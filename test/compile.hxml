@@ -1,0 +1,18 @@
+
+
+############ TEST JABBER
+-cp ../src
+-cp ../lib/core
+-neko ../bin/test/test_jabber.n
+-main TestJabber
+--override
+
+
+
+############ TEST XMPP
+--next
+-cp ../src
+-cp ../lib/core
+-neko ../bin/test/test_xmpp.n
+-main TestXMPP
+--override

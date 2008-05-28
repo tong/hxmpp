@@ -23,7 +23,6 @@ class JID {
 //TODO MAX_PART_SIZE
 	public static inline var MAX_PART_SIZE = 1023;
 	
-	
 	public var node(default,null) 			: String;
     public var domain(default,null) 		: String;
     public var resource(default,null)		: String;
