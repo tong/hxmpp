@@ -20,25 +20,24 @@ import jabber.util.JIDUtil;
 */
 class JID {
 	
-//TODO MAX_PART_SIZE
 	public static inline var MAX_PART_SIZE = 1023;
 	
 	public var node(default,null) 			: String;
     public var domain(default,null) 		: String;
     public var resource(default,null)		: String;
 	public var barAdress(getBarAdress,null) : String;
+	
 	var cached 		: String;
 	var cached_bar 	: String;
 	
 	
-	public function new( str : String ) {
+	public function new( string : String, ?allowLocal : Bool ) {
 		
-// TEMP TODO: local jid - domains !!
-//		if( !JIDUtil.isValid( str ) ) throw "Invalid JID: " + str; temp for local testing -> domain(.net)
+		if( !JIDUtil.isValid( string, allowLocal ) ) throw "Invalid JID: " + string;
 		
-		this.node = JIDUtil.parseNode( str );
-		this.domain = JIDUtil.parseDomain( str );
-		this.resource = JIDUtil.parseResource( str );
+		this.node = JIDUtil.parseNode( string );
+		this.domain = JIDUtil.parseDomain( string );
+		this.resource = JIDUtil.parseResource( string );
  
 		toString(); // cache it.
 	}
