@@ -29,7 +29,7 @@ class TestJID extends haxe.unit.TestCase   {
 	public function testJIDUtil() {
 		
 		var j1 = "nodemain.net/Resource";
-		assertTrue( JIDUtil.isValid( j1 ) );
+		assertTrue( !JIDUtil.isValid( j1 ) );
 		
 		var j1 = "node@domain.net/Resource";
 		assertTrue( JIDUtil.isValid( j1 ) );

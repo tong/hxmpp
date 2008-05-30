@@ -17,10 +17,16 @@ class JIDUtil {
 	*/
 	public static function isValid( jid : String, ?allowLocal : Bool ) : Bool {
 		
+		#if !( flash9 || neko || js || php )
+		return throw "Not implemented for flash<9";
+		#else true
+		
 		//TODO: regexp jid resource
 		//AS3: var pattern:RegExp = /(\w|[_.\-])+@((\w|-)+\.)+\w{2,4}+/;
 		//TODO
-		if( allowLocal == null ) allowLocal = false;
+		
+		/*
+		if( allowLocal == null ) allowLocal = true;
 		
 		var r : EReg;
 		if( allowLocal ) {
@@ -29,12 +35,16 @@ class JIDUtil {
 		} else {
 			r = VALID_EREG;
 		}
+		*/
+		var r = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?/i;
 		if( !r.match( jid ) ) return false;
 		var parts = getParts( jid );
 		for( part in parts ) {
 			if( part.length > jabber.JID.MAX_PART_SIZE ) return false;
 		}
 		return true;
+		
+		#end
 	}
 	
 	

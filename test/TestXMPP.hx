@@ -1,4 +1,6 @@
 
+import xmpp.Message;
+
 
 
 class TestXMPP {
@@ -23,6 +25,12 @@ class TestXMPP {
 class TestMessagePacket extends haxe.unit.TestCase   {
 	
 	public function testMessage() {
+		
 		assertTrue( true );
+		
+		
+		var m = new xmpp.Message();
 	}
 }
+
+

@@ -1,18 +1,75 @@
 
+############ TEST XMPP
+-cp src
+-cp ../src
+-cp ../lib/core
+-neko ../bin/test/test_xmpp.n
+-main TestXMPP
+--override
+
+--next
+-cp ../src
+-cp ../lib/core
+-swf ../bin/test/test_xmpp.swf
+-swf-version 9
+-swf-header 1200:800:50:ffffff
+-main TestXMPP
+--flash-strict
+--override
+
+--next
+-cp ../src
+-cp ../lib/core
+-swf ../bin/test/test_xmpp_8.swf
+-swf-version 8
+-swf-header 1200:800:50:ffffff
+-main TestXMPP
+--flash-strict
+--override
+
+--next
+-cp ../src
+-cp ../lib/core
+-cp lib/core
+-js ../bin/test/test_xmpp.js
+-main TestXMPP
+--override
+
 
 ############ TEST JABBER
+--next
 -cp ../src
 -cp ../lib/core
 -neko ../bin/test/test_jabber.n
 -main TestJabber
 --override
 
-
-
-############ TEST XMPP
 --next
+-cp test
 -cp ../src
 -cp ../lib/core
--neko ../bin/test/test_xmpp.n
--main TestXMPP
+-swf ../bin/test/test_jabber.swf
+-swf-version 9
+-swf-header 1200:800:50:ffffff
+-main TestJabber
+--flash-strict
+--override
+
+--next
+-cp test
+-cp ../src
+-cp ../lib/core
+-swf ../bin/test/test_jabber_8.swf
+-swf-version 8
+-swf-header 1200:800:50:ffffff
+-main TestJabber
+--flash-strict
+--override
+
+--next
+-cp test
+-cp ../src
+-cp ../lib/core
+-js ../bin/test/test_jabber.js
+-main TestJabber
 --override
