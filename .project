@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
 	<name>hxjabber</name>
-	<comment></comment>
+	<comment>haXe xmpp/jabber library</comment>
 	<projects>
 	</projects>
 	<buildSpec>

@@ -16,7 +16,8 @@ enum StreamStatus {
 	/**
 		Stream opening sent, but no response so far.
 	*/
-	pending( status : String );
+	//pending( status : String );
+	pending;
 	
 	/**
 		XMPP stream is open and ready to exchange xmpp data.

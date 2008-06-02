@@ -99,3 +99,7 @@ class TestJID extends haxe.unit.TestCase   {
 		assertEquals( JIDUtil.unescapeNode( JIDUtil.escapeNode( node ) ), node );
 	}
 }
+
+
+class TestPacketCollector {
+}

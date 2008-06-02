@@ -21,22 +21,23 @@ class StreamBase {
 	
 	public var onOpen(default,null)  : Dispatcher<StreamBase>;
 	public var onClose(default,null) : Dispatcher<StreamBase>;
-	public var onClose(default,null) : Dispatcher<StreamBase>;
 	public var onData(default,null)  : Dispatcher<StreamBase>;
-	public var onError(default,null) : Dispatcher<StreamError>;
+//TODO	public var onError(default,null) : Dispatcher<StreamError>;
 	
-	public function cache(getCache,null) : String;
+	public var cache(getCache,null) : String;
 	
-	var cache : StringBuf;
+	var idFactory : IDFactory;
+	var cache_buf : StringBuf;
 	
 	
-	function new( connection : IStreamConnection ) {
+	function new( connection : IStreamConnection, ?version : String ) {
 		
 		status = StreamStatus.closed;
 		this.setConnection( connection ); // add connection listeners
+		this.version = version;
 		
 		idFactory = new IDFactory();
-		cache = new StringBuf();
+		cache_buf = new StringBuf();
 		
 		collectors = new List();
 		interceptors = new List();
@@ -44,7 +45,7 @@ class StreamBase {
 		onOpen = new Dispatcher();
 		onClose = new Dispatcher();
 		onData = new Dispatcher();
-		onXMPP = new Dispatcher();
+	//	onXMPP = new Dispatcher();
 	}
 	
 	
@@ -55,8 +56,18 @@ class StreamBase {
 			if( connection.connected ) connection.disconnect();
 		}
 		connection = c;
-		connection.stream = this;
+//		connection.stream = this;
 		return connection;
+	}
+	
+	function setVersion( v : String ) : String {
+		if( status == StreamStatus.closed ) version = v;
+		return version;
+	}
+	
+	function setLang( l : String ) : String {
+		if( status != StreamStatus.open ) lang = l;
+		return lang;
 	}
 	
 	function setID( id : String ) : String { // override me
@@ -64,6 +75,9 @@ class StreamBase {
 		return id;
 	}
 	
+	function getCache() : String {
+		return cache_buf.toString();
+	}
 	
 	/**
 	*/
@@ -80,7 +94,7 @@ class StreamBase {
 		if( status == StreamStatus.open || status == StreamStatus.pending ) return false;
 		//status = StreamStatus.pending;
 		if( !connection.connected ) connection.connect();
-		else onConnected();
+		else onConnect();
 		return true;
 	}
 	
@@ -93,7 +107,7 @@ class StreamBase {
 		if( status == StreamStatus.open ) {
 			sendData( "</stream:stream>" ); // TODO other namespaces
 			status = StreamStatus.closed;
-			cache = new StringBuf();
+			cache_buf = new StringBuf();
 			return true;
 		}
 		return false;
@@ -121,6 +135,9 @@ class StreamBase {
 		return true;
 	}
 	
+	public function processData( data : String ) {
+	}
+	
 	/**
 		Removes a packet collector from the stream.
 		This method could be used as timeout handler for packet collectors for automatic remove on timeout.
@@ -130,15 +147,11 @@ class StreamBase {
 		collectors.remove( c );
 	}
 	
-	public function processData( data : String ) {
-	}
-	
-	
 	public function collectPacket( packet : xmpp.Packet ) {
 	}
 	
 	
-	function onConnected() { throw "Abstract error"; }
+	function onConnect() { throw "Abstract error"; }
 	function onDisconnect() { throw "Abstract error"; }
-	function onData( data : String ) { throw "Abstract error"; }
+	//function onData( data : String ) { throw "Abstract error"; }
 }

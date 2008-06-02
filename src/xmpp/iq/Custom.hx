@@ -1,0 +1,4 @@
+
+/**
+	Custom IQ extension.
+*/
