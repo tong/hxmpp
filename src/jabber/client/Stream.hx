@@ -30,9 +30,8 @@ class Stream extends jabber.StreamBase {
 	}
 	
 	
-	/**
-	*/
 	override function onConnect() {
+		trace("onConnect");
 		status = StreamStatus.pending;
 		sendData( xmpp.Stream.createOpenStream( XMLNS, jid.domain, version, lang ) );
 		connection.read( true ); // start reading stream data
@@ -40,8 +39,9 @@ class Stream extends jabber.StreamBase {
 	
 	/**
 	*/
-		/*
 	override function onData( data : String ) {
+		trace(data);
+		
 		if( status == StreamStatus.closed ) return;
 		data = StringTools.trim( data );
 		
@@ -88,16 +88,17 @@ class Stream extends jabber.StreamBase {
 					}
 				}
 				trace("ERROr parsing xml " + data );
-				//if( data == "</stream:error>" ) {
-				//	trace("STEEAM ERROR");
+				/*
+				if( data == "</stream:error>" ) {
+					trace("STEEAM ERROR");
 					//streamCloseHandler();
-				//	onClose.dispatchEvent( this );
+					onClose.dispatchEvent( this );
 				}
+				*/
 			}
 			collectPackets( xml );
 		}
 	}
-		*/
 	
 	
 	/**

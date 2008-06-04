@@ -3,6 +3,7 @@ package xmpp;
 import xmpp.Packet;
 
 
+
 enum MessageType {
 	normal;
 	error;
@@ -12,6 +13,8 @@ enum MessageType {
 }
 
 
+/**
+*/
 class Message extends Packet {
 	
 	public inline static var NORMAL		= "normal";
@@ -75,7 +78,6 @@ class Message extends Packet {
 			case error 		: ERROR;
 		}
 	}
-	
 	
 	public static function getMessageType( p : String ) : MessageType {
 		return switch( p ) {

@@ -1,13 +1,6 @@
 package jabber;
 
 
-/*
-typedef PacketTimeout = {
-	var timeout : Int;
-	var handlers : Array<>;
-}
-*/
-
 
 /**
 	Default packet collector implementation.
@@ -47,7 +40,6 @@ class PacketCollector implements IPacketCollector {
 			
 		timeout = t;
 		timeout.collector = this;
-		
 		return timeout;
 	}
 	
@@ -66,21 +58,4 @@ class PacketCollector implements IPacketCollector {
 	public function deliver( p : xmpp.Packet ) {
 		for( handle in handlers ) handle( p );
 	}
-	
-	/*
-		Stops reporting timeout to handlers.
-	*/
-	/*
-	public function stopTimeout() {
-		isTimeout = false;
-	}
-	
-	//TODO public function forceTimeout() {
-	
-	function timeoutHandler() {
-		if( isTimeout && !permanent ) {
-			for( h in timeoutHandlers ) h( this );
-		}
-	}
-	*/
 }

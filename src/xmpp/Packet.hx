@@ -1,11 +1,14 @@
 package xmpp;
 
-//import packet.Ty
+
 
 /**
 	Abstract/Basic XMPP packet.
 */
 class Packet {
+	
+	//public static var DEFAULT_LANGUAGE = getSysLang();
+	
 	
 	public var _type(default,null) : PacketType;
 	
@@ -14,6 +17,7 @@ class Packet {
 	public var id 			: String;	
 	public var lang 		: String;
 	public var properties 	: Array<Xml>;
+	//public var extension 	: Array<IPacketExtension>;
 	
 	
 	function new( ?to : String, ?from : String, ?id : String, ?lang : String ) {
@@ -26,14 +30,14 @@ class Packet {
 	
 	
 	/**
-		Creates the xml representaion of this packet.
+		Creates/Returns the xml representaion of this xmpp packet.
 	*/
 	public function toXml() : Xml {
 		return throw "Error, cannot create xml from abstract xmpp packet";
 	}
 	
 	/**
-		Creates the xml representaion of this packet as string.
+		Creates/Returns the xml representaion of this xmpp packet as string.
 	*/
 	public function toString() : String {
 		return toXml().toString();
@@ -51,7 +55,7 @@ class Packet {
 		for( p in properties ) src.addChild( p );
         return src;
 	}
-	
+
 	
 	/**
 		Parses xml into a xmpp.Packet object.
@@ -67,7 +71,6 @@ class Packet {
 		return p;
 	}
 	
-	
 	/**
 		Adds basic attributes to every packet.
 	*/
@@ -78,7 +81,6 @@ class Packet {
 		p.lang = src.get( "xml:lang" );
 		return p;
 	}
-	
 	
 	/**
 		Returns the according xmpp.PacketType from given string.
@@ -102,8 +104,8 @@ class Packet {
 	}
 	
 	/*
-	//TODO
 	public static function isValid( src : Xml ) : Bool {
+		//TODO
 		return true;
 	}
 	*/

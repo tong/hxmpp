@@ -168,14 +168,15 @@ class IQError {
 		return xml;
 	}
 	
-	/*
+	
 	public static function parse( child : Xml ) : IQError {
 		var error = new IQError();
 		///TODO
 		return error;
+		/*
 		  <error code='405' type='cancel'>
     <not-allowed xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
   </error>
+  */
 	}
-	*/
 }

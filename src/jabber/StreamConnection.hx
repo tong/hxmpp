@@ -23,7 +23,7 @@ class StreamConnection implements IStreamConnection {
 	public function read( ?active : Bool ) : Bool{ return throw "Abstract method"; }
 	public function send( data : String ) : Bool { return throw "Abstract method";}
 	
-	//#if flash
-	//public var crossdomain : String;
-	//#end
+	#if flash
+	public var crossdomain : String;
+	#end
 }

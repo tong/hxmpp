@@ -1,50 +1,27 @@
 package jabber.util;
 
 
+
 /**
-	Static methods for JabberID manipulation/validation.<br>
 	<a href="http://www.xmpp.org/extensions/xep-0106.html2">XEP-0106: JID Escaping</a><br>
+	Static methods for JabberID manipulation/validation.<br>
 */	
 class JIDUtil {
 	
-	 //TODO
-	public static inline var VALID_EREG = null;
-	public static inline var VALID_EREG_LOCAL = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?/i;
-	
 	
 	/**
-		Returns true if the given jid is valid formed.
+		Returns [true] if the given jid is valid formed.
 	*/
-	public static function isValid( jid : String, ?allowLocal : Bool ) : Bool {
-		
-		#if !( flash9 || neko || js || php )
-		return throw "Not implemented for flash<9";
-		#else true
-		
+	public static function isValid( jid : String ) : Bool {
 		//TODO: regexp jid resource
+		
 		//AS3: var pattern:RegExp = /(\w|[_.\-])+@((\w|-)+\.)+\w{2,4}+/;
-		//TODO
 		
-		/*
-		if( allowLocal == null ) allowLocal = true;
-		
-		var r : EReg;
-		if( allowLocal ) {
-			throw "Not implemented"; // TODO
-			r = VALID_EREG_LOCAL;
-		} else {
-			r = VALID_EREG;
-		}
-		*/
-		var r = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?/i;
+		var r : EReg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?/i;
 		if( !r.match( jid ) ) return false;
 		var parts = getParts( jid );
-		for( part in parts ) {
-			if( part.length > jabber.JID.MAX_PART_SIZE ) return false;
-		}
+		for( part in parts ) if( part.length > jabber.JID.MAX_PART_SIZE ) return false;
 		return true;
-		
-		#end
 	}
 	
 	

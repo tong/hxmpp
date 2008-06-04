@@ -2,6 +2,9 @@ package jabber;
 
 // TODO TimeoutProcess
 
+/**
+	
+*/
 class PacketTimeout {
 	
 	public static var DEFAULT_TIMEOUT = 5;
@@ -25,16 +28,13 @@ class PacketTimeout {
 	
 	function getTime() : Int { return _time; }
 	function setTime( t : Null<Int> ) : Null<Int> {
-		
 		switch( t ) {
 			case null	: _time = 0; 				 // no timeout	
 			case 0 		: _time = DEFAULT_TIMEOUT;   // default timeout 
 			default 	: _time = t; 			     // given timeout
 		}
-		
 		if( _time == 0 ) {
 			active = false;
-			
 		} else {
 			start( _time );
 		}
@@ -42,6 +42,8 @@ class PacketTimeout {
 	}
 	
 	
+	/**
+	*/
 	public function start( t : Int ) {
 		
 	//	if( active ) stop(); // TODO TimeoutProcess
@@ -52,7 +54,7 @@ class PacketTimeout {
 		#if neko
 		util.Delay.run( Std.int( _time ), timeoutHandler )();
 			
-		#else(flash9||js)
+		#else true
 		haxe.Timer.delayed( timeoutHandler, _time * 1000 )();
 			
 		#end
@@ -65,6 +67,9 @@ class PacketTimeout {
 		active = false;
 	}
 	
+	/**
+		Force to report timeout and stop.
+	*/
 	public function forceTimeout() {
 		reportTimeout();
 		active = false;

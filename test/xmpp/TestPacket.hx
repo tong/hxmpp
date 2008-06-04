@@ -1,9 +1,10 @@
+package test.xmpp;
 
 import xmpp.Message;
 
 
 
-class TestXMPP {
+class TestPacket {
 	
 	static function main() {
 		
@@ -20,6 +21,7 @@ class TestXMPP {
 		r.run();
 	}
 }
+
 
 
 class TestMessagePacket extends haxe.unit.TestCase   {

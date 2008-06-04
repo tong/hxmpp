@@ -1,0 +1,26 @@
+
+-cp sample
+-cp src
+-cp lib/core
+-neko bin/sample/simple_client.n
+-main SimpleClient
+--override
+
+--next
+-cp sample
+-cp src
+-cp lib/core
+-swf-header 800:600:50
+-swf-version 9
+-swf bin/sample/simple_client.swf
+-main SimpleClient
+--override
+
+--next
+-cp sample
+-cp src
+-cp lib/core
+-js bin/sample/simple_client.js
+-main SimpleClient
+--override
+-D SOCKET_BRIDGE

@@ -1,6 +1,9 @@
 package jabber;
 
 
+
+/**
+*/
 interface IPacketCollector {
 	
 	/**
