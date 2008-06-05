@@ -4,7 +4,6 @@ import xmpp.PacketType;
 import xmpp.Message;
 
 
-
 /** 
 	Filters message packets, optional with given xmpp.MessageType.
 */

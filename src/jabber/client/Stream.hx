@@ -40,7 +40,6 @@ class Stream extends jabber.StreamBase {
 	/**
 	*/
 	override function onData( data : String ) {
-		trace(data);
 		
 		if( status == StreamStatus.closed ) return;
 		data = StringTools.trim( data );

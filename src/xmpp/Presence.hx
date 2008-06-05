@@ -3,11 +3,31 @@ package xmpp;
 import xmpp.Packet;
 
 
-//TODO presence mode
+
+enum PresenceType {
+	error;
+	probe;
+	subscribe;
+	subscribed;
+	unavailable;
+	unsubscribe;
+	unsubscribed;
+}
 
 
+enum PresenceShow {
+	away;
+	chat;
+	dnd;
+	xa;
+}
+
+
+/**
+	<a href="http://www.xmpp.org/rfcs/rfc3921.html#presence">Exchanging Presence Information</a>
+*/
 class Presence extends Packet {
-	
+	/*
 	public static inline var AVAILABLE 		= "available";
 	public static inline var OFFLINE 		= "offline";
 	public static inline var AWAY 			= "away";
@@ -18,10 +38,10 @@ class Presence extends Packet {
 	public static inline var SUBSCRIBE	 	= "subscribe";
 	public static inline var SUBSCRIBED		= "subscribed";
 	public static inline var UNSUBSCRIBED 	= "unsubscribed";
-
+*/
 	
-   	public var type 	: String;
-   	public var show 	: String;
+   	public var type 	: String; //TODO PresenceType
+   	public var show 	: String; //TODO PresenceShow
     public var status 	: String;
     public var priority : Null<Int>;
     
@@ -38,10 +58,10 @@ class Presence extends Packet {
 	
 	override public function toXml() : Xml {
 		var xml = super.addAttributes( Xml.createElement( "presence" ) );
-		if( type != null ) 						xml.set( "type", type );
-		if( show != null && show != "" ) 		xml.addChild( Packet.createXmlElement( "show", show ) );
-		if( status != null && status != "" ) 	xml.addChild( Packet.createXmlElement( "status", status ) );
-		if( priority != null ) 					xml.addChild( Packet.createXmlElement( "priority", Std.string( priority ) ) );
+		if( type != null ) 					 xml.set( "type", type );
+		if( show != null && show != "" ) 	 xml.addChild( Packet.createXmlElement( "show", show ) );
+		if( status != null && status != "" ) xml.addChild( Packet.createXmlElement( "status", status ) );
+		if( priority != null ) 				 xml.addChild( Packet.createXmlElement( "priority", Std.string( priority ) ) );
 		return xml;
 	}
 	

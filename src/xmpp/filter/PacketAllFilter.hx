@@ -1,7 +1,6 @@
 package xmpp.filter;
 
 
-
 /**
 	Accepts every packet.
 */

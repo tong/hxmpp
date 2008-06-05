@@ -1,5 +1,6 @@
 
--cp sample
+####### SIMPLE CLIENT
+-cp samples
 -cp src
 -cp lib/core
 -neko bin/sample/simple_client.n
@@ -7,7 +8,7 @@
 --override
 
 --next
--cp sample
+-cp samples
 -cp src
 -cp lib/core
 -swf-header 800:600:50
@@ -17,10 +18,18 @@
 --override
 
 --next
--cp sample
+-cp samples
 -cp src
 -cp lib/core
--js bin/sample/simple_client.js
+-js bin/sample/simple_client_bridged.js
 -main SimpleClient
 --override
 -D SOCKET_BRIDGE
+
+--next
+-cp samples
+-cp src
+-cp lib/core
+-js bin/sample/simple_client_bosh.js
+-main SimpleClient
+--override

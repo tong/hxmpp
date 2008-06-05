@@ -76,5 +76,4 @@ class StreamError {
 	/** the initiating entity has sent XML that is not well-formed as defined by [XML] (Bray, T., Paoli, J., Sperberg-McQueen, C., and E. Maler, “Extensible Markup Language (XML) 1.0 (2nd ed),” October 2000.). */
 	public static inline var XML_NOT_WELL_FORMED = "xml-not-well-formed";
 	
-	
 }

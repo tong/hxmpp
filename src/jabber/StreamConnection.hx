@@ -1,7 +1,6 @@
 package jabber;
 
 
-
 /**
 	Abstract connection for jabber streams.
 */

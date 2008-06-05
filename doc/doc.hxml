@@ -1,0 +1,8 @@
+-cp ../src
+-cp ../lib/core
+-main ImportAll
+-neko all.n
+-xml api.xml
+-cmd rm all.n
+-cmd cd api/
+-cmd haxedoc ../api.xml -f jabber -f xmpp -f crypt -f net.sasl -f util -f net.util;
