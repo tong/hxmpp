@@ -11,17 +11,17 @@ import xmpp.filter.PacketIDFilter;
 
 
 /**
-	Abstract base for jabber streams from C2S.
+	Base for jabber streams from C2S.
 */
 class Stream extends jabber.StreamBase {
 	
-	public static inline var XMLNS = "jabber:client";
 	public static var DEFAULT_PORT = 5222;
 	
 	
 	public var jid(default,null) : JID;
-	//public var password(default,setPassword) : String;
-	//TODO: global presence? : IPresenceListener;
+	public var host(getHost,null) : String;
+	
+	//var presenceListeners
 	
 	
 	public function new( jid : JID, connection : IStreamConnection, ?version : String ) {
@@ -30,16 +30,20 @@ class Stream extends jabber.StreamBase {
 	}
 	
 	
-	override function onConnect() {
-		trace("onConnect");
-		status = StreamStatus.pending;
-		sendData( xmpp.Stream.createOpenStream( XMLNS, jid.domain, version, lang ) );
-		connection.read( true ); // start reading stream data
+	function getHost() : String {
+		return if( jid == null ) null else jid.domain;
 	}
 	
-	/**
-	*/
+	
+	override function onConnect() {
+		status = StreamStatus.pending;
+		sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_CLIENT, jid.domain, version, lang ) );
+		connection.read( true ); // start reading input
+	}
+	
 	override function onData( data : String ) {
+		
+		//super.onData( data );
 		
 		if( status == StreamStatus.closed ) return;
 		data = StringTools.trim( data );
@@ -47,7 +51,7 @@ class Stream extends jabber.StreamBase {
 		if( status == StreamStatus.pending ) {
 			if( xmpp.Stream.isStream( data ) ) {
 				if( xmpp.Stream.getStreamType( data ) == "features" ) {
-					parseStreamFeatures( Xml.parse( data ).firstElement() );
+//					parseStreamFeatures( Xml.parse( data ).firstElement() );
 					return;
 				}
 				data = util.StringUtil.removeXmlHeader( data );
@@ -56,7 +60,7 @@ class Stream extends jabber.StreamBase {
 					var i = data.indexOf("><") + 1;
 					s = data.substr( 0, i );
 					var f = data.substr( i );
-					parseStreamFeatures( Xml.parse( f ).firstElement() );
+//					parseStreamFeatures( Xml.parse( f ).firstElement() );
 				} else {
 					s = data;
 				}
@@ -101,24 +105,27 @@ class Stream extends jabber.StreamBase {
 	
 	
 	/**
-		Sends an IQ xmpp packet and forwards the response to the defined handler function.
+		Sends an IQ xmpp packet and forwards the collected response to the given handler function.
 	*/
 	public function sendIQ( iq : xmpp.IQ, handler : xmpp.IQ->Void,
 							?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool ) {
 		iq.id = nextID();
 		collectors.add( new PacketCollector( [new PacketIDFilter( iq.id )], handler, permanent, timeout, block ) );
 		sendPacket( iq );
+		//return { iq : iq, collector : IPacketCollector };
 	}
 	
 	/**
 		Sends a "normal" type message.
 	*/
-	public function sendMessage( to : String, subject : String, message : String ) {
-		sendPacket( new xmpp.Message( MessageType.normal, to, subject, message, null, jid.toString() ) );
+	public function sendMessage( to : String, subject : String, message : String ) : xmpp.Message {
+		return untyped sendPacket( new xmpp.Message( MessageType.normal, to, subject, message, null, jid.toString() ) );
 	}
 	
+	//public function sendPresence()
 	
 	public function toString() : String {
 		return "jabber.client.Stream("+jid+")";
 	}
+	
 }

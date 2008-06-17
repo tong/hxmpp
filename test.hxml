@@ -1,14 +1,14 @@
 
-############ TEST XMPP
+############ TEST XMPP PACKET
 -cp src
--cp lib/core
+-cp ../core/hx
 -neko bin/test/xmpp/test_packet.n
 -main test.xmpp.TestPacket
 --override
 
 --next
 -cp src
--cp lib/core
+-cp ../core/hx
 -swf bin/test/xmpp/test_packet.swf
 -swf-version 9
 -swf-header 1200:800:50:ffffff
@@ -18,7 +18,7 @@
 
 --next
 -cp src
--cp lib/core
+-cp ../core/hx
 -swf bin/test/xmpp/test_packet_8.swf
 -swf-version 8
 -swf-header 1200:800:50:ffffff
@@ -28,10 +28,19 @@
 
 --next
 -cp src
--cp lib/core
--cp lib/core
+-cp ../core/hx
 -js bin/test/xmpp/test_packet.js
 -main test.xmpp.TestPacket
+--override
+
+
+
+############ TEST XMPP PACKETFILTER
+--next
+-cp src
+-cp ../core/hxe
+-neko bin/test/xmpp/test_packetfilter.n
+-main test.xmpp.TestPacketFilter
 --override
 
 
@@ -39,14 +48,14 @@
 ############ TEST JID
 --next
 -cp src
--cp lib/core
+-cp ../core/hx
 -neko bin/test/jabber/test_jid.n
 -main test.jabber.TestJID
 --override
 
 --next
 -cp src
--cp lib/core
+-cp ../core/hx
 -swf bin/test/jabber/test_jid.swf
 -swf-version 9
 -swf-header 1200:800:50:ffffff
@@ -56,7 +65,7 @@
 
 --next
 -cp src
--cp lib/core
+-cp ../core/hx
 -swf bin/test/jabber/test_jid_8.swf
 -swf-version 8
 -swf-header 1200:800:50:ffffff
@@ -66,7 +75,7 @@
 
 --next
 -cp src
--cp lib/core
+-cp ../core/hx
 -js bin/test/jabber/test_jid.js
 -main test.jabber.TestJID
 --override

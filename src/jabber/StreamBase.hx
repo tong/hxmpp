@@ -6,30 +6,31 @@ import util.IDFactory;
 
 
 /**
-	Abstract base for jabber streams between any entities.<br>
+	Abstract base for xmpp stream comunication between jabber entities.<br>
+	
 */
 class StreamBase {
 	
-	public static var VERSION = "1.0";
+	public static inline var VERSION = "1.0";
 
+	
+	public var connection(default,setConnection) : IStreamConnection;
+	public var status(default,null) : StreamStatus;
 	
 	public var version(default,setVersion) 	: String;
 	public var lang(default,setLang) 		: String;
 	public var id(default,null) 			: String;
-	public var connection(default,setConnection) : IStreamConnection;
-	public var status(default,null) 		: StreamStatus;
-	//public var features(default,null)		: List<String>; //TODO activate
 	
-	public var collectors 					: List<IPacketCollector>;
-	public var interceptors 				: List<IPacketInterceptor>;
+	public var collectors 	: List<IPacketCollector>;
+	public var interceptors : List<IPacketInterceptor>;
 	
-	public var onOpen(default,null)  		: Dispatcher<StreamBase>;
-	public var onClose(default,null) 		: Dispatcher<StreamBase>;
-	//public var onData(default,null) 		: Dispatcher<>; //
-	//public var onError(default,null) 		: Dispatcher<StreamError>;
+	public var onOpen(default,null)  	: Dispatcher<StreamBase>;
+	public var onClose(default,null) 	: Dispatcher<StreamBase>;
+	//public var onXMPP(default,null) 	: Dispatcher<String>; //
+	//public var onError(default,null) 	: Dispatcher<StreamError>;
 
 	var idFactory 	: IDFactory;
-	var cache 		: String;
+	var cache 		: String; // TODO StringBuf
 
 
 	function new( connection : IStreamConnection, ?version : String ) {
@@ -44,6 +45,7 @@ class StreamBase {
 		
 		onOpen = new Dispatcher();
 		onClose = new Dispatcher();
+		//onXMPP = new Dispatcher();
 	}
 	
 	
@@ -58,7 +60,7 @@ class StreamBase {
 	}
 	
 	function setConnection( c : IStreamConnection ) : IStreamConnection {
-		//if( status == StreamStatus.pending ) throw "";
+		//if( status == StreamStatus.pending )
 		if( status == StreamStatus.open || status == StreamStatus.pending ) close();
 		if( connection != null && connection.connected ) connection.disconnect(); 
 		connection = c;
@@ -70,9 +72,9 @@ class StreamBase {
 	
 	
 	//////// internal connection handlers
-	function onConnect() { throw "Abstract error"; }
-	function onDisconnect() { throw "Abstract error"; }
-	function onData( data : String ) { throw "Abstract error"; }
+	function onConnect() { throw "Abstract error onConnect"; }
+	function onDisconnect() { throw "Abstract error onDisconnect"; }
+	function onData( data : String ) { throw "Abstract error onData"; }
 	//////// ---
 	
 	
@@ -97,9 +99,9 @@ class StreamBase {
 	}
 	
 	/**
-		Sends a closing stream tag. Keeps connection up.
+		Sends a closing stream tag. Keeps socket connection up.
 	*/
-	//public function close( ?error ) : Bool {
+	// TODO public function close( ?error ) : Bool {
 	public function close() : Bool {
 		if( status == StreamStatus.open ) {
 			sendData( "</stream:stream>" ); // TODO other namespaces
@@ -111,14 +113,13 @@ class StreamBase {
 	}
 	
 	/**
-		Intercepts and sends a xmpp packet.
-		Returns the intercepted packet.
+		Intercepts, sends and returns a xmpp packet.
 	*/
-	//TODO
-	//public function sendPacket( packet : xmpp.Packet, ?intercept : Bool ) : mpp.Packet {
-	public function sendPacket( packet : xmpp.Packet ) : xmpp.Packet {
-		if( !connection.connected || status != StreamStatus.open ) return null;
-		for( interceptor in interceptors ) interceptor.intercept( packet );
+	public function sendPacket( packet : xmpp.Packet, ?intercept : Bool ) : xmpp.Packet {
+		if( !connection.connected || status != StreamStatus.open ) throw "Cannot send packet, stream not connected";
+		if( intercept || intercept == null ) { 
+			for( interceptor in interceptors ) interceptor.intercept( packet );
+		}
 		sendData( packet.toString() );
 		return packet;
 	}
@@ -170,6 +171,7 @@ class StreamBase {
 		}
 		#else true
 		onData( d );
+		
 		#end
 	}
 	
@@ -210,9 +212,9 @@ class StreamBase {
 		}
 	}
 	
+		/*
 	function parseStreamFeatures( src : Xml ) {
 		//TODO
-		/*
 		for( e in src.elements() ) {
 			switch( e.nodeName ) {
 				case "starttls" :
@@ -222,6 +224,6 @@ class StreamBase {
 				case "register" :
 			}
 		}
-		*/
 	}
+		*/
 }

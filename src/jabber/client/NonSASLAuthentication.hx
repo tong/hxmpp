@@ -7,18 +7,18 @@ import xmpp.IQ;
 /**
 	Client@Server authentication.
 */
-class NonSASLAuth {
+class NonSASLAuthentication {
 	
 	public var onSuccess(default,null) : Dispatcher<Stream>;
-	public var onFailed(default,null) : Dispatcher<Stream>;
+	public var onFailed(default,null)  : Dispatcher<Stream>;
 	
 	public var usePlainText : Bool;
+	public var authenticating(default,null) : Bool;
 	
 	var stream 		: Stream;
 	var username 	: String;
 	var password 	: String;
 	var resource 	: String;
-	var authenticating : Bool;
 	
 
 	public function new( stream : Stream, ?usePlainText : Bool ) {
@@ -36,14 +36,13 @@ class NonSASLAuth {
 
 	public function authenticate( password : String, ?resource : String ) {
 		if( authenticating ) {
-			throw "Unable to authenticate, already in progress";
+			throw "Authentication already in progress";
 		} else {
-			authenticating = true;
 			this.password = password;
 			this.resource = resource;
+			authenticating = true;
 			var iq = new IQ();
 			iq.extension = new xmpp.iq.Authentication( username );
-			//iq.child = new xmpp.iq.Authentication( username ).toXml();
 			stream.sendIQ( iq, handleResponse );
 		}
 	}
@@ -58,19 +57,18 @@ class NonSASLAuth {
 			else new xmpp.iq.Authentication( username, password, null, resource );
 			stream.sendIQ( iq, handleResult );
 		} else {
+			authenticating = false;
 			onFailed.dispatchEvent( stream );
 		}
 	}
 	
 	function handleResult( iq : xmpp.IQ ) {
-		switch( iq.type ) {
-			case IQType.result : 
-				authenticating = false;
-				onSuccess.dispatchEvent( stream );
-			case IQType.error : 
-				authenticating = false;
-				onFailed.dispatchEvent( stream );
-			default : //#
+		if( iq.type == IQType.result ) {
+			authenticating = false;
+			onSuccess.dispatchEvent( stream );
+		} else {
+			authenticating = false;
+			onFailed.dispatchEvent( stream );
 		}
 	}
 }

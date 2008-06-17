@@ -1,13 +1,10 @@
 package jabber;
 
-// TODO TimeoutProcess
 
-/**
-	
-*/
+// TODO TimeoutProcess
 class PacketTimeout {
 	
-	public static var DEFAULT_TIMEOUT = 5;
+	public static var DEFAULT_TIMEOUT = 5; // sec
 	
 	
 	public var time(getTime,setTime) : Int;
@@ -52,7 +49,8 @@ class PacketTimeout {
 		_time = t;
 		
 		#if neko
-		util.Delay.run( Std.int( _time ), timeoutHandler )();
+		trace("NEKO TIMER DLEAy");
+		util.Delay.run( timeoutHandler, Std.int( _time ) )();
 			
 		#else true
 		haxe.Timer.delayed( timeoutHandler, _time * 1000 )();

@@ -47,7 +47,7 @@ class StreamSocketConnection extends jabber.StreamConnection {
 		this.host = host;
 		this.port = port;
 		
-		#if ( js || SOCKET_BRIDGE )
+		#if ( SOCKET_BRIDGE )
 		socket = new Socket();
 		socket.onConnect = sockConnectHandler;
 		socket.onDisconnect = sockDisconnectHandler;
@@ -69,7 +69,7 @@ class StreamSocketConnection extends jabber.StreamConnection {
 
 		#else flash
 		throw "Flash<9 not supported right now!";
-		socket = new Socket();
+		//socket = new Socket();
 		//socket.onConnect = sockConnectHandler;
 		//socket.onClose = sockDisconnectHandler;
 		//socket.onData = sockDataHandler;
@@ -86,10 +86,10 @@ class StreamSocketConnection extends jabber.StreamConnection {
 	//	if( crossdomain != null ) flash.system.Security.loadPolicyFile( crossdomain );
 	//	#end
 		
-		#if ( js || SOCKET_BRIDGE )
+		//#if ( js || SOCKET_BRIDGE )
 		//TODO
 		
-		#else neko
+		#if neko
 		socket.setTimeout( DEFAULT_SOCKET_TIMEOUT );
 		socket.connect( new neko.net.Host( host ), port );
 		connected = true;
@@ -257,15 +257,17 @@ class StreamSocketConnection extends jabber.StreamConnection {
 	#else flash9 //#######################################
 
 	function sockConnectHandler( e : Event ) {
+		trace("sockConnectHandler");
 		connected = true;
-		socket.addEventListener( Event.CONNECT, sockConnectHandler );
-		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
-		socket.addEventListener( IOErrorEvent.IO_ERROR, sockDisconnectHandler );
-		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, sockDisconnectHandler );
+//		socket.addEventListener( Event.CONNECT, sockConnectHandler );
+//		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
+//		socket.addEventListener( IOErrorEvent.IO_ERROR, sockDisconnectHandler );
+//		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, sockDisconnectHandler );
 		onConnect();
 	}
 
 	function sockDisconnectHandler( e : Event ) {
+		trace("sockDisconnectHandler");
 		connected = false;
 		onDisconnect();
 	}
@@ -317,7 +319,7 @@ class StreamSocketConnection extends jabber.StreamConnection {
 class SocketBridgeConnection {
 	
 	public static var DEFAULT_CNX_DELAY = 500;
-	public static var ID = "hxjabber";
+	public static var ID = "net.disktree.hxjabber";
 	
 	public static var cnx(default,null) : haxe.remoting.Connection;
 	

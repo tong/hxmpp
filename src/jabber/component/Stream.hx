@@ -11,7 +11,6 @@ import jabber.PacketCollector;
 */
 class Stream extends jabber.StreamBase {
 	
-	public static inline var XMLNS = "jabber:component:accept";
 	public static var DEFAULT_PORT = 5275;
 	
 	
@@ -26,7 +25,7 @@ class Stream extends jabber.StreamBase {
 	}
 	
 	override function onConnect() {
-		sendData( xmpp.Stream.createOpenStream( XMLNS, name ) );
+		sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_COMPONENT, name ) );
 		status = StreamStatus.pending;
 		connection.read( true ); // start reading io data
 	}

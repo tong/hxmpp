@@ -18,7 +18,8 @@ class PacketCollector implements IPacketCollector {
 	public var timeout(default,setTimeout) : PacketTimeout;
 	
 	
-	public function new( filters : Array<Dynamic>, handler : Dynamic->Void, ?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool ) {
+	public function new( filters : Array<Dynamic>, handler : Dynamic->Void,
+						 ?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool ) {
 		
 		handlers = new Array();
 		
@@ -58,4 +59,5 @@ class PacketCollector implements IPacketCollector {
 	public function deliver( p : xmpp.Packet ) {
 		for( handle in handlers ) handle( p );
 	}
+	
 }

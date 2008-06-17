@@ -2,7 +2,7 @@ package jabber;
 
 
 /**
-	Abstract connection for jabber streams.
+	Abstract io connection for jabber streams.
 */
 class StreamConnection implements IStreamConnection {
 	
@@ -11,6 +11,7 @@ class StreamConnection implements IStreamConnection {
 	public var onDisconnect : Void->Void;
 	public var onData 		: String->Void;
 	
+	//public var usedHost : String;
 	
 	function new() {
 		connected = false;

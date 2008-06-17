@@ -25,7 +25,7 @@ private class Socket extends flash.net.Socket {
 */
 class SocketBridge {
 	
-	static inline var CLIENT = "hxjabber"; // haxe.remoting client name
+	static inline var CLIENT = "net.disktree.hxjabber"; // haxe.remoting client id
 	
 	static var cnx : haxe.remoting.Connection; // TODO cnxs : Hash<haxe.remoting.Connection>;
 	static var sockets = new List<Socket>();
@@ -33,9 +33,8 @@ class SocketBridge {
 	
 	
 	static function main() {
-		
-		haxe.Firebug.redirectTraces();
-		
+		trace("SOCKETBRIDGE_READY");
+		//haxe.Firebug.redirectTraces();
 		cnx = haxe.remoting.Connection.jsConnect( CLIENT );
 	}
 	
@@ -45,6 +44,7 @@ class SocketBridge {
 //	}
 	
 	static function createSocket() {
+		trace("createSSSocket");
 		var id = s_count++;
 		var s = new Socket( id );
 		s.addEventListener( Event.CONNECT, sockConnectHandler );
@@ -57,6 +57,7 @@ class SocketBridge {
 	}
 	
 	static function connect( id : Int, host : String, port : Int ) : Bool {
+		trace(host);
 		var s = getSocket( id );
 		s.connect( host, port );
 		return true;

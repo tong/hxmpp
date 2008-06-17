@@ -11,11 +11,10 @@ enum StreamStatus {
 	/**
 		Stream opening sent, but no response so far.
 	*/
-	pending;
-	//pending( status : String );
+	pending; // TODO pending( status : String );
 	
 	/**
-		XMPP stream is open and ready to exchabge packets.
+		XMPP stream is open and ready to exchange packets.
 	*/
 	open;
 }

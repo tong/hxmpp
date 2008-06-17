@@ -4,6 +4,10 @@ package xmpp;
 
 class Stream {
 	
+	public static inline var XMLNS_CLIENT = "jabber:client";
+	public static inline var XMLNS_SERVER = "jabber:client";
+	public static inline var XMLNS_COMPONENT = "jabber:component:accept";
+	
 	static inline var reg_stream = new EReg( "stream:stream", "" );
 	static inline var reg_stream_features = new EReg( "stream:features", "" );
 	static inline var reg_stream_error = new EReg( "stream:error", "" );
