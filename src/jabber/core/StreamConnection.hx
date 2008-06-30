@@ -1,4 +1,4 @@
-package jabber;
+package jabber.core;
 
 
 /**
@@ -26,4 +26,5 @@ class StreamConnection implements IStreamConnection {
 	#if flash
 	public var crossdomain : String;
 	#end
+	
 }

@@ -1,4 +1,4 @@
-package jabber;
+package jabber.core;
 
 
 // TODO TimeoutProcess

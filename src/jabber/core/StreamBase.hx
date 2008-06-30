@@ -1,4 +1,4 @@
-package jabber;
+package jabber.core;
 
 import event.Dispatcher;
 import util.IDFactory;
@@ -7,7 +7,6 @@ import util.IDFactory;
 
 /**
 	Abstract base for xmpp stream comunication between jabber entities.<br>
-	
 */
 class StreamBase {
 	
@@ -31,6 +30,8 @@ class StreamBase {
 
 	var idFactory 	: IDFactory;
 	var cache 		: String; // TODO StringBuf
+	
+	//public var extensions: Array<StreamExtension>;
 
 
 	function new( connection : IStreamConnection, ?version : String ) {

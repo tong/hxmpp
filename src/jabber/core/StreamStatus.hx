@@ -1,4 +1,4 @@
-package jabber;
+package jabber.core;
 
 
 enum StreamStatus {
@@ -17,4 +17,5 @@ enum StreamStatus {
 		XMPP stream is open and ready to exchange packets.
 	*/
 	open;
+	
 }

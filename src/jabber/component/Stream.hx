@@ -1,15 +1,15 @@
 package jabber.component;
 
 import jabber.JID;
-import jabber.StreamStatus;
-import jabber.PacketCollector;
+import jabber.core.StreamStatus;
+import jabber.core.PacketCollector;
 
 
 
 /**
 	Base for component2server jabber streams.
 */
-class Stream extends jabber.StreamBase {
+class Stream extends jabber.core.StreamBase {
 	
 	public static var DEFAULT_PORT = 5275;
 	
@@ -18,7 +18,7 @@ class Stream extends jabber.StreamBase {
 	public var password(default,null) 	: String;
 	
 	
-	public function new( name : String, password : String, connection : jabber.IStreamConnection ) {
+	public function new( name : String, password : String, connection : jabber.core.IStreamConnection ) {
 		super( connection );
 		this.name = name;
 		this.password = password;

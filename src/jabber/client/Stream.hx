@@ -1,27 +1,26 @@
 package jabber.client;
 
 import jabber.JID;
-import jabber.StreamStatus;
-import jabber.IStreamConnection;
-import jabber.PacketCollector;
-import jabber.PacketTimeout;
+import jabber.core.StreamStatus;
+import jabber.core.IStreamConnection;
+import jabber.core.PacketCollector;
+import jabber.core.PacketTimeout;
 import xmpp.Message;
 import xmpp.filter.PacketIDFilter;
 
 
 
 /**
-	Base for jabber streams from C2S.
+	Base for jabber streams between C2S.<br>
 */
-class Stream extends jabber.StreamBase {
+class Stream extends jabber.core.StreamBase {
 	
-	public static var DEFAULT_PORT = 5222;
+	public static inline var _DEFAULT_PORT = 5222;
+	public static var DEFAULT_PORT = _DEFAULT_PORT;
 	
 	
 	public var jid(default,null) : JID;
 	public var host(getHost,null) : String;
-	
-	//var presenceListeners
 	
 	
 	public function new( jid : JID, connection : IStreamConnection, ?version : String ) {

@@ -34,7 +34,7 @@ private typedef Server = {
 	// TODO neko: threads
 	// TODO bridge support for all platforms
 */
-class StreamSocketConnection extends jabber.StreamConnection {
+class StreamSocketConnection extends jabber.core.StreamConnection {
 	
 	public var host(default,null) 	: String;
 	public var port(default,null) 	: Int;

@@ -4,7 +4,7 @@
 -cp samples
 -cp src
 #-cp lib/core
--cp ../core/hx
+-cp ../core/src/hx
 -neko bin/sample/simple_client.n
 -main SimpleClient
 --override
@@ -13,7 +13,7 @@
 -cp samples
 -cp src
 #-cp lib/core
--cp ../core/hx
+-cp ../core/src/hx
 -swf-header 800:600:50
 -swf-version 9
 -swf bin/sample/simple_client.swf
@@ -24,7 +24,7 @@
 -cp samples
 -cp src
 #-cp lib/core
--cp ../core/hx
+-cp ../core/src//hx
 -js bin/sample/simple_client_bridged.js
 -main SimpleClient
 --override
@@ -34,7 +34,7 @@
 -cp samples
 -cp src
 #-cp lib/core
--cp ../core/hx
+-cp ../core/src//hx
 -js bin/sample/simple_client_bosh.js
 -main SimpleClient
 --override
@@ -45,7 +45,7 @@
 -cp samples
 -cp src
 #-cp lib/core
--cp ../core/hx
+-cp ../core/src//hx
 -neko bin/sample/simple_component.n
 -main SimpleComponent
 --override

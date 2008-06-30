@@ -1,14 +1,17 @@
+### unit tests for hxjabber
+
+
 
 ############ TEST XMPP PACKET
 -cp src
--cp ../core/hx
+-cp ../core/src//hx
 -neko bin/test/xmpp/test_packet.n
 -main test.xmpp.TestPacket
 --override
 
 --next
 -cp src
--cp ../core/hx
+-cp ../core/src//hx
 -swf bin/test/xmpp/test_packet.swf
 -swf-version 9
 -swf-header 1200:800:50:ffffff
@@ -18,7 +21,7 @@
 
 --next
 -cp src
--cp ../core/hx
+-cp ../core/src//hx
 -swf bin/test/xmpp/test_packet_8.swf
 -swf-version 8
 -swf-header 1200:800:50:ffffff
@@ -28,7 +31,7 @@
 
 --next
 -cp src
--cp ../core/hx
+-cp ../core/src//hx
 -js bin/test/xmpp/test_packet.js
 -main test.xmpp.TestPacket
 --override
@@ -38,7 +41,7 @@
 ############ TEST XMPP PACKETFILTER
 --next
 -cp src
--cp ../core/hxe
+-cp ../core/src//hxe
 -neko bin/test/xmpp/test_packetfilter.n
 -main test.xmpp.TestPacketFilter
 --override

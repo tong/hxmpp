@@ -1,4 +1,4 @@
-package jabber;
+package jabber.core;
 
 
 
@@ -45,4 +45,5 @@ interface IPacketCollector {
 	/**
 	*/
 	var timeout : PacketTimeout;
+	
 }
