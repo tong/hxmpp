@@ -24,7 +24,7 @@ class XMPPDebug {
     	#if js
     	haxe.Firebug.trace( v, inf );
     	
-    	#else neko
+    	#elseif neko
     	/*
     	var out = v;
     	if( inf.customParams != null ) {
@@ -34,10 +34,10 @@ class XMPPDebug {
     	*/
     	neko.Lib.print( v + "\n\n"  );
     	
-    	#else flash9
+    	#elseif flash9
     	XMPPDebug.trace( v, inf );
     	
-    	#else flash
+    	#elseif flash
     	flash.Lib.trace( v );
     	
     	#end

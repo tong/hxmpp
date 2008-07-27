@@ -52,8 +52,8 @@ class PacketTimeout {
 		trace("NEKO TIMER DLEAy");
 		util.Delay.run( timeoutHandler, Std.int( _time ) )();
 			
-		#else true
-		haxe.Timer.delayed( timeoutHandler, _time * 1000 )();
+		#else
+		haxe.Timer.delay( timeoutHandler, _time * 1000 );
 			
 		#end
 	}

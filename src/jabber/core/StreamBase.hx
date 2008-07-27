@@ -170,7 +170,7 @@ class StreamBase {
 				}
 			}
 		}
-		#else true
+		#else
 		onData( d );
 		
 		#end
@@ -184,7 +184,7 @@ class StreamBase {
 		*/
 //		trace("Collecting......." + data );
 		for( xml in data.elements() ) {
-			var packet : Dynamic;
+			var packet : Dynamic = null;
 			try {
 				packet = xmpp.Packet.parse( xml );
 			} catch( e : Dynamic ) {

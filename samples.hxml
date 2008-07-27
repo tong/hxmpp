@@ -7,7 +7,7 @@
 -cp ../core/src/hx
 -neko bin/sample/simple_client.n
 -main SimpleClient
---override
+#--override
 
 --next
 -cp samples
@@ -18,7 +18,7 @@
 -swf-version 9
 -swf bin/sample/simple_client.swf
 -main SimpleClient
---override
+#--override
 
 --next
 -cp samples
@@ -27,7 +27,7 @@
 -cp ../core/src//hx
 -js bin/sample/simple_client_bridged.js
 -main SimpleClient
---override
+#--override
 -D SOCKET_BRIDGE
 
 --next
@@ -37,7 +37,7 @@
 -cp ../core/src//hx
 -js bin/sample/simple_client_bosh.js
 -main SimpleClient
---override
+#--override
 
 
 ####### SIMPLE CLIENT
@@ -48,4 +48,4 @@
 -cp ../core/src//hx
 -neko bin/sample/simple_component.n
 -main SimpleComponent
---override
+#--override

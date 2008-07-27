@@ -1,5 +1,7 @@
 
-import jabber.StreamBase;
+import jabber.client.Stream;
+import jabber.client.NonSASLAuthentication;
+import jabber.client.SASLAuthentication;
 
 
 

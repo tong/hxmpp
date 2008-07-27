@@ -35,7 +35,7 @@ class SocketBridge {
 	static function main() {
 		trace("SOCKETBRIDGE_READY");
 		//haxe.Firebug.redirectTraces();
-		cnx = haxe.remoting.Connection.jsConnect( CLIENT );
+//TODO		cnx = haxe.remoting.Connection.jsConnect( CLIENT );
 	}
 	
 	

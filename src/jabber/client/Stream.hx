@@ -76,7 +76,7 @@ class Stream extends jabber.core.StreamBase {
 			}
 			
 		} else if( status == StreamStatus.open ) {
-			var xml : Xml;
+			var xml : Xml = null;
 			try {
 				xml = Xml.parse( data );
 			} catch( e : Dynamic ) {

@@ -7,7 +7,6 @@
 -cp ../core/src//hx
 -neko bin/test/xmpp/test_packet.n
 -main test.xmpp.TestPacket
---override
 
 --next
 -cp src
@@ -17,7 +16,6 @@
 -swf-header 1200:800:50:ffffff
 -main test.xmpp.TestPacket
 --flash-strict
---override
 
 --next
 -cp src
@@ -27,14 +25,12 @@
 -swf-header 1200:800:50:ffffff
 -main test.xmpp.TestPacket
 --flash-strict
---override
 
 --next
 -cp src
 -cp ../core/src//hx
 -js bin/test/xmpp/test_packet.js
 -main test.xmpp.TestPacket
---override
 
 
 
@@ -44,7 +40,6 @@
 -cp ../core/src//hxe
 -neko bin/test/xmpp/test_packetfilter.n
 -main test.xmpp.TestPacketFilter
---override
 
 
 
@@ -54,7 +49,6 @@
 -cp ../core/hx
 -neko bin/test/jabber/test_jid.n
 -main test.jabber.TestJID
---override
 
 --next
 -cp src
@@ -64,7 +58,6 @@
 -swf-header 1200:800:50:ffffff
 -main test.jabber.TestJID
 --flash-strict
---override
 
 --next
 -cp src
@@ -74,11 +67,9 @@
 -swf-header 1200:800:50:ffffff
 -main test.jabber.TestJID
 --flash-strict
---override
 
 --next
 -cp src
 -cp ../core/hx
 -js bin/test/jabber/test_jid.js
 -main test.jabber.TestJID
---override

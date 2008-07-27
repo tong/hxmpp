@@ -3,14 +3,14 @@ package jabber;
 #if neko
 import neko.net.Socket;
 
-#else flash9 
+#elseif flash9 
 import flash.net.Socket;
 import flash.events.Event;
 import flash.events.IOErrorEvent;
 import flash.events.SecurityErrorEvent;
 import flash.events.ProgressEvent;
 
-#else flash
+#elseif flash
 typedef Socket = flash.XMLSocket;
 #end
 
@@ -19,7 +19,7 @@ typedef Socket = flash.XMLSocket;
 #if neko
 private typedef Server = {
 	var data : String;
-	var buf : String;
+	var buf : haxe.io.Bytes;
 	var bufpos : Int;
 }
 #end
@@ -53,21 +53,21 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		socket.onDisconnect = sockDisconnectHandler;
 		socket.onData = sockDataHandler;
 		
-		#else neko
+		#elseif neko
 		socket = new neko.net.Socket();
-		messageHeaderSize = DEFAULT_MESSAGEHEADER_SIZE;
-		bufSize = DEFAULT_BUF_SIZE;
-		maxBufSize = MAX_BUF_SIZE;
-		reading = false;
+//		messageHeaderSize = DEFAULT_MESSAGEHEADER_SIZE;
+//		bufSize = DEFAULT_BUF_SIZE;
+//		maxBufSize = MAX_BUF_SIZE;
+//		reading = false;
 		
-		#else flash9
+		#elseif flash9
 		socket = new flash.net.Socket(); 
 		socket.addEventListener( Event.CONNECT, sockConnectHandler );
 		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
 		socket.addEventListener( IOErrorEvent.IO_ERROR, sockDisconnectHandler );
 		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, sockDisconnectHandler );
 
-		#else flash
+		#elseif flash
 		throw "Flash<9 not supported right now!";
 		//socket = new Socket();
 		//socket.onConnect = sockConnectHandler;
@@ -95,7 +95,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		connected = true;
 		onConnect();
 			
-		#else true
+		#else
 		socket.connect( host, port );
 
 		#end
@@ -113,14 +113,14 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		#if ( js || SOCKET_BRIDGE )
 		socket.send( data );
 		
-		#else neko
+		#elseif neko
 		socket.write( data );
 		
-		#else flash9
+		#elseif flash9
 		socket.writeUTFBytes( data ); 
 		socket.flush();
 		
-		#else flash
+		#elseif flash
 		socket.send( data );
 		
 		#end 
@@ -137,13 +137,14 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 			#if ( js || SOCKET_BRIDGE )
  			socket.onData = sockDataHandler;
 			
-			#else neko
+			#elseif neko
+			/*
 	 		reading = activate;
 			while( reading ) {
 				if( connected ) {
 					var s : Server = {
 						data : null,
-						buf : neko.Lib.makeString( bufSize ),
+						buf : haxe.io.Bytes.alloc( bufSize ),
 						bufpos : 0
 					};
 					readData( s );
@@ -151,8 +152,9 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 					break;
 				}
 			}
+			*/
 			
-			#else flash9
+			#elseif flash9
 			socket.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
 			
 			//#else true
@@ -165,14 +167,14 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 			#if ( js || SOCKET_BRIDGE )
  			socket.onData = null;
  			
-			#else neko
+			#elseif neko
 			// TODO check
-			reading = false;
+//			reading = false;
 			
-			#else flash9
+			#elseif flash9
 			socket.removeEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
 			
-			#else flash
+			#elseif flash
 			socket.onData = null;
 			
 			#end
@@ -200,14 +202,14 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	
 	
 	//########################################################
-	#else neko //#############################################
+	#elseif neko //###########################################
 	
 	public static var DEFAULT_MESSAGEHEADER_SIZE 	: Int = 1;
 	public static var DEFAULT_BUF_SIZE 				: Int = 1024;
 	public static var MAX_BUF_SIZE 					: Int = (1 << 24);
 	public static var DEFAULT_SOCKET_TIMEOUT 		: Int = 1000;
 	
-	
+	/*
 	public var bufSize : Int;
 	public var maxBufSize : Int;
 	var messageHeaderSize : Int;
@@ -225,8 +227,8 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 					throw "Max buffer size reached";
 				nsize = maxBufSize;
 			}
-			var buf2 = neko.Lib.makeString(nsize);
-			neko.Lib.copyBytes(buf2,0,cl.buf,0,buflen);
+			var buf2 = haxe.io.Bytes.alloc(nsize);
+			buf2.blit(0,cl.buf,0,buflen);
 			buflen = nsize;
 			cl.buf = buf2;
 		}
@@ -245,16 +247,15 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	}
 	
 	function processClientData( d : String, buf : String, bufpos : Int, buflen : Int ) {
-		var d = new neko.io.StringInput( buf, bufpos, buflen ).read( buflen );
+		//var d = new neko.io.StringInput( buf, bufpos, buflen ).read( buflen );
 		onData( d );
 		//return { msg : d , bytes : len };
 		return d.length; //TODO
 	}
-
-
+*/
 	
 	//####################################################
-	#else flash9 //#######################################
+	#elseif flash9 //#####################################
 
 	function sockConnectHandler( e : Event ) {
 		trace("sockConnectHandler");
@@ -279,7 +280,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	
 	
 	//####################################################
-	#else flash //########################################
+	#elseif flash //######################################
 	
 	function sockConnectHandler( b : Bool ) {
 		trace("sockConnectHandler");
@@ -308,13 +309,12 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 
 
 
-
 #if SOCKET_BRIDGE
 
+/*
 /**
 	TODO haxe.jabber.tool.ISocketBridge
 	haxe.remoting connection to socket bridge.
-*/
 //TODO private
 class SocketBridgeConnection {
 	
@@ -381,6 +381,7 @@ class SocketBridgeConnection {
 		s.onData( data );
 	}
 }
+*/
 
 
 /**
@@ -390,31 +391,31 @@ private class Socket {
 	
 	static var id_inc : Int = 0;
 	
-	public function onConnect() : Void {}
-	public function onDisconnect() : Void {}
-	public function onData( data : String ) : Void {}
+	dynamic public function onConnect() : Void {}
+	dynamic public function onDisconnect() : Void {}
+	dynamic public function onData( ata : String ) : Void {}
 	
 	public var id : Int;
 	
-	
 	public function new() {
-		var id = SocketBridgeConnection.createSocket( this );
-		if( id == -1 ) throw "Error creating socket at bridge";
-		this.id = id;
+//		var id = SocketBridgeConnection.createSocket( this );
+//		if( id == -1 ) throw "Error creating socket at bridge";
+//		this.id = id;
 	}
 	
 	
 	public function connect( host : String, port : Int ) {
-		SocketBridgeConnection.cnx.jabber.tool.SocketBridge.connect.call( [ id, host, port ] );
+		//SocketBridgeConnection.cnx.jabber.tool.SocketBridge.connect.call( [ id, host, port ] );
 	
 	}
 	public function close() {
-		SocketBridgeConnection.cnx.jabber.tool.SocketBridge.close.call( [ id ] );
+		//SocketBridgeConnection.cnx.jabber.tool.SocketBridge.close.call( [ id ] );
 	}
 	
 	public function send( data : String ) {
-		SocketBridgeConnection.cnx.jabber.tool.SocketBridge.send.call( [ id, data ] );
+		//SocketBridgeConnection.cnx.jabber.tool.SocketBridge.send.call( [ id, data ] );
 	}
+	
 }
 
 #end // SOCKET_BRIDGE
