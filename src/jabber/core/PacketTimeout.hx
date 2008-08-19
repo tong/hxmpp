@@ -52,7 +52,7 @@ class PacketTimeout {
 		trace("NEKO TIMER DLEAy");
 		util.Delay.run( timeoutHandler, Std.int( _time ) )();
 			
-		#else
+		#elseif !php
 		haxe.Timer.delay( timeoutHandler, _time * 1000 );
 			
 		#end

@@ -12,6 +12,10 @@ import flash.events.ProgressEvent;
 
 #elseif flash
 typedef Socket = flash.XMLSocket;
+
+#elseif php
+typedef Socket = php.net.Socket;
+
 #end
 
 
@@ -94,7 +98,10 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		socket.connect( new neko.net.Host( host ), port );
 		connected = true;
 		onConnect();
-			
+		
+		#elseif php
+		socket.connect( new php.net.Host( host ), port );
+		
 		#else
 		socket.connect( host, port );
 

@@ -15,8 +15,8 @@ import xmpp.filter.PacketIDFilter;
 */
 class Stream extends jabber.core.StreamBase {
 	
-	public static inline var _DEFAULT_PORT = 5222;
-	public static var DEFAULT_PORT = _DEFAULT_PORT;
+	public static inline var STANDARD_PORT = 5222;
+	public static var DEFAULT_PORT = STANDARD_PORT;
 	
 	
 	public var jid(default,null) : JID;

@@ -15,4 +15,5 @@ class PacketFromFilter implements IPacketFilter {
 	public function accept( packet : xmpp.Packet ) : Bool {
 		return packet.from == from;
 	}
+	
 }

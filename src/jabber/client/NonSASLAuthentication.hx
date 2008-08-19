@@ -53,9 +53,11 @@ class NonSASLAuthentication {
 			var hasDigest = false;
 			for( c in response.extension.toXml().elementsNamed( "digest" ) ) { hasDigest = true; break; }
 			var iq = new IQ( IQType.set );
+	//		#if !php
 			iq.extension = if( !usePlainText && hasDigest ) new xmpp.iq.Authentication( username, null, crypt.SHA1.encode( stream.id + password ), resource );
 			else new xmpp.iq.Authentication( username, password, null, resource );
 			stream.sendIQ( iq, handleResult );
+	//		#end
 		} else {
 			authenticating = false;
 			onFailed.dispatchEvent( stream );
