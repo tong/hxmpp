@@ -1,7 +1,6 @@
 package xmpp;
 
 
-
 /**
 	Plain/Custom XMPP packet.
 */
@@ -17,4 +16,5 @@ class PlainPacket extends Packet {
 	override public function toXml(): Xml {
 		return src;
 	}
+	
 }

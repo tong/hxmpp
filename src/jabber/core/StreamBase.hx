@@ -20,16 +20,18 @@ class StreamBase {
 	public var lang(default,setLang) 		: String;
 	public var id(default,null) 			: String;
 	
-	public var collectors 	: List<IPacketCollector>;
+	public var collectors : List<IPacketCollector>;
 	public var interceptors : List<IPacketInterceptor>;
 	
 	public var onOpen(default,null)  	: Dispatcher<StreamBase>;
 	public var onClose(default,null) 	: Dispatcher<StreamBase>;
+	#if XMPP_DEBUG
 	//public var onXMPP(default,null) 	: Dispatcher<String>; //
+	#end
 	//public var onError(default,null) 	: Dispatcher<StreamError>;
-
-	var idFactory 	: IDFactory;
-	var cache 		: String; // TODO StringBuf
+	
+	var idFactory : IDFactory;
+	var cache : String; // TODO StringBuf
 	
 	//public var extensions: Array<StreamExtension>;
 
@@ -51,13 +53,13 @@ class StreamBase {
 	
 	
 	function setVersion( v : String ) : String {
-		if( status == StreamStatus.closed ) version = v;
-		return version;
+		if( status != StreamStatus.closed ) throw "Cannot change version on active xmpp stream";
+		return version = v;
 	}
 	
 	function setLang( l : String ) : String {
-		if( status != StreamStatus.open ) lang = l;
-		return lang;
+		if( status != StreamStatus.closed ) throw "Cannot change language on active xmpp stream";
+		return lang = l;
 	}
 	
 	function setConnection( c : IStreamConnection ) : IStreamConnection {
@@ -70,13 +72,6 @@ class StreamBase {
 		connection.onData = processData;
 		return connection;
 	}
-	
-	
-	//////// internal connection handlers
-	function onConnect() { throw "Abstract error onConnect"; }
-	function onDisconnect() { throw "Abstract error onDisconnect"; }
-	function onData( data : String ) { throw "Abstract error onData"; }
-	//////// ---
 	
 	
 	/**
@@ -119,7 +114,8 @@ class StreamBase {
 	public function sendPacket( packet : xmpp.Packet, ?intercept : Bool ) : xmpp.Packet {
 		if( !connection.connected || status != StreamStatus.open ) throw "Cannot send packet, stream not connected";
 		if( intercept || intercept == null ) { 
-			for( interceptor in interceptors ) interceptor.intercept( packet );
+			for( interceptor in interceptors )
+				interceptor.intercept( packet );
 		}
 		sendData( packet.toString() );
 		return packet;
@@ -227,4 +223,12 @@ class StreamBase {
 		}
 	}
 		*/
+	
+	
+	//////// internal connection handlers
+	function onConnect() { throw "Abstract error onConnect"; }
+	function onDisconnect() { throw "Abstract error onDisconnect"; }
+	function onData( data : String ) { throw "Abstract error onData"; }
+	//////// ---
+	
 }

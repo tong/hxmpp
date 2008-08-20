@@ -56,6 +56,14 @@ class Packet {
         return src;
 	}
 
+	/*
+	inline function createXmlElement( name : String, data : String ) : Xml {
+		var x = Xml.createElement( name );
+		x.addChild( Xml.createPCData( data ) );
+		return x;
+	}
+	*/
+
 	
 	/**
 		Parses xml into a xmpp.Packet object.

@@ -118,7 +118,8 @@ class Stream extends jabber.core.StreamBase {
 		Sends a "normal" type message.
 	*/
 	public function sendMessage( to : String, subject : String, message : String ) : xmpp.Message {
-		return untyped sendPacket( new xmpp.Message( MessageType.normal, to, subject, message, null, jid.toString() ) );
+		//return untyped sendPacket( new xmpp.Message( MessageType.normal, to, subject, message, null, jid.toString() ) );
+		return cast( sendPacket( new xmpp.Message( MessageType.normal, to, subject, message, null, jid.toString() ) ), xmpp.Message );
 	}
 	
 	//public function sendPresence()

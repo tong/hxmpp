@@ -36,6 +36,7 @@ class DiscoItems extends List<DiscoItem> {
 		}
 		return items;
 	}
+	
 }
 
 
@@ -82,4 +83,5 @@ class DiscoItem {
 		item.action = child.get( "action" );
 		return item;
 	}
+	
 }

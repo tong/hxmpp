@@ -57,4 +57,5 @@ class DiscoInfo {
 		}
 		return info;
 	}
+	
 }

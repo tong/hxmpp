@@ -6,18 +6,23 @@ import flash.text.TextFormat;
 #end
 
 
+
 /**
 	flash9, neko, js, (flash).
+	
+	Trace utility.
 */
 class XMPPDebug {
 	
-	public static var COLOR_INFO 		= 0x000000;
-	public static var COLOR_XMPP_IN		= 0x0000ff;
-	public static var COLOR_XMPP_OUT 	= 0xff0000;
+	public static var COLOR_INFO 	 = 0x000000;
+	public static var COLOR_XMPP_IN	 = 0x0000ff;
+	public static var COLOR_XMPP_OUT = 0xff0000;
+	
 	
     public static function setRedirection() {
 		haxe.Log.trace = myTrace;
     }
+ 
  
     static function myTrace( v : Dynamic, ?inf : haxe.PosInfos ) {
     	
@@ -44,8 +49,7 @@ class XMPPDebug {
     }
     
     
-    //###############################################
-    #if flash9 //####################################
+    #if flash9 //##############
     
     public static var w = 1024;
     public static var h = 768;
@@ -58,6 +62,7 @@ class XMPPDebug {
 	static var textFormatXMPPIn  = new TextFormat( fontName, fontSize, COLOR_XMPP_IN );
 	static var textFormatXMPPOut = new TextFormat( fontName, fontSize, COLOR_XMPP_OUT );
     
+    
     static var _ = init();
     static function init() {
 		history = new Array();
@@ -67,6 +72,7 @@ class XMPPDebug {
     	tf.height = h;
 		flash.Lib.current.addChild( tf );
     }  
+    
     
     public static function trace( v : Dynamic, ?inf : haxe.PosInfos ) {
     	
@@ -99,4 +105,5 @@ class XMPPDebug {
     }
     
     #end // flash9
+    
 }

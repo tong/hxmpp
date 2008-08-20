@@ -88,4 +88,5 @@ class Message extends Packet {
 			case ERROR 		: error;
 		}
 	}
+	
 }

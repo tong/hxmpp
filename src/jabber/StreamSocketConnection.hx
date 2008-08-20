@@ -51,7 +51,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		this.host = host;
 		this.port = port;
 		
-		#if ( SOCKET_BRIDGE )
+		#if ( js || SOCKET_BRIDGE )
 		socket = new Socket();
 		socket.onConnect = sockConnectHandler;
 		socket.onDisconnect = sockDisconnectHandler;
@@ -79,19 +79,15 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		//socket.onData = sockDataHandler;
 		//flash.Lib._global.inst = this;
 		
+		#elseif php
+		socket = new php.net.Socket();
+		
 		#end
 	}
 	
 	
 	//TODO return Bool
 	override public function connect() {
-		
-	//	#if flash
-	//	if( crossdomain != null ) flash.system.Security.loadPolicyFile( crossdomain );
-	//	#end
-		
-		//#if ( js || SOCKET_BRIDGE )
-		//TODO
 		
 		#if neko
 		socket.setTimeout( DEFAULT_SOCKET_TIMEOUT );
@@ -100,9 +96,16 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		onConnect();
 		
 		#elseif php
+	//	socket.setTimeout( 100.0 );
 		socket.connect( new php.net.Host( host ), port );
+		connected = true;
+		onConnect();
+		trace("connect " + connected + "  qwe");
 		
 		#else
+	//	#if flash
+	//	if( crossdomain != null ) flash.system.Security.loadPolicyFile( crossdomain );
+	//	#end
 		socket.connect( host, port );
 
 		#end
@@ -135,13 +138,11 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		return true;
 	}
 	
-	override public function read( ?activate : Bool ) : Bool {
-		
-		if( activate == null ) activate = true;
+	override public function read( ?activate : Bool = true ) : Bool {
 		
 		if( activate ) { // add reading listeners
 			
-			#if ( js || SOCKET_BRIDGE )
+			#if SOCKET_BRIDGE
  			socket.onData = sockDataHandler;
 			
 			#elseif neko
@@ -163,6 +164,14 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 			
 			#elseif flash9
 			socket.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
+			
+			#elseif php
+			trace("reading");
+	 		var reading = true;
+			while( reading ) {
+				trace("---");
+				trace( socket.read() );
+			}
 			
 			//#else true
 			//socket.onData = sockDataHandler;
@@ -190,11 +199,11 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	}
 	
 	
-		
-	//####################################################
-	#if ( js || SOCKET_BRIDGE ) //########################
+	//#########################
+	#if ( js || SOCKET_BRIDGE )
 	
 	function sockConnectHandler() {
+		trace("sockConnectHandler");
 		connected = true;
 		onConnect();
 	}
@@ -208,8 +217,8 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	}
 	
 	
-	//########################################################
-	#elseif neko //###########################################
+	//##########
+	#elseif neko
 	
 	public static var DEFAULT_MESSAGEHEADER_SIZE 	: Int = 1;
 	public static var DEFAULT_BUF_SIZE 				: Int = 1024;
@@ -311,88 +320,36 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		onData( d );
 	}
 	
+	
+	//##################################################
+	#elseif php //######################################
+	
+	/*
+	function sockConnectHandler() {
+		trace("sockConnectHandler");
+	}
+
+	function sockDisconnectHandler() {
+		trace("sockDisconnectHandler");
+	}
+	
+	function sockDataHandler() {
+		trace("sockDataHandler");
+	}
+	*/
+	
+	
 	#end
 }
 
 
 
-#if SOCKET_BRIDGE
 
-/*
-/**
-	TODO haxe.jabber.tool.ISocketBridge
-	haxe.remoting connection to socket bridge.
-//TODO private
-class SocketBridgeConnection {
-	
-	public static var DEFAULT_CNX_DELAY = 500;
-	public static var ID = "net.disktree.hxjabber";
-	
-	public static var cnx(default,null) : haxe.remoting.Connection;
-	
-	static var bridgeName : String;
-	static var sockets : List<Socket>;
-	
-	
-	static function connectRemoting() {
-		cnx = haxe.remoting.Connection.flashConnect( bridgeName );
-     	// TODO bridge authentication!!
-	}
-	
-	public static function getInstance() {
-		if( _instance == null ) throw "SocketBridgeConnection not initialized";
-		return _instance;
-	}
-	static var _instance : SocketBridgeConnection;
-	
-	// Inits socket bridge remoting connection.
-	public static function init( bridgeName : String, cb : Void->Void, ?delay : Int ) : Void->Void {
-		if( _instance == null ) {
-			if( delay == null ) delay = DEFAULT_CNX_DELAY;
-			SocketBridgeConnection.bridgeName = bridgeName;
-			sockets = new List<Socket>();
-			_instance = new SocketBridgeConnection();
-			haxe.remoting.Connection.bind( ID, _instance );
-			haxe.Timer.delayed( connectRemoting, delay )();
-		}
-		return haxe.Timer.delayed( cb, delay );
-	}
-	function new() {}
-	
-	
-	public static function createSocket( s : Socket ) : Int {
-		var id = cnx.jabber.tool.SocketBridge.createSocket.call( [] );
-		SocketBridgeConnection.sockets.add( s );
-		return id;
-	}
-	
-	
-	static function getSocket( id : Int ) : Socket {
-		for( s in sockets ) if( s.id == id ) return s;
-		return null;
-	}
-	
-		
-	function onSockClose( id : Int ) {
-		var s = getSocket( id );
-		s.onDisconnect();
-	}
-	
-	function onSocketConnect( id : Int ) {
-		var s = getSocket( id );
-		s.onConnect();
-	}
-	
-	function onSocketData( id : Int, data : String ) {
-		var s = getSocket( id );
-		s.onData( data );
-	}
-}
-*/
+#if JABBER_SOCKET_BRIDGE
 
 
 /**
-	Socket for connection to socket bridge.
+	Socket for socket bridge use.
 */
 private class Socket {
 	
@@ -402,27 +359,88 @@ private class Socket {
 	dynamic public function onDisconnect() : Void {}
 	dynamic public function onData( ata : String ) : Void {}
 	
-	public var id : Int;
+	public var id(default,null) : Int;
+	
 	
 	public function new() {
-//		var id = SocketBridgeConnection.createSocket( this );
-//		if( id == -1 ) throw "Error creating socket at bridge";
-//		this.id = id;
+		var id = SocketBridgeConnection.createSocket( this );
+		if( id == -1 ) throw "Error creating socket at bridge";
+		this.id = id;
 	}
 	
 	
 	public function connect( host : String, port : Int ) {
-		//SocketBridgeConnection.cnx.jabber.tool.SocketBridge.connect.call( [ id, host, port ] );
+		SocketBridgeConnection.cnx.SocketBridge.connect.call( [ id, host, port ] );
 	
 	}
+	
 	public function close() {
-		//SocketBridgeConnection.cnx.jabber.tool.SocketBridge.close.call( [ id ] );
+		SocketBridgeConnection.cnx.SocketBridge.close.call( [ id ] );
 	}
 	
 	public function send( data : String ) {
-		//SocketBridgeConnection.cnx.jabber.tool.SocketBridge.send.call( [ id, data ] );
+		SocketBridgeConnection.cnx.SocketBridge.send.call( [ id, data ] );
 	}
 	
 }
 
-#end // SOCKET_BRIDGE
+
+class SocketBridgeConnection {
+	
+	public static var DEFAULT_DELAY = 500;
+	
+	public static var cnx(default,null) : haxe.remoting.Connection;
+	
+	static var initialized = false;
+	static var bridgeName : String;
+	static var sockets : List<Socket>;
+	static var cb : Void->Void;
+	
+	
+	public static function init( bridgeName : String, cb : Void->Void,
+								 ?delay : Int ) : Void {
+		if( !initialized ) {
+			if( delay == null || delay > 0 ) delay = DEFAULT_DELAY;
+			SocketBridgeConnection.bridgeName = bridgeName;
+			SocketBridgeConnection.cb = cb;
+			sockets = new List<Socket>();
+			var ctx = new haxe.remoting.Context();
+			ctx.addObject( "SocketBridgeConnection", SocketBridgeConnection );
+			cnx = haxe.remoting.ExternalConnection.flashConnect( "default", bridgeName, ctx );
+			initialized = true;
+			haxe.Timer.delay( cb, delay );
+		}
+	}
+	
+	
+	static function getSocket( id : Int ) : Socket {
+		for( s in sockets ) if( s.id == id ) return s;
+		return null;
+	}
+	
+	
+	public static function createSocket( s : Socket ) : Int {
+		var id = cnx.SocketBridge.createSocket.call([]);
+		SocketBridgeConnection.sockets.add( s );
+		return id;
+	}
+	
+	
+	static function onSocketConnect( id : Int ) {
+		var s = getSocket( id );
+		s.onConnect();
+	}
+	
+	static function onSockClose( id : Int ) {
+		var s = getSocket( id );
+		s.onDisconnect();
+	}
+	
+	static function onSocketData( id : Int, data : String ) {
+		var s = getSocket( id );
+		s.onData( data );
+	}
+	
+}
+
+#end // JABBER_SOCKET_BRIDGE

@@ -21,31 +21,39 @@ private class Socket extends flash.net.Socket {
 
 /**
 	flash9.
-	SWF Socket bridge.
+	Socket bridge server swf.
 */
 class SocketBridge {
 	
-	static inline var CLIENT = "net.disktree.hxjabber"; // haxe.remoting client id
-	
 	static var cnx : haxe.remoting.Connection; // TODO cnxs : Hash<haxe.remoting.Connection>;
 	static var sockets = new List<Socket>();
-	static var s_count = 0;
+	static var socketsTotal = 0;
 	
 	
 	static function main() {
-		trace("SOCKETBRIDGE_READY");
-		//haxe.Firebug.redirectTraces();
-//TODO		cnx = haxe.remoting.Connection.jsConnect( CLIENT );
+		
+		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
+		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
+		
+		var ctx = new haxe.remoting.Context();
+		ctx.addObject( "SocketBridge", SocketBridge );
+		cnx = haxe.remoting.ExternalConnection.jsConnect( "default", ctx );
 	}
 	
 	
-//TODO	auth client by name, set CLIENT
-//	public static function authenticate( secret : String, ) {
-//	}
+	static function getSocket( id : Int ) : Socket {
+		for( s in sockets ) if( s.id == id ) return s;
+		return null;
+	}
 	
-	static function createSocket() {
-		trace("createSSSocket");
-		var id = s_count++;
+	/*
+TODO	auth client by name, set CLIENT
+	static function authenticate( secret : String, ) {
+	}
+	*/
+	
+	static function createSocket() : Int {
+		var id = socketsTotal++;
 		var s = new Socket( id );
 		s.addEventListener( Event.CONNECT, sockConnectHandler );
 		s.addEventListener( Event.CLOSE, sockDisconnectHandler );
@@ -57,8 +65,8 @@ class SocketBridge {
 	}
 	
 	static function connect( id : Int, host : String, port : Int ) : Bool {
-		trace(host);
 		var s = getSocket( id );
+		//if( s == null ) return false;
 		s.connect( host, port );
 		return true;
 	}
@@ -76,25 +84,18 @@ class SocketBridge {
 		return true;
 	}
 	
-	
 	static function sockConnectHandler( e : Event ) {
-		cnx.onSocketConnect.call( [e.target.id] );
+		cnx.SocketBridgeConnection.onSocketConnect.call( [e.target.id] );
 	}
 
 	static function sockDisconnectHandler( e : Event ) {
-		trace(e);
-		cnx.onSockClose.call( [e.target.id] );
+		cnx.SocketBridgeConnection.onSockClose.call( [e.target.id] );
 	}
 	
 	static function sockDataHandler( e : ProgressEvent ) {
-		cnx.onSocketData.call( [e.target.id, e.target.readUTFBytes( e.bytesLoaded )] );
+		cnx.SocketBridgeConnection.onSocketData.call( [e.target.id, e.target.readUTFBytes( e.bytesLoaded )] );
 	}
 	
-	
-	static function getSocket( id : Int ) : Socket {
-		for( s in sockets ) if( s.id == id ) return s;
-		return null;
-	}
 }
 
 #end // flash9
