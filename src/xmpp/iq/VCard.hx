@@ -1,13 +1,17 @@
 package xmpp.iq;
 
+import util.XmlUtil;
 
 
-class VCard /*implements IPacketExtension*/ {
+
+/**
+*/
+class VCard {
 	
-	public static inline var NODENAME 	= "vCard";
-	public static inline var XMLNS 		= "vcard-temp";
-	public static inline var PRODID 	= "-//HandGen//NONSGML vGen v1.0//EN";
-	public static inline var VERSION 	= "2.0";
+	public static inline var NODENAME = "vCard";
+	public static inline var XMLNS 	  = "vcard-temp";
+	public static inline var PRODID   = "-//HandGen//NONSGML vGen v1.0//EN";
+	public static inline var VERSION  = "2.0";
 	
 	
 	public var fullName 		: String;
@@ -22,17 +26,16 @@ class VCard /*implements IPacketExtension*/ {
     public var organization 	: String;
     public var organizationUnit : String;
     public var avatar 			: String;
-//..
+	//....
+	
 
-
-	public function new() {
-	}
+	public function new() {}
 	
 	
 	public function toXml() : Xml {
 		var xml = Xml.createElement( NODENAME );
 		xml.set( "xmlns", XMLNS );
-		if( fullName != null ) xml.addChild( xmpp.Packet.createXmlElement( "FN", fullName ) );
+		if( fullName != null ) xml.addChild( XmlUtil.createXmlElement( "FN", fullName ) );
 		//if( nickName != null ) xml.addChild( xmpp.Packet.createXmlElement( "NN", nickName ) );
 		
 		//............
@@ -44,6 +47,8 @@ class VCard /*implements IPacketExtension*/ {
 	}
 	
 	
+	/**
+	*/
 	public static function parse( src : Xml ) : VCard  {
 		
 		var vc = new VCard();
@@ -57,4 +62,5 @@ class VCard /*implements IPacketExtension*/ {
 	
 		return vc;
 	}
+	
 }

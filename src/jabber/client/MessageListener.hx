@@ -19,13 +19,13 @@ class MessageListener extends event.Dispatcher<Message> {
 	var stream : Stream;
 	
 	
-	public function new( stream : Stream ) {
+	public function new( stream : Stream, ?listen : Bool = true ) {
 		
 		super();
 		this.stream = stream;
 		
 		collector = new PacketCollector( [new MessageFilter( MessageType.normal )], handleMessage, true );
-		setListening( true );
+		setListening( listen );
 	}
 	
 	

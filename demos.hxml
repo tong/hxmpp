@@ -22,6 +22,18 @@
 -D XMPP_DEBUG
 -D JABBER_DEBUG
 
+#--next
+#-cp demo
+#-cp src
+#-cp ../core/src/hx
+#-resource demo/account_local@account
+#-swf-version 8
+#-swf-header 800:600:60
+#-swf bin/demos/client/client8.swf
+#-main ClientDemo
+#-D XMPP_DEBUG
+#-D JABBER_DEBUG
+
 --next
 -cp demo
 -cp src

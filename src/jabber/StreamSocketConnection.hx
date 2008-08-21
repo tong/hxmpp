@@ -24,15 +24,13 @@ typedef Socket = php.net.Socket;
 #end
 
 
+	// TODO flash < 9
+	// TODO bridge support for all platforms
 
 /**
 	neko, flash9, js.
 	
 	Basic (socket) connection implementation for jabber streams.
-	
-	// TODO flash < 9, js
-	// TODO neko: threads
-	// TODO bridge support for all platforms
 */
 class StreamSocketConnection extends jabber.core.StreamConnection {
 	
@@ -61,7 +59,6 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		reading = true;
 		
 		#elseif flash9
-		flash.system.Security.loadPolicyFile("http://jabber.spektral.at/crossdomain.xml");
 		socket = new flash.net.Socket(); 
 		socket.addEventListener( Event.CONNECT, sockConnectHandler );
 		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
@@ -74,7 +71,6 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		//socket.onConnect = sockConnectHandler;
 		//socket.onClose = sockDisconnectHandler;
 		//socket.onData = sockDataHandler;
-		//flash.Lib._global.inst = this;
 		
 		#elseif php
 		socket = new php.net.Socket();
@@ -83,7 +79,6 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	}
 	
 	
-	//TODO return Bool
 	override public function connect() {
 		
 		#if neko
@@ -99,9 +94,6 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		onConnect();
 		
 		#else
-	//	#if flash
-	//	if( crossdomain != null ) flash.system.Security.loadPolicyFile( crossdomain );
-	//	#end
 		socket.connect( host, port );
 
 		#end
@@ -146,14 +138,16 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
  			socket.onData = null;
  			
 			#elseif neko
-			// TODO check
 			reading = false;
 			
 			#elseif flash9
 			socket.removeEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
 			
 			#elseif flash
-			socket.onData = null;
+			//TODO
+			
+			#elseif php
+			//TODO
 			
 			#end
  		}
@@ -163,6 +157,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	override public function send( data : String ) : Bool {
 		
 		if( !connected ) return false;
+		if( data == null || data == "" ) false;
 		
 		#if ( js || SOCKET_BRIDGE )
 		socket.send( data );

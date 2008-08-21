@@ -4,6 +4,8 @@ import jabber.JID;
 import jabber.client.MessageListener;
 import jabber.client.NonSASLAuthentication;
 import jabber.client.Roster;
+import jabber.client.ServiceDiscovery;
+import jabber.client.VCardTemp;
 
 #if JABBER_SOCKETBRIDGE
 import jabber.StreamSocketConnection;
@@ -50,17 +52,19 @@ class ClientDemo {
 
 
 /**
-	Custom jabber stream providing basic IM functionality.
+	Custom jabber stream providing basic instant messaging functionality.
 */
 private class Jabber extends jabber.client.Stream {
 	
-	public var onMessage(default,null) : Dispatcher<xmpp.Message>;
-	public var onChatMessage(default,null) : Dispatcher<xmpp.Message>;
+	//public var onMessage(default,null) : Dispatcher<xmpp.Message>;
+	//public var onChatMessage(default,null) : Dispatcher<xmpp.Message>;
 	//public var onRosterUpdate(default,null) : Dispatcher<jabber.client.Roster>;
 	
+	public var service(default,null) : ServiceDiscovery;
 	public var roster(default,null) : Roster;
 	public var auth(default,null) : NonSASLAuthentication;
 	public var messages(default,null) : MessageListener;
+	public var vcard : VCardTemp;
 	
 	var password : String;
 	
@@ -90,68 +94,54 @@ private class Jabber extends jabber.client.Stream {
 		roster.onUpdate.addHandler( rosterRemoveHandler );
 		roster.onPresence.addHandler( rosterPresenceHandler );
 		
-		onOpen.addHandler( onStreamOpen );
-		onClose.addHandler( onStreamClose );
+		vcard = new VCardTemp( this );
+		vcard.onLoad.addHandler( vcardLoadHandler );
+		
+		onOpen.addHandler( streamOpenHandler );
+		onClose.addHandler( streamCloseHandler );
 	}
 	
 	
-	override function onDisconnect() {
-		trace( "DISCONNECTED from: " + jid.domain );
-	}
-	/*
-	override function onData( data : String ) {
-		trace( "XMPP IN:\n" + data, false );
-		super.onData( data );
-	}
-	override public function sendData( data : String ) : Bool {
-		trace( "XMPP OUT:\n" + data, true );
-		return super.sendData( data );
-	}
-	*/
-	
-	
-	function onStreamOpen( stream ) {
+	function streamOpenHandler( stream ) {
 		auth.authenticate( password, "hxjab" );
 	}
 	
-	function onStreamClose( stream ) {
+	function streamCloseHandler( stream ) {
 		trace( "STREAM CLOSED" );
 	}
 	
-	function onStreamError( stream ) {
+	function streamErrorHandler( stream ) {
 		trace( "STREAM ERROR" );
 	}
 	
-	
 	function authenticationSuccessHandler( stream ) {
 		roster.load();
+		vcard.load();
 	}
-	
 	
 	function messageHandler( m : xmpp.Message ) {
-		trace( "MESSAGe" );
+		trace( "Recieved message from " + m.from + ": " + m.body );
 	}
 	
+	function vcardLoadHandler( vc : VCardChange ) {
+		trace( "VCard loaded from: " + vc.from );
+	}
 	
 	function rosterAvailableHandler( r : Roster ) {
-		/*
-		trace("#ä#äää#ä#########################################################");
-		for( e in r.entries ) 
-			trace( e.jid + " " + e.subscription  );
-		*/
+		trace( "Roster loaded, " + r.entries.length + " items"  );
 		roster.sendPresence( new xmpp.Presence( "available" ) );
 	}
 	
 	function rosterUpdateHandler( e : List<RosterEntry> ) {
-		trace( e );
+		trace( "Roster entries updated " + e.length );
 	}
 	
 	function rosterRemoveHandler( e : List<RosterEntry> ) {
-		trace( e );
+		trace( "Roster entries removed " + e.length );
 	}
 	
 	function rosterPresenceHandler( e : RosterEntry ) {
-		trace( e );
+		trace( "Presence from " + e.jid + ": " + e.presence.type  );
 	}
 	
 }
