@@ -3,8 +3,8 @@ package jabber.util;
 
 
 /**
-	<a href="http://www.xmpp.org/extensions/xep-0106.html2">XEP-0106: JID Escaping</a><br>
 	Static methods for JabberID manipulation/validation.<br>
+	<a href="http://www.xmpp.org/extensions/xep-0106.html2">XEP-0106: JID Escaping</a><br>
 */	
 class JIDUtil {
 	
@@ -156,4 +156,5 @@ class JIDUtil {
 		}
 		return buf.toString();
 	}
+	
 }

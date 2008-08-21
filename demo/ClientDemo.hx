@@ -37,9 +37,7 @@ class ClientDemo {
 	}
 	
 	static function init() {
-		
 		trace( "initializing jabber client ..." );
-		
 		var acc = new jabber.util.ResourceAccount( "account" );
 		var stream = new Jabber( new JID( acc.jid ), acc.password, acc.host, acc.port );
 		stream.open();
@@ -79,7 +77,8 @@ private class Jabber extends jabber.client.Stream {
 		onOpen.addHandler( onStreamOpen );
 		onClose.addHandler( onStreamClose );
 		
-	//	roster = new Roster( this );
+		roster = new Roster( this );
+		roster.onAvailable.addHandler( onRosterAvailable );
 	}
 	
 	
@@ -114,6 +113,17 @@ private class Jabber extends jabber.client.Stream {
 	}
 	
 	function onAuthenticated( stream ) {
+		roster.load();
+	}
+	
+	
+	function onRosterAvailable( r : Roster ) {
+		/*
+		trace("#ä#äää#ä#########################################################");
+		for( e in r.entries ) 
+			trace( e.jid + " " + e.subscription  );
+		*/
+		roster.sendPresence( new xmpp.Presence( "available" ) );
 	}
 	
 }

@@ -44,6 +44,8 @@ class Roster extends List<RosterItem> {
 	}
 	
 	
+	/**
+	*/
 	public static function parse( child : Xml ) : Roster {
 		var r = new Roster();
 		for( item in child.elements() ) {
@@ -51,9 +53,12 @@ class Roster extends List<RosterItem> {
 		}
 		return r;
 	}
+	
 }
 
 
+/**
+*/
 class RosterItem {
 	
 	public var jid(default,null) 	: String;
@@ -92,6 +97,8 @@ class RosterItem {
 //	}
 	
 	
+	/**
+	*/
 	public static function parse( child : Xml ) : RosterItem {
 		var item = new RosterItem( child.get( "jid" ) );
 		item.subscription = getSubscriptionType( child.get( "subscription" ) );
