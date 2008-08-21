@@ -3,8 +3,6 @@ package jabber.core;
 
 
 /**
-	Default packet collector implementation.
-	//TODO PacketTimeoutCollector extends PacketCollector
 */
 class PacketCollector implements IPacketCollector {
 	
@@ -19,14 +17,14 @@ class PacketCollector implements IPacketCollector {
 	
 	
 	public function new( filters : Array<Dynamic>, handler : Dynamic->Void,
-						 ?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool ) {
+						 ?permanent : Bool = false, ?timeout : PacketTimeout, ?block : Bool = false ) {
 		
 		handlers = new Array();
 		
 		this.filters = filters;
 		if( handler != null ) handlers.push( handler );
-		this.permanent = if( permanent != null ) permanent else false;
-		this.block = if( block == null ) false else block;
+		this.permanent = permanent;
+		this.block = block;
 		this.setTimeout( timeout );
 	}
 	

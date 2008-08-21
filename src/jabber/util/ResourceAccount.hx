@@ -21,8 +21,7 @@ class ResourceAccount {
 			host = account[2];
 			port = Std.parseInt( account[3] );
 		} catch( e : Dynamic ) {
-			trace(e);
-			throw "Error getting account information";
+			throw "Error parsing account information";
 		}
 	}
 	

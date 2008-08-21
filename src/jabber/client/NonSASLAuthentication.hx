@@ -64,9 +64,11 @@ class NonSASLAuthentication {
 	function handleResult( iq : xmpp.IQ ) {
 		if( iq.type == IQType.result ) {
 			authenticating = false;
+			#if JABBER_DEBUG trace( "Authentication success.\n" ); #end
 			onSuccess.dispatchEvent( stream );
 		} else {
 			authenticating = false;
+			#if JABBER_DEBUG trace( "Authentication error.\n" ); #end
 			onFailed.dispatchEvent( stream );
 		}
 	}

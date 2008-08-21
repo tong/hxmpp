@@ -8,6 +8,8 @@
 -resource demo/account_local@account
 -neko bin/demos/client/client.n
 -main ClientDemo
+-D XMPP_DEBUG
+-D JABBER_DEBUG
 
 --next
 -cp demo
@@ -17,6 +19,8 @@
 -swf-header 800:600:60
 -swf9 bin/demos/client/client.swf
 -main ClientDemo
+-D XMPP_DEBUG
+-D JABBER_DEBUG
 
 --next
 -cp demo
@@ -25,6 +29,8 @@
 -js bin/demos/client/client_bridged.js
 -main ClientDemo
 -D JABBER_SOCKETBRIDGE
+-D XMPP_DEBUG
+-D JABBER_DEBUG
 
 #--next
 #-cp demo
@@ -33,6 +39,8 @@
 #-resource demo/account_local@account
 #-js bin/demos/client/client_bosh.js
 #-main ClientDemo
+-D XMPP_DEBUG
+-D JABBER_DEBUG
 
 --next
 -cp demo
@@ -42,6 +50,8 @@
 -php bin/demos/client
 --php-front client.php
 -main ClientDemo
+-D XMPP_DEBUG
+-D JABBER_DEBUG
 
 
 
@@ -54,6 +64,8 @@
 -cp ../core/src//hx
 -neko bin/demos/component/component.n
 -main ComponentDemo
+-D XMPP_DEBUG
+-D JABBER_DEBUG
 
 --next
 -cp demo
@@ -61,6 +73,8 @@
 -cp ../core/src//hx
 -swf9 bin/demos/component/component.swf
 -main ComponentDemo
+-D XMPP_DEBUG
+-D JABBER_DEBUG
 
 --next
 -cp demo
@@ -69,6 +83,8 @@
 -js bin/demos/component/component.js
 -main ComponentDemo
 -D JABBER_SOCKETBRIDGE
+-D XMPP_DEBUG
+-D JABBER_DEBUG
 
 --next
 -cp demo
@@ -77,3 +93,5 @@
 -php bin/demos/component
 --php-front component.php
 -main ComponentDemo
+-D XMPP_DEBUG
+-D JABBER_DEBUG

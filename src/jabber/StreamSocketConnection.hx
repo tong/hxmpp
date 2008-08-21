@@ -2,6 +2,11 @@ package jabber;
 
 #if neko
 import neko.net.Socket;
+private typedef Connection = {
+	var data : String;
+	var buf : haxe.io.Bytes;
+	var bufbytes : Int;
+}
 
 #elseif flash9 
 import flash.net.Socket;
@@ -18,15 +23,6 @@ typedef Socket = php.net.Socket;
 
 #end
 
-
-
-#if neko
-private typedef Connection = {
-	var data : String;
-	var buf : haxe.io.Bytes;
-	var bufbytes : Int;
-}
-#end
 
 
 /**
@@ -65,6 +61,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		reading = true;
 		
 		#elseif flash9
+		flash.system.Security.loadPolicyFile("http://jabber.spektral.at/crossdomain.xml");
 		socket = new flash.net.Socket(); 
 		socket.addEventListener( Event.CONNECT, sockConnectHandler );
 		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
@@ -100,7 +97,6 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		socket.connect( new php.net.Host( host ), port );
 		connected = true;
 		onConnect();
-		trace("connect " + connected + "  qwe");
 		
 		#else
 	//	#if flash
@@ -182,6 +178,10 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		socket.send( data );
 		
 		#end 
+		
+		#if XMPP_DEBUG
+		trace( "xmpp-o::: " + data + "\n", true );
+		#end
 		
 		return true;
 	}
@@ -273,24 +273,20 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	#elseif flash
 	
 	function sockConnectHandler( b : Bool ) {
-		trace("sockConnectHandler");
 		connected = b;
 		if( b ) onConnect();
 	}
 
 	function sockDisconnectHandler() {
-		trace("sockDisconnectHandler");
 		connected = false;
 		onDisconnect();
 	}
 	
 	function sockDataHandler( d : String ) {
-		trace("sockDataHandler " );
 		onData( d );
 	}
 	
 	function sockXMLDataHandler( d  ) {
-		trace("sockXMLDataHandler " + d );
 		onData( d );
 	}
 	
@@ -300,15 +296,12 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	
 	/*
 	function sockConnectHandler() {
-		trace("sockConnectHandler");
 	}
 
 	function sockDisconnectHandler() {
-		trace("sockDisconnectHandler");
 	}
 	
 	function sockDataHandler() {
-		trace("sockDataHandler");
 	}
 	*/
 	
@@ -359,6 +352,8 @@ private class Socket {
 }
 
 
+/**
+*/
 class SocketBridgeConnection {
 	
 	public static var DEFAULT_DELAY = 500;

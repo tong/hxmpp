@@ -178,24 +178,21 @@ class StreamBase {
 		split id packet filters from rest
 		collect collectors with id filters first
 		*/
-//		trace("Collecting......." + data );
 		for( xml in data.elements() ) {
 			var packet : Dynamic = null;
 			try {
 				packet = xmpp.Packet.parse( xml );
 			} catch( e : Dynamic ) {
-				trace( "ERROR, parsing packet:" + e ); // TODO
+				throw "Error parsing xmpp packet: " + xml;
 			} 
 			var collected = false;
 			for( c in collectors ) {
-//				trace("......." + c.filters);
 				if( c.accept( packet ) ) {
-//					trace("COLLECTED"+packet.toString());
 					collected = true;
 					c.deliver( packet );
 					if( !c.permanent ) {
 						collectors.remove( c );
-						c = null; // garbage
+						c = null; // gc
 					}
 			//		if( c.block ) {
 			//			//TODO
@@ -204,7 +201,9 @@ class StreamBase {
 				}
 			}
 			if( !collected ) {
-				trace("## PACKET NOT COLLECTED! ##");
+				#if JABBER_DEBUG
+				trace( "WARNING, last packet not collected.\n" );
+				#end
 			}
 		}
 	}
@@ -226,9 +225,11 @@ class StreamBase {
 	
 	
 	//////// internal connection handlers
+	
 	function onConnect() { throw "Abstract error onConnect"; }
 	function onDisconnect() { throw "Abstract error onDisconnect"; }
 	function onData( data : String ) { throw "Abstract error onData"; }
+	
 	//////// ---
 	
 }

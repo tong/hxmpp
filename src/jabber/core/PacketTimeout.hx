@@ -49,7 +49,6 @@ class PacketTimeout {
 		_time = t;
 		
 		#if neko
-		trace("NEKO TIMER DLEAy");
 		util.Delay.run( timeoutHandler, Std.int( _time ) )();
 			
 		#elseif !php

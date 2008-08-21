@@ -86,6 +86,7 @@ private class Jabber extends jabber.client.Stream {
 	override function onDisconnect() {
 		trace( "DISCONNECTED from: " + jid.domain );
 	}
+	/*
 	override function onData( data : String ) {
 		trace( "XMPP IN:\n" + data, false );
 		super.onData( data );
@@ -94,12 +95,10 @@ private class Jabber extends jabber.client.Stream {
 		trace( "XMPP OUT:\n" + data, true );
 		return super.sendData( data );
 	}
+	*/
 	
 	
 	function onStreamOpen( stream ) {
-		
-		trace( "STREAM OPENED" );
-		
 		var auth = new jabber.client.NonSASLAuthentication( this );
 		auth.onSuccess.addHandler( onAuthenticated );
 		auth.onFailed.addHandler( function(e) { trace( "Authentication failed!" ); } );
@@ -115,8 +114,6 @@ private class Jabber extends jabber.client.Stream {
 	}
 	
 	function onAuthenticated( stream ) {
-		trace( "STREAM AUTHENTICATED" );
-		
 	}
 	
 }

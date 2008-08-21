@@ -42,7 +42,9 @@ class Stream extends jabber.core.StreamBase {
 	
 	override function onData( data : String ) {
 		
-		//super.onData( data );
+		#if XMPP_DEBUG
+		trace( "xmpp-i::: " + data + "\n", false );
+		#end
 		
 		if( status == StreamStatus.closed ) return;
 		data = StringTools.trim( data );
@@ -69,6 +71,9 @@ class Stream extends jabber.core.StreamBase {
 					throw "Invalid stream response, no id specified";
 				}
 				status = StreamStatus.open;
+				#if JABBER_DEBUG
+				trace( "XMPP stream opened.\n" );
+				#end
 				onOpen.dispatchEvent( this );
 				
 			} else {
