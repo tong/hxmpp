@@ -1,5 +1,5 @@
 -cp ../src
--cp ../lib/core
+-cp ../../core/src/hx
 -main ImportAll
 -neko all.n
 -xml api.xml

@@ -319,7 +319,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 
 
 
-#if JABBER_SOCKET_BRIDGE
+#if JABBER_SOCKETBRIDGE
 
 
 /**
@@ -417,4 +417,4 @@ class SocketBridgeConnection {
 	
 }
 
-#end // JABBER_SOCKET_BRIDGE
+#end // JABBER_SOCKETBRIDGE

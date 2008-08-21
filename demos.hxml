@@ -22,7 +22,7 @@
 -cp ../core/src//hx
 -js bin/demos/client/client_bridged.js
 -main ClientDemo
--D JABBER_SOCKET_BRIDGE
+-D JABBER_SOCKETBRIDGE
 
 #--next
 #-cp demo
@@ -49,4 +49,27 @@
 -cp src
 -cp ../core/src//hx
 -neko bin/demos/component/component.n
+-main ComponentDemo
+
+--next
+-cp demo
+-cp src
+-cp ../core/src//hx
+-swf9 bin/demos/component/component.swf
+-main ComponentDemo
+
+--next
+-cp demo
+-cp src
+-cp ../core/src//hx
+-js bin/demos/component/component.js
+-main ComponentDemo
+-D JABBER_SOCKETBRIDGE
+
+--next
+-cp demo
+-cp src
+-cp ../core/src//hx
+-php bin/demos/component
+--php-front component.php
 -main ComponentDemo
