@@ -1,0 +1,52 @@
+
+
+### CLIENT DEMO
+
+-cp demo
+-cp src
+-cp ../core/src/hx
+-neko bin/demos/client/client.n
+-main ClientDemo
+
+--next
+-cp demo
+-cp src
+-cp ../core/src/hx
+-swf-header 800:600:60
+-swf9 bin/demos/client/client.swf
+-main ClientDemo
+
+--next
+-cp demo
+-cp src
+-cp ../core/src//hx
+-js bin/demos/client/client_bridged.js
+-main ClientDemo
+-D JABBER_SOCKET_BRIDGE
+
+#--next
+#-cp demo
+#-cp src
+#-cp ../core/src//hx
+#-js bin/demos/client/client_bosh.js
+#-main ClientDemo
+
+--next
+-cp demo
+-cp src
+-cp ../core/src/hx
+-php bin/demos/client
+--php-front client.php
+-main ClientDemo
+
+
+
+
+### COMPONENT DEMO
+
+--next
+-cp demo
+-cp src
+-cp ../core/src//hx
+-neko bin/demos/component/component.n
+-main ComponentDemo

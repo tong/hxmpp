@@ -21,10 +21,10 @@ typedef Socket = php.net.Socket;
 
 
 #if neko
-private typedef Server = {
+private typedef Connection = {
 	var data : String;
 	var buf : haxe.io.Bytes;
-	var bufpos : Int;
+	var bufbytes : Int;
 }
 #end
 
@@ -59,10 +59,10 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		
 		#elseif neko
 		socket = new neko.net.Socket();
-//		messageHeaderSize = DEFAULT_MESSAGEHEADER_SIZE;
-//		bufSize = DEFAULT_BUF_SIZE;
-//		maxBufSize = MAX_BUF_SIZE;
-//		reading = false;
+		messageHeaderSize = DEFAULT_MESSAGEHEADER_SIZE;
+		bufSize = DEFAULT_BUF_SIZE;
+		maxBufSize = MAX_BUF_SIZE;
+		reading = true;
 		
 		#elseif flash9
 		socket = new flash.net.Socket(); 
@@ -116,28 +116,6 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		socket.close();
 	}
 	
-	override public function send( data : String ) : Bool {
-		
-		if( !connected ) return false;
-		
-		#if ( js || SOCKET_BRIDGE )
-		socket.send( data );
-		
-		#elseif neko
-		socket.write( data );
-		
-		#elseif flash9
-		socket.writeUTFBytes( data ); 
-		socket.flush();
-		
-		#elseif flash
-		socket.send( data );
-		
-		#end 
-		
-		return true;
-	}
-	
 	override public function read( ?activate : Bool = true ) : Bool {
 		
 		if( activate ) { // add reading listeners
@@ -146,30 +124,18 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
  			socket.onData = sockDataHandler;
 			
 			#elseif neko
-			/*
-	 		reading = activate;
-			while( reading ) {
-				if( connected ) {
-					var s : Server = {
-						data : null,
-						buf : haxe.io.Bytes.alloc( bufSize ),
-						bufpos : 0
-					};
-					readData( s );
-				} else {
-					break;
-				}
+			while( connected ) {
+				readData( { data : null,
+							buf : haxe.io.Bytes.alloc( bufSize ),
+							bufbytes : 0 } );
 			}
-			*/
 			
 			#elseif flash9
 			socket.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
 			
 			#elseif php
-			trace("reading");
 	 		var reading = true;
 			while( reading ) {
-				trace("---");
 				trace( socket.read() );
 			}
 			
@@ -185,7 +151,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
  			
 			#elseif neko
 			// TODO check
-//			reading = false;
+			reading = false;
 			
 			#elseif flash9
 			socket.removeEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
@@ -198,12 +164,33 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		return activate;
 	}
 	
+	override public function send( data : String ) : Bool {
+		
+		if( !connected ) return false;
+		
+		#if ( js || SOCKET_BRIDGE )
+		socket.send( data );
+		
+		#elseif ( neko|| php )
+		socket.write( data );
+		
+		#elseif flash9
+		socket.writeUTFBytes( data ); 
+		socket.flush();
+		
+		#elseif flash
+		socket.send( data );
+		
+		#end 
+		
+		return true;
+	}
+	
 	
 	//#########################
 	#if ( js || SOCKET_BRIDGE )
 	
 	function sockConnectHandler() {
-		trace("sockConnectHandler");
 		connected = true;
 		onConnect();
 	}
@@ -220,71 +207,59 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	//##########
 	#elseif neko
 	
-	public static var DEFAULT_MESSAGEHEADER_SIZE 	: Int = 1;
-	public static var DEFAULT_BUF_SIZE 				: Int = 1024;
-	public static var MAX_BUF_SIZE 					: Int = (1 << 24);
-	public static var DEFAULT_SOCKET_TIMEOUT 		: Int = 1000;
+	public static var DEFAULT_MESSAGEHEADER_SIZE : Int = 1;
+	public static var DEFAULT_BUF_SIZE 			 : Int = 1024;
+	public static var MAX_BUF_SIZE 				 : Int = (1 << 24);
+	public static var DEFAULT_SOCKET_TIMEOUT 	 : Int = 1000;
 	
-	/*
 	public var bufSize : Int;
 	public var maxBufSize : Int;
 	var messageHeaderSize : Int;
 	var reading : Bool;
 	
 	
-	//TODO
-	function readData( cl : Server ) {
-		var buflen = cl.buf.length;
-		// eventually double the buffer size
-		if( cl.bufpos == buflen ) {
+	function readData( c : Connection ) {
+		var buflen = c.buf.length;
+		if( c.bufbytes == buflen ) {
 			var nsize = buflen * 2;
-			if( nsize > maxBufSize ) {
-				if( buflen == maxBufSize )
-					throw "Max buffer size reached";
-				nsize = maxBufSize;
+			if( nsize > MAX_BUF_SIZE ) {
+				if( buflen == MAX_BUF_SIZE ) throw "Max buffer size reached";
+				nsize = MAX_BUF_SIZE;
 			}
-			var buf2 = haxe.io.Bytes.alloc(nsize);
-			buf2.blit(0,cl.buf,0,buflen);
+			var buf2 = haxe.io.Bytes.alloc( nsize );
+			buf2.blit( 0, c.buf, 0, buflen );
 			buflen = nsize;
-			cl.buf = buf2;
+			c.buf = buf2;
 		}
-		// read the available data
-		var nbytes = socket.input.readBytes( cl.buf, cl.bufpos , buflen - cl.bufpos );
-		cl.bufpos += nbytes;
-		// process data
+		// read available data
+		var nbytes = socket.input.readBytes( c.buf, c.bufbytes, buflen - c.bufbytes );
+		c.bufbytes += nbytes;
 		var pos = 0;
-		while( cl.bufpos > 0 ) {
-			var nbytes = processClientData( cl.data, cl.buf, pos, cl.bufpos);
+		while( c.bufbytes > 0 ) {
+			var nbytes = processClientData( c.data, c.buf, pos, c.bufbytes );
 			if( nbytes == 0 ) break;
 			pos += nbytes;
-			cl.bufpos -= nbytes;
+			c.bufbytes -= nbytes;
 		}
-		if( pos > 0 ) neko.Lib.copyBytes(cl.buf,0,cl.buf,pos,cl.bufpos);
+		if( pos > 0 ) c.buf.blit( 0, c.buf, pos, c.bufbytes );
+	}
+
+	function processClientData( d : String, buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) {
+		onData( buf.readString( bufpos, buflen ) );
+		return 0;
 	}
 	
-	function processClientData( d : String, buf : String, bufpos : Int, buflen : Int ) {
-		//var d = new neko.io.StringInput( buf, bufpos, buflen ).read( buflen );
-		onData( d );
-		//return { msg : d , bytes : len };
-		return d.length; //TODO
-	}
-*/
 	
-	//####################################################
-	#elseif flash9 //#####################################
+	
+	//############
+	#elseif flash9
 
 	function sockConnectHandler( e : Event ) {
-		trace("sockConnectHandler");
 		connected = true;
-//		socket.addEventListener( Event.CONNECT, sockConnectHandler );
-//		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
-//		socket.addEventListener( IOErrorEvent.IO_ERROR, sockDisconnectHandler );
-//		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, sockDisconnectHandler );
 		onConnect();
 	}
 
 	function sockDisconnectHandler( e : Event ) {
-		trace("sockDisconnectHandler");
 		connected = false;
 		onDisconnect();
 	}
@@ -294,9 +269,8 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	}
 	
 	
-	
-	//####################################################
-	#elseif flash //######################################
+	//###########
+	#elseif flash
 	
 	function sockConnectHandler( b : Bool ) {
 		trace("sockConnectHandler");

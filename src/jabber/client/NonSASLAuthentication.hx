@@ -35,16 +35,13 @@ class NonSASLAuthentication {
 
 
 	public function authenticate( password : String, ?resource : String ) {
-		if( authenticating ) {
-			throw "Authentication already in progress";
-		} else {
-			this.password = password;
-			this.resource = resource;
-			authenticating = true;
-			var iq = new IQ();
-			iq.extension = new xmpp.iq.Authentication( username );
-			stream.sendIQ( iq, handleResponse );
-		}
+		if( authenticating ) throw "Authentication already in progress";
+		this.password = password;
+		this.resource = resource;
+		authenticating = true;
+		var iq = new IQ();
+		iq.extension = new xmpp.iq.Authentication( username );
+		stream.sendIQ( iq, handleResponse );
 	}
 	
 	
@@ -73,4 +70,5 @@ class NonSASLAuthentication {
 			onFailed.dispatchEvent( stream );
 		}
 	}
+	
 }
