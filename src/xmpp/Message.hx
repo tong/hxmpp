@@ -1,5 +1,6 @@
 package xmpp;
 
+import util.XmlUtil;
 import xmpp.Packet;
 
 
@@ -14,15 +15,17 @@ enum MessageType {
 
 
 /**
+	XMPP message packet.
 */
 class Message extends Packet {
+	
+	//public static inline var NAME = "message";
 	
 	public inline static var NORMAL		= "normal";
 	public inline static var CHAT		= "chat";
 	public inline static var GROUPCHAT 	= "groupchat";
 	public inline static var HEADLINE  	= "headline";
 	public inline static var ERROR     	= "error";
-	
 	
 	public var type 	: MessageType;
 	public var subject 	: String;
@@ -45,11 +48,11 @@ class Message extends Packet {
 	override public function toXml() : Xml {
 		var xml = super.addAttributes( Xml.createElement( "message" ) );
 		if( type != null ) 		xml.set( "type", getMessageTypeString( type ) );
-		if( subject != null ) 	xml.addChild( Packet.createXmlElement( "subject", subject ) );
-		if( body != null ) 		xml.addChild( Packet.createXmlElement( "body", body ) );
-//TODO	if( error != null ) 	xml.addChild( Packet.createXmlElement( "error", error ) );
-//TODO	if( html != null ) 		xml.addChild( Packet.createXmlElement( "html", html ) );
-		if( thread != null ) 	xml.addChild( Packet.createXmlElement( "thread", thread ) );
+		if( subject != null ) 	xml.addChild( XmlUtil.createXmlElement( "subject", subject ) );
+		if( body != null ) 		xml.addChild( XmlUtil.createXmlElement( "body", body ) );
+//TODO	if( error != null ) 	xml.addChild( XmlUtil.createXmlElement( "error", error ) );
+//TODO	if( html != null ) 		xml.addChild( XmlUtil.createXmlElement( "html", html ) );
+		if( thread != null ) 	xml.addChild( XmlUtil.createXmlElement( "thread", thread ) );
 		return xml;
 	}
 	

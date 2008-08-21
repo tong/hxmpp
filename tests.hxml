@@ -42,27 +42,32 @@
 
 --next
 -cp src
+-cp ../core/src//hx
 -neko bin/tests/xmpp/test_packetfilter.n
 -main test.xmpp.TestPacketFilter
 
 --next
 -cp src
+-cp ../core/src//hx
 -swf9 bin/tests/xmpp/test_packetfilter.swf
 -main test.xmpp.TestPacket
 
 --next
 -cp src
+-cp ../core/src//hx
 -swf-version 8
 -swf bin/tests/xmpp/test_packetfilter8.swf
 -main test.xmpp.TestPacket
 
 --next
 -cp src
+-cp ../core/src//hx
 -js bin/tests/xmpp/test_packetfilter.js
 -main test.xmpp.TestPacketFilter
 
 --next
 -cp src
+-cp ../core/src//hx
 -php bin/tests/xmpp
 --php-front test_packetfilter.php
 -main test.xmpp.TestPacketFilter

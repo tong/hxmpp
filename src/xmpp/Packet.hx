@@ -3,7 +3,7 @@ package xmpp;
 
 
 /**
-	Abstract/Basic XMPP packet.
+	Abstract/Basic xmpp packet.
 */
 class Packet {
 	
@@ -33,7 +33,7 @@ class Packet {
 		Creates/Returns the xml representaion of this xmpp packet.
 	*/
 	public function toXml() : Xml {
-		return throw "Error, cannot create xml from abstract xmpp packet";
+		return throw "Abstract error";
 	}
 	
 	/**
@@ -56,14 +56,6 @@ class Packet {
         return src;
 	}
 
-	/*
-	inline function createXmlElement( name : String, data : String ) : Xml {
-		var x = Xml.createElement( name );
-		x.addChild( Xml.createPCData( data ) );
-		return x;
-	}
-	*/
-
 	
 	/**
 		Parses xml into a xmpp.Packet object.
@@ -80,7 +72,7 @@ class Packet {
 	}
 	
 	/**
-		Adds basic attributes to every packet.
+		Parses/adds basic attributes to the packet.
 	*/
 	public static function parseAttributes( p : Packet, src : Xml ) : Packet {
 		p.to = src.get( "to" );
@@ -101,15 +93,7 @@ class Packet {
 			default 		: PacketType.custom;
 		}
 	}
-	
-	/**
-		Creates a xml object: <name>data</name>
-	*/
-	public static function createXmlElement( name : String, data : String ) : Xml {
-		var x = Xml.createElement( name );
-		x.addChild( Xml.createPCData( data ) );
-		return x;
-	}
+
 	
 	/*
 	public static function isValid( src : Xml ) : Bool {
@@ -117,4 +101,5 @@ class Packet {
 		return true;
 	}
 	*/
+	
 }

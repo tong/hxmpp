@@ -202,7 +202,7 @@ class StreamBase {
 			}
 			if( !collected ) {
 				#if JABBER_DEBUG
-				trace( "WARNING, last packet not collected.\n" );
+				trace( "WARNING, last xmpp packet not collected.\n" );
 				#end
 			}
 		}

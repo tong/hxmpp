@@ -24,8 +24,8 @@ class IQ extends Packet {
 //	public var child(getChild,setChild) : Xml;
 	public var error : IQError;
 	
-	var _extension : PacketExtension;
-	var _child : Xml;
+	//var _extension : PacketExtension;
+	//var _child : Xml;
 	
 	
 	public function new( ?type : IQType, ?id : String, ?to : String, ?from ) {
@@ -34,10 +34,11 @@ class IQ extends Packet {
 		this.type = if( type != null ) type else IQType.get;
 	}
 	
-	
+	/*
 	public function setExtensionXml( data : Xml ) {
 		extension = new PacketCustomExtension( data );
 	}
+	*/
 	
 	/*
 	function getChild() : Xml {
@@ -78,10 +79,8 @@ class IQ extends Packet {
 		Parses iq-xml into xmpp.IQ object.
 	*/
 	public static function parse( src : Xml ) : IQ {
-		
 		var iq = new IQ();
 		Packet.parseAttributes( iq, src );
-		
 		var iq_type = src.get( "type" );
 		iq.type = switch( iq_type ) {
 			case IQ.GET 	: IQType.get;
@@ -89,16 +88,13 @@ class IQ extends Packet {
 			case IQ.RESULT 	: IQType.result;
 			case IQ.ERROR 	: IQType.error;
 		}
-		
-		//iq.child = src.elements().next();
 		var ext = src.elements().next();
 		if( ext != null ) iq.extension = new PacketCustomExtension( ext );
-		
 		return iq;
 	}
 	
 	
-	public static function getIQType( s : String ) : IQType {
+	public static inline function getIQType( s : String ) : IQType {
 		return switch( s ) {
 			case GET 	: IQType.get;
 			case SET 	: IQType.set;
@@ -109,18 +105,20 @@ class IQ extends Packet {
 	
 	
 	/**
-		Creates '<query xmlns="namspace"/>'
+		Creates '<query xmlns="namspace"/>' Xml object.
 	*/
-    public static function createQuery( namespace : String ) : Xml {
+    public static inline function createQuery( namespace : String ) : Xml {
 		var query = Xml.createElement( "query" );
 		query.set( "xmlns", namespace );
 		return query;
 	}
+	
 }
 
 
 
-
+/**
+*/
 enum IQErrorType {
 	auth;
 	cancel;
@@ -135,11 +133,11 @@ enum IQErrorType {
 */
 class IQError {
 
-    static inline var ERROR_AUTH 	= "auth";
-	static inline var ERROR_CANCEL 	= "cancel";
-	static inline var ERROR_CONTINUE= "continue";
-	static inline var ERROR_MODIFY 	= "modify";
-	static inline var ERROR_WAIT 	= "wait";
+    public static inline var ERROR_AUTH 	= "auth";
+	public static inline var ERROR_CANCEL 	= "cancel";
+	public static inline var ERROR_CONTINUE = "continue";
+	public static inline var ERROR_MODIFY 	= "modify";
+	public static inline var ERROR_WAIT 	= "wait";
 	
 	
 	public var type : IQErrorType;
@@ -169,6 +167,8 @@ class IQError {
 	}
 	
 	
+	/**
+	*/
 	public static function parse( child : Xml ) : IQError {
 		var error = new IQError();
 		///TODO
@@ -179,4 +179,5 @@ class IQError {
   </error>
   */
 	}
+	
 }

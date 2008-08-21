@@ -1,6 +1,8 @@
 
 import event.Dispatcher;
 import jabber.JID;
+import jabber.client.MessageListener;
+import jabber.client.NonSASLAuthentication;
 import jabber.client.Roster;
 
 #if JABBER_SOCKETBRIDGE
@@ -56,8 +58,9 @@ private class Jabber extends jabber.client.Stream {
 	public var onChatMessage(default,null) : Dispatcher<xmpp.Message>;
 	//public var onRosterUpdate(default,null) : Dispatcher<jabber.client.Roster>;
 	
-	public var roster : Roster;
-	
+	public var roster(default,null) : Roster;
+	public var auth(default,null) : NonSASLAuthentication;
+	public var messages(default,null) : MessageListener;
 	
 	var password : String;
 	
@@ -74,11 +77,21 @@ private class Jabber extends jabber.client.Stream {
 		this.lang = "en";
 		this.password = password;
 		
-		onOpen.addHandler( onStreamOpen );
-		onClose.addHandler( onStreamClose );
+		auth = new jabber.client.NonSASLAuthentication( this );
+		auth.onSuccess.addHandler( authenticationSuccessHandler );
+		auth.onFailed.addHandler( function(e) { trace( "Authentication failed!" ); } );
+		
+		messages = new MessageListener( this );
+		messages.addHandler( messageHandler );
 		
 		roster = new Roster( this );
-		roster.onAvailable.addHandler( onRosterAvailable );
+		roster.onAvailable.addHandler( rosterAvailableHandler );
+		roster.onUpdate.addHandler( rosterUpdateHandler );
+		roster.onUpdate.addHandler( rosterRemoveHandler );
+		roster.onPresence.addHandler( rosterPresenceHandler );
+		
+		onOpen.addHandler( onStreamOpen );
+		onClose.addHandler( onStreamClose );
 	}
 	
 	
@@ -98,9 +111,6 @@ private class Jabber extends jabber.client.Stream {
 	
 	
 	function onStreamOpen( stream ) {
-		var auth = new jabber.client.NonSASLAuthentication( this );
-		auth.onSuccess.addHandler( onAuthenticated );
-		auth.onFailed.addHandler( function(e) { trace( "Authentication failed!" ); } );
 		auth.authenticate( password, "hxjab" );
 	}
 	
@@ -112,18 +122,36 @@ private class Jabber extends jabber.client.Stream {
 		trace( "STREAM ERROR" );
 	}
 	
-	function onAuthenticated( stream ) {
+	
+	function authenticationSuccessHandler( stream ) {
 		roster.load();
 	}
 	
 	
-	function onRosterAvailable( r : Roster ) {
+	function messageHandler( m : xmpp.Message ) {
+		trace( "MESSAGe" );
+	}
+	
+	
+	function rosterAvailableHandler( r : Roster ) {
 		/*
 		trace("#ä#äää#ä#########################################################");
 		for( e in r.entries ) 
 			trace( e.jid + " " + e.subscription  );
 		*/
 		roster.sendPresence( new xmpp.Presence( "available" ) );
+	}
+	
+	function rosterUpdateHandler( e : List<RosterEntry> ) {
+		trace( e );
+	}
+	
+	function rosterRemoveHandler( e : List<RosterEntry> ) {
+		trace( e );
+	}
+	
+	function rosterPresenceHandler( e : RosterEntry ) {
+		trace( e );
 	}
 	
 }
