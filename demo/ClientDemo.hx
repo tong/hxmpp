@@ -1,9 +1,11 @@
 
 import event.Dispatcher;
 import jabber.JID;
-import jabber.StreamSocketConnection;
 import jabber.client.Roster;
 
+#if JABBER_SOCKETBRIDGE
+import jabber.StreamSocketConnection;
+#end
 
 
 
@@ -14,12 +16,6 @@ import jabber.client.Roster;
 	Basic jabber client example.
 */
 class ClientDemo {
-	
-	static var JID = "tong@disktree/hxjab";//"hxjab@jabber.spektral.at";//"tong@disktree/hxjab";
-	static var PW  = "test";
-	static var MANUAL_HOST  = "127.0.0.1";//"83.64.208.21";//"127.0.0.1";
-	static var MANUAL_PORT  = 5222;
-	
 	
 	static function main() {
 		
@@ -41,12 +37,12 @@ class ClientDemo {
 	}
 	
 	static function init() {
-		var stream = new Jabber( new jabber.JID( JID ), PW, MANUAL_HOST, MANUAL_PORT );
-		try {
-			stream.open();
-		} catch( e : Dynamic ) {
-			trace( e );
-		}
+		
+		trace( "initializing jabber client ..." );
+		
+		var acc = new jabber.util.ResourceAccount( "account" );
+		var stream = new Jabber( new JID( acc.jid ), acc.password, acc.host, acc.port );
+		stream.open();
 	}
 	
 }
@@ -70,11 +66,11 @@ private class Jabber extends jabber.client.Stream {
 	
 	public function new( jid : JID, password : String, ?manualHost : String, ?manualPort : Int ) {
 		
-//		#if ( js && !JABBER_SOCKETBRIDGE )
-		connection = new jabber.StreamBOSHConnection( manualHost == null ? jid.domain : manualHost, manualPort == null ? jabber.client.Stream.DEFAULT_PORT : manualPort );
-//		#else
-//		connection = new jabber.StreamSocketConnection( manualHost == null ? jid.domain : manualHost, manualPort == null ? jabber.client.Stream.DEFAULT_PORT : manualPort );
-//		#end
+	//	#if ( js && !JABBER_SOCKETBRIDGE )
+	//	connection = new jabber.StreamBOSHConnection( manualHost == null ? jid.domain : manualHost, manualPort == null ? jabber.client.Stream.DEFAULT_PORT : manualPort );
+	//	#else
+		connection = new jabber.StreamSocketConnection( manualHost == null ? jid.domain : manualHost, manualPort == null ? jabber.client.Stream.DEFAULT_PORT : manualPort );
+	//	#end
 		
 		super( jid, connection, "1.0" );
 		this.lang = "en";
@@ -83,7 +79,7 @@ private class Jabber extends jabber.client.Stream {
 		onOpen.addHandler( onStreamOpen );
 		onClose.addHandler( onStreamClose );
 		
-		roster = new Roster( this );
+	//	roster = new Roster( this );
 	}
 	
 	
@@ -120,6 +116,7 @@ private class Jabber extends jabber.client.Stream {
 	
 	function onAuthenticated( stream ) {
 		trace( "STREAM AUTHENTICATED" );
+		
 	}
 	
 }

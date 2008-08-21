@@ -5,6 +5,7 @@
 -cp demo
 -cp src
 -cp ../core/src/hx
+-resource demo/account_local@account
 -neko bin/demos/client/client.n
 -main ClientDemo
 
@@ -12,6 +13,7 @@
 -cp demo
 -cp src
 -cp ../core/src/hx
+-resource demo/account_local@account
 -swf-header 800:600:60
 -swf9 bin/demos/client/client.swf
 -main ClientDemo
@@ -28,6 +30,7 @@
 #-cp demo
 #-cp src
 #-cp ../core/src//hx
+#-resource demo/account_local@account
 #-js bin/demos/client/client_bosh.js
 #-main ClientDemo
 
@@ -35,6 +38,7 @@
 -cp demo
 -cp src
 -cp ../core/src/hx
+-resource demo/account_local@account
 -php bin/demos/client
 --php-front client.php
 -main ClientDemo
