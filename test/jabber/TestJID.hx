@@ -52,9 +52,7 @@ class TestJabberID extends haxe.unit.TestCase   {
 		var parts2 = JIDUtil.getParts( j2 );
 		assertEquals( "node", parts2[0] );
 		assertEquals( "domain.net", parts2[1] );
-		assertEquals( null, parts2[2] );
 	}
-	
 	
 	public function testJID() {
 		
@@ -89,7 +87,6 @@ class TestJabberID extends haxe.unit.TestCase   {
 		parts = JIDUtil.getParts( jid_str );
 		assertEquals( "node", parts[0] );
 		assertEquals( "domain.net", parts[1] );
-		assertEquals( null, parts[2] );
 	}
 	
 	

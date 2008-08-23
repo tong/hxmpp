@@ -120,15 +120,14 @@ class JIDUtil {
      	for foreign systems.
     */
 	public static function unescapeNode( node : String ) : String {
-		var chars = node.split( "" );
-		var n = chars.length;
+		var n = node.length;
 		var buf = new StringBuf();
 		var i = 0;
 		while( i < n ) {
 			var c = node.charAt( i );
 			if( c == '\\' && i+2 < n ) {
-				var c2 = chars[i+1];
-				var c3 = chars[i+2];
+				var c2 = node.charAt( i+1 );
+				var c3 = node.charAt( i+2 );
 				if( c2 == "2" ) {
 					switch( c3 ) {
 						case '0' : buf.add( ' ' );  i += 3;
