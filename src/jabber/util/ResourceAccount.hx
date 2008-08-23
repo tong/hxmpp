@@ -3,7 +3,14 @@ package jabber.util;
 
 /**
 	Utility for testing.
-	Loads account data from a resource file.
+	Loads account data from a resource file attached at compilke time.
+	The resource file must have the following format:
+	
+tong@disktree/hxjab
+test
+127.0.0.1
+5222
+
 */
 class ResourceAccount {
 

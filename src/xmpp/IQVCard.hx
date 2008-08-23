@@ -1,4 +1,4 @@
-package xmpp.iq;
+package xmpp;
 
 import util.XmlUtil;
 
@@ -79,7 +79,7 @@ typedef Org = {
 	
 	Partial implemented!!!
 */
-class VCard {
+class IQVCard {
 	
 	public static inline var NODENAME = "vCard";
 	public static inline var XMLNS 	  = "vcard-temp";
@@ -238,9 +238,9 @@ class VCard {
 	}
 	
 	
-	public static function parse( src : Xml ) : VCard  {
+	public static function parse( src : Xml ) : IQVCard  {
 		
-		var vc = new VCard();
+		var vc = new IQVCard();
 		
 		for( node in src.elements() ) {
 			switch( node.nodeName ) {

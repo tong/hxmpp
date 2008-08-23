@@ -1,6 +1,6 @@
 package jabber.roster;
 
-import xmpp.iq.Roster;
+import xmpp.IQRoster;
 
 
 class RosterEntry {

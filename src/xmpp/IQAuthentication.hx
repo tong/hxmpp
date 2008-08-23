@@ -1,4 +1,4 @@
-package xmpp.iq;
+package xmpp;
 
 import util.XmlUtil;
 import xmpp.Packet;
@@ -7,7 +7,7 @@ import xmpp.Packet;
 /**
 	IQ extension for client account authenticating.
 */
-class Authentication {
+class IQAuthentication {
 	
 	public static inline var XMLNS = "jabber:iq:auth";
 	

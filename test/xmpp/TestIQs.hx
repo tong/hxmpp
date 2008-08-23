@@ -69,7 +69,7 @@ class TestVCard extends haxe.unit.TestCase   {
   </vCard>';
 	
 	
-	static var vc = xmpp.iq.VCard.parse( Xml.parse( VCARD ).firstElement() );
+	static var vc = xmpp.IQVCard.parse( Xml.parse( VCARD ).firstElement() );
 	
 	
 	public function testParsing() {

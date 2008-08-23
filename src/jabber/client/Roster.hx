@@ -9,7 +9,7 @@ import xmpp.Presence;
 import xmpp.IQ;
 import xmpp.filter.IQFilter;
 import xmpp.filter.PacketTypeFilter;
-import xmpp.iq.Roster;
+import xmpp.IQRoster;
 
 
 
@@ -85,7 +85,7 @@ class Roster {
 	*/
 	public function load() {
 		var iq = new IQ();
-		iq.extension = new xmpp.iq.Roster();
+		iq.extension = new xmpp.IQRoster();
 		stream.sendIQ( iq, handleRosterIQ );
 	}
 	
@@ -105,7 +105,7 @@ class Roster {
 	public function subscribe( to : String ) {
 		
 		// send roster iq to server.
-		var items = new xmpp.iq.Roster();
+		var items = new xmpp.IQRoster();
 		items.add( new RosterItem( to ) );
 		var iq = new IQ( IQType.set );
 		iq.extension = items;
@@ -123,7 +123,7 @@ class Roster {
 	public function unsubscribe( from : String ) {
 		//TODO test
 		var iq = new IQ( IQType.set );
-		iq.extension = new xmpp.iq.Roster( [new RosterItem( from, Subscription.remove )] );
+		iq.extension = new xmpp.IQRoster( [new RosterItem( from, Subscription.remove )] );
 		stream.sendIQ( iq, handleRosterIQ );
 	}
 	

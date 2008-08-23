@@ -1,4 +1,4 @@
-package xmpp.iq;
+package xmpp;
 
 
 
@@ -32,7 +32,7 @@ enum AskType {
 
 
 
-class Roster extends List<RosterItem> {
+class IQRoster extends List<RosterItem> {
 	
 	public static inline var XMLNS  = "jabber:iq:roster";
 	
@@ -54,8 +54,8 @@ class Roster extends List<RosterItem> {
 	
 	/**
 	*/
-	public static function parse( child : Xml ) : Roster {
-		var r = new Roster();
+	public static function parse( child : Xml ) : IQRoster {
+		var r = new IQRoster();
 		for( item in child.elements() ) {
 			if( item.nodeName == "item" ) r.add( RosterItem.parse( item ) );
 		}

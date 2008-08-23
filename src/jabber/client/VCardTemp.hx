@@ -2,13 +2,13 @@ package jabber.client;
 
 import event.Dispatcher;
 import xmpp.IQ;
-import xmpp.iq.VCard;
+import xmpp.IQVCard;
 
 
 
 typedef VCardChange = {
 	var from : String;
-	var data : xmpp.iq.VCard;
+	var data : xmpp.IQVCard;
 }
 
 
@@ -30,7 +30,7 @@ class VCardTemp {
 		this.stream = stream;
 		
 		iq_load = new IQ();
-		iq_load.extension = new VCard();
+		iq_load.extension = new IQVCard();
 		
 		iq_update = new IQ( IQType.set, null, stream.jid.domain );
 		
@@ -52,7 +52,7 @@ class VCardTemp {
 	/**
 		Update own vcard.
 	*/
-	public function update( vc : xmpp.iq.VCard ) {
+	public function update( vc : IQVCard ) {
 		iq_update.extension = vc;
 		stream.sendIQ( iq_update, handleUpdate );
 	}
@@ -60,7 +60,7 @@ class VCardTemp {
 	
 	function handleLoad( iq : IQ ) {
 		switch( iq.type ) {
-			case result : onLoad.dispatchEvent( { from : iq.from, data : xmpp.iq.VCard.parse( iq.extension.toXml() ) } );
+			case result : onLoad.dispatchEvent( { from : iq.from, data : IQVCard.parse( iq.extension.toXml() ) } );
 			case error :
 				//TODO
 			default : //#
@@ -69,7 +69,7 @@ class VCardTemp {
 	
 	function handleUpdate( iq : IQ ) {
 		switch( iq.type ) {
-			case result : onUpdate.dispatchEvent( { from : iq.from, data : xmpp.iq.VCard.parse( iq.extension.toXml() ) } );
+			case result : onUpdate.dispatchEvent( { from : iq.from, data : IQVCard.parse( iq.extension.toXml() ) } );
 			case error :
 				//TODO
 			default : //
