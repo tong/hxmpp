@@ -3,7 +3,7 @@
 ############ TEST XMPP PACKET
 
 -cp src
--cp ../core/src//hx
+-cp ../core/src/hx
 -neko bin/tests/xmpp/test_packet.n
 -main test.xmpp.TestPacket
 
@@ -16,7 +16,7 @@
 
 --next
 -cp src
--cp ../core/src//hx
+-cp ../core/src/hx
 -swf-version 8
 -swf-header 1200:800:60:ffffff
 -swf bin/tests/xmpp/test_packet_8.swf
@@ -24,13 +24,13 @@
 
 --next
 -cp src
--cp ../core/src//hx
+-cp ../core/src/hx
 -js bin/tests/xmpp/test_packet.js
 -main test.xmpp.TestPacket
 
 --next
 -cp src
--cp ../core/src//hx
+-cp ../core/src/hx
 -php bin/tests/xmpp
 --php-front test_packet.php
 -main test.xmpp.TestPacket
@@ -42,7 +42,7 @@
 
 --next
 -cp src
--cp ../core/src//hx
+-cp ../core/src/hx
 -neko bin/tests/xmpp/test_packetfilter.n
 -main test.xmpp.TestPacketFilter
 
@@ -54,20 +54,20 @@
 
 --next
 -cp src
--cp ../core/src//hx
+-cp ../core/src/hx
 -swf-version 8
 -swf bin/tests/xmpp/test_packetfilter8.swf
 -main test.xmpp.TestPacket
 
 --next
 -cp src
--cp ../core/src//hx
+-cp ../core/src/hx
 -js bin/tests/xmpp/test_packetfilter.js
 -main test.xmpp.TestPacketFilter
 
 --next
 -cp src
--cp ../core/src//hx
+-cp ../core/src/hx
 -php bin/tests/xmpp
 --php-front test_packetfilter.php
 -main test.xmpp.TestPacketFilter
@@ -78,7 +78,7 @@
 
 --next
 -cp src
--cp ../core/hx
+-cp ../core/src/hx
 -neko bin/tests/jabber/test_jid.n
 -main test.jabber.TestJID
 
@@ -90,20 +90,20 @@
 
 --next
 -cp src
--cp ../core/hx
+-cp ../core/src/hx
 -swf-version 8
 -swf bin/tests/jabber/test_jid_8.swf
 -main test.jabber.TestJID
 
 --next
 -cp src
--cp ../core/hx
+-cp ../core/src/hx
 -js bin/tests/jabber/test_jid.js
 -main test.jabber.TestJID
 
 --next
 -cp src
--cp ../core/hx
+-cp ../core/src/hx
 -php bin/tests/jabber
 --php-front test_jid.php
 -main test.jabber.TestJID
@@ -111,5 +111,13 @@
 
 
 ############ TEST JABBER SOCKET BRIDGE
+
+
+############ TEST XMPP IQs
+--next
+-cp src
+-cp ../core/src/hx
+-neko bin/tests/xmpp/test_iqs.n
+-main test.xmpp.TestIQs
 
 

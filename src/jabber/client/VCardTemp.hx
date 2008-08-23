@@ -36,6 +36,8 @@ class VCardTemp {
 		
 		onLoad = new Dispatcher();		
 		onUpdate = new Dispatcher();
+		
+		//TODO collect/handle incoming vcard requests (?)
 	}
 	
 	

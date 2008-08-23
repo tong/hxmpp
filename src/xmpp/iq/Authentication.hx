@@ -28,10 +28,10 @@ class Authentication {
 	
 	public function toXml() : Xml {
 		var query = xmpp.IQ.createQuery( XMLNS );
-		if( username != null ) 	query.addChild( XmlUtil.createXmlElement( "username", username ) );
-		if( password != null ) 	query.addChild( XmlUtil.createXmlElement( "password", password ) );
-		if( digest != null ) 	query.addChild( XmlUtil.createXmlElement( "digest", digest ) );
-		if( resource != null ) 	query.addChild( XmlUtil.createXmlElement( "resource", resource ) );
+		if( username != null ) 	query.addChild( XmlUtil.createElement( "username", username ) );
+		if( password != null ) 	query.addChild( XmlUtil.createElement( "password", password ) );
+		if( digest != null ) 	query.addChild( XmlUtil.createElement( "digest", digest ) );
+		if( resource != null ) 	query.addChild( XmlUtil.createElement( "resource", resource ) );
 		return query;
 	}
 	

@@ -115,7 +115,7 @@ private class Jabber extends jabber.client.Stream {
 	}
 	
 	function authenticationSuccessHandler( stream ) {
-		roster.load();
+	//	roster.load();
 		vcard.load();
 	}
 	
@@ -124,7 +124,16 @@ private class Jabber extends jabber.client.Stream {
 	}
 	
 	function vcardLoadHandler( vc : VCardChange ) {
-		trace( "VCard loaded from: " + vc.from );
+		trace( "VCard loaded: " + vc.data.fullName );
+		trace( "VCard loaded: " + vc.data.nickName );
+	//	vc.data.fullName = "herbert hutter";
+	//	vc.data.nickName = "tong";
+	//	vc.data.birthday = "1982-06-01";
+	//	vcard.update( vc.data );
+	}
+	
+	function vcardUpdatedHandler( vc : VCardChange ) {
+		trace( "Vcard updated " + vc );
 	}
 	
 	function rosterAvailableHandler( r : Roster ) {

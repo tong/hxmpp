@@ -48,11 +48,11 @@ class Message extends Packet {
 	override public function toXml() : Xml {
 		var xml = super.addAttributes( Xml.createElement( "message" ) );
 		if( type != null ) 		xml.set( "type", getMessageTypeString( type ) );
-		if( subject != null ) 	xml.addChild( XmlUtil.createXmlElement( "subject", subject ) );
-		if( body != null ) 		xml.addChild( XmlUtil.createXmlElement( "body", body ) );
-//TODO	if( error != null ) 	xml.addChild( XmlUtil.createXmlElement( "error", error ) );
-//TODO	if( html != null ) 		xml.addChild( XmlUtil.createXmlElement( "html", html ) );
-		if( thread != null ) 	xml.addChild( XmlUtil.createXmlElement( "thread", thread ) );
+		if( subject != null ) 	xml.addChild( XmlUtil.createElement( "subject", subject ) );
+		if( body != null ) 		xml.addChild( XmlUtil.createElement( "body", body ) );
+//TODO	if( error != null ) 	xml.addChild( XmlUtil.createElement( "error", error ) );
+//TODO	if( html != null ) 		xml.addChild( XmlUtil.createElement( "html", html ) );
+		if( thread != null ) 	xml.addChild( XmlUtil.createElement( "thread", thread ) );
 		return xml;
 	}
 	

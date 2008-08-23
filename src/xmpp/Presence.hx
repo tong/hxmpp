@@ -62,9 +62,9 @@ class Presence extends Packet {
 	override public function toXml() : Xml {
 		var xml = super.addAttributes( Xml.createElement( "presence" ) );
 		if( type != null ) 					 xml.set( "type", type );
-		if( show != null && show != "" ) 	 xml.addChild( XmlUtil.createXmlElement( "show", show ) );
-		if( status != null && status != "" ) xml.addChild( XmlUtil.createXmlElement( "status", status ) );
-		if( priority != null ) 				 xml.addChild( XmlUtil.createXmlElement( "priority", Std.string( priority ) ) );
+		if( show != null && show != "" ) 	 xml.addChild( XmlUtil.createElement( "show", show ) );
+		if( status != null && status != "" ) xml.addChild( XmlUtil.createElement( "status", status ) );
+		if( priority != null ) 				 xml.addChild( XmlUtil.createElement( "priority", Std.string( priority ) ) );
 		return xml;
 	}
 	
