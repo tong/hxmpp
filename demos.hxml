@@ -38,6 +38,7 @@
 -cp demo
 -cp src
 -cp ../core/src//hx
+-resource demo/account_local@account
 -js bin/demos/client/client_bridged.js
 -main ClientDemo
 -D JABBER_SOCKETBRIDGE

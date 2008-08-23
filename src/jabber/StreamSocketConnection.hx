@@ -20,6 +20,11 @@ typedef Socket = flash.XMLSocket;
 
 #elseif php
 typedef Socket = php.net.Socket;
+private typedef Connection = {
+	var data : String;
+	var buf : haxe.io.Bytes;
+	var bufbytes : Int;
+}
 
 #end
 
@@ -73,6 +78,10 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		
 		#elseif php
 		socket = new php.net.Socket();
+		messageHeaderSize = DEFAULT_MESSAGEHEADER_SIZE;
+		bufSize = DEFAULT_BUF_SIZE;
+		maxBufSize = MAX_BUF_SIZE;
+		reading = false;
 		
 		#end
 	}
@@ -87,7 +96,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		onConnect();
 		
 		#elseif php
-	//	socket.setTimeout( 100.0 );
+		//socket.setTimeout( 100.0 );
 		socket.connect( new php.net.Host( host ), port );
 		connected = true;
 		onConnect();
@@ -121,10 +130,16 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 			socket.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
 			
 			#elseif php
-	 		var reading = true;
-			while( reading ) {
-				trace( socket.read() );
+			trace("read..");
+			//var input = socket.read();
+			//trace( input );
+			/*
+			while( connected ) {
+				readData( { data : null,
+							buf : haxe.io.Bytes.alloc( bufSize ),
+							bufbytes : 0 } );
 			}
+			*/
 			
 			//#else true
 			//socket.onData = sockDataHandler;
@@ -136,16 +151,13 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 			#if ( js || SOCKET_BRIDGE )
  			socket.onData = null;
  			
-			#elseif neko
+			#elseif ( neko || php )
 			reading = false;
 			
 			#elseif flash9
 			socket.removeEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
 			
 			#elseif flash
-			//TODO
-			
-			#elseif php
 			//TODO
 			
 			#end
@@ -174,7 +186,8 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		#end 
 		
 		#if XMPP_DEBUG
-		trace( "xmpp-o::: " + data + "\n", true );
+		trace( "xmpp>>> " + data + "\n" );
+		
 		#end
 		
 		return true;
@@ -287,15 +300,22 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	//#########
 	#elseif php
 	
-	function sockConnectHandler() {
+	public static var DEFAULT_MESSAGEHEADER_SIZE : Int = 1;
+	public static var DEFAULT_BUF_SIZE 			 : Int = 1024;
+	public static var MAX_BUF_SIZE 				 : Int = (1 << 24);
+	public static var DEFAULT_SOCKET_TIMEOUT 	 : Int = 1000;
+	
+	public var bufSize : Int;
+	public var maxBufSize : Int;
+	var messageHeaderSize : Int;
+	var reading : Bool;
+	
+	
+	function readData( c : Connection ) {
 	}
 
-	function sockDisconnectHandler() {
+	function processClientData( d : String, buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) {
 	}
-	
-	function sockDataHandler() {
-	}
-	
 	
 	#end
 }

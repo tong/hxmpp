@@ -6,7 +6,6 @@ import jabber.client.NonSASLAuthentication;
 import jabber.client.Roster;
 import jabber.client.ServiceDiscovery;
 import jabber.client.VCardTemp;
-import xmpp.Stream;
 
 #if JABBER_SOCKETBRIDGE
 import jabber.StreamSocketConnection;
@@ -22,8 +21,6 @@ class ClientDemo {
 	
 	static function main() {
 		
-		trace("...");
-		
 		jabber.tool.XMPPDebug.setRedirection();
 		
 		#if flash9
@@ -37,7 +34,7 @@ class ClientDemo {
 		
 		#else
 		init();
-		
+
 		#end
 	}
 	

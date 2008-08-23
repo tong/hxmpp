@@ -6,9 +6,9 @@ package jabber.core;
 */
 class StreamConnection implements IStreamConnection {
 	
-	dynamic public function onConnect() : Void;
-	dynamic public function onDisconnect() : Void;
-	dynamic public function onData( data : String ) : Void;
+	dynamic public function onConnect() : Void {}
+	dynamic public function onDisconnect() : Void {}
+	dynamic public function onData( data : String ) : Void {}
 
 	public var connected(default,null) : Bool;
 	

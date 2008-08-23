@@ -36,22 +36,22 @@ class Stream extends jabber.core.StreamBase {
 	
 	override function onConnect() {
 		status = StreamStatus.pending;
-		sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_CLIENT, jid.domain, version, lang ) );
+		sendData( xmpp.XMPPStream.createOpenStream( xmpp.XMPPStream.XMLNS_CLIENT, jid.domain, version, lang ) );
 		connection.read( true ); // start reading input
 	}
 	
 	override function onData( data : String ) {
 		
 		#if XMPP_DEBUG
-		trace( "xmpp-i::: " + data + "\n", false );
+		trace( "xmpp<<< " + data + "\n", false );
 		#end
 		
 		if( status == StreamStatus.closed ) return;
 		data = StringTools.trim( data );
 		
 		if( status == StreamStatus.pending ) {
-			if( xmpp.Stream.isStream( data ) ) {
-				if( xmpp.Stream.getStreamType( data ) == "features" ) {
+			if( xmpp.XMPPStream.isStream( data ) ) {
+				if( xmpp.XMPPStream.getStreamType( data ) == "features" ) {
 //					parseStreamFeatures( Xml.parse( data ).firstElement() );
 					return;
 				}
@@ -85,7 +85,7 @@ class Stream extends jabber.core.StreamBase {
 			try {
 				xml = Xml.parse( data );
 			} catch( e : Dynamic ) {
-				if( xmpp.Stream.isStream( data ) ) {
+				if( xmpp.XMPPStream.isStream( data ) ) {
 					if( data.indexOf( "stream:error" ) > -1 ) {
 						trace( data.substr( data.indexOf("<stream:error"), data.lastIndexOf("/stream:error")+14 ) );
 						//TODO parse stream:error

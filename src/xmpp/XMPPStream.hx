@@ -1,8 +1,9 @@
 package xmpp;
 
+import util.XmlUtil;
 
 
-class Stream {
+class XMPPStream {
 	
 	public static inline var XMLNS_CLIENT = "jabber:client";
 	public static inline var XMLNS_SERVER = "jabber:client";
@@ -17,10 +18,8 @@ class Stream {
 	/**
 	*/
 	public static function createOpenStream( xmlns : String, to : String,
-											 ?version : String, ?lang : String, ?xmlHeader : Bool ) : String {
+											 ?version : String, ?lang : String, ?xmlHeader : Bool = true ) : String {
 		
-		trace("SSSSTREAMMMM");
-		if( xmlHeader == null ) xmlHeader = true;
 		var buf = new StringBuf();
 		buf.add( '<stream:stream xmlns="' );
 		buf.add( xmlns );
@@ -38,7 +37,7 @@ class Stream {
 			buf.add( '"' );
 		}
 		buf.add( '>' );
-		return if( xmlHeader ) '<?xml version="1.0" encoding="UTF-8"?>' + buf.toString();
+		return if( xmlHeader ) XmlUtil.XML_HEADER.toString() + buf.toString();
 		else buf.toString();
 	}
 	

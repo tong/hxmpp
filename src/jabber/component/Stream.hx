@@ -27,7 +27,7 @@ class Stream extends jabber.core.StreamBase {
 	
 	
 	override function onConnect() {
-		sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_COMPONENT, name ) );
+		sendData( xmpp.XMPPStream.createOpenStream( xmpp.XMPPStream.XMLNS_COMPONENT, name ) );
 		status = StreamStatus.pending;
 		connection.read( true ); // start reading io data
 	}
@@ -39,7 +39,7 @@ class Stream extends jabber.core.StreamBase {
 		data = StringTools.trim( data );
 		
 		if( status == StreamStatus.pending ) {
-			if( xmpp.Stream.isStream( data ) ) {
+			if( xmpp.XMPPStream.isStream( data ) ) {
 				data = util.StringUtil.removeXmlHeader( data );
 				var dx = Xml.parse( data + "</stream:stream>" ).firstChild();
 				id = dx.get( "id" );
