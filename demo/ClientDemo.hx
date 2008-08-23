@@ -125,11 +125,15 @@ private class Jabber extends jabber.client.Stream {
 	
 	function vcardLoadHandler( vc : VCardChange ) {
 		trace( "VCard loaded: " + vc.data.fullName );
-		trace( "VCard loaded: " + vc.data.nickName );
+		/*
+	//	trace( "VCard loaded: " + vc.data.nickName );
 	//	vc.data.fullName = "herbert hutter";
-	//	vc.data.nickName = "tong";
-	//	vc.data.birthday = "1982-06-01";
-	//	vcard.update( vc.data );
+		vc.data.nickName = "tong";
+		vc.data.birthday = "1982-06-01";
+	//	vc.data.email.pref = "tong@disktree.net";
+		vc.data.url = "http://disktree.net";
+		vcard.update( vc.data );
+	*/
 	}
 	
 	function vcardUpdatedHandler( vc : VCardChange ) {

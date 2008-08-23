@@ -27,7 +27,7 @@ class ResourceAccount {
 	
 	
 	public function toString() : String {
-		return "jabber.util.JabberAccount("+jid+","+password+","+host+","+port+")";
+		return "jabber.util.ResourceAccount("+jid+","+password+","+host+","+port+")";
 	}
 		
 }

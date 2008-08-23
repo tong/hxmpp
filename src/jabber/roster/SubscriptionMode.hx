@@ -1,7 +1,6 @@
 package jabber.roster;
 
 
-
 enum SubscriptionMode {
 	
 	/** Accepts all subscription and unsubscription requests. */
@@ -12,4 +11,5 @@ enum SubscriptionMode {
 
 	/** */
 	manual;
+	
 }

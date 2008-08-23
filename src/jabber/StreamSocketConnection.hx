@@ -23,13 +23,12 @@ typedef Socket = php.net.Socket;
 
 #end
 
-
+	// TODO php
 	// TODO flash < 9
 	// TODO bridge support for all platforms
 
 /**
 	neko, flash9, js.
-	
 	Basic (socket) connection implementation for jabber streams.
 */
 class StreamSocketConnection extends jabber.core.StreamConnection {
@@ -245,7 +244,6 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	}
 	
 	
-	
 	//############
 	#elseif flash9
 
@@ -286,8 +284,8 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	}
 	
 	
-	//##################################################
-	#elseif php //######################################
+	//#########
+	#elseif php
 	
 	/*
 	function sockConnectHandler() {
@@ -300,15 +298,12 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	}
 	*/
 	
-	
 	#end
 }
 
 
 
-
 #if JABBER_SOCKETBRIDGE
-
 
 /**
 	Socket for socket bridge use.
@@ -323,7 +318,7 @@ private class Socket {
 	
 	public var id(default,null) : Int;
 	
-	
+
 	public function new() {
 		var id = SocketBridgeConnection.createSocket( this );
 		if( id == -1 ) throw "Error creating socket at bridge";
@@ -333,7 +328,6 @@ private class Socket {
 	
 	public function connect( host : String, port : Int ) {
 		SocketBridgeConnection.cnx.SocketBridge.connect.call( [ id, host, port ] );
-	
 	}
 	
 	public function close() {
@@ -358,7 +352,6 @@ class SocketBridgeConnection {
 	static var initialized = false;
 	static var bridgeName : String;
 	static var sockets : List<Socket>;
-	static var cb : Void->Void;
 	
 	
 	public static function init( bridgeName : String, cb : Void->Void,
@@ -366,7 +359,6 @@ class SocketBridgeConnection {
 		if( !initialized ) {
 			if( delay == null || delay > 0 ) delay = DEFAULT_DELAY;
 			SocketBridgeConnection.bridgeName = bridgeName;
-			SocketBridgeConnection.cb = cb;
 			sockets = new List<Socket>();
 			var ctx = new haxe.remoting.Context();
 			ctx.addObject( "SocketBridgeConnection", SocketBridgeConnection );

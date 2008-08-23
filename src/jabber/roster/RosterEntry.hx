@@ -15,5 +15,5 @@ class RosterEntry {
 	
 	
 	public function new() {}
-	
+
 }

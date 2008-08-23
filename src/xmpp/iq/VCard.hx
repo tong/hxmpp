@@ -238,8 +238,6 @@ class VCard {
 	}
 	
 	
-	/**
-	*/
 	public static function parse( src : Xml ) : VCard  {
 		
 		var vc = new VCard();

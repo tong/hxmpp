@@ -6,7 +6,9 @@ class PacketTimeout {
 	
 	public static var DEFAULT_TIMEOUT = 5; // sec
 	
-	
+	/**
+		null = no timeout, 	0 = default timeout, value = value.
+	*/
 	public var time(getTime,setTime) : Int;
 	public var handlers : Array<IPacketCollector->Void>;
 	public var collector : PacketCollector;
@@ -83,6 +85,7 @@ class PacketTimeout {
 			active = false;
 		}
 	}
+	
 }
 
 

@@ -2,7 +2,7 @@ package jabber.core;
 
 
 /**
-	Abstract io connection for jabber streams.
+	Abstract jabber stream io connection.
 */
 class StreamConnection implements IStreamConnection {
 	

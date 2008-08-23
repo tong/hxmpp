@@ -15,4 +15,5 @@ class PacketIDFilter implements IPacketFilter {
 	public function accept( packet : xmpp.Packet ) : Bool {
 		return packet.id == id;
 	}
+	
 }

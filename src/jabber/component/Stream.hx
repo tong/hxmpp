@@ -11,11 +11,12 @@ import jabber.core.PacketCollector;
 */
 class Stream extends jabber.core.StreamBase {
 	
-	public static var DEFAULT_PORT = 5275;
+	public static inline var STANDARD_PORT = 5275;
+	public static var DEFAULT_PORT = STANDARD_PORT;
 	
 	
-	public var name(default,null) 		: String;
-	public var password(default,null) 	: String;
+	public var name(default,null) : String;
+	public var password(default,null) : String;
 	
 	
 	public function new( name : String, password : String, connection : jabber.core.IStreamConnection ) {
@@ -23,6 +24,7 @@ class Stream extends jabber.core.StreamBase {
 		this.name = name;
 		this.password = password;
 	}
+	
 	
 	override function onConnect() {
 		sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_COMPONENT, name ) );
@@ -56,4 +58,5 @@ class Stream extends jabber.core.StreamBase {
 		trace( p );
 		//service disco
 	}
+	
 }

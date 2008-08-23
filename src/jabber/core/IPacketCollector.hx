@@ -1,7 +1,6 @@
 package jabber.core;
 
 
-
 /**
 */
 interface IPacketCollector {
@@ -16,8 +15,7 @@ interface IPacketCollector {
 	var handlers : Array<xmpp.Packet->Void>;
 	
 	/**
-		Indicates if the the collector should get removed from the streams
-		collectors on successful collecting.
+		Indicates if the the collector should get removed from the streams after successful collecting.
 	*/
 	var permanent : Bool;
 	
@@ -26,11 +24,9 @@ interface IPacketCollector {
 	*/
 	var block : Bool;
 	
-	//var timeout
-	
 	/**
 	*/
-	//var timeoutHandlers : List<IPacketCollector->Void>;
+	var timeout : PacketTimeout;
 	
 	/**
 		Returns [true] if the given xmpp packet passes through all filters.
@@ -41,9 +37,5 @@ interface IPacketCollector {
 		Delivers the xmpp packet to registerd handlers.
 	*/
 	function deliver( packet : xmpp.Packet ) : Void;
-	
-	/**
-	*/
-	var timeout : PacketTimeout;
 	
 }
