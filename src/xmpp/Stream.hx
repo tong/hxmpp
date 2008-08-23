@@ -18,6 +18,8 @@ class Stream {
 	*/
 	public static function createOpenStream( xmlns : String, to : String,
 											 ?version : String, ?lang : String, ?xmlHeader : Bool ) : String {
+		
+		trace("SSSSTREAMMMM");
 		if( xmlHeader == null ) xmlHeader = true;
 		var buf = new StringBuf();
 		buf.add( '<stream:stream xmlns="' );

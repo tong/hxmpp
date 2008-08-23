@@ -55,7 +55,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		messageHeaderSize = DEFAULT_MESSAGEHEADER_SIZE;
 		bufSize = DEFAULT_BUF_SIZE;
 		maxBufSize = MAX_BUF_SIZE;
-		reading = true;
+		reading = false;
 		
 		#elseif flash9
 		socket = new flash.net.Socket(); 
@@ -287,7 +287,6 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	//#########
 	#elseif php
 	
-	/*
 	function sockConnectHandler() {
 	}
 
@@ -296,7 +295,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	
 	function sockDataHandler() {
 	}
-	*/
+	
 	
 	#end
 }

@@ -45,6 +45,9 @@ class XMPPDebug {
     	#elseif flash
     	flash.Lib.trace( v );
     	
+    	#elseif php
+    	php.Lib.print( v + "\n\n"  );
+    	
     	#end
     }
     
