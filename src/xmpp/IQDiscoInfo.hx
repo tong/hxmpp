@@ -10,7 +10,7 @@ typedef DiscoIdentity = {
 
 
 
-class DiscoInfo {
+class IQDiscoInfo {
 	
 	public static inline var XMLNS = 'http://jabber.org/protocol/disco#info';
 	
@@ -47,8 +47,8 @@ class DiscoInfo {
 	}
 
 	
-	public static function parse( child : Xml ) : xmpp.iq.DiscoInfo {
-		var info = new DiscoInfo();
+	public static function parse( child : Xml ) : IQDiscoInfo {
+		var info = new IQDiscoInfo();
 		for( f in child.elements() ) {
 			switch( f.nodeName ) {
 				case "feature"  : info.features.add( f.get( "var" ) );

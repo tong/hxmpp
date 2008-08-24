@@ -1,9 +1,8 @@
-package xmpp.iq;
+package xmpp;
 
 
 
-
-class DiscoItems extends List<DiscoItem> {
+class IQDiscoItems extends List<DiscoItem> {
 
 	public static inline var XMLNS = 'http://jabber.org/protocol/disco#items';
 	

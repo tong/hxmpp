@@ -1,4 +1,4 @@
-package xmpp.iq;
+package xmpp;
 
 
 
@@ -26,7 +26,7 @@ enum DataFormType {
 }
 
 
-class DataForm /* implements IIQExtension */ {
+class IQDataForm {
 	
 	public static inline var XMLNS = "jabber:x:data";
 

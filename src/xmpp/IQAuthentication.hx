@@ -5,7 +5,7 @@ import xmpp.Packet;
 
 
 /**
-	IQ extension for client account authenticating.
+	IQ extension used for client account authenticating.
 */
 class IQAuthentication {
 	

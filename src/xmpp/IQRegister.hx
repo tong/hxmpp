@@ -1,12 +1,13 @@
-package xmpp.iq;
+package xmpp;
 
+import xml.XmlUtil;
 import xmpp.Packet;
 
 
-
 /**
+	IQ extension used for client account registration/manipulation.
 */
-class Register {
+class IQRegister {
 	
 	public static var XMLNS  = "jabber:iq:register";
 	
@@ -27,10 +28,10 @@ class Register {
 	
 	public function toXml() : Xml {
 		var query = xmpp.IQ.createQuery( XMLNS );
-		if( username != null ) 	query.addChild( Packet.createXmlElement( "username", username ) );
-		if( password != null ) 	query.addChild( Packet.createXmlElement( "password", password ) );
-		if( email != null ) 	query.addChild( Packet.createXmlElement( "email", email ) );
-		if( name != null ) 		query.addChild( Packet.createXmlElement( "name", name ) );
+		if( username != null ) 	query.addChild( XmlUtil.createElement( "username", username ) );
+		if( password != null ) 	query.addChild( XmlUtil.createElement( "password", password ) );
+		if( email != null ) 	query.addChild( XmlUtil.createElement( "email", email ) );
+		if( name != null ) 		query.addChild( XmlUtil.createElement( "name", name ) );
 		return query;
 	}
 	
@@ -40,5 +41,6 @@ class Register {
 		var r = new Register();
 		return r;
 	}
-	*/	
+	*/
+	
 }
