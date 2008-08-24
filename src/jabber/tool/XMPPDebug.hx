@@ -37,10 +37,12 @@ class XMPPDebug {
     	}
     	neko.Lib.print( out + "\n\n"  );
     	*/
+    	
     	if( neko.Web.isModNeko ) {
-    		haxe.Firebug.trace( v, inf );
+    		haxe.Firebug.trace( v );
+    		neko.Lib.println( '<div>'+StringTools.htmlEscape(v)+'</div>' );
     	} else {
-	    	neko.Lib.println( v + "\n" );
+	    	neko.Lib.println( v );
     	}
     	
     	#elseif flash9
@@ -50,8 +52,8 @@ class XMPPDebug {
     	flash.Lib.trace( v );
     	
     	#elseif php
-    	php.Lib.println( v );
-    	haxe.Firebug.trace( v, inf );
+    	php.Lib.println( '<div>'+StringTools.htmlEscape(v)+'</div>' );
+    	haxe.Firebug.trace( v );
     	
     	#end
     }

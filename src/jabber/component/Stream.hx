@@ -34,6 +34,10 @@ class Stream extends jabber.core.StreamBase {
 
 	override function onData( data : String ) {
 		
+		#if XMPP_DEBUG
+		trace( "XMPP<<< " + data + "\n", false );
+		#end
+		
 		if( status == StreamStatus.closed ) return;
 //		if( data.length < 2 ) return;
 		data = StringTools.trim( data );

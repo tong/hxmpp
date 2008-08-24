@@ -50,11 +50,8 @@ class PacketTimeout {
 		active = true;
 		_time = t;
 		
-		#if neko
-		util.Delay.run( timeoutHandler, Std.int( _time ) )();
-			
-		#elseif !php
-		haxe.Timer.delay( timeoutHandler, _time * 1000 );
+		#if !php
+		util.Delay.run( timeoutHandler, Std.int( _time ) );
 			
 		#end
 	}

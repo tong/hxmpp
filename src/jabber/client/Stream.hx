@@ -43,7 +43,7 @@ class Stream extends jabber.core.StreamBase {
 	override function onData( data : String ) {
 		
 		#if XMPP_DEBUG
-		trace( "xmpp<<< " + data + "\n", false );
+		trace( "XMPP<<< " + data + "\n", false );
 		#end
 		
 		if( status == StreamStatus.closed ) return;
@@ -72,7 +72,7 @@ class Stream extends jabber.core.StreamBase {
 				}
 				status = StreamStatus.open;
 				#if JABBER_DEBUG
-				trace( "XMPP stream opened.\n" );
+				trace( "Jabber stream to " +jid.domain+ " opened.\n" );
 				#end
 				onOpen.dispatchEvent( this );
 				

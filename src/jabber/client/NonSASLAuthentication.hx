@@ -65,10 +65,10 @@ class NonSASLAuthentication {
 		authenticating = false;
 		switch( iq.type ) {
 			case IQType.result :
-				#if JABBER_DEBUG trace( "Authentication success.\n" ); #end
+				#if JABBER_DEBUG trace( "Jabber authentication of "+username+" success.\n" ); #end
 				onSuccess.dispatchEvent( stream );
 			default :
-				#if JABBER_DEBUG trace( "Authentication failed.\n" ); #end
+				#if JABBER_DEBUG trace( "Jabber authentication "+username+" failed.\n" ); #end
 				onFailed.dispatchEvent( stream );
 		}
 	}

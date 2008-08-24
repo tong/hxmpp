@@ -1,6 +1,7 @@
 package jabber;
 
 #if neko
+import neko.net.Host;
 import neko.net.Socket;
 private typedef Connection = {
 	var data : String;
@@ -19,6 +20,7 @@ import flash.events.ProgressEvent;
 typedef Socket = flash.XMLSocket;
 
 #elseif php
+import php.net.Host;
 typedef Socket = php.net.Socket;
 private typedef Connection = {
 	var data : String;
@@ -38,6 +40,12 @@ private typedef Connection = {
 */
 class StreamSocketConnection extends jabber.core.StreamConnection {
 	
+	#if ( neko || php )
+	public static var DEFAULT_SOCKET_TIMEOUT : Int = 1000;
+	public static var DEFAULT_BUF_SIZE  : Int = 1024;
+	#end
+	
+	
 	public var host(default,null) 	: String;
 	public var port(default,null) 	: Int;
 	public var socket(default,null) : Socket;
@@ -49,21 +57,20 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		this.host = host;
 		this.port = port;
 		
-		#if ( js || SOCKET_BRIDGE )
 		socket = new Socket();
+		
+		#if ( js || SOCKET_BRIDGE )
 		socket.onConnect = sockConnectHandler;
 		socket.onDisconnect = sockDisconnectHandler;
 		socket.onData = sockDataHandler;
 		
 		#elseif neko
-		socket = new neko.net.Socket();
 		messageHeaderSize = DEFAULT_MESSAGEHEADER_SIZE;
 		bufSize = DEFAULT_BUF_SIZE;
 		maxBufSize = MAX_BUF_SIZE;
 		reading = false;
 		
 		#elseif flash9
-		socket = new flash.net.Socket(); 
 		socket.addEventListener( Event.CONNECT, sockConnectHandler );
 		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
 		socket.addEventListener( IOErrorEvent.IO_ERROR, sockDisconnectHandler );
@@ -71,17 +78,9 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 
 		#elseif flash
 		throw "Flash<9 not supported right now!";
-		//socket = new Socket();
-		//socket.onConnect = sockConnectHandler;
-		//socket.onClose = sockDisconnectHandler;
-		//socket.onData = sockDataHandler;
 		
 		#elseif php
-		socket = new php.net.Socket();
-		messageHeaderSize = DEFAULT_MESSAGEHEADER_SIZE;
-		bufSize = DEFAULT_BUF_SIZE;
-		maxBufSize = MAX_BUF_SIZE;
-		reading = false;
+		//reading = false;
 		
 		#end
 	}
@@ -89,15 +88,9 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	
 	override public function connect() {
 		
-		#if neko
-		socket.setTimeout( DEFAULT_SOCKET_TIMEOUT );
-		socket.connect( new neko.net.Host( host ), port );
-		connected = true;
-		onConnect();
-		
-		#elseif php
-		//socket.setTimeout( 100.0 );
-		socket.connect( new php.net.Host( host ), port );
+		#if ( neko || php )
+//		socket.setTimeout( DEFAULT_SOCKET_TIMEOUT );
+		socket.connect( new Host( host ), port );
 		connected = true;
 		onConnect();
 		
@@ -120,19 +113,6 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
  			socket.onData = sockDataHandler;
 			
 			#elseif neko
-			while( connected ) {
-				readData( { data : null,
-							buf : haxe.io.Bytes.alloc( bufSize ),
-							bufbytes : 0 } );
-			}
-			
-			#elseif flash9
-			socket.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
-			
-			#elseif php
-			trace("read..");
-			//var input = socket.read();
-			//trace( input );
 			/*
 			while( connected ) {
 				readData( { data : null,
@@ -140,6 +120,23 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 							bufbytes : 0 } );
 			}
 			*/
+			
+			while( connected ) {
+				var buf = haxe.io.Bytes.alloc( DEFAULT_BUF_SIZE );
+				var l = socket.input.readBytes( buf, 0, buf.length - 0 );
+				onData( buf.readString( 0, buf.length ) );
+			}
+			
+			
+			#elseif flash9
+			socket.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
+			
+			#elseif php
+			while( connected ) {
+				var buf = haxe.io.Bytes.alloc( DEFAULT_BUF_SIZE );
+				var l = socket.input.readBytes( buf, 0, buf.length - 0 );
+				onData( buf.readString( 0, buf.length ) );
+			}
 			
 			//#else true
 			//socket.onData = sockDataHandler;
@@ -152,7 +149,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
  			socket.onData = null;
  			
 			#elseif ( neko || php )
-			reading = false;
+//			reading = false;
 			
 			#elseif flash9
 			socket.removeEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
@@ -186,8 +183,9 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		#end 
 		
 		#if XMPP_DEBUG
-		trace( "xmpp>>> " + data + "\n" );
-		
+	//	if( data.length > 1 ) {
+			trace( "XMPP>>> " + data + "\n", true );
+	//	}
 		#end
 		
 		return true;
@@ -215,9 +213,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	#elseif neko
 	
 	public static var DEFAULT_MESSAGEHEADER_SIZE : Int = 1;
-	public static var DEFAULT_BUF_SIZE 			 : Int = 1024;
 	public static var MAX_BUF_SIZE 				 : Int = (1 << 24);
-	public static var DEFAULT_SOCKET_TIMEOUT 	 : Int = 1000;
 	
 	public var bufSize : Int;
 	public var maxBufSize : Int;
@@ -296,27 +292,6 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		onData( d );
 	}
 	
-	
-	//#########
-	#elseif php
-	
-	public static var DEFAULT_MESSAGEHEADER_SIZE : Int = 1;
-	public static var DEFAULT_BUF_SIZE 			 : Int = 1024;
-	public static var MAX_BUF_SIZE 				 : Int = (1 << 24);
-	public static var DEFAULT_SOCKET_TIMEOUT 	 : Int = 1000;
-	
-	public var bufSize : Int;
-	public var maxBufSize : Int;
-	var messageHeaderSize : Int;
-	var reading : Bool;
-	
-	
-	function readData( c : Connection ) {
-	}
-
-	function processClientData( d : String, buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) {
-	}
-	
 	#end
 }
 
@@ -365,7 +340,6 @@ private class Socket {
 class SocketBridgeConnection {
 	
 	public static var DEFAULT_DELAY = 500;
-	
 	public static var cnx(default,null) : haxe.remoting.Connection;
 	
 	static var initialized = false;
@@ -373,8 +347,9 @@ class SocketBridgeConnection {
 	static var sockets : List<Socket>;
 	
 	
-	public static function init( bridgeName : String, cb : Void->Void,
-								 ?delay : Int ) : Void {
+	/**
+	*/
+	public static function init( bridgeName : String, cb : Void->Void, ?delay : Int ) : Void {
 		if( !initialized ) {
 			if( delay == null || delay > 0 ) delay = DEFAULT_DELAY;
 			SocketBridgeConnection.bridgeName = bridgeName;
@@ -384,6 +359,8 @@ class SocketBridgeConnection {
 			cnx = haxe.remoting.ExternalConnection.flashConnect( "default", bridgeName, ctx );
 			initialized = true;
 			haxe.Timer.delay( cb, delay );
+		} else {
+			trace( "Socketbridge already initialized" );
 		}
 	}
 	

@@ -115,6 +115,12 @@ private class Jabber extends jabber.client.Stream {
 	function authenticationSuccessHandler( stream ) {
 	//	roster.load();
 		vcard.load();
+		
+		if( Std.is( connection, jabber.StreamSocketConnection ) ) { 
+			var keepAlive = new net.util.KeepAlive();
+			keepAlive.onPing.addHandler( function(p) { stream.sendData(p); } );
+			keepAlive.start();
+		}
 	}
 	
 	function messageHandler( m : xmpp.Message ) {
