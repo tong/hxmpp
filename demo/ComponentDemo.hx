@@ -47,15 +47,4 @@ private class CustomStream extends jabber.component.Stream {
 			   new StreamSocketConnection( manualHost != null ? manualHost : host, manualPort != null ? manualPort : Stream.DEFAULT_PORT  ) );
 	}
 	
-	
-	override function onData( data : String ) {
-		trace( data, false );
-		super.onData( data );
-	}
-	
-	override public function sendData( data : String ) : Bool {
-		trace( data, true );
-		return super.sendData( data );
-	}
-	
 }

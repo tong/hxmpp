@@ -67,9 +67,9 @@ class StreamBase {
 		if( status == StreamStatus.open || status == StreamStatus.pending ) close();
 		if( connection != null && connection.connected ) connection.disconnect(); 
 		connection = c;
-		connection.onConnect = onConnect;
-		connection.onDisconnect = onDisconnect;
-		connection.onData = processData;
+		connection.onConnect = connectHandler;
+		connection.onDisconnect = disconnectHandler;
+		connection.onData = dataHandler;
 		return connection;
 	}
 	
@@ -90,7 +90,7 @@ class StreamBase {
 		if( status == StreamStatus.open || status == StreamStatus.pending ) return false;
 		//status = StreamStatus.pending;
 		if( !connection.connected ) connection.connect();
-		else onConnect();
+		else connectHandler();
 		return true;
 	}
 	
@@ -147,11 +147,11 @@ class StreamBase {
 		
 		#if neko
 		if( status != StreamStatus.open ) {
-			onData( d );
+			dataHandler( d );
 		} else { // cache data
 			try {
 				var x = Xml.parse( d );
-				onData( d );
+				dataHandler( d );
 				cache = "";
 			} catch( e : Dynamic ) {
 				if( cache != null && cache.length == 0 ) {
@@ -160,14 +160,14 @@ class StreamBase {
 					cache += d;
 					try {
 						var x = Xml.parse( cache );
-						onData( cache );
+						dataHandler( cache );
 						cache = "";
 					} catch( e : Dynamic ) {  /*# wait for more data #*/  }
 				}
 			}
 		}
 		#else
-		onData( d );
+		dataHandler( d );
 		
 		#end
 	}
@@ -226,9 +226,9 @@ class StreamBase {
 	
 	//////// internal connection handlers
 	
-	function onConnect() { throw "Abstract error onConnect"; }
-	function onDisconnect() { throw "Abstract error onDisconnect"; }
-	function onData( data : String ) { throw "Abstract error onData"; }
+	function connectHandler() { throw "Abstract error onConnect"; }
+	function disconnectHandler() { throw "Abstract error onDisconnect"; }
+	function dataHandler( data : String ) { throw "Abstract error onData"; }
 	
 	//////// ---
 	

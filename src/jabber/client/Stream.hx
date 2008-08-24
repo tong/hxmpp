@@ -34,13 +34,13 @@ class Stream extends jabber.core.StreamBase {
 	}
 	
 	
-	override function onConnect() {
+	override function connectHandler() {
 		status = StreamStatus.pending;
 		sendData( xmpp.XMPPStream.createOpenStream( xmpp.XMPPStream.XMLNS_CLIENT, jid.domain, version, lang ) );
 		connection.read( true ); // start reading input
 	}
 	
-	override function onData( data : String ) {
+	override function dataHandler( data : String ) {
 		
 		#if XMPP_DEBUG
 		trace( "XMPP<<< " + data + "\n", false );
