@@ -45,7 +45,7 @@ class ClientDemo {
 		try {
 			stream.open();
 		} catch( e : Dynamic ) {
-			trace( e );
+			trace( "JABBER ERROR: " + e );
 		}
 	}
 	
@@ -76,7 +76,8 @@ private class Jabber extends jabber.client.Stream {
 	//	#if ( js && !JABBER_SOCKETBRIDGE )
 	//	connection = new jabber.StreamBOSHConnection( manualHost == null ? jid.domain : manualHost, manualPort == null ? jabber.client.Stream.DEFAULT_PORT : manualPort );
 	//	#else
-		connection = new jabber.StreamSocketConnection( manualHost == null ? jid.domain : manualHost, manualPort == null ? jabber.client.Stream.DEFAULT_PORT : manualPort );
+		connection = new jabber.StreamSocketConnection( manualHost == null ? jid.domain : manualHost,
+														manualPort == null ? jabber.client.Stream.DEFAULT_PORT : manualPort );
 	//	#end
 		
 		super( jid, connection, "1.0" );
@@ -117,13 +118,20 @@ private class Jabber extends jabber.client.Stream {
 	}
 	
 	function authenticationSuccessHandler( stream ) {
-		//roster.load();
-		vcard.load();
+		roster.load();
+	//	vcard.load();
 		
 		if( Std.is( connection, jabber.StreamSocketConnection ) ) { 
-		//	var keepAlive = new net.util.KeepAlive();
-		//	keepAlive.onPing.addHandler( function(p) { stream.sendData(p); } );
-		//	keepAlive.start();
+			/*
+			#if neko
+			var keepAlive = new net.util.KeepAlive( 1000 );
+			keepAlive.onPing.addHandler( function(p) { 
+				//trace("-");
+				//stream.sendData(p);
+			} );
+			keepAlive.start();
+			#end
+			*/
 		}
 	}
 	
@@ -150,7 +158,7 @@ private class Jabber extends jabber.client.Stream {
 	
 	function rosterAvailableHandler( r : Roster ) {
 		trace( "Roster loaded, " + r.entries.length + " items"  );
-	//	roster.sendPresence( new xmpp.Presence( "available" ) );
+		roster.sendPresence( new xmpp.Presence( "available" ) );
 	}
 	
 	function rosterUpdateHandler( e : List<RosterEntry> ) {

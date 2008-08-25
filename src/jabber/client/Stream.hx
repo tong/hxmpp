@@ -74,9 +74,8 @@ class Stream extends jabber.core.StreamBase {
 	override function dataHandler( data : String ) {
 		
 		#if XMPP_DEBUG
-		trace( "XMPP<<< @ " +status + "///" + data );
+		trace( "XMPP <<< " + data );
 		#end
-
 		
 		switch( status ) {
 			
@@ -103,10 +102,10 @@ class Stream extends jabber.core.StreamBase {
 				if( id == null ) throw "Invalid xmpp stream, no id.";
 				
 				var sfi =  data.indexOf("<stream:features>");
-				trace(sfi+"");
-				var sf = data.substr( data.indexOf("<stream:features>") );
+//				trace(sfi+"");
+				var sf = data.substr( data.indexOf( "<stream:features>" ) );
 				if( sfi != -1 ) {
-					trace("################################################ " + sf + "\n\n");
+//					trace("################################################ " + sf + "\n\n");
 					parseStreamFeatures( Xml.parse( sf ).firstElement() );
 					if( status != StreamStatus.open ) {
 						status = StreamStatus.open;

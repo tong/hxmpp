@@ -139,39 +139,6 @@ class StreamBase {
 		collectors.remove( c );
 	}
 	
-	/*
-	function processData( d : String ) {
-		
-		// TODO !! DOSNT WORK FOR <stream:error>
-		//<stream:error xmlns:stream="http://etherx.jabber.org/streams"><conflict xmlns="urn:ietf:params:xml:ns:xmpp-streams"/></stream:error></stream:stream>
-		
-		#if neko
-		if( status != StreamStatus.open ) {
-			dataHandler( d );
-		} else { // cache data
-			try {
-				var x = Xml.parse( d );
-				dataHandler( d );
-				cache = "";
-			} catch( e : Dynamic ) {
-				if( cache != null && cache.length == 0 ) {
-					cache += d;
-				} else {
-					cache += d;
-					try {
-						var x = Xml.parse( cache );
-						dataHandler( cache );
-						cache = "";
-					} catch( e : Dynamic ) {  /*# wait for more data #  }
-				}
-			}
-		}
-		#else
-		dataHandler( d );
-		
-		#end
-	}
-	*/
 	
 	function collectPackets( data : Xml ) {
 		
@@ -209,8 +176,42 @@ class StreamBase {
 		}
 	}
 	
+	/*
+	function processData( d : String ) {
+		
+		// TODO !! DOSNT WORK FOR <stream:error>
+		//<stream:error xmlns:stream="http://etherx.jabber.org/streams"><conflict xmlns="urn:ietf:params:xml:ns:xmpp-streams"/></stream:error></stream:stream>
+		
+		#if neko
+		if( status != StreamStatus.open ) {
+			dataHandler( d );
+		} else { // cache data
+			try {
+				var x = Xml.parse( d );
+				dataHandler( d );
+				cache = "";
+			} catch( e : Dynamic ) {
+				if( cache != null && cache.length == 0 ) {
+					cache += d;
+				} else {
+					cache += d;
+					try {
+						var x = Xml.parse( cache );
+						dataHandler( cache );
+						cache = "";
+					} catch( e : Dynamic ) {  /*# wait for more data #  }
+				}
+			}
+		}
+		#else
+		dataHandler( d );
+		
+		#end
+	}
+	*/
+	
 		/*
-	function parseStreamFeatures( src : Xml ) {
+	function parseStreamFeatures( src : Xml ) : Array<Dynamic> {
 		//TODO
 		for( e in src.elements() ) {
 			switch( e.nodeName ) {

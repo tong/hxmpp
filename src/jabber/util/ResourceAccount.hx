@@ -21,15 +21,16 @@ class ResourceAccount {
 	
 	
 	public function new( ?id : String = "account" ) {
+		var account : Array<String>;
 		try {
-			var account = haxe.Resource.getString( id ).split( "\n" );
+			account = haxe.Resource.getString( id ).split( "\n" );
 			jid = account[0];
 			password = account[1];
-			host = account[2];
-			port = Std.parseInt( account[3] );
 		} catch( e : Dynamic ) {
 			throw "Error parsing account information";
 		}
+		host = account[2] == "" ? null : account[2];
+		port = ( account[3] == "" || account[3] == null )  ? null : Std.parseInt( account[3] );
 	}
 	
 	

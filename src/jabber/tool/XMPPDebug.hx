@@ -10,13 +10,13 @@ import flash.text.TextFormat;
 /**
 	flash9, neko, js, (flash).
 	
-	Trace utility.
+	Trace utility for jabber streams.
 */
 class XMPPDebug {
 	
-	public static var COLOR_INFO 	 = 0x000000;
-	public static var COLOR_XMPP_IN	 = 0x0000ff;
-	public static var COLOR_XMPP_OUT = 0xff0000;
+	public static var COLOR_INFO 	 = 0x222222;
+	public static var COLOR_XMPP_IN	 = 0x6CC8EF;
+	public static var COLOR_XMPP_OUT = 0xA80080;
 	
 	
     public static function setRedirection() {
@@ -40,22 +40,24 @@ class XMPPDebug {
     	
     	if( neko.Web.isModNeko ) {
     		if( haxe.Firebug.detect() ) {
-	    		haxe.Firebug.trace( v );
+	    		haxe.Firebug.trace( v, inf );
     		}
-    		neko.Lib.println( v );
+    		//neko.Lib.println( v );
+    		//neko.Lib.println( '<div>'+StringTools.htmlEscape(v)+'</div><br/>' );
     	} else {
 	    	neko.Lib.println( v );
     	}
     	
     	#elseif flash9
     	XMPPDebug.trace( v, inf );
+    	haxe.Firebug.trace( v, inf );
     	
     	#elseif flash
     	flash.Lib.trace( v );
     	
     	#elseif php
     	php.Lib.println( '<div>'+StringTools.htmlEscape(v)+'</div>' );
-    	haxe.Firebug.trace( v );
+    	haxe.Firebug.trace( v, inf );
     	
     	#end
     }
@@ -64,11 +66,11 @@ class XMPPDebug {
     #if flash9 //##############
     
     public static var w = 1024;
-    public static var h = 768;
+    public static var h = 600;
     public static var fontName = "Arial";
     public static var fontSize = 10;
 	public static var history : Array<{s:String,format:TextFormat}>;
-	public static var history_length = 300;
+	public static var history_length = 60;
     static var tf : TextField;
     static var textFormatInfo 	 = new TextFormat( fontName, fontSize, COLOR_INFO );
 	static var textFormatXMPPIn  = new TextFormat( fontName, fontSize, COLOR_XMPP_IN );

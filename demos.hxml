@@ -16,7 +16,7 @@
 -cp src
 -cp ../core/src/hx
 -resource demo/account_local@account
--swf-header 800:600:60
+-swf-header 800:600:60:ffffff
 -swf9 bin/demos/client/client.swf
 -main ClientDemo
 -D XMPP_DEBUG

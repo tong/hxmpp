@@ -213,7 +213,7 @@ class Roster {
 				
 				if( !available ) {
 					available = true;
-					#if JABBER_DEBUG trace( "Roster loaded.\n" ); #end
+					#if JABBER_DEBUG trace( "Roster loaded." ); #end
 					onAvailable.dispatchEvent( this );
 				}
 				if( added.length > 0 )   onAdd.dispatchEvent( added );

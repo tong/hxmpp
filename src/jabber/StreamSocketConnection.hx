@@ -66,7 +66,6 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		socket.onData = sockDataHandler;
 		
 		#elseif ( neko || php )
-		messageHeaderSize = DEFAULT_MESSAGEHEADER_SIZE;
 		bufSize = DEFAULT_BUF_SIZE;
 		maxBufSize = MAX_BUF_SIZE;
 		reading = false;
@@ -79,9 +78,6 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 
 		#elseif flash
 		throw "Flash<9 not supported right now!";
-		
-		//#elseif php
-		//reading = false;
 		
 		#end
 	}
@@ -114,19 +110,14 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
  			socket.onData = sockDataHandler;
 			
 			#elseif ( neko || php )
-			
-			while( connected ) {
-				readData( { data : null,
-							buf : haxe.io.Bytes.alloc( bufSize ),
-							bufbytes : 0 } );
+			reading = true;
+			while( connected && reading ) {
+				var input = readData( { data : null, buf : haxe.io.Bytes.alloc( bufSize ), bufbytes : 0 } );
+			//	#if XMPP_DEBUG
+			//	trace( "XMPP <<< " + input + "\n", true );
+			//	#end
+				onData( input );
 			}
-			/*
-			while( connected ) {
-				var buf = haxe.io.Bytes.alloc( DEFAULT_BUF_SIZE );
-				var l = socket.input.readBytes( buf, 0, buf.length - 0 );
-				onData( buf.readString( 0, buf.length ) );
-			}
-			*/
 			
 			#elseif flash9
 			socket.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
@@ -140,9 +131,9 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 			
 			#if ( js || SOCKET_BRIDGE )
  			socket.onData = null;
- 			
+		
 			#elseif ( neko || php )
-//			reading = false;
+			reading = false;
 			
 			#elseif flash9
 			socket.removeEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
@@ -158,7 +149,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	override public function send( data : String ) : Bool {
 		
 		if( !connected ) return false;
-		if( data == null || data == "" ) false;
+		if( data == null || data == "" ) return false;
 		
 		#if ( js || SOCKET_BRIDGE )
 		socket.send( data );
@@ -171,13 +162,13 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		socket.flush();
 		
 		#elseif flash
-		socket.send( data );
+		//socket.send( data );
 		
 		#end 
 		
 		#if XMPP_DEBUG
 	//	if( data.length > 1 ) {
-			trace( "XMPP>>> " + data + "\n", true );
+			trace( "XMPP >>> " + data );
 	//	}
 		#end
 		
@@ -202,15 +193,13 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	}
 	
 	
-	//##########
+	//#####################
 	#elseif ( neko || php )
 	
-	public static var DEFAULT_MESSAGEHEADER_SIZE : Int = 1;
-	public static var MAX_BUF_SIZE 				 : Int = (1 << 24);
+	public static var MAX_BUF_SIZE : Int = 2048;// ( 1 << 24 );
 	
 	public var bufSize : Int;
 	public var maxBufSize : Int;
-	var messageHeaderSize : Int;
 	var reading : Bool;
 	
 	
@@ -228,23 +217,28 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 			c.buf = buf2;
 		}
 		// read available data
+		var input : String = null;
 		var nbytes = socket.input.readBytes( c.buf, c.bufbytes, buflen - c.bufbytes );
 		c.bufbytes += nbytes;
 		var pos = 0;
 		while( c.bufbytes > 0 ) {
-			var nbytes = processClientData( c.data, c.buf, pos, c.bufbytes );
+			input = c.buf.readString( pos, c.bufbytes ); //processClientData( c.data, c.buf, pos, c.bufbytes );
+			var nbytes = input.length;
 			if( nbytes == 0 ) break;
 			pos += nbytes;
 			c.bufbytes -= nbytes;
 		}
 		if( pos > 0 ) c.buf.blit( 0, c.buf, pos, c.bufbytes );
+		return input;
 	}
 
-	function processClientData( d : String, buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) {
-		onData( buf.readString( bufpos, buflen ) );
-		return 0;
+/*
+	function processClientData( d : String, buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) : String {
+		var s = buf.readString( bufpos, buflen );
+		onData( s );
+		return s;
 	}
-	
+	*/
 	
 	//############
 	#elseif flash9
