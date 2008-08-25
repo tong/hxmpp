@@ -32,6 +32,7 @@ private typedef Connection = {
 
 	// TODO php
 	// TODO flash < 9
+	// neko thread (or leave it to app level aka threaded streams ?)
 	// TODO bridge support for all platforms
 
 /**
@@ -64,7 +65,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		socket.onDisconnect = sockDisconnectHandler;
 		socket.onData = sockDataHandler;
 		
-		#elseif neko
+		#elseif ( neko || php )
 		messageHeaderSize = DEFAULT_MESSAGEHEADER_SIZE;
 		bufSize = DEFAULT_BUF_SIZE;
 		maxBufSize = MAX_BUF_SIZE;
@@ -79,7 +80,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		#elseif flash
 		throw "Flash<9 not supported right now!";
 		
-		#elseif php
+		//#elseif php
 		//reading = false;
 		
 		#end
@@ -112,35 +113,27 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 			#if SOCKET_BRIDGE
  			socket.onData = sockDataHandler;
 			
-			#elseif neko
-			/*
+			#elseif ( neko || php )
+			
 			while( connected ) {
 				readData( { data : null,
 							buf : haxe.io.Bytes.alloc( bufSize ),
 							bufbytes : 0 } );
 			}
-			*/
-			
+			/*
 			while( connected ) {
 				var buf = haxe.io.Bytes.alloc( DEFAULT_BUF_SIZE );
 				var l = socket.input.readBytes( buf, 0, buf.length - 0 );
 				onData( buf.readString( 0, buf.length ) );
 			}
-			
+			*/
 			
 			#elseif flash9
 			socket.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
 			
-			#elseif php
-			while( connected ) {
-				var buf = haxe.io.Bytes.alloc( DEFAULT_BUF_SIZE );
-				var l = socket.input.readBytes( buf, 0, buf.length - 0 );
-				onData( buf.readString( 0, buf.length ) );
-			}
-			
 			//#else true
 			//socket.onData = sockDataHandler;
-			 
+			
 			#end
 			
 		} else { // remove reading listeners
@@ -210,7 +203,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	
 	
 	//##########
-	#elseif neko
+	#elseif ( neko || php )
 	
 	public static var DEFAULT_MESSAGEHEADER_SIZE : Int = 1;
 	public static var MAX_BUF_SIZE 				 : Int = (1 << 24);

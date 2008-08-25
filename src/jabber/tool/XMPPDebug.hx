@@ -39,8 +39,10 @@ class XMPPDebug {
     	*/
     	
     	if( neko.Web.isModNeko ) {
-    		haxe.Firebug.trace( v );
-    		neko.Lib.println( '<div>'+StringTools.htmlEscape(v)+'</div>' );
+    		if( haxe.Firebug.detect() ) {
+	    		haxe.Firebug.trace( v );
+    		}
+    		neko.Lib.println( v );
     	} else {
 	    	neko.Lib.println( v );
     	}

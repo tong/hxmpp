@@ -16,9 +16,9 @@ class StreamBase {
 	public var connection(default,setConnection) : IStreamConnection;
 	public var status(default,null) : StreamStatus;
 	
-	public var version(default,setVersion) 	: String;
-	public var lang(default,setLang) 		: String;
-	public var id(default,null) 			: String;
+	public var version(default,setVersion) : String;
+	public var lang(default,setLang) : String;
+	public var id(default,null) : String;
 	
 	public var collectors : List<IPacketCollector>;
 	public var interceptors : List<IPacketInterceptor>;
@@ -139,7 +139,7 @@ class StreamBase {
 		collectors.remove( c );
 	}
 	
-	
+	/*
 	function processData( d : String ) {
 		
 		// TODO !! DOSNT WORK FOR <stream:error>
@@ -162,7 +162,7 @@ class StreamBase {
 						var x = Xml.parse( cache );
 						dataHandler( cache );
 						cache = "";
-					} catch( e : Dynamic ) {  /*# wait for more data #*/  }
+					} catch( e : Dynamic ) {  /*# wait for more data #  }
 				}
 			}
 		}
@@ -171,6 +171,7 @@ class StreamBase {
 		
 		#end
 	}
+	*/
 	
 	function collectPackets( data : Xml ) {
 		

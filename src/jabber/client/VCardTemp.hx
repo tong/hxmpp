@@ -60,7 +60,9 @@ class VCardTemp {
 	
 	function handleLoad( iq : IQ ) {
 		switch( iq.type ) {
-			case result : onLoad.dispatchEvent( { from : iq.from, data : IQVCard.parse( iq.extension.toXml() ) } );
+			case result :
+				trace("VCADLOAD");
+				onLoad.dispatchEvent( { from : iq.from, data : IQVCard.parse( iq.extension.toXml() ) } );
 			case error :
 				//TODO
 			default : //#

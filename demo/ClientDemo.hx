@@ -42,7 +42,11 @@ class ClientDemo {
 		trace( "initializing jabber client ..." );
 		var acc = new jabber.util.ResourceAccount( "account" );
 		var stream = new Jabber( new JID( acc.jid ), acc.password, acc.host, acc.port );
-		stream.open();
+		try {
+			stream.open();
+		} catch( e : Dynamic ) {
+			trace( e );
+		}
 	}
 	
 }
@@ -113,13 +117,13 @@ private class Jabber extends jabber.client.Stream {
 	}
 	
 	function authenticationSuccessHandler( stream ) {
-	//	roster.load();
+		//roster.load();
 		vcard.load();
 		
 		if( Std.is( connection, jabber.StreamSocketConnection ) ) { 
-			var keepAlive = new net.util.KeepAlive();
-			keepAlive.onPing.addHandler( function(p) { stream.sendData(p); } );
-			keepAlive.start();
+		//	var keepAlive = new net.util.KeepAlive();
+		//	keepAlive.onPing.addHandler( function(p) { stream.sendData(p); } );
+		//	keepAlive.start();
 		}
 	}
 	
@@ -146,7 +150,7 @@ private class Jabber extends jabber.client.Stream {
 	
 	function rosterAvailableHandler( r : Roster ) {
 		trace( "Roster loaded, " + r.entries.length + " items"  );
-		roster.sendPresence( new xmpp.Presence( "available" ) );
+	//	roster.sendPresence( new xmpp.Presence( "available" ) );
 	}
 	
 	function rosterUpdateHandler( e : List<RosterEntry> ) {
