@@ -168,7 +168,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		
 		#if XMPP_DEBUG
 	//	if( data.length > 1 ) {
-			trace( "XMPP >>> " + data );
+	//		trace( "XMPP >>> " + data );
 	//	}
 		#end
 		

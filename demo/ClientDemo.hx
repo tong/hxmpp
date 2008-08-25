@@ -84,6 +84,8 @@ private class Jabber extends jabber.client.Stream {
 		this.lang = "en";
 		this.password = password;
 		
+		var me = this;
+		
 		auth = new jabber.client.NonSASLAuthentication( this );
 		auth.onSuccess.addHandler( authenticationSuccessHandler );
 		auth.onFailed.addHandler( function(e) { trace( "Authentication failed!" ); } );
@@ -100,18 +102,26 @@ private class Jabber extends jabber.client.Stream {
 		vcard = new VCardTemp( this );
 		vcard.onLoad.addHandler( vcardLoadHandler );
 		
-		onOpen.addHandler( streamOpenHandler );
-		onClose.addHandler( streamCloseHandler );
+		onOpen.addHandler( function(s) {
+			me.auth.authenticate( password, "hxjab" );
+		} );
+		onError.addHandler( function(e) {
+			trace( "XMPP stream error: " + e.error.condition );
+		} );
+		onClose.addHandler( function(s) {
+			trace( "Jabber stream to: "+jid.domain+" closed." );
+		} );
+		onXMPP.addHandler( function(xmpp) {
+			trace( if( xmpp.incoming ) {
+				"XMPP <<< " + xmpp.packet.toString();
+				//trace( xmpp.packet, true );
+			} else {
+				"XMPP >>> " + xmpp.packet.toString();
+				//trace( xmpp.packet, false );
+			} );
+		} );
 	}
 	
-	
-	function streamOpenHandler( stream ) {
-		auth.authenticate( password, "hxjab" );
-	}
-	
-	function streamCloseHandler( stream ) {
-		trace( "STREAM CLOSED" );
-	}
 	
 	function streamErrorHandler( stream ) {
 		trace( "STREAM ERROR" );
@@ -119,7 +129,7 @@ private class Jabber extends jabber.client.Stream {
 	
 	function authenticationSuccessHandler( stream ) {
 		roster.load();
-	//	vcard.load();
+		//vcard.load();
 		
 		if( Std.is( connection, jabber.StreamSocketConnection ) ) { 
 			/*
@@ -140,7 +150,7 @@ private class Jabber extends jabber.client.Stream {
 	}
 	
 	function vcardLoadHandler( vc : VCardChange ) {
-		trace( "VCard loaded: " + vc.data.fullName );
+		trace( "VCard loaded: " + vc.from );
 		/*
 	//	trace( "VCard loaded: " + vc.data.nickName );
 	//	vc.data.fullName = "herbert hutter";

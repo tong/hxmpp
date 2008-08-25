@@ -2,7 +2,7 @@ package jabber.core;
 
 import event.Dispatcher;
 import util.IDFactory;
-
+import xmpp.XMPPStreamError;
 
 
 /**
@@ -23,8 +23,12 @@ class StreamBase {
 	public var collectors : List<IPacketCollector>;
 	public var interceptors : List<IPacketInterceptor>;
 	
-	public var onOpen(default,null)  	: Dispatcher<StreamBase>;
-	public var onClose(default,null) 	: Dispatcher<StreamBase>;
+	public var onOpen(default,null)  : Dispatcher<StreamBase>;
+	public var onClose(default,null) : Dispatcher<StreamBase>;
+	public var onError(default,null) : Dispatcher<{stream:StreamBase,error:XMPPStreamError}>;
+	public var onXMPP(default,null) : Dispatcher<jabber.event.XMPPEvent>;
+	
+	
 	#if XMPP_DEBUG
 	//public var onXMPP(default,null) 	: Dispatcher<String>; //
 	#end
@@ -48,7 +52,8 @@ class StreamBase {
 		
 		onOpen = new Dispatcher();
 		onClose = new Dispatcher();
-		//onXMPP = new Dispatcher();
+		onError = new Dispatcher();
+		onXMPP = new Dispatcher();
 	}
 	
 	
@@ -63,7 +68,7 @@ class StreamBase {
 	}
 	
 	function setConnection( c : IStreamConnection ) : IStreamConnection {
-		//if( status == StreamStatus.pending )
+		if( status == StreamStatus.pending ) throw "Stream is already pending";
 		if( status == StreamStatus.open || status == StreamStatus.pending ) close();
 		if( connection != null && connection.connected ) connection.disconnect(); 
 		connection = c;
@@ -117,8 +122,11 @@ class StreamBase {
 			for( interceptor in interceptors )
 				interceptor.intercept( packet );
 		}
-		sendData( packet.toString() );
-		return packet;
+		if( sendData( packet.toString() ) ) {
+			onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, packet, false ) );
+			return packet;
+		}
+		return null;
 	}
 	
 	/**
@@ -126,8 +134,7 @@ class StreamBase {
 	*/
 	public function sendData( data : String ) : Bool {
 		if( !connection.connected ) return false;
-		connection.send( data );
-		return true;
+		return connection.send( data );
 	}
 	
 	/**
@@ -139,13 +146,41 @@ class StreamBase {
 		collectors.remove( c );
 	}
 	
-	
-	function collectPackets( data : Xml ) {
+	/*
+	function handlePacketData( data : String ) {
+		if( data.substr( 0, 13 ) == "<stream:error" ) {
+			var error = XMPPStreamError.parse( Xml.parse( data.substr( 0, data.indexOf( "</stream:error>" )+15 ) ).firstElement() );
+			onError.dispatchEvent( { stream : cast( this, jabber.core.StreamBase ),  error : error } );
+		}
+		var i = data.indexOf( "</stream:stream>" );
+		if( i != -1 ) {
+			connection.disconnect();
+			onClose.dispatchEvent( this );
+			return;
+		}
+			
+		var xml : Xml = null;
+		try {
+			xml = Xml.parse( data );
+		} catch( e : Dynamic ) {
+			throw "Invalid xmpp " + data;
+		}
 		
-		/*TODO
-		split id packet filters from rest
-		collect collectors with id filters first
-		*/
+		if( xml != null ) {
+			var packets = collectPackets( xml );
+			for( packet in packets ) {
+				onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, packet ) );
+			}
+		}
+		
+	}	
+	*/
+	
+	
+	function collectPackets( data : Xml ) : Array<xmpp.Packet> {
+		
+		var packets = new Array<xmpp.Packet>();
+		
 		for( xml in data.elements() ) {
 			var packet : Dynamic = null;
 			try {
@@ -153,10 +188,12 @@ class StreamBase {
 			} catch( e : Dynamic ) {
 				throw "Error parsing xmpp packet: " + xml;
 			} 
+			packets.push( packet );
 			var collected = false;
 			for( c in collectors ) {
 				if( c.accept( packet ) ) {
 					collected = true;
+					onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, packet ) );
 					c.deliver( packet );
 					if( !c.permanent ) {
 						collectors.remove( c );
@@ -169,61 +206,11 @@ class StreamBase {
 				}
 			}
 			if( !collected ) {
-				#if JABBER_DEBUG
 				trace( "WARNING, last xmpp packet not collected.\n" );
-				#end
 			}
 		}
+		return packets;
 	}
-	
-	/*
-	function processData( d : String ) {
-		
-		// TODO !! DOSNT WORK FOR <stream:error>
-		//<stream:error xmlns:stream="http://etherx.jabber.org/streams"><conflict xmlns="urn:ietf:params:xml:ns:xmpp-streams"/></stream:error></stream:stream>
-		
-		#if neko
-		if( status != StreamStatus.open ) {
-			dataHandler( d );
-		} else { // cache data
-			try {
-				var x = Xml.parse( d );
-				dataHandler( d );
-				cache = "";
-			} catch( e : Dynamic ) {
-				if( cache != null && cache.length == 0 ) {
-					cache += d;
-				} else {
-					cache += d;
-					try {
-						var x = Xml.parse( cache );
-						dataHandler( cache );
-						cache = "";
-					} catch( e : Dynamic ) {  /*# wait for more data #  }
-				}
-			}
-		}
-		#else
-		dataHandler( d );
-		
-		#end
-	}
-	*/
-	
-		/*
-	function parseStreamFeatures( src : Xml ) : Array<Dynamic> {
-		//TODO
-		for( e in src.elements() ) {
-			switch( e.nodeName ) {
-				case "starttls" :
-				case "mechanisms" :
-				case "compression" :
-				case "auth" :
-				case "register" :
-			}
-		}
-	}
-		*/
 	
 	
 	//////// internal connection handlers

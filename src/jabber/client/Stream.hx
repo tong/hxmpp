@@ -73,16 +73,16 @@ class Stream extends jabber.core.StreamBase {
 	
 	override function dataHandler( data : String ) {
 		
-		#if XMPP_DEBUG
-		trace( "XMPP <<< " + data );
-		#end
-		
 		switch( status ) {
 			
 			case StreamStatus.closed : return;
 			
 			case StreamStatus.pending :
-			
+				
+				#if XMPP_DEBUG
+				trace( "XMPP <<< " + data );
+				#end
+				
 				data = util.StringUtil.removeXmlHeader( data );
 				var sei = data.indexOf( ">" );
 				
@@ -101,11 +101,9 @@ class Stream extends jabber.core.StreamBase {
 				
 				if( id == null ) throw "Invalid xmpp stream, no id.";
 				
-				var sfi =  data.indexOf("<stream:features>");
-//				trace(sfi+"");
+				var sfi =  data.indexOf( "<stream:features>" );
 				var sf = data.substr( data.indexOf( "<stream:features>" ) );
 				if( sfi != -1 ) {
-//					trace("################################################ " + sf + "\n\n");
 					parseStreamFeatures( Xml.parse( sf ).firstElement() );
 					if( status != StreamStatus.open ) {
 						status = StreamStatus.open;
@@ -114,164 +112,39 @@ class Stream extends jabber.core.StreamBase {
 				}
 			
 			case StreamStatus.open :
-				trace("OPEN");
+			
+				if( data.substr( 0, 13 ) == "<stream:error" ) {
+					var error = xmpp.XMPPStreamError.parse( Xml.parse( data.substr( 0, data.indexOf( "</stream:error>" )+15 ) ).firstElement() );
+					onError.dispatchEvent( { stream : cast( this, jabber.core.StreamBase ),  error : error } );
+				}
+				var i = data.indexOf( "</stream:stream>" );
+				if( i != -1 ) {
+					connection.disconnect();
+					onClose.dispatchEvent( this );
+					return;
+				}
+				
 				var xml : Xml = null;
 				try {
 					xml = Xml.parse( data );
 				} catch( e : Dynamic ) {
-					trace("Error?");
-					trace( e );
+					throw "Invalid xmpp " + data;
 				}
-				if( xml != null ) {
-					collectPackets( xml );
-				}
-		}
-		
-		///////////////////////////////////////////////////////////
-		
-		/*
-		if( status == StreamStatus.closed ) return;
-		data = StringTools.trim( data );
-		
-		if( status == StreamStatus.pending ) {
-			if( xmpp.XMPPStream.isStream( data ) ) {
-				if( xmpp.XMPPStream.getStreamType( data ) == "features" ) {
-//					parseStreamFeatures( Xml.parse( data ).firstElement() );
-					return;
-				}
-				data = util.StringUtil.removeXmlHeader( data );
-				var s : String;
-				if( data.substr( data.indexOf("><") + 2, 15 ) == "stream:features" ) {
-					var i = data.indexOf("><") + 1;
-					s = data.substr( 0, i );
-					var f = data.substr( i );
-//					parseStreamFeatures( Xml.parse( f ).firstElement() );
-				} else {
-					s = data;
-				}
-				var sx = Xml.parse( s + "</stream:stream>" ).firstChild();
-				id = sx.get( "id" );
-				if( id == null || id.length < 2 ) {
-					throw "Invalid stream response, no id specified";
-				}
-				status = StreamStatus.open;
-				#if JABBER_DEBUG
-				trace( "Jabber stream to " +jid.domain+ " opened.\n" );
-				#end
-				onOpen.dispatchEvent( this );
 				
-			} else {
-				throw "XMPP error";
-			}
-			
-		} else if( status == StreamStatus.open ) {
-			var xml : Xml = null;
-			try {
-				xml = Xml.parse( data );
-			} catch( e : Dynamic ) {
-				if( xmpp.XMPPStream.isStream( data ) ) {
-					if( data.indexOf( "stream:error" ) > -1 ) {
-						trace( data.substr( data.indexOf("<stream:error"), data.lastIndexOf("/stream:error")+14 ) );
-						//TODO parse stream:error
+				if( xml != null ) {
+					var packets = collectPackets( xml );
+					/*
+					for( packet in packets ) {
+						onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, packet ) );
 					}
-					if( data.indexOf( "/stream:stream" ) > -1 ) {
-						trace("STREAM CLOSED");
-					}
+					*/
 				}
-				trace("ERROr parsing xml " + data );
-				//if( data == "</stream:error>" ) {
-				//	trace("STEEAM ERROR");
-				//	//streamCloseHandler();
-				//	onClose.dispatchEvent( this );
-				//}
-			}
-			collectPackets( xml );
 		}
-		*/
-	}
-	
-	function parseStreamOpen( src : String ) {
 	}
 	
 	function parseStreamFeatures( src : Xml ) {
 		//TODO
-		trace("parseStreamFeatures");
+		//trace("parseStreamFeatures");
 	}
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-FUCKED DATAHANDLERS
-
-
-		switch( status ) {
-		
-			case StreamStatus.closed : return;
-			
-			case StreamStatus.pending :
-				
-				trace( "PENDING " );
-			
-				//data = StringTools.trim( data );
-				data = util.StringUtil.removeXmlHeader( data );
-				var sei = data.indexOf( ">" );
-
-				if( id == null ) {
-					
-					var s = data.substr( 0, sei ) + " />";
-					var sx = Xml.parse( s ).firstElement();
-					id = sx.get( "id" );
-					
-					if( version != "1.0" ) {
-						status = StreamStatus.open;
-						onOpen.dispatchEvent( this );
-						return;
-					}
-					
-				}
-				
-				trace(status);
-				trace( "änd ################################ " );
-				var sf = data.substr( sei+1 );
-				if( sf.length > 0 ) {
-					trace("PARSE FEATUERS");
-					//trace(sf+"");
-					//var sfx = Xml.parse( sf ).firstElement();
-					//trace(sfx.toString());
-					//parseStreamFeatures( sfx );
-					status = StreamStatus.open;
-					onOpen.dispatchEvent( this );
-					trace( "################################ " );
-				}
-				
-				
-			case StreamStatus.open :
-			 
-				trace("OPEN");
-				
-				var xml : Xml = null;
-				try {
-					xml = Xml.parse( data );
-				} catch( e : Dynamic ) {
-					trace("STREAM Error");
-					trace( e );
-				}
-				
-				if( xml != null ) collectPackets( xml );
-		
-		}
-
-
-*/

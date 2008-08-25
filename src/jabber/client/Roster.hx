@@ -213,7 +213,6 @@ class Roster {
 				
 				if( !available ) {
 					available = true;
-					#if JABBER_DEBUG trace( "Roster loaded." ); #end
 					onAvailable.dispatchEvent( this );
 				}
 				if( added.length > 0 )   onAdd.dispatchEvent( added );
@@ -241,7 +240,7 @@ class Roster {
 			
 		} else {
 			//...
-			trace("###########");
+			trace( "new roster entry " );
 			if( presence.type == "subscribe" ) {
 				if( subscriptionMode == SubscriptionMode.acceptAll ) {
 					var p = new Presence( "subscribed" );
