@@ -1,5 +1,4 @@
 
-import event.Dispatcher;
 import jabber.JID;
 import jabber.client.MessageListener;
 import jabber.client.NonSASLAuthentication;
@@ -7,60 +6,9 @@ import jabber.client.Roster;
 import jabber.client.ServiceDiscovery;
 import jabber.client.VCardTemp;
 
-#if JABBER_SOCKETBRIDGE
-import jabber.StreamSocketConnection;
-#end
 
 
-/**
-	flash9, neko, js, php.
-	
-	Basic jabber client example.
-*/
-class ClientDemo {
-	
-	static function main() {
-		
-		jabber.tool.XMPPDebug.setRedirection();
-		
-		#if flash9
-		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
-		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
-		#end
-		
-		#if JABBER_SOCKETBRIDGE
-		trace( "Using socket bridge for connecting to server." );
-		jabber.SocketBridgeConnection.init( "f9bridge", init );
-		
-		#else
-		init();
-
-		#end
-	}
-	
-	static function init() {
-		trace( "initializing jabber client ..." );
-		var acc = new jabber.util.ResourceAccount( "account" );
-		var stream = new Jabber( new JID( acc.jid ), acc.password, acc.host, acc.port );
-		try {
-			stream.open();
-		} catch( e : Dynamic ) {
-			trace( "JABBER ERROR: " + e );
-		}
-	}
-	
-}
-
-
-
-/**
-	Custom jabber stream providing basic instant messaging functionality.
-*/
-private class Jabber extends jabber.client.Stream {
-	
-	//public var onMessage(default,null) : Dispatcher<xmpp.Message>;
-	//public var onChatMessage(default,null) : Dispatcher<xmpp.Message>;
-	//public var onRosterUpdate(default,null) : Dispatcher<jabber.client.Roster>;
+class CustomStream extends jabber.client.Stream {
 	
 	public var service(default,null) : ServiceDiscovery;
 	public var roster(default,null) : Roster;
@@ -113,11 +61,9 @@ private class Jabber extends jabber.client.Stream {
 		} );
 		onXMPP.addHandler( function(xmpp) {
 			trace( if( xmpp.incoming ) {
-				"XMPP <<< " + xmpp.packet.toString();
-				//trace( xmpp.packet, true );
+				"XMPP <<< " + xmpp.packet;
 			} else {
-				"XMPP >>> " + xmpp.packet.toString();
-				//trace( xmpp.packet, false );
+				"XMPP >>> " + xmpp.packet;
 			} );
 		} );
 	}
@@ -151,15 +97,6 @@ private class Jabber extends jabber.client.Stream {
 	
 	function vcardLoadHandler( vc : VCardChange ) {
 		trace( "VCard loaded: " + vc.from );
-		/*
-	//	trace( "VCard loaded: " + vc.data.nickName );
-	//	vc.data.fullName = "herbert hutter";
-		vc.data.nickName = "tong";
-		vc.data.birthday = "1982-06-01";
-	//	vc.data.email.pref = "tong@disktree.net";
-		vc.data.url = "http://disktree.net";
-		vcard.update( vc.data );
-	*/
 	}
 	
 	function vcardUpdatedHandler( vc : VCardChange ) {
@@ -167,7 +104,12 @@ private class Jabber extends jabber.client.Stream {
 	}
 	
 	function rosterAvailableHandler( r : Roster ) {
-		trace( "Roster loaded, " + r.entries.length + " items"  );
+		trace( "# Roster available, " + r.entries.length + " items"  );
+		for( entry in r.entries ) {
+			trace( "### " + entry.jid + " // " + entry.subscription  );
+		}
+	//	roster.subscribe("account@disktree");
+	//	roster.unsubscribe( "account@disktree" );
 		roster.sendPresence( new xmpp.Presence( "available" ) );
 	}
 	

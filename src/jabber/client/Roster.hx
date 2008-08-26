@@ -26,7 +26,7 @@ class RosterEntry extends jabber.roster.RosterEntry {
 */
 class Roster {
 	
-	public static var DEFAULT_SUBSCRIPTIONMODE = SubscriptionMode.acceptAll;
+	public static var DEFAULT_SUBSCRIPTIONMODE = SubscriptionMode.rejectAll;
 	
 	public var onAvailable(default,null) : Dispatcher<Roster>;
 	public var onAdd(default,null) 		 : Dispatcher<List<RosterEntry>>;
@@ -41,7 +41,10 @@ class Roster {
 	public var groups(getGroups,null) : List<String>; 
 	public var subscriptionMode : SubscriptionMode;
 	public var stream(default,null) : Stream;
-
+	
+	//var pending_subscriptions : List<RosterEntry>;
+	//var pending_unsubscriptions : Hash<RosterEntry>;
+	
 
 	public function new( stream : Stream ) {
 		
@@ -51,6 +54,8 @@ class Roster {
 		available = false;
 		presence = new Presence( "unavailable" );
 		entries = new List();
+		
+		//pending_unsubscriptions = new Hash();
 		
 		onAvailable = new Dispatcher();
 		onAdd = new Dispatcher();
@@ -118,13 +123,22 @@ class Roster {
 	}
 	
 	/**
-		Requests to unsubscribe from the given entities roster.
+		Requests to unsubscribe from the roster entry.
 	*/
-	public function unsubscribe( from : String ) {
-		//TODO test
+	public function unsubscribe( from : String ) : Bool {
+		var entry = getEntry( from );
+		if( entry == null ) return false;
 		var iq = new IQ( IQType.set );
 		iq.extension = new xmpp.IQRoster( [new RosterItem( from, Subscription.remove )] );
-		stream.sendIQ( iq, handleRosterIQ );
+//		pending_unsubscriptions.set( iq.id, entry );
+		stream.sendIQ( iq, function(iq) {
+			switch( iq.type ) {
+				case result : 
+					trace("UNSUBSCRIBE Result " + iq );
+				default :
+			}
+		} );
+		return true;
 	}
 	
 	/**
@@ -178,6 +192,7 @@ class Roster {
 		Handles incoming xmpp.IQ (roster) packets.
 	*/
 	public function handleRosterIQ( iq : xmpp.IQ ) {
+		trace("Händle roster iq");
 		
 		switch( iq.type ) {
 			
@@ -234,21 +249,44 @@ class Roster {
 		
 		var from = JIDUtil.parseBarAddress( presence.from );
 		var entry = getEntry( from );
-		if( entry != null ) { // process only from entities in the roster
+		if( entry != null ) {
+			trace("PRESENCE FROM ROSTER USER");		
 			entry.presence = presence;
 			onPresence.dispatchEvent( entry );
 			
 		} else {
-			//...
-			trace( "new roster entry " );
+			trace("PRESENCE FROM NEW USER");
+			
 			if( presence.type == "subscribe" ) {
-				if( subscriptionMode == SubscriptionMode.acceptAll ) {
-					var p = new Presence( "subscribed" );
-					p.to = presence.from;
-					stream.sendPacket( p ); // allow subsription
-					subscribe( presence.from ); // subscribe too, automaticly
+				switch( subscriptionMode ) {
+				
+					case rejectAll :
+						var p = new Presence( "unsubscribed" );
+						p.to = presence.from;
+						stream.sendPacket( p );
+						return;
+						
+					case acceptAll :
+						if( subscriptionMode == SubscriptionMode.acceptAll ) {
+						
+						trace("FFFFFFFFFFFFFFFFFFFFFFFFFFF");
+						/*
+							var p = new Presence( "subscribed" );
+							p.to = presence.from;
+							stream.sendPacket( p ); // allow subsription
+							//onPresence( entry );
+							//subscribe( presence.from ); // subscribe too, automaticly
+						*/
+						}
+					case manual :
+						//..
+						//onPresence( entry );
 				}
+			} else if( presence.type == "unsubscribed" ) {
+				
 			}
+			//...
+			
 		}
 	}
 	

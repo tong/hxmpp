@@ -206,7 +206,7 @@ class StreamBase {
 				}
 			}
 			if( !collected ) {
-				trace( "WARNING, last xmpp packet not collected.\n" );
+				trace( "WARNING, last xmpp packet not collected: " + packet );
 			}
 		}
 		return packets;

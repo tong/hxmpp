@@ -7,7 +7,7 @@ import jabber.component.Stream;
 
 /**
 */
-class ComponentDemo {
+class App {
 	
 	static function main() {
 		
@@ -18,7 +18,7 @@ class ComponentDemo {
 		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
 		#end
 		
-		var component = new ComponentDemo();
+		var component = new App();
 	}
 	
 	

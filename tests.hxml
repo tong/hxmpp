@@ -4,13 +4,13 @@
 
 -cp src
 -cp ../core/src/hx
--neko bin/tests/xmpp/test_packet.n
+-neko bin/tests/test_packet.n
 -main test.xmpp.TestPacket
 
 --next
 -cp src
 -cp ../core/src//hx
--swf9 bin/tests/xmpp/test_packet.swf
+-swf9 bin/tests/test_packet.swf
 -swf-header 1200:800:60:ffffff
 -main test.xmpp.TestPacket
 
@@ -19,19 +19,19 @@
 -cp ../core/src/hx
 -swf-version 8
 -swf-header 1200:800:60:ffffff
--swf bin/tests/xmpp/test_packet_8.swf
+-swf bin/tests/test_packet_8.swf
 -main test.xmpp.TestPacket
 
 --next
 -cp src
 -cp ../core/src/hx
--js bin/tests/xmpp/test_packet.js
+-js bin/tests/test_packet.js
 -main test.xmpp.TestPacket
 
 --next
 -cp src
 -cp ../core/src/hx
--php bin/tests/xmpp
+-php bin/tests
 --php-front test_packet.php
 -main test.xmpp.TestPacket
 
@@ -43,32 +43,32 @@
 --next
 -cp src
 -cp ../core/src/hx
--neko bin/tests/xmpp/test_packetfilter.n
+-neko bin/tests/test_packetfilter.n
 -main test.xmpp.TestPacketFilter
 
 --next
 -cp src
 -cp ../core/src//hx
--swf9 bin/tests/xmpp/test_packetfilter.swf
+-swf9 bin/tests/test_packetfilter.swf
 -main test.xmpp.TestPacket
 
 --next
 -cp src
 -cp ../core/src/hx
 -swf-version 8
--swf bin/tests/xmpp/test_packetfilter8.swf
+-swf bin/tests/test_packetfilter8.swf
 -main test.xmpp.TestPacket
 
 --next
 -cp src
 -cp ../core/src/hx
--js bin/tests/xmpp/test_packetfilter.js
+-js bin/tests/test_packetfilter.js
 -main test.xmpp.TestPacketFilter
 
 --next
 -cp src
 -cp ../core/src/hx
--php bin/tests/xmpp
+-php bin/tests
 --php-front test_packetfilter.php
 -main test.xmpp.TestPacketFilter
 
@@ -79,32 +79,32 @@
 --next
 -cp src
 -cp ../core/src/hx
--neko bin/tests/jabber/test_jid.n
+-neko bin/tests/test_jid.n
 -main test.jabber.TestJID
 
 --next
 -cp src
 -cp ../core/hx
--swf9 bin/tests/jabber/test_jid.swf
+-swf9 bin/tests/test_jid.swf
 -main test.jabber.TestJID
 
 --next
 -cp src
 -cp ../core/src/hx
 -swf-version 8
--swf bin/tests/jabber/test_jid_8.swf
+-swf bin/tests/test_jid_8.swf
 -main test.jabber.TestJID
 
 --next
 -cp src
 -cp ../core/src/hx
--js bin/tests/jabber/test_jid.js
+-js bin/tests/test_jid.js
 -main test.jabber.TestJID
 
 --next
 -cp src
 -cp ../core/src/hx
--php bin/tests/jabber
+-php bin/tests
 --php-front test_jid.php
 -main test.jabber.TestJID
 
@@ -117,7 +117,7 @@
 --next
 -cp src
 -cp ../core/src/hx
--neko bin/tests/xmpp/test_iqs.n
+-neko bin/tests/test_iqs.n
 -main test.xmpp.TestIQs
 
 

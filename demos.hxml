@@ -1,110 +1,88 @@
 
 
-### CLIENT DEMO
+### 01 - CLIENT
 
--cp demo
+-cp demo/01-client
 -cp src
 -cp ../core/src/hx
 -resource demo/account_local@account
--neko bin/demos/client/client.n
--main ClientDemo
+-neko bin/demos/01-client/client.n
+-main App
 -D XMPP_DEBUG
 -D JABBER_DEBUG
 
 --next
--cp demo
+-cp demo/01-client
 -cp src
 -cp ../core/src/hx
 -resource demo/account_local@account
 -swf-header 800:600:60:ffffff
--swf9 bin/demos/client/client.swf
--main ClientDemo
+-swf9 bin/demos/01-client/client.swf
+-main App
 -D XMPP_DEBUG
 -D JABBER_DEBUG
 
-#--next
-#-cp demo
-#-cp src
-#-cp ../core/src/hx
-#-resource demo/account_local@account
-#-swf-version 8
-#-swf-header 800:600:60
-#-swf bin/demos/client/client8.swf
-#-main ClientDemo
-#-D XMPP_DEBUG
-#-D JABBER_DEBUG
-
 --next
--cp demo
+-cp demo/01-client
 -cp src
 -cp ../core/src//hx
 -resource demo/account_local@account
--js bin/demos/client/client_bridged.js
--main ClientDemo
+-js bin/demos/01-client/client_bridged.js
+-main App
 -D JABBER_SOCKETBRIDGE
 -D XMPP_DEBUG
 -D JABBER_DEBUG
 
-#--next
-#-cp demo
-#-cp src
-#-cp ../core/src//hx
-#-resource demo/account_local@account
-#-js bin/demos/client/client_bosh.js
-#-main ClientDemo
--D XMPP_DEBUG
--D JABBER_DEBUG
-
 --next
--cp demo
+-cp demo/01-client
 -cp src
 -cp ../core/src/hx
 -resource demo/account_local@account
--php bin/demos/client
+-php bin/demos/01-client
 --php-front client.php
--main ClientDemo
+-main App
 -D XMPP_DEBUG
 -D JABBER_DEBUG
 
 
 
 
-### COMPONENT DEMO
+### 02 - COMPONENT
 
 --next
--cp demo
+-cp demo/02-component
 -cp src
 -cp ../core/src//hx
--neko bin/demos/component/component.n
--main ComponentDemo
+-neko bin/demos/02-component/component.n
+-main App
 -D XMPP_DEBUG
 -D JABBER_DEBUG
 
 --next
--cp demo
+-cp demo/02-component
 -cp src
 -cp ../core/src//hx
--swf9 bin/demos/component/component.swf
--main ComponentDemo
+-swf9 bin/demos/02-component/component.swf
+-main App
 -D XMPP_DEBUG
 -D JABBER_DEBUG
 
 --next
--cp demo
+-cp demo/02-component
 -cp src
 -cp ../core/src//hx
--js bin/demos/component/component.js
--main ComponentDemo
+-js bin/demos/02-component/component.js
+-main App
 -D JABBER_SOCKETBRIDGE
 -D XMPP_DEBUG
 -D JABBER_DEBUG
 
 --next
--cp demo
+-cp demo/02-component
 -cp src
 -cp ../core/src//hx
--php bin/demos/component
+-php bin/demos/02-component
 --php-front component.php
--main ComponentDemo
+-main App
 -D XMPP_DEBUG
 -D JABBER_DEBUG

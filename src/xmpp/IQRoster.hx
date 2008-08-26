@@ -1,7 +1,6 @@
 package xmpp;
 
 
-
 enum Subscription {
 	
 	/** The user and subscriber have no interest in each other's presence.*/
@@ -31,10 +30,12 @@ enum AskType {
 }
 
 
-
+/**
+	IQ roster extension.
+*/
 class IQRoster extends List<RosterItem> {
 	
-	public static inline var XMLNS  = "jabber:iq:roster";
+	public static inline var XMLNS = "jabber:iq:roster";
 	
 	
 	public function new( ?items : Iterable<RosterItem> ) {
@@ -51,9 +52,11 @@ class IQRoster extends List<RosterItem> {
 		return query;
 	}
 	
+	override public function toString() : String {
+		return toXml().toString();
+	}
 	
-	/**
-	*/
+	
 	public static function parse( child : Xml ) : IQRoster {
 		var r = new IQRoster();
 		for( item in child.elements() ) {
@@ -66,6 +69,7 @@ class IQRoster extends List<RosterItem> {
 
 
 /**
+	IQ roster extension item.
 */
 class RosterItem {
 	
@@ -90,8 +94,8 @@ class RosterItem {
 		var xml = Xml.createElement( "item" );
 		if( jid != null ) xml.set( "jid", jid );
 		if( name != null ) xml.set( "name", name );
-		if( subscription != null ) xml.set( "subscription",  getSubscriptionString( subscription ) );
-		if( askType != null ) xml.set( "ask",  getAskTypeString( askType ) );
+		if( subscription != null ) xml.set( "subscription", getSubscriptionString( subscription ) );
+		if( askType != null ) xml.set( "ask", getAskTypeString( askType ) );
 		for( group in groups ) {
 			var g = Xml.createElement( "group" );
 			g.addChild( Xml.createPCData( group ) );
@@ -100,13 +104,11 @@ class RosterItem {
 		return xml;
 	}
 	
-//	public function toString() : String {
-//		return toXml().toString();
-//	}
+	public function toString() : String {
+		return toXml().toString();
+	}
 	
 	
-	/**
-	*/
 	public static function parse( child : Xml ) : RosterItem {
 		var item = new RosterItem( child.get( "jid" ) );
 		item.subscription = getSubscriptionType( child.get( "subscription" ) );
@@ -120,17 +122,17 @@ class RosterItem {
 	}
 	
 	
-	public static function getSubscriptionString( s : Subscription ) : String {
+	public static inline function getSubscriptionString( s : Subscription ) : String {
 		return switch( s ) {
-			case Subscription.none 		: "none";
-			case Subscription.to 		: "to";
-			case Subscription.from 		: "from";
-			case Subscription.both 		: "both";
-			case Subscription.remove 	: "remove";
+			case Subscription.none 	 : "none";
+			case Subscription.to 	 : "to";
+			case Subscription.from 	 : "from";
+			case Subscription.both 	 : "both";
+			case Subscription.remove : "remove";
 		}
 	}
 	
-	public static function getSubscriptionType( s : String ) : Subscription {
+	public static inline function getSubscriptionType( s : String ) : Subscription {
 		return switch( s ) {
 			case "none" 	: Subscription.none;
 			case "to" 		: Subscription.to;
@@ -141,17 +143,18 @@ class RosterItem {
 		}
 	}
 	
-	public static function getAskType( t : String ) : AskType {
+	public static inline function getAskType( t : String ) : AskType {
 		return switch( t ) {
-			case "subscribe" 	: AskType.subscribe;
-			case "unsubscribe" 	: AskType.unsubscribe;
+			case "subscribe"   : AskType.subscribe;
+			case "unsubscribe" : AskType.unsubscribe;
 		}
 	}
 	
 	public static function getAskTypeString( t : AskType ) : String {
 		return switch( t ) {
-			case AskType.subscribe 		: "subscribe";
-			case AskType.unsubscribe 	: "unsubscribe";
+			case AskType.subscribe 	 : "subscribe";
+			case AskType.unsubscribe : "unsubscribe";
 		}
 	}
+	
 }
