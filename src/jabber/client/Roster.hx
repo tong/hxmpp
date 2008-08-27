@@ -26,7 +26,7 @@ class RosterEntry extends jabber.roster.RosterEntry {
 */
 class Roster {
 	
-	public static var DEFAULT_SUBSCRIPTIONMODE = SubscriptionMode.rejectAll;
+	public static var DEFAULT_SUBSCRIPTIONMODE = SubscriptionMode.acceptAll;
 	
 	public var onAvailable(default,null) : Dispatcher<Roster>;
 	public var onAdd(default,null) 		 : Dispatcher<List<RosterEntry>>;
@@ -67,7 +67,7 @@ class Roster {
 		stream.collectors.add( new PacketCollector( [new PacketTypeFilter( PacketType.presence )], handlePresence, true ) );
 		
 		// collect roster iq packets
-		//stream.collectors.add( new PacketCollector( [new IQFilter( xmpp.iq.Roster.XMLNS )], handleRosterIQ, true ) );
+		//stream.collectors.add( new PacketCollector( [new IQFilter( xmpp.IQRoster.XMLNS )], handleRosterIQ, true ) );
 	}
 	
 		
@@ -103,13 +103,42 @@ class Roster {
 		for( entry in entries ) if( entry.jid == jid ) return entry;
 		return null;
 	}
-
+	
+	/**
+		Requests to remove the entry from the remote roster.
+	*/
+	public function remove( jid : String ) : Bool {
+		var entry = getEntry( jid );
+		if( entry == null ) return false;
+		var iq = new IQ( IQType.set );
+		iq.extension = new xmpp.IQRoster( [new RosterItem( jid, Subscription.remove )] );
+		var me = this;
+		stream.sendIQ( iq, function(iq) {
+			switch( iq.type ) {
+				case result :
+					var rem = new List<RosterEntry>();
+					rem.add( entry );
+					me.onRemove.dispatchEvent( rem );
+					
+				default :
+			}
+		} );
+		return true;
+	}
+	
 	/**
 		Requests to subscribe to the given entities roster.
 	*/
 	public function subscribe( to : String ) {
 		
-		// send roster iq to server.
+		var entry = getEntry( to );
+		if( entry != null ) {
+			if( entry.subscription != null || entry.subscription != from ) {
+				return;
+			} 
+		}
+		
+		// send roster iq to server.  hmmmmm ????? remove
 		var items = new xmpp.IQRoster();
 		items.add( new RosterItem( to ) );
 		var iq = new IQ( IQType.set );
@@ -126,23 +155,15 @@ class Roster {
 		Requests to unsubscribe from the roster entry.
 	*/
 	public function unsubscribe( from : String ) : Bool {
-		var entry = getEntry( from );
-		if( entry == null ) return false;
-		var iq = new IQ( IQType.set );
-		iq.extension = new xmpp.IQRoster( [new RosterItem( from, Subscription.remove )] );
-//		pending_unsubscriptions.set( iq.id, entry );
-		stream.sendIQ( iq, function(iq) {
-			switch( iq.type ) {
-				case result : 
-					trace("UNSUBSCRIBE Result " + iq );
-				default :
-			}
-		} );
+		var p = new Presence( "unsubscribe" );
+		p.to = from;
+		stream.sendPacket( p );
 		return true;
 	}
 	
 	/**
 		Sends given presence to all subscribed entries in the roster.
+		//TODO presence(getPresence,setPresence)
 	*/
 	public function sendPresence( p : Presence ) : Presence {
 		if( !available ) return presence;
@@ -250,9 +271,11 @@ class Roster {
 		var from = JIDUtil.parseBarAddress( presence.from );
 		var entry = getEntry( from );
 		if( entry != null ) {
+			
 			trace("PRESENCE FROM ROSTER USER");		
 			entry.presence = presence;
 			onPresence.dispatchEvent( entry );
+			
 			
 		} else {
 			trace("PRESENCE FROM NEW USER");
@@ -267,16 +290,12 @@ class Roster {
 						return;
 						
 					case acceptAll :
-						if( subscriptionMode == SubscriptionMode.acceptAll ) {
-						
-						trace("FFFFFFFFFFFFFFFFFFFFFFFFFFF");
-						/*
+						if( subscriptionMode == SubscriptionMode.acceptAll ) { // allow subsription
 							var p = new Presence( "subscribed" );
 							p.to = presence.from;
-							stream.sendPacket( p ); // allow subsription
+							stream.sendPacket( p );
+							subscribe( presence.from ); // subscribe too, automaticly
 							//onPresence( entry );
-							//subscribe( presence.from ); // subscribe too, automaticly
-						*/
 						}
 					case manual :
 						//..

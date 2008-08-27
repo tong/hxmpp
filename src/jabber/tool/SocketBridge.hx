@@ -2,7 +2,37 @@ package jabber.tool;
 
 import haxe.remoting.Connection;
 
-#if flash9
+
+#if neko
+
+import neko.net.Socket;
+
+/**
+	mode_neko socket bridge.
+	// hm?
+*/
+class SocketBridge {
+	
+	
+	static function main() {
+		var params = neko.Web.getParams();
+		if( Lambda.empty( params ) ) {
+			neko.Lib.println( "NOTING " );
+		} else {
+			neko.Lib.println( "PARAMS " + params );
+		}
+	}
+	
+	
+	function new() {
+	}
+	
+}
+
+
+
+
+#elseif flash9
 import flash.events.Event;
 import flash.events.IOErrorEvent;
 import flash.events.SecurityErrorEvent;

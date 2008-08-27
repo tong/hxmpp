@@ -1,10 +1,15 @@
 
+import jabber.Client;
+
 #if JABBER_SOCKETBRIDGE
 import jabber.StreamSocketConnection;
 #end
 
 
 class App {
+	
+	static var stream : CustomStream;
+	
 	
 	static function main() {
 		
@@ -26,14 +31,25 @@ class App {
 	}
 	
 	static function init() {
+		
 		trace( "initializing jabber client ..." );
 		var acc = new jabber.util.ResourceAccount( "account" );
-		var stream = new CustomStream( new jabber.JID( acc.jid ), acc.password, acc.host, acc.port );
+		stream = new CustomStream( new jabber.JID( acc.jid ), acc.password, acc.host, acc.port );
 		try {
 			stream.open();
 		} catch( e : Dynamic ) {
 			trace( "JABBER ERROR: " + e );
 		}
 	}
+	
+	
+	#if js
+	
+	public static function sendXMPP( data : String ) {
+		trace("sending--data--.. " + stream);
+		trace( stream.sendData( data ) );
+	}
+	
+	#end
 	
 }

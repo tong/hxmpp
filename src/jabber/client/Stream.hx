@@ -133,11 +133,10 @@ class Stream extends jabber.core.StreamBase {
 				
 				if( xml != null ) {
 					var packets = collectPackets( xml );
-					/*
 					for( packet in packets ) {
-						onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, packet ) );
+					//	onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, packet ) );
 					}
-					*/
+					
 				}
 		}
 	}

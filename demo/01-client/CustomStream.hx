@@ -44,7 +44,7 @@ class CustomStream extends jabber.client.Stream {
 		roster = new Roster( this );
 		roster.onAvailable.addHandler( rosterAvailableHandler );
 		roster.onUpdate.addHandler( rosterUpdateHandler );
-		roster.onUpdate.addHandler( rosterRemoveHandler );
+		roster.onRemove.addHandler( rosterRemoveHandler );
 		roster.onPresence.addHandler( rosterPresenceHandler );
 		
 		vcard = new VCardTemp( this );
@@ -110,6 +110,7 @@ class CustomStream extends jabber.client.Stream {
 		}
 	//	roster.subscribe("account@disktree");
 	//	roster.unsubscribe( "account@disktree" );
+	//	roster.remove( "account@disktree" );
 		roster.sendPresence( new xmpp.Presence( "available" ) );
 	}
 	

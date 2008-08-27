@@ -43,6 +43,10 @@ class StreamBase {
 	function new( connection : IStreamConnection, ?version : String ) {
 		
 		status = StreamStatus.closed;
+		
+		if( connection == null ) {
+		}
+		
 		this.setConnection( connection ); // add connection listeners
 		this.version = version;
 		
@@ -134,6 +138,7 @@ class StreamBase {
 	*/
 	public function sendData( data : String ) : Bool {
 		if( !connection.connected ) return false;
+		trace(data);
 		return connection.send( data );
 	}
 	
