@@ -1,4 +1,5 @@
 
+import Reflect;
 import jabber.Client;
 
 #if JABBER_SOCKETBRIDGE

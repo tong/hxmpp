@@ -15,9 +15,13 @@ import xmpp.IQRoster;
 
 /**
 */
-class RosterEntry extends jabber.roster.RosterEntry {
+class RosterEntry extends jabber.roster.Entry {
+	
 	public var roster : Roster;
-	public function new() { super(); }
+	
+	public function new() {
+		super();
+	}
 }
 
 

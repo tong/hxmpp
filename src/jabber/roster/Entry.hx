@@ -3,7 +3,7 @@ package jabber.roster;
 import xmpp.IQRoster;
 
 
-class RosterEntry {
+class Entry {
 	
 	//public var roster : T;
 	
@@ -16,6 +16,6 @@ class RosterEntry {
 	public var resource : String; // TODO var resource : List<String>;
 	
 	
-	public function new() {}
+	function new() {}
 
 }
