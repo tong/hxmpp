@@ -1,0 +1,6 @@
+
+-cp demo
+-cp ../core
+-neko bin/demos/component.n
+-main JabberComponentDemo
+-D JABBER_DEBUG

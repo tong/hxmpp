@@ -1,0 +1,29 @@
+
+-cp demo
+-cp ../core
+-swf9 bin/demos/client.swf
+-main JabberClientDemo
+-D JABBER_DEBUG
+
+--next
+-cp demo
+-cp ../core
+-js bin/demos/client_bridged.js
+-main JabberClientDemo
+-D JABBER_SOCKETBRIDGE
+-D JABBER_DEBUG
+
+--next
+-cp demo
+-cp ../core
+-neko bin/demos/client.n
+-main JabberClientDemo
+-D JABBER_DEBUG
+
+--next
+-cp demo
+-cp ../core
+-php bin/demos
+--php-front client.php
+-main JabberClientDemo
+-D JABBER_DEBUG

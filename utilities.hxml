@@ -1,13 +1,5 @@
 
 # SWF9 SOCKET BRIDGE
-
--cp src
--swf-header 100:100:60:ff0000
+-swf-header 0:0:60:ff0000
 -swf9 bin/f9_socketbridge.swf
 -main jabber.tool.SocketBridge
-
-
-#--next
-#-cp src
-#-neko bin/demos/01-client/socketbridge.n
-#-main jabber.tool.SocketBridge
