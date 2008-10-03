@@ -15,6 +15,7 @@ class NonSASLAuthentication {
 	var password : String;
 	var resource : String;
 
+
 	public function new( stream : Stream, ?usePlainText : Bool,
 										  ?onSuccess : Stream->Void, ?onFailed : Stream->Void ) {
 	
@@ -27,6 +28,7 @@ class NonSASLAuthentication {
 		
 		authenticating = false;
 	}
+
 
 	public dynamic function onSuccess( stream : Stream ) { /* i am yours */ }
 	public dynamic function onFailed( stream : Stream ) { /* i am yours */ }

@@ -11,7 +11,9 @@ import xmpp.filter.PacketTypeFilter;
 import xmpp.IQRoster;
 
 
-
+/**
+	Wrapper for handling users presence.
+*/
 private class PresenceManager {
 	
 	public var type(getType,setShow) : String;
@@ -57,10 +59,12 @@ private class PresenceManager {
 	}
 	
 	
+	/**
+	*/
 	public function change( ?type : String, ?show : String, ?status : String, ?priority : Int ) {
 		var changed = false;
 		if( type != p.type ) { p.type = type; changed = true; }
-		if( show != p.show )	{ p.show = show; changed = true; }
+		if( show != p.show ) { p.show = show; changed = true; }
 		if( status != p.status ) { p.status = status; changed = true; }
 		if( priority != p.priority ) { p.priority = priority; changed = true; }
 		if( changed ) r.stream.sendPacket( p );
@@ -73,7 +77,9 @@ private class PresenceManager {
 	Entry in clients roster.
 */
 class RosterEntry extends jabber.roster.Entry {
+	
 	public var roster(default,null) : Roster;
+	
 	public function new( r : Roster ) {
 		super();
 		roster = r;
@@ -100,7 +106,7 @@ class Roster {
 	//var pending_unsubscriptions : Hash<RosterEntry>;
 	
 
-	public function new( stream : Stream ) {
+	public function new( stream : Stream, ?subscriptionMode : jabber.roster.SubscriptionMode ) {
 		
 		this.stream = stream;
 		this.subscriptionMode = ( subscriptionMode == null ) ? DEFAULT_SUBSCRIPTIONMODE : subscriptionMode;
@@ -108,12 +114,10 @@ class Roster {
 		available = false;
 		entries = new Array();
 		presence = new PresenceManager( this );
-		
 		//pending_unsubscriptions = new Hash();
 		
 		// collect presence packets
 		stream.collectors.add( new PacketCollector( [cast new PacketTypeFilter( PacketType.presence )], handlePresence, true ) );
-		
 		// collect roster iq packets
 		//stream.collectors.add( new PacketCollector( [new IQFilter( xmpp.IQRoster.XMLNS )], handleRosterIQ, true ) );
 	}

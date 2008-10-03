@@ -136,6 +136,9 @@ class StreamBase {
 			case closed : return;
 			
 			case pending :
+				#if JABBER_DEBUG
+				onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, d, true ) );
+				#end
 				d = util.XmlUtil.removeXmlHeader( d );
 				processStreamInit( d );
 				
@@ -168,7 +171,6 @@ class StreamBase {
 						cache.add( d );
 						try {
 							x = Xml.parse( cache.toString() );
-							trace( x.nodeType );
 							if( Std.string( x.firstChild().nodeType ) == "pcdata" ) throw "";
 						} catch( e : Dynamic ) {
 							return; // wait for more data.
