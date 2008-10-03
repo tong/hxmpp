@@ -197,6 +197,9 @@ class StreamBase {
 			for( c in collectors ) {
 				if( c.accept( packet ) ) {
 					collected = true;
+					#if JABBER_DEBUG
+					onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, packet.toString(), true ) );
+					#end
 					c.deliver( packet );
 					if( !c.permanent ) {
 						collectors.remove( c );
@@ -215,9 +218,6 @@ class StreamBase {
 			if( !collected ) trace( "WARNING, xmpp packet not processed: "+packet );
 			#end
 		}
-		#if JABBER_DEBUG
-		for( p in packets ) onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, p.toString(), true ) );
-		#end
 		return packets;
 	}
 	
