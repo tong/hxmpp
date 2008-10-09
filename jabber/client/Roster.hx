@@ -10,6 +10,8 @@ import xmpp.filter.IQFilter;
 import xmpp.filter.PacketTypeFilter;
 import xmpp.IQRoster;
 
+import jabber.event.RosterEvent;
+
 
 /**
 	Wrapper for handling users presence.
@@ -84,6 +86,7 @@ class RosterEntry extends jabber.roster.Entry {
 		super();
 		roster = r;
 	}
+	
 }
 
 
@@ -138,13 +141,13 @@ class Roster {
 	}
 	*/
 	
-		
+	//public dynamic function change( e : jabber.event.RosterEvent<Roster,RosterEntry> ) : Void;
 	public dynamic function onAvailable( roster : Roster ) {}
 	public dynamic function onAdd( entries : List<RosterEntry> ) {}
 	public dynamic function onUpdate( entries : List<RosterEntry> ) {}
 	public dynamic function onRemove( entries : List<RosterEntry> ) {}
 	public dynamic function onPresence( entry : RosterEntry ) {}
-	
+
 	/**
 		Requests roster load.
 	*/
@@ -179,6 +182,7 @@ class Roster {
 					var rem = new List<RosterEntry>();
 					rem.add( entry );
 					me.onRemove( rem );
+					
 					
 				default :
 			}
@@ -306,10 +310,11 @@ class Roster {
 				if( !available ) {
 					available = true;
 					onAvailable( this );
+					//change( new RosterEvent( stream, RosterEventType.available( this ) ) );
 				}
-				if( added.length > 0 )   onAdd( added );
-				if( updated.length > 0 ) onUpdate( updated );
-				if( removed.length > 0 ) onRemove( removed );
+				if( added.length > 0 )   onAdd( added );//change( new RosterEvent( stream, RosterEventType.added( added ) ) ); //onAdd( added );
+				if( updated.length > 0 ) onUpdate( updated );//change( new RosterEvent( stream, RosterEventType.updated( updated ) ) );//onUpdate( updated );
+				if( removed.length > 0 ) onRemove( removed );//change( new RosterEvent( stream, RosterEventType.removed( removed ) ) );//onRemove( removed );
 			
 			default :
 				// TODO
@@ -331,7 +336,7 @@ class Roster {
 			trace("PRESENCE FROM ROSTER USER");		
 			entry.presence = presence;
 			onPresence( entry );
-			
+			//change( new RosterEvent( stream, RosterEventType.presence( entry ) ) );
 			
 		} else {
 			trace("PRESENCE FROM NEW USER");

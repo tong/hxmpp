@@ -14,28 +14,31 @@ import php.net.Host;
 import php.net.Socket;
 #end
 
+/*
 #if ( neko || php )
 private typedef Connection = {
 	//var data : String;
 	var buf : haxe.io.Bytes;
 	var bufpos : Int;
 }
-
 #end
+*/
 
+// TODO socket handling
 
+//TODO
+//class SocketConnection {
 class StreamSocketConnection extends jabber.core.StreamConnection {
 	
 	#if ( neko || php )
-	public static var SOCKET_TIMEOUT_DEFAULT = 1000;
-	public static var BUF_SIZE_DEFAULT = 512;
-	public static var BUF_SIZE_MAX = 1<<24;
+	public static var SOCKET_TIMEOUT_DEFAULT = 10;
+	public static var BUF_SIZE_DEFAULT = 128;
+	//public static var BUF_SIZE_MAX = 1024;
 	
-	var bufSize : Int;
-	var maxBufSize : Int;
 	var reading : Bool;
-	var messageHeaderSize : Int;
-	var c : Connection;
+	var buf : haxe.io.Bytes;
+	var bufpos : Int;
+	var data : String;
 	
 	#end
 	
@@ -61,9 +64,9 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		
 		#elseif ( neko || php )
 		reading = false;
-		bufSize = BUF_SIZE_DEFAULT;
-		maxBufSize = BUF_SIZE_MAX;
-		messageHeaderSize = 1;
+	//	bufSize = BUF_SIZE_DEFAULT;
+	//	maxBufSize = BUF_SIZE_MAX;
+	//	messageHeaderSize = 1;
 		
 		#elseif ( js || SOCKET_BRIDGE )
 		socket.onConnect = sockConnectHandler;
@@ -77,7 +80,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		#if ( neko || php )
 		socket.connect( new Host( host ), port );
 		connected = true;
-//TODO	socket.setTimeout( 1.0 );
+//		socket.setTimeout( SOCKET_TIMEOUT_DEFAULT );
 		onConnect();
 		#else
 		socket.connect( host, port );
@@ -95,13 +98,12 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 			socket.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
 			#elseif ( neko || php )
 			reading = true;
-			c = { buf : haxe.io.Bytes.alloc( bufSize ), bufpos : 0 };
+			//c = { buf : haxe.io.Bytes.alloc( bufSize ), bufpos : 0 };
+			buf = haxe.io.Bytes.alloc( BUF_SIZE_DEFAULT );
+			bufpos = 0;
+			data = "";
 			while( connected && reading ) {
-				//trace("###########################################");
-				//var t = haxe.io.Bytes.alloc( bufSize );
-				//dataHandler( readData( haxe.io.Bytes.alloc( bufSize ), 0 ) );
-				//readData( { buf : haxe.io.Bytes.alloc( bufSize ), bufpos : 0 } );
-				dataHandler( readData( c ) );
+				readData();
 			}
 			#elseif ( js || SOCKET_BRIDGE )
 			socket.onData = sockDataHandler;
@@ -165,59 +167,19 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	
 	#elseif ( neko || php )
 	
-	
-	function readData( c : Connection ) {
-		var buflen = c.buf.length;
-		// read available data
-		var input : String = null;
-		var nbytes = socket.input.readBytes( c.buf, c.bufpos, buflen - c.bufpos );
-		c.bufpos += nbytes;
-		var pos = 0;
-		while( c.bufpos > 0 ) {
-			input = c.buf.readString( pos, c.bufpos );
-			var nbytes = input.length;
-			if( nbytes == 0 ) break;
-			pos += nbytes;
-			c.bufpos -= nbytes;
+	// TODO replace by net.ClientSocketManager
+	// or think over handling socket at application level.
+	function readData() {
+		var nbytes = socket.input.readBytes( buf, bufpos, buf.length );
+		data += buf.readString( 0, nbytes );
+		if( nbytes == BUF_SIZE_DEFAULT ) {
+			readData();
+		} else {
+			dataHandler( data );
+			data = "";
 		}
-		if( pos > 0 ) c.buf.blit( 0, c.buf, pos, c.bufpos );
-		return input;
 	}
-	//TODO
-	/*
-	function readData( c : Connection ) {
-		var buflen = c.buf.length;
-		if( c.bufpos == buflen ) {
-			var nsize = buflen * 2;
-			if( nsize > BUF_SIZE_MAX ) {
-				trace("BUFFERGRÖSSE NICHT AUSREICHEND");
-				if( buflen == BUF_SIZE_MAX ) {
-					trace("Max buffer size reached");
-					throw "Max buffer size reached";
-				}
-				nsize = BUF_SIZE_MAX;
-			}
-			var buf2 = haxe.io.Bytes.alloc( nsize );
-			buf2.blit( 0, c.buf, 0, buflen );
-			buflen = nsize;
-			c.buf = buf2;
-		}
-		// read available data
-		var input : String = null;
-		var nbytes = socket.input.readBytes( c.buf, c.bufpos, buflen - c.bufpos );
-		c.bufpos += nbytes;
-		var pos = 0;
-		while( c.bufpos > 0 ) {
-			input = c.buf.readString( pos, c.bufpos );
-			var nbytes = input.length;
-			if( nbytes == 0 ) break;
-			pos += nbytes;
-			c.bufpos -= nbytes;
-		}
-		if( pos > 0 ) c.buf.blit( 0, c.buf, pos, c.bufpos );
-		return input;
-	}
-	*/
+
 	
 	#elseif ( js || SOCKET_BRIDGE )
 	

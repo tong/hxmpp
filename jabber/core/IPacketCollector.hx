@@ -27,7 +27,7 @@ interface IPacketCollector {
 	
 	/**
 	*/
-	var timeout : PacketTimeout;
+	var timeout(default,setTimeout) : PacketTimeout;
 	
 	/**
 		Returns [true] if the given xmpp packet passes through all filters.

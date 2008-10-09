@@ -40,7 +40,7 @@ class DelayedDelivery {
 						 stamp : e.get( "stamp" ),
 						 description : e.firstChild().nodeValue };
 			}
-			#if XEP_091
+			#if XEP_0091
 			if( e.nodeName == "x" && e.get( "xmlns" ) == "jabber:x:delay" ) {
 				var description : String = null;
 				try { description = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
@@ -48,7 +48,7 @@ class DelayedDelivery {
 						 stamp : e.get( "stamp" ),
 						 description : description };
 			}
-			#end
+			#end // XEP_0091
 		}
 		return null;	
 	}

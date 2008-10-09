@@ -32,12 +32,16 @@ class VCardTemp {
 	}
 	
 	
-	public dynamic function onLoad( vc : VCardEvent ) {}
-	public dynamic function onUpdated( vc : VCardEvent ) {}
+	public dynamic function onLoad( vc : VCardEvent ) {
+		// i am yours.
+	}
+	public dynamic function onUpdated( vc : VCardEvent ) {
+		// i am yours.
+	}
 	
 	
 	/**
-		Requests to load the vcard from the given entity, or itself if no argument given.
+		Requests to load the vcard from the given entity or from its own if no argument given.
 	*/
 	public function load( ?jid : String  ) {
 		iq_load.to = jid;

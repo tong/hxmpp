@@ -147,13 +147,13 @@ class StreamBase {
 				//var s = "</stream:stream>";
 				var r = new EReg( "stream:stream", "" );
 				if( r.match( d ) ) {
-					trace( "STREAM CLOSE." );
+					trace( d );
 					return;
 				}
 				//TODO
 				var r = new EReg( "stream:error", "" );
 				if( r.match( d ) ) {
-					trace( "STREAM ERROR." );
+					trace( d );
 					return;
 				}
 				//TODO
