@@ -1,0 +1,94 @@
+
+body {
+	text-align: left;
+	font-family: sans-serif;
+	background-color : #222222;
+	color : #6CC8EF;
+	font-size:10px;
+}
+
+.document {
+	width : 800px;
+	/*position : relative;
+	margin : 0px auto 0px auto;*/
+	border : solid 0px #CFD0D4;
+	text-align : justify;
+	background-color: #222222;
+}
+
+.title {
+	font-size: 18;
+	font-weight: normal;
+	text-align: left;
+	background-color : #222222;
+	color : #A80080;
+}
+
+ul.entry {
+	list-style-type: circle;
+	font-weight : bold;
+	margin-left : 0px;
+}
+
+.package_content {
+	display : none;
+}
+
+a {
+	color : #ffffff;
+	font-weight : bold;
+	text-decoration : none;
+}
+
+a:hover {
+	color : #ffffff;
+	text-decoration : underline;
+}
+
+a.package {
+	color : #6CC8EF;
+}
+
+.index {
+	margin-left : 0px;
+}
+
+.kwd {
+	color : #6CC8EF;
+}
+
+.classname {
+	font-size : 26;
+	font-weight : bold;
+	margin-top : 10px;
+	margin-left : 0px;
+	margin-bottom : 20px;
+	color : #ffffff;
+}
+
+.classdoc {
+	border : 1px dashed #666;
+	margin-left : 0px;
+	margin-right : 20px;
+	padding : 5 5 5 5;
+	color : #ffffff;
+}
+
+.importmod, .extends, .implements, .typedef, .platforms {
+	margin-left: 20px;
+	color : #777;
+}
+
+dd {
+	margin : 0 0 20 20;
+	font-size : 10pt;
+	color : #999;
+}
+
+dt {
+	margin-left : 0px;
+	margin-bottom :0px;
+	text-align : left;
+	font-size : 8pt;
+	font-family: Courier New, monospace;
+}
