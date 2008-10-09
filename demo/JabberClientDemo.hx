@@ -25,14 +25,14 @@ class JabberClientDemo {
 	
 	
 	static function init() {
-		var cnx = new jabber.StreamSocketConnection( "jabber.spektral.at", 5222 );
-		stream = new jabber.client.Stream( new jabber.JID("tong@jabber.spektral.at"), cnx, "1.0" );
+		var cnx = new jabber.StreamSocketConnection( "127.0.0.1", 5222 );
+		stream = new jabber.client.Stream( new jabber.JID("tong@disktree"), cnx, "1.0" );
 		stream.onOpen = function(s) {
 			trace("JABBER STREAM opened...");
 			var auth = new NonSASLAuthentication(s);
 			auth.onSuccess = loginSuccess;
 			auth.onFailed = function(s) { trace( "LOGIN FAILED" ); };
-			auth.authenticate( "sp3ak", "norc" );
+			auth.authenticate( "test", "norc" );
 		};
 		stream.onClose = function(s) { trace( "Stream to: "+s.jid.domain+" closed." ); } ;
 		stream.onXMPP.addHandler( xmppTransferHandler );
@@ -61,6 +61,7 @@ class JabberClientDemo {
 				trace("ENTRY: "+ e.jid );
 			}
 		};
+		//roster.change = rosterChangeHandler;
 		roster.load();
 		
 		/*
@@ -70,7 +71,11 @@ class JabberClientDemo {
 		service.discoverInfo("account@disktree");
 		*/
 	}
-		
+	
+	static function rosterChangeHandler( e ) {
+		trace(e.type);
+	}
+	
 	static function xmppTransferHandler( e : jabber.event.XMPPEvent ) {
 		trace( "\t" + ( if( e.incoming ) "<<< "+e.data else ">>> "+e.data )+"\n" );
 	}

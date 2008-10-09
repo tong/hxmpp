@@ -2,7 +2,6 @@ package jabber.tool;
 
 import haxe.remoting.Connection;
 
-
 #if flash9
 import flash.events.Event;
 import flash.events.IOErrorEvent;
@@ -22,6 +21,8 @@ private class Socket extends flash.net.Socket {
 /**
 	flash9.
 	haXe-remoting socket bridge.
+	
+	// TODO replace remoting stuff by flash.external..ExternaInterface.
 */
 class SocketBridge {
 	
