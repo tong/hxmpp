@@ -1,14 +1,12 @@
 package jabber.core;
 
 import jabber.StreamStatus;
-
+import xmpp.filter.PacketIDFilter;
 
 /**
-	Abstract base for xmpp stream comunication between jabber entities.<br>
+	Abstract base for client and component jabber streams.<br>
 */
 class StreamBase {
-	
-	public static inline var VERSION = "1.0";
 	
 	public var status : StreamStatus; //public var status(default,setStatus) : StreamStatus;
 	public var connection(default,setConnection) : StreamConnection;
@@ -112,6 +110,18 @@ class StreamBase {
 		onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, data, false ) );
 		#end
 		return true;
+	}
+	
+	/**
+		Sends an IQ xmpp packet and forwards the collected response to the given handler function.
+	*/
+	//TODO ?timeout : TPacketTimeout
+	public function sendIQ( iq : xmpp.IQ, handler : xmpp.IQ->Void,
+							?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool ) {
+		iq.id = nextID();
+		collectors.add( new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block ) );
+		return sendPacket( iq );
+		//return { iq : iq, collector : IPacketCollector };
 	}
 	
 	/**

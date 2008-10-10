@@ -6,21 +6,20 @@ import jabber.core.PacketCollector;
 import jabber.core.PacketTimeout;
 import jabber.core.StreamConnection;
 import xmpp.Message;
-import xmpp.filter.PacketIDFilter;
 
 
 /**
-	Basic C2S jabber stream.<br>
+	Base for Client-2-Server jabber streams.<br>
 */
 class Stream extends jabber.core.StreamBase {
 	
 	public static inline var STANDARD_PORT = 5222;
-	public static var DEFAULT_PORT = STANDARD_PORT;
+	public static var defaultPort = STANDARD_PORT;
 	
 	public var jid(default,null) : JID;
 	
 	
-	public function new( jid : JID, connection : StreamConnection, ?version : String ) {
+	public function new( jid : JID, connection : StreamConnection, ?version : String = "1.0" ) {
 		super( connection, version );
 		this.jid = jid;
 	}
@@ -38,18 +37,6 @@ class Stream extends jabber.core.StreamBase {
 	*/
 	public function sendChatMessage( to : String, message : String ) : xmpp.Message {
 		return cast sendPacket( new xmpp.Message( xmpp.MessageType.chat, to, null, message, null, jid.toString() ) );
-	}
-	
-	/**
-		Sends an IQ xmpp packet and forwards the collected response to the given handler function.
-	*/
-	//TODO ?timeout : TPacketTimeout
-	public function sendIQ( iq : xmpp.IQ, handler : xmpp.IQ->Void,
-							?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool ) {
-		iq.id = nextID();
-		collectors.add( new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block ) );
-		sendPacket( iq );
-		//return { iq : iq, collector : IPacketCollector };
 	}
 	
 	

@@ -1,7 +1,7 @@
 package jabber.core;
 
 
-typedef StreamDataFilter = {
+private typedef DataFilter = {
 	
 	/**
 		Filters incoming data before further processing ( fe: uncompression ).
@@ -10,20 +10,22 @@ typedef StreamDataFilter = {
 	
 }
 
-typedef StreamDataInterceptor = {
+
+private typedef DataInterceptor = {
 	
 	/**
-		Modifies data before sending ( fe: compression ).
+		Modifies raw data before sending ( fe: compression ).
 	*/
 	function interceptData( data : String ) : String;
+	
 }
 
 
 class StreamConnection {
 	
 	public var connected(default,null) : Bool;
-	public var interceptors : Array<StreamDataInterceptor>;
-	public var filters : Array<StreamDataFilter>;
+	public var interceptors : Array<DataInterceptor>;
+	public var filters : Array<DataFilter>;
 	
 	
 	function new() {

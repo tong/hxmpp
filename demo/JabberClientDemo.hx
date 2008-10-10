@@ -42,7 +42,7 @@ class JabberClientDemo {
 	static function loginSuccess( s ) {
 		var vcard = new jabber.client.VCardTemp( stream );
 		vcard.onLoad = function(vc) {
-			//trace(vc.data);
+			trace(vc);
 		}
 		vcard.load();
 		/*

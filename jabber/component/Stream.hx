@@ -9,13 +9,13 @@ import xmpp.filter.PacketIDFilter;
 
 
 /**
-	Base for component2server jabber streams.
+	Base for Component-2-Server jabber streams.<br/>
 	<a href="http://www.xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>
 */
 class Stream extends jabber.core.StreamBase {
 	
 	public static inline var STANDARD_PORT = 5275;
-	public static var DEFAULT_PORT = STANDARD_PORT;
+	public static var defaultPort = STANDARD_PORT;
 	
 	public var server(default,null) : String;
 	public var password(default,null) : String;
@@ -63,15 +63,4 @@ class Stream extends jabber.core.StreamBase {
 		//service.listenInfoRequests = true;
 	}
 	
-	/**
-		Sends an IQ xmpp packet and forwards the collected response to the given handler function.
-	*/
-	//TODO ?timeout : TPacketTimeout
-	public function sendIQ( iq : xmpp.IQ, handler : xmpp.IQ->Void,
-							?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool ) {
-		iq.id = nextID();
-		collectors.add( new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block ) );
-		sendPacket( iq );
-		//return { iq : iq, collector : IPacketCollector };
-	}
 }

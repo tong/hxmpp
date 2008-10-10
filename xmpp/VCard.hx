@@ -126,6 +126,10 @@ class VCard {
 	}
 	
 	
+	public function injectData( src : Xml ) {
+		
+	}
+	
 	public function toXml() : Xml {
 		var xml = Xml.createElement( NODENAME );
 		xml.set( "xmlns", XMLNS );

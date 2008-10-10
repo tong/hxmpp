@@ -6,6 +6,17 @@ import xmpp.IQType;
 import xmpp.VCard;
 
 
+class VCardEvent extends xmpp.VCard {
+	
+	public var stream(default,null) : Stream;
+	
+	public function new( stream : Stream ) {
+		super();
+	}
+	
+}
+
+
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0054.html">XEP-0054: vcard-temp</a>
 */
@@ -63,8 +74,9 @@ class VCardTemp {
 			case result :
 				trace("RRRRESULT");
 				//loaded = {from:iq.from, data:VCard.parse( iq.ext.toXml() ) };
-				onLoad( new VCardEvent( stream, iq.from, xmpp.VCard.parse( iq.ext.toXml() ) ) );
-			//	onLoad( new VCardEvent( stream, iq ) );
+				var e = new VCardEvent( stream );
+				e.injectData( iq.ext.toXml() ); //TODO
+				onLoad( e );
 				
 			case error :
 				//TODO

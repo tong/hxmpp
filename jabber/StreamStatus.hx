@@ -1,6 +1,6 @@
 package jabber;
 
-
+//TODO move this to xmpp.StreamStatus ?? 
 enum StreamStatus {
 	
 	/**
