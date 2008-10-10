@@ -45,7 +45,6 @@ class JabberClientDemo {
 			//trace(vc.data);
 		}
 		vcard.load();
-		
 		/*
 		#if neko
 		var zlib = new jabber.util.ZLibCompression();

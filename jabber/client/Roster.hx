@@ -6,9 +6,8 @@ import jabber.util.JIDUtil;
 import xmpp.PacketType;
 import xmpp.Presence;
 import xmpp.IQ;
-import xmpp.filter.IQFilter;
+import xmpp.Roster;
 import xmpp.filter.PacketTypeFilter;
-import xmpp.IQRoster;
 
 import jabber.event.RosterEvent;
 
@@ -153,7 +152,7 @@ class Roster {
 	*/
 	public function load() {
 		var iq = new IQ();
-		iq.ext = new xmpp.IQRoster();
+		iq.ext = new xmpp.Roster();
 		stream.sendIQ( iq, handleRosterIQ );
 	}
 	
@@ -174,7 +173,7 @@ class Roster {
 		var entry = getEntry( jid );
 		if( entry == null ) return false;
 		var iq = new IQ( IQType.set );
-		iq.ext = new xmpp.IQRoster( [new RosterItem( jid, Subscription.remove )] );
+		iq.ext = new xmpp.Roster( [new xmpp.RosterItem( jid, Subscription.remove )] );
 		var me = this;
 		stream.sendIQ( iq, function(iq) {
 			switch( iq.type ) {
@@ -201,8 +200,8 @@ class Roster {
 			} 
 		}
 		// send roster iq to server.  hmmmmm ????? remove
-		var items = new xmpp.IQRoster();
-		items.add( new RosterItem( to ) );
+		var items = new xmpp.Roster();
+		items.add( new xmpp.RosterItem( to ) );
 		var iq = new IQ( IQType.set );
 		iq.ext = items;
 		stream.sendIQ( iq, handleRosterIQ );
@@ -380,10 +379,10 @@ var resource = JIDUtil.parseResource( jid_str ); //TODO()
 		for( group in xml.elementsNamed( "group" ) ) groups.add( group.firstChild().nodeValue );
 		var e = new RosterEntry( this );
 		e.jid = JIDUtil.parseBar( jid_str );
-		e.subscription = RosterItem.getSubscriptionType( xml.get( "subscription" ) );
+		e.subscription = xmpp.RosterItem.getSubscriptionType( xml.get( "subscription" ) );
 		e.name = xml.get( "name" );
 		e.presence = null;
-		e.askType = RosterItem.getAskType( xml.get( "ask" ) );
+		e.askType = xmpp.RosterItem.getAskType( xml.get( "ask" ) );
 		e.groups = groups;
 		return e;
 		/*
