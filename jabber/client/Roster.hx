@@ -6,6 +6,7 @@ import jabber.util.JIDUtil;
 import xmpp.PacketType;
 import xmpp.Presence;
 import xmpp.IQ;
+import xmpp.IQType;
 import xmpp.Roster;
 import xmpp.filter.PacketTypeFilter;
 

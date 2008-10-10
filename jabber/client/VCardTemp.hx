@@ -2,6 +2,7 @@ package jabber.client;
 
 import jabber.event.VCardEvent;
 import xmpp.IQ;
+import xmpp.IQType;
 import xmpp.iq.VCard;
 
 

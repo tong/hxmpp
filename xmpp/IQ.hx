@@ -1,14 +1,6 @@
 package xmpp;
 
 
-enum IQType {
-	get;
-	set;
-	result;
-	error;
-}
-
-//class IQ<T:IQExtension> extends xmpp.Packet {
 class IQ extends xmpp.Packet {
 	
 	public static inline var GET = "get";
@@ -30,7 +22,7 @@ class IQ extends xmpp.Packet {
 	
 	public override function toXml(): Xml {
 		if( id == null ) throw "Invalid IQ packet, no id";
-		if( type == null ) type = get;
+		if( type == null ) type = xmpp.IQType.get;
 		var xml = super.addAttributes( Xml.createElement( "iq" ) );
 		xml.set( "type", getTypeString( type ) );
 		xml.set( "id", id );
