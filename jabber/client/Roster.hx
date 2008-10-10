@@ -23,11 +23,11 @@ private class PresenceManager {
 	public var status(getStatus,setShow) : String;
 	public var priority(getPriority,setPriority) : Int;
 	
-	var r : Roster;
+	var stream : Stream;
 	var p : xmpp.Presence;
 	
-	public function new( roster : Roster ) {
-		r = roster;
+	public function new( s : Stream ) {
+		stream = s;
 		p = new xmpp.Presence();
 	}
 	
@@ -35,41 +35,49 @@ private class PresenceManager {
 	function setType( v : String ) : String {
 		if( v == p.type ) return v;
 		p.type = v;
-		r.stream.sendPacket( p );
+		stream.sendPacket( p );
 		return v;
 	}
 	function getShow() : String { return p.show; }
 	function setShow( v : String ) : String {
 		if( v == p.show ) return v;
 		p.show = v;
-		r.stream.sendPacket( p );
+		stream.sendPacket( p );
 		return v;
 	}
 	function getStatus() : String { return p.status; }
 	function setStatus( v : String ) : String {
 		if( v == p.status ) return v;
 		p.status = v;
-		r.stream.sendPacket( p );
+		stream.sendPacket( p );
 		return v;
 	}
 	function getPriority() : Int { return p.priority; }
 	function setPriority( v : Int ) : Int {
 		if( v == p.priority ) return v;
 		p.priority = v;
-		r.stream.sendPacket( p );
+		stream.sendPacket( p );
 		return v;
 	}
 	
 	
 	/**
+		Change the presence by passing in a xmpp.Presence packet.
+	*/
+	public function set( p : xmpp.Presence ) {
+		stream.sendPacket( p );
+	}
+	
+	/**
+		Change the presence by changing presence values.
 	*/
 	public function change( ?type : String, ?show : String, ?status : String, ?priority : Int ) {
-		var changed = false;
-		if( type != p.type ) { p.type = type; changed = true; }
-		if( show != p.show ) { p.show = show; changed = true; }
-		if( status != p.status ) { p.status = status; changed = true; }
-		if( priority != p.priority ) { p.priority = priority; changed = true; }
-		if( changed ) r.stream.sendPacket( p );
+		p = new xmpp.Presence();
+		if( type != p.type ) p.type = type;
+		if( show != p.show ) p.show = show;
+		if( status != p.status ) p.status = status;
+		if( priority != p.priority ) p.priority = priority;
+		stream.sendPacket( p );
 	}
 	
 }
@@ -80,9 +88,10 @@ private class PresenceManager {
 */
 class RosterEntry extends xmpp.RosterItem {
 	
+	/** Reference to this entries roster. */
 	public var roster(default,null) : Roster;
+	/** */
 	public var presence : xmpp.Presence; // TODO var presence : Hash<xmpp.Presence>;
-	
 	
 	public function new( jid : String, r : Roster ) {
 		super( jid );
@@ -95,6 +104,8 @@ class RosterEntry extends xmpp.RosterItem {
 /**
 	Jabber client roster.
 */
+//?? class Roster extends event.Dispatcher<RosterEvent>
+//?? class Roster extends jabber.StreamExtension.
 class Roster {
 	
 	public static var DEFAULT_SUBSCRIPTIONMODE = SubscriptionMode.acceptAll;
@@ -118,7 +129,7 @@ class Roster {
 		
 		available = false;
 		entries = new Array();
-		presence = new PresenceManager( this );
+		presence = new PresenceManager( stream );
 		//pending_unsubscriptions = new Hash();
 		
 		// collect presence packets
