@@ -5,7 +5,8 @@ import xmpp.Roster;
 
 class RosterItem {
 	
-	public var jid(default,null) : String;
+	//public var jid(default,null) : String;
+	public var jid : String;
 	public var subscription : Subscription;
 	public var name : String;
 	public var askType : AskType;

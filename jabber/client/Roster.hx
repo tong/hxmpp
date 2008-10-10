@@ -78,12 +78,14 @@ private class PresenceManager {
 /**
 	Entry in clients roster.
 */
-class RosterEntry extends jabber.roster.Entry {
+class RosterEntry extends xmpp.RosterItem {
 	
 	public var roster(default,null) : Roster;
+	public var presence : xmpp.Presence; // TODO var presence : Hash<xmpp.Presence>;
 	
-	public function new( r : Roster ) {
-		super();
+	
+	public function new( jid : String, r : Roster ) {
+		super( jid );
 		roster = r;
 	}
 	
@@ -378,8 +380,7 @@ class Roster {
 var resource = JIDUtil.parseResource( jid_str ); //TODO()
 		var groups = new List<String>();
 		for( group in xml.elementsNamed( "group" ) ) groups.add( group.firstChild().nodeValue );
-		var e = new RosterEntry( this );
-		e.jid = JIDUtil.parseBar( jid_str );
+		var e = new RosterEntry( JIDUtil.parseBar( jid_str ), this );
 		e.subscription = xmpp.RosterItem.getSubscriptionType( xml.get( "subscription" ) );
 		e.name = xml.get( "name" );
 		e.presence = null;
