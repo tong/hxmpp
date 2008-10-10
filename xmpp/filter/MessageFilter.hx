@@ -2,6 +2,7 @@ package xmpp.filter;
 
 import xmpp.PacketType;
 import xmpp.Message;
+import xmpp.MessageType;
 
 
 /** 

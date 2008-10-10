@@ -3,17 +3,8 @@ package xmpp;
 import util.XmlUtil;
 
 
-enum MessageType {
-	normal;
-	error;
-	chat;
-	groupchat;
-	headline;
-}
-
-
 /**
-	XMPP message packet.
+	XMPP message packet.<br/>
 */
 class Message extends xmpp.Packet {
 	

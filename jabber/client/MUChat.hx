@@ -5,6 +5,7 @@ import jabber.muc.Affiliation;
 import jabber.muc.Peer;
 import jabber.muc.Role;
 import xmpp.Message;
+import xmpp.MessageType;
 import xmpp.PacketType;
 import xmpp.filter.MessageFilter;
 import xmpp.filter.PacketFromContainsFilter;

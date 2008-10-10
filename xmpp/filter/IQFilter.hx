@@ -3,6 +3,7 @@ package xmpp.filter;
 import xmpp.Packet;
 import xmpp.PacketType;
 import xmpp.IQ;
+import xmpp.IQType;
 
 
 /**
