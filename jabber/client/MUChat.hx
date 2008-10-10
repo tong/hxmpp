@@ -14,6 +14,8 @@ import xmpp.filter.PacketTypeFilter;
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
 	
+TODO http://xmpp.org/extensions/xep-0249.html
+	
 	Represents a multi user chatroom conversation.
 */
 class MUChat {

@@ -16,6 +16,7 @@ enum PresenceType {
 */
 
 /**
+	<a href="http://xmpp.org/rfcs/rfc3921.html">RFC-3921 - Instant Messaging and Presence</a></br>
 	<a href="http://www.xmpp.org/rfcs/rfc3921.html#presence">Exchanging Presence Information</a>
 */
 class Presence extends Packet {

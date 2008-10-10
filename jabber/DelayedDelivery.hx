@@ -24,7 +24,9 @@ typedef PacketDelay = {
 
 /**
 	<a href="http://xmpp.org/extensions/xep-0203.html">XEP-0203: Delayed Delivery</a><br/>
-	Use compiler flag 'XEP_091' for backwards compatibility with <a href="http://xmpp.org/extensions/xep-0091.html">XEP-0091: Delayed Delivery</a><br/>.
+	
+	Use compiler flag 'XEP_0091' for backwards compatibility with
+	<a href="http://xmpp.org/extensions/xep-0091.html">XEP-0091: Delayed Delivery</a>.
 */
 class DelayedDelivery {
 	

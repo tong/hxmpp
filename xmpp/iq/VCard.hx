@@ -77,7 +77,7 @@ typedef Org = {
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0054.html">XEP-0054: vcard-temp</a>
 	
-	Partial implemented!!!
+	Partial implemented!
 */
 class VCard {
 	
@@ -85,7 +85,6 @@ class VCard {
 	public static inline var XMLNS 	  = "vcard-temp";
 	public static inline var PRODID   = "-//HandGen//NONSGML vGen v1.0//EN";
 	public static inline var VERSION  = "2.0";
-	
 	
 	public var fullName 	: String;
 	public var name 		: Name;

@@ -6,6 +6,9 @@ package xmpp;
 */
 class PlainPacket extends Packet {
 	
+	/**
+		Plain content of the packet.
+	*/
 	public var src : Xml;
 
 	public function new( src : Xml ) {

@@ -7,7 +7,6 @@ package xmpp;
 class Packet {
 	
 	public var _type(default,null) : PacketType;
-	
 	public var to : String;
 	public var from : String;
 	public var id : String;	
