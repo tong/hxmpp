@@ -39,7 +39,7 @@ class NonSASLAuthentication {
 		this.resource = resource;
 		authenticating = true;
 		var iq = new xmpp.IQ();
-		iq.ext = new xmpp.iq.Auth( username );
+		iq.ext = new xmpp.Auth( username );
 		stream.sendIQ( iq, handleResponse );
 	}
 	
@@ -50,8 +50,8 @@ class NonSASLAuthentication {
 				var hasDigest = false;
 				for( c in response.ext.toXml().elementsNamed( "digest" ) ) { hasDigest = true; break; }
 				var iq = new xmpp.IQ( xmpp.IQType.set );
-				iq.ext = if( !usePlainText && hasDigest ) new xmpp.iq.Auth( username, null, crypt.SHA1.encode( stream.id + password ), resource );
-				else new xmpp.iq.Auth( username, password, null, resource );
+				iq.ext = if( !usePlainText && hasDigest ) new xmpp.Auth( username, null, crypt.SHA1.encode( stream.id + password ), resource );
+				else new xmpp.Auth( username, password, null, resource );
 				stream.sendIQ( iq, handleResult );
 			default : 
 				authenticating = false;

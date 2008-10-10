@@ -3,7 +3,7 @@ package jabber.client;
 import jabber.event.VCardEvent;
 import xmpp.IQ;
 import xmpp.IQType;
-import xmpp.iq.VCard;
+import xmpp.VCard;
 
 
 /**
@@ -52,7 +52,7 @@ class VCardTemp {
 	/**
 		Update own vcard.
 	*/
-	public function update( vc : xmpp.iq.VCard ) {
+	public function update( vc : xmpp.VCard ) {
 		iq_update.ext = vc;
 		stream.sendIQ( iq_update, handleUpdate );
 	}
@@ -63,7 +63,7 @@ class VCardTemp {
 			case result :
 				trace("RRRRESULT");
 				//loaded = {from:iq.from, data:VCard.parse( iq.ext.toXml() ) };
-				onLoad( new VCardEvent( stream, iq.from, VCard.parse( iq.ext.toXml() ) ) );
+				onLoad( new VCardEvent( stream, iq.from, xmpp.VCard.parse( iq.ext.toXml() ) ) );
 			//	onLoad( new VCardEvent( stream, iq ) );
 				
 			case error :

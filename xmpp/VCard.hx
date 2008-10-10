@@ -1,4 +1,4 @@
-package xmpp.iq;
+package xmpp;
 
 import util.XmlUtil;
 
@@ -233,8 +233,8 @@ class VCard {
 	}
 	
 	
-	public static function parse( src : Xml ) : xmpp.iq.VCard  {
-		var vc = new xmpp.iq.VCard();
+	public static function parse( src : Xml ) : xmpp.VCard  {
+		var vc = new xmpp.VCard();
 		for( node in src.elements() ) {
 			switch( node.nodeName ) {
 				case "FN" : vc.fullName = node.firstChild().nodeValue;

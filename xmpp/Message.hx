@@ -15,7 +15,6 @@ class Message extends xmpp.Packet {
 	public static var ERROR = "error";
 	
 	public var type : MessageType;
-	
 	public var subject : String;
 	public var body : String;
     public var thread : String;

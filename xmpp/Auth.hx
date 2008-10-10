@@ -1,10 +1,10 @@
-package xmpp.iq;
+package xmpp;
 
 import util.XmlUtil;
 
 
 /**
-	IQ used for client account authenticating.
+	IQ extension used for account authenticating.
 */
 class Auth {
 	

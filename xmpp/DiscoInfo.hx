@@ -1,4 +1,4 @@
-package xmpp.iq;
+package xmpp;
 
 
 typedef DiscoIdentity = {
@@ -49,8 +49,8 @@ class DiscoInfo {
 //	}
 	
 	
-	public static function parse( child : Xml ) : xmpp.iq.DiscoInfo {
-		var info = new xmpp.iq.DiscoInfo();
+	public static function parse( child : Xml ) : xmpp.DiscoInfo {
+		var info = new xmpp.DiscoInfo();
 		for( f in child.elements() ) {
 			switch( f.nodeName ) {
 				case "feature"  : info.features.add( f.get( "var" ) );
