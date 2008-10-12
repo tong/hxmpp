@@ -3,14 +3,8 @@ package xmpp;
 
 class IQ extends xmpp.Packet {
 	
-	public static inline var GET = "get";
-	public static inline var SET = "set";
-    public static inline var RESULT = "result";
-    public static inline var ERROR = "error";
-    
 	public var type : IQType;
 	public var ext : PacketElement;
-	//public var error : IQError; //TODO
 	
 	
 	public function new( ?type : IQType, ?id : String, ?to : String, ?from ) {
@@ -22,14 +16,11 @@ class IQ extends xmpp.Packet {
 	
 	public override function toXml(): Xml {
 //		if( id == null ) throw "Invalid IQ packet, no id";
-		
 		if( type == null ) type = xmpp.IQType.get;
 		var xml = super.addAttributes( Xml.createElement( "iq" ) );
 		xml.set( "type", Type.enumConstructor( type ) );
 		xml.set( "id", id );
 		if( ext != null ) xml.addChild( ext.toXml() );
-//TODO	if( error != null ) xml.addChild( error.toXml() );
-		// super.addErrors();
 		return xml;
 	}
 	

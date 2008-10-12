@@ -105,13 +105,6 @@ class TestFilters extends haxe.unit.TestCase {
 		assertTrue( !iqf.accept( new Message() ) );
 	}
 	
-	
-	/*TODO
-	public function testNameFilter() {
-		//TODO
-		assertTrue( true );
-	}
-	
 	public function testIQFilter() {
 		
 		var f = new IQFilter( null, null, IQType.get );
@@ -120,25 +113,35 @@ class TestFilters extends haxe.unit.TestCase {
 		assertTrue( !f.accept( new IQ( IQType.error ) ) );
 		assertTrue( !f.accept( new IQ( IQType.result ) ) );
 		
-		f = new IQFilter( xmpp.IQAuth.XMLNS );
-		assertTrue( f.accept( new xmpp.IQAuth() ) );
-		assertTrue( !f.accept( new xmpp.IQRoster() ) );
-	
-		f = new IQFilter( xmpp.IQAuth.XMLNS, "query" );
-		assertTrue( f.accept( new xmpp.IQAuth() ) );
-		assertTrue( !f.accept( new xmpp.IQRoster() ) );
+		var iq_auth = new IQ();
+		iq_auth.ext = new xmpp.Auth();
+		var iq_roster = new IQ();
+		iq_roster.ext = new xmpp.Roster();
 		
-		f = new IQFilter( xmpp.IQAuth.XMLNS, "query", IQType.set );
-		assertTrue( !f.accept( new xmpp.IQAuth() ) );
-		assertTrue( !f.accept( new xmpp.IQRoster() ) );
-		var iq = new xmpp.IQAuth();
-		iq.type = IQType.set;
-		assertTrue( f.accept( iq ) );
+		f = new IQFilter( xmpp.Auth.XMLNS );
+		assertTrue( f.accept( iq_auth ) );
+		assertTrue( !f.accept( iq_roster ) );
+	
+		f = new IQFilter( xmpp.Auth.XMLNS, "query" );
+		assertTrue( f.accept( iq_auth ) );
+		assertTrue( !f.accept( iq_roster ) );
+		
+		f = new IQFilter( xmpp.Auth.XMLNS, "query", IQType.set );
+		assertTrue( !f.accept( iq_auth ) );
+		assertTrue( !f.accept( iq_roster ) );
+		iq_auth.type = IQType.set;
+		assertTrue( f.accept( iq_auth ) );
 		
 		f = new IQFilter( null, "query" );
-		assertTrue( f.accept( new xmpp.IQAuth() ) );
-		assertTrue( f.accept( new xmpp.IQRoster() ) );
-		assertTrue( f.accept( new xmpp.IQDiscoInfo() ) );
+		assertTrue( f.accept( iq_auth ) );
+		assertTrue( f.accept( iq_roster ) );
+	}
+	
+	/*
+	//TODO
+	public function testNameFilter() {
+		assertTrue( true );
 	}
 	*/
+	
 }

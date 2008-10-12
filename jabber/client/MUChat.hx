@@ -157,9 +157,9 @@ class MUChat {
 			
 			case myJid :
 				switch( p.type ) {
-					case "unavailable" : 
+					case xmpp.PresenceType.unavailable : 
 						joined = false;
-					case null, "available" :
+					case null :
 						if( !joined ) {
 							joined = true;
 						}
