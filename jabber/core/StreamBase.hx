@@ -72,7 +72,7 @@ class StreamBase {
 			case open, pending : return false;
 			case closed :
 				if( !connection.connected ) connection.connect();
-				else connectHandler(); // TODO: sendOpenStream();
+				else connectHandler();
 				return true;
 		}
 	}
@@ -115,13 +115,13 @@ class StreamBase {
 	/**
 		Sends an IQ xmpp packet and forwards the collected response to the given handler function.
 	*/
-	//TODO ?timeout : TPacketTimeout
 	public function sendIQ( iq : xmpp.IQ, handler : xmpp.IQ->Void,
-							?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool ) {
+							?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool )
+	: { iq : xmpp.IQ, collector : IPacketCollector } {
 		iq.id = nextID();
-		collectors.add( new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block ) );
-		return sendPacket( iq );
-		//return { iq : iq, collector : IPacketCollector };
+		var c : IPacketCollector = new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block );
+		collectors.add( c );
+		return { iq : untyped sendPacket( iq ), collector : c };
 	}
 	
 	/**

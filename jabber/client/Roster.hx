@@ -236,26 +236,13 @@ class Roster {
 	}
 	
 	/**
-		Sends given presence to all subscribed entries in the roster.
-		//TODO presence(getPresence,setPresence)
-	public function setPresence( p : Presence ) : Presence {
-		if( !available ) return presence;
-		presence = p;
-		stream.sendPacket( presence );
-		return presence;
-	}
-	*/
-	
-	/**
 		Sets presence of all roster contacts to offline.
 	*/
 	public function setPresencesOffline() {
-		/*TODO
 		for( entry in entries ) {
-			entry.presence.type = xmpp.PresenceType.offline;
+			entry.presence.type = xmpp.PresenceType.unavailable;
 			onPresence( entry );
 		}
-		*/
 	}
 	
 	/**
@@ -269,11 +256,15 @@ class Roster {
 	}
 	
 	/**
+		TODO
 		Returns the presence of the given jid at a specified resource.
-	*/
-	public function getResourcePresence( jid : String, resource : String ) {
-		//TODO
+	public function getResourcePresence( jid : String, resource : String ) : xmpp.Presence {
+		if( !entries.exists( jid ) ) return null;
+		var e = entries.get( jid );
+		if( !e.presence.exists( resource ) ) return null;
+		return e.presence.get( resource );
 	}
+	*/
 	
 	/**
 	*/
@@ -356,29 +347,32 @@ class Roster {
 		} else {
 			trace("PRESENCE FROM NEW USER");
 			
-			if( presence.type == xmpp.PresenceType.subscribe ) {
-				switch( subscriptionMode ) {
+			switch(  presence.type ) {
 				
-					case rejectAll :
-						var p = new Presence( "unsubscribed" );
-						p.to = presence.from;
-						stream.sendPacket( p );
-						return;
-						
-					case acceptAll :
-						if( subscriptionMode == SubscriptionMode.acceptAll ) { // allow subsription
-							var p = new Presence( "subscribed" );
+				case xmpp.PresenceType.subscribe :
+					switch( subscriptionMode ) {
+					
+						case rejectAll :
+							var p = new Presence( "unsubscribed" );
 							p.to = presence.from;
 							stream.sendPacket( p );
-							subscribe( presence.from ); // subscribe too, automaticly
+							return;
+							
+						case acceptAll :
+							if( subscriptionMode == SubscriptionMode.acceptAll ) { // allow subsription
+								var p = new Presence( "subscribed" );
+								p.to = presence.from;
+								stream.sendPacket( p );
+								subscribe( presence.from ); // subscribe too, automaticly
+								//onPresence( entry );
+							}
+						case manual :
+							//..
 							//onPresence( entry );
-						}
-					case manual :
-						//..
-						//onPresence( entry );
-				}
-			} else if( presence.type == xmpp.PresenceType.unsubscribed ) {
-				//TODO
+					}
+				case xmpp.PresenceType.unsubscribed :
+					//TODO
+				
 			}
 			//...
 			
@@ -388,32 +382,15 @@ class Roster {
 	/**
 		Creates a RosterEntry from given roster item xml.
 	*/
-	function createRosterEntry( xml : Xml ) : RosterEntry {
-		var jid_str = xml.get( "jid" );
-var resource = JIDUtil.parseResource( jid_str ); //TODO()
-		var groups = new List<String>();
-		for( group in xml.elementsNamed( "group" ) ) groups.add( group.firstChild().nodeValue );
-		var e = new RosterEntry( JIDUtil.parseBar( jid_str ), this );
-		var _subscription = xml.get( "subscription" );
-		if( _subscription != null ) e.subscription = Type.createEnum( Subscription, xml.get( "subscription" ) );
-		e.name = xml.get( "name" );
-		e.presence = null;
-		var _ask = xml.get( "ask" );
-		if( _ask != null ) e.askType = Type.createEnum( AskType, _ask );
-		e.groups = groups;
+	function createRosterEntry( x : Xml ) : RosterEntry {
+		var item = xmpp.RosterItem.parse( x );
+		var e = new RosterEntry( null, this );
+		e.subscription = item.subscription;
+		e.name = item.name;
+		e.askType = item.askType;
+		e.groups = item.groups;
+		//e.presence = null;
 		return e;
-		/*
-		return {
-			roster : this,
-			jid : JIDUtil.parseBarAddress( jid_str ),
-			subscription : RosterItem.getSubscriptionType( xml.get( "subscription" ) ),
-			name : xml.get( "name" ),
-			presence : null,
-			askType : RosterItem.getAskType( xml.get( "ask" ) ),
-			groups : groups,
-			resource : resource //TODO
-		};
-		*/
 	}
 	
 }

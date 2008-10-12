@@ -30,8 +30,17 @@ class IQ extends xmpp.Packet {
 		xmpp.Packet.parseAttributes( iq, x );
 		iq.type = Type.createEnum( IQType, x.get( "type" ) );
 		var ext = x.elements().next();
-		if( ext != null ) iq.ext = new PlainPacket( ext );
-		//TODO parse other properties (any) ..errors
+		if( ext != null ) {
+			iq.ext = new PlainPacket( ext );
+			// TODO test->
+			for( el in x.elements() ) {
+				switch( el.nodeName ) {
+					case "error" : iq.errors.push( el );
+					default : iq.properties.push( el );
+				}
+			}
+			
+		}
 		return iq;
 	}
 	
@@ -45,69 +54,3 @@ class IQ extends xmpp.Packet {
 	}
 	
 }
-
-
-
-/**
-enum IQErrorType {
-	auth;
-	cancel;
-	continue_;
-	modify;
-	wait;
-}
-*/
-
-
-/**
-	IQ error packet extension.
-class IQError {
-
-    public static inline var ERROR_AUTH 	= "auth";
-	public static inline var ERROR_CANCEL 	= "cancel";
-	public static inline var ERROR_CONTINUE = "continue";
-	public static inline var ERROR_MODIFY 	= "modify";
-	public static inline var ERROR_WAIT 	= "wait";
-	
-	
-	public var type : IQErrorType;
-	public var name : String;
-	public var xmlns : String;
-	public var code : Int;
-
-	
-	public function new() {
-		code = -1;
-	}
-	
-	
-	public function toXml() : Xml {
-		//TODO
-		var xml = Xml.createElement( "error" );
-		xml.set( "type", switch( type ) {
-			case auth : ERROR_AUTH;
-			case cancel : ERROR_CANCEL;
-			case continue_ : ERROR_CONTINUE;
-			case modify : ERROR_MODIFY;
-			case wait : ERROR_WAIT;
-		} );
-		xml.set( "xmlns", xmlns );
-		if( code != -1 ) xml.set( "code", Std.string( code ) );
-		return xml;
-	}
-	
-	
-	public static function parse( child : Xml ) : IQError {
-		var error = new IQError();
-		///TODO
-		return error;
-		
-		  <error code='405' type='cancel'>
-    <not-allowed xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
-  </error>
-  
-	}
-	
-}
-
-*/

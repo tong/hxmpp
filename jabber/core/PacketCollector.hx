@@ -1,6 +1,9 @@
 package jabber.core;
 
 
+/**
+	Default IPacketCollector implementation.
+*/
 class PacketCollector implements IPacketCollector {
 	
 	public static var DEFAULT_TIMEOUT = 5;

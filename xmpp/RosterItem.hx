@@ -2,6 +2,15 @@ package xmpp;
 
 import xmpp.Roster;
 
+/*
+typedef TRosterItem = {
+	var jid : String;
+	var subscription : Subscription;
+	var name : String;
+	var askType : AskType;
+	var groups : List<String>;
+}*/
+
 
 class RosterItem {
 	
@@ -43,12 +52,12 @@ class RosterItem {
 	}
 	
 	
-	public static function parse( child : Xml ) : RosterItem {
-		var item = new RosterItem( child.get( "jid" ) );
-		item.subscription = Type.createEnum( Subscription, child.get( "subscription" ) );
-		item.name = child.get( "name" );
-		item.askType = Type.createEnum( AskType, child.get( "ask" ) );
-		for( group in child.elementsNamed( "group" ) ) {
+	public static function parse( x : Xml ) : RosterItem {
+		var item = new RosterItem( x.get( "jid" ) );
+		item.subscription = Type.createEnum( Subscription, x.get( "subscription" ) );
+		item.name = x.get( "name" );
+		if( x.exists( "ask" ) ) item.askType = Type.createEnum( AskType, x.get( "ask" ) );
+		for( group in x.elementsNamed( "group" ) ) {
 			item.groups.add( group.nodeValue );
 		}
 		return item;

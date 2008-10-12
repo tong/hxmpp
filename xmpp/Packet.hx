@@ -20,6 +20,7 @@ class Packet {
 		this.from = from;
 		this.id = id ;
 		this.lang = lang;
+		errors = new Array();
 		properties = new Array();
 	}
 
