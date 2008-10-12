@@ -11,8 +11,8 @@ class Packet {
 	public var from : String;
 	public var id : String;	
 	public var lang : String;
+	public var errors : Array<Xml>;
 	public var properties : Array<Xml>;
-	//error?
 	
 	
 	function new( ?to : String, ?from : String, ?id : String, ?lang : String ) {
@@ -38,17 +38,18 @@ class Packet {
 		return toXml().toString();
 	}
 	
-	
+
 	/**
 		Adds the basic xmpp packet attributes to the xml.
 	*/
-	function addAttributes( src : Xml ) : Xml {
-		if( to != null ) src.set( "to", to );
-		if( from != null ) src.set( "from", from );
-		if( id != null ) src.set( "id", id );
-		if( lang != null ) src.set( "xml:lang", lang );
-		for( p in properties ) src.addChild( p );
-        return src;
+	function addAttributes( x : Xml ) : Xml {
+		if( to != null ) x.set( "to", to );
+		if( from != null ) x.set( "from", from );
+		if( id != null ) x.set( "id", id );
+		if( lang != null ) x.set( "xml:lang", lang );
+		for( p in properties ) x.addChild( p );
+		for( e in errors ) x.addChild( e );
+        return x;
 	}
 	
 	
@@ -64,14 +65,21 @@ class Packet {
 		}
 	}
 	
+		/* TODO
+	static function parseBase( p, x : Xml ) {
+		parseAttributes
+		for( e in errors )
+		for( p in properties ) 
+	}
+	*/
 	/**
 		Parses/adds basic attributes to the packet.
 	*/
-	public static function parseAttributes( p : xmpp.Packet, src : Xml ) : xmpp.Packet {
-		p.to = src.get( "to" );
-		p.from = src.get( "from" );
-		p.id = src.get( "id" );
-		p.lang = src.get( "xml:lang" );
+	public static function parseAttributes( p : xmpp.Packet, x : Xml ) : xmpp.Packet {
+		p.to = x.get( "to" );
+		p.from = x.get( "from" );
+		p.id = x.get( "id" );
+		p.lang = x.get( "xml:lang" );
 		return p;
 	}
 	

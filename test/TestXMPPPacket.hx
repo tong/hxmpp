@@ -21,6 +21,7 @@ class TestXMPPPacket {
 		r.add( new TestMessagePacket() );
 		r.add( new TestPresencePacket() );
 		r.add( new TestIQPacket() );
+		r.add( new TestErrorExtension() );
 		r.run();
 	}
 	
@@ -140,4 +141,17 @@ class TestIQPacket extends haxe.unit.TestCase   {
 //	public function testIQAuth() {
 //	}
 	
+}
+
+
+
+class TestErrorExtension extends haxe.unit.TestCase   {
+	
+	public function testExtension() {
+		var error = xmpp.Error.parse( Xml.parse( '<error type="cancel"><conflict xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>' ).firstElement() );
+		assertEquals( error.type, xmpp.ErrorType.cancel );
+		assertEquals( error.name, "conflict" );
+		assertEquals( error.text, null );
+		
+	}
 }

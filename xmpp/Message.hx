@@ -8,12 +8,6 @@ import util.XmlUtil;
 */
 class Message extends xmpp.Packet {
 	
-	public static var NORMAL = "normal";
-	public static var CHAT = "chat";
-	public static var GROUPCHAT = "groupchat";
-	public static var HEADLINE = "headline";
-	public static var ERROR = "error";
-	
 	public var type : MessageType;
 	public var subject : String;
 	public var body : String;

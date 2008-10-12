@@ -34,22 +34,22 @@ class IQ extends xmpp.Packet {
 	}
 	
 	
-	public static function parse( src : Xml ) : xmpp.IQ {
+	public static function parse( x : Xml ) : xmpp.IQ {
 		var iq = new IQ();
-		xmpp.Packet.parseAttributes( iq, src );
-		iq.type = Type.createEnum( IQType, src.get( "type" ) );
-		var ext = src.elements().next();
+		xmpp.Packet.parseAttributes( iq, x );
+		iq.type = Type.createEnum( IQType, x.get( "type" ) );
+		var ext = x.elements().next();
 		if( ext != null ) iq.ext = new PlainPacket( ext );
-		//TODO parse other properties (any)
+		//TODO parse other properties (any) ..errors
 		return iq;
 	}
 	
 	/**
 		Creates '<query xmlns="namspace"/>' Xml object.
 	*/
-    public static inline function createQuery( namespace : String ) : Xml {
+    public static inline function createQuery( ns : String ) : Xml {
 		var query = Xml.createElement( "query" );
-		query.set( "xmlns", namespace );
+		query.set( "xmlns", ns );
 		return query;
 	}
 	
