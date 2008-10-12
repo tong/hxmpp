@@ -13,7 +13,7 @@ class PacketNameFilter {
 	}
 	
 	public function accept( p : xmpp.Packet ) : Bool {
-		return name == p.toXml().nodeName; //TODO xmpp.Packet.name
+		return name == Type.enumConstructor( p_type );
 	}
 	
 }
