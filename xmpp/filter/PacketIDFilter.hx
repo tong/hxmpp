@@ -12,8 +12,8 @@ class PacketIDFilter {
 		this.id = id;
 	}
 	
-	public function accept( packet : xmpp.Packet ) : Bool {
-		return packet.id == id;
+	public function accept( p : xmpp.Packet ) : Bool {
+		return p.id == id;
 	}
 	
 }

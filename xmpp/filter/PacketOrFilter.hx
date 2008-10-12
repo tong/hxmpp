@@ -13,7 +13,7 @@ class PacketOrFilter extends List<xmpp.PacketFilter> {
 		}
 	}
 	
-	public function accept( packet : xmpp.Packet ) : Bool {
+	public function accept( p : xmpp.Packet ) : Bool {
 		for( f in iterator() ) {
 			if( f.accept( packet ) ) return true;
 		}

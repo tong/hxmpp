@@ -12,8 +12,8 @@ class PacketFromFilter {
 		this.from = from;
 	}
 	
-	public function accept( packet : xmpp.Packet ) : Bool {
-		return packet.from == from;
+	public function accept( p : xmpp.Packet ) : Bool {
+		return p.from == from;
 	}
 	
 }

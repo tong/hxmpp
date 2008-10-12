@@ -1,7 +1,9 @@
 
 import xmpp.Message;
+import xmpp.MessageType;
 import xmpp.Presence;
 import xmpp.IQ;
+import xmpp.IQType;
 
 
 class TestXMPPPacket {

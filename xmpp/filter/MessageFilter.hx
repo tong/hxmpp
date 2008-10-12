@@ -1,7 +1,6 @@
 package xmpp.filter;
 
 import xmpp.PacketType;
-import xmpp.Message;
 import xmpp.MessageType;
 
 
@@ -16,9 +15,9 @@ class MessageFilter {
 		this.type = messageType;
 	}
 	
-	public function accept( packet : xmpp.Packet ) {
-		if( packet._type != PacketType.message ) return false;
-		if( this.type != null ) return this.type == untyped packet.type;
+	public function accept( p : xmpp.Packet ) {
+		if( p._type != PacketType.message ) return false;
+		if( this.type != null ) return this.type == untyped p.type;
 		return true;
 	}
 	

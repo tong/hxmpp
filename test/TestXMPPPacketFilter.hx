@@ -2,8 +2,10 @@
 import xmpp.Packet;
 import xmpp.PacketType;
 import xmpp.Message;
+import xmpp.MessageType;
 import xmpp.Presence;
 import xmpp.IQ;
+import xmpp.IQType;
 import xmpp.filter.MessageFilter;
 import xmpp.filter.PacketAllFilter;
 import xmpp.filter.PacketFromContainsFilter;

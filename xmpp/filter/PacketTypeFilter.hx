@@ -12,7 +12,8 @@ class PacketTypeFilter {
 		this.type = type;
 	}
 	
-	public function accept( packet : xmpp.Packet ) : Bool {
-		return packet._type == type;
+	public function accept( p : xmpp.Packet ) : Bool {
+		return p._type == type;
 	}
+	
 }

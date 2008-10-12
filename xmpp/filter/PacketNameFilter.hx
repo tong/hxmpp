@@ -12,7 +12,8 @@ class PacketNameFilter {
 		this.name = name;
 	}
 	
-	public function accept( packet  : xmpp.Packet ) : Bool {
-		return name == packet.toXml().nodeName; //TODO xmpp.Packet.name
+	public function accept( p : xmpp.Packet ) : Bool {
+		return name == p.toXml().nodeName; //TODO xmpp.Packet.name
 	}
+	
 }

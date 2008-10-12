@@ -6,5 +6,6 @@ import jabber.client.MUChat;
 import jabber.StreamSocketConnection;
 import jabber.client.Roster;
 import jabber.component.Stream;
+import jabber.Lib;
 
 class ImportAll { static function main() {} }
