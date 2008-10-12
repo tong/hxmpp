@@ -21,10 +21,11 @@ class IQ extends xmpp.Packet {
 
 	
 	public override function toXml(): Xml {
-		if( id == null ) throw "Invalid IQ packet, no id";
+//		if( id == null ) throw "Invalid IQ packet, no id";
+		
 		if( type == null ) type = xmpp.IQType.get;
 		var xml = super.addAttributes( Xml.createElement( "iq" ) );
-		xml.set( "type", getTypeString( type ) );
+		xml.set( "type", Type.enumConstructor( type ) );
 		xml.set( "id", id );
 		if( ext != null ) xml.addChild( ext.toXml() );
 //TODO	if( error != null ) xml.addChild( error.toXml() );
@@ -36,7 +37,7 @@ class IQ extends xmpp.Packet {
 	public static function parse( src : Xml ) : xmpp.IQ {
 		var iq = new IQ();
 		xmpp.Packet.parseAttributes( iq, src );
-		iq.type = getType( src.get( "type" ) );
+		iq.type = Type.createEnum( IQType, src.get( "type" ) );
 		var ext = src.elements().next();
 		if( ext != null ) iq.ext = new PlainPacket( ext );
 		//TODO parse other properties (any)
@@ -50,24 +51,6 @@ class IQ extends xmpp.Packet {
 		var query = Xml.createElement( "query" );
 		query.set( "xmlns", namespace );
 		return query;
-	}
-	
-	public static inline function getType( s : String ) : xmpp.IQType {
-		return switch( s ) {
-			case GET : xmpp.IQType.get;
-			case SET : xmpp.IQType.set;
-			case RESULT : xmpp.IQType.result;
-			case ERROR : xmpp.IQType.error;
-		};
-	}
-	
-	public static inline function getTypeString( s : xmpp.IQType ) : String {
-		return switch( s ) {
-			case get : GET;
-			case set : SET;
-			case result : RESULT;
-			case error : ERROR;
-		};
 	}
 	
 }

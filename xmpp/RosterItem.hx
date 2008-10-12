@@ -24,11 +24,12 @@ class RosterItem {
 	
 	
 	public function toXml() : Xml {
+		if( jid == null ) throw "Invalid roster item";
 		var xml = Xml.createElement( "item" );
-		if( jid != null ) xml.set( "jid", jid );
+		xml.set( "jid", jid );
 		if( name != null ) xml.set( "name", name );
-		if( subscription != null ) xml.set( "subscription", getSubscriptionString( subscription ) );
-		if( askType != null ) xml.set( "ask", getAskTypeString( askType ) );
+		if( subscription != null ) xml.set( "subscription", Type.enumConstructor( subscription ) );
+		if( askType != null ) xml.set( "ask", Type.enumConstructor( askType ) );
 		for( group in groups ) {
 			var g = Xml.createElement( "group" );
 			g.addChild( Xml.createPCData( group ) );
@@ -44,16 +45,16 @@ class RosterItem {
 	
 	public static function parse( child : Xml ) : RosterItem {
 		var item = new RosterItem( child.get( "jid" ) );
-		item.subscription = getSubscriptionType( child.get( "subscription" ) );
+		item.subscription = Type.createEnum( Subscription, child.get( "subscription" ) );
 		item.name = child.get( "name" );
-		item.askType = getAskType( child.get( "ask" ) );
-		//TODO
+		item.askType = Type.createEnum( AskType, child.get( "ask" ) );
 		for( group in child.elementsNamed( "group" ) ) {
 			item.groups.add( group.nodeValue );
 		}
 		return item;
 	}
 	
+	/*
 	public inline static function getSubscriptionString( s : Subscription ) : String {
 		return switch( s ) {
 			case Subscription.none 	 : "none";
@@ -89,5 +90,6 @@ class RosterItem {
 			default : null;
 		}
 	}
+	*/
 	
 }

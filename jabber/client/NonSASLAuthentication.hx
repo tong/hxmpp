@@ -10,14 +10,13 @@ class NonSASLAuthentication {
 	public var stream(default,null) : Stream;
 	public var usePlainText : Bool;
 	public var authenticating(default,null) : Bool;
-	
-	var username : String;
-	var password : String;
-	var resource : String;
+	public var username(default,null) : String;
+	public var password(default,null) : String;
+	public var resource(default,null) : String;
 
 
 	public function new( stream : Stream, ?usePlainText : Bool,
-										  ?onSuccess : Stream->Void, ?onFailed : Stream->Void ) {
+						 ?onSuccess : Stream->Void, ?onFailed : Stream->Void ) {
 	
 		this.stream = stream;
 		this.usePlainText = ( usePlainText != null ) ? usePlainText : false;
@@ -30,8 +29,12 @@ class NonSASLAuthentication {
 	}
 
 
-	public dynamic function onSuccess( stream : Stream ) { /* i am yours */ }
-	public dynamic function onFailed( stream : Stream ) { /* i am yours */ }
+	public dynamic function onSuccess( s : Stream ) {
+		// i am yours.
+	}
+	public dynamic function onFailed( s : Stream ) {
+		// i am yours.
+	}
 
 	public function authenticate( password : String, ?resource : String ) {
 		if( authenticating ) throw "Authentication already in progress";
@@ -44,15 +47,24 @@ class NonSASLAuthentication {
 	}
 	
 	
-	function handleResponse( response : xmpp.IQ ) {
-		switch( response.type ) {
+	function handleResponse( r : IQ ) {
+		switch( r.type ) {
 			case xmpp.IQType.result :
-				var hasDigest = false;
-				for( c in response.ext.toXml().elementsNamed( "digest" ) ) { hasDigest = true; break; }
+				var q = xmpp.Auth.parse( r.ext.toXml() );
 				var iq = new xmpp.IQ( xmpp.IQType.set );
-				iq.ext = if( !usePlainText && hasDigest ) new xmpp.Auth( username, null, crypt.SHA1.encode( stream.id + password ), resource );
+				iq.ext = if( q.digest != null ) new xmpp.Auth( username, null, crypt.SHA1.encode( stream.id + password ), resource );
 				else new xmpp.Auth( username, password, null, resource );
 				stream.sendIQ( iq, handleResult );
+			/*
+				var hasDigest = false;
+				if( !usePlainText ) {
+					for( c in response.ext.toXml().elementsNamed( "digest" ) ) { hasDigest = true; break; }
+				}
+				var iq = new xmpp.IQ( xmpp.IQType.set );
+				iq.ext = if( hasDigest ) new xmpp.Auth( username, null, crypt.SHA1.encode( stream.id + password ), resource );
+				else new xmpp.Auth( username, password, null, resource );
+				stream.sendIQ( iq, handleResult );
+				*/
 			default : 
 				authenticating = false;
 				onFailed( stream );

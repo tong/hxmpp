@@ -80,14 +80,14 @@ class TestPresencePacket extends haxe.unit.TestCase   {
 		var p = new xmpp.Presence();
 		
 		assertEquals( p.toString(), '<presence/>' );
-		p.type = "available";
-		assertEquals( p.toString(), '<presence type="available"/>' );
+		p.type = xmpp.PresenceType.subscribe;
+		assertEquals( p.toString(), '<presence type="subscribe"/>' );
 		p.show = "dnd";
-		assertEquals( p.toString(), '<presence type="available"><show>dnd</show></presence>' );
+		assertEquals( '<presence type="subscribe"><show>dnd</show></presence>', p.toString() );
 		p.status = "be right back";
-		assertEquals( p.toString(), '<presence type="available"><show>dnd</show><status>be right back</status></presence>' );
+		assertEquals( '<presence type="subscribe"><show>dnd</show><status>be right back</status></presence>', p.toString() );
 		p.priority = 5;
-		assertEquals( p.toString(), '<presence type="available"><show>dnd</show><status>be right back</status><priority>5</priority></presence>' );
+		assertEquals( '<presence type="subscribe"><show>dnd</show><status>be right back</status><priority>5</priority></presence>', p.toString() );
 		
 	}
 	

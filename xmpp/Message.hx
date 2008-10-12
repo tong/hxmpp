@@ -32,18 +32,16 @@ class Message extends xmpp.Packet {
     
     public override function toXml() : Xml {
     	var xml = super.addAttributes( Xml.createElement( "message" ) );
-		if( type != null ) 		xml.set( "type", getTypeString( type ) );
-		if( subject != null ) 	xml.addChild( XmlUtil.createElement( "subject", subject ) );
-		if( body != null ) 		xml.addChild( XmlUtil.createElement( "body", body ) );
-//TODO	if( error != null ) 	xml.addChild( XmlUtil.createElement( "error", error ) );
-//TODO	if( html != null ) 		xml.addChild( XmlUtil.createElement( "html", html ) );
-		if( thread != null ) 	xml.addChild( XmlUtil.createElement( "thread", thread ) );
+		if( type != null ) 	  xml.set( "type", Type.enumConstructor( type ) );
+		if( subject != null ) xml.addChild( XmlUtil.createElement( "subject", subject ) );
+		if( body != null ) 	  xml.addChild( XmlUtil.createElement( "body", body ) );
+		if( thread != null )  xml.addChild( XmlUtil.createElement( "thread", thread ) );
 		return xml;
     }
     
     
     public static function parse( src : Xml ) : xmpp.Message {
-    	var m = new Message( getType( src.get( "type" ) ) );
+    	var m = new Message( Type.createEnum( xmpp.MessageType, src.get( "type" ) ) );
    		xmpp.Packet.parseAttributes( m, src );
    		for( child in src.elements() ) {
 			switch( child.nodeName ) {
@@ -56,24 +54,4 @@ class Message extends xmpp.Packet {
    		return m;
 	}
     
-    public static inline function getType( p : String ) : xmpp.MessageType {
-		return switch( p ) {
-			case NORMAL : xmpp.MessageType.normal;
-			case CHAT : xmpp.MessageType.chat;
-			case GROUPCHAT : xmpp.MessageType.groupchat;
-			case HEADLINE : xmpp.MessageType.headline;
-			case ERROR : xmpp.MessageType.error;
-		}
-	}
-	
-	public static inline function getTypeString( t : MessageType ) : String {
-		return switch( t ) {
-			case normal : NORMAL;
-			case chat : CHAT;
-			case groupchat : GROUPCHAT;
-			case headline : HEADLINE;
-			case error : ERROR;
-		}
-	}
-	
 }

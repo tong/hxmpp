@@ -18,7 +18,7 @@ import jabber.event.RosterEvent;
 */
 private class PresenceManager {
 	
-	public var type(getType,setShow) : String;
+	public var type(getType,setType) : xmpp.PresenceType;
 	public var show(getShow,setShow) : String;
 	public var status(getStatus,setShow) : String;
 	public var priority(getPriority,setPriority) : Int;
@@ -31,8 +31,8 @@ private class PresenceManager {
 		p = new xmpp.Presence();
 	}
 	
-	function getType() : String { return p.type; }
-	function setType( v : String ) : String {
+	function getType() : xmpp.PresenceType { return p.type; }
+	function setType( v : xmpp.PresenceType ) : xmpp.PresenceType {
 		if( v == p.type ) return v;
 		p.type = v;
 		stream.sendPacket( p );
@@ -71,7 +71,7 @@ private class PresenceManager {
 	/**
 		Change the presence by changing presence values.
 	*/
-	public function change( ?type : String, ?show : String, ?status : String, ?priority : Int ) {
+	public function change( ?type : xmpp.PresenceType, ?show : String, ?status : String, ?priority : Int ) {
 		p = new xmpp.Presence();
 		if( type != p.type ) p.type = type;
 		if( show != p.show ) p.show = show;
@@ -250,10 +250,12 @@ class Roster {
 		Sets presence of all roster contacts to offline.
 	*/
 	public function setPresencesOffline() {
+		/*TODO
 		for( entry in entries ) {
-			entry.presence.type = "offline";//Presence.OFFLINE;
+			entry.presence.type = xmpp.PresenceType.offline;
 			onPresence( entry );
 		}
+		*/
 	}
 	
 	/**
@@ -275,7 +277,7 @@ class Roster {
 	
 	/**
 	*/
-	public function getEntriesWithPresence( type : String ) : List<RosterEntry> {
+	public function getEntriesWithPresence( type : xmpp.PresenceType ) : List<RosterEntry> {
 		var list = new List<RosterEntry>();
 		for( entry in entries ) {
 			if( entry.presence.type == type ) list.add( entry );
@@ -354,7 +356,7 @@ class Roster {
 		} else {
 			trace("PRESENCE FROM NEW USER");
 			
-			if( presence.type == "subscribe" ) {
+			if( presence.type == xmpp.PresenceType.subscribe ) {
 				switch( subscriptionMode ) {
 				
 					case rejectAll :
@@ -375,8 +377,8 @@ class Roster {
 						//..
 						//onPresence( entry );
 				}
-			} else if( presence.type == "unsubscribed" ) {
-				
+			} else if( presence.type == xmpp.PresenceType.unsubscribed ) {
+				//TODO
 			}
 			//...
 			
@@ -392,10 +394,12 @@ var resource = JIDUtil.parseResource( jid_str ); //TODO()
 		var groups = new List<String>();
 		for( group in xml.elementsNamed( "group" ) ) groups.add( group.firstChild().nodeValue );
 		var e = new RosterEntry( JIDUtil.parseBar( jid_str ), this );
-		e.subscription = xmpp.RosterItem.getSubscriptionType( xml.get( "subscription" ) );
+		var _subscription = xml.get( "subscription" );
+		if( _subscription != null ) e.subscription = Type.createEnum( Subscription, xml.get( "subscription" ) );
 		e.name = xml.get( "name" );
 		e.presence = null;
-		e.askType = xmpp.RosterItem.getAskType( xml.get( "ask" ) );
+		var _ask = xml.get( "ask" );
+		if( _ask != null ) e.askType = Type.createEnum( AskType, _ask );
 		e.groups = groups;
 		return e;
 		/*

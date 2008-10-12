@@ -34,14 +34,15 @@ class TestXMPPPacketFilter {
 class TestFilters extends haxe.unit.TestCase {
 	
 	public function testMessageTypeFilter() {
+		
 		var f = new MessageFilter();
 		assertTrue( !f.accept( new Presence() ) );
 		assertTrue( !f.accept( new IQ() ) );
 		assertTrue( f.accept( new Message() ) );
-		assertTrue( !f.accept( new Message( chat ) ) );
-		assertTrue( !f.accept( new Message( error ) ) );
-		assertTrue( !f.accept( new Message( groupchat ) ) );
-		assertTrue( !f.accept( new Message( headline ) ) );
+		assertTrue( f.accept( new Message( chat ) ) );
+		assertTrue( f.accept( new Message( error ) ) );
+		assertTrue( f.accept( new Message( groupchat ) ) );
+		assertTrue( f.accept( new Message( headline ) ) );
 		f = new MessageFilter( chat );
 		assertTrue( f.accept( new Message( chat ) ) );
 		assertTrue( !f.accept( new Message() ) );
