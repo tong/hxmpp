@@ -2,15 +2,12 @@ package jabber;
 
 import jabber.core.PacketCollector;
 import xmpp.Message;
-import xmpp.filter.MessageFilter;
 
 
 /**
 	Shortcut utility to simplify listening for incoming (normal type) message packets.
 */
 class MessageListener {
-	
-	static var streamJids = new List<String>;
 	
 	/**
 		Activates/Deactivates collecting message packets.
@@ -21,20 +18,11 @@ class MessageListener {
 	var collector : PacketCollector;
 	
 	
-	/**
-		Create a new Message listeners, throws an error if a listeners got already added to the stream.
-	*/
 	public function new( stream : Stream, ?listen : Bool = true ) {
-		
-		for( jid in streamJids ) {
-			if( jid == stream.jid.bar ) {
-				return null;
-			}
-		}
 		
 		this.stream = stream;
 		
-		collector = new PacketCollector( [cast new MessageFilter()], onMessageTest, true );
+		collector = new PacketCollector( [cast new xmpp.filter.MessageFilter()], onMessageTest, true );
 		setListening( listen );
 	}
 	

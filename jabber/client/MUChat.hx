@@ -4,12 +4,28 @@ import jabber.core.PacketCollector;
 import jabber.muc.Affiliation;
 import jabber.muc.Peer;
 import jabber.muc.Role;
+import jabber.muc.Occupant;
 import xmpp.Message;
 import xmpp.MessageType;
 import xmpp.PacketType;
 import xmpp.filter.MessageFilter;
 import xmpp.filter.PacketFromContainsFilter;
 import xmpp.filter.PacketTypeFilter;
+
+
+/*
+private class PresenceManager {
+	
+	public function new() {
+	}
+	
+}
+
+class Occupant extends jabber.muc.Occupant {
+	
+}
+
+*/
 
 
 /**
@@ -27,8 +43,10 @@ class MUChat {
 	public var jid(default,null) : String;
 	public var joined(default,null)	: Bool;
 	public var me(default,null) : jabber.muc.Peer;
+	//public var presence : PresenceManager;
 	public var myJid(default,null) : String;
-	public var peers(default,null) : List<jabber.muc.Peer>;
+	//public var peers(default,null) : List<jabber.muc.Peer>;
+	public var occupants : Array<jabber.muc.Occupant>;
 	//public var history(default,null) : Array<MUChatMessage>;
 	public var historySize(default,setHistorySize) : Int;
 	
@@ -59,7 +77,7 @@ class MUChat {
 		me = { nickname : null,
 			   presence : new xmpp.Presence( "offline" ),
 			   role : null, affiliation : null };
-		peers = new List();
+		occupants = new Array();
 		message = new Message( MessageType.groupchat, jid );
 		
 		// collect all presences and messages from the room jid
@@ -79,7 +97,7 @@ class MUChat {
 	
 	public dynamic function onJoin( muc : jabber.client.MUChat ) {}
 	public dynamic function onMessage( m ) {}
-	public dynamic function onPresence( peer : jabber.muc.Peer ) {}
+	public dynamic function onPresence( occupant : jabber.muc.Occupant ) {}
 	
 	
 	/**
@@ -118,9 +136,11 @@ class MUChat {
 	}
 	
 	#if JABBER_DEBUG
+	
 	public function toString() : String {
-		return "MUChat()";
+		return "MUChat("+jid+")";
 	}
+	
 	#end
 	
 	
@@ -134,6 +154,7 @@ class MUChat {
 	
 	function handlePresence( p : xmpp.Presence ) {
 		switch( p.from ) {
+			
 			case myJid :
 				switch( p.type ) {
 					case "unavailable" : 
@@ -144,26 +165,30 @@ class MUChat {
 						}
 					onJoin( this );
 				}
-				
+			case jid :
+				trace("TODO process presence from room.");
+			
 			default : // process occupant presence
 				var from = parseName( p.from );
-				var peer = getPeer( from );
-				if( peer == null ) { // new occupant
-					peer = { nickname : from, presence : p, role : null, affiliation : null };
-					peers.add( peer );
+				var occupant = getOccupant( from );
+				if( occupant == null ) { // new occupant
+					//
+					occupant = new Occupant();//{ nickname : from, presence : p, role : null, affiliation : null };
+					
+					occupants.push( occupant );
 				} else { // update existing occupant
-					peer = { nickname : from, presence : p, role : null, affiliation : null };
+					occupant = new Occupant();//{ nickname : from, presence : p, role : null, affiliation : null };
 				}
 				var x = parsePresenceX( p );
 				if( x != null ) {
-					if( x.role != null ) peer.role = x.role;
-					if( x.affiliation != null ) peer.affiliation = x.affiliation;
+					if( x.role != null ) occupant.role = x.role;
+					if( x.affiliation != null ) occupant.affiliation = x.affiliation;
 				}
-				onPresence( peer );
+				onPresence( occupant );
 		}
 	}
 	
-	
+	// TODO all namespaces
 	function parsePresenceX( p : xmpp.Presence ) : { role : Role, affiliation : Affiliation } {
 		var role : Role = null;
 		var affiliation : Affiliation = null;
@@ -205,8 +230,8 @@ class MUChat {
 		return { role : role , affiliation : affiliation };
 	}
 	
-	function getPeer( nickname : String ) : jabber.muc.Peer {
-		for( p in peers ) if( p.nickname == nickname ) return p;
+	function getOccupant( nick : String ) : jabber.muc.Occupant {
+		for( o in occupants ) if( o.nick == nick ) return o;
 		return null;
 	}
 	

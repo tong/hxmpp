@@ -9,6 +9,7 @@ function toggle(id) {
 	return false;
 }
 </script>
+
 <style type="text/css">
 body {
 	text-align: left;
@@ -60,11 +61,16 @@ a.package {
 	color : #6CC8EF;
 }
 
+img {
+	border:0px none;
+}
+
 .index {
 	margin-left : 0px;
 }
 
 .kwd {
+	margin-left : 2px;
 	color : #6CC8EF;
 }
 
@@ -78,7 +84,7 @@ a.package {
 }
 
 .classdoc {
-	border : 1px dashed #666;
+	/*border : 1px dashed #666;*/
 	margin-left : 0px;
 	margin-right : 20px;
 	padding : 5 5 5 5;
@@ -97,7 +103,7 @@ dd {
 }
 
 dt {
-	margin-left : 0px;
+	margin-left : 7px;
 	margin-bottom :0px;
 	text-align : left;
 	font-size : 8pt;
@@ -105,6 +111,7 @@ dt {
 }
 
 </style>
+
 </head>
 <body>
 <div class="document">
