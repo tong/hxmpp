@@ -2,7 +2,6 @@ package jabber.client;
 
 import jabber.core.PacketCollector;
 import jabber.muc.Affiliation;
-import jabber.muc.Peer;
 import jabber.muc.Role;
 import jabber.muc.Occupant;
 import xmpp.Message;
@@ -42,7 +41,7 @@ class MUChat {
 	public var stream(default,null) : jabber.client.Stream;
 	public var jid(default,null) : String;
 	public var joined(default,null)	: Bool;
-	public var me(default,null) : jabber.muc.Peer;
+	public var me(default,null) : jabber.muc.Occupant;
 	//public var presence : PresenceManager;
 	public var myJid(default,null) : String;
 	//public var peers(default,null) : List<jabber.muc.Peer>;
@@ -74,9 +73,8 @@ class MUChat {
 		*/
 		
 		joined = false;
-		me = { nickname : null,
-			   presence : new xmpp.Presence( "offline" ),
-			   role : null, affiliation : null };
+		me = new Occupant();
+		me.presence = new xmpp.Presence( xmpp.PresenceType.unavailable );   
 		occupants = new Array();
 		message = new Message( MessageType.groupchat, jid );
 		
@@ -106,7 +104,7 @@ class MUChat {
 	public function join( nickname : String, ?password : String ) {
 		if( joined ) return;
 		if( nickname == null || nickname.length == 0 ) throw "Nickname must be not null or blank";
-		me.nickname = nickname;
+		me.nick = nickname;
 		myJid = jid + "/" + nickname;
 		var  p = new xmpp.Presence();
 		p.to = myJid;
