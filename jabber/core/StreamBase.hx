@@ -43,13 +43,16 @@ class StreamBase {
 	
 	
 	function setConnection( c : StreamConnection ) : StreamConnection {
-		if( status == StreamStatus.open || status == StreamStatus.pending ) close( true );
-		if( connection != null && connection.connected ) connection.disconnect(); 
-		connection = c;
-		connection.onConnect = connectHandler;
-		connection.onDisconnect = disconnectHandler;
-		connection.onData = processData;
-		connection.onError = errorHandler;
+		switch( status ) {
+			case open, pending : close( true );
+			case closed :
+				if( connection != null && connection.connected ) connection.disconnect(); 
+				connection = c;
+				connection.onConnect = connectHandler;
+				connection.onDisconnect = disconnectHandler;
+				connection.onData = processData;
+				connection.onError = errorHandler;
+		}
 		return connection;
 	}
 	
@@ -69,11 +72,11 @@ class StreamBase {
 	*/
 	public function open() : Bool {
 		switch( status ) {
-			case open, pending : return false;
 			case closed :
 				if( !connection.connected ) connection.connect();
 				else connectHandler();
 				return true;
+			default : return false;
 		}
 	}
 	
@@ -146,27 +149,27 @@ class StreamBase {
 			case closed : return;
 			
 			case pending :
+			
 				#if JABBER_DEBUG
 				onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, d, true ) );
 				#end
+				
 				d = util.XmlUtil.removeXmlHeader( d );
 				processStreamInit( d );
 				
 			case open :
 				//TODO
 				//var s = "</stream:stream>";
-				var r = new EReg( "stream:stream", "" );
+				var r = new EReg( "/stream:stream", "" );
 				if( r.match( d ) ) {
-					trace( d );
+					trace( "STREAM CLOSE: "+d );
 					return;
 				}
-				//TODO
 				var r = new EReg( "stream:error", "" );
 				if( r.match( d ) ) {
-					trace( d );
+					trace( "STREAM CLOSE: "+d );
 					return;
 				}
-				//TODO
 				
 				var x : Xml = null;
 				try {
@@ -198,36 +201,30 @@ class StreamBase {
 	function collectPackets( data : Xml ) : Array<xmpp.Packet> {
 		var packets = new Array<xmpp.Packet>();
 		for( xml in data.elements() ) {
-			var packet : Dynamic = null;
+			var p : Dynamic = null;
 			try {
-				packet = xmpp.Packet.parse( xml );
+				p = xmpp.Packet.parse( xml );
 			} catch( e : Dynamic ) {
 				throw "Error parsing XMPP packet: "+xml;
 			} 
-			packets.push( packet );
+			packets.push( p );
 			var collected = false;
 			for( c in collectors ) {
-				if( c.accept( packet ) ) {
+				if( c.accept( p ) ) {
 					collected = true;
 					#if JABBER_DEBUG
-					onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, packet.toString(), true ) );
+					onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, p.toString(), true ) );
 					#end
-					c.deliver( packet );
+					c.deliver( p );
+					if( c.block ) break;
 					if( !c.permanent ) {
 						collectors.remove( c );
 						c = null; // gc
-					}
-					/*
-					if( c.block ) {
-						//TODO
-						trace("COLLECTING BLOCKED");
-						return packets;
-					}
-					*/
+					}					
 				}
 			}
 			#if JABBER_DEBUG
-			if( !collected ) trace( "WARNING, xmpp packet not processed: "+packet );
+			if( !collected ) trace( "WARNING, xmpp packet not processed: "+p );
 			#end
 		}
 		return packets;

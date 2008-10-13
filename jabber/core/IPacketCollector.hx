@@ -2,9 +2,7 @@ package jabber.core;
 
 
 /**
-	// TODO: remove ?
 */
-
 interface IPacketCollector {
 	
 	/**

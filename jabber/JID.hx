@@ -19,7 +19,6 @@ import jabber.util.JIDUtil;
 */
 class JID {
 	
-	//TODO MAX_PART_SIZE
 	public static inline var MAX_PART_SIZE = 1023;
 	
 	public var node(default,null) : String;
@@ -33,7 +32,7 @@ class JID {
 	
 	public function new( str : String ) {
 		
-// TEMP TODO: local jid - domains !!
+//TODO: local jid - domains !!
 //		if( !JIDUtil.isValid( str ) ) throw "Invalid JID: " + str; temp for local testing -> domain(.net)
 		
 		this.node = JIDUtil.parseNode( str );

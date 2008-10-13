@@ -1,8 +1,7 @@
 package jabber.muc;
 
 
-/*TODO
-class Occupant extends Peer {
+class Occupant {
 	
 	public var nick : String;
 	public var jid : String;
@@ -12,21 +11,5 @@ class Occupant extends Peer {
 	
 	public function new() {
 	}
-	
-}
-*/
-
-
-typedef Peer = {
-	
-	var nickname : String;
-	
-	var presence : xmpp.Presence;
-	
-	var role : Role;
-	
-	var affiliation : Affiliation;
-	
-	//var room : RoomInfo;
 	
 }

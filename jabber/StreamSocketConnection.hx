@@ -14,16 +14,6 @@ import php.net.Host;
 import php.net.Socket;
 #end
 
-/*
-#if ( neko || php )
-private typedef Connection = {
-	//var data : String;
-	var buf : haxe.io.Bytes;
-	var bufpos : Int;
-}
-#end
-*/
-
 // TODO socket handling
 
 //TODO
@@ -160,15 +150,14 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		try {
 			data = socket.readUTFBytes( e.bytesLoaded );
 		} catch( e : Dynamic ) {
-			//TODO
+			trace( e );
 		}
 		dataHandler( data );
 	}
 	
 	#elseif ( neko || php )
 	
-	// TODO replace by net.ClientSocketManager
-	// or think over handling socket at application level.
+	// TODO replace by net.ClientSocketManager, .. handle socket at application level ?, or utility class ?.
 	function readData() {
 		var nbytes = socket.input.readBytes( buf, bufpos, buf.length );
 		data += buf.readString( 0, nbytes );
