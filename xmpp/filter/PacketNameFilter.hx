@@ -2,7 +2,7 @@ package xmpp.filter;
 
 
 /**
-	Filters (custom) packets with given xml nodename.
+	Filters (custom) packets with given nodename.
 */
 class PacketNameFilter {
 	

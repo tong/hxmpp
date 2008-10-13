@@ -81,10 +81,10 @@ typedef Org = {
 */
 class VCard {
 	
-	public static inline var NODENAME = "vCard";
-	public static inline var XMLNS 	  = "vcard-temp";
-	public static inline var PRODID   = "-//HandGen//NONSGML vGen v1.0//EN";
-	public static inline var VERSION  = "2.0";
+	public static var NODENAME = "vCard";
+	public static var XMLNS    = "vcard-temp";
+	public static var PRODID   = "-//HandGen//NONSGML vGen v1.0//EN";
+	public static var VERSION  = "2.0";
 	
 	public var fullName 	: String;
 	public var name 		: Name;
@@ -243,10 +243,10 @@ class VCard {
 			switch( node.nodeName ) {
 				case "FN" : vc.fullName = node.firstChild().nodeValue;
 				case "N" :
-					vc.name = {family:null,given:null,middle:null,prefix:null,suffix:null};
+					vc.name = { family:null, given:null, middle:null, prefix:null, suffix:null };
 					for( n in node.elements() ) {
 						var value : String = null;
-						try {  value = n.firstChild().nodeValue; } catch( e : Dynamic ) {}
+						try { value = n.firstChild().nodeValue; } catch( e : Dynamic ) {}
 						if( value != null ) {
 							switch( n.nodeName ) {
 								case "FAMILY" : vc.name.family = value;
@@ -286,6 +286,7 @@ class VCard {
 					vc.addresses.push( adr );
 				case "LABEL" :
 					//TODO
+					trace("Missing implementation fro vcard label.");		
 				case "LINE" : vc.line = node.firstChild().nodeValue;
 				case "TEL" :
 					var tel : Tel = untyped {};
@@ -345,7 +346,9 @@ class VCard {
 				case "TITLE" : vc.title = node.firstChild().nodeValue;
 				case "ROLE" : vc.role = node.firstChild().nodeValue;
 				case "LOGO" : vc.logo = parsePhoto( node );
-				//TODO AGENT
+				case "AGENT" :
+					//TODO
+					trace("Missing implementation fro vcard agent.");
 				case "ORG" :
 					vc.org = untyped {};
 					for( n in node.elements() ) {

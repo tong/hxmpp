@@ -10,7 +10,6 @@ import xmpp.Packet;
 */
 class Presence extends Packet {
 	
-	//public var type : String; 	//public var type : PresenceType; //TODO
    	public var type : PresenceType;
    	public var show : String;
     public var status : String;

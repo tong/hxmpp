@@ -22,12 +22,12 @@ class MessageListener {
 		
 		this.stream = stream;
 		
-		collector = new PacketCollector( [cast new xmpp.filter.MessageFilter()], onMessageTest, true );
+		collector = new PacketCollector( [untyped new xmpp.filter.MessageFilter()], onMessageTest, true );
 		setListening( listen );
 	}
 	
 
-	public dynamic function onMessage( m : xmpp.Message ) : Void {}
+	public dynamic function onMessage( m : xmpp.Message ) : Void { /**/ }
 
 	
 	function setListening( v : Bool ) : Bool {

@@ -19,7 +19,7 @@ class Stream extends jabber.core.StreamBase {
 	
 	public var server(default,null) : String;
 	public var password(default,null) : String;
-	public var service(default,null) : ServiceDiscovery;
+	//public var service(default,null) : ServiceDiscovery;
 	
 	
 	public function new( server : String, password : String, connection : jabber.core.StreamConnection ) {
@@ -59,7 +59,7 @@ class Stream extends jabber.core.StreamBase {
 	}
 	
 	function handshakeResponseHandler( p : xmpp.Packet ) {
-		service = new ServiceDiscovery( this );
+//		service = new ServiceDiscovery( this );
 		//service.listenInfoRequests = true;
 	}
 	

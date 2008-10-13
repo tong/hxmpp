@@ -10,8 +10,6 @@ import xmpp.IQType;
 import xmpp.Roster;
 import xmpp.filter.PacketTypeFilter;
 
-import jabber.event.RosterEvent;
-
 
 /**
 	Wrapper for handling users presence.
@@ -318,9 +316,9 @@ class Roster {
 					onAvailable( this );
 					//change( new RosterEvent( stream, RosterEventType.available( this ) ) );
 				}
-				if( added.length > 0 )   onAdd( added );//change( new RosterEvent( stream, RosterEventType.added( added ) ) ); //onAdd( added );
-				if( updated.length > 0 ) onUpdate( updated );//change( new RosterEvent( stream, RosterEventType.updated( updated ) ) );//onUpdate( updated );
-				if( removed.length > 0 ) onRemove( removed );//change( new RosterEvent( stream, RosterEventType.removed( removed ) ) );//onRemove( removed );
+				if( added.length > 0 )   onAdd( added );
+				if( updated.length > 0 ) onUpdate( updated );
+				if( removed.length > 0 ) onRemove( removed );
 			
 			default :
 				// TODO

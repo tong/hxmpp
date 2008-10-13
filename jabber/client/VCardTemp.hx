@@ -1,17 +1,18 @@
 package jabber.client;
 
-import jabber.event.VCardEvent;
-import xmpp.IQ;
-import xmpp.IQType;
-import xmpp.VCard;
 
-
+/**
+	Event, dispatched on vcard load or update.
+*/
 class VCardEvent extends xmpp.VCard {
 	
+	public var from(default,null) : String;
 	public var stream(default,null) : Stream;
 	
-	public function new( stream : Stream ) {
+	public function new( stream : Stream, from : String ) {
 		super();
+		this.stream = stream;
+		this.from = from;
 	}
 	
 }
@@ -23,11 +24,9 @@ class VCardEvent extends xmpp.VCard {
 class VCardTemp {
 	
 	public var stream(default,null) : Stream;
-	public var loaded(default,null) : { from:String, data:VCard };
-	public var updated(default,null) : VCard;
 	
-	var iq_load	: IQ;
-	var iq_update : IQ;
+	var iq_load	: xmpp.IQ;
+	var iq_update : xmpp.IQ;
 	
 	
 	public function new( stream : Stream ) {
@@ -35,12 +34,10 @@ class VCardTemp {
 		this.stream = stream;
 		//stream.features.add( this );
 		
-		iq_load = new IQ();
-		iq_load.ext = new VCard();
-		
-		iq_update = new IQ( IQType.set, null, stream.jid.domain );
-		
-		//TODO collect/handle incoming vcard requests (?)
+		iq_load = new xmpp.IQ();
+		iq_load.ext = new xmpp.VCard();
+		iq_update = new xmpp.IQ( xmpp.IQType.set, null, stream.jid.domain );
+		// collect/handle incoming vcard requests (?) jabber.VCardTempListener ?
 	}
 	
 	
@@ -72,21 +69,24 @@ class VCardTemp {
 	function handleLoad( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 			case result :
-				trace("RRRRESULT");
-				//loaded = {from:iq.from, data:VCard.parse( iq.ext.toXml() ) };
-				var e = new VCardEvent( stream );
-				e.injectData( iq.ext.toXml() ); //TODO
+				//TODO
+				trace("VCARD RESULT");
+				var e = new VCardEvent( stream, iq.from );
+				e.injectData( iq.ext.toXml() );
 				onLoad( e );
 				
 			case error :
 				//TODO
+				//stream.onError.?
+				
 			default : //#
 		}
 	}
 	
-	function handleUpdate( iq : IQ ) {
+	function handleUpdate( iq : xmpp.IQ ) {
 		switch( iq.type ) {
-			case result : //onUpdate.dispatchEvent( { from : iq.from, data : IQVCard.parse( iq.extension.toXml() ) } );
+			case result :
+				//onUpdate.dispatchEvent( { from : iq.from, data : IQVCard.parse( iq.extension.toXml() ) } );
 			case error :
 				//TODO
 			default : //

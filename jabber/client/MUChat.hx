@@ -21,22 +21,19 @@ private class PresenceManager {
 }
 
 class Occupant extends jabber.muc.Occupant {
-	
 }
 
 */
 
 
 /**
-	<a href="http://www.xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
-	
-TODO http://xmpp.org/extensions/xep-0249.html
-	
 	Represents a multi user chatroom conversation.
+	
+	<a href="http://www.xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
+	<a href="http://www.xmpp.org/extensions/xep-0249.html">XEP-0249: Direct MUC Invitations</a>
+	
 */
 class MUChat {
-	
-	public static inline var XMLNS_USER = "http://jabber.org/protocol/muc#user";
 	
 	public var stream(default,null) : jabber.client.Stream;
 	public var jid(default,null) : String;
@@ -58,20 +55,7 @@ class MUChat {
 		
 		this.stream = stream;
 		this.jid = roomName+"@"+host;
-		/*
-		this.room = {
-			jid : roomName+"@"+host,
-			description : null,
-			subject : null,
-			peers : new List<Peer>(),
-			membersOnly : false,
-			moderated : false,
-			nonanonymous : false,
-			passwordProtected : false,
-			persistent : false,
-		};
-		*/
-		
+
 		joined = false;
 		me = new Occupant();
 		me.presence = new xmpp.Presence( xmpp.PresenceType.unavailable );   
@@ -88,8 +72,9 @@ class MUChat {
 	
 	
 	function setHistorySize( s : Int ) : Int {
-		//..TODO
-		return s;
+		if( s < 0 ) s = 0;
+		if( s < history.length ) history = history.slice( history.length-s );
+		return historySize = s;
 	}
 	
 	
