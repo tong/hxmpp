@@ -32,4 +32,11 @@ class Register {
 		return q;
 	}
 	
+	
+	/*
+	public static function parse( x : Xml ) : xmpp.Auth {
+		//TODO
+	}
+	*/
+	
 }

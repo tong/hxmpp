@@ -96,17 +96,17 @@ class StreamBase {
 	/**
 		Intercepts, sends and returns a xmpp packet.
 	*/
-	public function sendPacket( p : xmpp.Packet, ?intercept : Bool = false ) : xmpp.Packet {
+	public function sendPacket<T>( p : xmpp.Packet, ?intercept : Bool = false ) : T {
 		if( !connection.connected || status != StreamStatus.open ) return null;
 		if( intercept ) for( i in interceptors ) i.interceptPacket( p );
-		if( sendData( p.toString() ) ) return p;
+		if( sendData( p.toString() ) ) return cast p;
 		return null;
 	}
 	
 	/**
 		Sends raw data.
 	*/
-	public function sendData( data : String ) {
+	public function sendData( data : String ) : Bool {
 		if( !connection.connected ) return false;
 		if( !connection.send( data ) ) return false;
 		#if JABBER_DEBUG
@@ -124,7 +124,7 @@ class StreamBase {
 		iq.id = nextID();
 		var c : IPacketCollector = new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block );
 		collectors.add( c );
-		return { iq : untyped sendPacket( iq ), collector : c };
+		return { iq : sendPacket( iq ), collector : c };
 	}
 	
 	/**

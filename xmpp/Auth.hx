@@ -40,6 +40,15 @@ class Auth {
 	
 	public static function parse( x : Xml ) : xmpp.Auth {
 		var a = new xmpp.Auth();
+		// TODO probe
+		try {
+			xmpp.XMPPStream.reflectPacketNodes( x, a );
+		} catch( e : Dynamic ) {
+			trace( "Error reflecting packet nodes "+e );
+		}
+		return a;
+		/*
+		var a = new xmpp.Auth();
 		for( e in x.elements() ) {
 			var v : String = null;
 			try { v = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
@@ -53,6 +62,7 @@ class Auth {
 			}
 		}
 		return a;
+		*/
 	}
 	
 	/**
