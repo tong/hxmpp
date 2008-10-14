@@ -68,7 +68,7 @@ class Auth {
 	/**
 		Returns true if this the given xml is a valid formed auth packet.
 		
-	public function check() : Bool {
+	public static function check() : Bool {
 	}
 	*/
 	

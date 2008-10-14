@@ -3,6 +3,7 @@ package jabber.core;
 import jabber.StreamStatus;
 import xmpp.filter.PacketIDFilter;
 
+
 /**
 	Abstract base for client and component jabber streams.<br>
 */
@@ -15,13 +16,14 @@ class StreamBase {
 	public var lang(default,setLang) : String;
 	public var collectors : List<IPacketCollector>;
 	public var interceptors : List<IPacketInterceptor>;
-	#if JABBER_DEBUG
-	public var onXMPP(default,null) : event.Dispatcher<jabber.event.XMPPEvent>;
-	#end
 	
 	var version : String;
 	var idFactory : util.IDFactory;
 	var cache : StringBuf;
+	
+	#if JABBER_DEBUG
+	public var onXMPP(default,null) : event.Dispatcher<jabber.event.XMPPEvent>;
+	#end
 	
 	
 	function new( connection : StreamConnection, ?version : String ) {
@@ -36,9 +38,7 @@ class StreamBase {
 		interceptors = new List();
 		idFactory = new util.IDFactory();
 		
-		#if JABBER_DEBUG
-		onXMPP = new event.Dispatcher();
-		#end
+		#if JABBER_DEBUG onXMPP = new event.Dispatcher(); #end
 	}
 	
 	
@@ -107,6 +107,7 @@ class StreamBase {
 		Sends raw data.
 	*/
 	public function sendData( data : String ) : Bool {
+		trace("sendData");
 		if( !connection.connected ) return false;
 		if( !connection.send( data ) ) return false;
 		#if JABBER_DEBUG

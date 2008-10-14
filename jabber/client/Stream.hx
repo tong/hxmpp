@@ -2,8 +2,6 @@ package jabber.client;
 
 import jabber.JID;
 import jabber.StreamStatus;
-import jabber.core.PacketCollector;
-import jabber.core.PacketTimeout;
 import jabber.core.StreamConnection;
 import xmpp.Message;
 
@@ -28,19 +26,18 @@ class Stream extends jabber.core.StreamBase {
 	/**
 		Sends a "normal" type message.
 	*/
-	public function sendMessage( to : String, subject : String, message : String ) : xmpp.Message {
-		return cast sendPacket( new xmpp.Message( xmpp.MessageType.normal, to, subject, message, null, jid.toString() ) );
+	public function sendMessage( to : String, subject : String, msg : String ) : xmpp.Message {
+		return sendPacket( new Message( xmpp.MessageType.normal, to, subject, msg, null, jid.toString() ) );
 	}
 	
 	/**
 		Sends a "chat" type message.
 	*/
-	public function sendChatMessage( to : String, message : String ) : xmpp.Message {
-		return cast sendPacket( new xmpp.Message( xmpp.MessageType.chat, to, null, message, null, jid.toString() ) );
+	public function sendChatMessage( to : String, msg : String ) : xmpp.Message {
+		return sendPacket( new Message( xmpp.MessageType.chat, to, null, msg, null, jid.toString() ) );
 	}
 	
 	
-	// client specific stream-open parsing.
 	override function processStreamInit( d : String ) {
 		var sei = d.indexOf( ">" );
 		if( id == null ) {
