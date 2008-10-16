@@ -2,7 +2,7 @@ package xmpp.filter;
 
 
 /**
-	Returns true if any of the filters accepts the xmpp packet.
+	Returns true if ANY of the filters accepts the packet.
 */
 class PacketOrFilter extends List<xmpp.PacketFilter> {
 	

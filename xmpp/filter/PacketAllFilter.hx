@@ -6,5 +6,5 @@ package xmpp.filter;
 */
 class PacketAllFilter {
 	public function new() {}
-	public function accept( packet : xmpp.Packet ) : Bool { return true; }
+	public function accept( p : xmpp.Packet ) : Bool { return true; }
 }
