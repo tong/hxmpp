@@ -1,0 +1,73 @@
+
+DISKTREE.NET HAXE JABBER/XMPP - README
+======================================
+hxmpp is a haXe[03] library for creation of jabber clients and components, targeting flash9+, neko, js, php.
+The library consists of two main parts:
+* xmpp: creation and manipulation of xmpp packets.
+* jabber: creationa nd handling of xmpp streams between jabber entities.
+
+For further information on jabber visit [04][05].
+
+
+XEPS SUPPORTED
+--------------
+TODO
+
+
+BUILD+INSTALLATION
+------------------
+
+Run the *.hxml files in the main directory to build included demos/tests/utilities.
+
+# Compiler flags:
+* JABBER_SOCKET_BRIDGE		Use socket bridge for io connection ( see: jabber.tool.SocketBridge ).
+* JABBER_DEBUG				Prints debug information
+* XMPP_DEBUG 				Prints xmpp transfer
+* XEP_0091					Ensures backward compatibility with XEP-0091 when using jabber.DelayedDelivery. 
+
+# neko
+Copy /hxjabber/bin/sha1.ndll to your neko installation. The ndll is required for SHA1 cryption.
+
+# php
+Experimental support only.
+
+# flash9+
+* You have to allow the flashplayer to connect to the web if running local ( [06] ).
+* Since version 9,0,124,0, flash player does not allow you to make a socket connection directly to a server
+without first obtaining explicit permission from that server in form of a policy-file-request ( [07] for further information ).
+You can download a simple flash-policy-server for neko from [08][09].
+
+# js
+TODO
+
+# actionscript3
+You can generate as3 source files by compiling the ImportAll class under /doc.
+The required command is 'haxe -as3 <directory> -cp doc -main ImportAll'
+
+
+USAGE
+-----
+see /demo/*
+
+
+CONTACT
+-------
+xmpp://tong@jabber.spektral.at
+
+
+DOWNLOAD
+--------
+git://83.64.208.21/home/tong/git/hxmpp.git
+
+
+LINKS
+-----
+[01] http://hxmpp.disktree.net
+[02] http://disktree.net
+[03] http://haxe.org
+[04] http://jabber.org
+[05] http://xmpp.org
+[06] http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html
+[07] http://www.adobe.com/devnet/flashplayer/articles/socket_policy_files.html
+[08] http://blog.disktree.net/?p=41
+[09] http://blog.disktree.net/?p=45
