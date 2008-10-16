@@ -6,7 +6,7 @@ package xmpp.filter;
 */
 class PacketOrFilter extends List<xmpp.PacketFilter> {
 	
-	public function new( ?filters : Iterable ) {
+	public function new( ?filters : Iterable<xmpp.PacketFilter> ) {
 		super();
 		if( filters != null ) {
 			for( f in filters ) add( f );
@@ -15,7 +15,7 @@ class PacketOrFilter extends List<xmpp.PacketFilter> {
 	
 	public function accept( p : xmpp.Packet ) : Bool {
 		for( f in iterator() ) {
-			if( f.accept( packet ) ) return true;
+			if( f.accept( p ) ) return true;
 		}
 		return false;
 	}

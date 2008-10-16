@@ -23,9 +23,10 @@ typedef EntityTimeData = {
 
 
 /**
-	<a href="http://www.xmpp.org/extensions/xep-0202.html">XEP 202 - EntityTime</a>
-	
+	TODO move to jabber.EntityTime
+
 	Extension for communicating the local time of an entity.<br>
+	<a href="http://www.xmpp.org/extensions/xep-0202.html">XEP 202 - EntityTime</a>
 */
 class EntityTime {
 	
@@ -35,6 +36,7 @@ class EntityTime {
 	//public var onError : String->Void;
 	
 	public var stream(default,null) : Stream;
+	
 	var iq : IQ;
 	
 	
