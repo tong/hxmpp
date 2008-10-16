@@ -29,27 +29,25 @@ typedef PacketDelay = {
 */
 class DelayedDelivery {
 	
-	public static var XMLNS = "urn:xmpp:delay";
+	public static var XMLNS = "urn:xmpp:delay"; // TODO move to xmpp.DelayedDelivery
 	
 	/**
 		Parses/returns the delay extension of this xmpp packet.
 	*/
 	public static function getDelay( m : xmpp.Message ) : PacketDelay {
 		for( e in m.properties ) {
-			if( e.nodeName == "delay" && e.get( "xmlns" ) == XMLNS ) {
-				return { from : e.get( "from" ),
-						 stamp : e.get( "stamp" ),
-						 description : e.firstChild().nodeValue };
+			if( e.nodeName != "delay" || e.get( "xmlns" ) != XMLNS ) return;
+			return { from : e.get( "from" ),
+					 stamp : e.get( "stamp" ),
+					 description : e.firstChild().nodeValue };
 			}
 			#if XEP_0091
-			if( e.nodeName == "x" && e.get( "xmlns" ) == "jabber:x:delay" ) {
-				var description : String = null;
-				try { description = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
-				return { from : e.get( "from" ),
-						 stamp : e.get( "stamp" ),
-						 description : description };
-			}
-			#end // XEP_0091
+			var description : String = null;
+			try { description = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
+			return { from : e.get( "from" ),
+					 stamp : e.get( "stamp" ),
+					 description : description };
+			#end//XEP_0091
 		}
 		return null;	
 	}

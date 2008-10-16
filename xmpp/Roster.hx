@@ -34,7 +34,7 @@ enum AskType {
 */
 class Roster extends List<xmpp.RosterItem> {
 	
-	public static inline var XMLNS = "jabber:iq:roster";
+	public static var XMLNS = "jabber:iq:roster";
 	
 	
 	public function new( ?items : Iterable<RosterItem> ) {

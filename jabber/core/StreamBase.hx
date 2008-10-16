@@ -7,17 +7,17 @@ import xmpp.filter.PacketIDFilter;
 /**
 	Abstract base for client and component jabber streams.<br>
 */
-class StreamBase {
+class StreamBase /* implements IStream */ {
 	
 	public var status : StreamStatus; //public var status(default,setStatus) : StreamStatus;
 	public var connection(default,setConnection) : StreamConnection;
 	public var id(default,null) : String;
 //	public var features(default,setFeatures) : Array<String>; //TODO
+	//public var serverFeatures : Hash<>;
 	public var lang(default,setLang) : String;
 	public var collectors : List<IPacketCollector>;
 	public var interceptors : List<IPacketInterceptor>;
 	
-	var version : String;
 	var idFactory : util.IDFactory;
 	var cache : StringBuf;
 	
@@ -26,12 +26,11 @@ class StreamBase {
 	#end
 	
 	
-	function new( connection : StreamConnection, ?version : String ) {
+	function new( connection : StreamConnection ) {
 		
 		status = StreamStatus.closed;
 
 		this.setConnection( connection );
-		this.version = version;
 		
 //		features = new Array();
 		collectors = new List();
@@ -231,9 +230,44 @@ class StreamBase {
 		return packets;
 	}
 	
-	function parseStreamFeatures( src : Xml ) {
+	function parseStreamFeatures( x : Xml ) {
 		//TODO
-		//trace("parseStreamFeatures");
+		/*
+		trace("#################################### parseStreamFeatures");
+		//var xx = Xml.parse( '<starttls xmlns="urn:ietf:params:xml:ns:xmpp-sasl"></starttls>' ).firstElement();
+		var xx = Xml.parse('<presence from="jdev@conference.jabber.org/etix" xml:lang="en" to="tong@jabber.spektral.at/laboratory" ></presence>').firstElement();
+		try {
+			trace( haxe.xml.Check.checkNode( xx, xmpp.Rule.presence ) );
+		} catch( e : Dynamic ) {
+			trace( e );
+		}
+		*/
+		trace("####################################");
+		var f = new haxe.xml.Fast( x );
+		trace( f.node.starttls );
+		
+		/*
+		if( f.hasNode.resolve( "starttls" ) ) {
+			trace("NNNNN");
+		}
+		if( f.hasNode.resolve( "mechanisms" ) ) {
+			trace( f.node.mechanisms.att.xmlns );
+		}
+		*/
+		/*
+		<stream:features>
+			<starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls"></starttls>
+			<mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl">
+				<mechanism>DIGEST-MD5</mechanism><mechanism>PLAIN</mechanism>
+				<mechanism>ANONYMOUS</mechanism><mechanism>CRAM-MD5</mechanism>
+			</mechanisms>
+			<compression xmlns="http://jabber.org/features/compress">
+				<method>zlib</method>
+			</compression>
+			<auth xmlns="http://jabber.org/features/iq-auth"/>
+			<register xmlns="http://jabber.org/features/iq-register"/>
+		</stream:features>
+		*/
 	}
 	
 	

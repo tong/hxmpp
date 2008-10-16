@@ -4,7 +4,7 @@ import util.XmlUtil;
 
 
 /**
-	IQ extension used for account authenticating.
+	IQ extension for account authenticating.
 */
 class Auth {
 	

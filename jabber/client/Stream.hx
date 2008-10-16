@@ -15,11 +15,15 @@ class Stream extends jabber.core.StreamBase {
 	public static var defaultPort = STANDARD_PORT;
 	
 	public var jid(default,null) : JID;
+	public var hasSASL(default,null) : Bool;
+	
+	var version : String;
 	
 	
 	public function new( jid : JID, connection : StreamConnection, ?version : String = "1.0" ) {
-		super( connection, version );
+		super( connection );
 		this.jid = jid;
+		this.version = version;
 	}
 	
 	
