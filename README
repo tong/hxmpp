@@ -16,17 +16,17 @@ TODO
 
 BUILD+INSTALLATION
 ------------------
-
-Run the *.hxml files in the main directory to build included demos/tests/utilities.
+Run the *.hxml files in the main directory to build included demos, tests and utilities.
 
 # Compiler flags:
-* JABBER_SOCKET_BRIDGE		Use socket bridge for io connection ( see: jabber.tool.SocketBridge ).
-* JABBER_DEBUG				Prints debug information
+* JABBER_DEBUG				Prints debug information, adds toString() methods to some classes.
+* JABBER_SOCKET_BRIDGE		Use a socket bridge for io connection (see: jabber.tool.SocketBridge).
 * XMPP_DEBUG 				Prints xmpp transfer
 * XEP_0091					Ensures backward compatibility with XEP-0091 when using jabber.DelayedDelivery. 
 
+
 # neko
-Copy /hxjabber/bin/sha1.ndll to your neko installation. The ndll is required for SHA1 cryption.
+Copy /hxjabber/bin/sha1.ndll to your neko installation. The ndll is just for SHA1 encryption.
 
 # php
 Experimental support only.
@@ -47,12 +47,13 @@ The required command is 'haxe -as3 <directory> -cp doc -main ImportAll'
 
 USAGE
 -----
-see /demo/*
+see: hxmpp/demo/
 
 
-CONTACT
--------
-xmpp://tong@jabber.spektral.at
+AUTHOR CONTACT
+--------------
+xmpp: tong@jabber.spektral.at
+mail: tong@disktree.net
 
 
 DOWNLOAD

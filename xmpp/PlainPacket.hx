@@ -13,6 +13,7 @@ class PlainPacket extends Packet {
 
 	public function new( src : Xml ) {
 		super();
+		this._type = xmpp.PacketType.custom;
 		this.src = src;
 	}
 	

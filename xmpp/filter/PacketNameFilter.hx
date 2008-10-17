@@ -6,6 +6,8 @@ package xmpp.filter;
 */
 class PacketNameFilter {
 	
+	// TODO regexp
+	//public var exp : EReg;
 	public var name : String;
 	
 	public function new( name : String ) {
@@ -13,7 +15,8 @@ class PacketNameFilter {
 	}
 	
 	public function accept( p : xmpp.Packet ) : Bool {
-		return name == p.toXml().nodeName;
+		//TODO return exp.match( p.toXml().nodeName );
+		return ( name == p.toXml().nodeName );
 	}
 	
 }
