@@ -32,15 +32,15 @@ class DelayedDelivery {
 	public static var XMLNS = "urn:xmpp:delay"; // TODO move to xmpp.DelayedDelivery
 	
 	/**
-		Parses/returns the delay extension of this xmpp packet.
+		Parses/returns the packet delay of the given packet.
 	*/
-	public static function getDelay( m : xmpp.Message ) : PacketDelay {
+	public static function getDelay( m : xmpp.Message ) : jabber.PacketDelay {
 		for( e in m.properties ) {
-			if( e.nodeName != "delay" || e.get( "xmlns" ) != XMLNS ) return;
+			if( e.nodeName != "delay" || e.get( "xmlns" ) != XMLNS ) return null;
 			return { from : e.get( "from" ),
 					 stamp : e.get( "stamp" ),
 					 description : e.firstChild().nodeValue };
-			}
+			
 			#if XEP_0091
 			var description : String = null;
 			try { description = e.firstChild().nodeValue; } catch( e : Dynamic ) {}

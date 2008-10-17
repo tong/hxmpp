@@ -73,7 +73,7 @@ class MUChat {
 	
 	function setHistorySize( s : Int ) : Int {
 		if( s < 0 ) s = 0;
-		if( s < history.length ) history = history.slice( history.length-s );
+	//	if( s < history.length ) history = history.slice( history.length-s );
 		return historySize = s;
 	}
 	
@@ -176,7 +176,7 @@ class MUChat {
 		var role : Role = null;
 		var affiliation : Affiliation = null;
 		for( p in p.properties ) {
-			if( p.nodeName == "x" && p.get( "xmlns" ) == XMLNS_USER ) {
+			if( p.nodeName == "x" && p.get( "xmlns" ) == xmpp.MUC.XMLNS_USER ) {
 				for( item in p.elementsNamed( "item" ) ) {
 					var r = item.get( "role" );
 					if( r != null ) {

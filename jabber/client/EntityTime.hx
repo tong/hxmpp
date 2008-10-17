@@ -1,6 +1,7 @@
 package jabber.client;
 
 import xmpp.IQ;
+import xmpp.IQType;
 
 
 typedef EntityTimeData = {
