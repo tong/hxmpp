@@ -35,7 +35,7 @@ class Packet {
 	/**
 		Creates/Returns the string representaion of this xmpp packet.
 	*/
-	public function toString() : String {
+	public inline function toString() : String {
 		return toXml().toString();
 	}
 	

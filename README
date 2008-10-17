@@ -4,14 +4,25 @@ DISKTREE.NET HAXE JABBER/XMPP - README
 hxmpp is a haXe[03] library for creation of jabber clients and components, targeting flash9+, neko, js, php.
 The library consists of two main parts:
 * xmpp: creation and manipulation of xmpp packets.
-* jabber: creationa nd handling of xmpp streams between jabber entities.
+* jabber: creation and handling of xmpp streams between jabber entities.
 
 For further information on jabber visit [04][05].
 
 
+
 XEPS SUPPORTED
 --------------
-TODO
+!Mind: XEPs listed because of their usable not .. 
+* 0012 LastActivity
+* 0045 MUChat
+* 0054 VCardTemp
+* 0085 ChatStateNotification
+* 0091 DelayedDelivery
+* 0115 EntityCapabilities
+* 0154 RosterExchange
+* 0202 EntityTime
+* 0203 DelayedDelivery
+
 
 
 BUILD+INSTALLATION
@@ -23,7 +34,6 @@ Run the *.hxml files in the main directory to build included demos, tests and ut
 * JABBER_SOCKET_BRIDGE		Use a socket bridge for io connection (see: jabber.tool.SocketBridge).
 * XMPP_DEBUG 				Prints xmpp transfer
 * XEP_0091					Ensures backward compatibility with XEP-0091 when using jabber.DelayedDelivery. 
-
 
 # neko
 Copy /hxjabber/bin/sha1.ndll to your neko installation. The ndll is just for SHA1 encryption.
@@ -45,9 +55,11 @@ You can generate as3 source files by compiling the ImportAll class under /doc.
 The required command is 'haxe -as3 <directory> -cp doc -main ImportAll'
 
 
+
 USAGE
 -----
 see: hxmpp/demo/
+
 
 
 AUTHOR CONTACT
@@ -56,9 +68,11 @@ xmpp: tong@jabber.spektral.at
 mail: tong@disktree.net
 
 
+
 DOWNLOAD
 --------
 git://83.64.208.21/home/tong/git/hxmpp.git
+
 
 
 LINKS

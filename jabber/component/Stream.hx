@@ -52,7 +52,7 @@ class Stream extends jabber.core.StreamBase {
 		var dx = Xml.parse( data + "</stream:stream>" ).firstChild();
 		id = dx.get( "id" );
 		status = StreamStatus.open;
-		collectors.add( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( "handshake" ) ], handshakeResponseHandler, false ) );
+		collectors.add( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], handshakeResponseHandler, false ) );
 		var handshake = Xml.createElement( "handshake" );
 		handshake.addChild( Xml.createPCData( crypt.SHA1.encode( id + password ) ) );
 		sendData( handshake.toString() );

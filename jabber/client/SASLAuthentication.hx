@@ -68,23 +68,23 @@ class SASLAuthentication {
 		// collect errors, failures,..
 		var errorFilters = new PacketOrFilter();
 		// TODO replace with regular expression.
-		errorFilters.add( new PacketNameFilter( "failure" ) ); //?
-		errorFilters.add( new PacketNameFilter( "not-authorized" ) );
-		errorFilters.add( new PacketNameFilter( "aborted" ) );
-		errorFilters.add( new PacketNameFilter( "incorrect-encoding" ) );
-		errorFilters.add( new PacketNameFilter( "invalid-authzid" ) );
-		errorFilters.add( new PacketNameFilter( "invalid-mechanism" ) );
-		errorFilters.add( new PacketNameFilter( "mechanism-too-weak" ) );
-		errorFilters.add( new PacketNameFilter( "temporary-auth-failure" ) );
+		errorFilters.add( new PacketNameFilter( ~/failure/ ) ); //?
+		errorFilters.add( new PacketNameFilter( ~/not-authorized/ ) );
+		errorFilters.add( new PacketNameFilter( ~/aborted/ ) );
+		errorFilters.add( new PacketNameFilter( ~/incorrect-encoding/ ) );
+		errorFilters.add( new PacketNameFilter( ~/invalid-authzid/ ) );
+		errorFilters.add( new PacketNameFilter( ~/invalid-mechanism/ ) );
+		errorFilters.add( new PacketNameFilter( ~/mechanism-too-weak/ ) );
+		errorFilters.add( new PacketNameFilter( ~/temporary-auth-failure/ ) );
 		errorCollector = new PacketCollector( [cast errorFilters], handleError, false );
 		stream.collectors.add( errorCollector );
 		
 		// collect challenge packets
-		challengeCollector = new PacketCollector( [cast new PacketNameFilter("challenge")], handleChallenge, true );
+		challengeCollector = new PacketCollector( [cast new PacketNameFilter( ~/challenge/ )], handleChallenge, true );
 		stream.collectors.add( challengeCollector );
 		
 		// collect success packet
-		successCollector = new PacketCollector( [cast new PacketNameFilter( "success" )], handleSuccess );
+		successCollector = new PacketCollector( [cast new PacketNameFilter( ~/success/ )], handleSuccess );
 		stream.collectors.add( successCollector );
 		
 		// send auth

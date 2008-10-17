@@ -20,7 +20,7 @@ private typedef DataInterceptor = {
 	
 }
 
-
+//class StreamConnectionBase
 class StreamConnection {
 	
 	public var connected(default,null) : Bool;

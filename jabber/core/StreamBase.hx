@@ -118,7 +118,6 @@ class StreamBase /* implements IStream */ {
 		Sends raw data.
 	*/
 	public function sendData( data : String ) : Bool {
-		trace("sendData");
 		if( !connection.connected ) return false;
 		if( !connection.send( data ) ) return false;
 		packetsSent++;
@@ -134,7 +133,7 @@ class StreamBase /* implements IStream */ {
 	public function sendIQ( iq : xmpp.IQ, handler : xmpp.IQ->Void,
 							?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool )
 	: { iq : xmpp.IQ, collector : IPacketCollector } {
-		iq.id = nextID();
+		if( iq.id == null ) iq.id = nextID();
 		var c : IPacketCollector = new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block );
 		collectors.add( c );
 		return { iq : sendPacket( iq ), collector : c };

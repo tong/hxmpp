@@ -1,9 +1,11 @@
 package jabber.client;
 
 import jabber.core.PacketCollector;
-import jabber.muc.Affiliation;
-import jabber.muc.Role;
+import jabber.core.PresenceManager;
 import jabber.muc.Occupant;
+import xmpp.MUC;
+import xmpp.muc.Affiliation;
+import xmpp.muc.Role;
 import xmpp.Message;
 import xmpp.MessageType;
 import xmpp.PacketType;
@@ -12,18 +14,19 @@ import xmpp.filter.PacketFromContainsFilter;
 import xmpp.filter.PacketTypeFilter;
 
 
-/*
-private class PresenceManager {
+class MUChatMessage {
 	
-	public function new() {
+	public var muc(default,null) : MUChat;
+	public var message(default,null) : xmpp.Message;
+	public var occupant : Occupant;
+	
+	public function new( muc : MUChat, m : xmpp.Message, o : Occupant ) {
+		this.muc = muc;
+		this.message = m;
+		this.occupant = o;
 	}
-	
-}
 
-class Occupant extends jabber.muc.Occupant {
 }
-
-*/
 
 
 /**
@@ -31,35 +34,45 @@ class Occupant extends jabber.muc.Occupant {
 	
 	<a href="http://www.xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
 	<a href="http://www.xmpp.org/extensions/xep-0249.html">XEP-0249: Direct MUC Invitations</a>
-	
 */
 class MUChat {
 	
-	public var stream(default,null) : jabber.client.Stream;
+	public dynamic function onJoin( muc : MUChat ) {}
+	public dynamic function onMessage( msg : MUChatMessage ) {}
+	public dynamic function onPresence( occupant : jabber.muc.Occupant ) {}
+	
+	public var stream(default,null) : Stream;
 	public var jid(default,null) : String;
 	public var joined(default,null)	: Bool;
-	public var me(default,null) : jabber.muc.Occupant;
-	//public var presence : PresenceManager;
+	//public var locked(default,null) : Bool;
 	public var myJid(default,null) : String;
-	//public var peers(default,null) : List<jabber.muc.Peer>;
+	public var nick(default,null) : String;
+	public var role : Role;
+	public var affiliation : Affiliation;
+	public var presence : PresenceManager;
 	public var occupants : Array<jabber.muc.Occupant>;
-	//public var history(default,null) : Array<MUChatMessage>;
+	//public var subject(default,setSubject) : String;
+	public var history(default,null) : Array<String>;//Array<MUCMessage>;
 	public var historySize(default,setHistorySize) : Int;
+	
+	//public var service(default,setServiceDiscovery) : ServiceDiscovery;
 	
 	var message : xmpp.Message;
 	var presenceCollector : PacketCollector;
 	var messageCollector : PacketCollector;
 	
 	
+	/**
+	*/
 	public function new( stream : Stream, host : String, roomName : String ) {
 		
 		this.stream = stream;
 		this.jid = roomName+"@"+host;
 
 		joined = false;
-		me = new Occupant();
-		me.presence = new xmpp.Presence( xmpp.PresenceType.unavailable );   
+		presence = new PresenceManager( stream ); 
 		occupants = new Array();
+		history = new Array();
 		message = new Message( MessageType.groupchat, jid );
 		
 		// collect all presences and messages from the room jid
@@ -78,45 +91,48 @@ class MUChat {
 	}
 	
 	
-	public dynamic function onJoin( muc : jabber.client.MUChat ) {}
-	public dynamic function onMessage( m ) {}
-	public dynamic function onPresence( occupant : jabber.muc.Occupant ) {}
-	
-	
 	/**
 		Sends initial available presence to muc-room.
 	*/
-	public function join( nickname : String, ?password : String ) {
-		if( joined ) return;
-		if( nickname == null || nickname.length == 0 ) throw "Nickname must be not null or blank";
-		me.nick = nickname;
-		myJid = jid + "/" + nickname;
-		var  p = new xmpp.Presence();
+	public function join( nick : String, ?password : String ) : Bool {
+		if( joined ) return false;
+		if( nick == null || nick.length == 0 ) throw "Nickname must be not null or blank";
+		this.nick = nick;
+		myJid = jid+"/"+nick;
+		var p = new xmpp.Presence();
 		p.to = myJid;
-		p.properties.push( Xml.parse( '<x xmlns="http://jabber.org/protocol/muc"/>' ).firstElement() );
+		p.properties.push( xmpp.X.create( xmpp.MUC.XMLNS ) );
 		stream.sendPacket( p );
-		/*
-		*/
+		return true;
 	}
 	
 	/**
-		Sends unavailable presence.
+		Sends unavailable presence to the room and returns the presence packet sent.
 	*/
-	public function leave() {
-		if( !joined ) return;
-		//var p = new Presence( Presence.UNAVAILABLE, null, null, 0  );
-		//p.to = myJid;
-//		setPresence( p );
+	public function leave() : xmpp.Presence {
+		if( !joined ) return null;
+		var p = new xmpp.Presence( xmpp.PresenceType.unavailable );
+		p.to = myJid;
+		presence.set( p );
+		return p;
 	}
 	
 	/**
 		Sends message to all room occupants.
 	*/
-	public function speak( m : String ) {
-		if( !joined ) return;
-		message.body = m;
-		stream.sendPacket( message );
+	public function speak( t : String ) : xmpp.Message {
+		if( !joined ) return null;
+		message.body = t;
+		return stream.sendPacket( message );
 	}
+	
+	/*
+	public function hasService( jid : String, handler :  ) {
+		//service
+	}*/
+	
+	
+	
 	
 	#if JABBER_DEBUG
 	
@@ -129,92 +145,84 @@ class MUChat {
 	
 	function handleMessage( m : xmpp.Message ) {
 		//TODO
-		//trace("MUC MESSAGE: " );
-		//if( joined ) {
-			onMessage( m );
-		//}
+		if( !joined ) return;
+		var from = parseName( m.from );
+		var occupant = getOccupant( from );
+		if( occupant == null && from != jid ) {
+			trace( "??? Message from unknown muc occupant ???" );
+			return;
+		}
+		var msg = new MUChatMessage( this, m, occupant );
+		onMessage( msg );
 	}
 	
 	function handlePresence( p : xmpp.Presence ) {
+		
+		var x_user = xmpp.MUCUser.parse( p.toXml() );
+		if( x_user == null ) return;
+		
 		switch( p.from ) {
 			
 			case myJid :
 				switch( p.type ) {
+					
 					case xmpp.PresenceType.unavailable : 
 						joined = false;
+						occupants = new Array();
+						onJoin( this );
+						
 					case null :
 						if( !joined ) {
+							//.TODO check presence packet
 							joined = true;
+							onJoin( this );
+							// unlock room if required
+							if( x_user.item.role == Role.moderator &&
+								x_user.status != null &&
+								x_user.status.code == xmpp.muc.Status.WAITS_FOR_UNLOCK )
+							{
+								var iq = new xmpp.IQ( xmpp.IQType.set, null, jid );
+								var query = new xmpp.MUCOwner().toXml();
+								//TODO
+								query.addChild( Xml.parse( '<x xmlns="jabber:x:data" type="submit"/>' ) );
+								iq.properties.push( query );
+								stream.sendIQ( iq, function(iq) {
+									if( iq.type == xmpp.IQType.result ) {
+										trace("UNLOCKEDDDDD");
+										//unlocked = true;
+									}
+								} );
+							}
 						}
-					onJoin( this );
 				}
+				
 			case jid :
 				trace("TODO process presence from room.");
 			
 			default : // process occupant presence
 				var from = parseName( p.from );
 				var occupant = getOccupant( from );
-				if( occupant == null ) { // new occupant
-					//
-					occupant = new Occupant();//{ nickname : from, presence : p, role : null, affiliation : null };
+				if( occupant != null ) { // update existing occupant
+					if( p.type == xmpp.PresenceType.unavailable ) {
+						occupants.remove( occupant );
+					}
+					//..
 					
+				} else { // process new occupant
+					occupant = new Occupant();
+					occupant.nick = from;
+					//occupant.jid = null;
 					occupants.push( occupant );
-				} else { // update existing occupant
-					occupant = new Occupant();//{ nickname : from, presence : p, role : null, affiliation : null };
 				}
-				var x = parsePresenceX( p );
-				if( x != null ) {
-					if( x.role != null ) occupant.role = x.role;
-					if( x.affiliation != null ) occupant.affiliation = x.affiliation;
-				}
+				occupant.presence = p;
+				if( x_user.item.role != null ) occupant.role = x_user.item.role;
+				if( x_user.item.affiliation != null ) occupant.affiliation = x_user.item.affiliation;
 				onPresence( occupant );
 		}
 	}
 	
-	// TODO all namespaces
-	function parsePresenceX( p : xmpp.Presence ) : { role : Role, affiliation : Affiliation } {
-		var role : Role = null;
-		var affiliation : Affiliation = null;
-		for( p in p.properties ) {
-			if( p.nodeName == "x" && p.get( "xmlns" ) == xmpp.MUC.XMLNS_USER ) {
-				for( item in p.elementsNamed( "item" ) ) {
-					var r = item.get( "role" );
-					if( r != null ) {
-						role = switch( r ) {
-							case "none" : Role.none;
-							case "visitor" : Role.visitor;
-							case "participant" : Role.participiant;
-							case "moderator" : Role.moderator;
-						}
-					}
-					var a = item.get( "affiliation" );
-					if( a != null ) {
-						affiliation = switch( a ) {
-							case "none" : Affiliation.none;
-							case "owner" : Affiliation.owner;
-							case "admin" : Affiliation.admin;
-							case "member" : Affiliation.member;
-							case "outcast" : Affiliation.outcast;
-						}
-					}
-				}
-				//TODO
-				//TODO parse: <status code='110'/>
-				for( status in p.elementsNamed( "status" ) ) {
-					var code = status.get( "code" );
-					switch( code ) {
-						case "110" : // indicates that this presence is from myself
-						case "210" : // indicates that the my roomnick got changed
-					}
-				}
-				////////// TODO
-			}
-		}
-		return { role : role , affiliation : affiliation };
-	}
-	
-	function getOccupant( nick : String ) : jabber.muc.Occupant {
-		for( o in occupants ) if( o.nick == nick ) return o;
+	function getOccupant( n : String ) : jabber.muc.Occupant {
+		for( o in occupants ) if( o.nick == n ) return o;
 		return null;
 	}
 	

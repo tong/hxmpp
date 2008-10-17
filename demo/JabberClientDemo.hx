@@ -25,14 +25,26 @@ class JabberClientDemo {
 	
 	
 	static function init() {
+		//var cnx = new jabber.BOSHConnection( "127.0.0.1", 5222 );
 		var cnx = new jabber.StreamSocketConnection( "127.0.0.1", 5222 );
-		stream = new jabber.client.Stream( new jabber.JID("tong@disktree"), cnx, "1.0" );
+		stream = new jabber.client.Stream( new jabber.JID( "tong@disktree" ), cnx, "1.0" );
 		stream.onOpen = function(s) {
 			trace("JABBER STREAM opened...");
-			var auth = new NonSASLAuthentication(s);
+			if( stream.sasl.negotiated ) {
+				loginSuccess( stream );
+				return;
+			}
+			var auth = new jabber.client.SASLAuthentication(stream);
+			//auth.handshake.registerMechanism( net.sasl.AnonymousMechanism.ID, net.sasl.AnonymousMechanism );
+			auth.handshake.mechanisms.push( new net.sasl.AnonymousMechanism() );
+			auth.handshake.mechanisms.push( new net.sasl.PlainMechanism() );
+			auth.handshake.mechanisms.push( new net.sasl.MD5Mechanism() );
+		
 			auth.onSuccess = loginSuccess;
 			auth.onFailed = function(s) { trace( "LOGIN FAILED" ); };
-			auth.authenticate( "test", "norc" );
+			//auth.authenticate( "test", "norc" );
+			auth.authenticate( "test" );
+			
 		};
 		stream.onClose = function(s) { trace( "Stream to: "+s.jid.domain+" closed." ); } ;
 		stream.onXMPP.addHandler( xmppTransferHandler );
@@ -42,7 +54,7 @@ class JabberClientDemo {
 	static function loginSuccess( s ) {
 		var vcard = new jabber.client.VCardTemp( stream );
 		vcard.onLoad = function(vc) {
-			trace(vc);
+			trace("VCARD LOADED");
 		}
 		vcard.load();
 		/*
