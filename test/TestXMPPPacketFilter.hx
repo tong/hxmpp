@@ -4,6 +4,7 @@ import xmpp.PacketType;
 import xmpp.Message;
 import xmpp.MessageType;
 import xmpp.Presence;
+import xmpp.PlainPacket;
 import xmpp.IQ;
 import xmpp.IQType;
 import xmpp.filter.MessageFilter;
@@ -11,6 +12,7 @@ import xmpp.filter.PacketAllFilter;
 import xmpp.filter.PacketFromContainsFilter;
 import xmpp.filter.PacketFromFilter;
 import xmpp.filter.PacketIDFilter;
+import xmpp.filter.PacketNameFilter;
 import xmpp.filter.PacketTypeFilter;
 import xmpp.filter.IQFilter;
 
@@ -137,11 +139,29 @@ class TestFilters extends haxe.unit.TestCase {
 		assertTrue( f.accept( iq_roster ) );
 	}
 	
-	/*
-	//TODO
 	public function testNameFilter() {
-		assertTrue( true );
+		
+		var f = new PacketNameFilter( ~/message/ );
+		assertTrue( f.accept( new Message() ) );
+		assertTrue( !f.accept( new Presence() ) );
+		assertTrue( !f.accept( new IQ() ) );
+		
+		f = new PacketNameFilter( ~/presence/ );
+		assertTrue( !f.accept( new Message() ) );
+		assertTrue( f.accept( new Presence() ) );
+		assertTrue( !f.accept( new IQ() ) );
+		
+		// TODO
+		/*
+		f = new PacketNameFilter( ~// );
+		assertTrue( f.accept( new Message() ) );
+		assertTrue( f.accept( new Presence() ) );
+		assertTrue( f.accept( new IQ() ) );
+		var x = Xml.parse( '<custom id="123"></custom>' ).firstElement();
+		trace(x.nodeName);
+		assertTrue( !f.accept( new PlainPacket( x ) ) );
+		*/
+		
 	}
-	*/
 	
 }

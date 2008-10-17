@@ -8,12 +8,12 @@ import jabber.core.StreamBase;
 */
 class XMPPEvent {
 	
-	public var stream(default,null) : StreamBase;
+	public var stream(default,null) : StreamBase; //TODO IStream
 	public var data(default,null) : String;
 	public var incoming(default,null) : Bool;
 	
 	
-	public function new( stream : StreamBase, data : String, incoming : Bool ) {
+	public function new( stream : StreamBase, data : String, ?incoming : Bool = false ) {
 		this.stream = stream;
 		this.data = data;
 		this.incoming = incoming;

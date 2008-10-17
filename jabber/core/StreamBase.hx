@@ -18,7 +18,7 @@ class StreamBase /* implements IStream */ {
 	public var collectors : List<IPacketCollector>;
 	public var interceptors : List<IPacketInterceptor>;
 	
-	var idFactory : util.IDFactory;
+	var packetsSent : Int;
 	var cache : StringBuf;
 	
 	#if JABBER_DEBUG
@@ -35,15 +35,18 @@ class StreamBase /* implements IStream */ {
 //		features = new Array();
 		collectors = new List();
 		interceptors = new List();
-		idFactory = new util.IDFactory();
+		packetsSent = 0;
 		
-		#if JABBER_DEBUG onXMPP = new event.Dispatcher(); #end
+		#if JABBER_DEBUG
+		onXMPP = new event.Dispatcher();
+		#end
 	}
 	
 	
 	function setConnection( c : StreamConnection ) : StreamConnection {
 		switch( status ) {
-			case open, pending : close( true );
+			case open, pending :
+				close( true );
 			case closed :
 				if( connection != null && connection.connected ) connection.disconnect(); 
 				connection = c;
@@ -62,9 +65,10 @@ class StreamBase /* implements IStream */ {
 	
 	
 	/**
+		Returns a unique id.
 	*/
 	public function nextID() : String {
-		return idFactory.next();
+		return haxe.BaseCode.encode( util.StringUtil.random64( 5 )+packetsSent, util.StringUtil.BASE64 );
 	}
 	
 	/**
@@ -101,6 +105,9 @@ class StreamBase /* implements IStream */ {
 		Intercepts, sends and returns a xmpp packet.
 	*/
 	public function sendPacket<T>( p : xmpp.Packet, ?intercept : Bool = false ) : T {
+	
+		// TODO cache packets sent while fe: initializing stream compression.
+
 		if( !connection.connected || status != StreamStatus.open ) return null;
 		if( intercept ) for( i in interceptors ) i.interceptPacket( p );
 		if( sendData( p.toString() ) ) return cast p;
@@ -114,6 +121,7 @@ class StreamBase /* implements IStream */ {
 		trace("sendData");
 		if( !connection.connected ) return false;
 		if( !connection.send( data ) ) return false;
+		packetsSent++;
 		#if JABBER_DEBUG
 		onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, data, false ) );
 		#end
