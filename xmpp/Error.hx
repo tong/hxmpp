@@ -1,6 +1,9 @@
 package xmpp;
 
 
+/**
+	Error xmpp packet extension.
+*/
 class Error {
 	
 	public static var XMLNS = "urn:ietf:params:xml:ns:xmpp-stanzas";

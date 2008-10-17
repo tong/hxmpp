@@ -7,6 +7,37 @@ import xmpp.Message;
 
 
 /**
+	TODO
+*/
+private class SASL {
+	
+	//public var has : Bool;
+	public var negotiated : Bool;
+	//public var use : Bool;
+	//public var implementedMechanisms : Hash<String>;
+	public var availableMechanisms : Array<String>;
+	
+	public function new( /*use : Bool = true*/ ) {
+		
+		negotiated = false;
+		//implementedMechanisms = new Array();
+		availableMechanisms = new Array();
+	}
+	
+	//public function parseSASL( x : Xml ) {
+	
+	#if JABBER_DEBUG
+	/*
+	public function toString() : String {
+		return "SASL(has=>"+has+",use=>"+use+")";
+	}
+	*/
+	#end
+	
+}
+
+
+/**
 	Base for Client-2-Server jabber streams.<br>
 */
 class Stream extends jabber.core.StreamBase {
@@ -15,15 +46,18 @@ class Stream extends jabber.core.StreamBase {
 	public static var defaultPort = STANDARD_PORT;
 	
 	public var jid(default,null) : JID;
-	public var hasSASL(default,null) : Bool;
+	public var sasl(default,null) : SASL;
 	
 	var version : String;
 	
 	
 	public function new( jid : JID, connection : StreamConnection, ?version : String = "1.0" ) {
+		
 		super( connection );
 		this.jid = jid;
 		this.version = version;
+		
+		sasl = new SASL();
 	}
 	
 	
@@ -55,12 +89,16 @@ class Stream extends jabber.core.StreamBase {
 				return;
 			}
 		}
-		if( id == null ) throw "Invalid xmpp stream, no id.";
+		if( id == null ) {
+			//TODO
+			throw "Invalid xmpp stream, no id given.";
+		}
 		// check for stream features
 		var sfi =  d.indexOf( "<stream:features>" );
 		var sf = d.substr( d.indexOf( "<stream:features>" ) );
 		if( sfi != -1 ) {
-			parseStreamFeatures( Xml.parse( sf ).firstElement() );
+			//TODO
+			//var features = parseStreamFeatures( Xml.parse( sf ).firstElement() );
 			if( status != StreamStatus.open ) {
 				status = StreamStatus.open;
 				onOpen( this );

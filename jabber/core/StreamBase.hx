@@ -70,6 +70,10 @@ class StreamBase /* implements IStream */ {
 	/**
 	*/
 	public function open() : Bool {
+		if( !connection.connected ) connection.connect();
+		else connectHandler();
+		return true;
+		/*
 		switch( status ) {
 			case closed :
 				if( !connection.connected ) connection.connect();
@@ -77,6 +81,7 @@ class StreamBase /* implements IStream */ {
 				return true;
 			default : return false;
 		}
+		*/
 	}
 	
 	/**
@@ -232,8 +237,8 @@ class StreamBase /* implements IStream */ {
 	
 	function parseStreamFeatures( x : Xml ) {
 		//TODO
-		/*
 		trace("#################################### parseStreamFeatures");
+		/*
 		//var xx = Xml.parse( '<starttls xmlns="urn:ietf:params:xml:ns:xmpp-sasl"></starttls>' ).firstElement();
 		var xx = Xml.parse('<presence from="jdev@conference.jabber.org/etix" xml:lang="en" to="tong@jabber.spektral.at/laboratory" ></presence>').firstElement();
 		try {
@@ -242,9 +247,8 @@ class StreamBase /* implements IStream */ {
 			trace( e );
 		}
 		*/
-		trace("####################################");
-		var f = new haxe.xml.Fast( x );
-		trace( f.node.starttls );
+	//	var f = new haxe.xml.Fast( x );
+	//	trace( f.node.starttls );
 		
 		/*
 		if( f.hasNode.resolve( "starttls" ) ) {
@@ -258,8 +262,10 @@ class StreamBase /* implements IStream */ {
 		<stream:features>
 			<starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls"></starttls>
 			<mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl">
-				<mechanism>DIGEST-MD5</mechanism><mechanism>PLAIN</mechanism>
-				<mechanism>ANONYMOUS</mechanism><mechanism>CRAM-MD5</mechanism>
+				<mechanism>DIGEST-MD5</mechanism>
+				<mechanism>PLAIN</mechanism>
+				<mechanism>ANONYMOUS</mechanism>
+				<mechanism>CRAM-MD5</mechanism>
 			</mechanisms>
 			<compression xmlns="http://jabber.org/features/compress">
 				<method>zlib</method>

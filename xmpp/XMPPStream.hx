@@ -41,6 +41,12 @@ class XMPPStream {
 		else buf.toString();
 	}
 	
+	/*
+	function parseStreamFeatures( x : Xml ) {
+		trace("#################################### parseStreamFeatures"+src);
+	}
+	*/
+	
 	
 	/**
 		Reflects the elememts of the xml into the packet.

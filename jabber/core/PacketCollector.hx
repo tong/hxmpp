@@ -15,6 +15,12 @@ class PacketCollector implements IPacketCollector {
 	public var timeout(default,setTimeout) : PacketTimeout;
 	
 	
+	/**
+		Creates a new packet collector instance.
+		filters
+		handler
+		?permanent 
+	*/
 	public function new( filters : Array<xmpp.PacketFilter>, handler : Dynamic->Void,
 						 ?permanent : Bool = false, ?timeout : PacketTimeout, ?block : Bool = false ) {
 		
