@@ -6,15 +6,16 @@ import util.XmlUtil;
 //TODO rename to Stream, check with php. (?)
 class XMPPStream {
 	
-	public static var XMLNS_STREAM 		= "http://etherx.jabber.org/streams";
-	public static var XMLNS_CLIENT 		= "jabber:client";
-	public static var XMLNS_SERVER 		= "jabber:client";
-	public static var XMLNS_COMPONENT 	= "jabber:component:accept";
+	public static var XMLNS_STREAM 	  = "http://etherx.jabber.org/streams";
+	public static var XMLNS_CLIENT 	  = "jabber:client";
+	public static var XMLNS_SERVER 	  = "jabber:client";
+	public static var XMLNS_COMPONENT = "jabber:component:accept";
 	
+	public static var CLOSE = "</stream:stream>";
+	public static var ERROR = "</stream:error>";
 	
-//	public static function getStreamType( s : String )  {
-//	}
-	
+	public static var eregStreamClose = new EReg( CLOSE, "" );
+	public static var eregStreamError = new EReg( ERROR, "" );
 	
 	/**
 	*/
@@ -42,25 +43,8 @@ class XMPPStream {
 	}
 	
 	/*
-	function parseStreamFeatures( x : Xml ) {
-		trace("#################################### parseStreamFeatures"+src);
+	public static function parseStreamFeatures( x : Xml ) {
 	}
 	*/
-	
-	
-	/**
-		Reflects the elememts of the xml into the packet.
-		Use with care!
-	*/
-	public static function reflectPacketNodes<T>( x : Xml, p : T ) : T {
-		for( e in x.elements() ) {
-			var v : String = null;
-			try { v = e.firstChild().nodeValue; } catch( e : Dynamic ) {};
-			if( v != null ) {
-				Reflect.setField( p, e.nodeName, v );
-			}
-		}
-		return p;
-	}
 	
 }

@@ -99,11 +99,15 @@ class DataFormField {
 		return field;
 	}
 	
+	/**
+		Parses all dataformfields into the given dataformfield container.
+	*/
 	public static inline function parseFields( t : { fields : Array<DataFormField> }, x : Xml ) : { fields : Array<DataFormField> } {
 		for( e in x.elementsNamed( "field" ) ) t.fields.push( DataFormField.parse( e.firstElement() ) );
 		return t;
 	}
 }
+
 
 
 class DataFormItem {
@@ -128,6 +132,7 @@ class DataFormItem {
 		return cast DataFormField.parseFields( new DataFormItem(), x );
 	}
 }
+
 
 
 class DataFormReported extends DataFormItem {

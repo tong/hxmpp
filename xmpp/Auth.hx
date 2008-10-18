@@ -42,7 +42,7 @@ class Auth {
 		var a = new xmpp.Auth();
 		// TODO probe
 		try {
-			xmpp.XMPPStream.reflectPacketNodes( x, a );
+			xmpp.Packet.reflectPacketNodes( x, a );
 		} catch( e : Dynamic ) {
 			trace( "Error reflecting packet nodes "+e );
 		}

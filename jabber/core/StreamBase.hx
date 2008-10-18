@@ -9,11 +9,15 @@ import xmpp.filter.PacketIDFilter;
 */
 class StreamBase /* implements IStream */ {
 	
-	public var status : StreamStatus; //public var status(default,setStatus) : StreamStatus;
+	public dynamic function onOpen<T>( s : T ) {}
+	public dynamic function onClose<T>( s : T ) {}
+	public dynamic function onError<T>( s : T, m : Dynamic ) {}
+	
+	public var status : StreamStatus;
 	public var connection(default,setConnection) : StreamConnection;
 	public var id(default,null) : String;
 //	public var features(default,setFeatures) : Array<String>; //TODO
-	//public var serverFeatures : Hash<>;
+//	public var serverFeatures : Hash<>;
 	public var lang(default,setLang) : String;
 	public var collectors : List<IPacketCollector>;
 	public var interceptors : List<IPacketInterceptor>;
@@ -29,7 +33,6 @@ class StreamBase /* implements IStream */ {
 	function new( connection : StreamConnection ) {
 		
 		status = StreamStatus.closed;
-
 		this.setConnection( connection );
 		
 //		features = new Array();
@@ -72,27 +75,21 @@ class StreamBase /* implements IStream */ {
 	}
 	
 	/**
+		Opens the outgoing xml stream.
 	*/
 	public function open() : Bool {
+		if( status == StreamStatus.open ) return false;
 		if( !connection.connected ) connection.connect();
 		else connectHandler();
 		return true;
-		/*
-		switch( status ) {
-			case closed :
-				if( !connection.connected ) connection.connect();
-				else connectHandler();
-				return true;
-			default : return false;
-		}
-		*/
 	}
 	
 	/**
+		Closes the outgoing xml stream.
 	*/
 	public function close( ?disconnect = false ) : Bool {
 		if( status == StreamStatus.open ) {
-			sendData( "</stream:stream>" );
+			sendData( xmpp.XMPPStream.CLOSE );
 			status = StreamStatus.closed;
 			if( disconnect ) connection.disconnect();
 			onClose( this );
@@ -105,9 +102,7 @@ class StreamBase /* implements IStream */ {
 		Intercepts, sends and returns a xmpp packet.
 	*/
 	public function sendPacket<T>( p : xmpp.Packet, ?intercept : Bool = false ) : T {
-	
 		// TODO cache packets sent while fe: initializing stream compression.
-
 		if( !connection.connected || status != StreamStatus.open ) return null;
 		if( intercept ) for( i in interceptors ) i.interceptPacket( p );
 		if( sendData( p.toString() ) ) return cast p;
@@ -136,7 +131,13 @@ class StreamBase /* implements IStream */ {
 		if( iq.id == null ) iq.id = nextID();
 		var c : IPacketCollector = new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block );
 		collectors.add( c );
-		return { iq : sendPacket( iq ), collector : c };
+		var sent = sendPacket( iq );
+		if( sent == null ) {
+			collectors.remove( c );
+			c = null;
+			return null;
+		}
+		return { iq : sent, collector : c };
 	}
 	
 	/**
@@ -145,44 +146,34 @@ class StreamBase /* implements IStream */ {
 	}
 	*/
 	
-	/** */
-	public dynamic function onOpen<T>( stream : T ) { /* override me */ }
-	/** */
-	public dynamic function onClose<T>( stream : T ) { /* override me */ }
-	/** */
-	public dynamic function onError<T>( stream : T, m : Dynamic ) { /* override me */ }
-	
 	
 	function processData( d : String ) {
+		
 		//if( status != StreamStatus.closed ) return;
 		if( d == " " && cache == null ) return;
+		
+		if( xmpp.XMPPStream.eregStreamClose.match( d ) ) {
+			//..
+			close( true );
+			return;
+		}
+		if( xmpp.XMPPStream.eregStreamError.match( d ) ) {
+			//..
+			close( true );
+			return;
+		}
+		
 		switch( status ) {
 			
 			case closed : return;
 			
 			case pending :
-			
 				#if JABBER_DEBUG
 				onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, d, true ) );
 				#end
-				
-				d = util.XmlUtil.removeXmlHeader( d );
-				processStreamInit( d );
+				processStreamInit( util.XmlUtil.removeXmlHeader( d ) );
 				
 			case open :
-				//TODO
-				//var s = "</stream:stream>";
-				var r = new EReg( "/stream:stream", "" );
-				if( r.match( d ) ) {
-					trace( "STREAM CLOSE: "+d );
-					return;
-				}
-				var r = new EReg( "stream:error", "" );
-				if( r.match( d ) ) {
-					trace( "STREAM CLOSE: "+d );
-					return;
-				}
-				
 				var x : Xml = null;
 				try {
 					x = Xml.parse( d );
@@ -197,9 +188,7 @@ class StreamBase /* implements IStream */ {
 						try {
 							x = Xml.parse( cache.toString() );
 							if( Std.string( x.firstChild().nodeType ) == "pcdata" ) throw "";
-						} catch( e : Dynamic ) {
-							return; // wait for more data.
-						}
+						} catch( e : Dynamic ) { return; /* wait for more data */ }
 					}
 				}
 				collectPackets( x );
@@ -210,14 +199,14 @@ class StreamBase /* implements IStream */ {
 		// override me.
 	}
 	
-	function collectPackets( data : Xml ) : Array<xmpp.Packet> {
+	function collectPackets( d : Xml ) : Array<xmpp.Packet> {
 		var packets = new Array<xmpp.Packet>();
-		for( xml in data.elements() ) {
-			var p : Dynamic = null;
+		for( x in d.elements() ) {
+			var p : xmpp.Packet = null;
 			try {
-				p = xmpp.Packet.parse( xml );
+				p = xmpp.Packet.parse( x );
 			} catch( e : Dynamic ) {
-				throw "Error parsing XMPP packet: "+xml;
+				throw "Error parsing XMPP packet: "+x;
 			} 
 			packets.push( p );
 			var collected = false;
@@ -231,7 +220,7 @@ class StreamBase /* implements IStream */ {
 					if( c.block ) break;
 					if( !c.permanent ) {
 						collectors.remove( c );
-						c = null; // gc
+						c = null;
 					}					
 				}
 			}
@@ -285,15 +274,12 @@ class StreamBase /* implements IStream */ {
 	
 	
 	function connectHandler() {}
-	
 	function disconnectHandler() {}
-	
 	function dataHandler( data : String ) {
 		#if JABBER_DEBUG
 		onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, data, true ) );
 		#end
 	}
-	
 	function errorHandler( m : Dynamic ) {
 		onError( this, m  );
 	}

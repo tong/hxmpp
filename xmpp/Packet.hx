@@ -57,22 +57,23 @@ class Packet {
 	/**
 		Parses xml into a xmpp.Packet object.
 	*/
-	public static function parse( src : Xml ) : xmpp.Packet {
-		return switch( src.nodeName ) {
-			case "iq" 		: cast IQ.parse( src );
-			case "message"  : cast xmpp.Message.parse( src );
-			case "presence" : cast Presence.parse( src );
-			default : cast new PlainPacket( src );
+	public static function parse( x : Xml ) : xmpp.Packet {
+		return switch( x.nodeName ) {
+			case "iq" 		: cast IQ.parse( x );
+			case "message"  : cast xmpp.Message.parse( x );
+			case "presence" : cast Presence.parse( x );
+			default : cast new PlainPacket( x );
 		}
 	}
 	
-		/* TODO
+	/* TODO
 	static function parseBase( p, x : Xml ) {
 		parseAttributes
 		for( e in errors )
 		for( p in properties ) 
 	}
 	*/
+	
 	/**
 		Parses/adds basic attributes to the packet.
 	*/
@@ -83,5 +84,30 @@ class Packet {
 		p.lang = x.get( "xml:lang" );
 		return p;
 	}
+	
+	/**
+		Reflects the elements of the xml into the packet.
+		Use with care!
+	*/
+	public static function reflectPacketNodes<T>( x : Xml, p : T ) : T {
+		for( e in x.elements() ) {
+			var v : String = null;
+			try { v = e.firstChild().nodeValue; } catch( e : Dynamic ) {};
+			if( v != null ) Reflect.setField( p, e.nodeName, v );
+		}
+		return p;
+	}
+	
+	/**
+		Determines the packettype of the given xml.
+	public static function getPacketType( x : Xml ) : PacketType {
+		return switch( x.nodeName ) {
+			case "presence" : PacketType.presence;
+			case "message" : PacketType.message;
+			case "iq" : PacketType.iq;
+			default : PacketType.custom;
+		}
+	}
+	*/
 	
 }
