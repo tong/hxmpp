@@ -98,7 +98,7 @@ class Packet {
 		return p;
 	}
 	
-	/**
+	/*
 		Determines the packettype of the given xml.
 	public static function getPacketType( x : Xml ) : PacketType {
 		return switch( x.nodeName ) {

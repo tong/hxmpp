@@ -10,13 +10,11 @@ class IQFilter {
 	public var nodeName : String;
 	public var iqType : xmpp.IQType;
 	
-	
-	public function new( ?xmlns : String, ?nodeName : String, ?iqType : xmpp.IQType ) {
+	public function new( ?xmlns : String, ?nodeName : String, ?type : xmpp.IQType ) {
 		this.xmlns = xmlns;
 		this.nodeName = nodeName;
-		this.iqType = iqType;
+		this.iqType = type;
 	}
-	
 	
 	public function accept( p : xmpp.Packet ) : Bool {
 		if( p._type != xmpp.PacketType.iq ) return false;
@@ -35,4 +33,5 @@ class IQFilter {
 		}
 		return true;
 	}
+	
 }

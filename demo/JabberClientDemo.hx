@@ -45,9 +45,7 @@ class JabberClientDemo {
 		*/
 			auth.onSuccess = loginSuccess;
 			auth.onFailed = function(s) { trace( "LOGIN FAILED" ); };
-			//auth.authenticate( "test", "norc" );
-			auth.authenticate( "test" );
-			
+			auth.authenticate( "test", "norc" );
 		};
 		stream.onClose = function(s) { trace( "Stream to: "+s.jid.domain+" closed." ); } ;
 		stream.onXMPP.addHandler( xmppTransferHandler );
@@ -55,18 +53,34 @@ class JabberClientDemo {
 	}
 	
 	static function loginSuccess( s ) {
+		//stream.sendData("<fuckyouup>23</fuckyouup>");
+		
+		var ml = new jabber.MessageListener( stream );
+		
+		/*
+		var la = new jabber.LastActivityQuery( stream );
+		la.onLoad = function(e) {
+			if( e.error != null ) {
+				trace("Last activity error "+e.error.name );
+				return;
+			}
+			trace( "Last activity from"+e.from+" : "+e.seconds );
+		}
+		la.request("account@disktree/desktop");
+		var lal = new jabber.LastActivityListener( stream, "norc" );
+		*/
+		
+		/*
 		var vcard = new jabber.client.VCardTemp( stream );
 		vcard.onLoad = function(vc) {
 			trace("VCARD LOADED");
 		}
 		vcard.load();
-		/*
 		#if neko
 		var zlib = new jabber.util.ZLibCompression();
 		var compression = new jabber.StreamCompression( s );
 		compression.request( zlib );
 		#end
-		*/
 		
 		var roster = new jabber.client.Roster( stream );
 		roster.onAvailable = function(r) {
@@ -77,6 +91,7 @@ class JabberClientDemo {
 		};
 		//roster.change = rosterChangeHandler;
 		roster.load();
+		*/
 		
 		/*
 		var service = new jabber.client.ServiceDiscovery(stream);
