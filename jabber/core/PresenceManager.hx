@@ -1,76 +1,78 @@
 package jabber.core;
 
 import jabber.StreamStatus;
-
+import xmpp.Presence;
+import xmpp.PresenceType;
 
 /**
 	Wrapper for presence handling.
 */
 class PresenceManager {
 	
-	public var type(getType,setType) : xmpp.PresenceType;
+	public var type(getType,setType) : PresenceType;
 	public var show(getShow,setShow) : String;
 	public var status(getStatus,setShow) : String;
 	public var priority(getPriority,setPriority) : Int;
 	
 	var stream : jabber.core.StreamBase;
-	var p : xmpp.Presence;
+	var presence : Presence;
 	
 	
-	public function new( s : jabber.core.StreamBase ) {
-		stream = s;
-		p = new xmpp.Presence();
+	public function new( stream : jabber.core.StreamBase ) {
+		this.stream = stream;
+		presence = new Presence();
 	}
+
 	
-	
-	function getType() : xmpp.PresenceType { return p.type; }
-	function setType( v : xmpp.PresenceType ) : xmpp.PresenceType {
-		if( v == p.type ) return v;
-		p.type = v;
-		if( stream.status == StreamStatus.open ) stream.sendPacket( p );
+	function getType() : PresenceType { return presence.type; }
+	function setType( v : PresenceType ) : xmpp.PresenceType {
+		if( stream.status != StreamStatus.open ) return null;
+		if( v == presence.type ) return v;
+		presence = new Presence( v );
+		stream.sendPacket( presence );
 		return v;
 	}
-	function getShow() : String { return p.show; }
+	function getShow() : String { return presence.show; }
 	function setShow( v : String ) : String {
-		if( v == p.show ) return v;
-		p.show = v;
-		if( stream.status == StreamStatus.open ) stream.sendPacket( p );
-		return p.show;
+		if( stream.status != StreamStatus.open ) return null;
+		if( v == presence.show ) return v;
+		presence = new Presence( null, v );
+		stream.sendPacket( presence );
+		return v;
 	}
-	function getStatus() : String { return p.status; }
+	function getStatus() : String { return presence.status; }
 	function setStatus( v : String ) : String {
-		if( v == p.status ) return v;
-		p.status = v;
-		if( stream.status == StreamStatus.open ) stream.sendPacket( p );
-		return p.status;
+		if( stream.status != StreamStatus.open ) return null;
+		if( v == presence.status ) return v;
+		presence = new Presence( null, null, v );
+		stream.sendPacket( presence );
+		return v;
 	}
-	function getPriority() : Int { return p.priority; }
+	function getPriority() : Int { return presence.priority; }
 	function setPriority( v : Int ) : Int {
-		if( v == p.priority ) return v;
-		p.priority = v;
-		if( stream.status == StreamStatus.open ) stream.sendPacket( p );
-		return p.priority;
+		if( stream.status != StreamStatus.open ) return -1;
+		if( v == presence.priority ) return v;
+		presence = new Presence( null, null, null, v );
+		stream.sendPacket( presence );
+		return v;
 	}
 	
 	
 	/**
-		Change the presence by passing in a xmpp.Presence packet.
+		Set the presence.
 	*/
-	public function set( ?p : xmpp.Presence ) : xmpp.Presence {
-		if( p == null || p == this.p ) return null;
-		return stream.sendPacket( this.p = p );
+	public function set( ?p : Presence ) : Presence {
+		if( stream.status != StreamStatus.open ) return null;
+		if( p == presence ) return null;
+		presence = if( p == null ) new Presence() else p;
+		return stream.sendPacket( presence );
 	}
 	
 	/**
-		Change the presence by changing presence values.
+		Change the presence.
 	*/
 	public function change( ?type : xmpp.PresenceType, ?show : String, ?status : String, ?priority : Int ) : xmpp.Presence {
-		p = new xmpp.Presence();
-		if( type != p.type ) p.type = type;
-		if( show != p.show ) p.show = show;
-		if( status != p.status ) p.status = status;
-		if( priority != p.priority ) p.priority = priority;
-		return stream.sendPacket( p );
+		return set( new Presence( type, show, status, priority ) );
 	}
 	
 }

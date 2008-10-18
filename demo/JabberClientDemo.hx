@@ -1,13 +1,15 @@
 
 import jabber.StreamSocketConnection;
+import jabber.client.Stream;
 import jabber.client.NonSASLAuthentication;
+import jabber.client.Roster;
 
 
 
 class JabberClientDemo {
 	
-	static var stream : jabber.client.Stream;
-	
+	static var stream : Stream;
+	static var roster : Roster;
 	
 	static function main() {
 		
@@ -54,9 +56,11 @@ class JabberClientDemo {
 	
 	static function loginSuccess( s ) {
 		//stream.sendData("<fuckyouup>23</fuckyouup>");
+		roster = new jabber.client.Roster( stream );
+		roster.onAvailable = rosterAvailableHandler;
+		roster.load();
 		
-		var ml = new jabber.MessageListener( stream );
-		
+		//var ml = new jabber.MessageListener( stream );
 		/*
 		var la = new jabber.LastActivityQuery( stream );
 		la.onLoad = function(e) {
@@ -82,23 +86,29 @@ class JabberClientDemo {
 		compression.request( zlib );
 		#end
 		
-		var roster = new jabber.client.Roster( stream );
-		roster.onAvailable = function(r) {
-			trace( "ROSTER AVAILABLE " );
-			for( e in r.entries ) {
-				trace("ENTRY: "+ e.jid );
-			}
-		};
-		//roster.change = rosterChangeHandler;
-		roster.load();
-		*/
-		
-		/*
 		var service = new jabber.client.ServiceDiscovery(stream);
 		service.onInfo = function( e ) {
 		}
 		service.discoverInfo("account@disktree");
 		*/
+	}
+	
+	static function rosterAvailableHandler( r : jabber.client.Roster ) {
+		trace( "ROSTER AVAILABLE "+r.entries.length );
+		for( e in r.entries ) {
+			trace("#");
+			trace( "ENTRY: "+ e );
+			//trace( "ENTRY: "+ e.presence );
+			/*
+			roster.presence.show = "online";
+			var chat = new jabber.Chat( stream, stream.jid.toString(), "account@disktree/desktop" );
+			chat.onMessage = function(c) {
+				trace("MSG: "+c.lastMessage.body );
+			};
+			chat.speak("rotz.i am online");
+			*/
+		}
+		roster.presence.set();
 	}
 	
 	static function rosterChangeHandler( e ) {

@@ -30,19 +30,18 @@ enum SubscriptionMode {
 /**
 	Entry in clients roster.
 */
-class RosterEntry extends xmpp.RosterItem {
+private class RosterEntry extends xmpp.RosterItem {
 	
 	/** Reference to this entries roster. */
-	public var roster(default,null) : Roster;
+	public var roster : Roster;
 	/** */
 	public var presence : xmpp.Presence;
 	// TODO var presence : Hash<xmpp.Presence>;
 	
-	public function new( jid : String, r : Roster ) {
+	public function new( jid : String, ?r : Roster ) {
 		super( jid );
 		roster = r;
 	}
-	
 }
 
 
@@ -52,8 +51,15 @@ class RosterEntry extends xmpp.RosterItem {
 //?? class Roster extends event.Dispatcher<RosterEvent>
 //?? class Roster extends jabber.StreamExtension.
 class Roster {
-	
+
 	public static var DEFAULT_SUBSCRIPTIONMODE = SubscriptionMode.acceptAll;
+	
+	//public dynamic function change( e : jabber.event.RosterEvent<Roster,RosterEntry> ) : Void;
+	public dynamic function onAvailable( roster : Roster ) {}
+	public dynamic function onAdd( entries : List<RosterEntry> ) {}
+	public dynamic function onUpdate( entries : List<RosterEntry> ) {}
+	public dynamic function onRemove( entries : List<RosterEntry> ) {}
+	public dynamic function onPresence( entry : RosterEntry ) {}
 	
 	public var available(default,null) : Bool;
 	public var presence(default,null) : jabber.core.PresenceManager;
@@ -99,12 +105,6 @@ class Roster {
 	}
 	*/
 	
-	//public dynamic function change( e : jabber.event.RosterEvent<Roster,RosterEntry> ) : Void;
-	public dynamic function onAvailable( roster : Roster ) {}
-	public dynamic function onAdd( entries : List<RosterEntry> ) {}
-	public dynamic function onUpdate( entries : List<RosterEntry> ) {}
-	public dynamic function onRemove( entries : List<RosterEntry> ) {}
-	public dynamic function onPresence( entry : RosterEntry ) {}
 
 	/**
 		Requests roster load.
@@ -236,8 +236,10 @@ class Roster {
 				
 				for( item_xml in iq.ext.toXml().elements() ) {
 					
-					var entry = createRosterEntry( item_xml );
-					
+					var item = xmpp.RosterItem.parse( item_xml );
+					var entry : RosterEntry = cast item;
+					entry.roster = this;
+		
 					if( entry.subscription == Subscription.remove ) { // remove entry
 						var e = getEntry( entry.jid );
 						if( e != null ) {
@@ -261,7 +263,6 @@ class Roster {
 				if( !available ) {
 					available = true;
 					onAvailable( this );
-					//change( new RosterEvent( stream, RosterEventType.available( this ) ) );
 				}
 				if( added.length > 0 )   onAdd( added );
 				if( updated.length > 0 ) onUpdate( updated );
@@ -322,20 +323,6 @@ class Roster {
 			//...
 			
 		}
-	}
-	
-	/**
-		Creates a RosterEntry from given roster item xml.
-	*/
-	function createRosterEntry( x : Xml ) : RosterEntry {
-		var item = xmpp.RosterItem.parse( x ); // TODO hm
-		var e = new RosterEntry( null, this );
-		e.subscription = item.subscription;
-		e.name = item.name;
-		e.askType = item.askType;
-		e.groups = item.groups;
-		//e.presence = null;
-		return e;
 	}
 	
 }
