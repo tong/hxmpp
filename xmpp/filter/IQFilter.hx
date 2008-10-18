@@ -6,9 +6,9 @@ package xmpp.filter;
 */
 class IQFilter {
 	
-	public var xmlns 	: String;
+	public var xmlns : String;
 	public var nodeName : String;
-	public var iqType 	: xmpp.IQType;
+	public var iqType : xmpp.IQType;
 	
 	
 	public function new( ?xmlns : String, ?nodeName : String, ?iqType : xmpp.IQType ) {

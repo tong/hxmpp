@@ -26,19 +26,35 @@ class Error {
 		if( name != null ) {
 			var n = Xml.createElement( name );
 			n.set( "xmlns", XMLNS );
+			//..
 		}
 		return x;
 	}
 	
 	
+	/**
+		Parses the error from a given packet.
+	*/
+	public static function parsePacket( p : xmpp.Packet ) : xmpp.Error {
+		for( e in p.toXml().elements() ) {
+			if( e.nodeName == "error" ) return Error.parse( e );
+		}
+		return null;
+	}
+	
+	/**
+		Parses the error from given xml.
+	*/
 	public static function parse( x : Xml ) : xmpp.Error {
-		var error = new xmpp.Error();
-		error.type = Type.createEnum( ErrorType, x.get( "type" ) );
-		var c = x.elements().next();
-//		if( c.get( "xmlns" ) != XMLNS ) throw "Invalid xmpp error";
-		error.name = c.nodeName;
-		try { error.text = c.firstChild().nodeValue; } catch( e : Dynamic ) {}
-		return error;
+		var e = new xmpp.Error();
+		e.code = Std.parseInt( x.get( "code" ) );
+		e.type = Type.createEnum( ErrorType, x.get( "type" ) );
+		for( c in x.elements() ) {
+			if( c.get( "xmlns" ) != XMLNS ) throw "Invalid xmpp error";
+			e.name = c.nodeName;
+			break;
+		}
+		return e;
 	}
 	
 }

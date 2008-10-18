@@ -227,6 +227,7 @@ class StreamBase /* implements IStream */ {
 			#if JABBER_DEBUG
 			if( !collected ) trace( "WARNING, xmpp packet not processed: "+p );
 			#end
+			//TODO create response
 		}
 		return packets;
 	}
