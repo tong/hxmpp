@@ -7,6 +7,7 @@ import xmpp.muc.Item;
 import xmpp.muc.Status;
 import xmpp.muc.Invite;
 
+
 class MUCUser {
 	
 	public static var XMLNS = xmpp.MUC.XMLNS+"#user";

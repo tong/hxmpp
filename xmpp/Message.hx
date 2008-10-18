@@ -4,7 +4,7 @@ import util.XmlUtil;
 
 
 /**
-	XMPP message packet.<br/>
+	XMPP message packet.
 */
 class Message extends xmpp.Packet {
 	

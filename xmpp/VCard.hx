@@ -1,77 +1,13 @@
 package xmpp;
 
 import util.XmlUtil;
-
-
-typedef Photo = {
-	var type : String;
-	var binval : String;
-}
-
-typedef Name = {
-	var family : String;
-	var given : String;
-	var middle : String;
-	var prefix : String;
-	var suffix : String;
-}
-
-typedef Address = {
-	var home : String;
-	var work : String;
-	var postal : String;
-	var parcel : String;
-	//var DOM/INTL : String;
-	var pref : String;
-	var pobox : String;
-	var extadd : String;
-	var street : String;
-	var locality : String;
-	var region : String;
-	var pcode : String;
-	var ctry : String;
-}
-
-typedef Label  = {
-	var home : String;
-	var work : String;
-	var postal : String;
-	var parcel : String;
-	//var DOM/INTL : String;
-	var pref : String;
-	var line : String;
-}
-	
-typedef Tel = {
-	var number : String;
-	var home : String;
-	var work : String;
-	var voice : String;
-	var fax : String;
-	var pager : String;
-	var msg : String;
-	var cell : String;
-	var video : String;
-	var bbs : String;
-	var modem : String;
-	var isdn : String;
-	var pcs : String;
-	var pref : String;
-}
-
-typedef EMail = {
-	var home : String;
-	var work : String;
-	var internet : String;
-	var pref : String;
-	var x400 : String;
-	var userid : String;
-}
-	
-typedef Org = {
-	var name : String;
-	var unit : String;
-}
+import xmpp.vcard.Address;
+import xmpp.vcard.EMail;
+import xmpp.vcard.Label;
+import xmpp.vcard.Name;
+import xmpp.vcard.Org;
+import xmpp.vcard.Photo;
+import xmpp.vcard.Tel;
 
 
 /**

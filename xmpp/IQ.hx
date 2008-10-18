@@ -39,7 +39,6 @@ class IQ extends xmpp.Packet {
 					default : iq.properties.push( el );
 				}
 			}
-			
 		}
 		return iq;
 	}
@@ -48,9 +47,9 @@ class IQ extends xmpp.Packet {
 		Creates '<query xmlns="namspace"/>' Xml object.
 	*/
     public static inline function createQuery( ns : String ) : Xml {
-		var query = Xml.createElement( "query" );
-		query.set( "xmlns", ns );
-		return query;
+		var q = Xml.createElement( "query" );
+		q.set( "xmlns", ns );
+		return q;
 	}
 	
 }

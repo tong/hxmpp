@@ -1,14 +1,16 @@
 package jabber.core;
 
+import xmpp.filter.PacketFilter;
+
 
 /**
-	Default IPacketCollector implementation.
+	Default/Basic IPacketCollector implementation.
 */
 class PacketCollector implements IPacketCollector {
 	
 	public static var DEFAULT_TIMEOUT = 5;
 	
-	public var filters : Array<xmpp.PacketFilter>;
+	public var filters : Array<PacketFilter>;
 	public var handlers : Array<xmpp.Packet->Void>;
 	public var permanent : Bool;
 	public var block : Bool;
@@ -21,7 +23,7 @@ class PacketCollector implements IPacketCollector {
 		handler
 		?permanent 
 	*/
-	public function new( filters : Array<xmpp.PacketFilter>, handler : Dynamic->Void,
+	public function new( filters : Array<PacketFilter>, handler : Dynamic->Void,
 						 ?permanent : Bool = false, ?timeout : PacketTimeout, ?block : Bool = false ) {
 		
 		handlers = new Array();

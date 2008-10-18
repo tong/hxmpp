@@ -7,7 +7,7 @@ interface IPacketCollector {
 	
 	/**
 	*/
-	var filters : Array<xmpp.PacketFilter>;
+	var filters : Array<xmpp.filter.PacketFilter>;
 	
 	/**
 		Methods to which collected packets get delivered.

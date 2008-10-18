@@ -13,6 +13,7 @@ For further information on jabber visit [04][05].
 XEPS SUPPORTED
 --------------
 !Mind: XEPs listed because of their usable not .. 
+* 0004 DataForms
 * 0012 LastActivity
 * 0045 MUChat
 * 0054 VCardTemp

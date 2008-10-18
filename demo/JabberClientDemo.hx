@@ -30,6 +30,9 @@ class JabberClientDemo {
 		stream = new jabber.client.Stream( new jabber.JID( "tong@disktree" ), cnx, "1.0" );
 		stream.onOpen = function(s) {
 			trace("JABBER STREAM opened...");
+			var auth = new NonSASLAuthentication( stream );
+			
+			/*
 			if( stream.sasl.negotiated ) {
 				loginSuccess( stream );
 				return;
@@ -39,7 +42,7 @@ class JabberClientDemo {
 			auth.handshake.mechanisms.push( new net.sasl.AnonymousMechanism() );
 			auth.handshake.mechanisms.push( new net.sasl.PlainMechanism() );
 			auth.handshake.mechanisms.push( new net.sasl.MD5Mechanism() );
-		
+		*/
 			auth.onSuccess = loginSuccess;
 			auth.onFailed = function(s) { trace( "LOGIN FAILED" ); };
 			//auth.authenticate( "test", "norc" );

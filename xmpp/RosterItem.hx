@@ -1,6 +1,9 @@
 package xmpp;
 
 import xmpp.Roster;
+import xmpp.roster.AskType;
+import xmpp.roster.Subscription;
+
 
 /*
 typedef TRosterItem = {

@@ -8,6 +8,8 @@ import xmpp.Presence;
 import xmpp.IQ;
 import xmpp.IQType;
 import xmpp.Roster;
+import xmpp.roster.AskType;
+import xmpp.roster.Subscription;
 import xmpp.filter.PacketTypeFilter;
 
 

@@ -1,4 +1,4 @@
-package xmpp;
+package xmpp.filter;
 
 
 typedef PacketFilter = {
