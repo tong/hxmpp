@@ -1,7 +1,6 @@
 package jabber.client;
 
 import jabber.core.PacketCollector;
-import jabber.roster.SubscriptionMode;
 import jabber.util.JIDUtil;
 import xmpp.PacketType;
 import xmpp.Presence;
@@ -11,6 +10,21 @@ import xmpp.Roster;
 import xmpp.roster.AskType;
 import xmpp.roster.Subscription;
 import xmpp.filter.PacketTypeFilter;
+
+
+enum SubscriptionMode {
+	
+	/** Accepts all subscription and unsubscription requests. */
+	acceptAll;
+	//acceptAll( subscribe : Bool );
+	
+	/** Rejects all subscription requests. */
+	rejectAll;
+
+	/** Ask user how to proceed. */
+	manual;
+	
+}
 
 
 /**
@@ -53,7 +67,7 @@ class Roster {
 	//var pending_unsubscriptions : Hash<RosterEntry>;
 	
 
-	public function new( stream : Stream, ?subscriptionMode : jabber.roster.SubscriptionMode ) {
+	public function new( stream : Stream, ?subscriptionMode : SubscriptionMode ) {
 		
 		this.stream = stream;
 		this.subscriptionMode = ( subscriptionMode == null ) ? DEFAULT_SUBSCRIPTIONMODE : subscriptionMode;
