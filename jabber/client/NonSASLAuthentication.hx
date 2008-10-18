@@ -41,7 +41,7 @@ class NonSASLAuthentication {
 		this.password = password;
 		this.resource = resource;
 		authenticating = true;
-		var iq = new xmpp.IQ();
+		var iq = new IQ();
 		iq.ext = new xmpp.Auth( username );
 		stream.sendIQ( iq, handleResponse );
 	}
@@ -50,37 +50,18 @@ class NonSASLAuthentication {
 	function handleResponse( r : IQ ) {
 		switch( r.type ) {
 			case xmpp.IQType.result :
-				
-				//var q = xmpp.Auth.parse( r.ext.toXml() );
-				//trace(q);
-				
-				trace("#####################");
-				//trace( ( !usePlainText && r.ext.toXml().elementsNamed( "digest" ).next() != null ) );
 				var hasDigest = ( !usePlainText && r.ext.toXml().elementsNamed( "digest" ).next() != null );
-				trace(hasDigest);
-				trace(resource);
-				
-				var iq = new xmpp.IQ( xmpp.IQType.set );
+				var iq = new IQ( xmpp.IQType.set );
 				iq.ext = if( hasDigest ) new xmpp.Auth( username, null, crypt.SHA1.encode( stream.id+password ), resource );
 				else new xmpp.Auth( username, password, null, resource );
 				stream.sendIQ( iq, handleResult );
-			/*
-				var hasDigest = false;
-				if( !usePlainText ) {
-					for( c in response.ext.toXml().elementsNamed( "digest" ) ) { hasDigest = true; break; }
-				}
-				var iq = new xmpp.IQ( xmpp.IQType.set );
-				iq.ext = if( hasDigest ) new xmpp.Auth( username, null, crypt.SHA1.encode( stream.id + password ), resource );
-				else new xmpp.Auth( username, password, null, resource );
-				stream.sendIQ( iq, handleResult );
-				*/
 			default : 
 				authenticating = false;
 				onFailed( stream );
 		}
 	}
 	
-	function handleResult( r : xmpp.IQ ) {
+	function handleResult( r : IQ ) {
 		authenticating = false;
 		switch( r.type ) {
 			case result : onSuccess( stream );
