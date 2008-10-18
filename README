@@ -12,7 +12,6 @@ For further information on jabber visit [04][05].
 
 XEPS SUPPORTED
 --------------
-!Mind: XEPs listed because of their usable not .. 
 * 0004 DataForms
 * 0012 LastActivity
 * 0045 MUChat
@@ -23,6 +22,7 @@ XEPS SUPPORTED
 * 0154 RosterExchange
 * 0202 EntityTime
 * 0203 DelayedDelivery
+(!Mind: This doesn't mean they are 100% implemented, but fulfilling our current needs)
 
 
 
@@ -43,7 +43,7 @@ Copy /hxjabber/bin/sha1.ndll to your neko installation. The ndll is just for SHA
 Experimental support only.
 
 # flash9+
-* You have to allow the flashplayer to connect to the web if running local ( [06] ).
+* You have to allow the flash player to connect to the web if running local ( [06] ).
 * Since version 9,0,124,0, flash player does not allow you to make a socket connection directly to a server
 without first obtaining explicit permission from that server in form of a policy-file-request ( [07] for further information ).
 You can download a simple flash-policy-server for neko from [08][09].

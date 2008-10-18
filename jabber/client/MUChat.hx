@@ -182,10 +182,10 @@ class MUChat {
 								x_user.status.code == xmpp.muc.Status.WAITS_FOR_UNLOCK )
 							{
 								var iq = new xmpp.IQ( xmpp.IQType.set, null, jid );
-								var query = new xmpp.MUCOwner().toXml();
-								//TODO
-								query.addChild( Xml.parse( '<x xmlns="jabber:x:data" type="submit"/>' ) );
-								iq.properties.push( query );
+								var q = new xmpp.MUCOwner().toXml();
+								q.addChild( Xml.parse( '<x xmlns="jabber:x:data" type="submit" />' ) );
+								//query.addChild( new xmpp.DataForm( xmpp.DataFormType.submit ).toXml() );
+								iq.properties.push( q );
 								stream.sendIQ( iq, function(iq) {
 									if( iq.type == xmpp.IQType.result ) {
 										trace("UNLOCKEDDDDD");

@@ -50,9 +50,18 @@ class NonSASLAuthentication {
 	function handleResponse( r : IQ ) {
 		switch( r.type ) {
 			case xmpp.IQType.result :
-				var q = xmpp.Auth.parse( r.ext.toXml() );
+				
+				//var q = xmpp.Auth.parse( r.ext.toXml() );
+				//trace(q);
+				
+				trace("#####################");
+				//trace( ( !usePlainText && r.ext.toXml().elementsNamed( "digest" ).next() != null ) );
+				var hasDigest = ( !usePlainText && r.ext.toXml().elementsNamed( "digest" ).next() != null );
+				trace(hasDigest);
+				trace(resource);
+				
 				var iq = new xmpp.IQ( xmpp.IQType.set );
-				iq.ext = if( q.digest != null ) new xmpp.Auth( username, null, crypt.SHA1.encode( stream.id + password ), resource );
+				iq.ext = if( hasDigest ) new xmpp.Auth( username, null, crypt.SHA1.encode( stream.id+password ), resource );
 				else new xmpp.Auth( username, password, null, resource );
 				stream.sendIQ( iq, handleResult );
 			/*

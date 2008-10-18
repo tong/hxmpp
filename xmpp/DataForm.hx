@@ -61,13 +61,14 @@ class DataFormField {
 	public var type : DataFormFieldType;
 	public var variable : String;
 	public var desc : String;
-//	public var required : String; // hm ? 
+	public var required : Bool;
 	public var values : Array<String>;
 	public var options : Array<DataFormFieldOption>;
 	
 	public function new() {
 		values = new Array();
 		options = new Array();
+		required = false;
 	}
 	
 	public function toXml() : Xml {
@@ -75,7 +76,7 @@ class DataFormField {
 		if( label != null ) x.set( "label", label );
 		if( type != null ) x.set( "type", hack_enum_to.replace( Type.enumConstructor( type ), "-" ) );
 		if( variable != null ) x.set( "var", variable );
-//		if( required != null ) x.addChild( XmlUtil.createElement( "required", required ) );
+		if( required ) x.addChild( XmlUtil.createElement( "required" ) );
 		if( desc != null ) x.addChild( XmlUtil.createElement( "desc", desc ) );
 		for( value in values ) x.addChild( XmlUtil.createElement( "value", value ) );
 		for( option in options ) x.addChild( option.toXml() );
@@ -90,12 +91,17 @@ class DataFormField {
 		for( e in x.elements() ) {
 			switch( e.nodeName ) {
 				case "desc" : try { field.desc = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
-//				case "required" : 
+				case "required" : field.required = true;
 				case "option" : field.options.push( DataFormFieldOption.parse( e ) );
 				case "value" : try { field.values.push( e.firstChild().nodeValue ); } catch( e : Dynamic ) {}
 			}
 		}
 		return field;
+	}
+	
+	public static inline function parseFields( t : { fields : Array<DataFormField> }, x : Xml ) : { fields : Array<DataFormField> } {
+		for( e in x.elementsNamed( "field" ) ) t.fields.push( DataFormField.parse( e.firstElement() ) );
+		return t;
 	}
 }
 
@@ -119,14 +125,7 @@ class DataFormItem {
 	}
 	
 	public static function parse( x : Xml ) : DataFormItem {
-		return parseFields( new DataFormItem(), x );
-	}
-	
-	public static inline function parseFields( t : { fields : Array<DataFormField> }, x : Xml ) : untyped {} {
-		for( e in x.elementsNamed( "field" ) ) {
-			t.fields.push( DataFormField.parse( e.firstElement() ) );
-		}
-		return untyped t;
+		return cast DataFormField.parseFields( new DataFormItem(), x );
 	}
 }
 
@@ -142,13 +141,16 @@ class DataFormReported extends DataFormItem {
 	}
 	
 	public static function parse( x : Xml ) : DataFormReported {
-		return DataFormItem.parseFields( new DataFormReported(), x );
+		return cast DataFormField.parseFields( new DataFormReported(), x );
 	}
 }
 
 
 /**
 	DataForm packet extension (for iq and message packets).
+	
+	<a href="http://xmpp.org/extensions/xep-0004.html">XEP-0004: Data Forms</a><br/>
+	
 */
 class DataForm {
 	
@@ -162,7 +164,8 @@ class DataForm {
 	public var items : Array<DataFormItem>;
 	
 	
-	public function new() {
+	public function new( ?type : DataFormType ) {
+		this.type = type;
 		fields = new Array();
 		items = new Array();
 	}
@@ -172,7 +175,7 @@ class DataForm {
 		//TODO validate
 		var x = Xml.createElement( "x" );
 		x.set( "xmlns", XMLNS );
-		x.set( "type", Type.enumConstructor( type ) );
+		if( type != null ) x.set( "type", Type.enumConstructor( type ) );
 		if( title != null ) x.addChild( XmlUtil.createElement( "title", title ) );
 		if( instructions != null ) x.addChild( XmlUtil.createElement( "instructions", instructions ) );
 		for( f in fields ) x.addChild( f.toXml() );
