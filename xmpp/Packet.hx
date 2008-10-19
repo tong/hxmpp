@@ -99,6 +99,14 @@ class Packet {
 	}
 	
 	/*
+	public static function reflectField<T,V>( o : T, name : String, value : V ) {
+		//trace( Type.typeof(o) );
+		Reflect.setField( o, name, value );
+		return o;
+	}
+	*/
+	
+	/*
 		Determines the packettype of the given xml.
 	public static function getPacketType( x : Xml ) : PacketType {
 		return switch( x.nodeName ) {

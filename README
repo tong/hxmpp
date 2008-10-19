@@ -14,12 +14,13 @@ XEPS SUPPORTED
 --------------
 * 0004 DataForms
 * 0012 LastActivity
+* 0030 ServiceDiscovery
 * 0045 MUChat
 * 0054 VCardTemp
 * 0085 ChatStateNotification
 * 0091 DelayedDelivery
-* 0115 EntityCapabilities
-* 0154 RosterExchange
+// * 0115 EntityCapabilities
+// * 0154 RosterExchange
 * 0202 EntityTime
 * 0203 DelayedDelivery
 

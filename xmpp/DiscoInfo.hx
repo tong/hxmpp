@@ -13,8 +13,8 @@ class DiscoInfo {
 	public static inline var XMLNS = 'http://jabber.org/protocol/disco#info';
 	
 	public var from : String;
-	public var identities 	: List<DiscoIdentity>; 
-	public var features 	: List<String>;
+	public var identities : List<DiscoIdentity>; 
+	public var features : List<String>;
 	
 	
 	public function new( ?identities : List<DiscoIdentity>, ?features : List<String> ) {
@@ -44,20 +44,20 @@ class DiscoInfo {
 		return query;
 	}
 	
-//	public function toString() {
-//		return toXml().toString();
-//	}
+	public inline function toString() {
+		return toXml().toString();
+	}
 	
 	
-	public static function parse( child : Xml ) : xmpp.DiscoInfo {
-		var info = new xmpp.DiscoInfo();
-		for( f in child.elements() ) {
+	public static function parse( x : Xml ) : DiscoInfo {
+		var i = new xmpp.DiscoInfo();
+		for( f in x.elements() ) {
 			switch( f.nodeName ) {
-				case "feature"  : info.features.add( f.get( "var" ) );
-				case "identity" : info.identities.push( { category : f.get( "category" ), name : f.get( "name" ), type : f.get( "type" ) } );
+				case "feature"  : i.features.add( f.get( "var" ) );
+				case "identity" : i.identities.push( { category : f.get( "category" ), name : f.get( "name" ), type : f.get( "type" ) } );
 			}
 		}
-		return info;
+		return i;
 	}
 	
 }

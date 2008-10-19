@@ -47,7 +47,7 @@ class Stream extends jabber.core.StreamBase {
 	
 	public var jid(default,null) : JID;
 	public var sasl(default,null) : SASL;
-	
+
 	var version : String;
 	
 	

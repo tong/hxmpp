@@ -9,11 +9,12 @@ import xmpp.filter.PacketIDFilter;
 */
 class StreamBase /* implements IStream */ {
 	
-	public dynamic function onOpen<T>( s : T ) {}
-	public dynamic function onClose<T>( s : T ) {}
-	public dynamic function onError<T>( s : T, m : Dynamic ) {}
+	public dynamic function onOpen<T>( stream : T ) {}
+	public dynamic function onClose<T>( stream : T ) {}
+	public dynamic function onError<T>( stream : T, m : Dynamic ) {}
 	
 	public var status : StreamStatus;
+	//public var authenticated : Bool;
 	public var connection(default,setConnection) : StreamConnection;
 	public var id(default,null) : String;
 //	public var features(default,setFeatures) : Array<String>; //TODO
@@ -78,7 +79,8 @@ class StreamBase /* implements IStream */ {
 		Opens the outgoing xml stream.
 	*/
 	public function open() : Bool {
-		if( status == StreamStatus.open ) return false;
+//		trace( "open stream--> "+status );
+//		if( status == StreamStatus.open ) return false;
 		if( !connection.connected ) connection.connect();
 		else connectHandler();
 		return true;
@@ -140,7 +142,7 @@ class StreamBase /* implements IStream */ {
 		return { iq : sent, collector : c };
 	}
 	
-	/**
+	/*
 	public function handlePacket( p : xmpp.Packet ) {
 		// override me
 	}
@@ -149,7 +151,8 @@ class StreamBase /* implements IStream */ {
 	
 	function processData( d : String ) {
 		
-		//if( status != StreamStatus.closed ) return;
+		trace("STATUS: "+status);
+		
 		if( d == " " && cache == null ) return;
 		
 		if( xmpp.XMPPStream.eregStreamClose.match( d ) ) {
@@ -168,6 +171,7 @@ class StreamBase /* implements IStream */ {
 			case closed : return;
 			
 			case pending :
+			trace("PENDING");
 				#if JABBER_DEBUG
 				onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, d, true ) );
 				#end
@@ -196,7 +200,7 @@ class StreamBase /* implements IStream */ {
 	}
 	
 	function processStreamInit( d : String ) {
-		// override me.
+		// override me //
 	}
 	
 	function collectPackets( d : Xml ) : Array<xmpp.Packet> {
@@ -234,7 +238,7 @@ class StreamBase /* implements IStream */ {
 	
 	function parseStreamFeatures( x : Xml ) {
 		//TODO
-		trace("#################################### parseStreamFeatures");
+		trace("########### parseStreamFeatures");
 		/*
 		//var xx = Xml.parse( '<starttls xmlns="urn:ietf:params:xml:ns:xmpp-sasl"></starttls>' ).firstElement();
 		var xx = Xml.parse('<presence from="jdev@conference.jabber.org/etix" xml:lang="en" to="tong@jabber.spektral.at/laboratory" ></presence>').firstElement();
@@ -254,22 +258,6 @@ class StreamBase /* implements IStream */ {
 		if( f.hasNode.resolve( "mechanisms" ) ) {
 			trace( f.node.mechanisms.att.xmlns );
 		}
-		*/
-		/*
-		<stream:features>
-			<starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls"></starttls>
-			<mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl">
-				<mechanism>DIGEST-MD5</mechanism>
-				<mechanism>PLAIN</mechanism>
-				<mechanism>ANONYMOUS</mechanism>
-				<mechanism>CRAM-MD5</mechanism>
-			</mechanisms>
-			<compression xmlns="http://jabber.org/features/compress">
-				<method>zlib</method>
-			</compression>
-			<auth xmlns="http://jabber.org/features/iq-auth"/>
-			<register xmlns="http://jabber.org/features/iq-register"/>
-		</stream:features>
 		*/
 	}
 	

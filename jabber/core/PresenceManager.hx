@@ -4,6 +4,7 @@ import jabber.StreamStatus;
 import xmpp.Presence;
 import xmpp.PresenceType;
 
+
 /**
 	Wrapper for presence handling.
 */
@@ -71,7 +72,7 @@ class PresenceManager {
 	/**
 		Change the presence.
 	*/
-	public function change( ?type : xmpp.PresenceType, ?show : String, ?status : String, ?priority : Int ) : xmpp.Presence {
+	public inline function change( ?type : xmpp.PresenceType, ?show : String, ?status : String, ?priority : Int ) : xmpp.Presence {
 		return set( new Presence( type, show, status, priority ) );
 	}
 	
