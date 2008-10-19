@@ -56,6 +56,21 @@ class JabberClientDemo {
 	
 	static function loginSuccess( s ) {
 		//stream.sendData("<fuckyouup>23</fuckyouup>");
+		
+		//var ecaps = new jabber.EntityCapabilities( stream );
+		
+		var service = new jabber.ServiceDiscovery( stream );
+		service.onInfo = function(info) {
+			trace( "INFO RECIEVED");
+			for( i in info.identities ) {
+				trace("  IDENTITY "+i);
+			}
+			for( i in info.features ) {
+				trace("  FEATURE "+i);
+			}
+		};
+		service.discoverInfo("disktree");
+		
 		roster = new jabber.client.Roster( stream );
 		roster.onAvailable = rosterAvailableHandler;
 		roster.load();

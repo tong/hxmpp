@@ -215,6 +215,7 @@ class StreamBase /* implements IStream */ {
 			packets.push( p );
 			var collected = false;
 			for( c in collectors ) {
+		//		if( c == null ) collectors.remove( c );
 				if( c.accept( p ) ) {
 					collected = true;
 					#if JABBER_DEBUG

@@ -1,43 +1,74 @@
 package jabber.client;
 
 import jabber.core.PacketCollector;
+import xmpp.IQ;
+import xmpp.IQType;
 import xmpp.filter.PacketNameFilter;
 import xmpp.filter.PacketOrFilter;
 
 
-//enum SASLEvent {
-//}
+/*
+typedef BindEvent = {
+	var stream : Stream;
+	var jid : String;
+	var resource : String;
+}
+// hmmm
+class AuthEvent {
+	
+	public var stream : Stream;
+	
+	public function new() {
+		super();
+	}
+}
+*/
 
 
 /**
-	Responsible authenticating the user using SASL, binding the resource to
+	Responsible authenticating a client account using SASL, binding the resource to
 	the connection and establishing a session with the server.
+	
+	http://xmpp.org/rfcs/rfc3920.html#sasl
+	http://xmpp.org/rfcs/rfc3920.html#bind
+	
 */
 class SASLAuthentication {
 
-	public dynamic function onSuccess( s : Stream ) {}
-	public dynamic function onFailed( s : Stream ) {}
+	public dynamic function onFailed( stream : Stream ) {}
+	//public dynamic function onSASLComplete( stream : Stream ) {}
+	public dynamic function onSuccess( stream : Stream ) {} //-> stream, jid, resource
 	
 	public var stream(default,null) : Stream;
 	public var handshake(default,null) : net.sasl.Handshake;
+	public var resource(default,null) : String;
+	public var active(default,null) : Bool;
 	
-	var errorCollector : PacketCollector;
-	var challengeCollector : PacketCollector;
-	var successCollector : PacketCollector;
+	var collector_error : PacketCollector;
+	var collector_challenge : PacketCollector;
+	var collector_success : PacketCollector;
 	
 	
 	public function new( stream : Stream ) {
 		
 		this.stream = stream;
-
+		
+		active = false;
 		handshake = new net.sasl.Handshake();
 	}
 	
 	
 	/**
 		Inits SASL authentication.
+		Returns false if no compatible sasl mechanism was found.
 	*/
-	public function authenticate( password : String, ?resource : String ) {
+	public function authenticate( password : String, ?resource : String ) : Bool {
+		
+		if( active ) return false;
+		this.resource = resource; 
+		
+		// relay the stream opn event TODO:save old handler and reassign on authentication success/fail
+		stream.onOpen = handleStreamOpen;
 		
 		trace("locating mechanism");
 		//handshake.mechanism = new net.sasl.MD5Mechanism();
@@ -62,8 +93,10 @@ class SASLAuthentication {
 		}
 		if( handshake.mechanism == null ) {
 			trace( "No matching SASL mechanism found." );
-			return;
+			return false;
 		}
+		
+		active = true;
 		
 		// collect errors, failures,..
 		var errorFilters = new PacketOrFilter();
@@ -76,47 +109,75 @@ class SASLAuthentication {
 		errorFilters.add( new PacketNameFilter( ~/invalid-mechanism/ ) );
 		errorFilters.add( new PacketNameFilter( ~/mechanism-too-weak/ ) );
 		errorFilters.add( new PacketNameFilter( ~/temporary-auth-failure/ ) );
-		errorCollector = new PacketCollector( [cast errorFilters], handleError, false );
-		stream.collectors.add( errorCollector );
+		collector_error = new PacketCollector( [cast errorFilters], handleSASLError, false );
+		stream.collectors.add( collector_error );
 		
 		// collect challenge packets
-		challengeCollector = new PacketCollector( [cast new PacketNameFilter( ~/challenge/ )], handleChallenge, true );
-		stream.collectors.add( challengeCollector );
+		collector_challenge = new PacketCollector( [cast new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
+		stream.collectors.add( collector_challenge );
 		
 		// collect success packet
-		successCollector = new PacketCollector( [cast new PacketNameFilter( ~/success/ )], handleSuccess );
-		stream.collectors.add( successCollector );
+		collector_success = new PacketCollector( [cast new PacketNameFilter( ~/success/ )], handleSASLSuccess );
+		stream.collectors.add( collector_success );
 		
 		// send auth
 		var text = handshake.mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password );
 		if( text != null ) text = haxe.BaseCode.encode( text, util.StringUtil.BASE64 );
 		stream.sendData( xmpp.SASL.createAuthXml( handshake.mechanism.id, text ).toString() );
+		
+		return true;
 	}
 	
 	
-	function handleChallenge( p : xmpp.Packet ) {
+	function handleSASLChallenge( p : xmpp.Packet ) {
 		var c = p.toXml().firstChild().nodeValue;
+		// create challenge response
 		var response = handshake.getChallengeResponse( c );
 		// send challenge response
 		stream.sendData( xmpp.SASL.createResponseXml( haxe.BaseCode.encode( response, util.StringUtil.BASE64 ) ).toString() );
 	}
 	
-	function handleError( p : xmpp.Packet ) {
+	function handleSASLError( p : xmpp.Packet ) {
 		trace( "handle SASL ERROR "+p );
 	}
 	
-	function handleSuccess( p : xmpp.Packet ) {
-		//cleanup();
-		//onSuccess( stream );
-		trace("SASL SUCCESS, procceed with resource binding.");
+	function handleSASLSuccess( p : xmpp.Packet ) {
 		stream.sasl.negotiated = true;
-		//stream.open();
+		stream.open(); // reopen stream
+	}
+	
+	function handleStreamOpen( s : Stream ) {
+		if( stream.sasl.negotiated ) {
+			trace("STREAM REPOPENED .....................");
+			// bind resource
+			var iq = new IQ( IQType.set );
+			iq.ext = new xmpp.Bind( resource );
+			stream.sendIQ( iq, handleBind );
+		}
+	}
+	
+	function handleBind( iq : IQ ) {
+		cleanup();
+		switch( iq.type ) {
+			case IQType.result :
+				var b = xmpp.Bind.parse( iq.ext.toXml() );
+				//TODO
+				
+				onSuccess( stream );
+					
+			case IQType.error : 
+				trace( "TODO resource bind error" );
+				//e.error = xmpp.Error.parsePacket( iq );
+				//onFailed( e );
+		}
 	}
 	
 	function cleanup() {
-		stream.collectors.remove( challengeCollector );
-		stream.collectors.remove( successCollector );
-		stream.collectors.remove( errorCollector );
+		active = false;
+		stream.collectors.remove( collector_challenge );
+		stream.collectors.remove( collector_success );
+		stream.collectors.remove( collector_error );
+		//collector_challenge = collector_success = collector_error = null;
 	}
 	
 }

@@ -7,9 +7,12 @@ import xmpp.IQ;
 */
 class NonSASLAuthentication {
 	
+	public dynamic function onFailed( stream : Stream ) {}
+	public dynamic function onSuccess( stream : Stream ) {}
+	
 	public var stream(default,null) : Stream;
+	public var authenticating(default,null) : Bool;//TODO rename to active
 	public var usePlainText : Bool;
-	public var authenticating(default,null) : Bool;
 	public var username(default,null) : String;
 	public var password(default,null) : String;
 	public var resource(default,null) : String;
@@ -29,12 +32,6 @@ class NonSASLAuthentication {
 	}
 
 
-	public dynamic function onSuccess( s : Stream ) {
-		// i am yours.
-	}
-	public dynamic function onFailed( s : Stream ) {
-		// i am yours.
-	}
 
 	public function authenticate( password : String, ?resource : String ) {
 		if( authenticating ) throw "Authentication already in progress";

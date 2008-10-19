@@ -11,9 +11,12 @@ import xmpp.Message;
 */
 private class SASL {
 	
+	//public dynamic function onBindOffer<T>( stream : T ) {}
+	//public dynamic function onBound<T>( stream : T ) {}
+	
 	//public var has : Bool;
-	public var negotiated : Bool;
 	//public var use : Bool;
+	public var negotiated : Bool;
 	//public var implementedMechanisms : Hash<String>;
 	public var availableMechanisms : Array<String>;
 	
