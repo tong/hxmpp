@@ -103,7 +103,7 @@ class StreamBase /* implements IStream */ {
 	/**
 		Intercepts, sends and returns a xmpp packet.
 	*/
-	public function sendPacket<T>( p : xmpp.Packet, ?intercept : Bool = false ) : T {
+	public function sendPacket<T>( p : xmpp.Packet, ?intercept : Bool = true ) : T {
 		// TODO cache packets sent while fe: initializing stream compression.
 		if( !connection.connected || status != StreamStatus.open ) return null;
 		if( intercept ) for( i in interceptors ) i.interceptPacket( p );
@@ -150,8 +150,6 @@ class StreamBase /* implements IStream */ {
 	
 	
 	function processData( d : String ) {
-		
-		trace("STATUS: "+status);
 		
 		if( d == " " && cache == null ) return;
 		
