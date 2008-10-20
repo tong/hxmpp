@@ -9,6 +9,7 @@ import xmpp.IQ;
 import xmpp.IQType;
 import xmpp.filter.MessageFilter;
 import xmpp.filter.PacketAllFilter;
+import xmpp.filter.PacketFieldFilter;
 import xmpp.filter.PacketFromContainsFilter;
 import xmpp.filter.PacketFromFilter;
 import xmpp.filter.PacketIDFilter;
@@ -161,6 +162,23 @@ class TestFilters extends haxe.unit.TestCase {
 		trace(x.nodeName);
 		assertTrue( !f.accept( new PlainPacket( x ) ) );
 		*/
+		
+	}
+	
+	public function testFieldFilter() {
+		
+		var m = new Message();
+		m.to = "node@disktree.net";
+		m.from = "me@disktree.net";
+		
+		var f = new PacketFieldFilter( "to", "node@disktree.net" );
+		assertTrue( f.accept( m ) );
+		
+		f = new PacketFieldFilter( "to" );
+		assertTrue( f.accept( m ) );
+		
+		f = new PacketFieldFilter( "toooooooo" );
+		assertTrue( !f.accept( m ) );
 		
 	}
 	
