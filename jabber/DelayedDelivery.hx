@@ -36,20 +36,23 @@ class DelayedDelivery {
 	*/
 	public static function getDelay( m : xmpp.Message ) : jabber.PacketDelay {
 		for( e in m.properties ) {
-			if( e.nodeName != "delay" || e.get( "xmlns" ) != XMLNS ) return null;
-			return { from : e.get( "from" ),
-					 stamp : e.get( "stamp" ),
-					 description : e.firstChild().nodeValue };
-			
-			#if XEP_0091
-			var description : String = null;
-			try { description = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
-			return { from : e.get( "from" ),
-					 stamp : e.get( "stamp" ),
-					 description : description };
-			#end//XEP_0091
+			var nodeName = e.nodeName;
+			var xmlns = e.get( "xmlns" );
+			#if XEP_0091 
+			if( nodeName == "x" && xmlns == "jabber:x:delay" ) {
+				var desc : String = null;
+				try { desc = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
+				return { from : e.get( "from" ), stamp : e.get( "stamp" ), description : desc };
+			}
+			#end
+			if( nodeName == "delay" ) {
+				trace("HASDELAYHASDELAYHASDELAY");
+				var desc : String = null;
+				try { desc = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
+				return { from : e.get( "from" ), stamp : e.get( "stamp" ), description : desc };
+			}
 		}
-		return null;	
+		return null;
 	}
 	
 }
