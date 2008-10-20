@@ -4,6 +4,34 @@ import jabber.StreamStatus;
 import xmpp.filter.PacketIDFilter;
 
 
+private class FeatureList {
+	
+	var features : List<String>;
+	
+	public function new() {
+		features = new List();
+	}
+	
+	
+	public function has( name : String ) {
+		for( f in features ) if( f == name ) return f;
+		return null;
+	}
+	
+	public function add( name : String  ) {
+	}
+	
+	
+	public function remove( name : String  ) {
+	}
+	
+	public function clear() {
+		features = new List();
+	}
+	
+}
+
+
 /**
 	Abstract base for client and component jabber streams.<br>
 */
@@ -17,7 +45,7 @@ class StreamBase /* implements IStream */ {
 	//public var authenticated : Bool;
 	public var connection(default,setConnection) : StreamConnection;
 	public var id(default,null) : String;
-//	public var features(default,setFeatures) : Array<String>; //TODO
+	public var features(default,null) : Array<String>; //TODO
 //	public var serverFeatures : Hash<>;
 	public var lang(default,setLang) : String;
 	public var collectors : List<IPacketCollector>;
@@ -40,6 +68,8 @@ class StreamBase /* implements IStream */ {
 		collectors = new List();
 		interceptors = new List();
 		packetsSent = 0;
+		
+		features = new Array();
 		
 		#if JABBER_DEBUG
 		onXMPP = new event.Dispatcher();
@@ -127,14 +157,17 @@ class StreamBase /* implements IStream */ {
 	/**
 		Sends an IQ xmpp packet and forwards the collected response to the given handler function.
 	*/
-	public function sendIQ( iq : xmpp.IQ, handler : xmpp.IQ->Void,
+	public function sendIQ( iq : xmpp.IQ, ?handler : xmpp.IQ->Void,
 							?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool )
 	: { iq : xmpp.IQ, collector : IPacketCollector } {
 		if( iq.id == null ) iq.id = nextID();
-		var c : IPacketCollector = new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block );
-		collectors.add( c );
+		var c : IPacketCollector = null;
+		if( handler != null ) {
+			c = new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block );
+			collectors.add( c );
+		}
 		var sent = sendPacket( iq );
-		if( sent == null ) {
+		if( sent == null && handler != null ) {
 			collectors.remove( c );
 			c = null;
 			return null;

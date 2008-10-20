@@ -17,6 +17,7 @@ class ChatStateNotification implements jabber.core.IPacketInterceptor {
 	*/
 	public var state : xmpp.ChatState;
 	public var chat(default,setChat) : Chat;
+	public var featureName(default,null) : String;
 	
 	var filter_message : MessageFilter;
 	var filter_to : PacketFieldFilter;
@@ -28,6 +29,8 @@ class ChatStateNotification implements jabber.core.IPacketInterceptor {
 		message = new xmpp.Message( MessageType.chat );
 		filter_message = new MessageFilter( MessageType.chat );
 		filter_to = new PacketFieldFilter( "to", chat.peer );
+		
+		featureName = xmpp.ChatStatePacket.XMLNS;
 		
 		setChat( chat );
 		
