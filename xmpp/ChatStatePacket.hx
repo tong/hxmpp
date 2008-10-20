@@ -14,7 +14,7 @@ class ChatStatePacket {
 	}
 	
 	/**
-		Creates the chatstate extension xml.
+		Creates a chatstate extension xml.
 	*/
 	public static function createXml( state : ChatState ) : Xml {
 		var x = Xml.createElement( Type.enumConstructor( state ) );
@@ -24,13 +24,14 @@ class ChatStatePacket {
 	
 	/**
 		Extracts the chat state of the given message.
+		Returns null if no state was found.
 	*/
 	public static function getState( m : xmpp.Message ) : xmpp.ChatState {
 		for( e in m.properties ) {
-			var name = e.nodeName;
-			switch( name ) {
+			var n = e.nodeName;
+			switch( n ) {
 				case "active","composing","paused","inactive","gone" :
-					return Type.createEnum( xmpp.ChatState, name );
+					return Type.createEnum( xmpp.ChatState, n );
 			}
 		}
 		return null;
