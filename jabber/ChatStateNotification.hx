@@ -12,7 +12,7 @@ import xmpp.filter.PacketFieldFilter;
 class ChatStateNotification implements jabber.core.IPacketInterceptor {
 	
 	/**
-		The current state for this chat.
+		The current state of this chat.
 		If not null, messages sent to the peer jid of this chat will be intercepted with the state notification.
 	*/
 	public var state : xmpp.ChatState;

@@ -2,7 +2,7 @@
 # hxmpp doc
 -cp ../
 -cp ../../core
--main ImportAll
+ImportAll
 -neko all.n
 -xml api.xml
 -cmd rm all.n
