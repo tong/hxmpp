@@ -20,41 +20,27 @@ private class DiscoItem extends xmpp.disco.Items {
 }
 
 /**
-	Extension to discover infos and items of an xmpp entity.
-	
-	<a href="http://www.xmpp.org/extensions/xep-0030.html">XEP 30 - ServiceDiscovery</a>
-	
 	Manages discovery of services from XMPP entities.<br>
 	Two kinds of information can be discovered:<br>
 	(1) the identity and capabilities of an entity, including the protocols and features it supports,<br>
 	(2) the items associated with an entity, such as the list of rooms hosted at a multi-user chat service.<br>
 	
+	<a href="http://www.xmpp.org/extensions/xep-0030.html">XEP 30 - ServiceDiscovery</a>
 */
 class ServiceDiscovery {
 	
-	public static var defaultIdentityName = "hxmpp";
-	public static var defaultIdentityType = "pc";
-
 	public dynamic function onInfo( e : DiscoInfo ) {}
 	public dynamic function onItem( e : DiscoItem ) {}
 	
-	public var identityName : String;
-	public var identityType : String;
 	public var stream(default,null) : StreamBase;
-	public var listener(default,null) : ServiceDiscoveryListener;
 	
 	var iq_info : IQ;
 	var iq_item : IQ;
 	
 	
-	public function new( stream : StreamBase, ?identityName : String, ?identityType : String ) {
+	public function new( stream : StreamBase ) {
 		
 		this.stream = stream;
-		this.identityName = ( identityName != null ) ? identityName : defaultIdentityName;
-		this.identityType = ( identityType != null ) ? identityType : defaultIdentityType;
-		
-		listener =  new ServiceDiscoveryListener( stream );
-		listener.active = true;
 		
 		iq_info = new IQ();
 		iq_info.ext = new xmpp.disco.Info();
@@ -106,52 +92,6 @@ class ServiceDiscovery {
 			default: //#
 				//TODO
 		}
-	}
-	
-}
-
-
-/**
-	Listens for incoming service discovery requests.
-*/
-private class ServiceDiscoveryListener {
-	
-	public var stream(default,null) : StreamBase;
-	public var active(default,setActive) : Bool;
-	
-	var collector_info : PacketCollector;
-	var collector_item : PacketCollector;
-	
-	
-	public function new( stream : StreamBase ) {
-		
-		this.stream = stream;
-		
-		collector_info = new PacketCollector( [ cast new IQFilter( xmpp.disco.Info.XMLNS, null, IQType.get ) ], handleInfoQuery, true );
-		collector_item = new PacketCollector( [ cast new IQFilter( xmpp.disco.Items.XMLNS, null, IQType.get ) ], handleItemQuery, true );
-	}
-	
-	
-	function setActive( a : Bool ) : Bool {
-		if( a == active ) return a;
-		Reflect.setField( this, "active", a );
-		if( a ) {
-			stream.collectors.add( collector_info );
-			stream.collectors.add( collector_item );
-		} else {
-			stream.collectors.remove( collector_info );
-			stream.collectors.remove( collector_item );
-		}
-		return a;
-	}
-	
-	
-	function handleInfoQuery( iq : IQ ) {
-		trace("handleInfoQuery");
-	}
-	
-	function handleItemQuery( iq : IQ ) {
-		trace("handleItemQuery");
 	}
 	
 }

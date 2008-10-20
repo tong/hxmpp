@@ -21,14 +21,12 @@ class Info {
 
 	public function toXml() : Xml {
 		var x = xmpp.IQ.createQuery( XMLNS );
-		if( identities.length > 0 ) {
-			for( i in identities ) {
-				var identity = Xml.createElement( 'identity' );
-				if( i.category != null ) identity.set( "category", i.category );
-				if( i.name != null ) identity.set( "name", i.name );
-				if( i.type != null ) identity.set( "type", i.type );
-				x.addChild( identity );
-			}
+		for( i in identities ) {
+			var identity = Xml.createElement( 'identity' );
+			if( i.category != null ) identity.set( "category", i.category );
+			if( i.name != null ) identity.set( "name", i.name );
+			if( i.type != null ) identity.set( "type", i.type );
+			x.addChild( identity );
 		}
 		if( features.length > 0 ) {
 			for( f in features ) {

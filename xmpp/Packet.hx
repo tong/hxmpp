@@ -99,6 +99,11 @@ class Packet {
 	}
 	
 	/*
+	public static function reflectPacketAttributes<T>( x : Xml, p : T ) : T {
+	}
+	*/
+	
+	/*
 	public static function reflectField<T,V>( o : T, name : String, value : V ) {
 		//trace( Type.typeof(o) );
 		Reflect.setField( o, name, value );
