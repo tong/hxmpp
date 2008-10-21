@@ -1,4 +1,4 @@
-package jabber;
+package xmpp;
 
 
 typedef PacketDelay = {
@@ -29,12 +29,12 @@ typedef PacketDelay = {
 */
 class DelayedDelivery {
 	
-	public static var XMLNS = "urn:xmpp:delay"; // TODO move to xmpp.DelayedDelivery
+	public static var XMLNS = "urn:xmpp:delay";
 	
 	/**
 		Parses/returns the packet delay of the given packet.
 	*/
-	public static function getDelay( m : xmpp.Message ) : jabber.PacketDelay {
+	public static function get( m : xmpp.Message ) : xmpp.PacketDelay {
 		for( e in m.properties ) {
 			var nodeName = e.nodeName;
 			var xmlns = e.get( "xmlns" );
