@@ -40,6 +40,7 @@ class MUChat {
 	public dynamic function onJoin( muc : MUChat ) {}
 	public dynamic function onMessage( msg : MUChatMessage ) {}
 	public dynamic function onPresence( occupant : jabber.muc.Occupant ) {}
+	public dynamic function onSubject( muc : MUChat ) {}
 	
 	public var stream(default,null) : Stream;
 	public var jid(default,null) : String;
@@ -51,7 +52,7 @@ class MUChat {
 	public var affiliation : Affiliation;
 	public var presence : PresenceManager;
 	public var occupants : Array<jabber.muc.Occupant>;
-	//public var subject(default,setSubject) : String;
+	public var subject(default,null) : String;
 	public var history(default,null) : Array<String>;//Array<MUCMessage>;
 	public var historySize(default,setHistorySize) : Int;
 	
@@ -122,6 +123,7 @@ class MUChat {
 	*/
 	public function speak( t : String ) : xmpp.Message {
 		if( !joined ) return null;
+		message.subject = null;
 		message.body = t;
 		return stream.sendPacket( message );
 	}
@@ -131,7 +133,11 @@ class MUChat {
 		//service
 	}*/
 	
-	
+	public function changeSubject( t : String ) : xmpp.Message {
+		message.body = null;
+		message.subject = t;
+		return stream.sendPacket( message );
+	}
 	
 	
 	#if JABBER_DEBUG
@@ -143,17 +149,23 @@ class MUChat {
 	#end
 	
 	
-	function handleMessage( m : xmpp.Message ) {
 		//TODO
+	function handleMessage( m : xmpp.Message ) {
 		if( !joined ) return;
 		var from = parseName( m.from );
 		var occupant = getOccupant( from );
-		if( occupant == null && from != jid ) {
-			trace( "??? Message from unknown muc occupant ???" );
+		if( occupant == null && from != jid && from != nick && from != jid ) {
+			trace( "??? Message from unknown muc occupant ??? "+from );
 			return;
 		}
-		var msg = new MUChatMessage( this, m, occupant );
-		onMessage( msg );
+		if( m.subject != null ) {
+			if( subject != null ) {
+				if( m.subject == subject ) return;
+			}
+			subject = m.subject;
+			onSubject( this );
+		}
+		onMessage( new MUChatMessage( this, m, occupant ) );
 	}
 	
 	function handlePresence( p : xmpp.Presence ) {
@@ -197,8 +209,9 @@ class MUChat {
 				}
 				
 			case jid :
-				trace("TODO process presence from room.");
-			
+				trace("... process presence from room.");
+				//TODO
+				
 			default : // process occupant presence
 				var from = parseName( p.from );
 				var occupant = getOccupant( from );

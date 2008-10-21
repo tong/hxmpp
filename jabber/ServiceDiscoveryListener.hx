@@ -9,13 +9,10 @@ import xmpp.IQType;
 
 /**
 	Listens for incoming service discovery requests.
-	
 */
 class ServiceDiscoveryListener {
 	
-	public static var defaultIdentityType = "pc";
-	public static var defaultIdentityName = "hxmpp";
-	public static var defaultIdentityCategory = "client";
+	public static var defaultIdentity = { category:"client", name:"hxmpp", type:"pc" }
 	
 	public var stream(default,null) : StreamBase;
 	public var active(default,setActive) : Bool;
@@ -25,12 +22,14 @@ class ServiceDiscoveryListener {
 	var collector_item : PacketCollector;
 	var info_result : IQ;
 	var info_result_ext : xmpp.disco.Info;
+	var item_result : IQ;
+	var item_result_ext : xmpp.disco.Item;
 	
 	
 	public function new( stream : StreamBase,  ?identity : xmpp.disco.Identity ) {
 		
 		this.stream = stream;
-		this.identity = if( identity != null ) identity else { category:defaultIdentityCategory, name:defaultIdentityName, type:defaultIdentityType };
+		this.identity = if( identity != null ) identity else defaultIdentity;
 		
 		collector_info = new PacketCollector( [ cast new IQFilter( xmpp.disco.Info.XMLNS, null, IQType.get ) ], handleInfoQuery, true );
 		collector_item = new PacketCollector( [ cast new IQFilter( xmpp.disco.Items.XMLNS, null, IQType.get ) ], handleItemQuery, true );
@@ -39,6 +38,9 @@ class ServiceDiscoveryListener {
 		info_result_ext = new xmpp.disco.Info();
 		info_result_ext.identities = [ identity ];
 		info_result.ext = info_result_ext;
+		
+		item_result = new IQ( IQType.result );
+		item_result.ext = item_result;
 		
 		setActive( true );
 	}
@@ -60,7 +62,6 @@ class ServiceDiscoveryListener {
 	
 	function handleInfoQuery( iq : IQ ) {
 		info_result.to = iq.from;
-		trace(identity);
 		info_result_ext.identities = [identity];
 		info_result_ext.features = new Array();
 		for( f in stream.features ) info_result_ext.features.push( f );
@@ -68,7 +69,10 @@ class ServiceDiscoveryListener {
 	}
 	
 	function handleItemQuery( iq : IQ ) {
-		trace("TODO handleItemQuery");
+		trace("handleItemQuery");
+		//TODO
+		//.
+		stream.sendIQ( item_result );
 	}
 	
 }

@@ -12,9 +12,13 @@ class PacketFromContainsFilter {
 		this.contained = contained;
 	}
 	
-	public function accept( packet : xmpp.Packet ) : Bool {
-		if( packet.from == null ) return false;
-		return new EReg( contained, "" ).match( packet.from );
+	public function accept( p : xmpp.Packet ) : Bool {
+		try {
+			if( p.from == null ) return false;
+			return new EReg( contained, "" ).match( p.from );
+		} catch( e : Dynamic ) {
+			return false;
+		}
 	}
 	
 	#if JABBER_DEBUG

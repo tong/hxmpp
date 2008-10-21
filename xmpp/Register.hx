@@ -32,11 +32,27 @@ class Register {
 		return q;
 	}
 	
-	
-	/*
-	public static function parse( x : Xml ) : xmpp.Auth {
-		//TODO
+	public inline function toString() : String {
+		return toXml().toString();
 	}
-	*/
+	
+	
+	public static function parse( x : Xml ) : xmpp.Register {
+		var r = new xmpp.Register();
+		//xmpp.Packet.reflectPacketNodes( x, r );
+		for( e in x.elements() ) {
+			var v : String = null;
+			try { v = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
+			if( v != null ) {
+				switch( e.nodeName ) {
+					case "username" : r.username = v;
+					case "password" : r.password = v;
+					case "email"   : r.email = v;
+					case "name" : r.name = v;
+				}
+			}
+		}
+		return r;
+	}
 	
 }

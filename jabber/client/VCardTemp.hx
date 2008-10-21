@@ -4,10 +4,11 @@ package jabber.client;
 /**
 	Event, dispatched on vcard load or update.
 */
-class VCardEvent extends xmpp.VCard {
+private class VCardEvent extends xmpp.VCard {
 	
 	public var from(default,null) : String;
 	public var stream(default,null) : Stream;
+	//public var error 
 	
 	public function new( stream : Stream, from : String ) {
 		super();
@@ -69,8 +70,6 @@ class VCardTemp {
 	function handleLoad( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 			case result :
-				//TODO
-				trace("VCARD RESULT");
 				var e = new VCardEvent( stream, iq.from );
 				e.injectData( iq.ext.toXml() );
 				onLoad( e );

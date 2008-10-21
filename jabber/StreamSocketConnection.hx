@@ -116,6 +116,9 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		} catch( e : Dynamic ) {
 			trace(e);
 		}
+		var s = haxe.io.Bytes.ofString( data );
+		//trace(s);
+		//trace("##"+neko.zip.Uncompress.run( haxe.io.Bytes.ofString( data ) ).toString() );
 		#if ( js || SOCKET_BRIDGE )
 		socket.send( data );
 		#elseif flash9

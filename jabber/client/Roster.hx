@@ -23,7 +23,6 @@ enum SubscriptionMode {
 
 	/** Ask user how to proceed. */
 	manual;
-	
 }
 
 
@@ -48,17 +47,14 @@ private class RosterEntry extends xmpp.RosterItem {
 /**
 	Jabber client roster.
 */
-//?? class Roster extends event.Dispatcher<RosterEvent>
-//?? class Roster extends jabber.StreamExtension.
 class Roster {
 
 	public static var DEFAULT_SUBSCRIPTIONMODE = SubscriptionMode.acceptAll;
 	
-	//public dynamic function change( e : jabber.event.RosterEvent<Roster,RosterEntry> ) : Void;
 	public dynamic function onAvailable( roster : Roster ) {}
-	public dynamic function onAdd( entries : List<RosterEntry> ) {}
-	public dynamic function onUpdate( entries : List<RosterEntry> ) {}
-	public dynamic function onRemove( entries : List<RosterEntry> ) {}
+	public dynamic function onAdd( entries : Iterable<RosterEntry> ) {}
+	public dynamic function onUpdate( entries : Iterable<RosterEntry> ) {}
+	public dynamic function onRemove( entries : Iterable<RosterEntry> ) {}
 	public dynamic function onPresence( entry : RosterEntry ) {}
 	
 	public var available(default,null) : Bool;
@@ -81,7 +77,6 @@ class Roster {
 		available = false;
 		entries = new Array();
 		presence = new jabber.core.PresenceManager( stream );
-		//pending_unsubscriptions = new Hash();
 		
 		// collect presence packets
 		stream.collectors.add( new PacketCollector( [cast new PacketTypeFilter( PacketType.presence )], handlePresence, true ) );
@@ -121,7 +116,7 @@ class Roster {
 	public function getEntry( jid : String ) : RosterEntry {
 		if( !available ) return null;
 		jid = JIDUtil.parseBar( jid );
-		for( entry in entries ) if( entry.jid == jid ) return entry;
+		for( e in entries ) if( e.jid == jid ) return e;
 		return null;
 	}
 	
@@ -159,11 +154,13 @@ class Roster {
 			} 
 		}
 		// send roster iq to server.  hmmmmm ????? remove
+		/*
 		var items = new xmpp.Roster();
 		items.add( new xmpp.RosterItem( to ) );
 		var iq = new IQ( IQType.set );
 		iq.ext = items;
 		stream.sendIQ( iq, handleRosterIQ );
+		*/
 		// send subsbscribe presence to entity.
 		var p = new Presence( "subscribe" );
 		p.to = to;
@@ -191,7 +188,7 @@ class Roster {
 	}
 	
 	/**
-		Returns the [xmpp.Presence] of the given user.
+		Returns the presence of the given user.
 	*/
 	public function getPresence( jid : String ) : Presence {
 		if( !available ) return null;
@@ -200,7 +197,7 @@ class Roster {
 		return null;
 	}
 	
-	/**
+	/*
 		TODO
 		Returns the presence of the given jid at a specified resource.
 	public function getResourcePresence( jid : String, resource : String ) : xmpp.Presence {
@@ -234,9 +231,9 @@ class Roster {
 				var updated = new List<RosterEntry>();
 				var removed = new List<RosterEntry>();
 				
-				for( item_xml in iq.ext.toXml().elements() ) {
+				for( x in iq.ext.toXml().elements() ) {
 					
-					var item = xmpp.RosterItem.parse( item_xml );
+					var item = xmpp.RosterItem.parse( x );
 					var entry : RosterEntry = cast item;
 					entry.roster = this;
 		
@@ -259,8 +256,8 @@ class Roster {
 						}
 					}
 				}
-				
 				if( !available ) {
+					// report avaibility
 					available = true;
 					onAvailable( this );
 				}
@@ -268,9 +265,12 @@ class Roster {
 				if( updated.length > 0 ) onUpdate( updated );
 				if( removed.length > 0 ) onRemove( removed );
 			
+			case error :
+				// TODO 
+				//var err = xmpp.Error.parse( iq );
+				
 			default :
 				// TODO
-			
 		}
 	}
 	
@@ -284,7 +284,6 @@ class Roster {
 		var from = JIDUtil.parseBar( presence.from );
 		var entry = getEntry( from );
 		if( entry != null ) {
-			
 			trace("PRESENCE FROM ROSTER USER");		
 			entry.presence = presence;
 			onPresence( entry );
@@ -321,7 +320,6 @@ class Roster {
 				
 			}
 			//...
-			
 		}
 	}
 	

@@ -11,7 +11,7 @@ class NonSASLAuthentication {
 	public dynamic function onSuccess( stream : Stream ) {}
 	
 	public var stream(default,null) : Stream;
-	public var authenticating(default,null) : Bool;//TODO rename to active
+	public var active(default,null) : Bool;
 	public var usePlainText : Bool;
 	public var username(default,null) : String;
 	public var password(default,null) : String;
@@ -28,16 +28,15 @@ class NonSASLAuthentication {
 		if( onSuccess != null ) this.onSuccess = onSuccess;
 		if( onFailed != null ) this.onFailed = onFailed;
 		
-		authenticating = false;
+		active = false;
 	}
 
 
-
 	public function authenticate( password : String, ?resource : String ) {
-		if( authenticating ) throw "Authentication already in progress";
+		if( active ) throw "Authentication already in progress";
 		this.password = password;
 		this.resource = resource;
-		authenticating = true;
+		active = true;
 		var iq = new IQ();
 		iq.ext = new xmpp.Auth( username );
 		stream.sendIQ( iq, handleResponse );
@@ -53,13 +52,13 @@ class NonSASLAuthentication {
 				else new xmpp.Auth( username, password, null, resource );
 				stream.sendIQ( iq, handleResult );
 			default : 
-				authenticating = false;
+				active = false;
 				onFailed( stream );
 		}
 	}
 	
 	function handleResult( r : IQ ) {
-		authenticating = false;
+		active = false;
 		switch( r.type ) {
 			case result : onSuccess( stream );
 			default : onFailed( stream );

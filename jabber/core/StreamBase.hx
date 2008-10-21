@@ -4,6 +4,7 @@ import jabber.StreamStatus;
 import xmpp.filter.PacketIDFilter;
 
 
+/*
 private class FeatureList {
 	
 	var features : List<String>;
@@ -30,6 +31,7 @@ private class FeatureList {
 	}
 	
 }
+*/
 
 
 /**
@@ -48,8 +50,10 @@ class StreamBase /* implements IStream */ {
 	public var features(default,null) : Array<String>; //TODO
 //	public var serverFeatures : Hash<>;
 	public var lang(default,setLang) : String;
+	public var version : String;  // hm not sure
 	public var collectors : List<IPacketCollector>;
 	public var interceptors : List<IPacketInterceptor>;
+	
 	
 	var packetsSent : Int;
 	var cache : StringBuf;
@@ -64,7 +68,6 @@ class StreamBase /* implements IStream */ {
 		status = StreamStatus.closed;
 		this.setConnection( connection );
 		
-//		features = new Array();
 		collectors = new List();
 		interceptors = new List();
 		packetsSent = 0;
@@ -109,7 +112,6 @@ class StreamBase /* implements IStream */ {
 		Opens the outgoing xml stream.
 	*/
 	public function open() : Bool {
-//		trace( "open stream--> "+status );
 //		if( status == StreamStatus.open ) return false;
 		if( !connection.connected ) connection.connect();
 		else connectHandler();
@@ -159,7 +161,8 @@ class StreamBase /* implements IStream */ {
 	*/
 	public function sendIQ( iq : xmpp.IQ, ?handler : xmpp.IQ->Void,
 							?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool )
-	: { iq : xmpp.IQ, collector : IPacketCollector } {
+	: { iq : xmpp.IQ, collector : IPacketCollector }
+	{
 		if( iq.id == null ) iq.id = nextID();
 		var c : IPacketCollector = null;
 		if( handler != null ) {
@@ -175,24 +178,18 @@ class StreamBase /* implements IStream */ {
 		return { iq : sent, collector : c };
 	}
 	
-	/*
-	public function handlePacket( p : xmpp.Packet ) {
-		// override me
-	}
-	*/
-	
 	
 	function processData( d : String ) {
 		
 		if( d == " " && cache == null ) return;
 		
 		if( xmpp.XMPPStream.eregStreamClose.match( d ) ) {
-			//..
+			//TODO
 			close( true );
 			return;
 		}
 		if( xmpp.XMPPStream.eregStreamError.match( d ) ) {
-			//..
+			//TODO
 			close( true );
 			return;
 		}
@@ -202,7 +199,6 @@ class StreamBase /* implements IStream */ {
 			case closed : return;
 			
 			case pending :
-			trace("PENDING");
 				#if JABBER_DEBUG
 				onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, d, true ) );
 				#end
@@ -241,7 +237,10 @@ class StreamBase /* implements IStream */ {
 			try {
 				p = xmpp.Packet.parse( x );
 			} catch( e : Dynamic ) {
-				throw "Error parsing XMPP packet: "+x;
+				trace( "##### ERROR ##### ");
+				trace( e );
+				trace( "#################" );
+				return null;
 			} 
 			packets.push( p );
 			var collected = false;
@@ -260,10 +259,12 @@ class StreamBase /* implements IStream */ {
 					}					
 				}
 			}
-			#if JABBER_DEBUG
-			if( !collected ) trace( "WARNING, xmpp packet not processed: "+p );
-			#end
-			//TODO create response
+			if( !collected ) {
+				#if JABBER_DEBUG
+				trace( "WARNING, xmpp packet not processed: "+p );
+				#end
+				//TODO create response
+			}
 		}
 		return packets;
 	}
@@ -271,26 +272,6 @@ class StreamBase /* implements IStream */ {
 	function parseStreamFeatures( x : Xml ) {
 		//TODO
 		trace("########### parseStreamFeatures");
-		/*
-		//var xx = Xml.parse( '<starttls xmlns="urn:ietf:params:xml:ns:xmpp-sasl"></starttls>' ).firstElement();
-		var xx = Xml.parse('<presence from="jdev@conference.jabber.org/etix" xml:lang="en" to="tong@jabber.spektral.at/laboratory" ></presence>').firstElement();
-		try {
-			trace( haxe.xml.Check.checkNode( xx, xmpp.Rule.presence ) );
-		} catch( e : Dynamic ) {
-			trace( e );
-		}
-		*/
-	//	var f = new haxe.xml.Fast( x );
-	//	trace( f.node.starttls );
-		
-		/*
-		if( f.hasNode.resolve( "starttls" ) ) {
-			trace("NNNNN");
-		}
-		if( f.hasNode.resolve( "mechanisms" ) ) {
-			trace( f.node.mechanisms.att.xmlns );
-		}
-		*/
 	}
 	
 	

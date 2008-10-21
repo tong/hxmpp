@@ -3,7 +3,7 @@ package jabber.util;
 
 /**
 	Static methods for JabberID manipulation/validation.<br>
-	<a href="http://www.xmpp.org/extensions/xep-0106.html2">XEP-0106: JID Escaping</a><br>
+	<a href="http://www.xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a><br>
 */	
 class JIDUtil {
 	
@@ -85,6 +85,8 @@ class JIDUtil {
 	    Typically, escaping is performed only by a client that is processing information
 	    provided by a human user in unescaped form, or by a gateway to some external system
 	    (e.g., email or LDAP) that needs to generate a JID.
+	    
+	    TODO check XEP!! maybe minor errors (?)
     */
 	public static function escapeNode( node : String ) : String {
 		var buf = new StringBuf();
@@ -100,7 +102,12 @@ class JIDUtil {
 				case '>' 	: buf.add( "\\3e" );
 				case '@' 	: buf.add( "\\40" );
 				case '\\\\'	: buf.add( "\\5c" );
-				default 	: if( c == " " ) buf.add( "\\20" ) else buf.add( c );
+				//TODO
+				/*
+				case " " : buf.add( "\\20" );
+				default : buf.add( c );
+				*/
+				default : if( c == " " ) buf.add( "\\20" ) else buf.add( c );
 			}
 		}
 		return buf.toString();
@@ -115,6 +122,8 @@ class JIDUtil {
      	containing escaped characters to a human user, or by a gateway to some
      	external system (e.g., email or LDAP) that needs to generate identifiers
      	for foreign systems.
+     	
+      TODO check XEP!! maybe minor errors (?)
     */
 	public static function unescapeNode( node : String ) : String {
 		var n = node.length;

@@ -66,7 +66,7 @@ class Packet {
 		}
 	}
 	
-	/* TODO
+	/*
 	static function parseBase( p, x : Xml ) {
 		parseAttributes
 		for( e in errors )

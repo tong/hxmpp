@@ -47,6 +47,7 @@ class StreamConnection {
 	
 	
 	function dataHandler( data : String ) {
+		trace("##");
 		for( f in filters ) data = f.filterData( data );
 		onData( data );
 	}

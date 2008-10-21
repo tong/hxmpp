@@ -34,7 +34,7 @@ class StreamCompression {
 	public function request( method : CompressionMethod ) {
 		this.method = method;
 		//TODO add attibute filter
-		stream.collectors.add( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( "compressed" ) ], compressionInitSuccessHandler, false ) );
+		stream.collectors.add( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/compressed/ ) ], compressionInitSuccessHandler, false ) );
 		//stream.collectors.add( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( "failure" ) ], compressionInitFailedHandler, false ) );
 		stream.sendData( '<compress xmlns="'+XMLNS+'"><method>'+method.name+'</method></compress>' );
 	}
@@ -56,6 +56,7 @@ class StreamCompression {
 		stream.connection.interceptors.push( this );
 		stream.connection.filters.push( this );
 		stream.status = jabber.StreamStatus.closed;
+		stream.version = null;
 		stream.open();
 	}
 	

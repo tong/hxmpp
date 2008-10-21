@@ -19,6 +19,7 @@ private class DiscoItem extends xmpp.disco.Items {
 	public function new() { super(); }
 }
 
+
 /**
 	Manages discovery of services from XMPP entities.<br>
 	Two kinds of information can be discovered:<br>
@@ -64,7 +65,7 @@ class ServiceDiscovery {
 		stream.sendIQ( iq_item, handleItem );
 	}
 	
-		//TODO
+	
 	function handleInfo( iq : IQ ) {
 		switch( iq.type ) {
 			case result :
@@ -73,13 +74,13 @@ class ServiceDiscovery {
 				i.stream = stream;
 				onInfo( i );
 			case error :
+				var err = xmpp.Error.parsePacket( iq ); 
+				trace( err );
 				//TODO
 			default: //#
-				//TODO
 		}
 	}
 	
-		//TODO
 	function handleItem( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 			case result :
@@ -90,7 +91,6 @@ class ServiceDiscovery {
 			case error :
 				//TODO
 			default: //#
-				//TODO
 		}
 	}
 	

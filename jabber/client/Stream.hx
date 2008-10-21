@@ -51,7 +51,7 @@ class Stream extends jabber.core.StreamBase {
 	public var jid(default,null) : JID;
 	public var sasl(default,null) : SASL;
 
-	var version : String;
+//	var version : String;
 	
 	
 	public function new( jid : JID, connection : StreamConnection, ?version : String = "1.0" ) {
@@ -101,7 +101,7 @@ class Stream extends jabber.core.StreamBase {
 		var sf = d.substr( d.indexOf( "<stream:features>" ) );
 		if( sfi != -1 ) {
 			//TODO
-			//var features = parseStreamFeatures( Xml.parse( sf ).firstElement() );
+			var features = parseStreamFeatures( Xml.parse( sf ).firstElement() );
 			if( status != StreamStatus.open ) {
 				status = StreamStatus.open;
 				onOpen( this );
