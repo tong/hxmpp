@@ -16,9 +16,7 @@ import php.net.Socket;
 
 // TODO socket handling
 
-//TODO
-//class SocketConnection {
-class StreamSocketConnection extends jabber.core.StreamConnection {
+class SocketConnection extends jabber.core.StreamConnection {
 	
 	#if ( neko || php )
 	public static var SOCKET_TIMEOUT_DEFAULT = 10;

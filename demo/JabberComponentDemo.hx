@@ -7,7 +7,7 @@ class JabberComponentDemo {
 	
 	static function main() {
 		
-		var cnx = new jabber.StreamSocketConnection( "127.0.0.1", 5275 );
+		var cnx = new jabber.SocketConnection( "127.0.0.1", 5275 );
 		stream = new jabber.component.Stream( "norc", "1234", cnx );
 		stream.onOpen = function(s) {
 			trace("JABBER STREAM opened...");

@@ -1,5 +1,5 @@
 
-import jabber.StreamSocketConnection;
+import jabber.SocketConnection;
 import jabber.client.Stream;
 import jabber.client.NonSASLAuthentication;
 import jabber.client.Roster;
@@ -30,7 +30,7 @@ class JabberClientDemo {
 	static function init() {
 		trace("init");
 		//var cnx = new jabber.BOSHConnection( "127.0.0.1", 5222 );
-		var cnx = new jabber.StreamSocketConnection( "127.0.0.1", 5222 );
+		var cnx = new jabber.SocketConnection( "127.0.0.1", 5222 );
 		stream = new jabber.client.Stream( new jabber.JID( "tong@disktree" ), cnx, "1.0" );
 		stream.onOpen = function(s) {
 			trace("JABBER STREAM opened...");
@@ -65,7 +65,7 @@ class JabberClientDemo {
 		trace("loginSuccess");
 		
 		#if !( js || SOCKET_BRIDGE )
-		var keepAlive = new net.util.KeepAlive( cast( stream.connection, jabber.StreamSocketConnection ).socket );
+		var keepAlive = new net.util.KeepAlive( cast( stream.connection, jabber.SocketConnection ).socket );
 		keepAlive.start();
 		#end
 		
