@@ -15,6 +15,7 @@
 	36 turkis
 	37 white
 	38 turkis
+	39 white
 	..
 	.. BG
 */
@@ -24,9 +25,9 @@ static value printC( value t, value c ) {
 	int color = val_int(c);
 	//printf( "# %s", val_string(t) );
 	switch( color ) {
-		case 0 : printf( "%c[1;30m%s\n", 27, val_string(t) );break;
-		case 1 : printf( "%c[1;32m%s\n", 27, val_string(t) );break;
-		case 2 : printf( "%c[1;35m%s\n", 27, val_string(t) );break;
+		case 0 : printf( "%c[37;40m%s\n", 27, val_string(t) );break;
+		case 1 : printf( "%c[36;40m%s\n", 27, val_string(t) );break;
+		case 2 : printf( "%c[35;40m%s\n", 27, val_string(t) );break;
 	}
 	return alloc_int(0);
 }

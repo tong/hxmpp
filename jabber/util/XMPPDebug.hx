@@ -5,8 +5,14 @@ class XMPPDebug {
 	
 	public static function redirectTraces() {
 		#if neko
-		if( neko.Web.isModNeko ) haxe.Firebug.redirectTraces();
-		else haxe.Log.trace = myTrace;
+		if( neko.Web.isModNeko ) {
+			haxe.Firebug.redirectTraces();
+		} else {
+			trace( neko.Sys.systemName() );
+			if( neko.Sys.systemName() == "Linux" ) {
+				haxe.Log.trace = myTrace;
+			}
+		}
 		#else
 		haxe.Firebug.redirectTraces();
 		#end
@@ -21,6 +27,7 @@ class XMPPDebug {
 		var c = 0;
 		var buf = new StringBuf();
 		if( inf.customParams == null ) {
+			buf.add( "\t" );
 			buf.add( v );
 			buf.add( " / " );
 			buf.add( inf.className+" / "+inf.lineNumber+"   " );
