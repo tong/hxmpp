@@ -35,14 +35,17 @@ class Message extends xmpp.Packet {
     
     
     public static function parse( src : Xml ) : xmpp.Message {
-    	var m = new Message( Type.createEnum( xmpp.MessageType, src.get( "type" ) ) );
+    	var type : MessageType = null;
+    	var _type = src.get( "type" );
+    	if( _type != null ) type = Type.createEnum( xmpp.MessageType, _type );
+    	var m = new Message( type );
    		xmpp.Packet.parseAttributes( m, src );
    		for( child in src.elements() ) {
 			switch( child.nodeName ) {
 				case "subject" : m.subject = child.firstChild().nodeValue;
 				case "body"    : m.body = child.firstChild().nodeValue;
 				case "thread"  : m.thread = child.firstChild().nodeValue;
-				default 	   : m.properties.push( child );
+				default : m.properties.push( child );
 			}
 		}
    		return m;
