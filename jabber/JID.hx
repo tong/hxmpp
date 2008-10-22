@@ -33,8 +33,9 @@ class JID {
 	
 	public function new( str : String ) {
 		
-//TODO: local jid - domains !!
-//		if( !JIDUtil.isValid( str ) ) throw "Invalid JID: " + str; temp for local testing -> domain(.net)
+		#if !JABBER_DEBUG
+		if( !JIDUtil.isValid( str ) ) throw "Invalid JID: "+str; 
+		#end
 		
 		this.node = JIDUtil.parseNode( str );
 		this.domain = JIDUtil.parseDomain( str );

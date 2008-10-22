@@ -11,6 +11,7 @@ class JabberClientDemo {
 	static var stream : Stream;
 	static var roster : Roster;
 	
+	
 	static function main() {
 		
 		jabber.util.XMPPDebug.redirectTraces();
@@ -27,13 +28,13 @@ class JabberClientDemo {
 	
 	
 	static function init() {
+		trace("init");
 		//var cnx = new jabber.BOSHConnection( "127.0.0.1", 5222 );
 		var cnx = new jabber.StreamSocketConnection( "127.0.0.1", 5222 );
 		stream = new jabber.client.Stream( new jabber.JID( "tong@disktree" ), cnx, "1.0" );
 		stream.onOpen = function(s) {
 			trace("JABBER STREAM opened...");
 			var auth = new NonSASLAuthentication( stream );
-			
 			/*
 			if( stream.sasl.negotiated ) {
 				loginSuccess( stream );
@@ -49,16 +50,31 @@ class JabberClientDemo {
 			auth.onFailed = function(s) { trace( "LOGIN FAILED" ); };
 			auth.authenticate( "test", "norc" );
 		};
+		stream.onError = function(s,err) {
+			trace(err);
+		};
 		stream.onClose = function(s) { trace( "Stream to: "+s.jid.domain+" closed." ); } ;
 		stream.onXMPP.addHandler( xmppTransferHandler );
+		
 		stream.open();
+		trace("..");
 	}
 	
 	static function loginSuccess( s ) {
+		
+		trace("loginSuccess");
+		
+		#if !( js || SOCKET_BRIDGE )
+		var keepAlive = new net.util.KeepAlive( cast( stream.connection, jabber.StreamSocketConnection ).socket );
+		keepAlive.start();
+		#end
+		
+		
 		//stream.sendData("<fuckyouup>23</fuckyouup>");
 		
 		//var ecaps = new jabber.EntityCapabilities( stream );
 		
+		/*
 		var service = new jabber.ServiceDiscovery( stream );
 		service.onInfo = function(info) {
 			trace( "INFO RECIEVED");
@@ -74,6 +90,7 @@ class JabberClientDemo {
 		roster = new jabber.client.Roster( stream );
 		roster.onAvailable = rosterAvailableHandler;
 		roster.load();
+		*/
 		
 		//var ml = new jabber.MessageListener( stream );
 		/*

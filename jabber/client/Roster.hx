@@ -9,6 +9,7 @@ import xmpp.IQType;
 import xmpp.Roster;
 import xmpp.roster.AskType;
 import xmpp.roster.Subscription;
+import xmpp.filter.IQFilter;
 import xmpp.filter.PacketTypeFilter;
 
 
@@ -81,7 +82,7 @@ class Roster {
 		// collect presence packets
 		stream.collectors.add( new PacketCollector( [cast new PacketTypeFilter( PacketType.presence )], handlePresence, true ) );
 		// collect roster iq packets
-		//stream.collectors.add( new PacketCollector( [new IQFilter( xmpp.IQRoster.XMLNS )], handleRosterIQ, true ) );
+		stream.collectors.add( new PacketCollector( [cast new IQFilter( xmpp.Roster.XMLNS )], handleRosterIQ, true ) );
 	}
 	
 		
@@ -178,6 +179,27 @@ class Roster {
 	}
 	
 	/**
+	*/
+	public function addItem( item : xmpp.RosterItem ) {
+		var iq = new IQ( IQType.set );
+		var ext = item;
+		stream.sendIQ( iq, function(iq:IQ) {
+			//TODO trace("I");
+		} );
+	}
+	
+	/**
+	*/
+	public function removeItem( item : xmpp.RosterItem ) {
+		var iq = new IQ( IQType.set );
+		var ext = item;
+		item.subscription = Subscription.remove;
+		stream.sendIQ( iq, function(iq:IQ) {
+			//TODO trace("I");
+		} );
+	}
+	
+	/**
 		Sets presence of all roster contacts to offline.
 	*/
 	public function setPresencesOffline() {
@@ -231,6 +253,8 @@ class Roster {
 				var updated = new List<RosterEntry>();
 				var removed = new List<RosterEntry>();
 				
+				if( iq.ext == null ) return;
+				
 				for( x in iq.ext.toXml().elements() ) {
 					
 					var item = xmpp.RosterItem.parse( x );
@@ -268,7 +292,12 @@ class Roster {
 			case error :
 				// TODO 
 				//var err = xmpp.Error.parse( iq );
-				
+			
+			case set :
+			trace("SETSETSETSETSETSETSETSETSETSET");
+				//TODO roster item added handler
+				//retuurn result on accept or error
+			
 			default :
 				// TODO
 		}
@@ -304,13 +333,12 @@ class Roster {
 							return;
 							
 						case acceptAll :
-							if( subscriptionMode == SubscriptionMode.acceptAll ) { // allow subsription
-								var p = new Presence( "subscribed" );
-								p.to = presence.from;
-								stream.sendPacket( p );
-								subscribe( presence.from ); // subscribe too, automaticly
-								//onPresence( entry );
-							}
+							var p = new Presence( "subscribed" );
+							p.to = presence.from;
+							stream.sendPacket( p );
+							subscribe( presence.from ); // subscribe too, automaticly
+							//onPresence( entry );
+							
 						case manual :
 							//..
 							//onPresence( entry );

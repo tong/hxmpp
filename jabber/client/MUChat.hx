@@ -101,6 +101,7 @@ class MUChat {
 		this.nick = nick;
 		myJid = jid+"/"+nick;
 		var p = new xmpp.Presence();
+		p.priority = 5;
 		p.to = myJid;
 		p.properties.push( xmpp.X.create( xmpp.MUC.XMLNS ) );
 		stream.sendPacket( p );
@@ -134,6 +135,8 @@ class MUChat {
 	}*/
 	
 	public function changeSubject( t : String ) : xmpp.Message {
+		if( !joined ) return null;
+		//TODO check/role .. only moderators can change
 		message.body = null;
 		message.subject = t;
 		return stream.sendPacket( message );

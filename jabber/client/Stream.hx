@@ -68,7 +68,7 @@ class Stream extends jabber.core.StreamBase {
 		Sends a "normal" type message.
 	*/
 	public function sendMessage( to : String, subject : String, msg : String ) : xmpp.Message {
-		return sendPacket( new Message( xmpp.MessageType.normal, to, subject, msg, null, jid.toString() ) );
+		return sendPacket( new xmpp.Message( xmpp.MessageType.normal, to, subject, msg, null, jid.toString() ) );
 	}
 	
 	/**
@@ -76,8 +76,7 @@ class Stream extends jabber.core.StreamBase {
 	*/
 	public function sendChatMessage( to : String, msg : String ) : xmpp.Message {
 		return sendPacket( new Message( xmpp.MessageType.chat, to, null, msg, null, jid.toString() ) );
-	}
-	
+	}	
 	
 	override function processStreamInit( d : String ) {
 		var sei = d.indexOf( ">" );

@@ -1,6 +1,6 @@
 package jabber;
 
-#if flash9 
+#if ( flash9  || flash10 ) 
 import flash.net.Socket;
 import flash.events.Event;
 import flash.events.IOErrorEvent;
@@ -35,7 +35,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	public var host(default,null) : String;
 	public var port(default,null) : Int;
 	
-	var socket : Socket;
+	public var socket(default,null) : Socket; //TODO
 	
 	
 	public function new( host : String, port : Int ) {
@@ -46,7 +46,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		
 		socket = new Socket();
 		
-		#if flash9
+		#if ( flash9 || flash10 )
 		socket.addEventListener( Event.CONNECT, sockConnectHandler );
 		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
 		socket.addEventListener( IOErrorEvent.IO_ERROR, sockErrorHandler );
@@ -84,7 +84,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 	
 	public override function read( ?yes : Bool = true ) : Bool {
 		if( yes ) {
-			#if flash9
+			#if ( flash9 || flash10 )
 			socket.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
 			#elseif ( neko || php )
 			reading = true;
@@ -99,7 +99,7 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 			socket.onData = sockDataHandler;
 			#end
 		} else {
-			#if flash9
+			#if ( flash9  || flash10 )
 			socket.removeEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
 			#elseif ( neko || php )
 			reading = false;
@@ -116,12 +116,12 @@ class StreamSocketConnection extends jabber.core.StreamConnection {
 		} catch( e : Dynamic ) {
 			trace(e);
 		}
-		var s = haxe.io.Bytes.ofString( data );
+		//var s = haxe.io.Bytes.ofString( data );
 		//trace(s);
 		//trace("##"+neko.zip.Uncompress.run( haxe.io.Bytes.ofString( data ) ).toString() );
 		#if ( js || SOCKET_BRIDGE )
 		socket.send( data );
-		#elseif flash9
+		#elseif ( flash9 || flash10 )
 		socket.writeUTFBytes( data ); 
 		socket.flush();
 		#elseif ( neko || php )

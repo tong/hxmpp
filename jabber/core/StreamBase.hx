@@ -54,7 +54,6 @@ class StreamBase /* implements IStream */ {
 	public var collectors : List<IPacketCollector>;
 	public var interceptors : List<IPacketInterceptor>;
 	
-	
 	var packetsSent : Int;
 	var cache : StringBuf;
 	
@@ -122,6 +121,7 @@ class StreamBase /* implements IStream */ {
 		Closes the outgoing xml stream.
 	*/
 	public function close( ?disconnect = false ) : Bool {
+		trace("CLOSING STREAM:" + status);
 		if( status == StreamStatus.open ) {
 			sendData( xmpp.XMPPStream.CLOSE );
 			status = StreamStatus.closed;
@@ -239,6 +239,7 @@ class StreamBase /* implements IStream */ {
 			} catch( e : Dynamic ) {
 				trace( "##### ERROR ##### ");
 				trace( e );
+				trace( x );
 				trace( "#################" );
 				return null;
 			} 
