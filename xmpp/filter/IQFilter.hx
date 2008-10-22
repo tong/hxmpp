@@ -18,18 +18,19 @@ class IQFilter {
 	
 	public function accept( p : xmpp.Packet ) : Bool {
 		if( p._type != xmpp.PacketType.iq ) return false;
-		var iq = cast( p, xmpp.IQ );
-		if( xmlns != null && iq.ext != null ) {
-			var name = iq.ext.toXml().get( "xmlns" );
-			if( xmlns != name ) return false;
+		var iq : xmpp.IQ = cast( p, xmpp.IQ );
+		if( xmlns != null ) {
+			if( iq.ext == null ) return false;
+			var _xmlns = iq.ext.toXml().get( "xmlns" );
+			if( xmlns != _xmlns ) return false;
 		}
-		if( nodeName != null && iq.ext != null ) {
-		//	if( untyped packet.child == null ) return false;
+		if( nodeName != null ) {
+			if( iq.ext == null ) return false;
 			var name = iq.ext.toXml().nodeName;
 			if( nodeName != name ) return false;
 		}
 		if( iqType != null ) {
-			if( iqType != untyped iq.type ) return false;
+			if( iqType != iq.type ) return false;
 		}
 		return true;
 	}
