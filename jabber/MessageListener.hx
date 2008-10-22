@@ -24,7 +24,7 @@ class MessageListener {
 		
 		setStream( stream );
 		
-		collector = new PacketCollector( [untyped new xmpp.filter.MessageFilter()], messageHandler, true );
+		collector = new PacketCollector( [cast new xmpp.filter.MessageFilter( xmpp.MessageType.normal )], messageHandler, true );
 		setListening( listen );
 	}
 	
