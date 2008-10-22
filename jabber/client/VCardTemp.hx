@@ -85,7 +85,7 @@ class VCardTemp {
 	function handleUpdate( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 			case result :
-				//onUpdate.dispatchEvent( { from : iq.from, data : IQVCard.parse( iq.extension.toXml() ) } );
+				//onUpdate( { from : iq.from, data : IQVCard.parse( iq.extension.toXml() ) } );
 			case error :
 				//TODO
 			default : //

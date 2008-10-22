@@ -154,14 +154,11 @@ class Roster {
 				return;
 			} 
 		}
-		// send roster iq to server.  hmmmmm ????? remove
-		/*
 		var items = new xmpp.Roster();
 		items.add( new xmpp.RosterItem( to ) );
 		var iq = new IQ( IQType.set );
 		iq.ext = items;
 		stream.sendIQ( iq, handleRosterIQ );
-		*/
 		// send subsbscribe presence to entity.
 		var p = new Presence( "subscribe" );
 		p.to = to;
@@ -294,6 +291,9 @@ class Roster {
 				//var err = xmpp.Error.parse( iq );
 			
 			case set :
+				//for( pendingSubscription in pendingSubscriptions ) {
+				//<iq type="result" id="VFlEUXI2" to="hxmpp@jabber.spektral.at/norc"/>
+				
 			trace("SETSETSETSETSETSETSETSETSETSET");
 				//TODO roster item added handler
 				//retuurn result on accept or error

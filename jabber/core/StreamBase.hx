@@ -57,10 +57,6 @@ class StreamBase /* implements IStream */ {
 	var packetsSent : Int;
 	var cache : StringBuf;
 	
-	#if JABBER_DEBUG
-	public var onXMPP(default,null) : event.Dispatcher<jabber.event.XMPPEvent>;
-	#end
-	
 	
 	function new( connection : StreamConnection ) {
 		
@@ -74,7 +70,7 @@ class StreamBase /* implements IStream */ {
 		features = new Array();
 		
 		#if JABBER_DEBUG
-		onXMPP = new event.Dispatcher();
+	//	onXMPP = new event.Dispatcher();
 		#end
 	}
 	
@@ -151,7 +147,7 @@ class StreamBase /* implements IStream */ {
 		if( !connection.send( data ) ) return false;
 		packetsSent++;
 		#if JABBER_DEBUG
-		onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, data, false ) );
+		trace( data, true );
 		#end
 		return true;
 	}
@@ -183,6 +179,10 @@ class StreamBase /* implements IStream */ {
 		
 		if( d == " " && cache == null ) return;
 		
+		#if JABBER_DEBUG
+		trace( d, false );
+		#end
+		
 		if( xmpp.XMPPStream.eregStreamClose.match( d ) ) {
 			//TODO
 			close( true );
@@ -199,9 +199,6 @@ class StreamBase /* implements IStream */ {
 			case closed : return;
 			
 			case pending :
-				#if JABBER_DEBUG
-				onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, d, true ) );
-				#end
 				processStreamInit( util.XmlUtil.removeXmlHeader( d ) );
 				
 			case open :
@@ -233,6 +230,7 @@ class StreamBase /* implements IStream */ {
 	function collectPackets( d : Xml ) : Array<xmpp.Packet> {
 		var packets = new Array<xmpp.Packet>();
 		for( x in d.elements() ) {
+			/*
 			var p : xmpp.Packet = null;
 			try {
 				p = xmpp.Packet.parse( x );
@@ -242,16 +240,16 @@ class StreamBase /* implements IStream */ {
 				trace( x );
 				trace( "#################" );
 				return null;
-			} 
+			}
+			*/ 
+			var p = xmpp.Packet.parse( x );
+			
 			packets.push( p );
 			var collected = false;
 			for( c in collectors ) {
 		//		if( c == null ) collectors.remove( c );
 				if( c.accept( p ) ) {
 					collected = true;
-					#if JABBER_DEBUG
-					onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, p.toString(), true ) );
-					#end
 					c.deliver( p );
 					if( c.block ) break;
 					if( !c.permanent ) {
@@ -272,17 +270,13 @@ class StreamBase /* implements IStream */ {
 	
 	function parseStreamFeatures( x : Xml ) {
 		//TODO
-		trace("########### parseStreamFeatures");
+		trace("parseStreamFeatures...");
 	}
 	
 	
 	function connectHandler() {}
 	function disconnectHandler() {}
-	function dataHandler( data : String ) {
-		#if JABBER_DEBUG
-		onXMPP.dispatchEvent( new jabber.event.XMPPEvent( this, data, true ) );
-		#end
-	}
+	function dataHandler( data : String ) {}
 	function errorHandler( m : Dynamic ) {
 		onError( this, m  );
 	}
