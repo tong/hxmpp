@@ -8,7 +8,6 @@ class XMPPDebug {
 		if( neko.Web.isModNeko ) {
 			haxe.Firebug.redirectTraces();
 		} else {
-			trace( neko.Sys.systemName() );
 			if( neko.Sys.systemName() == "Linux" ) {
 				haxe.Log.trace = myTrace;
 			}
@@ -29,8 +28,8 @@ class XMPPDebug {
 		if( inf.customParams == null ) {
 			buf.add( "\t" );
 			buf.add( v );
-			buf.add( " / " );
-			buf.add( inf.className+" / "+inf.lineNumber+"   " );
+			buf.add( " => " );
+			buf.add( inf.className+" "+inf.lineNumber+"   " );
 			
 		} else {
 			if( inf.customParams[0] ) {

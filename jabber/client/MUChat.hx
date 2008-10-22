@@ -113,7 +113,7 @@ class MUChat {
 	*/
 	public function leave() : xmpp.Presence {
 		if( !joined ) return null;
-		var p = new xmpp.Presence( xmpp.PresenceType.unavailable );
+		var p = new xmpp.Presence( xmpp.PresenceType.unavailable, "unavailable" );
 		p.to = myJid;
 		presence.set( p );
 		return p;
@@ -155,7 +155,7 @@ class MUChat {
 		//TODO
 	function handleMessage( m : xmpp.Message ) {
 		if( !joined ) return;
-		var from = parseName( m.from );
+		var from = parseOccupantName( m.from );
 		var occupant = getOccupant( from );
 		if( occupant == null && from != jid && from != nick && from != jid ) {
 			trace( "??? Message from unknown muc occupant ??? "+from );
@@ -216,7 +216,7 @@ class MUChat {
 				//TODO
 				
 			default : // process occupant presence
-				var from = parseName( p.from );
+				var from = parseOccupantName( p.from );
 				var occupant = getOccupant( from );
 				if( occupant != null ) { // update existing occupant
 					if( p.type == xmpp.PresenceType.unavailable ) {
@@ -242,7 +242,7 @@ class MUChat {
 		return null;
 	}
 	
-	inline function parseName( j : String ) : String {
+	inline function parseOccupantName( j : String ) : String {
 		return j.substr( j.lastIndexOf( "/" ) + 1 );
 	}
 	

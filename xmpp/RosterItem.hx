@@ -37,17 +37,15 @@ class RosterItem {
 	
 	public function toXml() : Xml {
 		if( jid == null ) throw "Invalid roster item";
-		var xml = Xml.createElement( "item" );
-		xml.set( "jid", jid );
-		if( name != null ) xml.set( "name", name );
-		if( subscription != null ) xml.set( "subscription", Type.enumConstructor( subscription ) );
-		if( askType != null ) xml.set( "ask", Type.enumConstructor( askType ) );
+		var x = Xml.createElement( "item" );
+		x.set( "jid", jid );
+		if( name != null ) x.set( "name", name );
+		if( subscription != null ) x.set( "subscription", Type.enumConstructor( subscription ) );
+		if( askType != null ) x.set( "ask", Type.enumConstructor( askType ) );
 		for( group in groups ) {
-			var g = Xml.createElement( "group" );
-			g.addChild( Xml.createPCData( group ) );
-			xml.addChild( g );
+			x.addChild( util.XmlUtil.createElement( "group", group ) );
 		}
-		return xml;
+		return x;
 	}
 	
 	public function toString() : String {
@@ -61,47 +59,9 @@ class RosterItem {
 		item.name = x.get( "name" );
 		if( x.exists( "ask" ) ) item.askType = Type.createEnum( AskType, x.get( "ask" ) );
 		for( group in x.elementsNamed( "group" ) ) {
-			item.groups.add( group.nodeValue );
+			item.groups.add( group.firstChild().nodeValue );
 		}
 		return item;
 	}
-	
-	/*
-	public inline static function getSubscriptionString( s : Subscription ) : String {
-		return switch( s ) {
-			case Subscription.none 	 : "none";
-			case Subscription.to 	 : "to";
-			case Subscription.from 	 : "from";
-			case Subscription.both 	 : "both";
-			case Subscription.remove : "remove";
-		}
-	}
-	
-	public inline static function getSubscriptionType( s : String ) : Subscription {
-		return switch( s ) {
-			case "none" 	: Subscription.none;
-			case "to" 		: Subscription.to;
-			case "from" 	: Subscription.from;
-			case "both" 	: Subscription.both;
-			case "remove" 	: Subscription.remove;
-			default : null;
-		}
-	}
-	
-	public inline static function getAskTypeString( t : AskType ) : String {
-		return switch( t ) {
-			case AskType.subscribe 	 : "subscribe";
-			case AskType.unsubscribe : "unsubscribe";
-		}
-	}
-	
-	public inline static function getAskType( t : String ) : AskType {
-		return switch( t ) {
-			case "subscribe"   : AskType.subscribe;
-			case "unsubscribe" : AskType.unsubscribe;
-			default : null;
-		}
-	}
-	*/
 	
 }

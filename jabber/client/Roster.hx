@@ -30,7 +30,7 @@ enum SubscriptionMode {
 /**
 	Entry in clients roster.
 */
-private class RosterEntry extends xmpp.RosterItem {
+class RosterEntry extends xmpp.RosterItem {
 	
 	/** Reference to this entries roster. */
 	public var roster : Roster;
@@ -42,6 +42,22 @@ private class RosterEntry extends xmpp.RosterItem {
 		super( jid );
 		roster = r;
 	}
+	
+	/*
+	public function setItemValue( item : xmpp.RosterItem ) {
+		
+	}
+	*/
+	
+	/*
+	#if JABBER_DEBUG
+	
+	public function info() : String {
+		return "("+this.jid+")";
+	}
+	
+	#end
+	*/
 }
 
 
@@ -53,10 +69,11 @@ class Roster {
 	public static var DEFAULT_SUBSCRIPTIONMODE = SubscriptionMode.acceptAll;
 	
 	public dynamic function onAvailable( roster : Roster ) {}
-	public dynamic function onAdd( entries : Iterable<RosterEntry> ) {}
-	public dynamic function onUpdate( entries : Iterable<RosterEntry> ) {}
-	public dynamic function onRemove( entries : Iterable<RosterEntry> ) {}
+	public dynamic function onAdd( entries : List<RosterEntry> ) {}
+	public dynamic function onUpdate( entries : List<RosterEntry> ) {}
+	public dynamic function onRemove( entries : List<RosterEntry> ) {}
 	public dynamic function onPresence( entry : RosterEntry ) {}
+	public dynamic function onResourcePresence( resource : String ) {}
 	
 	public var available(default,null) : Bool;
 	public var presence(default,null) : jabber.core.PresenceManager;
@@ -65,9 +82,12 @@ class Roster {
 	public var subscriptionMode : SubscriptionMode;
 	public var groups(getGroups,null) : List<String>; 
 	public var stream(default,null) : Stream;
+	public var resources(default,null) : Hash<Presence>; // other available resources for this account.
 	
 	//var pending_subscriptions : List<RosterEntry>;
 	//var pending_unsubscriptions : Hash<RosterEntry>;
+	var pending_add : List<String>;
+	var pending_remove : List<String>;
 	
 
 	public function new( stream : Stream, ?subscriptionMode : SubscriptionMode ) {
@@ -78,6 +98,10 @@ class Roster {
 		available = false;
 		entries = new Array();
 		presence = new jabber.core.PresenceManager( stream );
+		resources = new Hash();
+		
+		pending_remove = new List();
+		pending_add = new List();
 		
 		// collect presence packets
 		stream.collectors.add( new PacketCollector( [cast new PacketTypeFilter( PacketType.presence )], handlePresence, true ) );
@@ -88,9 +112,9 @@ class Roster {
 		
 	function getGroups() : List<String> {
 		var groups = new List<String>();
-		for( entry in entries ) 
-			for( group in entry.groups ) 
-				for( g in groups ) 
+		for( entry in entries )
+			for( group in entry.groups )
+				for( g in groups )
 					if( group != g ) groups.add( group );
 		return groups;
 	}
@@ -103,15 +127,6 @@ class Roster {
 	
 
 	/**
-		Requests roster load.
-	*/
-	public function load() {
-		var iq = new IQ();
-		iq.ext = new xmpp.Roster();
-		stream.sendIQ( iq, handleRosterIQ );
-	}
-	
-	/**
 		Returns the entry with the given JID.
 	*/
 	public function getEntry( jid : String ) : RosterEntry {
@@ -122,47 +137,105 @@ class Roster {
 	}
 	
 	/**
+		Requests roster load.
+	*/
+	public function load() {
+		var iq = new IQ();
+		iq.ext = new xmpp.Roster();
+		stream.sendIQ( iq );
+	}
+	
+	/**
+		Requests to save the item in the remote  roster.
+	*/
+	public function add( jid : String ) : Bool {
+		if( !available ) return false;
+		var entry = getEntry( jid );
+		if( entry != null ) return false;
+		var iq = new IQ( IQType.set );
+		iq.ext = new xmpp.Roster( [new xmpp.RosterItem( jid )] );
+		stream.sendIQ( iq, handleRosterIQ );
+		pending_add.add( iq.id );
+		return true;
+	}
+	
+	/**
 		Requests to remove the entry from the remote roster.
 	*/
 	public function remove( jid : String ) : Bool {
+		if( !available ) return false;
 		var entry = getEntry( jid );
 		if( entry == null ) return false;
 		var iq = new IQ( IQType.set );
 		iq.ext = new xmpp.Roster( [new xmpp.RosterItem( jid, Subscription.remove )] );
-		var me = this;
-		stream.sendIQ( iq, function(iq) {
-			switch( iq.type ) {
-				case result :
-					var rem = new List<RosterEntry>();
-					rem.add( entry );
-					me.onRemove( rem );
-					
-					
-				default :
-			}
-		} );
+		stream.sendIQ( iq, handleRosterIQ );
+		pending_remove.add( iq.id );
+		return true;
+	}
+	
+	/**
+		Requests to update the entry in the remote roster.
+	*/
+	public function update( entry : xmpp.RosterItem ) {
+		if( !available ) return false;
+		if( getEntry( entry.jid ) == null ) return false;
+		//if( entry.roster != null || entry.roster != this ) return false;
+		var iq = new IQ( IQType.set );
+		iq.ext = new xmpp.Roster( [entry] );
+		stream.sendIQ( iq, handleRosterIQ );
+		pending_add.add( iq.id );
 		return true;
 	}
 	
 	/**
 		Requests to subscribe to the given entities roster.
 	*/
-	public function subscribe( to : String ) {
+	public function subscribe( to : String ) : Bool {
 		var entry = getEntry( to );
 		if( entry != null ) {
+			/*
 			if( entry.subscription != null || entry.subscription != from ) {
 				return;
 			} 
+			*/
 		}
-		var items = new xmpp.Roster();
-		items.add( new xmpp.RosterItem( to ) );
-		var iq = new IQ( IQType.set );
-		iq.ext = items;
-		stream.sendIQ( iq, handleRosterIQ );
-		// send subsbscribe presence to entity.
-		var p = new Presence( "subscribe" );
+		
+		var entry = getEntry( to );
+		if( entry == null ) {
+			var iq = new IQ( IQType.set );
+			var ext = new xmpp.Roster();
+			ext.add( new xmpp.RosterItem( to ) );
+			iq.ext = ext;
+			stream.sendIQ( iq, handleRosterIQ );
+		}
+		var p = new Presence( xmpp.PresenceType.subscribe );
 		p.to = to;
 		stream.sendPacket( p );
+		
+		return false;
+		/*
+		var self = this;
+		var iq = new IQ( IQType.set );
+		var ext = new xmpp.Roster();
+		ext.add( new xmpp.RosterItem( to ) );
+		iq.ext = ext;
+		stream.sendIQ( iq, function(r) {
+			switch( r.type ) {
+				case result :
+					var entry = self.getEntry( to );
+					if( entry != null ) {
+						// subscribe presence
+						var p = new Presence( xmpp.PresenceType.subscribe );
+						p.to = to;
+						self.stream.sendPacket( p );
+					} else {
+						//TODO
+					}
+				default :
+					//TODO
+			}
+		} );
+		*/
 	}
 	
 	/**
@@ -173,27 +246,6 @@ class Roster {
 		p.to = from;
 		stream.sendPacket( p );
 		return true;
-	}
-	
-	/**
-	*/
-	public function addItem( item : xmpp.RosterItem ) {
-		var iq = new IQ( IQType.set );
-		var ext = item;
-		stream.sendIQ( iq, function(iq:IQ) {
-			//TODO trace("I");
-		} );
-	}
-	
-	/**
-	*/
-	public function removeItem( item : xmpp.RosterItem ) {
-		var iq = new IQ( IQType.set );
-		var ext = item;
-		item.subscription = Subscription.remove;
-		stream.sendIQ( iq, function(iq:IQ) {
-			//TODO trace("I");
-		} );
 	}
 	
 	/**
@@ -242,90 +294,136 @@ class Roster {
 	*/
 	public function handleRosterIQ( iq : xmpp.IQ ) {
 		
+		trace( "handleRosterIQ / "+iq.type );
+		
 		switch( iq.type ) {
 			
 			case result :
-			
-				var added   = new List<RosterEntry>();
-				var updated = new List<RosterEntry>();
-				var removed = new List<RosterEntry>();
-				
-				if( iq.ext == null ) return;
-				
-				for( x in iq.ext.toXml().elements() ) {
-					
-					var item = xmpp.RosterItem.parse( x );
-					var entry : RosterEntry = cast item;
-					entry.roster = this;
-		
-					if( entry.subscription == Subscription.remove ) { // remove entry
-						var e = getEntry( entry.jid );
-						if( e != null ) {
-							entries.remove( e );
-							removed.add( e );
-						}
-						
-					} else { // add/update entry
-						var existing = getEntry( entry.jid );
-						if( existing == null ) { // add new entry
-							entries.push( entry );
-							added.add( entry );
-							
-						} else { // update existing entry
-							existing = entry;
-							updated.add( entry );
-						}
+				for( pending in pending_add ) {
+					trace("pending add: "+pending);
+					if( iq.id == pending ) {
+						pending_add.remove( pending );
+						var result_iq = new xmpp.IQ( xmpp.IQType.result, iq.id );
+						stream.sendData( result_iq.toString() );
+						return;
 					}
 				}
-				if( !available ) {
-					// report avaibility
-					available = true;
-					onAvailable( this );
+				for( pending in pending_remove ) {
+					trace("pending remove: "+pending);
+					if( iq.id == pending ) {
+						pending_remove.remove( pending );
+						var result_iq = new xmpp.IQ( xmpp.IQType.result, iq.id );
+						stream.sendData( result_iq.toString() );
+						return;
+					}
 				}
-				if( added.length > 0 )   onAdd( added );
-				if( updated.length > 0 ) onUpdate( updated );
-				if( removed.length > 0 ) onRemove( removed );
-			
-			case error :
-				// TODO 
-				//var err = xmpp.Error.parse( iq );
-			
-			case set :
-				//for( pendingSubscription in pendingSubscriptions ) {
-				//<iq type="result" id="VFlEUXI2" to="hxmpp@jabber.spektral.at/norc"/>
+				handleRosterChangePacket( iq );
 				
-			trace("SETSETSETSETSETSETSETSETSETSET");
-				//TODO roster item added handler
-				//retuurn result on accept or error
-			
-			default :
-				// TODO
+			case set :
+				handleRosterChangePacket( iq );
+				
+			case error :
+			case get :
 		}
 	}
+	
+	
+	function handleRosterChangePacket( iq : xmpp.IQ ) {
+		if( iq.ext == null ) return;
+		var added = new List<RosterEntry>();
+		var updated = new List<RosterEntry>();
+		var removed = new List<RosterEntry>();
+		var items = xmpp.Roster.parse( iq.ext.toXml() );
+		for( item in items ) {
+			
+			if( item.subscription == Subscription.remove ) {
+				// remove entry
+				var entry = getEntry( item.jid );
+				if( entry != null ) {
+					entries.remove( entry );
+					removed.add( entry );
+				}
+			} else {
+				var entry = getEntry( item.jid );
+				if( entry == null ) {
+					// add new entry
+					entry = cast item;
+					entry.roster = this;
+					entries.push( entry );
+					added.add( entry );
+				} else {
+					//TODO
+					entry = cast item;
+					entry.roster = this;
+					updated.add( entry );
+				}
+			}	
+		}
+		if( !available ) {
+			available = true;
+			onAvailable( this );
+		}
+		if( added.length > 0 ) onAdd( added );
+		if( updated.length > 0 ) onUpdate( updated );
+		if( removed.length > 0 ) onRemove( removed );
+	}
+	
 	
 	/**
 		Handles incoming xmpp.Presence packets.
 	*/
 	public function handlePresence( presence : xmpp.Presence ) {
-		
+
 		if( !available ) return;
 		
 		var from = JIDUtil.parseBar( presence.from );
+	
+		trace( "handlePresence "+from+" / "+presence.type );
+		
+		if( from == stream.jid.barAdress ) {
+			// handlr account resource presence
+			var resource = jabber.util.JIDUtil.parseResource( presence.from );
+			resources.set( resource, presence );
+			onResourcePresence( resource );
+			return;
+		}
+			
 		var entry = getEntry( from );
+		
+		
+		/*
 		if( entry != null ) {
-			trace("PRESENCE FROM ROSTER USER");		
-			entry.presence = presence;
-			onPresence( entry );
-			//change( new RosterEvent( stream, RosterEventType.presence( entry ) ) );
+			// handle presence from roster user
+		//	entry.presence = presence;
+		//	onPresence( entry );
+			
+			switch( presence.type ) {
+				case subscribe :
+					switch( subscriptionMode ) {
+						case rejectAll :
+						case acceptAll :
+							trace("ACCEPT SUBSRIPTION REQUEST");	
+						case manual :
+					}
+				
+				case unsubscribe :	
+				case unsubscribed :
+				case unavailable :
+				case subscribed :
+				case probe :
+				case error :
+			}
+			
 			
 		} else {
-			trace("PRESENCE FROM NEW USER");
-			
+			// handle presence from new user
 			switch(  presence.type ) {
 				
 				case xmpp.PresenceType.subscribe :
-					switch( subscriptionMode ) {
+					trace(from+" wants to subscibe..");
 					
+					switch( subscriptionMode ) {
+						
 						case rejectAll :
 							var p = new Presence( "unsubscribed" );
 							p.to = presence.from;
@@ -333,22 +431,34 @@ class Roster {
 							return;
 							
 						case acceptAll :
+							trace("ACCEPT ALL");
 							var p = new Presence( "subscribed" );
 							p.to = presence.from;
 							stream.sendPacket( p );
-							subscribe( presence.from ); // subscribe too, automaticly
+							//subscribe( presence.from ); // subscribe too, automaticly
 							//onPresence( entry );
 							
 						case manual :
-							//..
 							//onPresence( entry );
 					}
+				
+				case xmpp.PresenceType.subscribed :
+				trace("SUBScribED");
+				
 				case xmpp.PresenceType.unsubscribed :
 					//TODO
-				
+					
+				default :
+					if( from == stream.jid.barAdress ) {
+						// handler account resource presence
+						var resource = jabber.util.JIDUtil.parseResource( presence.from );
+						resources.set( resource, presence );
+						onResourcePresence( resource );
+					}
 			}
 			//...
 		}
+		*/
 	}
 	
 }

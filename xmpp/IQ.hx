@@ -4,7 +4,7 @@ package xmpp;
 class IQ extends xmpp.Packet {
 	
 	public var type : IQType;
-	public var ext : PacketElement;
+	public var ext : PacketElement; //TODO remove
 	
 	
 	public function new( ?type : IQType, ?id : String, ?to : String, ?from ) {

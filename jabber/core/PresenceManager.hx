@@ -6,7 +6,7 @@ import xmpp.PresenceType;
 
 
 /**
-	Wrapper for presence handling.
+	Wrapper base for presence handling.
 */
 class PresenceManager {
 	
