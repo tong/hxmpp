@@ -50,7 +50,7 @@ class Error {
 		e.code = Std.parseInt( x.get( "code" ) );
 		e.type = Type.createEnum( ErrorType, x.get( "type" ) );
 		for( c in x.elements() ) {
-			if( c.get( "xmlns" ) != XMLNS ) throw "Invalid xmpp error";
+			if( c.get( "xmlns" ) != XMLNS ) throw new error.Exception( "Invalid xmpp error" );
 			e.name = c.nodeName;
 			break;
 		}

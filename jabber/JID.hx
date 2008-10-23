@@ -34,7 +34,7 @@ class JID {
 	public function new( str : String ) {
 		
 		#if !JABBER_DEBUG
-		if( !JIDUtil.isValid( str ) ) throw "Invalid JID: "+str; 
+		if( !JIDUtil.isValid( str ) ) throw new error.Exception( "Invalid jid: "+str ); 
 		#end
 		
 		this.node = JIDUtil.parseNode( str );

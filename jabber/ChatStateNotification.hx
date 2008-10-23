@@ -60,8 +60,8 @@ class ChatStateNotification implements jabber.core.IPacketInterceptor {
 		Force to send the current chat state in a empty message.
 	*/
 	public function send( state : xmpp.ChatState ) : xmpp.Message {
-		if( state == null ) throw "Cannot set null chat state";
-		if( chat == null ) throw "No chat given, cannot set chat state";
+		if( state == null ) throw new error.Exception( "Cannot set null chat state" );
+		if( chat == null ) throw new error.Exception( "No chat given, cannot set chat state" );
 		this.state = state;
 		xmpp.ChatStatePacket.add( message, state );
 		chat.stream.sendPacket( message, false );

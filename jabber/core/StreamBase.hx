@@ -91,7 +91,7 @@ class StreamBase /* implements IStream */ {
 	}
 	
 	function setLang( l : String ) : String {
-		if( status != StreamStatus.closed ) throw "Cannot change language";
+		if( status != StreamStatus.closed ) throw new error.Exception( "Cannot change language on active stream" );
 		return lang = l;
 	}
 	
@@ -210,7 +210,7 @@ class StreamBase /* implements IStream */ {
 				var x : Xml = null;
 				try {
 					x = Xml.parse( d );
-					if( Std.string( x.firstChild().nodeType ) == "pcdata" ) throw "";
+					if( Std.string( x.firstChild().nodeType ) == "pcdata" ) throw new error.Exception( "Invalid xmpp" );
 				} catch( e : Dynamic ) {
 					if( cache == null ) {
 						cache = new StringBuf();
@@ -220,7 +220,7 @@ class StreamBase /* implements IStream */ {
 						cache.add( d );
 						try {
 							x = Xml.parse( cache.toString() );
-							if( Std.string( x.firstChild().nodeType ) == "pcdata" ) throw "";
+							if( Std.string( x.firstChild().nodeType ) == "pcdata" ) throw new error.Exception( "Invalid xmpp" );
 						} catch( e : Dynamic ) { return; /* wait for more data */ }
 					}
 				}

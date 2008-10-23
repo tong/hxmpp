@@ -36,7 +36,7 @@ class RosterItem {
 	
 	
 	public function toXml() : Xml {
-		if( jid == null ) throw "Invalid roster item";
+		if( jid == null ) throw new error.Exception( "Invalid roster item" );
 		var x = Xml.createElement( "item" );
 		x.set( "jid", jid );
 		if( name != null ) x.set( "name", name );

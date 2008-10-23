@@ -29,7 +29,7 @@ class Packet {
 		Creates/Returns the xml representaion of this xmpp packet.
 	*/
 	public function toXml() : Xml {
-		return throw "Abstract error";
+		return throw new error.AbstractError();
 	}
 	
 	/**

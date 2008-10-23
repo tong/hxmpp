@@ -222,7 +222,7 @@ class Socket {
 
 	public function new() {
 		var id = SocketBridgeConnection.createSocket( this );
-		if( id == -1 ) throw "Error creating socket at bridge";
+		if( id == -1 ) throw new error.Exception( "Error creating socket at bridge" );
 		this.id = id;
 	}
 	

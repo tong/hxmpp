@@ -37,8 +37,8 @@ class StreamConnection {
 	}
 	
 	
-	public function connect() : Bool { return throw "Abstract"; }
-	public function disconnect() : Bool { return throw "Abstract";  }
+	public function connect() : Bool { return throw new error.AbstractError(); }
+	public function disconnect() : Bool { return throw new error.AbstractError();  }
 	public function read( ?yes : Bool = true ) : Bool { return false; }
 	public function send( data : String ) : Bool { return false;}
 	

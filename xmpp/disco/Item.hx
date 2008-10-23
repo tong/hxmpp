@@ -16,7 +16,7 @@ class Item {
 	
 	
 	public function toXml() : Xml {
-		if( jid == null ) throw "Incalid disco item, no jid set";
+		if( jid == null ) throw new error.Exception( "Invalid disco item, no jid set" );
 		var x = Xml.createElement( "item" );
 		x.set( "jid", jid );
 		if( name != null ) x.set( "name", name );

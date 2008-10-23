@@ -25,7 +25,6 @@ class MUChatMessage {
 		this.message = m;
 		this.occupant = o;
 	}
-
 }
 
 
@@ -55,16 +54,13 @@ class MUChat {
 	public var subject(default,null) : String;
 	public var history(default,null) : Array<String>;//Array<MUCMessage>;
 	public var historySize(default,setHistorySize) : Int;
-	
-	//public var service(default,setServiceDiscovery) : ServiceDiscovery;
+	//public var service(default,setServiceDiscovery) : MUChatDiscovery;
 	
 	var message : xmpp.Message;
 	var presenceCollector : PacketCollector;
 	var messageCollector : PacketCollector;
 	
 	
-	/**
-	*/
 	public function new( stream : Stream, host : String, roomName : String ) {
 		
 		this.stream = stream;
@@ -86,7 +82,7 @@ class MUChat {
 	
 	
 	function setHistorySize( s : Int ) : Int {
-		if( s < 0 ) s = 0;
+		if( s < 0 ) throw new error.Exception( "Invalid history size "+s );
 	//	if( s < history.length ) history = history.slice( history.length-s );
 		return historySize = s;
 	}
@@ -106,7 +102,7 @@ class MUChat {
 	*/
 	public function join( nick : String, ?password : String ) : Bool {
 		if( joined ) return false;
-		if( nick == null || nick.length == 0 ) throw "Nickname must be not null or blank";
+		if( nick == null || nick.length == 0 ) throw new error.Exception( "Nickname must be not null or blank" );
 		this.nick = nick;
 		myJid = jid+"/"+nick;
 		var p = new xmpp.Presence();

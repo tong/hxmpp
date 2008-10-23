@@ -33,7 +33,7 @@ class NonSASLAuthentication {
 
 
 	public function authenticate( password : String, ?resource : String ) {
-		if( active ) throw "Authentication already in progress";
+		if( active ) throw new error.Exception( "Authentication already in progress" );
 		this.password = password;
 		this.resource = resource;
 		active = true;
