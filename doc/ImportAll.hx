@@ -4,7 +4,7 @@ import jabber.ChatStateNotification;
 import jabber.MessageListener;
 import jabber.LastActivityQuery;
 import jabber.Lib;
-import jabber.StreamSocketConnection;
+import jabber.SocketConnection;
 import jabber.ServiceDiscovery;
 import jabber.ServiceDiscoveryListener;
 

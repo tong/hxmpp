@@ -12,20 +12,21 @@ For further information on jabber visit [04][05].
 
 XEPS SUPPORTED
 --------------
-* 0004 DataForms
+## * 0004 DataForms
 * 0012 LastActivity
-* 0030 ServiceDiscovery
-* 0045 MUChat
+## * 0030 ServiceDiscovery
+## * 0045 MUChat
 * 0054 VCardTemp
+##* 0077 In-Band Registration
 * 0085 ChatStateNotification
 * 0091 DelayedDelivery
-// * 0115 EntityCapabilities
-// * 0154 RosterExchange
-* 0202 EntityTime
+* 0106 JID Escaping
+* 0138 Stream Compression
+##* 0202 EntityTime
 * 0203 DelayedDelivery
 
 !Mind: This doesn't mean they are 100% implemented according to their specification, but fulfilling our current needs.
-
+## means bugging.
 
 
 BUILD+INSTALLATION
@@ -39,7 +40,10 @@ Run the *.hxml files in the main directory to build included demos, tests and ut
 * XEP_0091					Ensures backward compatibility with XEP-0091 when using jabber.DelayedDelivery. 
 
 # neko
-Copy /hxjabber/bin/sha1.ndll to your neko installation. The ndll is just for SHA1 encryption.
+Copy the ndlls to your neko installation.
+* sha1.ndll for SHA1 encoding.
+* hxmpp_debug.ndll for colored bash output on linux.
+
 
 # php
 Experimental support only.
@@ -56,7 +60,7 @@ TODO
 # actionscript3
 You can generate as3 source files by compiling the ImportAll class under /doc.
 The required command is 'haxe -as3 <directory> -cp doc -main ImportAll'
-
+Untested!
 
 
 USAGE
@@ -74,6 +78,7 @@ mail: tong@disktree.net
 
 DOWNLOAD
 --------
+http://hxmpp.disktree.net/download
 git://83.64.208.21/home/tong/git/hxmpp.git
 
 
