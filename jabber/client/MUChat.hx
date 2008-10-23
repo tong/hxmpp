@@ -93,6 +93,15 @@ class MUChat {
 	
 	
 	/**
+	*/
+	public function cleanup() {
+		if( joined ) return false;
+		stream.collectors.remove( presenceCollector );
+		stream.collectors.remove( messageCollector );
+		return true;
+	}
+	
+	/**
 		Sends initial available presence to muc-room.
 	*/
 	public function join( nick : String, ?password : String ) : Bool {
@@ -111,9 +120,9 @@ class MUChat {
 	/**
 		Sends unavailable presence to the room and returns the presence packet sent.
 	*/
-	public function leave() : xmpp.Presence {
+	public function leave( ?message : String ) : xmpp.Presence {
 		if( !joined ) return null;
-		var p = new xmpp.Presence( xmpp.PresenceType.unavailable, "unavailable" );
+		var p = new xmpp.Presence( xmpp.PresenceType.unavailable, null, message );
 		p.to = myJid;
 		presence.set( p );
 		return p;

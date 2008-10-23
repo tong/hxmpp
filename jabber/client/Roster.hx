@@ -13,6 +13,7 @@ import xmpp.filter.IQFilter;
 import xmpp.filter.PacketTypeFilter;
 
 
+//enum PresenceSubscriptionMode {
 enum SubscriptionMode {
 	
 	/** Accepts all subscription and unsubscription requests. */
@@ -84,8 +85,6 @@ class Roster {
 	public var stream(default,null) : Stream;
 	public var resources(default,null) : Hash<Presence>; // other available resources for this account.
 	
-	//var pending_subscriptions : List<RosterEntry>;
-	//var pending_unsubscriptions : Hash<RosterEntry>;
 	var pending_add : List<String>;
 	var pending_remove : List<String>;
 	
@@ -193,15 +192,6 @@ class Roster {
 	public function subscribe( to : String ) : Bool {
 		if( !available ) return false;
 		var entry = getEntry( to );
-		if( entry != null ) {
-			/*
-			if( entry.subscription != null || entry.subscription != from ) {
-				return;
-			} 
-			*/
-		}
-		
-		var entry = getEntry( to );
 		if( entry == null ) {
 			var iq = new IQ( IQType.set );
 			var ext = new xmpp.Roster();
@@ -213,31 +203,7 @@ class Roster {
 		var p = new Presence( xmpp.PresenceType.subscribe );
 		p.to = to;
 		stream.sendPacket( p );
-		
-		return false;
-		/*
-		var self = this;
-		var iq = new IQ( IQType.set );
-		var ext = new xmpp.Roster();
-		ext.add( new xmpp.RosterItem( to ) );
-		iq.ext = ext;
-		stream.sendIQ( iq, function(r) {
-			switch( r.type ) {
-				case result :
-					var entry = self.getEntry( to );
-					if( entry != null ) {
-						// subscribe presence
-						var p = new Presence( xmpp.PresenceType.subscribe );
-						p.to = to;
-						self.stream.sendPacket( p );
-					} else {
-						//TODO
-					}
-				default :
-					//TODO
-			}
-		} );
-		*/
+		return true;
 	}
 	
 	/**
@@ -268,8 +234,8 @@ class Roster {
 	*/
 	public function getPresence( jid : String ) : Presence {
 		if( !available ) return null;
-		var entry = getEntry( jid );
-		if( entry != null ) return entry.presence;
+		var e = getEntry( jid );
+		if( e != null ) return e.presence;
 		return null;
 	}
 	
