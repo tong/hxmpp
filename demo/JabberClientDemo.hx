@@ -33,7 +33,9 @@ class JabberClientDemo {
 	static function loginSuccess( s ) {
 		
 		trace( "Logged in as "+ s.jid.node+" at "+s.jid.domain );
-		#if !( js || SOCKET_BRIDGE )
+		
+		#if !JABBER_SOCKETBRIDGE
+		// The socketbridge handles keepalive on its own.
 		var keepAlive = new net.util.KeepAlive( cast( stream.connection, jabber.SocketConnection ).socket ).start();
 		#end
 		

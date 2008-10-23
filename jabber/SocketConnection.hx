@@ -15,6 +15,7 @@ import php.net.Socket;
 #end
 
 // TODO socket handling
+// TODO move keepAlive into here ?
 
 class SocketConnection extends jabber.core.StreamConnection {
 	
@@ -32,7 +33,6 @@ class SocketConnection extends jabber.core.StreamConnection {
 	
 	public var host(default,null) : String;
 	public var port(default,null) : Int;
-	
 	public var socket(default,null) : Socket; //TODO
 	
 	
@@ -209,7 +209,7 @@ class SocketConnection extends jabber.core.StreamConnection {
 /**
 	Socket for socket bridge use.
 */
-private class Socket {
+class Socket {
 	
 	static var id_inc = 0;
 	

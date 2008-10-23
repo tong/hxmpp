@@ -10,10 +10,29 @@ import flash.events.ProgressEvent;
 
 
 private class Socket extends flash.net.Socket {
+	
 	public var id : Int;
+	
+	var keepAlive : net.util.KeepAlive;
+	
 	public function new( id : Int) {
+		
 		super();
 		this.id = id;
+		
+		keepAlive = new net.util.KeepAlive( this );
+		addEventListener( Event.CONNECT, onConnect );
+		addEventListener( Event.CLOSE, onDisconnect );
+		addEventListener( IOErrorEvent.IO_ERROR, onDisconnect );
+		addEventListener( SecurityErrorEvent.SECURITY_ERROR, onDisconnect );
+	}
+	
+	function onConnect( e : Event ) {
+		keepAlive.start();
+	}
+	
+	function onDisconnect( e : Event ) {
+		keepAlive.stop();
 	}
 }
 
