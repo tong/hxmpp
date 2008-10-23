@@ -1,24 +1,24 @@
 
 
--cp ../core
+-cp lib/core
 -cp test
 -swf9 bin/tests/test_xmpp.swf
 -main TestXMPPPacket
 
 --next
--cp ../core
+-cp lib/core
 -cp test
 -js bin/tests/test_xmpp.js
 -main TestXMPPPacket
 
 --next
--cp ../core
+-cp lib/core
 -cp test
 -neko bin/tests/test_xmpp.n
 -main TestXMPPPacket
 
 --next
--cp ../core
+-cp lib/core
 -cp test
 -php bin/tests
 --php-front test_xmpp.php
@@ -29,25 +29,25 @@
 ####
 
 --next
--cp ../core
+-cp lib/core
 -cp test
 -swf9 bin/tests/test_jid.swf
 -main TestJID
 
 --next
--cp ../core
+-cp lib/core
 -cp test
 -js bin/tests/test_jid.js
 -main TestJID
 
 --next
--cp ../core
+-cp lib/core
 -cp test
 -neko bin/tests/test_jid.n
 -main TestJID
 
 --next
--cp ../core
+-cp lib/core
 -cp test
 -php bin/tests
 --php-front test_jid.php
@@ -58,25 +58,25 @@
 ####
 
 --next
--cp ../core
+-cp lib/core
 -cp test
 -swf9 bin/tests/test_xmpp_filter.swf
 -main TestXMPPPacketFilter
 
 --next
--cp ../core
+-cp lib/core
 -cp test
 -js bin/tests/test_xmpp_filter.js
 -main TestXMPPPacketFilter
 
 --next
--cp ../core
+-cp lib/core
 -cp test
 -neko bin/tests/test_xmpp_filter.n
 -main TestXMPPPacketFilter
 
 --next
--cp ../core
+-cp lib/core
 -cp test
 -php bin/tests
 --php-front test_xmpp_filter.php
@@ -87,13 +87,13 @@
 ###
 
 --next
--cp ../core
+-cp lib/core
 -cp test
 -neko bin/tests/test_xmpp_stream.n
 -main TestXMPPStream
 
 --next
--cp ../core
+-cp lib/core
 -cp test
 -swf9 bin/tests/test_xmpp_stream.swf
 -main TestXMPPStream
@@ -103,7 +103,7 @@
 ###
 
 --next
--cp ../core
+-cp lib/core
 -cp test
 -neko bin/tests/test_xmpp_iqs.n
 -main TestXMPPIQExtensions
