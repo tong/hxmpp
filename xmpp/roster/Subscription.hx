@@ -1,6 +1,9 @@
 package xmpp.roster;
 
 
+/**
+	Roster subscription states.
+*/
 enum Subscription {
 	
 	/** The user and subscriber have no interest in each other's presence.*/

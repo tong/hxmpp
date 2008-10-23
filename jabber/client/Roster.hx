@@ -191,6 +191,7 @@ class Roster {
 		Requests to subscribe to the given entities roster.
 	*/
 	public function subscribe( to : String ) : Bool {
+		if( !available ) return false;
 		var entry = getEntry( to );
 		if( entry != null ) {
 			/*
@@ -207,6 +208,7 @@ class Roster {
 			ext.add( new xmpp.RosterItem( to ) );
 			iq.ext = ext;
 			stream.sendIQ( iq, handleRosterIQ );
+			pending_add.add( iq.id );
 		}
 		var p = new Presence( xmpp.PresenceType.subscribe );
 		p.to = to;
@@ -241,10 +243,13 @@ class Roster {
 	/**
 		Requests to unsubscribe from the roster entry.
 	*/
-	public function unsubscribe( from : String ) : Bool {
-		var p = new Presence( "unsubscribe" );
+	public function unsubscribe( from : String, ?remove : Bool ) : Bool {
+		if( !available ) return false;
+		if( getEntry( from ) == null ) return false;
+		var p = new Presence( xmpp.PresenceType.unsubscribe );
 		p.to = from;
 		stream.sendPacket( p );
+		//TODO remove
 		return true;
 	}
 	
@@ -320,6 +325,15 @@ class Roster {
 				handleRosterChangePacket( iq );
 				
 			case set :
+				var items = xmpp.Roster.parse( iq.ext.toXml() );
+				for( item in items ) {
+					// automatic subscription ???
+					if( item.subscription == from && item.askType != AskType.subscribe ) {
+						var p = new Presence( xmpp.PresenceType.subscribe );
+						p.to = item.jid;
+						stream.sendPacket( p );
+					}
+				}
 				handleRosterChangePacket( iq );
 				
 			case error :
@@ -390,6 +404,36 @@ class Roster {
 			
 		var entry = getEntry( from );
 		
+		
+		if( presence.type != null ) {
+			
+			switch( presence.type ) {
+				
+				case subscribe :
+					switch( subscriptionMode ) {
+						
+						case acceptAll : 
+						trace("ACCEPT ALLLL " );
+						
+							var p = new Presence( xmpp.PresenceType.subscribed );
+							p.to = presence.from;
+							stream.sendPacket( p );
+							
+						//	if( entry.subscription == from ) {
+						//	}
+							
+						case rejectAll :
+						case manual :	
+					}
+					
+				case subscribed :
+				default :
+			}
+		}
+		/*
+		switch( presence.type ) {
+		}
+		*/
 		
 		/*
 		if( entry != null ) {
