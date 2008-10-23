@@ -8,7 +8,7 @@ private class VCardEvent extends xmpp.VCard {
 	
 	public var from(default,null) : String;
 	public var stream(default,null) : Stream;
-	//public var error 
+	//public var error //TODO
 	
 	public function new( stream : Stream, from : String ) {
 		super();
@@ -23,6 +23,9 @@ private class VCardEvent extends xmpp.VCard {
 	<a href="http://www.xmpp.org/extensions/xep-0054.html">XEP-0054: vcard-temp</a>
 */
 class VCardTemp {
+	
+	public dynamic function onLoad( vc : VCardEvent ) {}
+	public dynamic function onUpdated( vc : VCardEvent ) {}
 	
 	public var stream(default,null) : Stream;
 	
@@ -39,14 +42,6 @@ class VCardTemp {
 		iq_load.ext = new xmpp.VCard();
 		iq_update = new xmpp.IQ( xmpp.IQType.set, null, stream.jid.domain );
 		// collect/handle incoming vcard requests (?) jabber.VCardTempListener ?
-	}
-	
-	
-	public dynamic function onLoad( vc : VCardEvent ) {
-		// i am yours.
-	}
-	public dynamic function onUpdated( vc : VCardEvent ) {
-		// i am yours.
 	}
 	
 	

@@ -1,154 +1,80 @@
 
+import jabber.ServiceDiscovery;
 import jabber.SocketConnection;
-import jabber.client.Stream;
 import jabber.client.NonSASLAuthentication;
 import jabber.client.Roster;
-
+import jabber.client.Stream;
+import jabber.client.VCardTemp;
 
 
 class JabberClientDemo {
 	
 	static var stream : Stream;
 	static var roster : Roster;
+	static var service : ServiceDiscovery;
+	static var vcard : VCardTemp;
 	
+	static function init() {
+		var cnx = new SocketConnection( "127.0.0.1", 5222 );
+		stream = new Stream( new jabber.JID( "tong@disktree" ), cnx, "1.0" );
+		stream.onError = function(s,err) { trace( "Stream ERROR: " + err ); };
+		stream.onClose = function(s) { trace( "Stream to: "+s.jid.domain+" closed." ); } ;
+		stream.onOpen = function(s) {
+			trace( "Jabber stream to "+stream.jid.domain+" opened" );
+			var auth = new NonSASLAuthentication( stream );
+			auth.onSuccess = loginSuccess;
+			auth.onFailed = function(s) { trace( "LOGIN FAILED" ); };
+			auth.authenticate( "test", "norc" );
+		};
+		trace( "Initializing stream..." );
+		stream.open();
+	}
+	
+	static function loginSuccess( s ) {
+		
+		trace( "Logged in as "+ s.jid.node+" at "+s.jid.domain );
+		#if !( js || SOCKET_BRIDGE )
+		var keepAlive = new net.util.KeepAlive( cast( stream.connection, jabber.SocketConnection ).socket ).start();
+		#end
+		
+		roster = new Roster( stream );
+		roster.onAvailable = function( r : Roster ) {
+			trace( "ROSTER LOADED:" );
+			for( entry in r.entries ) {
+				trace( "\t"+entry.jid );
+			}
+		};
+		roster.load();
+		
+		vcard = new VCardTemp( stream );
+		vcard.onLoad = function(vc) {
+			trace( "VCARD LOADED: "+vc.from );
+		};
+		vcard.load();
+		
+		service = new ServiceDiscovery( stream );
+		service.onInfo = function( e ) {
+			trace( "SERVICE INFO RESULT: "+e.from );
+			trace( "\tIDENTITIES: ");
+			for( identity in e.identities ) trace( "\t\t"+identity );
+			trace( "\tFEATURES: ");
+			for( feature in e.features ) trace( "\t\t"+feature );
+			
+		};
+		service.discoverInfo( "account@disktree" );
+	}
 	
 	static function main() {
 		
 		jabber.util.XMPPDebug.redirectTraces();
 		
-		trace("JÄBA");
-		
 		#if JABBER_SOCKETBRIDGE
-		trace( "Using JABBER_SOCKETBRIDGE" );
+		trace( "Using socket bridge to connect" );
 		jabber.SocketBridgeConnection.init( "f9bridge", init );
+		
 		#else
 		init();
+		
 		#end
 	}
-	
-	
-	static function init() {
-		trace("init");
-		//var cnx = new jabber.BOSHConnection( "127.0.0.1", 5222 );
-		var cnx = new jabber.SocketConnection( "127.0.0.1", 5222 );
-		stream = new jabber.client.Stream( new jabber.JID( "tong@disktree" ), cnx, "1.0" );
-		stream.onOpen = function(s) {
-			trace("JABBER STREAM opened...");
-			var auth = new NonSASLAuthentication( stream );
-			/*
-			if( stream.sasl.negotiated ) {
-				loginSuccess( stream );
-				return;
-			}
-			var auth = new jabber.client.SASLAuthentication(stream);
-			//auth.handshake.registerMechanism( net.sasl.AnonymousMechanism.ID, net.sasl.AnonymousMechanism );
-			auth.handshake.mechanisms.push( new net.sasl.AnonymousMechanism() );
-			auth.handshake.mechanisms.push( new net.sasl.PlainMechanism() );
-			auth.handshake.mechanisms.push( new net.sasl.MD5Mechanism() );
-		*/
-			auth.onSuccess = loginSuccess;
-			auth.onFailed = function(s) { trace( "LOGIN FAILED" ); };
-			auth.authenticate( "test", "norc" );
-		};
-		stream.onError = function(s,err) {
-			trace(err);
-		};
-		stream.onClose = function(s) { trace( "Stream to: "+s.jid.domain+" closed." ); } ;
-		stream.onXMPP.addHandler( xmppTransferHandler );
-		
-		stream.open();
-		trace("..");
-	}
-	
-	static function loginSuccess( s ) {
-		
-		trace("loginSuccess");
-		
-		#if !( js || SOCKET_BRIDGE )
-		var keepAlive = new net.util.KeepAlive( cast( stream.connection, jabber.SocketConnection ).socket );
-		keepAlive.start();
-		#end
-		
-		
-		//stream.sendData("<fuckyouup>23</fuckyouup>");
-		
-		//var ecaps = new jabber.EntityCapabilities( stream );
-		
-		/*
-		var service = new jabber.ServiceDiscovery( stream );
-		service.onInfo = function(info) {
-			trace( "INFO RECIEVED");
-			for( i in info.identities ) {
-				trace("  IDENTITY "+i);
-			}
-			for( i in info.features ) {
-				trace("  FEATURE "+i);
-			}
-		};
-		service.discoverInfo("disktree");
-		
-		roster = new jabber.client.Roster( stream );
-		roster.onAvailable = rosterAvailableHandler;
-		roster.load();
-		*/
-		
-		//var ml = new jabber.MessageListener( stream );
-		/*
-		var la = new jabber.LastActivityQuery( stream );
-		la.onLoad = function(e) {
-			if( e.error != null ) {
-				trace("Last activity error "+e.error.name );
-				return;
-			}
-			trace( "Last activity from"+e.from+" : "+e.seconds );
-		}
-		la.request("account@disktree/desktop");
-		var lal = new jabber.LastActivityListener( stream, "norc" );
-		*/
-		
-		/*
-		var vcard = new jabber.client.VCardTemp( stream );
-		vcard.onLoad = function(vc) {
-			trace("VCARD LOADED");
-		}
-		vcard.load();
-		#if neko
-		var zlib = new jabber.util.ZLibCompression();
-		var compression = new jabber.StreamCompression( s );
-		compression.request( zlib );
-		#end
-		
-		var service = new jabber.client.ServiceDiscovery(stream);
-		service.onInfo = function( e ) {
-		}
-		service.discoverInfo("account@disktree");
-		*/
-	}
-	
-	static function rosterAvailableHandler( r : jabber.client.Roster ) {
-		trace( "ROSTER AVAILABLE "+r.entries.length );
-		for( e in r.entries ) {
-			trace("#");
-			trace( "ENTRY: "+ e );
-			//trace( "ENTRY: "+ e.presence );
-			/*
-			roster.presence.show = "online";
-			var chat = new jabber.Chat( stream, stream.jid.toString(), "account@disktree/desktop" );
-			chat.onMessage = function(c) {
-				trace("MSG: "+c.lastMessage.body );
-			};
-			chat.speak("rotz.i am online");
-			*/
-		}
-		roster.presence.set();
-	}
-	
-	static function rosterChangeHandler( e ) {
-		trace(e.type);
-	}
-	
-	static function xmppTransferHandler( e : jabber.event.XMPPEvent ) {
-		trace( "\t" + ( if( e.incoming ) "<<< "+e.data else ">>> "+e.data )+"\n" );
-	}
-	
 }

@@ -180,7 +180,12 @@ class StreamBase /* implements IStream */ {
 		if( d == " " && cache == null ) return;
 		
 		#if JABBER_DEBUG
-		trace( d, false );
+		try {
+			var x = Xml.parse(d);
+			for( e in x.elements() ) trace( e, false );
+		} catch( e : Dynamic ) {
+			trace( d, false );
+		}
 		#end
 		
 		if( xmpp.XMPPStream.eregStreamClose.match( d ) ) {

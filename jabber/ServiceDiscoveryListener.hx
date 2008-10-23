@@ -12,7 +12,7 @@ import xmpp.IQType;
 */
 class ServiceDiscoveryListener {
 	
-	public static var defaultIdentity = { category:"client", name:"hxmpp", type:"pc" }
+	public static var defaultIdentity = { category:"client", name:"hxmpp", type:"pc" };
 	
 	public var stream(default,null) : StreamBase;
 	public var active(default,setActive) : Bool;
@@ -41,6 +41,7 @@ class ServiceDiscoveryListener {
 		
 		item_result = new IQ( IQType.result );
 		item_result.ext = item_result;
+		//..
 		
 		setActive( true );
 	}
@@ -61,6 +62,7 @@ class ServiceDiscoveryListener {
 	
 	
 	function handleInfoQuery( iq : IQ ) {
+		trace("HÄNDELE INFO QUERY");
 		info_result.to = iq.from;
 		info_result_ext.identities = [identity];
 		info_result_ext.features = new Array();

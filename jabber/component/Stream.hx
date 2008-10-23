@@ -2,7 +2,8 @@ package jabber.component;
 
 import jabber.JID;
 import jabber.StreamStatus;
-import jabber.core.PacketCollector;
+import jabber.ServiceDiscovery;
+import jabber.ServiceDiscoveryListener;
 import jabber.core.PacketCollector;
 import jabber.core.PacketTimeout;
 import xmpp.filter.PacketIDFilter;
@@ -14,25 +15,31 @@ import xmpp.filter.PacketIDFilter;
 */
 class Stream extends jabber.core.StreamBase {
 	
+	public dynamic function onAuthenticated( stream : Stream ) {}
+	
 	public static inline var STANDARD_PORT = 5275;
 	public static var defaultPort = STANDARD_PORT;
 	
 	public var server(default,null) : String;
 	public var password(default,null) : String;
-	//public var service(default,null) : ServiceDiscovery;
+	public var authenticated(default,null) : Bool;
+	public var serviceListener(default,null) : ServiceDiscoveryListener;
 	
 	
 	public function new( server : String, password : String, connection : jabber.core.StreamConnection ) {
+		
 		super( connection );
 		this.server = server;
 		this.password = password;
+		
+		authenticated = false;
 	}
 	
 	
 	override function connectHandler() {
 		sendData( xmpp.XMPPStream.createOpenStream( xmpp.XMPPStream.XMLNS_COMPONENT, server ) );
 		status = StreamStatus.pending;
-		connection.read( true ); // start reading io data
+		connection.read( true );
 	}
 
 	override function dataHandler( data : String ) {
@@ -59,8 +66,9 @@ class Stream extends jabber.core.StreamBase {
 	}
 	
 	function handshakeResponseHandler( p : xmpp.Packet ) {
-//		service = new ServiceDiscovery( this );
-		//service.listenInfoRequests = true;
+		serviceListener = new ServiceDiscoveryListener( this, { category:"component", name:"norc", type:"server-pc" } );
+		authenticated = true;
+		onAuthenticated( this );
 	}
 	
 }

@@ -64,20 +64,27 @@ class SocketConnection extends jabber.core.StreamConnection {
 	}
 	
 	
-	public override function connect() {
+	public override function connect() : Bool {
 		#if ( neko || php )
-		socket.connect( new Host( host ), port );
-		connected = true;
-//		socket.setTimeout( SOCKET_TIMEOUT_DEFAULT );
+		try {
+	//		socket.setTimeout( SOCKET_TIMEOUT_DEFAULT );
+			socket.connect( new Host( host ), port );
+			connected = true;
+		} catch( e : Dynamic ) {
+			return false;
+		}
 		onConnect();
 		#else
 		socket.connect( host, port );
 		#end
+		return true;
 	}
 	
-	public override function disconnect() {
+	public override function disconnect() : Bool {
+		if( !connected ) return false;
 		socket.close();
 		connected = false;
+		return true;
 	}
 	
 	public override function read( ?yes : Bool = true ) : Bool {

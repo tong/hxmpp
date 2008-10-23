@@ -295,6 +295,127 @@ class Roster {
 	}
 	
 	/**
+		Handles incoming xmpp.Presence packets.
+	*/
+	public function handlePresence( presence : xmpp.Presence ) {
+
+		if( !available ) return;
+		
+		var from = JIDUtil.parseBar( presence.from );
+	
+		trace( "handlePresence "+from+" / "+presence.type );
+		
+		if( from == stream.jid.barAdress ) {
+			// handlr account resource presence
+			var resource = jabber.util.JIDUtil.parseResource( presence.from );
+			resources.set( resource, presence );
+			onResourcePresence( resource );
+			return;
+		}
+			
+		var entry = getEntry( from );
+		
+		
+		if( presence.type != null ) {
+			
+			switch( presence.type ) {
+				
+				case subscribe :
+					switch( subscriptionMode ) {
+						
+						case acceptAll : 
+						trace("ACCEPT ALLLL " );
+						
+							var p = new Presence( xmpp.PresenceType.subscribed );
+							p.to = presence.from;
+							stream.sendPacket( p );
+							
+						//	if( entry.subscription == from ) {
+						//	}
+							
+						case rejectAll :
+						case manual :	
+					}
+					
+				case subscribed :
+					
+				default :
+			}
+		} else {
+			
+		}
+		
+		/*
+		if( entry != null ) {
+			// handle presence from roster user
+		//	entry.presence = presence;
+		//	onPresence( entry );
+			
+			switch( presence.type ) {
+				case subscribe :
+					switch( subscriptionMode ) {
+						case rejectAll :
+						case acceptAll :
+							trace("ACCEPT SUBSRIPTION REQUEST");	
+						case manual :
+					}
+				
+				case unsubscribe :	
+				case unsubscribed :
+				case unavailable :
+				case subscribed :
+				case probe :
+				case error :
+			}
+			
+			
+		} else {
+			// handle presence from new user
+			switch(  presence.type ) {
+				
+				case xmpp.PresenceType.subscribe :
+					trace(from+" wants to subscibe..");
+					
+					switch( subscriptionMode ) {
+						
+						case rejectAll :
+							var p = new Presence( "unsubscribed" );
+							p.to = presence.from;
+							stream.sendPacket( p );
+							return;
+							
+						case acceptAll :
+							trace("ACCEPT ALL");
+							var p = new Presence( "subscribed" );
+							p.to = presence.from;
+							stream.sendPacket( p );
+							//subscribe( presence.from ); // subscribe too, automaticly
+							//onPresence( entry );
+							
+						case manual :
+							//onPresence( entry );
+					}
+				
+				case xmpp.PresenceType.subscribed :
+				trace("SUBScribED");
+				
+				case xmpp.PresenceType.unsubscribed :
+					//TODO
+					
+				default :
+					if( from == stream.jid.barAdress ) {
+						// handler account resource presence
+						var resource = jabber.util.JIDUtil.parseResource( presence.from );
+						resources.set( resource, presence );
+						onResourcePresence( resource );
+					}
+			}
+			//...
+		}
+		*/
+	}
+	
+	/**
 		Handles incoming xmpp.IQ (roster) packets.
 	*/
 	public function handleRosterIQ( iq : xmpp.IQ ) {
@@ -366,7 +487,7 @@ class Roster {
 					entries.push( entry );
 					added.add( entry );
 				} else {
-					//TODO
+					//TODO entry.setItemData( item );
 					entry = cast item;
 					entry.roster = this;
 					updated.add( entry );
@@ -380,129 +501,6 @@ class Roster {
 		if( added.length > 0 ) onAdd( added );
 		if( updated.length > 0 ) onUpdate( updated );
 		if( removed.length > 0 ) onRemove( removed );
-	}
-	
-	
-	/**
-		Handles incoming xmpp.Presence packets.
-	*/
-	public function handlePresence( presence : xmpp.Presence ) {
-
-		if( !available ) return;
-		
-		var from = JIDUtil.parseBar( presence.from );
-	
-		trace( "handlePresence "+from+" / "+presence.type );
-		
-		if( from == stream.jid.barAdress ) {
-			// handlr account resource presence
-			var resource = jabber.util.JIDUtil.parseResource( presence.from );
-			resources.set( resource, presence );
-			onResourcePresence( resource );
-			return;
-		}
-			
-		var entry = getEntry( from );
-		
-		
-		if( presence.type != null ) {
-			
-			switch( presence.type ) {
-				
-				case subscribe :
-					switch( subscriptionMode ) {
-						
-						case acceptAll : 
-						trace("ACCEPT ALLLL " );
-						
-							var p = new Presence( xmpp.PresenceType.subscribed );
-							p.to = presence.from;
-							stream.sendPacket( p );
-							
-						//	if( entry.subscription == from ) {
-						//	}
-							
-						case rejectAll :
-						case manual :	
-					}
-					
-				case subscribed :
-				default :
-			}
-		}
-		/*
-		switch( presence.type ) {
-		}
-		*/
-		
-		/*
-		if( entry != null ) {
-			// handle presence from roster user
-		//	entry.presence = presence;
-		//	onPresence( entry );
-			
-			switch( presence.type ) {
-				case subscribe :
-					switch( subscriptionMode ) {
-						case rejectAll :
-						case acceptAll :
-							trace("ACCEPT SUBSRIPTION REQUEST");	
-						case manual :
-					}
-				
-				case unsubscribe :	
-				case unsubscribed :
-				case unavailable :
-				case subscribed :
-				case probe :
-				case error :
-			}
-			
-			
-		} else {
-			// handle presence from new user
-			switch(  presence.type ) {
-				
-				case xmpp.PresenceType.subscribe :
-					trace(from+" wants to subscibe..");
-					
-					switch( subscriptionMode ) {
-						
-						case rejectAll :
-							var p = new Presence( "unsubscribed" );
-							p.to = presence.from;
-							stream.sendPacket( p );
-							return;
-							
-						case acceptAll :
-							trace("ACCEPT ALL");
-							var p = new Presence( "subscribed" );
-							p.to = presence.from;
-							stream.sendPacket( p );
-							//subscribe( presence.from ); // subscribe too, automaticly
-							//onPresence( entry );
-							
-						case manual :
-							//onPresence( entry );
-					}
-				
-				case xmpp.PresenceType.subscribed :
-				trace("SUBScribED");
-				
-				case xmpp.PresenceType.unsubscribed :
-					//TODO
-					
-				default :
-					if( from == stream.jid.barAdress ) {
-						// handler account resource presence
-						var resource = jabber.util.JIDUtil.parseResource( presence.from );
-						resources.set( resource, presence );
-						onResourcePresence( resource );
-					}
-			}
-			//...
-		}
-		*/
 	}
 	
 }
