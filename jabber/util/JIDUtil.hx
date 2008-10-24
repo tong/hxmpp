@@ -13,7 +13,6 @@ class JIDUtil {
 	*/
 	public static function isValid( jid : String ) : Bool {
 		//TODO: regexp jid resource
-		//AS3: var pattern:RegExp = /(\w|[_.\-])+@((\w|-)+\.)+\w{2,4}+/;
 		var r : EReg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?/i;
 		if( !r.match( jid ) ) return false;
 		var parts = getParts( jid );
@@ -51,7 +50,7 @@ class JIDUtil {
 	}
 	
 	/**
-		Returns the given jid without resource.
+		Removes the resource from a jid.
 	*/
 	public static function parseBar( jid : String ) : String {
 		var i = jid.indexOf( "/" );
@@ -63,7 +62,7 @@ class JIDUtil {
 	/**
 		Returns [true] if the given jid has a valid resource.
 	*/
-	public static function hasResource( jid : String ) : Bool {
+	public static inline function hasResource( jid : String ) : Bool {
 		return jid.indexOf( "/" ) != -1;
 	}
 	

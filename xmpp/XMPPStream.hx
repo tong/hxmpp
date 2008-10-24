@@ -21,25 +21,25 @@ class XMPPStream {
 	*/
 	public static function createOpenStream( xmlns : String, to : String,
 											 ?version : String, ?lang : String, ?xmlHeader : Bool = true ) : String {
-		var buf = new StringBuf();
-		buf.add( '<stream:stream xmlns="' );
-		buf.add( xmlns );
-		buf.add( '" xmlns:stream="http://etherx.jabber.org/streams" to="' );
-		buf.add( to );
-		buf.add( '"' );
+		var b = new StringBuf();
+		b.add( '<stream:stream xmlns="' );
+		b.add( xmlns );
+		b.add( '" xmlns:stream="http://etherx.jabber.org/streams" to="' );
+		b.add( to );
+		b.add( '"' );
 		if( version != null ) {
-			buf.add( ' version="' );
-			buf.add( version );
-			buf.add( '"' );
+			b.add( ' version="' );
+			b.add( version );
+			b.add( '"' );
 		}
 		if( lang != null ) {
-			buf.add( ' xml:lang="' );
-			buf.add( lang );
-			buf.add( '"' );
+			b.add( ' xml:lang="' );
+			b.add( lang );
+			b.add( '"' );
 		}
-		buf.add( '>' );
-		return if( xmlHeader ) XmlUtil.XML_HEADER + buf.toString();
-		else buf.toString();
+		b.add( '>' );
+		return if( xmlHeader ) XmlUtil.XML_HEADER + b.toString();
+		else b.toString();
 	}
 	
 	/*

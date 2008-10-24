@@ -20,15 +20,15 @@ import jabber.util.JIDUtil;
 */
 class JID {
 	
-	public static inline var MAX_PART_SIZE = 1023;
+	public static inline var MAX_PART_SIZE = 1023; // TODO
 	
 	public var node(default,null) : String;
     public var domain(default,null) : String;
     public var resource(default,null) : String;
-	public var barAdress(getBarAdress,null) : String;
+	public var bare(getBare,null) : String;
 	
 	var cached 	: String;
-	var cached_bar : String;
+	var cached_bare : String;
 	
 	
 	public function new( str : String ) {
@@ -45,29 +45,29 @@ class JID {
 	}
 	
 	
-	function getBarAdress() : String {
-		if( cached_bar == null ) {
-			var buf = new StringBuf();
-			buf.add( node );
-			buf.add( "@" );
-			buf.add( domain );
-			cached_bar = buf.toString();
+	function getBare() : String {
+		if( cached_bare == null ) {
+			var b = new StringBuf();
+			b.add( node );
+			b.add( "@" );
+			b.add( domain );
+			cached_bare = b.toString();
 		}
-		return cached_bar;
+		return cached_bare;
 	}
 	
 	
 	public function toString() : String {
 		if( cached == null ) {
-			var j = new StringBuf();
-			j.add( node );
-			j.add( "@" );
-			j.add( domain );
+			var b = new StringBuf();
+			b.add( node );
+			b.add( "@" );
+			b.add( domain );
 			if( resource != null ) {
-				j.add( "/" );
-				j.add( resource );
+				b.add( "/" );
+				b.add( resource );
 			}
-			cached = j.toString();
+			cached = b.toString();
 		}
 		return cached;
 	}

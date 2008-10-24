@@ -31,7 +31,7 @@ enum SubscriptionMode {
 /**
 	Entry in clients roster.
 */
-class RosterEntry extends xmpp.RosterItem {
+class RosterEntry extends xmpp.roster.Item {
 	
 	/** Reference to this entries roster. */
 	public var roster : Roster;
@@ -152,7 +152,7 @@ class Roster {
 		var entry = getEntry( jid );
 		if( entry != null ) return false;
 		var iq = new IQ( IQType.set );
-		iq.ext = new xmpp.Roster( [new xmpp.RosterItem( jid )] );
+		iq.ext = new xmpp.Roster( [new xmpp.roster.Item( jid )] );
 		stream.sendIQ( iq, handleRosterIQ );
 		pending_add.add( iq.id );
 		return true;
@@ -166,7 +166,7 @@ class Roster {
 		var entry = getEntry( jid );
 		if( entry == null ) return false;
 		var iq = new IQ( IQType.set );
-		iq.ext = new xmpp.Roster( [new xmpp.RosterItem( jid, Subscription.remove )] );
+		iq.ext = new xmpp.Roster( [new xmpp.roster.Item( jid, Subscription.remove )] );
 		stream.sendIQ( iq, handleRosterIQ );
 		pending_remove.add( iq.id );
 		return true;
@@ -175,7 +175,7 @@ class Roster {
 	/**
 		Requests to update the entry in the remote roster.
 	*/
-	public function update( entry : xmpp.RosterItem ) {
+	public function update( entry : xmpp.roster.Item ) {
 		if( !available ) return false;
 		if( getEntry( entry.jid ) == null ) return false;
 		//if( entry.roster != null || entry.roster != this ) return false;
@@ -195,7 +195,7 @@ class Roster {
 		if( entry == null ) {
 			var iq = new IQ( IQType.set );
 			var ext = new xmpp.Roster();
-			ext.add( new xmpp.RosterItem( to ) );
+			ext.add( new xmpp.roster.Item( to ) );
 			iq.ext = ext;
 			stream.sendIQ( iq, handleRosterIQ );
 			pending_add.add( iq.id );
@@ -271,7 +271,7 @@ class Roster {
 	
 		trace( "handlePresence "+from+" / "+presence.type );
 		
-		if( from == stream.jid.barAdress ) {
+		if( from == stream.jid.bare ) {
 			// handlr account resource presence
 			var resource = jabber.util.JIDUtil.parseResource( presence.from );
 			resources.set( resource, presence );

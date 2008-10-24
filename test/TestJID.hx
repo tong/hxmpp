@@ -63,7 +63,7 @@ class TestJabberID extends haxe.unit.TestCase   {
 		assertEquals( "domain.net", jid.domain );
 		assertTrue( JIDUtil.hasResource( jid_str ) );
 		assertEquals( "Resource", jid.resource );
-		assertEquals( "node@domain.net", jid.barAdress );
+		assertEquals( "node@domain.net", jid.bare );
 		
 		var parts = JIDUtil.getParts( jid_str );
 		assertEquals( "node", parts[0] );
@@ -79,7 +79,7 @@ class TestJabberID extends haxe.unit.TestCase   {
 		assertEquals( "domain.net", jid.domain );
 		assertTrue( !JIDUtil.hasResource( jid_str ) );
 		assertEquals( null, jid.resource );
-		assertEquals( "node@domain.net", jid.barAdress );
+		assertEquals( "node@domain.net", jid.bare );
 		
 		parts = JIDUtil.getParts( jid_str );
 		assertEquals( "node", parts[0] );

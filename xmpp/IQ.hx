@@ -31,8 +31,9 @@ class IQ extends xmpp.Packet {
 		iq.type = Type.createEnum( IQType, x.get( "type" ) );
 		var ext = x.elements().next();
 		if( ext != null ) {
+			//TODO!!!!!
 			iq.ext = new PlainPacket( ext );
-			// TODO test->
+			// TODO parseErrors
 			for( el in x.elements() ) {
 				switch( el.nodeName ) {
 					case "error" : iq.errors.push( el );

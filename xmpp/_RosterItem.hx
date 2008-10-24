@@ -5,20 +5,9 @@ import xmpp.roster.AskType;
 import xmpp.roster.Subscription;
 
 
-/*
-typedef TRosterItem = {
-	var jid : String;
-	var subscription : Subscription;
-	var name : String;
-	var askType : AskType;
-	var groups : List<String>;
-}*/
-
-
 class RosterItem {
 	
-	//public var jid(default,null) : String;
-	public var jid : String;
+	public var jid(default,null) : String;
 	public var subscription : Subscription;
 	public var name : String;
 	public var askType : AskType;

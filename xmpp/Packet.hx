@@ -1,5 +1,6 @@
 package xmpp;
 
+//TODO
 
 /**
 	Abstract/Basic xmpp packet.
@@ -11,8 +12,8 @@ class Packet {
 	public var from : String;
 	public var id : String;	
 	public var lang : String;
-	public var errors : Array<Xml>;
 	public var properties : Array<Xml>;
+	public var errors : Array<Xml>;
 	
 	
 	function new( ?to : String, ?from : String, ?id : String, ?lang : String ) {
@@ -65,6 +66,16 @@ class Packet {
 			default : cast new PlainPacket( x );
 		}
 	}
+	
+	/*
+	function parseErrors( x : Xml ) : Array<xmpp.Error> {
+		for( el in x.elements() ) {
+			if( el.nodeName == "error" ) {
+				iq.errors.push( el );
+			}
+		}
+	}
+	*/
 	
 	/*
 	static function parseBase( p, x : Xml ) {

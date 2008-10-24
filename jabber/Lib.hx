@@ -10,8 +10,8 @@ package jabber;
 class Lib {
 	
 	/**
-		0.3
+		0.2
 	*/
-	public static inline var VERSION = "0.3";
+	public static var VERSION = "0.2";
 		
 }
