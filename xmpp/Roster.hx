@@ -2,7 +2,7 @@ package xmpp;
 
 
 /**
-	IQ roster extension.
+	Roster iq extension.
 */
 class Roster extends List<xmpp.roster.Item> {
 	

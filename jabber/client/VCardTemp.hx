@@ -66,7 +66,7 @@ class VCardTemp {
 		switch( iq.type ) {
 			case result :
 				var e = new VCardEvent( stream, iq.from );
-				e.injectData( iq.ext.toXml() );
+			//TODO	e.injectData( iq.ext.toXml() );
 				onLoad( e );
 				
 			case error :

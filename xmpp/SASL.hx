@@ -2,7 +2,7 @@ package xmpp;
 
 
 /**
-	Holds static methods for creation of xml data required for SASL authetication over xmpp.
+	Holds static methods for creation of xml data required for SASL authetication.
 */
 class SASL {
 	

@@ -127,33 +127,33 @@ class TestDataFormExtension extends haxe.unit.TestCase {
 
 		assertEquals( 'Bot Configuration', form.title );
 		assertEquals( 'Fill out this form to configure your new bot!', form.instructions );
-		assertEquals( DataFormFieldType.hidden, form.fields[0].type );
+		assertEquals( xmpp.dataform.FieldType.hidden, form.fields[0].type );
 		assertEquals( 'FORM_TYPE', form.fields[0].variable );
 		assertEquals( 'jabber:bot', form.fields[0].values[0] );
 		
-		assertEquals( DataFormFieldType.fixed, form.fields[1].type );
+		assertEquals( xmpp.dataform.FieldType.fixed, form.fields[1].type );
 		assertEquals( 'Section 1: Bot Info', form.fields[1].values[0] );
 		
-		assertEquals( DataFormFieldType.text_single, form.fields[2].type );
+		assertEquals( xmpp.dataform.FieldType.text_single, form.fields[2].type );
 		assertEquals( 'botname', form.fields[2].variable );
 		assertEquals( 'The name of your bot', form.fields[2].label );
 		
-		assertEquals( DataFormFieldType.text_multi, form.fields[3].type );
+		assertEquals( xmpp.dataform.FieldType.text_multi, form.fields[3].type );
 		assertEquals( 'Helpful description of your bot', form.fields[3].label );
 		assertEquals( 'description', form.fields[3].variable );
 		
-		assertEquals( DataFormFieldType.boolean, form.fields[4].type );
+		assertEquals( xmpp.dataform.FieldType.boolean, form.fields[4].type );
 		assertEquals( 'Public bot?', form.fields[4].label );
 		assertEquals( 'public', form.fields[4].variable );
 		
-		assertEquals( DataFormFieldType.text_private, form.fields[5].type );
+		assertEquals( xmpp.dataform.FieldType.text_private, form.fields[5].type );
 		assertEquals( 'Password for special access', form.fields[5].label );
 		assertEquals( 'password', form.fields[5].variable );
 		
-		assertEquals( DataFormFieldType.fixed, form.fields[6].type );
+		assertEquals( xmpp.dataform.FieldType.fixed, form.fields[6].type );
 		assertEquals( 'Section 2: Features', form.fields[6].values[0] );
 		
-		assertEquals( DataFormFieldType.list_multi, form.fields[7].type );
+		assertEquals( xmpp.dataform.FieldType.list_multi, form.fields[7].type );
 		assertEquals( 'What features will the bot support?', form.fields[7].label );
 		assertEquals( 'features', form.fields[7].variable );
 		assertEquals( 'Contests', form.fields[7].options[0].label );
@@ -169,10 +169,10 @@ class TestDataFormExtension extends haxe.unit.TestCase {
 		assertEquals( 'news', form.fields[7].values[0] );
 		assertEquals( 'search', form.fields[7].values[1] );
 		
-		assertEquals( DataFormFieldType.fixed, form.fields[8].type );
+		assertEquals( xmpp.dataform.FieldType.fixed, form.fields[8].type );
 		assertEquals( 'Section 3: Subscriber List', form.fields[8].values[0] );
 		
-		assertEquals( DataFormFieldType.list_single, form.fields[9].type );
+		assertEquals( xmpp.dataform.FieldType.list_single, form.fields[9].type );
 		assertEquals( 'Maximum number of subscribers', form.fields[9].label );
 		assertEquals( 'maxsubs', form.fields[9].variable );
 		assertEquals( '20', form.fields[9].values[0] );
@@ -189,10 +189,10 @@ class TestDataFormExtension extends haxe.unit.TestCase {
 		assertEquals( 'None', form.fields[9].options[5].label );
 		assertEquals( 'none', form.fields[9].options[5].value );
 		
-		assertEquals( DataFormFieldType.fixed, form.fields[10].type );
+		assertEquals( xmpp.dataform.FieldType.fixed, form.fields[10].type );
 		assertEquals( 'Section 4: Invitations', form.fields[10].values[0] );
 		
-		assertEquals( DataFormFieldType.jid_multi, form.fields[11].type );
+		assertEquals( xmpp.dataform.FieldType.jid_multi, form.fields[11].type );
 		assertEquals( 'People to invite', form.fields[11].label );
 		assertEquals( 'invitelist', form.fields[11].variable );
 		assertEquals( 'Tell all your friends about your new bot!', form.fields[11].desc );

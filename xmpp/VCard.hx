@@ -18,9 +18,9 @@ import xmpp.vcard.Tel;
 class VCard {
 	
 	public static var NODENAME = "vCard";
-	public static var XMLNS    = "vcard-temp";
-	public static var PRODID   = "-//HandGen//NONSGML vGen v1.0//EN";
-	public static var VERSION  = "2.0";
+	public static var XMLNS = "vcard-temp";
+	public static var PRODID = "-//HandGen//NONSGML vGen v1.0//EN";
+	public static var VERSION = "2.0";
 	
 	public var fullName 	: String;
 	public var name 		: Name;
@@ -62,14 +62,15 @@ class VCard {
 	}
 	
 	
+	/*
 	public function injectData( src : Xml ) {
-		
 	}
+	*/
 	
 	public function toXml() : Xml {
-		var xml = Xml.createElement( NODENAME );
-		xml.set( "xmlns", XMLNS );
-		if( fullName != null ) xml.addChild( XmlUtil.createElement( "FN", fullName ) );
+		var x = Xml.createElement( NODENAME );
+		x.set( "xmlns", XMLNS );
+		if( fullName != null ) x.addChild( XmlUtil.createElement( "FN", fullName ) );
 		if( name != null ) {
 			var n = Xml.createElement( "N" );
 			if( name.family != null ) n.addChild( XmlUtil.createElement( "FAMILY", name.family ) );
@@ -77,16 +78,16 @@ class VCard {
 			if( name.middle != null ) n.addChild( XmlUtil.createElement( "MIDDLE", name.middle ) );
 			if( name.prefix != null ) n.addChild( XmlUtil.createElement( "PREFIX", name.prefix ) );
 			if( name.suffix != null ) n.addChild( XmlUtil.createElement( "SUFFIX", name.suffix ) );
-			xml.addChild( n );
+			x.addChild( n );
 		}
-		if( nickName != null ) xml.addChild( XmlUtil.createElement( "NN", nickName ) );
+		if( nickName != null ) x.addChild( XmlUtil.createElement( "NN", nickName ) );
 		if( photo != null ) {
 			var p = Xml.createElement( "PHOTO" );
 			p.addChild( XmlUtil.createElement( "TYPE", photo.type ) );
 			p.addChild( XmlUtil.createElement( "BINVAL", photo.binval ) );
-			xml.addChild( p );
+			x.addChild( p );
 		}
-		if( birthday != null ) xml.addChild( XmlUtil.createElement( "BDAY", birthday ) );
+		if( birthday != null ) x.addChild( XmlUtil.createElement( "BDAY", birthday ) );
 		for( address in addresses ) {
 			var a = Xml.createElement( "ADR" );
 			if( address.home != null )   a.addChild( XmlUtil.createElement( "HOME", address.home ) );
@@ -101,7 +102,7 @@ class VCard {
 			if( address.region != null ) a.addChild( XmlUtil.createElement( "REGION", address.region ) );
 			if( address.pcode != null )  a.addChild( XmlUtil.createElement( "PCODE", address.pcode ) );
 			if( address.ctry != null )   a.addChild( XmlUtil.createElement( "CTRY", address.ctry ) );
-			xml.addChild( a );
+			x.addChild( a );
 		}
 		if( label != null ) {
 			var l = Xml.createElement( "LABEL" );
@@ -111,9 +112,9 @@ class VCard {
 			if( label.parcel != null ) l.addChild( XmlUtil.createElement( "HOME", label.parcel ) );
 			if( label.pref != null ) l.addChild( XmlUtil.createElement( "HOME", label.pref ) );
 			if( label.line != null ) l.addChild( XmlUtil.createElement( "HOME", label.line ) );
-			xml.addChild( l );
+			x.addChild( l );
 		}
-		if( line != null ) xml.addChild( XmlUtil.createElement( "LINE", line ) );
+		if( line != null ) x.addChild( XmlUtil.createElement( "LINE", line ) );
 		for( tel in tels ) {
 			var t = Xml.createElement( "TEL" );
 			if( tel.number != null ) t.addChild( XmlUtil.createElement( "NUMBER", tel.number ) );
@@ -130,7 +131,7 @@ class VCard {
 			if( tel.isdn != null )   t.addChild( XmlUtil.createElement( "ISDN", tel.isdn ) );
 			if( tel.pcs != null )    t.addChild( XmlUtil.createElement( "PCS", tel.pcs ) );
 			if( tel.pref != null )   t.addChild( XmlUtil.createElement( "PREF", tel.pref ) );
-			xml.addChild( t );
+			x.addChild( t );
 		}
 		if( email != null ) {
 			var e = Xml.createElement( "EMAIL" );
@@ -140,42 +141,42 @@ class VCard {
 			if( email.pref != null )     e.addChild( XmlUtil.createElement( "PREF", email.pref ) );
 			if( email.x400 != null ) 	 e.addChild( XmlUtil.createElement( "X400", email.x400 ) );
 			if( email.userid != null )   e.addChild( XmlUtil.createElement( "USERID", email.userid ) );
-			xml.addChild( e );
+			x.addChild( e );
 		}
-		if( jid != null ) xml.addChild( XmlUtil.createElement( "JABBERID", jid ) );
-		if( mailer != null ) xml.addChild( XmlUtil.createElement( "MAILER", mailer ) );
-		if( tz != null ) xml.addChild( XmlUtil.createElement( "TZ", tz ) );
+		if( jid != null ) x.addChild( XmlUtil.createElement( "JABBERID", jid ) );
+		if( mailer != null ) x.addChild( XmlUtil.createElement( "MAILER", mailer ) );
+		if( tz != null ) x.addChild( XmlUtil.createElement( "TZ", tz ) );
 		if( geo != null ) {
 			var g  = Xml.createElement( "GEO" );
 			g.addChild( XmlUtil.createElement( "LAT", Std.string( geo.lat ) ) );
 			g.addChild( XmlUtil.createElement( "LON", Std.string( geo.lon ) ) );
-			xml.addChild( g );
+			x.addChild( g );
 		}
-		if( title != null ) xml.addChild( XmlUtil.createElement( "TITLE", title ) );
-		if( role != null ) xml.addChild( XmlUtil.createElement( "ROLE", role ) );
+		if( title != null ) x.addChild( XmlUtil.createElement( "TITLE", title ) );
+		if( role != null ) x.addChild( XmlUtil.createElement( "ROLE", role ) );
 		if( logo != null ) {
 			var l = Xml.createElement( "LOGO" );
 			l.addChild( XmlUtil.createElement( "TYPE", logo.type ) );
 			l.addChild( XmlUtil.createElement( "BINVAL", logo.binval ) );
-			xml.addChild( l );
+			x.addChild( l );
 		}
 		if( org != null ) {
 			var o = Xml.createElement( "ORG" );
 			if( org.name != null ) o.addChild( XmlUtil.createElement( "NAME", org.name ) );
 			if( org.unit != null ) o.addChild( XmlUtil.createElement( "UNIT", org.unit ) );
-			xml.addChild( o );
+			x.addChild( o );
 		}
-		if( note != null ) xml.addChild( XmlUtil.createElement( "NOTE", note ) );
-		if( prodid != null ) xml.addChild( XmlUtil.createElement( "PRODID", prodid ) );
-		if( url != null ) xml.addChild( XmlUtil.createElement( "URL", url ) );
-		if( desc != null ) xml.addChild( XmlUtil.createElement( "DESC", desc ) );
-		return xml;
+		if( note != null ) x.addChild( XmlUtil.createElement( "NOTE", note ) );
+		if( prodid != null ) x.addChild( XmlUtil.createElement( "PRODID", prodid ) );
+		if( url != null ) x.addChild( XmlUtil.createElement( "URL", url ) );
+		if( desc != null ) x.addChild( XmlUtil.createElement( "DESC", desc ) );
+		return x;
 	}
 	
 	
-	public static function parse( src : Xml ) : xmpp.VCard  {
+	public static function parse( x : Xml ) : xmpp.VCard  {
 		var vc = new xmpp.VCard();
-		for( node in src.elements() ) {
+		for( node in x.elements() ) {
 			switch( node.nodeName ) {
 				case "FN" : vc.fullName = node.firstChild().nodeValue;
 				case "N" :
@@ -308,9 +309,9 @@ class VCard {
 	}
 	
 	
-	static function parsePhoto( node : Xml ) : Photo {
+	static function parsePhoto( x : Xml ) : xmpp.vcard.Photo {
 		var photo = untyped {};
-		for( n in node.elements() ) {
+		for( n in x.elements() ) {
 			var value : String = null;
 			try {  value = n.firstChild().nodeValue; } catch( e : Dynamic ) {}
 			if( value != null ) {

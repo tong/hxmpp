@@ -8,7 +8,6 @@ class Info {
 	
 	public static var XMLNS = 'http://jabber.org/protocol/disco#info';
 	
-//	public var from : String;
 	public var identities : Array<xmpp.disco.Identity>; 
 	public var features : Array<String>;
 	
@@ -44,11 +43,13 @@ class Info {
 	
 	
 	public static function parse( x : Xml ) : xmpp.disco.Info {
-		var i = new xmpp.disco.Info();
+		var i = new Info();
 		for( f in x.elements() ) {
 			switch( f.nodeName ) {
 				case "feature"  : i.features.push( f.get( "var" ) );
-				case "identity" : i.identities.push( { category : f.get( "category" ), name : f.get( "name" ), type : f.get( "type" ) } );
+				case "identity" : i.identities.push( { category : f.get( "category" ),
+													   name : f.get( "name" ),
+													   type : f.get( "type" ) } );
 			}
 		}
 		return i;
