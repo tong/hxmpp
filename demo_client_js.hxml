@@ -1,0 +1,9 @@
+
+#
+-cp doc
+-cp ../core
+-js bin/demo_js/jabber.js
+jabber.Lib
+-D JABBER_CLIENTLIB
+-D JABBER_SOCKETBRIDGE
+-D JABBER_DEBUG

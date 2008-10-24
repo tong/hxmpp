@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="author" content="disktree.net" />
+<title>hxmpp usage from plain javascript</title>
+<script type="text/javascript" src="../swfobject.js"/></script>
+<script type="text/javascript" src="jabber.js"/></script>
+</head>
+<body>
+
+<form>
+	<input type="text" id="jid" value="tong@disktree"></input>
+	<label for="jid">JID</label><br>
+	<input type="password" id="pass" value="test"></input>
+	<label for="pass">PASSWORD</label><br>
+	<input type="button" id="login" value="LOGIN &raquo" onclick="openStream()"></input>
+</form>
+
+<div id="f9bridge">NO FLASHPLAYER DETECTED</div>
+<div id="jabberstatus"></div>
+<div id="streamstatus">Stream status: not initialized</div>
+
+<div id="haxe:trace"></div>
+
+<script type="text/javascript">swfobject.embedSWF("../f9_socketbridge.swf","f9bridge","0","0","9.0.0");</script>
+<script type="text/javascript">
+
+jabber.Lib.init();
+
+function printHtml(id,value) {
+	document.getElementById(id).innerHTML = value;
+}
+
+function streamStatusChangeHandler(stream) {
+	switch( stream.status ) {
+	case jabber.StreamStatus.open :
+		var auth = new jabber.client.NonSASLAuthentication(stream);
+		auth.onSuccess = function(s) {
+			var roster = new jabber.client.Roster(s);
+			roster.onAvailable = function() {
+				printHtml("jabberstatus","Roster loaded");
+			}
+			roster.load();
+			printHtml("jabberstat..us","Authentication success");
+		};
+		auth.onFailed = function(s) { printHtml("jabberstatus","Authentication failed"); };
+		auth.authenticate(document.getElementById("pass").value,"norc");
+		break;
+	case jabber.StreamStatus.closed :
+		//..
+		break;
+	}
+	printHtml("streamstatus","Stream status: "+stream.status);
+}
+
+function openStream() {
+	var jid = new jabber.JID(document.getElementById("jid").value);
+	var cnx = new jabber.SocketConnection(jid.host,5222);
+	var stream = new jabber.client.Stream(jid,cnx);
+	stream.onOpen = streamStatusChangeHandler;
+	stream.onClose = streamStatusChangeHandler;
+	stream.open();
+}
+
+</script>
+
+</body>
+</html>
