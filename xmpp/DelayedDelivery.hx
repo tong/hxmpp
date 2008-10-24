@@ -34,8 +34,8 @@ class DelayedDelivery {
 	/**
 		Parses/returns the packet delay of the given packet.
 	*/
-	public static function get( m : xmpp.Message ) : xmpp.PacketDelay {
-		for( e in m.properties ) {
+	public static function get( p : xmpp.Packet ) : xmpp.PacketDelay {
+		for( e in p.properties ) {
 			var nodeName = e.nodeName;
 			var xmlns = e.get( "xmlns" );
 			#if XEP_0091 
@@ -46,7 +46,6 @@ class DelayedDelivery {
 			}
 			#end
 			if( nodeName == "delay" ) {
-				trace("HASDELAYHASDELAYHASDELAY");
 				var desc : String = null;
 				try { desc = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
 				return { from : e.get( "from" ), stamp : e.get( "stamp" ), description : desc };

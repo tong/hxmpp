@@ -273,9 +273,10 @@ class StreamBase /* implements IStream */ {
 		return packets;
 	}
 	
-	function parseStreamFeatures( x : Xml ) {
 		//TODO
+	function parseStreamFeatures( x : Xml ) {
 		trace("parseStreamFeatures...");
+		return null;
 	}
 	
 	

@@ -120,14 +120,7 @@ class SocketConnection extends jabber.core.StreamConnection {
 	public override function send( data : String ) : Bool {
 		if( data == null || data == "" ) return false;
 		if( !connected ) return false;
-		try {
-			for( i in interceptors ) data = i.interceptData( data );
-		} catch( e : Dynamic ) {
-			trace(e);
-		}
-		//var s = haxe.io.Bytes.ofString( data );
-		//trace(s);
-		//trace("##"+neko.zip.Uncompress.run( haxe.io.Bytes.ofString( data ) ).toString() );
+		for( i in interceptors ) data = i.interceptData( data );
 		#if JABBER_SOCKETBRIDGE
 		socket.send( data );
 		#elseif ( flash9 || flash10 )

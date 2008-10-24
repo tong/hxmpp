@@ -6,7 +6,6 @@ import xmpp.dataform.FormType;
 
 /**
 	DataForm packet extension (for iq and message packets).
-	
 	<a href="http://xmpp.org/extensions/xep-0004.html">XEP-0004: Data Forms</a><br/>
 	
 */

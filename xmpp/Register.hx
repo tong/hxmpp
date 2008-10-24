@@ -4,6 +4,9 @@ import util.XmlUtil;
 
 
 /**
+
+	TODO check schema
+	
 */
 class Register {
 	
@@ -25,10 +28,10 @@ class Register {
 	
 	public function toXml() : Xml {
 		var q = xmpp.IQ.createQuery( XMLNS );
-		if( username != null ) q.addChild( XmlUtil.createXmlElement( "username", username ) );
-		if( password != null ) q.addChild( XmlUtil.createXmlElement( "password", password ) );
-		if( email != null ) q.addChild( XmlUtil.createXmlElement( "email", email ) );
-		if( name != null ) q.addChild( XmlUtil.createXmlElement( "name", name ) );
+		if( username != null ) q.addChild( XmlUtil.createElement( "username", username ) );
+		if( password != null ) q.addChild( XmlUtil.createElement( "password", password ) );
+		if( email != null ) q.addChild( XmlUtil.createElement( "email", email ) );
+		if( name != null ) q.addChild( XmlUtil.createElement( "name", name ) );
 		return q;
 	}
 	

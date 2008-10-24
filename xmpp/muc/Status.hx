@@ -18,12 +18,7 @@ class Status {
 	}
 	
 	public static function parse( x ) : Status {
-		try {
-			return new Status( Std.parseInt( x.get( "code" ) ) );
-		} catch( e : Dynamic ) {
-			trace( "Invalid status tag" );
-			return null;
-		}
+		return new Status( Std.parseInt( x.get( "code" ) ) );
 	}
 	
 }

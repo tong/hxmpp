@@ -40,11 +40,7 @@ class Auth {
 	
 	public static function parse( x : Xml ) : xmpp.Auth {
 		var a = new xmpp.Auth();
-		try {
-			xmpp.Packet.reflectPacketNodes( x, a );
-		} catch( e : Dynamic ) {
-			trace( "Error reflecting packet nodes "+e );
-		}
+		xmpp.Packet.reflectPacketNodes( x, a );
 		return a;
 		/*
 		var a = new xmpp.Auth();

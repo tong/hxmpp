@@ -1,7 +1,10 @@
 package xmpp;
 
 
-class ChatStatePacket {
+/**
+	<a href="http://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a><br/>
+*/
+class ChatStateExtension {
 	
 	public static var XMLNS = "http://jabber.org/protocol/chatstates";
 	
@@ -26,7 +29,7 @@ class ChatStatePacket {
 		Extracts the chat state of the given message.
 		Returns null if no state was found.
 	*/
-	public static function getState( m : xmpp.Message ) : xmpp.ChatState {
+	public static function get( m : xmpp.Message ) : xmpp.ChatState {
 		for( e in m.properties ) {
 			var n = e.nodeName;
 			switch( n ) {

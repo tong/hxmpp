@@ -98,6 +98,18 @@
 -swf9 bin/tests/test_xmpp_stream.swf
 -main TestXMPPStream
 
+--next
+-cp ../core
+-cp test
+-js bin/tests/test_xmpp_stream.js
+-main TestXMPPStream
+
+--next
+-cp ../core
+-cp test
+-php bin/tests
+--php-front test_xmpp_stream.php
+-main TestXMPPStream
 
 
 ###
@@ -108,3 +120,21 @@
 -neko bin/tests/test_xmpp_iqs.n
 -main TestXMPPIQExtensions
 
+--next
+-cp ../core
+-cp test
+-swf9 bin/tests/test_xmpp_iqs.swf
+-main TestXMPPIQExtensions
+
+--next
+-cp ../core
+-cp test
+-js bin/tests/test_xmpp_iqs.js
+-main TestXMPPIQExtensions
+
+--next
+-cp ../core
+-cp test
+-php bin/tests
+--php-front test_xmpp_iqs.php
+-main TestXMPPIQExtensions

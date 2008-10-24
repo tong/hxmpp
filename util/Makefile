@@ -1,6 +1,5 @@
 
 SYSTEM = Linux
-NDLL = ../ndll/$(SYSTEM)/hxmpp_debug.ndll
 
 OBJECTS =
 OBJECTS += hxmpp_debug.o
@@ -15,4 +14,3 @@ hxmpp_debug: $(OBJECTS)
 
 clean:
 	rm -f *.o
-

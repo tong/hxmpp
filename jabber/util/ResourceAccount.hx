@@ -33,8 +33,12 @@ class ResourceAccount {
 		port = ( account[3] == "" || account[3] == null )  ? null : Std.parseInt( account[3] );
 	}
 	
+	#if JABBER_DEBUG
+	
 	public function toString() : String {
-		return "jabber.util.ResourceAccount("+jid+","+password+","+host+","+port+")";
+		return "ResourceAccount("+jid+","+password+","+host+","+port+")";
 	}
+	
+	#end
 		
 }

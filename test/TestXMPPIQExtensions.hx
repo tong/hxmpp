@@ -1,7 +1,4 @@
 
-import xmpp.Roster;
-import xmpp.DataForm;
-
 
 
 class TestXMPPIQExtensions {
@@ -17,9 +14,13 @@ class TestXMPPIQExtensions {
 		
 		var r = new haxe.unit.TestRunner();
 		r.add( new TestAuthExtension() );
+		r.add( new TestRegisterExtension() );
 		r.add( new TestRosterExtension() );
 		r.add( new TestDataFormExtension() );
 		r.add( new TestDiscoExtension() );
+		r.add( new TestDelayedDeliveryExtension() );
+		r.add( new TestChatStateExtension() );
+		r.add( new TestLastActivityExtension() );
 		r.run();
 	}
 	
@@ -33,14 +34,46 @@ class TestXMPPIQExtensions {
 class TestAuthExtension extends haxe.unit.TestCase {
 	
 	public function testAuthExt() {
-		var iq = xmpp.IQ.parse( Xml.parse( '<iq type="set" id="66ceE3"><query xmlns="jabber:iq:auth"><username>tong</username><password>test</password><resource>norc</resource><digest>123</digest></query></iq>' ).firstElement() );
+		var iq = xmpp.IQ.parse( Xml.parse(
+		'<iq type="set" id="66ceE3">
+			<query xmlns="jabber:iq:auth">
+				<username>tong</username>
+				<password>test</password>
+				<resource>norc</resource>
+				<digest>123</digest>
+			</query>
+		</iq>' ).firstElement() );
 		var auth = xmpp.Auth.parse( iq.ext.toXml() );
 		assertEquals( auth.username, 'tong' );
 		assertEquals( auth.password, 'test' );
 		assertEquals( auth.resource, 'norc' );
 		assertEquals( auth.digest, "123" );
 	}
+}
 
+
+
+/**
+	Testunit for xmpp.Register
+*/
+class TestRegisterExtension extends haxe.unit.TestCase {
+	
+	public function testRegister() {
+		var iq = xmpp.IQ.parse( Xml.parse(
+		"<iq type='result' id='reg1'>
+			<query xmlns='jabber:iq:register'>
+   				<registered/>
+				<username>juliet</username>
+   				<password>R0m30</password>
+				<email>juliet@capulet.com</email>
+			</query>
+		</iq>" ).firstElement() );
+		var r = xmpp.Register.parse( iq.ext.toXml() );
+		assertEquals( r.username, 'juliet' );
+		assertEquals( r.password, 'R0m30' );
+		assertEquals( r.email, 'juliet@capulet.com' );
+		assertEquals( r.name, null );
+	}
 }
 
 
@@ -51,33 +84,20 @@ class TestAuthExtension extends haxe.unit.TestCase {
 class TestRosterExtension extends haxe.unit.TestCase {
 	
 	public function testRosterExt() {
-		//TODO
-		/*
-		var iq = xmpp.IQ.parse( Xml.parse( '<iq type="result" id="E/xud+7" to="tong@disktree/norc"><query xmlns="jabber:iq:roster"><item jid="test@disktree" subscription="both"/><item jid="account@disktree" subscription="both"/></query></iq>' ).firstElement() );
-		var r = xmpp.Roster.parse( iq.ext.toXml() );
 		
-		for( item in r ) {
-			assertEquals( "1","1");
-		}
-		*/
-		assertEquals("1","1");
-		/*
-		var iq = new xmpp.IQ();
-		var ext = new xmpp.RosterItem( "test@disktree.net" );
-		iq.ext = ext;
-		
-		//trace( iq.toString() );
-		//subscription="both" name="testnick"
-		assertEquals( ext.toString(), '<item jid="test@disktree.net"/>' );
-		assertEquals( iq.toString(), '<iq type="get" id="null"><item jid="test@disktree.net"/></iq>' );
-	
-	//	ext.name = "testnick";
-	//	ext.subscription = xmpp.Subscription.both;
-	//.........TODO
-		*/
-	}
+		var r = xmpp.Roster.parse( Xml.parse(
+		'<query xmlns="jabber:iq:roster">
+			<item jid="test@disktree.net" subscription="both"/>
+			<item jid="account@disktree.net" subscription="both"/>
+		</query>' ).firstElement() );
+		var items = Lambda.array( xmpp.Roster.parse( r.toXml() ) );
+		assertEquals( "test@disktree.net", items[0].jid );
+		assertEquals( "account@disktree.net", items[1].jid );
 
+		//.
+	}
 }
+
 
 
 /**
@@ -85,7 +105,7 @@ class TestRosterExtension extends haxe.unit.TestCase {
 */
 class TestDataFormExtension extends haxe.unit.TestCase {
 	
-	public function testAuthExt() {
+	public function testDataform() {
 		
 		// example src from http://xmpp.org/extensions/xep-0004.html
 		var form = xmpp.DataForm.parse( Xml.parse(
@@ -203,7 +223,6 @@ class TestDataFormExtension extends haxe.unit.TestCase {
 		TODO test with example which include ALL elements!
 	}
 	*/
-	
 }
 
 
@@ -215,7 +234,7 @@ class TestDiscoExtension extends haxe.unit.TestCase {
 	
 	
 	public function testDiscoInfo() {
-		
+	
 		var x = new xmpp.disco.Info().toXml();
 		assertEquals( xmpp.disco.Info.XMLNS, x.get( "xmlns" ) );
 		
@@ -232,11 +251,9 @@ class TestDiscoExtension extends haxe.unit.TestCase {
 		assertEquals( "registered", info.identities[0].type );
 		assertEquals( "account", info.identities[0].category );
 		assertEquals( null, info.identities[0].name );
-		
 		assertEquals( "pep", info.identities[1].type );
 		assertEquals( "pubsub", info.identities[1].category );
 		assertEquals( null, info.identities[1].name );
-		
 		assertEquals( "http://jabber.org/protocol/disco#info", info.features[0] );
 	}
 	
@@ -256,6 +273,7 @@ class TestDiscoExtension extends haxe.unit.TestCase {
 				<item name="Publish-Subscribe service" jid="pubsub.disktree"/>
 			</query>
 		</iq>').firstElement() );
+		
 		var items = xmpp.disco.Items.parse( iq.ext.toXml() );
 		var results_name = [ "Public Chatrooms", "Socks 5 Bytestreams Proxy", "User Search", "Publish-Subscribe service" ];
 		var results_jid = [ "conference.disktree", "proxy.disktree", "search.disktree", "pubsub.disktree" ];
@@ -271,3 +289,90 @@ class TestDiscoExtension extends haxe.unit.TestCase {
 	
 }
 
+
+
+/**
+	Testunit for xmpp.DelayedDelivery
+*/
+class TestDelayedDeliveryExtension extends haxe.unit.TestCase {
+	
+	public function testDelayedDelivery() {
+		
+		var m = xmpp.Message.parse( Xml.parse( "
+		<message from='romeo@montague.net/orchard' to='juliet@capulet.com' type='chat'>
+			<body>O blessed, blessed night! I am afeard. Being in night, all this is but a dream, Too flattering-sweet to be substantial.</body>
+			<delay xmlns='urn:xmpp:delay' from='capulet.com' stamp='2002-09-10T23:08:25Z'>Offline Storage</delay>
+		</message>" ).firstElement() );
+		var delay = xmpp.DelayedDelivery.get( m );
+		assertEquals( delay.from, 'capulet.com' );
+		assertEquals( delay.stamp, '2002-09-10T23:08:25Z' );
+		assertEquals( delay.description, 'Offline Storage' );
+		
+		var p = xmpp.Presence.parse( Xml.parse( "
+		<presence from='juliet@capulet.com/balcony' to='romeo@montague.net'>
+			<status>anon!</status>
+			<show>xa</show>
+			<priority>1</priority>
+			<delay xmlns='urn:xmpp:delay' from='juliet@capulet.com/balcony' stamp='2002-09-10T23:41:07Z'/>
+		</presence>
+		" ).firstElement() );
+		delay = xmpp.DelayedDelivery.get(p );
+		assertEquals( delay.from, 'juliet@capulet.com/balcony' );
+		assertEquals( delay.stamp, '2002-09-10T23:41:07Z' );
+		assertEquals( delay.description, null );
+	}
+}
+
+
+
+/**
+	Testunit for xmpp.ChatStatePacket
+*/
+class TestChatStateExtension extends haxe.unit.TestCase {
+	
+	public function testDelayedDelivery() {
+		
+		var m = xmpp.Message.parse( Xml.parse( "
+		<message from='bernardo@shakespeare.lit/pda' to='francisco@shakespeare.lit' type='chat'>
+			<body>Who's there?</body>
+		</message>" ).firstElement() );
+		assertEquals( null, xmpp.ChatStateExtension.get( m ) );
+
+		m = xmpp.Message.parse( Xml.parse( "
+		<message from='bernardo@shakespeare.lit/pda' to='francisco@shakespeare.lit' type='chat'>
+			<body>Who's there?</body>
+			<active xmlns='http://jabber.org/protocol/chatstates'/>
+		</message>" ).firstElement() );
+		assertEquals( xmpp.ChatState.active, xmpp.ChatStateExtension.get( m ) );
+		
+		m = xmpp.Message.parse( Xml.parse( "
+		<message from='bernardo@shakespeare.lit/pda' to='francisco@shakespeare.lit' type='chat'>
+			<body>Who's there?</body>
+			<composing xmlns='http://jabber.org/protocol/chatstates'/>
+		</message>" ).firstElement() );
+		assertEquals( xmpp.ChatState.composing, xmpp.ChatStateExtension.get( m ) );
+		
+		m = xmpp.Message.parse( Xml.parse( "
+		<message from='bernardo@shakespeare.lit/pda' to='francisco@shakespeare.lit' type='chat'>
+			<body>Who's there?</body>
+		</message>" ).firstElement() );
+		xmpp.ChatStateExtension.add( m, xmpp.ChatState.composing );
+		assertEquals( xmpp.ChatState.composing, xmpp.ChatStateExtension.get( m ) );
+	}
+}
+
+
+
+/**
+	Testunit for xmpp.LastActivity
+*/
+class TestLastActivityExtension extends haxe.unit.TestCase {
+	
+	public function testLastActivity() {
+		var query = Xml.parse( "<query xmlns='jabber:iq:last' seconds='903'/>" ).firstElement();
+		var activity = xmpp.LastActivity.parse( query );
+		var secs = xmpp.LastActivity.parseSeconds( query );
+		assertEquals( 903, activity.seconds );
+		assertEquals( 903, secs );
+	}
+}

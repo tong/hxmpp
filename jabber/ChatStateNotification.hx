@@ -30,7 +30,7 @@ class ChatStateNotification implements jabber.core.IPacketInterceptor {
 		filter_message = new MessageFilter( MessageType.chat );
 		filter_to = new PacketFieldFilter( "to", chat.peer );
 		
-		featureName = xmpp.ChatStatePacket.XMLNS;
+		featureName = xmpp.ChatStateExtension.XMLNS;
 		
 		setChat( chat );
 		
@@ -52,7 +52,7 @@ class ChatStateNotification implements jabber.core.IPacketInterceptor {
 			return p;
 		}
 		if( state == null || !filter_message.accept( p ) || !filter_to.accept( p ) ) return p;
-		xmpp.ChatStatePacket.add( untyped p, state );
+		xmpp.ChatStateExtension.add( untyped p, state );
 		return p;
 	}
 	
@@ -63,7 +63,7 @@ class ChatStateNotification implements jabber.core.IPacketInterceptor {
 		if( state == null ) throw new error.Exception( "Cannot set null chat state" );
 		if( chat == null ) throw new error.Exception( "No chat given, cannot set chat state" );
 		this.state = state;
-		xmpp.ChatStatePacket.add( message, state );
+		xmpp.ChatStateExtension.add( message, state );
 		chat.stream.sendPacket( message, false );
 		return message;
 	}
