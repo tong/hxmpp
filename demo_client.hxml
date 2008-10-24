@@ -1,13 +1,13 @@
 
 -cp demo
--cp lib/core
+-cp ../core
 -swf9 bin/demos/client.swf
 -main JabberClientDemo
 -D JABBER_DEBUG
 
 --next
 -cp demo
--cp lib/core
+-cp ../core
 -js bin/demos/client_bridged.js
 -main JabberClientDemo
 -D JABBER_SOCKETBRIDGE
@@ -15,14 +15,14 @@
 
 --next
 -cp demo
--cp lib/core
+-cp ../core
 -neko bin/demos/client.n
 -main JabberClientDemo
 -D JABBER_DEBUG
 
 --next
 -cp demo
--cp lib/core
+-cp ../core
 -php bin/demos
 --php-front client.php
 -main JabberClientDemo

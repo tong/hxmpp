@@ -1,10 +1,10 @@
 
 # hxmpp doc
 -cp ../
--cp ../lib/core
+-cp ../../core
 ImportAll
 -neko all.n
 -xml api.xml
 -cmd rm all.n
 -cmd cd api/
--cmd haxedoc ../api.xml -f jabber -f xmpp -f crypt -f net.sasl -f util -f net.util;
+-cmd haxedoc ../api.xml -f jabber -f xmpp -f crypt -f net.sasl -f util -f net.util -f error -f geom;

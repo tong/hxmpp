@@ -21,12 +21,9 @@ XEPS SUPPORTED
 * 0085 ChatStateNotification
 * 0091 DelayedDelivery
 * 0106 JID Escaping
-* 0138 Stream Compression
 ##* 0202 EntityTime
 * 0203 DelayedDelivery
 
-!Mind: This doesn't mean they are 100% implemented according to their specification, but fulfilling our current needs.
-## means bugging.
 
 
 BUILD+INSTALLATION
@@ -61,6 +58,7 @@ TODO
 You can generate as3 source files by compiling the ImportAll class under /doc.
 The required command is 'haxe -as3 <directory> -cp doc -main ImportAll'
 Untested!
+
 
 
 USAGE
