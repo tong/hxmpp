@@ -6,13 +6,17 @@ import flash.events.Event;
 import flash.events.IOErrorEvent;
 import flash.events.SecurityErrorEvent;
 import flash.events.ProgressEvent;
+
 #elseif neko
 import neko.net.Host;
 import neko.net.Socket;
+
 #elseif php
 import php.net.Host;
 import php.net.Socket;
+
 #end
+
 
 // TODO socket handling
 // TODO move keepAlive into here ?
@@ -56,7 +60,7 @@ class SocketConnection extends jabber.core.StreamConnection {
 	//	maxBufSize = BUF_SIZE_MAX;
 	//	messageHeaderSize = 1;
 		
-		#elseif ( js || SOCKET_BRIDGE )
+		#elseif JABBER_SOCKETBRIDGE
 		socket.onConnect = sockConnectHandler;
 		socket.onDisconnect = sockDisconnectHandler;
 		
@@ -100,7 +104,7 @@ class SocketConnection extends jabber.core.StreamConnection {
 			while( connected && reading ) {
 				readData();
 			}
-			#elseif ( js || SOCKET_BRIDGE )
+			#elseif JABBER_SOCKETBRIDGE
 			socket.onData = sockDataHandler;
 			#end
 		} else {
@@ -124,7 +128,7 @@ class SocketConnection extends jabber.core.StreamConnection {
 		//var s = haxe.io.Bytes.ofString( data );
 		//trace(s);
 		//trace("##"+neko.zip.Uncompress.run( haxe.io.Bytes.ofString( data ) ).toString() );
-		#if ( js || SOCKET_BRIDGE )
+		#if JABBER_SOCKETBRIDGE
 		socket.send( data );
 		#elseif ( flash9 || flash10 )
 		socket.writeUTFBytes( data ); 
@@ -178,7 +182,7 @@ class SocketConnection extends jabber.core.StreamConnection {
 	}
 
 	
-	#elseif ( js || SOCKET_BRIDGE )
+	#elseif JABBER_SOCKETBRIDGE
 	
 	function sockConnectHandler() {
 		connected = true;
@@ -204,7 +208,7 @@ class SocketConnection extends jabber.core.StreamConnection {
 }
 
 
-#if ( js || SOCKET_BRIDGE )
+#if JABBER_SOCKETBRIDGE
 
 /**
 	Socket for socket bridge use.
@@ -302,4 +306,4 @@ class SocketBridgeConnection {
 	
 }
 
-#end // ( js || SOCKET_BRIDGE )
+#end // JABBER_SOCKETBRIDGE

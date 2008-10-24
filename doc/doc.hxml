@@ -2,9 +2,12 @@
 # hxmpp doc
 -cp ../
 -cp ../../core
-ImportAll
--neko all.n
+jabber.Lib
+-js lib.js
 -xml api.xml
--cmd rm all.n
+-cmd rm lib.js
 -cmd cd api/
 -cmd haxedoc ../api.xml -f jabber -f xmpp -f crypt -f net.sasl -f util -f net.util -f error -f geom;
+-D JABBER_LIBCLIENT
+-D JABBER_DEBUG
+-D JABBER_SOCKETBRIDGE

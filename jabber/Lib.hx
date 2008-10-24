@@ -1,6 +1,8 @@
 package jabber;
 
-#if JABBER_CLIENTLIB
+import jabber.SocketConnection;
+
+#if JABBER_LIBCLIENT
 import jabber.Chat;
 import jabber.ChatStateNotification;
 import jabber.SocketConnection;
@@ -12,7 +14,10 @@ import jabber.client.Stream;
 import jabber.client.VCardTemp;
 import xmpp.DataForm;
 import xmpp.DelayedDelivery;
-//..
+#end
+
+#if JABBER_SOCKETBRIDGE
+import jabber.SocketConnection;
 #end
 
 
@@ -20,7 +25,8 @@ import xmpp.DelayedDelivery;
 	[-]×|V||º|º<br/>
 	
 	If you want use hxmpp from plain javascript you have to compile this class including
-	all required class imports.  By default it inlucdes the imports for all classes availale.
+	all required class imports.
+	By default it includes the imports for all classes available.
 */
 class Lib {
 	
@@ -30,10 +36,9 @@ class Lib {
 	*/
 	public static var VERSION = "0.2";
 	
+	#if JABBER_SOCKETBRIDGE
 	
-	#if JABBER_CLIENTLIB
-	
-	static function init( ?bridgeName : String = "f9bridge" ) {
+	static function initSocketBridge( ?bridgeName : String = "f9bridge" ) {
 		jabber.SocketBridgeConnection.init( bridgeName, initialized );
 	}
 	static function initialized() {
