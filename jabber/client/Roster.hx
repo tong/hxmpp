@@ -428,6 +428,14 @@ class Roster {
 		}
 	}
 	
+	#if JABBER_DEBUG
+	
+	public function toString() : String {
+		return "Roster("+stream.jid.bare+",available:"+available+",entries:"+entries.length+",subscriptionMode:"+subscriptionMode+")";
+	}
+	
+	#end
+	
 	
 	function handleRosterChangePacket( iq : xmpp.IQ ) {
 		if( iq.ext == null ) return;

@@ -2,15 +2,16 @@ package jabber.core;
 
 
 // TODO TimeoutProcess
+
 class PacketTimeout {
 	
 	public static var DEFAULT_TIMEOUT = 5; // sec
 	
-	/**
-		null = no timeout, 	0 = default timeout, value = value.
-	*/
+	/** null = no timeout, 	0 = default timeout, value = value. */
 	public var time(getTime,setTime) : Int;
-	public var handlers : Array<IPacketCollector->Void>;
+	/** */
+	public var handlers : Array<IPacketCollector->Void>; //handler : IPacketCollector->Void
+	/** The packet collector this timeout is working for. */
 	public var collector : IPacketCollector;
 	
 	var _time : Int;
@@ -28,9 +29,13 @@ class PacketTimeout {
 	function getTime() : Int { return _time; }
 	function setTime( t : Null<Int> ) : Null<Int> {
 		switch( t ) {
-			case null	: _time = 0; 				 // no timeout	
-			case 0 		: _time = DEFAULT_TIMEOUT;   // default timeout 
-			default 	: _time = t; 			     // given timeout
+			case null : // no timeout
+				_time = 0;
+			case 0 : 	// default timeout 
+				_time = DEFAULT_TIMEOUT;
+			default : 	// given timeout
+				if( t < 0 ) throw "Invalid packettimeout time: "+t; 
+				_time = t; 			     
 		}
 		if( _time == 0 ) {
 			active = false;

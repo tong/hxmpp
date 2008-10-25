@@ -148,10 +148,10 @@ class TestIQPacket extends haxe.unit.TestCase   {
 class TestErrorExtension extends haxe.unit.TestCase   {
 	
 	public function testExtension() {
-		var error = xmpp.Error.parse( Xml.parse( '<error type="cancel"><conflict xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>' ).firstElement() );
-		assertEquals( error.type, xmpp.ErrorType.cancel );
-		assertEquals( error.name, "conflict" );
-		assertEquals( error.text, null );
+		var err = xmpp.Error.parse( Xml.parse( '<error type="cancel"><conflict xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>' ).firstElement() );
+		assertEquals( err.type, xmpp.ErrorType.cancel );
+		assertEquals( err.name, "conflict" );
+		assertEquals( err.text, null );
 		
 	}
 }

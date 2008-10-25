@@ -27,10 +27,15 @@ class JabberClientDemo {
 			auth.authenticate( "test", "norc" );
 		};
 		trace( "Initializing stream..." );
-		stream.open();
+		try {
+			stream.open();
+		} catch( e : jabber.error.SocketError ) {
+			trace("SocketconnectionERRROROROROROROR######################");
+			trace(e);
+		}
 	}
 	
-	static function loginSuccess( s ) {
+	static function loginSuccess( s : Stream ) {
 		
 		trace( "Logged in as "+ s.jid.node+" at "+s.jid.domain );
 		
@@ -39,14 +44,14 @@ class JabberClientDemo {
 		var keepAlive = new net.util.KeepAlive( cast( stream.connection, jabber.SocketConnection ).socket ).start();
 		#end
 		
-		roster = new Roster( stream );
+		roster = new Roster( s );
+		roster.load();
 		roster.onAvailable = function( r : Roster ) {
 			trace( "ROSTER LOADED:" );
 			for( entry in r.entries ) {
 				trace( "\t"+entry.jid );
 			}
 		};
-		roster.load();
 		
 		vcard = new VCardTemp( stream );
 		vcard.onLoad = function(vc) {
@@ -63,7 +68,7 @@ class JabberClientDemo {
 			for( feature in e.features ) trace( "\t\t"+feature );
 			
 		};
-		service.discoverInfo( "account@disktree" );
+		service.discoverItems( "disktree" );
 	}
 	
 	static function main() {

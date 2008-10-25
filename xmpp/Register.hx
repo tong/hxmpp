@@ -17,6 +17,7 @@ class Register {
 	public var email : String;
 	public var name	: String;
 	
+	/* TODO
 	public var nick : String;
 	public var first : String;
 	public var last	: String;
@@ -33,6 +34,7 @@ class Register {
 	
 	public var registered : Bool;
 	//public var form : xmpp.DataForm;
+	*/
 	
 	public var remove : Bool;
 	
@@ -49,13 +51,13 @@ class Register {
 		var q = xmpp.IQ.createQuery( XMLNS );
 		if( remove ) {
 			q.addChild( Xml.createElement( "remove" ) );
-			return q;
+		} else {
+			if( username != null ) q.addChild( XmlUtil.createElement( "username", username ) );
+			if( password != null ) q.addChild( XmlUtil.createElement( "password", password ) );
+			if( email != null ) q.addChild( XmlUtil.createElement( "email", email ) );
+			if( name != null ) q.addChild( XmlUtil.createElement( "name", name ) );
+			//...
 		}
-		if( username != null ) q.addChild( XmlUtil.createElement( "username", username ) );
-		if( password != null ) q.addChild( XmlUtil.createElement( "password", password ) );
-		if( email != null ) q.addChild( XmlUtil.createElement( "email", email ) );
-		if( name != null ) q.addChild( XmlUtil.createElement( "name", name ) );
-		//...
 		return q;
 	}
 	
