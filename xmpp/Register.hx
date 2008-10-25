@@ -6,7 +6,7 @@ import util.XmlUtil;
 /**
 
 	TODO check schema
-	
+	<a href="http://www.xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a>
 */
 class Register {
 	
@@ -17,6 +17,25 @@ class Register {
 	public var email : String;
 	public var name	: String;
 	
+	public var nick : String;
+	public var first : String;
+	public var last	: String;
+	public var address : String;
+	public var city	: String;
+	public var state : String;
+	public var zip : String;
+	public var phone : String;
+	public var url : String;
+	public var date	: String;
+	public var misc	: String;
+	public var text	: String;
+	public var key	: String;
+	
+	public var registered : Bool;
+	//public var form : xmpp.DataForm;
+	
+	public var remove : Bool;
+	
 	
 	public function new( ?username:	String, ?password : String, ?email : String, ?name : String ) {
 		this.username = username;
@@ -24,14 +43,19 @@ class Register {
 		this.email = email;
 		this.name = name;
 	}
-	
-	
+
+
 	public function toXml() : Xml {
 		var q = xmpp.IQ.createQuery( XMLNS );
+		if( remove ) {
+			q.addChild( Xml.createElement( "remove" ) );
+			return q;
+		}
 		if( username != null ) q.addChild( XmlUtil.createElement( "username", username ) );
 		if( password != null ) q.addChild( XmlUtil.createElement( "password", password ) );
 		if( email != null ) q.addChild( XmlUtil.createElement( "email", email ) );
 		if( name != null ) q.addChild( XmlUtil.createElement( "name", name ) );
+		//...
 		return q;
 	}
 	
@@ -42,7 +66,8 @@ class Register {
 	
 	public static function parse( x : Xml ) : xmpp.Register {
 		var r = new xmpp.Register();
-		//xmpp.Packet.reflectPacketNodes( x, r );
+		xmpp.Packet.reflectPacketNodes( x, r );
+		/*
 		for( e in x.elements() ) {
 			var v : String = null;
 			try { v = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
@@ -55,6 +80,7 @@ class Register {
 				}
 			}
 		}
+		*/
 		return r;
 	}
 	
