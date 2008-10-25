@@ -12,7 +12,7 @@ class Presence extends Packet {
 	
    	public var type : PresenceType;
    	public var show : String;
-    public var status : String;
+    public var status(default,setStatus) : String;
     public var priority : Null<Int>;
     
 	
@@ -23,6 +23,13 @@ class Presence extends Packet {
         this.show = show;
         this.status = status;
         this.priority = priority;
+	}
+	
+	
+	function setStatus( s : String ) : String {
+		if( s.length > 1023 || s.length == 0 ) throw "Invalid xmpp, presence status size";
+		Reflect.setField( this, "status", s );
+		return status;
 	}
 	
 	
