@@ -1,6 +1,5 @@
 package xmpp;
 
-//TODO
 
 /**
 	Abstract/Basic xmpp packet.
@@ -13,7 +12,6 @@ class Packet {
 	public var id : String;	
 	public var lang : String;
 	public var properties : Array<Xml>;
-	//public var errors : Array<Xml>; //Array<xmpp.Error>;
 	public var errors : Array<xmpp.Error>;
 	
 	

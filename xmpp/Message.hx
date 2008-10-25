@@ -9,8 +9,8 @@ import util.XmlUtil;
 class Message extends xmpp.Packet {
 	
 	public var type : MessageType;
-	public var subject : String;
-	public var body : String;
+	public var subject : String; //PacketElement TODO
+	public var body : String; //PacketElement TODO
     public var thread : String;
 	
 
@@ -25,27 +25,24 @@ class Message extends xmpp.Packet {
     
     
     public override function toXml() : Xml {
-    	var xml = super.addAttributes( Xml.createElement( "message" ) );
-		if( type != null ) 	  xml.set( "type", Type.enumConstructor( type ) );
-		if( subject != null ) xml.addChild( XmlUtil.createElement( "subject", subject ) );
-		if( body != null ) 	  xml.addChild( XmlUtil.createElement( "body", body ) );
-		if( thread != null )  xml.addChild( XmlUtil.createElement( "thread", thread ) );
-		return xml;
+    	var x = super.addAttributes( Xml.createElement( "message" ) );
+		if( type != null ) x.set( "type", Type.enumConstructor( type ) );
+		if( subject != null ) x.addChild( XmlUtil.createElement( "subject", subject ) );
+		if( body != null ) x.addChild( XmlUtil.createElement( "body", body ) );
+		if( thread != null ) x.addChild( XmlUtil.createElement( "thread", thread ) );
+		return x;
     }
     
     
-    public static function parse( src : Xml ) : xmpp.Message {
-    	var type : MessageType = null;
-    	var _type = src.get( "type" );
-    	if( _type != null ) type = Type.createEnum( xmpp.MessageType, _type );
-    	var m = new Message( type );
-   		xmpp.Packet.parseAttributes( m, src );
-   		for( child in src.elements() ) {
-			switch( child.nodeName ) {
-				case "subject" : m.subject = child.firstChild().nodeValue;
-				case "body"    : m.body = child.firstChild().nodeValue;
-				case "thread"  : m.thread = child.firstChild().nodeValue;
-				default : m.properties.push( child );
+    public static function parse( x : Xml ) : xmpp.Message {
+    	var m = new Message( if( x.exists( "type" ) ) Type.createEnum( xmpp.MessageType, x.get( "type" ) ) );
+   		xmpp.Packet.parsePacketBase( m, x );
+   		for( c in x.elements() ) {
+			switch( c.nodeName ) {
+				case "subject" : m.subject = c.firstChild().nodeValue;
+				case "body"    : m.body = c.firstChild().nodeValue;
+				case "thread"  : m.thread = c.firstChild().nodeValue;
+				default : m.properties.push( c );
 			}
 		}
    		return m;

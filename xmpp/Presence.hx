@@ -45,7 +45,7 @@ class Presence extends Packet {
 	
 	public static function parse( x : Xml ) : Presence {
 		var p = new Presence( x.get( "type" ) );
-		xmpp.Packet.parseAttributes( p, x );
+		xmpp.Packet.parsePacketBase( p, x );
 		if( x.exists( "type" ) ) p.type = Type.createEnum( PresenceType, x.get( "type" ) );
 		for( c in x.elements() ) {
 			switch( c.nodeName ) {
