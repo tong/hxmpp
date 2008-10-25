@@ -1,7 +1,6 @@
 package xmpp;
 
 import util.XmlUtil;
-import xmpp.Packet;
 
 
 /**
@@ -27,19 +26,20 @@ class Presence extends Packet {
 	
 	
 	function setStatus( s : String ) : String {
-		if( s.length > 1023 || s.length == 0 ) throw "Invalid xmpp, presence status size";
+		if( s == null ) return null;
+		if( s.length > 1023 || s.length == 0 ) throw "Invalid xmpp, presence status size"; // TODO new jabber.error.XMPPInvalidError( "Invalid xmpp, presence status size" );
 		Reflect.setField( this, "status", s );
 		return status;
 	}
 	
 	
 	public override function toXml() : Xml {
-		var xml = super.addAttributes( Xml.createElement( "presence" ) );
-		if( type != null ) 					 xml.set( "type", Type.enumConstructor( type ) );
-		if( show != null && show != "" ) 	 xml.addChild( XmlUtil.createElement( "show", show ) );
-		if( status != null && status != "" ) xml.addChild( XmlUtil.createElement( "status", status ) );
-		if( priority != null ) 				 xml.addChild( XmlUtil.createElement( "priority", Std.string( priority ) ) );
-		return xml;
+		var x = super.addAttributes( Xml.createElement( "presence" ) );
+		if( type != null ) x.set( "type", Type.enumConstructor( type ) );
+		if( show != null && show != "" ) x.addChild( XmlUtil.createElement( "show", show ) );
+		if( status != null && status != "" ) x.addChild( XmlUtil.createElement( "status", status ) );
+		if( priority != null ) x.addChild( XmlUtil.createElement( "priority", Std.string( priority ) ) );
+		return x;
 	}
 	
 	
@@ -47,12 +47,12 @@ class Presence extends Packet {
 		var p = new Presence( x.get( "type" ) );
 		xmpp.Packet.parseAttributes( p, x );
 		if( x.exists( "type" ) ) p.type = Type.createEnum( PresenceType, x.get( "type" ) );
-		for( child in x.elements() ) {
-			switch( child.nodeName ) {
-				case "show" 	: p.show = child.firstChild().nodeValue;
-				case "status" 	: p.status = child.firstChild().nodeValue;
-				case "priority" : p.priority = Std.parseInt( child.firstChild().nodeValue );
-				default 		: p.properties.push( child );
+		for( c in x.elements() ) {
+			switch( c.nodeName ) {
+				case "show" : p.show = c.firstChild().nodeValue;
+				case "status" : p.status = c.firstChild().nodeValue;
+				case "priority" : p.priority = Std.parseInt( c.firstChild().nodeValue );
+				default : p.properties.push( c );
 			}
 		}
 		return p;

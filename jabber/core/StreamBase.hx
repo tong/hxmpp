@@ -117,7 +117,7 @@ class StreamBase /* implements IStream */ {
 		Closes the outgoing xml stream.
 	*/
 	public function close( ?disconnect = false ) : Bool {
-		trace("CLOSING STREAM:" + status);
+		trace( "Closing jabber stream:" + status );
 		if( status == StreamStatus.open ) {
 			sendData( xmpp.XMPPStream.CLOSE );
 			status = StreamStatus.closed;

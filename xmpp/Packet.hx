@@ -13,7 +13,8 @@ class Packet {
 	public var id : String;	
 	public var lang : String;
 	public var properties : Array<Xml>;
-	public var errors : Array<Xml>;
+	//public var errors : Array<Xml>; //Array<xmpp.Error>;
+	public var errors : Array<xmpp.Error>;
 	
 	
 	function new( ?to : String, ?from : String, ?id : String, ?lang : String ) {
@@ -42,7 +43,7 @@ class Packet {
 	
 
 	/**
-		Adds the basic xmpp packet attributes to the xml.
+		Adds the basic xmpp packet attributes to the given xml.
 	*/
 	function addAttributes( x : Xml ) : Xml {
 		if( to != null ) x.set( "to", to );
@@ -50,10 +51,10 @@ class Packet {
 		if( id != null ) x.set( "id", id );
 		if( lang != null ) x.set( "xml:lang", lang );
 		for( p in properties ) x.addChild( p );
-		for( e in errors ) x.addChild( e );
+		for( e in errors ) x.addChild( e.toXml() );
         return x;
 	}
-	
+
 	
 	/**
 		Parses xml into a xmpp.Packet object.
@@ -68,27 +69,28 @@ class Packet {
 	}
 	
 	/*
-	function parseErrors( x : Xml ) : Array<xmpp.Error> {
-		for( el in x.elements() ) {
-			if( el.nodeName == "error" ) {
-				iq.errors.push( el );
-			}
+	public static function reflectPacketAttributes<T>( x : Xml, p : T ) : T {
+	}
+	*/
+
+	/**
+		Reflects the elements of the xml into the packet.
+	*/
+	public static function reflectPacketNodes<T>( x : Xml, p : T ) : T {
+		for( e in x.elements() ) {
+			var v : String = null;
+			try {
+				v = e.firstChild().nodeValue;
+			} catch( e : Dynamic ) {};
+			if( v != null ) Reflect.setField( p, e.nodeName, v );
 		}
+		return p;
 	}
-	*/
-	
-	/*
-	static function parseBase( p, x : Xml ) {
-		parseAttributes
-		for( e in errors )
-		for( p in properties ) 
-	}
-	*/
 	
 	/**
 		Parses/adds basic attributes to the packet.
 	*/
-	public static function parseAttributes( p : xmpp.Packet, x : Xml ) : xmpp.Packet {
+	static inline function parseAttributes( p : xmpp.Packet, x : Xml ) : xmpp.Packet {
 		p.to = x.get( "to" );
 		p.from = x.get( "from" );
 		p.id = x.get( "id" );
@@ -97,41 +99,20 @@ class Packet {
 	}
 	
 	/**
-		Reflects the elements of the xml into the packet.
-		Use with care!
 	*/
-	public static function reflectPacketNodes<T>( x : Xml, p : T ) : T {
-		for( e in x.elements() ) {
-			var v : String = null;
-			try { v = e.firstChild().nodeValue; } catch( e : Dynamic ) {};
-			if( v != null ) Reflect.setField( p, e.nodeName, v );
+	static inline function parseChilds( p : xmpp.Packet, x : Xml ) : xmpp.Packet {
+		for( c in x.elements() ) {
+			switch( c.nodeName ) {
+				case "error" : p.errors.push( xmpp.Error.parse( c ) );
+				default : p.properties.push( c );
+			}
 		}
 		return p;
 	}
 	
-	/*
-	public static function reflectPacketAttributes<T>( x : Xml, p : T ) : T {
+	static inline function parsePacketBase( p : xmpp.Packet, x : Xml ) {
+		xmpp.Packet.parseAttributes( p, x );
+		xmpp.Packet.parseChilds( p, x );
 	}
-	*/
-	
-	/*
-	public static function reflectField<T,V>( o : T, name : String, value : V ) {
-		//trace( Type.typeof(o) );
-		Reflect.setField( o, name, value );
-		return o;
-	}
-	*/
-	
-	/*
-		Determines the packettype of the given xml.
-	public static function getPacketType( x : Xml ) : PacketType {
-		return switch( x.nodeName ) {
-			case "presence" : PacketType.presence;
-			case "message" : PacketType.message;
-			case "iq" : PacketType.iq;
-			default : PacketType.custom;
-		}
-	}
-	*/
 	
 }
