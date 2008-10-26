@@ -269,10 +269,9 @@ class Roster {
 		
 		var from = JIDUtil.parseBar( presence.from );
 	
-		trace( "handlePresence "+from+" / "+presence.type );
+		trace( "handlePresence "+from+" / type: "+presence.type );
 		
-		if( from == stream.jid.bare ) {
-			// handlr account resource presence
+		if( from == stream.jid.bare ) { // handle account resource presence
 			var resource = jabber.util.JIDUtil.parseResource( presence.from );
 			resources.set( resource, presence );
 			onResourcePresence( resource );
@@ -280,7 +279,6 @@ class Roster {
 		}
 			
 		var entry = getEntry( from );
-		
 		
 		if( presence.type != null ) {
 			
@@ -290,12 +288,10 @@ class Roster {
 					switch( subscriptionMode ) {
 						
 						case acceptAll : 
-						trace("ACCEPT ALLLL " );
-						
+							trace("ACCEPT ALLLL " );
 							var p = new Presence( xmpp.PresenceType.subscribed );
 							p.to = presence.from;
 							stream.sendPacket( p );
-							
 						//	if( entry.subscription == from ) {
 						//	}
 							
@@ -306,7 +302,9 @@ class Roster {
 				case subscribed :
 					
 				default :
+				
 			}
+			
 		} else {
 			
 		}

@@ -25,9 +25,9 @@ class Occupant {
 	#if JABBER_DEBUG
 	
 	public function toString() : String {
-		return "MUC"+Type.getClassName(Type.getClass(this))+"("+nick+","+role+","+presence.show+")";
+		return "MUCOccupant(nick:"+nick+", role:"+role+", presenceShow:"+presence.show+")";
 	}
 	
-	#end // JABBER_DEBUG
+	#end
 	
 }

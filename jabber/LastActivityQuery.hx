@@ -24,7 +24,7 @@ class LastActivityQuery {
 	
 	public dynamic function onLoad( e : LastActivity ) {}
 	
-	public var stream : StreamBase;
+	public var stream(default,null) : StreamBase;
 	
 	var iq : xmpp.IQ;
 	
@@ -54,6 +54,7 @@ class LastActivityQuery {
 				e.seconds = xmpp.LastActivity.parseSeconds( iq.ext.toXml() );
 				onLoad( e );
 			case error :
+			//TODO
 				e.error = xmpp.Error.parsePacket( iq );
 				onLoad( e );
 			default : //

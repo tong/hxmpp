@@ -5,6 +5,9 @@ import jabber.SocketConnection;
 #if JABBER_LIBCLIENT
 import jabber.Chat;
 import jabber.ChatStateNotification;
+import jabber.MessageListener;
+import jabber.ServiceDiscovery;
+import jabber.ServiceDiscoveryListener;
 import jabber.SocketConnection;
 import jabber.client.MUChat;
 import jabber.client.NonSASLAuthentication;
@@ -12,6 +15,9 @@ import jabber.client.Roster;
 import jabber.client.SASLAuthentication;
 import jabber.client.Stream;
 import jabber.client.VCardTemp;
+import jabber.component.Stream;
+import jabber.util.XMPPDebug;
+import jabber.util.ResourceAccount;
 import xmpp.DataForm;
 import xmpp.DelayedDelivery;
 #end

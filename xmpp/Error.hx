@@ -30,7 +30,7 @@ class Error {
 		if( name != null ) {
 			var n = Xml.createElement( name );
 			n.set( "xmlns", XMLNS );
-			//..
+			//..TODO
 		}
 		return x;
 	}
@@ -39,7 +39,7 @@ class Error {
 	/**
 		Parses the error from a given packet.
 	*/
-	public static function parsePacket( p : xmpp.Packet ) : xmpp.Error {
+	public static function parseFromPacket( p : xmpp.Packet ) : xmpp.Error {
 		for( e in p.toXml().elements() ) {
 			if( e.nodeName == "error" ) return Error.parse( e );
 		}

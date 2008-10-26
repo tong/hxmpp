@@ -159,6 +159,7 @@ class MUChat {
 	
 		//TODO
 	function handleMessage( m : xmpp.Message ) {
+	//	trace("händleMessage");
 		if( !joined ) return;
 		var from = parseOccupantName( m.from );
 		var occupant = getOccupant( from );
@@ -204,6 +205,7 @@ class MUChat {
 								var iq = new xmpp.IQ( xmpp.IQType.set, null, jid );
 								var q = new xmpp.MUCOwner().toXml();
 								q.addChild( Xml.parse( '<x xmlns="jabber:x:data" type="submit" />' ) );
+								//TODO
 								//query.addChild( new xmpp.DataForm( xmpp.DataFormType.submit ).toXml() );
 								iq.properties.push( q );
 								stream.sendIQ( iq, function(iq) {
