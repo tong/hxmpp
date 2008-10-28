@@ -69,7 +69,7 @@ class Roster {
 
 	public static var DEFAULT_SUBSCRIPTIONMODE = SubscriptionMode.acceptAll;
 	
-	public dynamic function onAvailable( roster : Roster ) {}
+	public dynamic function onLoad( roster : Roster ) {}
 	public dynamic function onAdd( entries : List<RosterEntry> ) {}
 	public dynamic function onUpdate( entries : List<RosterEntry> ) {}
 	public dynamic function onRemove( entries : List<RosterEntry> ) {}
@@ -468,7 +468,7 @@ class Roster {
 		}
 		if( !available ) {
 			available = true;
-			onAvailable( this );
+			onLoad( this );
 		}
 		if( added.length > 0 ) onAdd( added );
 		if( updated.length > 0 ) onUpdate( updated );

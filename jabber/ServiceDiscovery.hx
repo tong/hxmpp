@@ -6,17 +6,28 @@ import xmpp.IQ;
 import xmpp.IQType;
 import xmpp.filter.IQFilter;
 
+/*
+class DiscoEvent<T> extends T {
+	public var stream : StreamBase;
+	public var from : String;
+	//public function new() {	super(); }
+}*/
+//typedef DiscoInfo = jabber.DiscoEvent<xmpp.disco.Info>;
+//typedef DiscoItems = jabber.DiscoEvent<xmpp.disco.Items>;
+
 
 private class DiscoInfo extends xmpp.disco.Info {
 	public var stream : StreamBase;
 	public var from : String;
-	public function new() {	super(); }
+	//public var error : xmpp.Error;
+	//public function new() {	super(); }
 }
 
-private class DiscoItem extends xmpp.disco.Items {
+private class DiscoItems extends xmpp.disco.Items {
 	public var stream : StreamBase;
 	public var from : String;
-	public function new() { super(); }
+	//public var error : xmpp.Error;
+	//public function new() { super(); }
 }
 
 
@@ -31,7 +42,8 @@ private class DiscoItem extends xmpp.disco.Items {
 class ServiceDiscovery {
 	
 	public dynamic function onInfo( e : DiscoInfo ) {}
-	public dynamic function onItem( e : DiscoItem ) {}
+	public dynamic function onItems( e : DiscoItems ) {}
+	public dynamic function onError( error : jabber.XMPPError ) {}
 	
 	public var stream(default,null) : StreamBase;
 	
@@ -55,43 +67,62 @@ class ServiceDiscovery {
 	*/
 	public function discoverInfo( jid : String ) {
 		iq_info.to = jid;
-		stream.sendIQ( iq_info, handleInfo );
+		stream.sendIQ( iq_info, handleInfoRequest );
 	}
 	
 	/**
+		Queries entity for items.
 	*/
 	public function discoverItems( jid : String ) {
 		iq_item.to = jid;
-		stream.sendIQ( iq_item, handleItem );
+		stream.sendIQ( iq_item, handleItemRequest, false, new jabber.core.PacketTimeout( [timeoutHandler],2 ) );
+	}
+
+	/**
+	*/
+	public function publishItems( id : String, items : xmpp.disco.Items ) {
+		//TODO
 	}
 	
 	
-	function handleInfo( iq : IQ ) {
+	function timeoutHandler( collector ) {
+		// TODO
+		stream.collectors.remove( collector );
+		//trace("timeoutHandlertimeoutHandlertimeoutHandlertimeoutHandler");
+	}
+	
+	
+	function handleInfoRequest( iq : IQ ) {
 		switch( iq.type ) {
 			case result :
 				var i : DiscoInfo = cast xmpp.disco.Info.parse( iq.ext.toXml() );
 				i.from = iq.from;
 				i.stream = stream;
 				onInfo( i );
-			case error :
-				var err = xmpp.Error.parsePacket( iq ); 
-				trace( err );
+		//	case error :
+		//		var err = xmpp.Error.parsePacket( iq ); 
+		//		trace( err );
 				//TODO
 			default: //#
 		}
 	}
 	
-	function handleItem( iq : xmpp.IQ ) {
+	function handleItemRequest( iq : IQ ) {
 		switch( iq.type ) {
 			case result :
-				var i : DiscoItem = cast xmpp.disco.Items.parse( iq.ext.toXml() );
+				var i : DiscoItems = cast xmpp.disco.Items.parse( iq.ext.toXml() );
 				i.from = iq.from;
 				i.stream = stream;
-				onItem( i );
+				onItems( i );
+				
 			case error :
 				//TODO
 			default: //#
 		}
+	}
+	
+	function handleItemPublish( iq : IQ ) {
+		//TODO
 	}
 	
 }

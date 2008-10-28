@@ -1,0 +1,13 @@
+
+# hxmpp doc
+-cp ../core
+jabber.Lib
+-js lib.js
+-xml doc/api.xml
+-D JABBER_LIBCLIENT
+-D JABBER_DEBUG
+-D JABBER_SOCKETBRIDGE
+-cmd rm lib.js
+-cmd cd doc/api/
+-cmd haxedoc ../api.xml -f jabber -f xmpp -f crypt -f net.sasl -f util -f net.util -f error -f geom;
+
