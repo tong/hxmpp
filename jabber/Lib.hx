@@ -3,6 +3,7 @@ package jabber;
 import jabber.SocketConnection;
 
 #if JABBER_LIBCLIENT
+// this is the doc setup->
 import jabber.Chat;
 import jabber.ChatStateNotification;
 import jabber.MessageListener;
@@ -32,15 +33,19 @@ import jabber.SocketConnection;
 	
 	If you want use hxmpp from plain javascript you have to compile this class including
 	all required class imports.
-	By default it includes the imports for all classes available.
 */
 class Lib {
 	
+	
+	#if JABBER_DEBUG
+	
 	/**
 		Current version: 0.2
-		Next version: 0.2.1
 	*/
 	public static var VERSION = "0.2";
+	
+	#end // JABBER_DEBUG
+	
 	
 	#if JABBER_SOCKETBRIDGE
 	
@@ -48,9 +53,12 @@ class Lib {
 		jabber.SocketBridgeConnection.init( bridgeName, initialized );
 	}
 	static function initialized() {
+		#if JABBER_DEBUG
 		trace( "Socket bridge hopefuly initialized" );
+		#end
 	}
 	
 	#end // JABBER_SOCKETBRIDGE
+	
 	
 }

@@ -25,14 +25,14 @@ class Auth {
 
 	
 	public function toXml() : Xml {
-		var query = xmpp.IQ.createQuery( XMLNS );
-		if( username != null ) query.addChild( XmlUtil.createElement( "username", username ) );
-		if( password != null ) query.addChild( XmlUtil.createElement( "password", password ) );
-		if( digest != null )   query.addChild( XmlUtil.createElement( "digest", digest ) );
-		if( resource != null ) query.addChild( XmlUtil.createElement( "resource", resource ) );
-		return query;
+		var q = xmpp.IQ.createQuery( XMLNS );
+		if( username != null ) q.addChild( XmlUtil.createElement( "username", username ) );
+		if( password != null ) q.addChild( XmlUtil.createElement( "password", password ) );
+		if( digest != null )   q.addChild( XmlUtil.createElement( "digest", digest ) );
+		if( resource != null ) q.addChild( XmlUtil.createElement( "resource", resource ) );
+		return q;
 	}
-		
+	
 	public inline function toString() : String {
 		return toXml().toString();
 	}
@@ -41,9 +41,7 @@ class Auth {
 	public static function parse( x : Xml ) : xmpp.Auth {
 		var a = new xmpp.Auth();
 		xmpp.Packet.reflectPacketNodes( x, a );
-		return a;
 		/*
-		var a = new xmpp.Auth();
 		for( e in x.elements() ) {
 			var v : String = null;
 			try { v = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
@@ -56,8 +54,8 @@ class Auth {
 				}
 			}
 		}
-		return a;
 		*/
+		return a;
 	}
 	
 }

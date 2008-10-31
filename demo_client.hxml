@@ -4,6 +4,7 @@
 -swf9 bin/demos/client.swf
 -main JabberClientDemo
 -D JABBER_DEBUG
+-debug
 
 --next
 -cp demo
@@ -19,6 +20,7 @@
 -neko bin/demos/client.n
 -main JabberClientDemo
 -D JABBER_DEBUG
+-debug
 
 --next
 -cp demo
@@ -27,3 +29,4 @@
 --php-front client.php
 -main JabberClientDemo
 -D JABBER_DEBUG
+-debug

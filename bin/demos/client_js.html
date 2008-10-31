@@ -42,7 +42,7 @@ function streamStatusChangeHandler(stream) {
 				printHtml("jabberstatus","Roster loaded");
 			}
 			roster.load();
-			printHtml("jabberstat..us","Authentication success");
+			printHtml("jabberstatus","Authentication success");
 		};
 		auth.onFailed = function(s) { printHtml("jabberstatus","Authentication failed"); };
 		auth.authenticate(document.getElementById("pass").value,"norc");
@@ -56,14 +56,17 @@ function streamStatusChangeHandler(stream) {
 
 function openStream() {
 	var jid = new jabber.JID(document.getElementById("jid").value);
-	var cnx = new jabber.SocketConnection(jid.host,5222);
+	var cnx = new jabber.SocketConnection(jid.host,jabber.client.Stream.defaultPort);
 	var stream = new jabber.client.Stream(jid,cnx);
 	stream.onOpen = streamStatusChangeHandler;
 	stream.onClose = streamStatusChangeHandler;
+	//stream.onError =
 	stream.open();
 }
 
 </script>
+
+<div>Example usage of the hxmpp library from plain js (without the need of the haxe compiler), using a flash9 socketbridge to connect to the server.</div>
 
 </body>
 </html>

@@ -7,6 +7,18 @@ import jabber.client.Stream;
 import jabber.client.VCardTemp;
 
 
+/**
+	A basic jabber client.
+	
+	Action taking place is:
+	* open xmpp stream
+	* login
+	* load roster
+	* load vcard
+	* discover server infos
+	* discover server items
+		
+*/
 class JabberClientDemo {
 	
 	static var stream : Stream;
@@ -15,22 +27,25 @@ class JabberClientDemo {
 	static var vcard : VCardTemp;
 	
 	static function init() {
-		var cnx = new SocketConnection( "127.0.0.1", 5222 );
-		stream = new Stream( new jabber.JID( "tong@disktree" ), cnx, "1.0" );
+		//var account = new jabber.util.ResourceAccount();
+		var cnx = new SocketConnection( "jabber.spektral.at", 5222 );
+		stream = new Stream( new jabber.JID( "hxmpp@jabber.spektral.at" ), cnx, "1.0" );
 		stream.onError = function(s,err) { trace( "Stream ERROR: " + err ); };
 		stream.onClose = function(s) { trace( "Stream to: "+s.jid.domain+" closed." ); } ;
 		stream.onOpen = function(s) {
 			trace( "Jabber stream to "+stream.jid.domain+" opened" );
 			var auth = new NonSASLAuthentication( stream );
 			auth.onSuccess = loginSuccess;
-			auth.onFailed = function(s) { trace( "LOGIN FAILED" ); };
+			auth.onFailed = function(e) {
+				trace( "LOGIN FAILED "+e.name );
+			};
 			auth.authenticate( "test", "norc" );
 		};
 		trace( "Initializing stream..." );
 		try {
 			stream.open();
-		} catch( e : jabber.error.SocketError ) {
-			trace("SocketconnectionERRROROROROROROR######################");
+		} catch( e : jabber.error.SocketConnectionError ) {
+			trace( "Socket connection error " );
 			trace(e);
 		}
 	}
@@ -46,7 +61,7 @@ class JabberClientDemo {
 		
 		roster = new Roster( s );
 		roster.load();
-		roster.onAvailable = function( r : Roster ) {
+		roster.onLoad = function( r : Roster ) {
 			trace( "ROSTER LOADED:" );
 			for( entry in r.entries ) {
 				trace( "\t"+entry.jid );
@@ -63,12 +78,13 @@ class JabberClientDemo {
 		service.onInfo = function( e ) {
 			trace( "SERVICE INFO RESULT: "+e.from );
 			trace( "\tIDENTITIES: ");
-			for( identity in e.identities ) trace( "\t\t"+identity );
+			for( identity in e.data.identities ) trace( "\t\t"+identity );
 			trace( "\tFEATURES: ");
-			for( feature in e.features ) trace( "\t\t"+feature );
+			for( feature in e.data.features ) trace( "\t\t"+feature );
 			
 		};
-		service.discoverItems( "disktree" );
+		service.discoverItems( "jabber.spektral.at" );
+		service.discoverInfo( "jabber.spektral.at" );
 	}
 	
 	static function main() {

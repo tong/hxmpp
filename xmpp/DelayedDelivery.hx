@@ -18,7 +18,6 @@ typedef PacketDelay = {
 		Description of the reason for the delay.
 	*/
 	var description : String;
-	
 }
 
 
@@ -32,7 +31,7 @@ class DelayedDelivery {
 	public static var XMLNS = "urn:xmpp:delay";
 	
 	/**
-		Parses/returns the packet delay of the given packet.
+		Parses/Returns the packet delay of the given packet.
 	*/
 	public static function get( p : xmpp.Packet ) : xmpp.PacketDelay {
 		for( e in p.properties ) {

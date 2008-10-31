@@ -5,7 +5,7 @@ import jabber.core.PacketCollector;
 
 
 /**
-	Shortcut utility to simplify listening for incoming (normal type) messages.
+	Utility for listening to incoming messages.
 */
 class MessageListener {
 
@@ -24,7 +24,7 @@ class MessageListener {
 		
 		setStream( stream );
 		
-		collector = new PacketCollector( [cast new xmpp.filter.MessageFilter( xmpp.MessageType.normal )], messageHandler, true );
+		collector = new PacketCollector( [cast new xmpp.filter.MessageFilter()], messageHandler, true );
 		setListening( listen );
 	}
 	
@@ -44,7 +44,7 @@ class MessageListener {
 		return listen = v;
 	}
 	
-	// keep for possible override
+	// keep for a possible override
 	function messageHandler( m : xmpp.Message ) {
 		onMessage( m );
 	}

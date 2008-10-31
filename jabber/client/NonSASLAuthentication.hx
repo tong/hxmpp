@@ -1,5 +1,6 @@
 package jabber.client;
 
+import jabber.event.IQResult;
 import xmpp.IQ;
 
 
@@ -7,8 +8,8 @@ import xmpp.IQ;
 */
 class NonSASLAuthentication {
 	
-	public dynamic function onFailed( stream : Stream ) {}
-	public dynamic function onSuccess( stream : Stream ) {}
+	public dynamic function onSuccess( s : Stream ) {}
+	public dynamic function onFailed( s : jabber.event.XMPPErrorEvent ) {}
 	
 	public var stream(default,null) : Stream;
 	public var active(default,null) : Bool;
@@ -18,15 +19,12 @@ class NonSASLAuthentication {
 	public var resource(default,null) : String;
 
 
-	public function new( stream : Stream, ?usePlainText : Bool,
-						 ?onSuccess : Stream->Void, ?onFailed : Stream->Void ) {
+	public function new( stream : Stream, ?usePlainText : Bool ) {
 	
 		this.stream = stream;
 		this.usePlainText = ( usePlainText != null ) ? usePlainText : false;
 		username = stream.jid.node;
 		resource = stream.jid.resource;
-		if( onSuccess != null ) this.onSuccess = onSuccess;
-		if( onFailed != null ) this.onFailed = onFailed;
 		
 		active = false;
 	}
@@ -45,23 +43,24 @@ class NonSASLAuthentication {
 	
 	function handleResponse( r : IQ ) {
 		switch( r.type ) {
-			case xmpp.IQType.result :
+			case result :
 				var hasDigest = ( !usePlainText && r.ext.toXml().elementsNamed( "digest" ).next() != null );
 				var iq = new IQ( xmpp.IQType.set );
 				iq.ext = if( hasDigest ) new xmpp.Auth( username, null, crypt.SHA1.encode( stream.id+password ), resource );
 				else new xmpp.Auth( username, password, null, resource );
 				stream.sendIQ( iq, handleResult );
-			default : 
-				active = false;
-				onFailed( stream );
+			case error :
+				onFailed( new jabber.event.XMPPErrorEvent( stream, r ) );
+			default : //#
 		}
 	}
 	
-	function handleResult( r : IQ ) {
+	function handleResult( iq : IQ ) {
 		active = false;
-		switch( r.type ) {
+		switch( iq.type ) {
 			case result : onSuccess( stream );
-			default : onFailed( stream );
+			case error : onFailed( new jabber.event.XMPPErrorEvent( stream, iq ) );
+			default : //#
 		}
 	}
 	

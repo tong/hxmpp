@@ -38,8 +38,7 @@ class XMPPStream {
 			b.add( '"' );
 		}
 		b.add( '>' );
-		return if( xmlHeader ) XmlUtil.XML_HEADER + b.toString();
-		else b.toString();
+		return if( xmlHeader ) XmlUtil.XML_HEADER+b.toString() else b.toString();
 	}
 	
 	/*

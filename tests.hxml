@@ -1,4 +1,5 @@
 
+### TestXMPPPacket
 
 -cp ../core
 -cp test
@@ -26,7 +27,7 @@
 
 
 
-####
+### TestJID
 
 --next
 -cp ../core
@@ -55,7 +56,7 @@
 
 
 
-####
+### TestXMPPPacketFilter
 
 --next
 -cp ../core
@@ -84,7 +85,7 @@
 
 
 
-###
+### TestXMPPStream
 
 --next
 -cp ../core
@@ -112,7 +113,8 @@
 -main TestXMPPStream
 
 
-###
+
+### TestXMPPIQExtensions
 
 --next
 -cp ../core

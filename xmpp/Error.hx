@@ -2,7 +2,7 @@ package xmpp;
 
 
 /**
-	Error xmpp packet extension.
+	Xmpp packet error extension.
 */
 class Error {
 	

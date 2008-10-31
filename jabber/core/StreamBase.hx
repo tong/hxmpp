@@ -2,18 +2,17 @@ package jabber.core;
 
 import jabber.StreamStatus;
 import xmpp.filter.PacketIDFilter;
+import util.XmlUtil;
 
 
 /*
 private class FeatureList {
-	
+
 	var features : List<String>;
 	
 	public function new() {
 		features = new List();
 	}
-	
-	
 	public function has( name : String ) {
 		for( f in features ) if( f == name ) return f;
 		return null;
@@ -22,14 +21,12 @@ private class FeatureList {
 	public function add( name : String  ) {
 	}
 	
-	
 	public function remove( name : String  ) {
 	}
 	
 	public function clear() {
 		features = new List();
 	}
-	
 }
 */
 
@@ -42,6 +39,7 @@ class StreamBase /* implements IStream */ {
 	public dynamic function onOpen<T>( stream : T ) {}
 	public dynamic function onClose<T>( stream : T ) {}
 	public dynamic function onError<T>( stream : T, m : Dynamic ) {}
+	//onXMPPError
 	
 	public var status : StreamStatus;
 	//public var authenticated : Bool;
@@ -54,7 +52,7 @@ class StreamBase /* implements IStream */ {
 	public var collectors : List<IPacketCollector>;
 	public var interceptors : List<IPacketInterceptor>;
 	
-	var packetsSent : Int;
+	var packetsSent : Int; // num xmpp packet sent
 	var cache : StringBuf;
 	
 	
@@ -97,7 +95,7 @@ class StreamBase /* implements IStream */ {
 	
 	
 	/**
-		Returns a unique id.
+		Returns a unique (base64 encoded) id for this stream.
 	*/
 	public function nextID() : String {
 		return haxe.BaseCode.encode( util.StringUtil.random64( 5 )+packetsSent, util.StringUtil.BASE64 );
@@ -177,11 +175,11 @@ class StreamBase /* implements IStream */ {
 	
 	function processData( d : String ) {
 		
-		if( d == " " && cache == null ) return;
+		if( d == " " && cache == null ) return; // ignore keepalive
 		
 		#if JABBER_DEBUG
 		try {
-			var x = Xml.parse(d);
+			var x = Xml.parse( d );
 			for( e in x.elements() ) trace( e, false );
 		} catch( e : Dynamic ) {
 			trace( d, false );
@@ -203,8 +201,7 @@ class StreamBase /* implements IStream */ {
 			
 			case closed : return;
 			
-			case pending :
-				processStreamInit( util.XmlUtil.removeXmlHeader( d ) );
+			case pending : processStreamInit( XmlUtil.removeXmlHeader( d ) );
 				
 			case open :
 				var x : Xml = null;

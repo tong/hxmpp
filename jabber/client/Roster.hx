@@ -1,6 +1,7 @@
 package jabber.client;
 
 import jabber.core.PacketCollector;
+import jabber.event.XMPPErrorEvent;
 import jabber.util.JIDUtil;
 import xmpp.PacketType;
 import xmpp.Presence;
@@ -13,16 +14,12 @@ import xmpp.filter.IQFilter;
 import xmpp.filter.PacketTypeFilter;
 
 
-//enum PresenceSubscriptionMode {
 enum SubscriptionMode {
-	
 	/** Accepts all subscription and unsubscription requests. */
 	acceptAll;
 	//acceptAll( subscribe : Bool );
-	
 	/** Rejects all subscription requests. */
 	rejectAll;
-
 	/** Ask user how to proceed. */
 	manual;
 }
@@ -46,17 +43,14 @@ class RosterEntry extends xmpp.roster.Item {
 	
 	/*
 	public function setItemValue( item : xmpp.RosterItem ) {
-		
 	}
 	*/
 	
 	/*
 	#if JABBER_DEBUG
-	
 	public function info() : String {
 		return "("+this.jid+")";
 	}
-	
 	#end
 	*/
 }
@@ -75,11 +69,12 @@ class Roster {
 	public dynamic function onRemove( entries : List<RosterEntry> ) {}
 	public dynamic function onPresence( entry : RosterEntry ) {}
 	public dynamic function onResourcePresence( resource : String ) {}
+	public dynamic function onError( p : XMPPErrorEvent ) {}
 	
 	public var available(default,null) : Bool;
 	public var presence(default,null) : jabber.core.PresenceManager;
 	public var entries(default,null) : Array<RosterEntry>;
-//	public var unfiledEntries(getUnfiledEntries,null): List<RosterEntry>; // entries without group(s)
+	//public var unfiledEntries(getUnfiledEntries,null): List<RosterEntry>; // entries without group(s)
 	public var subscriptionMode : SubscriptionMode;
 	public var groups(getGroups,null) : List<String>; 
 	public var stream(default,null) : Stream;
@@ -102,9 +97,9 @@ class Roster {
 		pending_remove = new List();
 		pending_add = new List();
 		
-		// collect presence packets
+		// collect all presence packets
 		stream.collectors.add( new PacketCollector( [cast new PacketTypeFilter( PacketType.presence )], handlePresence, true ) );
-		// collect roster iq packets
+		// collect all roster iq packets
 		stream.collectors.add( new PacketCollector( [cast new IQFilter( xmpp.Roster.XMLNS )], handleRosterIQ, true ) );
 	}
 	
@@ -384,7 +379,7 @@ class Roster {
 	*/
 	public function handleRosterIQ( iq : xmpp.IQ ) {
 		
-		trace( "handleRosterIQ / "+iq.type );
+		//trace( "handleRosterIQ / "+iq.type );
 		
 		switch( iq.type ) {
 			
@@ -422,16 +417,16 @@ class Roster {
 				handleRosterChangePacket( iq );
 				
 			case error :
+				onError( new jabber.event.XMPPErrorEvent( stream, iq) );
+				
 			case get :
 		}
 	}
 	
 	#if JABBER_DEBUG
-	
 	public function toString() : String {
 		return "Roster("+stream.jid.bare+",available:"+available+",entries:"+entries.length+",subscriptionMode:"+subscriptionMode+")";
 	}
-	
 	#end
 	
 	
@@ -442,7 +437,6 @@ class Roster {
 		var removed = new List<RosterEntry>();
 		var items = xmpp.Roster.parse( iq.ext.toXml() );
 		for( item in items ) {
-			
 			if( item.subscription == Subscription.remove ) {
 				// remove entry
 				var entry = getEntry( item.jid );
