@@ -19,16 +19,16 @@ class ChatStateNotification implements jabber.core.IPacketInterceptor {
 	public var chat(default,setChat) : Chat;
 	public var featureName(default,null) : String;
 	
-	var filter_message : MessageFilter;
-	var filter_to : PacketFieldFilter;
-	var message : xmpp.Message;
+	var f_message : MessageFilter;
+	var f_to : PacketFieldFilter;
+	var m : xmpp.Message;
 	
 	
 	public function new( chat : Chat ) {
 		
-		message = new xmpp.Message( MessageType.chat );
-		filter_message = new MessageFilter( MessageType.chat );
-		filter_to = new PacketFieldFilter( "to", chat.peer );
+		m = new xmpp.Message( MessageType.chat );
+		f_message = new MessageFilter( MessageType.chat );
+		f_to = new PacketFieldFilter( "to", chat.peer );
 		
 		featureName = xmpp.ChatStateExtension.XMLNS;
 		
@@ -41,7 +41,7 @@ class ChatStateNotification implements jabber.core.IPacketInterceptor {
 	function setChat( c : Chat ) : Chat {
 		if( c == chat ) return c;
 		Reflect.setField( this, "chat", c );
-		message.to = filter_to.value = chat.peer;
+		m.to = f_to.value = chat.peer;
 		return chat;
 	}
 	
@@ -51,7 +51,7 @@ class ChatStateNotification implements jabber.core.IPacketInterceptor {
 			chat.stream.interceptors.remove( this );
 			return p;
 		}
-		if( state == null || !filter_message.accept( p ) || !filter_to.accept( p ) ) return p;
+		if( state == null || !f_message.accept( p ) || !f_to.accept( p ) ) return p;
 		xmpp.ChatStateExtension.add( untyped p, state );
 		return p;
 	}
@@ -63,9 +63,9 @@ class ChatStateNotification implements jabber.core.IPacketInterceptor {
 		if( state == null ) throw new error.Exception( "Cannot set null chat state" );
 		if( chat == null ) throw new error.Exception( "No chat given, cannot set chat state" );
 		this.state = state;
-		xmpp.ChatStateExtension.add( message, state );
-		chat.stream.sendPacket( message, false );
-		return message;
+		xmpp.ChatStateExtension.add( m, state );
+		chat.stream.sendPacket( m, false );
+		return m;
 	}
 	
 /*	

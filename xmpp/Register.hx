@@ -4,7 +4,6 @@ import util.XmlUtil;
 
 
 /**
-
 	TODO check schema
 	<a href="http://www.xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a>
 */
