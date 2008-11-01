@@ -69,7 +69,7 @@ class Roster {
 	public dynamic function onRemove( entries : List<RosterEntry> ) {}
 	public dynamic function onPresence( entry : RosterEntry ) {}
 	public dynamic function onResourcePresence( resource : String ) {}
-	public dynamic function onError( p : XMPPErrorEvent ) {}
+	public dynamic function onError( p : XMPPErrorEvent<Stream> ) {}
 	
 	public var available(default,null) : Bool;
 	public var presence(default,null) : jabber.core.PresenceManager;
@@ -417,7 +417,7 @@ class Roster {
 				handleRosterChangePacket( iq );
 				
 			case error :
-				onError( new jabber.event.XMPPErrorEvent( stream, iq) );
+				onError( new jabber.event.XMPPErrorEvent<Stream>( stream, iq) );
 				
 			case get :
 		}

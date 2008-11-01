@@ -9,7 +9,7 @@ import xmpp.IQ;
 class NonSASLAuthentication {
 	
 	public dynamic function onSuccess( s : Stream ) {}
-	public dynamic function onFailed( s : jabber.event.XMPPErrorEvent ) {}
+	public dynamic function onFailed( s : jabber.event.XMPPErrorEvent<Stream> ) {}
 	
 	public var stream(default,null) : Stream;
 	public var active(default,null) : Bool;
@@ -50,7 +50,7 @@ class NonSASLAuthentication {
 				else new xmpp.Auth( username, password, null, resource );
 				stream.sendIQ( iq, handleResult );
 			case error :
-				onFailed( new jabber.event.XMPPErrorEvent( stream, r ) );
+				onFailed( new jabber.event.XMPPErrorEvent<Stream>( stream, r ) );
 			default : //#
 		}
 	}
@@ -59,7 +59,7 @@ class NonSASLAuthentication {
 		active = false;
 		switch( iq.type ) {
 			case result : onSuccess( stream );
-			case error : onFailed( new jabber.event.XMPPErrorEvent( stream, iq ) );
+			case error : onFailed( new jabber.event.XMPPErrorEvent<Stream>( stream, iq ) );
 			default : //#
 		}
 	}

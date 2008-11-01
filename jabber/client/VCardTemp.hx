@@ -24,9 +24,9 @@ private class VCardEvent extends xmpp.VCard {
 */
 class VCardTemp {
 	
-	public dynamic function onLoad( r : IQResult<xmpp.VCard> ) {}
-	public dynamic function onUpdated( r : IQResult<xmpp.VCard> ) {}
-	public dynamic function onError( e : jabber.event.XMPPErrorEvent ) {}
+	public dynamic function onLoad( r : IQResult<Stream,xmpp.VCard> ) {}
+	public dynamic function onUpdated( r : IQResult<Stream,xmpp.VCard> ) {}
+	public dynamic function onError( e : jabber.event.XMPPErrorEvent<Stream> ) {}
 	
 	public var stream(default,null) : Stream;
 	
@@ -67,7 +67,7 @@ class VCardTemp {
 		switch( iq.type ) {
 			case result :
 				var l = xmpp.VCard.parse( iq.ext.toXml() );
-				var e = new IQResult<xmpp.VCard>( stream, iq, l );
+				var e = new IQResult<Stream,xmpp.VCard>( stream, iq, l );
 				onLoad( e );
 				
 			case error :

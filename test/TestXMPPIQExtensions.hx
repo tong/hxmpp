@@ -20,7 +20,7 @@ class TestXMPPIQExtensions {
 		r.add( new TestDelayedDeliveryExtension() );
 		r.add( new TestChatStateExtension() );
 		r.add( new TestLastActivityExtension() );
-		r.add( new TestEntityTimeExtension() );
+		//r.add( new TestEntityTimeExtension() );
 		r.run();
 	}
 	
@@ -319,8 +319,8 @@ class TestDelayedDeliveryExtension extends haxe.unit.TestCase {
 
 /**
 	Testunit for xmpp.EntityTime
-*/
-class TestEntityTimeExtension extends haxe.unit.TestCase {
+//TODO
+#class TestEntityTimeExtension extends haxe.unit.TestCase {
 	
 	public function testEnitiyTime() {
 		trace(Date.now().toString());
@@ -329,6 +329,7 @@ class TestEntityTimeExtension extends haxe.unit.TestCase {
 		//assertEquals( );
 	}
 }
+*/
 
 
 /**

@@ -1,52 +1,11 @@
 package jabber;
 
-import jabber.core.StreamBase;
+import jabber.Stream;
 import jabber.core.PacketCollector;
 import jabber.event.IQResult;
 import xmpp.IQ;
 import xmpp.IQType;
 import xmpp.filter.IQFilter;
-
-/*
-class DiscoEvent<T> extends T {
-	public var stream : StreamBase;
-	public var from : String;
-	//public function new() {	super(); }
-}
-//typedef DiscoInfo = jabber.DiscoEvent<xmpp.disco.Info>;
-//typedef DiscoItems = jabber.DiscoEvent<xmpp.disco.Items>;
-private class DiscoInfo extends xmpp.disco.Info {
-	public var stream : StreamBase;
-	public var from : String;
-	//public var error : xmpp.Error;
-	//public function new() {	super(); }
-}
-private class DiscoItems extends xmpp.disco.Items {
-	public var stream : StreamBase;
-	public var from : String;
-	//public var info : xmpp.PacketInfo;
-		
-	public function new() {
-		super();
-	}
-}
-class DiscoInfoEvent extends jabber.event.XMPPPacketEvent {
-	public var infos : xmpp.disco.Info; 
-	public function new( s : StreamBase, iq : xmpp.Packet ) {
-		super( s, iq );
-		this.infos = xmpp.disco.Info.parse( iq.ext.toXml() );
-	}
-}
-class DiscoInfoEvent extends xmpp.disco.Info {
-	public var stream : StreamBase;
-	public var from : String;
-	public function new( stream : StreamBase, p : xmpp.Packet) {
-		super();
-		this.stream = stream;
-		this.from = p.from;
-	}
-}
-*/
 
 
 /**
@@ -59,17 +18,17 @@ class DiscoInfoEvent extends xmpp.disco.Info {
 */
 class ServiceDiscovery {
 	
-	public dynamic function onInfo( e : IQResult<xmpp.disco.Info> ) {}
-	public dynamic function onItems( i : IQResult<xmpp.disco.Items> ) {}
-	public dynamic function onError( e : jabber.event.XMPPErrorEvent ) {}
+	public dynamic function onInfo( e : IQResult<jabber.Stream,xmpp.disco.Info> ) {}
+	public dynamic function onItems( i : IQResult<jabber.Stream,xmpp.disco.Items> ) {}
+	public dynamic function onError( e : jabber.event.XMPPErrorEvent<Stream> ) {}
 	
-	public var stream(default,null) : StreamBase;
+	public var stream(default,null) : jabber.Stream;
 	
 	var iq_info : IQ;
 	var iq_item : IQ;
 	
 	
-	public function new( stream : StreamBase ) {
+	public function new( stream : Stream ) {
 		
 		this.stream = stream;
 		
@@ -114,10 +73,10 @@ class ServiceDiscovery {
 		switch( iq.type ) {
 			case result :
 				var l = xmpp.disco.Info.parse( iq.ext.toXml() );
-				var e = new IQResult<xmpp.disco.Info>( stream, iq, l );
+				var e = new IQResult<jabber.Stream,xmpp.disco.Info>( stream, iq, l );
 				onInfo( e );
 			case error :
-				onError( new jabber.event.XMPPErrorEvent( stream, iq ) );
+				onError( new jabber.event.XMPPErrorEvent<jabber.Stream>( stream, iq ) );
 			default : //#
 		}
 	}
@@ -126,10 +85,10 @@ class ServiceDiscovery {
 		switch( iq.type ) {
 			case result :
 				var l = xmpp.disco.Items.parse( iq.ext.toXml() );
-				var e = new IQResult<xmpp.disco.Items>( stream, iq, l );
+				var e = new IQResult<jabber.Stream,xmpp.disco.Items>( stream, iq, l );
 				onItems( e );
 			case error :
-				onError( new jabber.event.XMPPErrorEvent( stream, iq ) );
+				onError( new jabber.event.XMPPErrorEvent<jabber.Stream>( stream, iq ) );
 			default: //#
 		}
 	}

@@ -1,15 +1,13 @@
 package jabber.event;
 
-import jabber.core.StreamBase;
-
 
 /**
 */
-class StreamEvent {
+class StreamEvent<T:jabber.Stream> {
 	
-	public var stream(default,null) : StreamBase;
+	public var stream(default,null) : T;
 	
-	public function new( s : StreamBase ) {
+	public function new( s : T ) {
 		this.stream = s;
 	}
 	

@@ -6,7 +6,7 @@ jabber.Lib
 -D JABBER_LIBCLIENT
 -D JABBER_SOCKETBRIDGE
 -D JABBER_DEBUG
---no-traces
+#--no-traces
 
 
 ### AS3 lib

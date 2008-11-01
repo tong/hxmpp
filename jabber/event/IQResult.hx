@@ -1,13 +1,11 @@
 package jabber.event;
 
-import jabber.core.StreamBase;
 
-
-class IQResult<T> extends XMPPPacketEvent {
+class IQResult<T:jabber.Stream,Data> extends XMPPPacketEvent<T> {
 	
-	public var data(default,null) : T;
+	public var data(default,null) : Data;
 	
-	public function new( s : StreamBase, iq : xmpp.IQ, ?data : T ) {
+	public function new( s : T, iq : xmpp.IQ, ?data : Data ) {
 		super( s, iq );
 		this.data = data;
 	}

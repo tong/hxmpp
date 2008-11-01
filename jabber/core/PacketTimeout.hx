@@ -5,7 +5,7 @@ package jabber.core;
 
 class PacketTimeout {
 	
-	public static var DEFAULT_TIMEOUT = 5; // sec
+	public static var defaultTimeout = 5; // sec
 	
 	/** null = no timeout, 	0 = default timeout, value = value. */
 	public var time(getTime,setTime) : Int;
@@ -32,7 +32,7 @@ class PacketTimeout {
 			case null : // no timeout
 				_time = 0;
 			case 0 : 	// default timeout 
-				_time = DEFAULT_TIMEOUT;
+				_time = defaultTimeout;
 			default : 	// given timeout
 				if( t < 0 ) throw "Invalid packettimeout time: "+t; 
 				_time = t; 			     

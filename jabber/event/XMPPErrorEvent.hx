@@ -1,18 +1,16 @@
 package jabber.event;
 
-import jabber.core.StreamBase;
-
 
 /**
 */
-class XMPPErrorEvent extends jabber.event.XMPPPacketEvent {
+class XMPPErrorEvent<T:jabber.Stream> extends XMPPPacketEvent<T> {
 	
 	public var type : xmpp.ErrorType;
 	public var code : Int;
 	public var name : String;
 	public var text : String;
 	
-	public function new( s : StreamBase, p : xmpp.Packet ) {
+	public function new( s : T, p : xmpp.Packet ) {
 		super( s, p );
 		var e = p.errors[0];
 		type = e.type;

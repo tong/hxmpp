@@ -28,8 +28,8 @@ class JabberClientDemo {
 	
 	static function init() {
 		//var account = new jabber.util.ResourceAccount();
-		var cnx = new SocketConnection( "jabber.spektral.at", 5222 );
-		stream = new Stream( new jabber.JID( "hxmpp@jabber.spektral.at" ), cnx, "1.0" );
+		var cnx = new SocketConnection( "127.0.0.1", 5222 );
+		stream = new Stream( new jabber.JID( "hxmpp@disktree" ), cnx, "1.0" );
 		stream.onError = function(s,err) { trace( "Stream ERROR: " + err ); };
 		stream.onClose = function(s) { trace( "Stream to: "+s.jid.domain+" closed." ); } ;
 		stream.onOpen = function(s) {
@@ -37,7 +37,7 @@ class JabberClientDemo {
 			var auth = new NonSASLAuthentication( stream );
 			auth.onSuccess = loginSuccess;
 			auth.onFailed = function(e) {
-				trace( "LOGIN FAILED "+e.name );
+				trace( "Login failed "+e.name );
 			};
 			auth.authenticate( "test", "norc" );
 		};
@@ -58,7 +58,7 @@ class JabberClientDemo {
 		// The socketbridge handles keepalive on its own.
 		var keepAlive = new net.util.KeepAlive( cast( stream.connection, jabber.SocketConnection ).socket ).start();
 		#end
-		
+		/*
 		roster = new Roster( s );
 		roster.load();
 		roster.onLoad = function( r : Roster ) {
@@ -73,7 +73,7 @@ class JabberClientDemo {
 			trace( "VCARD LOADED: "+vc.from );
 		};
 		vcard.load();
-		
+		*/
 		service = new ServiceDiscovery( stream );
 		service.onInfo = function( e ) {
 			trace( "SERVICE INFO RESULT: "+e.from );
@@ -83,8 +83,8 @@ class JabberClientDemo {
 			for( feature in e.data.features ) trace( "\t\t"+feature );
 			
 		};
-		service.discoverItems( "jabber.spektral.at" );
-		service.discoverInfo( "jabber.spektral.at" );
+		service.discoverItems( "disktree" );
+		service.discoverInfo( "disktree" );
 	}
 	
 	static function main() {

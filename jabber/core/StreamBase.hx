@@ -34,7 +34,7 @@ private class FeatureList {
 /**
 	Abstract base for client and component jabber streams.<br>
 */
-class StreamBase /* implements IStream */ {
+class StreamBase implements jabber.Stream {
 	
 	public dynamic function onOpen<T>( stream : T ) {}
 	public dynamic function onClose<T>( stream : T ) {}

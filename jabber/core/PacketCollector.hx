@@ -8,8 +8,6 @@ import xmpp.filter.PacketFilter;
 */
 class PacketCollector implements IPacketCollector {
 	
-	public static var DEFAULT_TIMEOUT = 5;
-	
 	public var filters : Array<PacketFilter>;
 	public var handlers : Array<xmpp.Packet->Void>;
 	public var permanent : Bool;
