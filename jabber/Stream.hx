@@ -4,11 +4,15 @@ import jabber.core.IPacketCollector;
 import jabber.core.IPacketInterceptor;
 import jabber.core.PacketTimeout;
 
+
 /**
 	Represents the exchange of xmpp data to and from another jabber entity.
 */
-// TODOtypedef IStream = {
 interface Stream {
+	
+	dynamic function onOpen<T>( s : T ) : Void {}
+	dynamic function onClose<T>( s : T ) : Void {}
+	dynamic function onError<T>( s : T, m : Dynamic ) : Void {}
 	
 	/**
 	*/
@@ -16,7 +20,7 @@ interface Stream {
 	
 	/**
 	*/
-	var connection(default,setConnection) : jabber.core.StreamConnection;
+	var connection(default,setConnection) : StreamConnection;
 	
 	/**
 	*/
@@ -48,8 +52,8 @@ interface Stream {
 	
 	/**
 	*/
-	function sendIQ( iq : xmpp.IQ, ?handler : xmpp.IQ->Void,
-				     ?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool )
+	function sendIQ( iq : xmpp.IQ,?handler : xmpp.IQ->Void,
+					 ?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool )
 	: { iq : xmpp.IQ, collector : IPacketCollector };
 	
 }

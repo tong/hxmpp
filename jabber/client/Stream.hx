@@ -1,8 +1,8 @@
 package jabber.client;
 
 import jabber.JID;
+import jabber.StreamConnection;
 import jabber.StreamStatus;
-import jabber.core.StreamConnection;
 import xmpp.Message;
 
 

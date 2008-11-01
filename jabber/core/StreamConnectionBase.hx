@@ -17,8 +17,7 @@ private typedef DataInterceptor = {
 }
 
 
-//class StreamConnectionBase
-class StreamConnection {
+class StreamConnectionBase {
 	
 	public dynamic function onConnect() : Void;
 	public dynamic function onDisconnect() : Void;

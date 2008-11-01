@@ -1,5 +1,6 @@
 package jabber.core;
 
+import jabber.StreamConnection;
 import jabber.StreamStatus;
 import xmpp.filter.PacketIDFilter;
 import util.XmlUtil;
@@ -36,10 +37,9 @@ private class FeatureList {
 */
 class StreamBase implements jabber.Stream {
 	
-	public dynamic function onOpen<T>( stream : T ) {}
-	public dynamic function onClose<T>( stream : T ) {}
-	public dynamic function onError<T>( stream : T, m : Dynamic ) {}
-	//onXMPPError
+	public dynamic function onOpen<T>( s : T ) {}
+	public dynamic function onClose<T>( s : T ) {}
+	public dynamic function onError<T>( s : T, m : Dynamic ) {}
 	
 	public var status : StreamStatus;
 	//public var authenticated : Bool;
