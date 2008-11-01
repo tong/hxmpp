@@ -1,6 +1,5 @@
 
 
-
 class TestXMPPIQExtensions {
 
 	static function main() {
@@ -21,11 +20,11 @@ class TestXMPPIQExtensions {
 		r.add( new TestDelayedDeliveryExtension() );
 		r.add( new TestChatStateExtension() );
 		r.add( new TestLastActivityExtension() );
+		r.add( new TestEntityTimeExtension() );
 		r.run();
 	}
 	
 }
-
 
 
 /**
@@ -52,7 +51,6 @@ class TestAuthExtension extends haxe.unit.TestCase {
 }
 
 
-
 /**
 	Testunit for xmpp.Register
 */
@@ -77,7 +75,6 @@ class TestRegisterExtension extends haxe.unit.TestCase {
 }
 
 
-
 /**
 	Testunit for xmpp.Roster
 */
@@ -98,6 +95,67 @@ class TestRosterExtension extends haxe.unit.TestCase {
 	}
 }
 
+
+/**
+	Testunit for xmpp.disco.Info
+*/
+class TestDiscoExtension extends haxe.unit.TestCase {
+	
+	
+	public function testDiscoInfo() {
+	
+		var x = new xmpp.disco.Info().toXml();
+		assertEquals( xmpp.disco.Info.XMLNS, x.get( "xmlns" ) );
+		
+		var iq = xmpp.IQ.parse( Xml.parse( '
+			<iq from="account@disktree.net" type="result" id="UkxsZUQz" to="tong@disktree.net/norc">
+				<query xmlns="http://jabber.org/protocol/disco#info">
+					<identity type="registered" category="account"/>
+					<identity type="pep" category="pubsub"/>
+					<feature var="http://jabber.org/protocol/disco#info"/>
+				</query>
+			</iq>').firstElement() );
+		var info = xmpp.disco.Info.parse( iq.ext.toXml() );
+		
+		assertEquals( "registered", info.identities[0].type );
+		assertEquals( "account", info.identities[0].category );
+		assertEquals( null, info.identities[0].name );
+		assertEquals( "pep", info.identities[1].type );
+		assertEquals( "pubsub", info.identities[1].category );
+		assertEquals( null, info.identities[1].name );
+		assertEquals( "http://jabber.org/protocol/disco#info", info.features[0] );
+	}
+	
+	
+	public function testDiscoItems() {
+		
+		var x = new xmpp.disco.Item( "node@disktree.net" ).toXml();
+		assertEquals( "item", x.nodeName );
+		assertEquals( "node@disktree.net", x.get("jid") );
+		
+		var iq = xmpp.IQ.parse( Xml.parse('
+			<iq from="disktree.net" type="result" id="eHJGKzYz" to="tong@disktree/norc">
+			<query xmlns="http://jabber.org/protocol/disco#items">
+				<item name="Public Chatrooms" jid="conference.disktree"/>
+				<item name="Socks 5 Bytestreams Proxy" jid="proxy.disktree"/>
+				<item name="User Search" jid="search.disktree"/>
+				<item name="Publish-Subscribe service" jid="pubsub.disktree"/>
+			</query>
+		</iq>').firstElement() );
+		
+		var items = xmpp.disco.Items.parse( iq.ext.toXml() );
+		var results_name = [ "Public Chatrooms", "Socks 5 Bytestreams Proxy", "User Search", "Publish-Subscribe service" ];
+		var results_jid = [ "conference.disktree", "proxy.disktree", "search.disktree", "pubsub.disktree" ];
+		var results_node = [null,null,null,null];
+		var i = 0;
+		for( item in items ) {
+			assertEquals( results_name[i], item.name );
+			assertEquals( results_jid[i], item.jid );
+			assertEquals( results_node[i], item.node );
+			i++;
+		}
+	}
+}
 
 
 /**
@@ -219,76 +277,11 @@ class TestDataFormExtension extends haxe.unit.TestCase {
 	}
 	
 	/*
-	public function testAuthExt() {
+	public function test() {
 		TODO test with example which include ALL elements!
 	}
 	*/
 }
-
-
-
-/**
-	Testunit for xmpp.disco.Info
-*/
-class TestDiscoExtension extends haxe.unit.TestCase {
-	
-	
-	public function testDiscoInfo() {
-	
-		var x = new xmpp.disco.Info().toXml();
-		assertEquals( xmpp.disco.Info.XMLNS, x.get( "xmlns" ) );
-		
-		var iq = xmpp.IQ.parse( Xml.parse( '
-			<iq from="account@disktree.net" type="result" id="UkxsZUQz" to="tong@disktree.net/norc">
-				<query xmlns="http://jabber.org/protocol/disco#info">
-					<identity type="registered" category="account"/>
-					<identity type="pep" category="pubsub"/>
-					<feature var="http://jabber.org/protocol/disco#info"/>
-				</query>
-			</iq>').firstElement() );
-		var info = xmpp.disco.Info.parse( iq.ext.toXml() );
-		
-		assertEquals( "registered", info.identities[0].type );
-		assertEquals( "account", info.identities[0].category );
-		assertEquals( null, info.identities[0].name );
-		assertEquals( "pep", info.identities[1].type );
-		assertEquals( "pubsub", info.identities[1].category );
-		assertEquals( null, info.identities[1].name );
-		assertEquals( "http://jabber.org/protocol/disco#info", info.features[0] );
-	}
-	
-	
-	public function testDiscoItems() {
-		
-		var x = new xmpp.disco.Item( "node@disktree.net" ).toXml();
-		assertEquals( "item", x.nodeName );
-		assertEquals( "node@disktree.net", x.get("jid") );
-		
-		var iq = xmpp.IQ.parse( Xml.parse('
-			<iq from="disktree.net" type="result" id="eHJGKzYz" to="tong@disktree/norc">
-			<query xmlns="http://jabber.org/protocol/disco#items">
-				<item name="Public Chatrooms" jid="conference.disktree"/>
-				<item name="Socks 5 Bytestreams Proxy" jid="proxy.disktree"/>
-				<item name="User Search" jid="search.disktree"/>
-				<item name="Publish-Subscribe service" jid="pubsub.disktree"/>
-			</query>
-		</iq>').firstElement() );
-		
-		var items = xmpp.disco.Items.parse( iq.ext.toXml() );
-		var results_name = [ "Public Chatrooms", "Socks 5 Bytestreams Proxy", "User Search", "Publish-Subscribe service" ];
-		var results_jid = [ "conference.disktree", "proxy.disktree", "search.disktree", "pubsub.disktree" ];
-		var results_node = [null,null,null,null];
-		var i = 0;
-		for( item in items ) {
-			assertEquals( results_name[i], item.name );
-			assertEquals( results_jid[i], item.jid );
-			assertEquals( results_node[i], item.node );
-			i++;
-		}
-	}
-	
-}
-
 
 
 /**
@@ -323,6 +316,19 @@ class TestDelayedDeliveryExtension extends haxe.unit.TestCase {
 	}
 }
 
+
+/**
+	Testunit for xmpp.EntityTime
+*/
+class TestEntityTimeExtension extends haxe.unit.TestCase {
+	
+	public function testEnitiyTime() {
+		trace(Date.now().toString());
+		trace( Date.fromString( Date.now().toString() ) );
+		//var et = new xmpp.EntityTime();
+		//assertEquals( );
+	}
+}
 
 
 /**
@@ -360,7 +366,6 @@ class TestChatStateExtension extends haxe.unit.TestCase {
 		assertEquals( xmpp.ChatState.composing, xmpp.ChatStateExtension.get( m ) );
 	}
 }
-
 
 
 /**
