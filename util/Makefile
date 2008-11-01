@@ -10,6 +10,7 @@ CFLAGS += -I/usr/lib/neko
 
 all linux: hxmpp_debug sha1
 
+	
 hxmpp_debug: $(OBJECTS)
 	$(CC) $(CFLAGS) -shared $(OBJECTS) -o ../ndll/$(SYSTEM)/hxmpp_debug.ndll 
 

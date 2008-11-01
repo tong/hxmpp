@@ -98,7 +98,8 @@ class StreamBase /* implements IStream */ {
 		Returns a unique (base64 encoded) id for this stream.
 	*/
 	public function nextID() : String {
-		return haxe.BaseCode.encode( util.StringUtil.random64( 5 )+packetsSent, util.StringUtil.BASE64 );
+		return util.StringUtil.random64( 5 );
+		//return haxe.BaseCode.encode( util.StringUtil.random64( 5 )+packetsSent, util.StringUtil.BASE64 );
 	}
 	
 	/**
@@ -106,8 +107,7 @@ class StreamBase /* implements IStream */ {
 	*/
 	public function open() : Bool {
 //		if( status == StreamStatus.open ) return false;
-		if( !connection.connected ) connection.connect();
-		else connectHandler();
+		if( !connection.connected ) connection.connect() else connectHandler();
 		return true;
 	}
 	
@@ -144,9 +144,7 @@ class StreamBase /* implements IStream */ {
 		if( !connection.connected ) return false;
 		if( !connection.send( data ) ) return false;
 		packetsSent++;
-		#if JABBER_DEBUG
-		trace( data, true );
-		#end
+		#if JABBER_DEBUG trace( data, true ); #end
 		return true;
 	}
 	

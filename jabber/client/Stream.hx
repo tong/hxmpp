@@ -19,6 +19,7 @@ private class SASL {
 	public var negotiated : Bool;
 	//public var implementedMechanisms : Hash<String>;
 	public var availableMechanisms : Array<String>;
+	//public var mechanismUsed : String;
 	
 	public function new( /*use : Bool = true*/ ) {
 		
@@ -48,7 +49,9 @@ class Stream extends jabber.core.StreamBase {
 	public static inline var STANDARD_PORT = 5222;
 	public static var defaultPort = STANDARD_PORT;
 	
+	/** */
 	public var jid(default,null) : JID;
+	/** */
 	public var sasl(default,null) : SASL;
 
 //	var version : String;
@@ -66,6 +69,7 @@ class Stream extends jabber.core.StreamBase {
 	
 	/**
 		Sends a "normal" type message.
+		//TODO move to jabber.StreamBase
 	*/
 	public function sendMessage( to : String, subject : String, msg : String ) : xmpp.Message {
 		return sendPacket( new xmpp.Message( xmpp.MessageType.normal, to, subject, msg, null, jid.toString() ) );
@@ -73,6 +77,7 @@ class Stream extends jabber.core.StreamBase {
 	
 	/**
 		Sends a "chat" type message.
+		//TODO move to jabber.StreamBase
 	*/
 	public function sendChatMessage( to : String, msg : String ) : xmpp.Message {
 		return sendPacket( new Message( xmpp.MessageType.chat, to, null, msg, null, jid.toString() ) );

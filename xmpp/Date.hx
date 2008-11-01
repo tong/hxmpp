@@ -3,6 +3,8 @@ package xmpp;
 
 /**
 	<a href="http://xmpp.org/extensions/xep-0082.html">XMPP Date and Time Profiles</a>
+	
+	//TODO check seconds.
 */
 class Date {
 	

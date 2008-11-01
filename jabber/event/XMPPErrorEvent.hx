@@ -4,7 +4,6 @@ import jabber.core.StreamBase;
 
 
 /**
-	XMPP error event.
 */
 class XMPPErrorEvent extends jabber.event.XMPPPacketEvent {
 	

@@ -10,7 +10,7 @@ class Error {
 	
 	public static var BAD_REQUEST 	= "bad-request";
 	public static var CONFLICT 		= "conflict";
-	//..
+	//..TODO
 	
 	public var type : ErrorType;
 	public var code : Int;

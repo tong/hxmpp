@@ -7,9 +7,9 @@ import jabber.core.PacketCollector;
 
 
 typedef CompressionMethod = {
-	var name : String;
+	var name(default,null) : String;
 	function compress( data : String ) : String;
-	function uncompress( data : String ) : String;
+	function decompress( data : String ) : String;
 }
 
 
@@ -31,7 +31,7 @@ class StreamCompression {
 	
 	/**
 	*/
-	public function request( method : CompressionMethod ) {
+	public function init( method : CompressionMethod ) {
 		this.method = method;
 		//TODO add attibute filter
 		stream.collectors.add( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/compressed/ ) ], compressionInitSuccessHandler, false ) );
@@ -42,6 +42,7 @@ class StreamCompression {
 	/**
 	*/
 	public function interceptData( d : String ) : String {
+		trace("INTERCEPT");
 		return method.compress( d );
 	}
 	
@@ -56,7 +57,7 @@ class StreamCompression {
 		stream.connection.interceptors.push( this );
 		stream.connection.filters.push( this );
 		stream.status = jabber.StreamStatus.closed;
-		stream.version = null;
+		//stream.version = null;
 		stream.open();
 	}
 	

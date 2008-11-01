@@ -21,6 +21,7 @@ class Stream extends jabber.core.StreamBase {
 	public static var defaultPort = STANDARD_PORT;
 	
 	public var server(default,null) : String;
+	/** Shared secret used to identify legacy components*/
 	public var password(default,null) : String;
 	public var authenticated(default,null) : Bool;
 	public var serviceListener(default,null) : ServiceDiscoveryListener;

@@ -9,6 +9,8 @@ import flash.events.SecurityErrorEvent;
 import flash.events.ProgressEvent;
 
 
+//TODO socker errors
+
 private class Socket extends flash.net.Socket {
 	
 	public var id : Int;
