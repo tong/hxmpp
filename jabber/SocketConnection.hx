@@ -203,6 +203,7 @@ class SocketConnection extends jabber.core.StreamConnectionBase {
 
 #if JABBER_SOCKETBRIDGE
 
+
 /**
 	Socket for socket bridge use.
 */
@@ -215,7 +216,6 @@ class Socket {
 	public dynamic function onData( ata : String ) : Void {}
 	
 	public var id(default,null) : Int;
-	
 
 	public function new() {
 		var id = SocketBridgeConnection.createSocket( this );
@@ -223,78 +223,57 @@ class Socket {
 		this.id = id;
 	}
 	
-	
 	public function connect( host : String, port : Int ) {
-		SocketBridgeConnection.cnx.SocketBridge.connect.call( [ id, host, port ] );
+		untyped js.Lib.document.getElementById( "f9bridge" ).connect( id, host, port );
 	}
 	
 	public function close() {
-		SocketBridgeConnection.cnx.SocketBridge.close.call( [ id ] );
+		//SocketBridgeConnection.cnx.SocketBridge.close.call( [ id ] );
 	}
 	
-	public function send( data : String ) {
-		SocketBridgeConnection.cnx.SocketBridge.send.call( [ id, data ] );
+	public function send( d : String ) {
+		untyped js.Lib.document.getElementById( "f9bridge" ).send( id, d );
 	}
 	
 }
 
 
-/**
-*/
 class SocketBridgeConnection {
 	
-	public static var DEFAULT_DELAY = 500;
-	public static var cnx(default,null) : haxe.remoting.Connection;
+	public static var defaultDelay = 500;
 	
+	static var bridgeId : String;
 	static var initialized = false;
-	static var bridgeName : String;
-	static var sockets : List<Socket>;
+	static var sockets : IntHash<Socket>;
 	
-	
-	/**
-	*/
-	public static function init( bridgeName : String, ?cb : Void->Void, ?delay : Int ) : Void {
-		if( !initialized ) {
-			if( delay == null || delay > 0 ) delay = DEFAULT_DELAY;
-			SocketBridgeConnection.bridgeName = bridgeName;
-			sockets = new List<Socket>();
-			var ctx = new haxe.remoting.Context();
-			ctx.addObject( "SocketBridgeConnection", SocketBridgeConnection );
-			cnx = haxe.remoting.ExternalConnection.flashConnect( "default", bridgeName, ctx );
-			initialized = true;
-			if( cb != null ) haxe.Timer.delay( cb, delay );
-		} else {
-			trace( "Socketbridge already initialized" );
-		}
+	public static function init( id : String, cb : Void->Void, ?delay : Int ) {
+		if( initialized ) throw "Socketbridge already initialized";
+		bridgeId = id;
+		if( delay == null || delay < 0 ) delay = defaultDelay;
+		sockets = new IntHash();
+		initialized = true;
+		haxe.Timer.delay( cb, delay );
 	}
 	
-	
-	static function getSocket( id : Int ) : Socket {
-		for( s in sockets ) if( s.id == id ) return s;
-		return null;
-	}
-	
-	
-	public static function createSocket( s : Socket ) : Int {
-		var id = cnx.SocketBridge.createSocket.call([]);
-		SocketBridgeConnection.sockets.add( s );
+	public static function createSocket( s : Socket ) {
+		var id : Int = untyped js.Lib.document.getElementById( "f9bridge" ).createSocket();
+		sockets.set( id, s );
 		return id;
 	}
 	
-	
-	static function onSocketConnect( id : Int ) {
-		var s = getSocket( id );
+	static function handleConnect( id : Int ) {
+		var s = sockets.get( id );
 		s.onConnect();
 	}
 	
-	static function onSockClose( id : Int ) {
-		var s = getSocket( id );
+	static function handleDisonnect( id : Int ) {
+		var s = sockets.get( id );
 		s.onDisconnect();
 	}
 	
-	static function onSocketData( id : Int, data : String ) {
-		var s = getSocket( id );
-		s.onData( data );
+	static function handleData( id : Int, d : String ) {
+		var s = sockets.get( id );
+		s.onData( d );
 	}
 	
 }

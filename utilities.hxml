@@ -1,6 +1,7 @@
 
 # SWF9 socket bridge
 -cp ../core
--swf-header 0:0:60:000000
--swf9 bin/f9_socketbridge.swf
+-swf-header 0:0:60:eeeeee
+-swf-version 9
+-swf bin/f9_socketbridge.swf
 -main jabber.tool.SocketBridge

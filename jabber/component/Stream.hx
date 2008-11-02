@@ -27,9 +27,9 @@ class Stream extends jabber.core.StreamBase {
 	public var serviceListener(default,null) : ServiceDiscoveryListener;
 	
 	
-	public function new( server : String, password : String, connection : jabber.core.StreamConnection ) {
+	public function new( server : String, password : String, cnx : jabber.StreamConnection ) {
 		
-		super( connection );
+		super( cnx );
 		this.server = server;
 		this.password = password;
 		
@@ -56,13 +56,13 @@ class Stream extends jabber.core.StreamBase {
 	}
 	
 	override function processStreamInit( s : String ) {
-		var data = util.XmlUtil.removeXmlHeader( s );
-		var dx = Xml.parse( data + "</stream:stream>" ).firstChild();
+		var d = util.XmlUtil.removeXmlHeader( s );
+		var dx = Xml.parse( d+"</stream:stream>" ).firstChild();
 		id = dx.get( "id" );
 		status = StreamStatus.open;
 		collectors.add( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], handshakeResponseHandler, false ) );
 		var handshake = Xml.createElement( "handshake" );
-		handshake.addChild( Xml.createPCData( crypt.SHA1.encode( id + password ) ) );
+		handshake.addChild( Xml.createPCData( crypt.SHA1.encode( id+password ) ) );
 		sendData( handshake.toString() );
 	}
 	

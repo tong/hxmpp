@@ -1,7 +1,5 @@
 package jabber;
 
-import jabber.SocketConnection;
-
 #if JABBER_LIBCLIENT
 // this is the doc setup->
 import jabber.Chat;
@@ -36,7 +34,6 @@ import jabber.SocketConnection;
 */
 class Lib {
 	
-	
 	#if JABBER_DEBUG
 	
 	/**
@@ -49,16 +46,13 @@ class Lib {
 	
 	#if JABBER_SOCKETBRIDGE
 	
-	static function initSocketBridge( ?bridgeName : String = "f9bridge" ) {
-		jabber.SocketBridgeConnection.init( bridgeName, initialized );
+	static function initSocketBridge( ?id : String = "f9bridge" ) {
+		jabber.SocketBridgeConnection.init( id, initialized );
 	}
 	static function initialized() {
-		#if JABBER_DEBUG
-		trace( "Socket bridge hopefuly initialized" );
-		#end
+		#if JABBER_DEBUG trace( "Socket bridge hopefuly initialized" ); #end
 	}
 	
 	#end // JABBER_SOCKETBRIDGE
-	
 	
 }

@@ -1,23 +1,20 @@
 package jabber.tool;
 
-import haxe.remoting.Connection;
-
 #if flash9
 import flash.events.Event;
 import flash.events.IOErrorEvent;
 import flash.events.SecurityErrorEvent;
 import flash.events.ProgressEvent;
+import flash.external.ExternalInterface;
 
-
-//TODO socker errors
 
 private class Socket extends flash.net.Socket {
 	
-	public var id : Int;
+	public var id(default,null) : UInt;
 	
 	var keepAlive : net.util.KeepAlive;
 	
-	public function new( id : Int) {
+	public function new( id : UInt ) {
 		
 		super();
 		this.id = id;
@@ -39,82 +36,88 @@ private class Socket extends flash.net.Socket {
 }
 
 
-/**
-	flash9.
-	haXe-remoting socket bridge.
-	
-	// TODO replace remoting stuff by flash.external..ExternaInterface.
-*/
 class SocketBridge {
 	
-	static var cnx : haxe.remoting.Connection; // TODO cnxs : Hash<haxe.remoting.Connection>;
-	static var sockets = new List<Socket>();
-	static var socketsTotal = 0;
+	var ctx : String;
+	var sockets : IntHash<Socket>;
 	
-	static function getSocket( id : Int ) : Socket {
-		for( s in sockets ) if( s.id == id ) return s;
-		return null;
+	function new() {
+		
+		ctx = "jabber.SocketBridgeConnection";
+		sockets = new IntHash();
+		
+		if( ExternalInterface.available ) {
+			var me = this;
+			try {
+				ExternalInterface.addCallback( "createSocket", me.createSocket );
+				ExternalInterface.addCallback( "connect", me.connect );
+				ExternalInterface.addCallback( "disconnect", me.disconnect );
+				ExternalInterface.addCallback( "send", me.send );
+			} catch( e : Dynamic ) {
+				trace( e );
+				throw e;
+			}
+		}
 	}
 	
 	/*
-TODO	auth client by name, set CLIENT
-	static function authenticate( secret : String, ) {
-	}
-	*/
+	function init( ctx : String ) : Bool {
+		this.ctx = ctx;
+		return true;
+	}*/
 	
-	static function createSocket() : Int {
-		var id = socketsTotal++;
+	function createSocket() : Int {
+		var id = Lambda.count( sockets );
 		var s = new Socket( id );
 		s.addEventListener( Event.CONNECT, sockConnectHandler );
 		s.addEventListener( Event.CLOSE, sockDisconnectHandler );
 		s.addEventListener( IOErrorEvent.IO_ERROR, sockDisconnectHandler );
 		s.addEventListener( SecurityErrorEvent.SECURITY_ERROR, sockDisconnectHandler );
 		s.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
-		sockets.add( s );
+		sockets.set( id, s );
 		return id;
 	}
 	
-	static function connect( id : Int, host : String, port : Int ) : Bool {
-		var s = getSocket( id );
-		//if( s == null ) return false;
+	function connect( id : Int, host : String, port : Int ) : Bool {
+		if( !sockets.exists( id ) ) return false;
+		var s = sockets.get( id );
 		s.connect( host, port );
 		return true;
 	}
 	
-	static function close( id : Int) : Bool {
-		var s = getSocket( id );
+	function disconnect( id : Int ) : Bool {
+		if( !sockets.exists( id ) ) return false;
+		var s = sockets.get( id );
 		s.close();
 		return true;
 	}
 	
-	static function send( id : Int, data : String ) : Bool {
-		var s = getSocket( id );
+	function send( id : Int, data : String ) : Bool {
+		if( !sockets.exists( id ) ) return false;
+		var s = sockets.get( id );
 		s.writeUTFBytes( data ); 
 		s.flush();
 		return true;
 	}
 	
-	static function sockConnectHandler( e : Event ) {
-		cnx.SocketBridgeConnection.onSocketConnect.call( [e.target.id] );
+	function sockConnectHandler( e : Event ) {
+		ExternalInterface.call( ctx+".handleConnect", e.target.id );
 	}
 
-	static function sockDisconnectHandler( e : Event ) {
-		cnx.SocketBridgeConnection.onSockClose.call( [e.target.id] );
+	function sockDisconnectHandler( e : Event ) {
+		ExternalInterface.call( ctx+".handleDisconnect", e.target.id );
 	}
 	
-	static function sockDataHandler( e : ProgressEvent ) {
-		cnx.SocketBridgeConnection.onSocketData.call( [e.target.id,e.target.readUTFBytes( e.bytesLoaded )] );
+	function sockDataHandler( e : ProgressEvent ) {
+		ExternalInterface.call( ctx+".handleData", e.target.id, e.target.readUTFBytes( e.bytesLoaded ) );
 	}
 	
 	
 	static function main() {
-		
 		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
-		
-		var ctx = new haxe.remoting.Context();
-		ctx.addObject( "SocketBridge", SocketBridge );
-		cnx = haxe.remoting.ExternalConnection.jsConnect( "default", ctx );
+		haxe.Firebug.redirectTraces();
+		var b = new SocketBridge();
 	}
 	
 }
