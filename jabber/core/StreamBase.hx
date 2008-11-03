@@ -52,6 +52,7 @@ class StreamBase implements jabber.Stream {
 	public var collectors : List<IPacketCollector>;
 	public var interceptors : List<IPacketInterceptor>;
 	
+	//var myJID : String; // must not be a JID for components
 	var packetsSent : Int; // num xmpp packet sent
 	var cache : StringBuf;
 	

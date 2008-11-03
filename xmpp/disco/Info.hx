@@ -19,7 +19,7 @@ class Info {
 	
 
 	public function toXml() : Xml {
-		var x = xmpp.IQ.createQuery( XMLNS );
+		var x = xmpp.IQ.createQueryXml( XMLNS );
 		for( i in identities ) {
 			var identity = Xml.createElement( 'identity' );
 			if( i.category != null ) identity.set( "category", i.category );

@@ -17,8 +17,8 @@ static value printC( value t, value c ) {
 	int color = val_int( c );
 	switch( color ) {
 		case 0 : printf( "%c[37m%s\n", 27, val_string( t ) ); break;
-		case 1 : printf( "%c[36m%s\n", 27, val_string( t ) ); break;
-		case 2 : printf( "%c[33m%s\n", 27, val_string( t ) ); break;
+		case 1 : printf( "%c[33m%s\n", 27, val_string( t ) ); break;
+		case 2 : printf( "%c[36m%s\n", 27, val_string( t ) ); break;
 	}
 	return alloc_int( 0 );
 }

@@ -3,6 +3,24 @@ package xmpp.roster;
 import xmpp.Roster;
 
 
+/*
+private class GroupList extends ExclusivStringList {
+	
+	public function new() {
+		super();
+	}
+	
+	public override function add( t : String ) {
+		for( i in iterator() ) {
+			if( t ==  
+		}
+		super();
+	}
+}
+*/
+
+
+
 class Item {
 	
 	public var jid(default,null) : String;

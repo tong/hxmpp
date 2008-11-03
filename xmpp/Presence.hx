@@ -27,7 +27,7 @@ class Presence extends Packet {
 	
 	function setStatus( s : String ) : String {
 		if( s == null ) return null;
-		if( s.length > 1023 || s.length == 0 ) throw "Invalid xmpp, presence status size"; // TODO new jabber.error.XMPPInvalidError( "Invalid xmpp, presence status size" );
+		if( s.length > 1023 || s.length == 0 ) throw "Invalid presence status size"; // TODO new jabber.error.XMPPInvalidError( "Invalid presence status size" );
 		Reflect.setField( this, "status", s );
 		return status;
 	}

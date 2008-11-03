@@ -19,7 +19,6 @@ import php.net.Socket;
 
 
 // TODO socket handling
-// TODO move keepAlive into here ?
 
 class SocketConnection extends jabber.core.StreamConnectionBase {
 	

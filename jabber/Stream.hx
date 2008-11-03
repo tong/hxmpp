@@ -15,6 +15,11 @@ interface Stream {
 	dynamic function onError<T>( s : T, m : Dynamic ) : Void {}
 	
 	/**
+		Time value set by the application.
+	*/
+	//var time : Float;
+	
+	/**
 	*/
 	var status : StreamStatus;
 	

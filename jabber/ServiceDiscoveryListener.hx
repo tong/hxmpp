@@ -62,7 +62,6 @@ class ServiceDiscoveryListener {
 	
 	
 	function handleInfoQuery( iq : IQ ) {
-		trace("HÄNDELE INFO QUERY");
 		info_result.to = iq.from;
 		info_result_ext.identities = [identity];
 		info_result_ext.features = new Array();
@@ -71,9 +70,8 @@ class ServiceDiscoveryListener {
 	}
 	
 	function handleItemQuery( iq : IQ ) {
-		trace("handleItemQuery");
-		//TODO
-		//.
+		trace("TODO handleItemQuery");
+		//..
 		stream.sendIQ( item_result );
 	}
 	

@@ -15,15 +15,18 @@ import xmpp.filter.PacketIDFilter;
 */
 class Stream extends jabber.core.StreamBase {
 	
-	public dynamic function onAuthenticated( stream : Stream ) {}
-	
 	public static inline var STANDARD_PORT = 5275;
 	public static var defaultPort = STANDARD_PORT;
 	
+	public dynamic function onAuthenticated( stream : Stream ) {}
+	
+	/** */
 	public var server(default,null) : String;
 	/** Shared secret used to identify legacy components*/
 	public var password(default,null) : String;
+	/** */
 	public var authenticated(default,null) : Bool;
+	/** */
 	public var serviceListener(default,null) : ServiceDiscoveryListener;
 	
 	

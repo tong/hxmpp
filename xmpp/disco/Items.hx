@@ -14,7 +14,7 @@ class Items extends List<xmpp.disco.Item> {
 	
 	
 	public function toXml() : Xml {
-		var q = xmpp.IQ.createQuery( XMLNS );
+		var q = xmpp.IQ.createQueryXml( XMLNS );
 		if( !isEmpty() ) {
 			for( i in iterator() ) {
 				var item = Xml.createElement( 'item' );

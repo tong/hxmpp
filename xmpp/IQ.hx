@@ -1,7 +1,10 @@
 package xmpp;
 
 
-class IQ extends xmpp.Packet {
+/**
+	InfoQuery xmpp packet.
+*/
+class IQ extends Packet {
 	
 	public var type : IQType;
 	public var ext : PacketElement;
@@ -16,7 +19,7 @@ class IQ extends xmpp.Packet {
 	
 	public override function toXml(): Xml {
 //		if( id == null ) throw "Invalid IQ packet, no id";
-		if( type == null ) type = xmpp.IQType.get;
+		if( type == null ) type = IQType.get;
 		var x = super.addAttributes( Xml.createElement( "iq" ) );
 		x.set( "type", Type.enumConstructor( type ) );
 		x.set( "id", id );
@@ -25,7 +28,7 @@ class IQ extends xmpp.Packet {
 	}
 	
 	
-	public static function parse( x : Xml ) : xmpp.IQ {
+	public static function parse( x : Xml ) : IQ {
 		var iq = new IQ();
 		iq.type = Type.createEnum( IQType, x.get( "type" ) );
 		xmpp.Packet.parsePacketBase( iq, x );
@@ -36,7 +39,7 @@ class IQ extends xmpp.Packet {
 	/**
 		Creates a '<query xmlns="namspace"/>' xml tag.
 	*/
-    public static inline function createQuery( ns : String ) : Xml {
+    public static inline function createQueryXml( ns : String ) : Xml {
 		var q = Xml.createElement( "query" );
 		q.set( "xmlns", ns );
 		return q;

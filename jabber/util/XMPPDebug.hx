@@ -1,6 +1,8 @@
 package jabber.util;
 
 
+/**
+*/
 class XMPPDebug {
 	
 	public static function redirectTraces() {
@@ -20,6 +22,11 @@ class XMPPDebug {
 	
 	#if neko
 	
+	//TODO send color value to ndll
+	//public static var WHITE = 33; 
+	//public static var WHITE = 33; 
+	//public static var WHITE = 33; 
+	
 	static var printC = neko.Lib.load( "hxmpp_debug", "printC", 2 );
 	
 	static function myTrace( v : Dynamic, ?inf : haxe.PosInfos ) {
@@ -27,9 +34,9 @@ class XMPPDebug {
 		var buf = new StringBuf();
 		if( inf.customParams == null ) {
 			buf.add( "\t" );
-			buf.add( v );
+			buf.add( inf.className+" "+inf.lineNumber );
 			buf.add( " => " );
-			buf.add( inf.className+" "+inf.lineNumber+"   " );
+			buf.add( v );
 			
 		} else {
 			if( inf.customParams[0] ) {
@@ -43,7 +50,7 @@ class XMPPDebug {
         //neko.Lib.print( buf.toString() );
 		printC( untyped buf.toString().__s, c );
     }
-
+	
 	#end
 	
 }

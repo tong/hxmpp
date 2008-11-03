@@ -12,9 +12,20 @@ typedef StreamConnection = {
 	
 	var connected(default,null) : Bool;
 	
+	/**
+	*/
 	function connect() : Void;
+	
+	/**
+	*/
 	function disconnect() : Bool;
+	
+	/**
+	*/
 	function send( data : String ) : Bool;
+	
+	/**
+	*/
 	function read( ?yes : Bool ) : Bool;
 	
 }

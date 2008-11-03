@@ -47,7 +47,7 @@ class Register {
 
 
 	public function toXml() : Xml {
-		var q = xmpp.IQ.createQuery( XMLNS );
+		var q = xmpp.IQ.createQueryXml( XMLNS );
 		if( remove ) {
 			q.addChild( Xml.createElement( "remove" ) );
 		} else {

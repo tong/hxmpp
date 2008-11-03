@@ -16,7 +16,7 @@ class Roster extends List<xmpp.roster.Item> {
 	
 	
 	public function toXml() : Xml {
-		var q = IQ.createQuery( XMLNS );
+		var q = IQ.createQueryXml( XMLNS );
 		for( item in iterator() ) q.addChild( item.toXml() );
 		return q;
 	}

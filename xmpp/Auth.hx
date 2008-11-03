@@ -25,7 +25,7 @@ class Auth {
 
 	
 	public function toXml() : Xml {
-		var q = xmpp.IQ.createQuery( XMLNS );
+		var q = xmpp.IQ.createQueryXml( XMLNS );
 		if( username != null ) q.addChild( XmlUtil.createElement( "username", username ) );
 		if( password != null ) q.addChild( XmlUtil.createElement( "password", password ) );
 		if( digest != null )   q.addChild( XmlUtil.createElement( "digest", digest ) );

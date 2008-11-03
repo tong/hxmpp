@@ -48,6 +48,7 @@ class PacketTimeout {
 	
 	
 	/**
+		Starts timeout.
 	*/
 	public function start( t : Int ) {
 		

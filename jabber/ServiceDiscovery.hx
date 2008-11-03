@@ -18,8 +18,8 @@ import xmpp.filter.IQFilter;
 */
 class ServiceDiscovery {
 	
-	public dynamic function onInfo( e : IQResult<jabber.Stream,xmpp.disco.Info> ) {}
-	public dynamic function onItems( i : IQResult<jabber.Stream,xmpp.disco.Items> ) {}
+	public dynamic function onInfo( e : IQResult<Stream,xmpp.disco.Info> ) {}
+	public dynamic function onItems( i : IQResult<Stream,xmpp.disco.Items> ) {}
 	public dynamic function onError( e : jabber.event.XMPPErrorEvent<Stream> ) {}
 	
 	public var stream(default,null) : jabber.Stream;
