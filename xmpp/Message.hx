@@ -30,18 +30,22 @@ class Message extends xmpp.Packet {
 		if( subject != null ) x.addChild( XmlUtil.createElement( "subject", subject ) );
 		if( body != null ) x.addChild( XmlUtil.createElement( "body", body ) );
 		if( thread != null ) x.addChild( XmlUtil.createElement( "thread", thread ) );
+		for( p in properties ) {
+			x.addChild( p );
+		}
 		return x;
     }
     
     
     public static function parse( x : Xml ) : xmpp.Message {
     	var m = new Message( if( x.exists( "type" ) ) Type.createEnum( xmpp.MessageType, x.get( "type" ) ) );
-   		xmpp.Packet.parsePacketBase( m, x );
+   		//Packet.parsePacketBase( m, x );
+   		Packet.parseAttributes( m, x );
    		for( c in x.elements() ) {
 			switch( c.nodeName ) {
 				case "subject" : m.subject = c.firstChild().nodeValue;
-				case "body"    : m.body = c.firstChild().nodeValue;
-				case "thread"  : m.thread = c.firstChild().nodeValue;
+				case "body" : m.body = c.firstChild().nodeValue;
+				case "thread" : m.thread = c.firstChild().nodeValue;
 				default : m.properties.push( c );
 			}
 		}

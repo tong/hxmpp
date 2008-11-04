@@ -102,7 +102,7 @@ class Packet {
 		for( c in x.elements() ) {
 			switch( c.nodeName ) {
 				case "error" : p.errors.push( xmpp.Error.parse( c ) );
-				default : p.properties.push( c );
+	//			default : p.properties.push( c );
 			}
 		}
 		return p;

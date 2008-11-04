@@ -31,6 +31,7 @@ class TestXMPPPacket {
 
 class TestMessagePacket extends haxe.unit.TestCase   {
 	
+	/*
 	public function testMessageCreate() {
 		
 		var m = new xmpp.Message();
@@ -54,9 +55,10 @@ class TestMessagePacket extends haxe.unit.TestCase   {
 		m.thread = "12345";
 		assertEquals( m.thread, "12345" );
 	}
+	*/
 
 	public function testMessageParse() {
-		
+		/*
 		var src = Xml.parse( '
 			<message type="chat" to="tong@igniterealtime.org" id="ab01a" >
 				<body>abc</body>
@@ -69,7 +71,24 @@ class TestMessagePacket extends haxe.unit.TestCase   {
 		assertEquals( m.id, "ab01a" );
 		assertEquals( m.body, "abc" );
 		
-		// TODO
+		*/
+		var src = Xml.parse( '
+			<message to="hxmpp@disktree">
+				<body>Wow, I&apos;m green with envy!</body>
+					<html xmlns="http://jabber.org/protocol/xhtml-im">
+						<body xmlns="http://www.w3.org/1999/xhtml">
+							<p style="font-size:large">
+								<em>Wow</em>, I&apos;m <span style="color:green">green</span>
+								with <strong>envy</strong>!
+							</p>
+						</body>
+					</html>
+			</message>' ).firstElement();
+		
+		var m : Message = cast xmpp.Packet.parse( src );
+		assertEquals( normal, m.type );
+		assertEquals( 'Wow, I&apos;m green with envy!', m.body );
+		assertEquals( 1, m.properties.length );
 	}
 	
 }

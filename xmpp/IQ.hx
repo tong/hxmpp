@@ -32,6 +32,9 @@ class IQ extends Packet {
 		var iq = new IQ();
 		iq.type = Type.createEnum( IQType, x.get( "type" ) );
 		xmpp.Packet.parsePacketBase( iq, x );
+		for( c in x.elements() ) {
+			iq.properties.push( c );
+		}
 		if( iq.properties.length > 0 ) iq.ext = new PlainPacket( iq.properties[0] );
 		return iq;
 	}
