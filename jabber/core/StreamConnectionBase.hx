@@ -1,20 +1,6 @@
 package jabber.core;
 
-
-private typedef DataFilter = {
-	/**
-		Filters incoming data before further processing ( fe: uncompression ).
-	*/
-	function filterData( data : String ) : String;
-}
-
-
-private typedef DataInterceptor = {
-	/**
-		Modifies raw data before sending ( fe: compression ).
-	*/
-	function interceptData( data : String ) : String;
-}
+import jabber.StreamConnection;
 
 
 class StreamConnectionBase {

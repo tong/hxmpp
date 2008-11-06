@@ -17,7 +17,7 @@ class LastActivity {
 	
 	
 	public function toXml() : Xml {
-		var q = IQ.createQuery( XMLNS );
+		var q = IQ.createQueryXml( XMLNS );
 		q.set( "seconds", Std.string( seconds ) );
 		return q;
 	}

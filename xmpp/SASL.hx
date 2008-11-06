@@ -12,8 +12,7 @@ class SASL {
 	*/
 	public static function createAuthXml( mechansim : String, ?text : String ) : Xml {
 		if( mechansim == null ) return null;
-		var a = if( text == null ) Xml.createElement( "auth" );
-		else util.XmlUtil.createElement( "auth", text );
+		var a = ( text == null ) ? Xml.createElement( "auth" ) : util.XmlUtil.createElement( "auth", text );
 		a.set( "xmlns", XMLNS );
 		a.set( "mechanism", mechansim );
 		return a;
@@ -31,12 +30,12 @@ class SASL {
 	/**
 	*/
 	public static function parseMechanisms( x : Xml ) : Array<String> {
-		var mechanisms = new Array<String>();
+		var m = new Array<String>();
 		for( e in x.elements() ) {
 			if( e.nodeName != "mechanism" ) continue;
-			mechanisms.push( e.firstChild().nodeValue );
+			m.push( e.firstChild().nodeValue );
 		}
-		return mechanisms;
+		return m;
 	}
 	
 }

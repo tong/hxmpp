@@ -1,6 +1,5 @@
 package jabber;
 
-import jabber.core.StreamBase;
 import jabber.core.PacketCollector;
 
 
@@ -15,12 +14,12 @@ class MessageListener {
 		Activates/Deactivates collecting message packets.
 	*/
 	public var listen(default,setListening) : Bool;
-	public var stream(default,setStream) : StreamBase;
+	public var stream(default,setStream) : Stream;
 	
 	var collector : PacketCollector;
 	
 	
-	public function new( stream : StreamBase, ?listen : Bool = true ) {
+	public function new( stream : Stream, ?listen : Bool = true ) {
 		
 		setStream( stream );
 		
@@ -29,7 +28,7 @@ class MessageListener {
 	}
 	
 	
-	function setStream( s : StreamBase ) : StreamBase {
+	function setStream( s : Stream ) : Stream {
 		if( s == stream ) return s;
 		var wasListening = listen;
 		if( listen ) setListening( false );
@@ -44,9 +43,9 @@ class MessageListener {
 		return listen = v;
 	}
 	
-	// keep for a possible override
+	// keep for possible override
 	function messageHandler( m : xmpp.Message ) {
-		onMessage( m );
+		this.onMessage( m );
 	}
 	
 }

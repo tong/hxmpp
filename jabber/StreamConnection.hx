@@ -1,6 +1,16 @@
 package jabber;
 
 
+typedef DataFilter = {
+	/** Filters incoming data before further processing ( fe: uncompression ). */
+	function filterData( data : String ) : String;
+}
+
+typedef DataInterceptor = {
+	/** Modifies raw data before sending ( fe: compression ). */
+	function interceptData( data : String ) : String;
+}
+
 typedef StreamConnection = {
 	
 	// TODO check filters,interceptors
@@ -11,6 +21,8 @@ typedef StreamConnection = {
 	var onError : Dynamic->Void;
 	
 	var connected(default,null) : Bool;
+	var interceptors : Array<DataInterceptor>;
+	var filters : Array<DataFilter>;
 	
 	/**
 	*/

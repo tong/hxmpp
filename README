@@ -18,7 +18,7 @@ XEPS SUPPORTED
 ## * 0030 ServiceDiscovery
 ## * 0045 MUChat
 * 0054 VCardTemp
-#* 0071 XHTML-IM
+* 0071 XHTML-IM
 * 0077 In-Band Registration
 * 0082 XMPP Date and Time Profiles
 * 0085 ChatStateNotification
@@ -27,7 +27,7 @@ XEPS SUPPORTED
 ##* 0202 EntityTime
 * 0203 DelayedDelivery
 
-Some features are supported not supported on all platforms.
+Some features are not supported on all platforms.
 
 
 BUILD+INSTALLATION
@@ -35,10 +35,10 @@ BUILD+INSTALLATION
 Run the *.hxml files in the main directory to build included demos, tests and utilities.
 
 # Compiler flags:
-* JABBER_DEBUG				Prints debug information, adds toString() methods to some classes.
-* JABBER_SOCKETBRIDGE		Use a socket bridge for io connection (see: jabber.tool.SocketBridge).
+* JABBER_DEBUG   Prints debug information, adds toString() methods to some classes.
+* JABBER_SOCKETBRIDGE   Use a socket bridge for io connection (see: jabber.tool.SocketBridge).
 * JABBER_LIBCLIENT
-* XEP_0091					Ensures backward compatibility with XEP-0091 when using jabber.DelayedDelivery. 
+* XEP_0091   Ensures backward compatibility with XEP-0091 when using jabber.DelayedDelivery. 
 
 # neko
 Copy the ndlls to your neko installation.
@@ -46,7 +46,7 @@ Copy the ndlls to your neko installation.
 * hxmpp_debug.ndll for colored bash output (linux only).
 
 # php
-Experimental support only.
+Untested!
 
 # flash9+
 * You have to allow the flash player to connect to the web if running local ( [06] ).
@@ -55,10 +55,11 @@ without first obtaining explicit permission from that server in form of a policy
 You can download a simple flash-policy-server for neko from [08][09].
 
 # js
-You have mainly two prosibilities using hxmpp from js:
+You have two prosibilities using hxmpp from js:
 * Code your complete application in haXe and compile to javascript.
 * Compile all required classes into a javascript file then call it from plain js (check /bin/demo/client_js.html for example and jabber.Lib class ). 
 (The current version includes a pre-compiled javascript file including basic features every jabber client should have (/bin/hxmpp_client.js).)
+There is no BOSH implementation so far. Connections can be made with an (invisible) flash9 movie acting as socket bridge.
 
 # actionscript3
 Untested!
@@ -70,8 +71,8 @@ see: hxmpp/demo/
 
 
 
-AUTHOR CONTACT
---------------
+AUTHOR
+------
 xmpp: tong@jabber.spektral.at
 mail: tong@disktree.net
 
@@ -79,7 +80,7 @@ mail: tong@disktree.net
 
 DOWNLOAD
 --------
-http://hxmpp.disktree.net/download
+http://hxmpp.disktree.net
 git://83.64.208.21/home/tong/git/hxmpp.git
 
 

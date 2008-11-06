@@ -164,6 +164,7 @@ class SocketConnection extends jabber.core.StreamConnectionBase {
 	// TODO replace by net.ClientSocketManager, .. handle socket at application level ?, or utility class ?.
 	function readData() {
 		var nbytes = socket.input.readBytes( buf, bufpos, buf.length );
+	//	trace("R "+nbytes);
 		data += buf.readString( 0, nbytes );
 		if( nbytes == BUF_SIZE_DEFAULT ) {
 			readData();

@@ -11,10 +11,10 @@ import jabber.event.XMPPErrorEvent;
 */
 class Account {
 	
-	public dynamic function onRegistered( e : IQResult<xmpp.Register> ) {}
-	public dynamic function onRemoved( e : IQResult<xmpp.Register> ) {}
-	public dynamic function onPasswordChange( e : IQResult<xmpp.Register> ) {}
-	public dynamic function onError( e : XMPPErrorEvent ) {}
+	public dynamic function onRegistered( e : IQResult<Stream,xmpp.Register> ) {}
+	public dynamic function onRemoved( e : IQResult<Stream,xmpp.Register> ) {}
+	public dynamic function onPasswordChange( e : IQResult<Stream,xmpp.Register> ) {}
+	public dynamic function onError( e : XMPPErrorEvent<Stream> ) {}
 	
 	public var stream(default,null) : Stream;
 	
@@ -61,14 +61,14 @@ class Account {
 						switch( r.type ) {
 							case result :
 								var l = xmpp.Register.parse( iq.ext.toXml() );
-								self.onRegistered( new IQResult( self.stream, r, l ) );
+								self.onRegistered( new IQResult<Stream,xmpp.Register>( self.stream, r, l ) );
 							case error:
-								self.onError( new jabber.event.XMPPErrorEvent( self.stream, r ) );
+								self.onError( new jabber.event.XMPPErrorEvent<Stream>( self.stream, r ) );
 							default : //#
 						}
 					} );
 					
-				case error : self.onError( new jabber.event.XMPPErrorEvent( self.stream, r ) );
+				case error : self.onError( new jabber.event.XMPPErrorEvent<Stream>( self.stream, r ) );
 				default : //#
 			}
 		} );
@@ -88,8 +88,8 @@ class Account {
 			switch( r.type ) {
 				case result :
 					var l = xmpp.Register.parse( iq.ext.toXml() );
-					self.onRemoved( new IQResult( self.stream, r, l ) );
-				case error : self.onError( new jabber.event.XMPPErrorEvent( self.stream, r ) );
+					self.onRemoved( new IQResult<Stream,xmpp.Register>( self.stream, r, l ) );
+				case error : self.onError( new jabber.event.XMPPErrorEvent<Stream>( self.stream, r ) );
 				default : //#
 			}
 		} );
@@ -111,8 +111,8 @@ class Account {
 			switch( r.type ) {
 				case result :
 					var l = xmpp.Register.parse( iq.ext.toXml() );
-					self.onPasswordChange( new IQResult( self.stream, r, l ) );
-				case error : self.onError( new jabber.event.XMPPErrorEvent( self.stream, r ) );
+					self.onPasswordChange( new IQResult<Stream,xmpp.Register>( self.stream, r, l ) );
+				case error : self.onError( new jabber.event.XMPPErrorEvent<Stream>( self.stream, r ) );
 				default : //#
 			}
 		} );

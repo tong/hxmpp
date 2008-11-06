@@ -48,12 +48,11 @@ class StreamBase implements jabber.Stream {
 	public var features(default,null) : Array<String>; //TODO
 //	public var serverFeatures : Hash<>;
 	public var lang(default,setLang) : String;
-	public var version : String;  // hm not sure
 	public var collectors : List<IPacketCollector>;
 	public var interceptors : List<IPacketInterceptor>;
 	
 	//var myJID : String; // must not be a JID for components
-	var packetsSent : Int; // num xmpp packet sent
+	var packetsSent : Int; // num xmpp packets sent
 	var cache : StringBuf;
 	
 	
@@ -65,12 +64,7 @@ class StreamBase implements jabber.Stream {
 		collectors = new List();
 		interceptors = new List();
 		packetsSent = 0;
-		
 		features = new Array();
-		
-		#if JABBER_DEBUG
-	//	onXMPP = new event.Dispatcher();
-		#end
 	}
 	
 	
@@ -269,12 +263,10 @@ class StreamBase implements jabber.Stream {
 		return packets;
 	}
 	
-		//TODO
+	
 	function parseStreamFeatures( x : Xml ) {
-		trace("parseStreamFeatures...");
 		return null;
 	}
-	
 	
 	function connectHandler() {}
 	function disconnectHandler() {}

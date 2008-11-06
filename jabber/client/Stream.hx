@@ -11,33 +11,26 @@ import xmpp.Message;
 */
 private class SASL {
 	
-	//public dynamic function onBindOffer<T>( stream : T ) {}
-	//public dynamic function onBound<T>( stream : T ) {}
-	
 	//public var has : Bool;
 	//public var use : Bool;
 	public var negotiated : Bool;
-	//public var implementedMechanisms : Hash<String>;
+	public var resourceBound : Bool;
+	/** SASL mechanisms offered by server */
 	public var availableMechanisms : Array<String>;
 	//public var mechanismUsed : String;
 	
 	public function new( /*use : Bool = true*/ ) {
-		
 		negotiated = false;
-		//implementedMechanisms = new Array();
 		availableMechanisms = new Array();
 	}
 	
-	//public function parseSASL( x : Xml ) {
-	
-	#if JABBER_DEBUG
 	/*
+	#if JABBER_DEBUG
 	public function toString() : String {
 		return "SASL(has=>"+has+",use=>"+use+")";
 	}
-	*/
 	#end
-	
+	*/
 }
 
 
@@ -49,15 +42,13 @@ class Stream extends jabber.core.StreamBase {
 	public static inline var STANDARD_PORT = 5222;
 	public static var defaultPort = STANDARD_PORT;
 	
-	/** */
 	public var jid(default,null) : JID;
-	/** */
 	public var sasl(default,null) : SASL;
-
-//	var version : String;
+	public var version : String;
 	
 	
-	public function new( jid : JID, connection : StreamConnection, ?version : String = "1.0" ) {
+	public function new( jid : JID, connection : StreamConnection,
+						 ?version : String = "1.0" ) {
 		
 		super( connection );
 		this.jid = jid;
@@ -101,6 +92,15 @@ class Stream extends jabber.core.StreamBase {
 		status = StreamStatus.pending;
 		sendData( xmpp.XMPPStream.createOpenStream( xmpp.XMPPStream.XMLNS_CLIENT, jid.domain, version, lang ) );
 		connection.read( true ); // start reading input
+	}
+	
+	override function parseStreamFeatures( x : Xml ) {
+		var f = new haxe.xml.Fast( x );
+		if( f.hasNode.mechanisms && f.node.mechanisms.has.xmlns && f.node.mechanisms.att.xmlns == "urn:ietf:params:xml:ns:xmpp-sasl"  ) {
+			sasl.availableMechanisms = xmpp.SASL.parseMechanisms( f.node.mechanisms.x );
+		}
+		//..
+		return null;
 	}
 	
 }
