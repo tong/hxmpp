@@ -9,8 +9,8 @@ import util.XmlUtil;
 class Message extends xmpp.Packet {
 	
 	public var type : MessageType;
-	public var subject : String; //PacketElement TODO
-	public var body : String; //PacketElement TODO
+	public var subject : String;
+	public var body : String;
     public var thread : String;
 	
 

@@ -47,12 +47,11 @@ class SocketBridge {
 		sockets = new IntHash();
 		
 		if( ExternalInterface.available ) {
-			var me = this;
 			try {
-				ExternalInterface.addCallback( "createSocket", me.createSocket );
-				ExternalInterface.addCallback( "connect", me.connect );
-				ExternalInterface.addCallback( "disconnect", me.disconnect );
-				ExternalInterface.addCallback( "send", me.send );
+				ExternalInterface.addCallback( "createSocket", createSocket );
+				ExternalInterface.addCallback( "connect", connect );
+				ExternalInterface.addCallback( "disconnect", disconnect );
+				ExternalInterface.addCallback( "send", send );
 			} catch( e : Dynamic ) {
 				trace( e );
 				throw e;

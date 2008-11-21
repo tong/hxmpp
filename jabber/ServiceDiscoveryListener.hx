@@ -8,18 +8,18 @@ import xmpp.IQType;
 
 
 /**
-	Listens for incoming service discovery requests.
+	Listens/Answers incoming service discovery requests.
 */
 class ServiceDiscoveryListener {
 	
-	public static var defaultIdentity = { category:"client", name:"hxmpp", type:"pc" };
+	public static var defaultIdentity = { category : "client", name : "hxmpp", type : "pc" };
 	
 	public var stream(default,null) : StreamBase;
-	public var active(default,setActive) : Bool;
+	public var listen(default,setListening) : Bool;
 	public var identity : xmpp.disco.Identity;
 	
-	var collector_info : PacketCollector;
-	var collector_item : PacketCollector;
+	var col_info : PacketCollector;
+	var col_item : PacketCollector;
 	var info_result : IQ;
 	var info_result_ext : xmpp.disco.Info;
 	var item_result : IQ;
@@ -31,9 +31,6 @@ class ServiceDiscoveryListener {
 		this.stream = stream;
 		this.identity = if( identity != null ) identity else defaultIdentity;
 		
-		collector_info = new PacketCollector( [ cast new IQFilter( xmpp.disco.Info.XMLNS, null, IQType.get ) ], handleInfoQuery, true );
-		collector_item = new PacketCollector( [ cast new IQFilter( xmpp.disco.Items.XMLNS, null, IQType.get ) ], handleItemQuery, true );
-		
 		info_result = new IQ( IQType.result );
 		info_result_ext = new xmpp.disco.Info();
 		info_result_ext.identities = [ identity ];
@@ -43,21 +40,24 @@ class ServiceDiscoveryListener {
 		item_result.ext = item_result;
 		//..
 		
+		col_info = new PacketCollector( [ cast new IQFilter( xmpp.disco.Info.XMLNS, null, IQType.get ) ], handleInfoQuery, true );
+		col_item = new PacketCollector( [ cast new IQFilter( xmpp.disco.Items.XMLNS, null, IQType.get ) ], handleItemQuery, true );
+		
 		setActive( true );
 	}
 	
 	
-	function setActive( a : Bool ) : Bool {
-		if( a == active ) return a;
-		Reflect.setField( this, "active", a );
-		if( a ) {
-			stream.collectors.add( collector_info );
-			stream.collectors.add( collector_item );
+	function setListening( l : Bool ) : Bool {
+		if( l == listen ) return l;
+		listen = l;
+		if( l ) {
+			stream.collectors.add( col_info );
+			stream.collectors.add( col_item );
 		} else {
-			stream.collectors.remove( collector_info );
-			stream.collectors.remove( collector_item );
+			stream.collectors.remove( col_info );
+			stream.collectors.remove( col_item );
 		}
-		return a;
+		return l;
 	}
 	
 	
@@ -65,7 +65,9 @@ class ServiceDiscoveryListener {
 		info_result.to = iq.from;
 		info_result_ext.identities = [identity];
 		info_result_ext.features = new Array();
-		for( f in stream.features ) info_result_ext.features.push( f );
+		for( f in stream.features ) {
+			info_result_ext.features.push( f );
+		}
 		stream.sendIQ( info_result );
 	}
 	

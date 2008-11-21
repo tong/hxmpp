@@ -8,7 +8,7 @@ import xmpp.filter.PacketOrFilter;
 
 
 /**
-	Responsible authenticating a client account using SASL, binding the resource to the connection
+	Responsible for authenticating a client account using SASL, binding the resource to the connection
 	and establishing a session with the server.
 	
 	http://xmpp.org/rfcs/rfc3920.html#sasl
@@ -27,20 +27,18 @@ class SASLAuthentication {
 	public var resource(default,null) : String;
 	public var active(default,null) : Bool;
 	
-	var clct_error : PacketCollector;
-	var clct_challenge : PacketCollector;
-	var clct_success : PacketCollector;
+	var col_error : PacketCollector;
+	var col_challenge : PacketCollector;
+	var col_success : PacketCollector;
 	
 	
-	public function new( stream : Stream ) {
+	public function new( stream : Stream, mechanisms : Iterable<net.sasl.Mechanism> ) {
 		
 		this.stream = stream;
 		
 		active = false;
 		handshake = new net.sasl.Handshake();
-		
-		// add mechanisms.
-		handshake.mechanisms.push( new net.sasl.PlainMechanism() );
+		for( m in mechanisms ) handshake.mechanisms.push( m );
 	}
 	
 	
@@ -85,16 +83,16 @@ class SASLAuthentication {
 		errorFilters.add( new PacketNameFilter( ~/invalid-mechanism/ ) );
 		errorFilters.add( new PacketNameFilter( ~/mechanism-too-weak/ ) );
 		errorFilters.add( new PacketNameFilter( ~/temporary-auth-failure/ ) );
-		clct_error = new PacketCollector( [cast errorFilters], handleSASLError, false );
-		stream.collectors.add( clct_error );
+		col_error = new PacketCollector( [cast errorFilters], handleSASLError, false );
+		stream.collectors.add( col_error );
 
 		// collect challenge packets
-		clct_challenge = new PacketCollector( [cast new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
-		stream.collectors.add( clct_challenge );
+		col_challenge = new PacketCollector( [cast new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
+		stream.collectors.add( col_challenge );
 		
 		// collect success packet
-		clct_success = new PacketCollector( [cast new PacketNameFilter( ~/success/ )], handleSASLSuccess );
-		stream.collectors.add( clct_success );
+		col_success = new PacketCollector( [cast new PacketNameFilter( ~/success/ )], handleSASLSuccess );
+		stream.collectors.add( col_success );
 		
 		// send init auth
 		var t = handshake.mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password );
@@ -107,11 +105,11 @@ class SASLAuthentication {
 		var c = p.toXml().firstChild().nodeValue;
 		// create/send challenge response
 		var enc = util.Base64.encode( handshake.getChallengeResponse( c ) );
-	//	enc = util.Base64.removeNullbits( enc );
 		stream.sendData( xmpp.SASL.createResponseXml( enc ).toString() );
 	}
 	
 	function handleSASLError( p : xmpp.Packet ) {
+		active = false;
 		onFailed( this );
 	}
 	
@@ -131,7 +129,6 @@ class SASLAuthentication {
 	}
 	
 	function handleBind( iq : IQ ) {
-		cleanup();
 		switch( iq.type ) {
 			case IQType.result :
 				// TODO required ?
@@ -144,17 +141,18 @@ class SASLAuthentication {
 			case IQType.error :
 				trace( "Unable to bind resource" );
 				//TODO
-				//e.error = xmpp.Error.parsePacket( iq );
+				active = false;
 				onFailed( this );
 		}
+		cleanup();
 	}
 	
 	function cleanup() {
 		active = false;
-		stream.collectors.remove( clct_challenge );
-		stream.collectors.remove( clct_success );
-		stream.collectors.remove( clct_error );
-		//clct_challenge = clct_success = collector_error = null;
+		stream.collectors.remove( col_challenge );
+		stream.collectors.remove( col_success );
+		stream.collectors.remove( col_error );
+		//col_challenge = col_success = collector_error = null;
 	}
 	
 }

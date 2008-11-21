@@ -3,17 +3,16 @@ package jabber;
 
 typedef DataFilter = {
 	/** Filters incoming data before further processing ( fe: uncompression ). */
-	function filterData( data : String ) : String;
+	function filterData( d : String ) : String;
 }
 
 typedef DataInterceptor = {
 	/** Modifies raw data before sending ( fe: compression ). */
-	function interceptData( data : String ) : String;
+	function interceptData( d : String ) : String;
 }
 
+
 typedef StreamConnection = {
-	
-	// TODO check filters,interceptors
 	
 	var onConnect : Void->Void;
 	var onDisconnect : Void->Void;
@@ -37,6 +36,7 @@ typedef StreamConnection = {
 	function send( data : String ) : Bool;
 	
 	/**
+		Starts/Stops reading from input.
 	*/
 	function read( ?yes : Bool ) : Bool;
 	

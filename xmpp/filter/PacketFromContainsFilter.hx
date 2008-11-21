@@ -13,8 +13,8 @@ class PacketFromContainsFilter {
 	}
 	
 	public function accept( p : xmpp.Packet ) : Bool {
+		if( p.from == null ) return false;
 		try {
-			if( p.from == null ) return false;
 			return new EReg( contained, "" ).match( p.from );
 		} catch( e : Dynamic ) {
 			return false;

@@ -32,7 +32,7 @@ Some features are not supported on all platforms.
 
 BUILD+INSTALLATION
 ------------------
-Run the *.hxml files in the main directory to build included demos, tests and utilities.
+Run the hxml files in the main directory to build included demos, tests and utilities.
 
 # Compiler flags:
 * JABBER_DEBUG   Prints debug information, adds toString() methods to some classes.
@@ -55,11 +55,12 @@ without first obtaining explicit permission from that server in form of a policy
 You can download a simple flash-policy-server for neko from [08][09].
 
 # js
-You have two prosibilities using hxmpp from js:
-* Code your complete application in haXe and compile to javascript.
-* Compile all required classes into a javascript file then call it from plain js (check /bin/demo/client_js.html for example and jabber.Lib class ). 
+You have two possibilities using hxmpp from javascript:
+1 Code your application in haXe and compile to javascript.
+2 Compile all required classes into a javascript file then call it from plain js (check /bin/demo/client_js.html for example and jabber.Lib class ). 
 (The current version includes a pre-compiled javascript file including basic features every jabber client should have (/bin/hxmpp_client.js).)
-There is no BOSH implementation so far. Connections can be made with an (invisible) flash9 movie acting as socket bridge.
+Since ther is no BOSH implementation so far connections could be made with an (invisible) flash9 movie acting as socket bridge.
+..
 
 # actionscript3
 Untested!
@@ -67,7 +68,7 @@ Untested!
 
 USAGE
 -----
-see: hxmpp/demo/
+see: hxmpp/demo/*
 
 
 
@@ -81,7 +82,7 @@ mail: tong@disktree.net
 DOWNLOAD
 --------
 http://hxmpp.disktree.net
-git://83.64.208.21/home/tong/git/hxmpp.git
+git://83.64.208.21/hxmpp.git
 
 
 

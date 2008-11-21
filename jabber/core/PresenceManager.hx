@@ -59,6 +59,10 @@ class PresenceManager {
 	}
 	
 	
+	public inline function get() : Presence {
+		return presence;
+	}
+	
 	/**
 		Set the presence.
 	*/

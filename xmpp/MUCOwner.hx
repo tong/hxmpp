@@ -1,14 +1,12 @@
 package xmpp;
 
-import xmpp.muc.Destroy;
-
 
 class MUCOwner {
 	
 	public static var XMLNS = xmpp.MUC.XMLNS+"#owner";
 	
 	public var items : List<xmpp.muc.Item>;
-	public var destroy : Destroy;
+	public var destroy : xmpp.muc.Destroy;
 	//public var empty : String;
 	
 	

@@ -8,8 +8,8 @@ class Error {
 	
 	public static var XMLNS = "urn:ietf:params:xml:ns:xmpp-stanzas";
 	
-	public static var BAD_REQUEST 	= "bad-request";
-	public static var CONFLICT 		= "conflict";
+	public static var BAD_REQUEST = "bad-request";
+	public static var CONFLICT 	  = "conflict";
 	//..TODO
 	
 	public var type : ErrorType;
@@ -50,7 +50,7 @@ class Error {
 		Parses the error from given xml.
 	*/
 	public static function parse( x : Xml ) : xmpp.Error {
-		if( x.nodeName != "error" ) throw "This is not an error extension";//TODO throw new jabber.error.XMPPParseError();
+		if( x.nodeName != "error" ) throw "This is not an error extension";
 		var e = new xmpp.Error();
 		e.code = Std.parseInt( x.get( "code" ) );
 		e.type = Type.createEnum( ErrorType, x.get( "type" ) );

@@ -2,6 +2,7 @@ package jabber.muc;
 
 
 /**
+TODO move into jabber.client.MUC
 */
 class Occupant {
 	
@@ -23,11 +24,9 @@ class Occupant {
 	*/
 	
 	#if JABBER_DEBUG
-	
 	public function toString() : String {
-		return "MUCOccupant(nick:"+nick+", role:"+role+", presenceShow:"+presence.show+")";
+		return "MUCOccupant(nick=>"+nick+",role=>"+role+",prsnc_show=>"+presence.show+")";
 	}
-	
 	#end
 	
 }

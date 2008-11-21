@@ -3,7 +3,6 @@ package jabber.client;
 import jabber.core.PacketCollector;
 import jabber.core.PresenceManager;
 import jabber.muc.Occupant;
-import xmpp.MUC;
 import xmpp.muc.Affiliation;
 import xmpp.muc.Role;
 import xmpp.Message;
@@ -14,17 +13,23 @@ import xmpp.filter.PacketFromContainsFilter;
 import xmpp.filter.PacketTypeFilter;
 
 
-class MUChatMessage {
+class MUCMessage {
 	
-	public var muc(default,null) : MUChat;
-	public var message(default,null) : xmpp.Message;
-	public var occupant : Occupant;
+	public var muc(default,null) : MUC;
+	public var xmpp(default,null) : xmpp.Message;
+	public var occupant(default,null) : Occupant;
 	
-	public function new( muc : MUChat, m : xmpp.Message, o : Occupant ) {
+	public function new( muc : MUC, m : xmpp.Message, o : Occupant ) {
 		this.muc = muc;
-		this.message = m;
+		this.xmpp = m;
 		this.occupant = o;
 	}
+	
+	#if JABBER_DEBUG
+	public function toString() : String {
+		return "MUCMessage(room=>"+muc.room+")";
+	}
+	#end
 }
 
 
@@ -34,66 +39,71 @@ class MUChatMessage {
 	<a href="http://www.xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
 	<a href="http://www.xmpp.org/extensions/xep-0249.html">XEP-0249: Direct MUC Invitations</a>
 */
-class MUChat {
+class MUC {
 	
-	public dynamic function onJoin( muc : MUChat ) {}
-	public dynamic function onMessage( msg : MUChatMessage ) {}
+	public dynamic function onJoin( muc : MUC ) {}
+	public dynamic function onMessage( msg : MUCMessage ) {}
 	public dynamic function onPresence( occupant : jabber.muc.Occupant ) {}
-	public dynamic function onSubject( muc : MUChat ) {}
+	public dynamic function onSubject( muc : MUC ) {}
 	
 	public var stream(default,null) : Stream;
 	public var jid(default,null) : String;
+	public var room(default,null) : String;
 	public var joined(default,null)	: Bool;
 	//public var locked(default,null) : Bool;
 	public var myJid(default,null) : String;
+	public var me(getMe,null) : Occupant;
 	public var nick(default,null) : String;
 	public var role : Role;
 	public var affiliation : Affiliation;
 	public var presence : PresenceManager;
 	public var occupants : Array<jabber.muc.Occupant>;
 	public var subject(default,null) : String;
-	public var history(default,null) : Array<String>;//Array<MUCMessage>;
-	public var historySize(default,setHistorySize) : Int;
 	//public var service(default,setServiceDiscovery) : MUChatDiscovery;
 	
 	var message : xmpp.Message;
-	var presenceCollector : PacketCollector;
-	var messageCollector : PacketCollector;
+	var col_presence : PacketCollector;
+	var col_message : PacketCollector;
 	
 	
 	public function new( stream : Stream, host : String, roomName : String ) {
 		
 		this.stream = stream;
 		this.jid = roomName+"@"+host;
+		this.room = roomName;
 
 		joined = false;
 		presence = new PresenceManager( stream ); 
 		occupants = new Array();
-		history = new Array();
+//		history = new Array();
 		message = new Message( MessageType.groupchat, jid );
 		
 		// collect all presences and messages from the room jid
-		var from_filter = new PacketFromContainsFilter( jid );
-		presenceCollector = new PacketCollector( [cast from_filter, cast new PacketTypeFilter( PacketType.presence ) ], handlePresence, true );
-		stream.collectors.add( presenceCollector );
-		messageCollector = new PacketCollector(  [cast from_filter, cast new MessageFilter( MessageType.groupchat )], handleMessage, true );
-		stream.collectors.add( messageCollector );
+		var f_from : xmpp.filter.PacketFilter = new PacketFromContainsFilter( jid );
+		col_presence = new PacketCollector( [f_from, cast new PacketTypeFilter( PacketType.presence ) ], handlePresence, true );
+		stream.collectors.add( col_presence );
+		col_message = new PacketCollector(  [f_from, cast new MessageFilter( MessageType.groupchat )], handleMessage, true );
+		stream.collectors.add( col_message );
 	}
 	
 	
-	function setHistorySize( s : Int ) : Int {
-		if( s < 0 ) throw new error.Exception( "Invalid history size "+s );
-	//	if( s < history.length ) history = history.slice( history.length-s );
-		return historySize = s;
+	function getMe() : Occupant {
+		var o = new Occupant();
+		o.nick = nick;
+		o.jid = myJid;
+		o.presence = presence.get();
+		o.role = role;
+		o.affiliation = affiliation;
+		return o;
 	}
 	
 	
 	/**
 	*/
-	public function cleanup() {
+	public function destroy() {
 		if( joined ) return false;
-		stream.collectors.remove( presenceCollector );
-		stream.collectors.remove( messageCollector );
+		stream.collectors.remove( col_presence );
+		stream.collectors.remove( col_message );
 		return true;
 	}
 	
@@ -149,23 +159,28 @@ class MUChat {
 	
 	
 	#if JABBER_DEBUG
-	
+	/*
 	public function toString() : String {
 		return "MUChat("+jid+")";
 	}
-	
+	*/
 	#end
 	
 	
-		//TODO
+	//TODO
 	function handleMessage( m : xmpp.Message ) {
 	//	trace("händleMessage");
-		if( !joined ) return;
-		var from = parseOccupantName( m.from );
+	//	if( !joined ) return;
+		var from = getOccupantName( m.from );
 		var occupant = getOccupant( from );
-		if( occupant == null && from != jid && from != nick && from != jid ) {
+		if( occupant == null && from != jid && from != nick ) {
 			trace( "??? Message from unknown muc occupant ??? "+from );
 			return;
+		}
+		if( occupant == null ) {
+			if( from == nick ) {
+				occupant = me;
+			}
 		}
 		if( m.subject != null ) {
 			if( subject != null ) {
@@ -173,8 +188,9 @@ class MUChat {
 			}
 			subject = m.subject;
 			onSubject( this );
+			return;
 		}
-		onMessage( new MUChatMessage( this, m, occupant ) );
+		onMessage( new MUCMessage( this, m, occupant ) );
 	}
 	
 	function handlePresence( p : xmpp.Presence ) {
@@ -185,6 +201,7 @@ class MUChat {
 		switch( p.from ) {
 			
 			case myJid :
+			
 				switch( p.type ) {
 					
 					case xmpp.PresenceType.unavailable : 
@@ -204,13 +221,13 @@ class MUChat {
 							{
 								var iq = new xmpp.IQ( xmpp.IQType.set, null, jid );
 								var q = new xmpp.MUCOwner().toXml();
-								q.addChild( Xml.parse( '<x xmlns="jabber:x:data" type="submit" />' ) );
 								//TODO
 								//query.addChild( new xmpp.DataForm( xmpp.DataFormType.submit ).toXml() );
+								q.addChild( Xml.parse( '<x xmlns="jabber:x:data" type="submit" />' ) );
 								iq.properties.push( q );
 								stream.sendIQ( iq, function(iq) {
 									if( iq.type == xmpp.IQType.result ) {
-										trace("UNLOCKEDDDDD");
+										trace("UNLOCKED MUC ROOM");
 										//unlocked = true;
 									}
 								} );
@@ -223,7 +240,7 @@ class MUChat {
 				//TODO
 				
 			default : // process occupant presence
-				var from = parseOccupantName( p.from );
+				var from = getOccupantName( p.from );
 				var occupant = getOccupant( from );
 				if( occupant != null ) { // update existing occupant
 					if( p.type == xmpp.PresenceType.unavailable ) {
@@ -249,7 +266,7 @@ class MUChat {
 		return null;
 	}
 	
-	inline function parseOccupantName( j : String ) : String {
+	inline function getOccupantName( j : String ) : String {
 		return j.substr( j.lastIndexOf( "/" ) + 1 );
 	}
 	

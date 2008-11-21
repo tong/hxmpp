@@ -42,7 +42,7 @@ class Stream extends jabber.core.StreamBase {
 	public static inline var STANDARD_PORT = 5222;
 	public static var defaultPort = STANDARD_PORT;
 	
-	public var jid(default,null) : JID;
+	public var jid(default,setJID) : JID;
 	public var sasl(default,null) : SASL;
 	public var version : String;
 	
@@ -55,6 +55,12 @@ class Stream extends jabber.core.StreamBase {
 		this.version = version;
 		
 		sasl = new SASL();
+	}
+	
+	
+	function setJID( j : JID ) : JID {
+		if( status != closed ) throw "Cannot change jid on active jid";
+		return jid = j;
 	}
 	
 	

@@ -46,6 +46,7 @@ class TestFilters extends haxe.unit.TestCase {
 		assertTrue( f.accept( new Message( error ) ) );
 		assertTrue( f.accept( new Message( groupchat ) ) );
 		assertTrue( f.accept( new Message( headline ) ) );
+		
 		f = new MessageFilter( chat );
 		assertTrue( f.accept( new Message( chat ) ) );
 		assertTrue( !f.accept( new Message() ) );
@@ -54,6 +55,17 @@ class TestFilters extends haxe.unit.TestCase {
 		assertTrue( !f.accept( new Message( error ) ) );
 		assertTrue( !f.accept( new Message( groupchat ) ) );
 		assertTrue( !f.accept( new Message( headline ) ) );
+		
+		/*
+		var m = xmpp.Message.parse( Xml.parse( '<message id="aadba" from="disktree@conference.disktree/tong" to="hxmpp@disktree/spekchat" type="groupchat"> <body>yg</body> <nick xmlns="http://jabber.org/protocol/nick">account</nick> <x from="account@disktree/desktop" xmlns="jabber:x:delay" stamp="20081110T15:07:05"/></message>' ).firstElement() );
+		f = new MessageFilter( groupchat );
+		assertTrue( f.accept( m ) );
+		
+		var f = new PacketFromContainsFilter( "disktree@conference.disktree" );
+		assertTrue( f.accept( m ) );
+		
+		trace("###################################");
+*/
 	}
 	
 	public function testAcceptAllFilter() {

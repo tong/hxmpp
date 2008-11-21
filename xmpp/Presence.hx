@@ -14,22 +14,20 @@ class Presence extends Packet {
     public var status(default,setStatus) : String;
     public var priority : Null<Int>;
     
-	
+    
 	public function new( ?type : PresenceType, ?show : String, ?status : String, ?priority : Int ) {
 		super();
 		_type = xmpp.PacketType.presence;
-        this.type = type;
-        this.show = show;
-        this.status = status;
-        this.priority = priority;
+		this.type = type;
+		this.show = show;
+		this.priority = priority;
 	}
 	
 	
 	function setStatus( s : String ) : String {
-		if( s == null ) return null;
-		if( s.length > 1023 || s.length == 0 ) throw "Invalid presence status size"; // TODO new jabber.error.XMPPInvalidError( "Invalid presence status size" );
-		Reflect.setField( this, "status", s );
-		return status;
+		if( s == null ) return status = s;
+		if( s.length > 1023 || s.length == 0 ) throw "Presence status size exceeded";
+		return status = s;
 	}
 	
 	

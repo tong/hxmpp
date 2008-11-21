@@ -7,6 +7,7 @@ import util.XmlUtil;
 
 
 /*
+TODO
 private class FeatureList {
 
 	var features : List<String>;
@@ -94,7 +95,7 @@ class StreamBase implements jabber.Stream {
 	*/
 	public function nextID() : String {
 		return util.StringUtil.random64( 5 );
-		//return haxe.BaseCode.encode( util.StringUtil.random64( 5 )+packetsSent, util.StringUtil.BASE64 );
+		//TODO return haxe.BaseCode.encode( util.StringUtil.random64( 5 )+packetsSent, util.StringUtil.BASE64 );
 	}
 	
 	/**
@@ -165,10 +166,16 @@ class StreamBase implements jabber.Stream {
 		return { iq : sent, collector : c };
 	}
 	
+	/**
+	public function sendMessage( to : String ) {
+	}
+	*/
+	
+	
 	
 	function processData( d : String ) {
 		
-		if( d == " " && cache == null ) return; // ignore keepalive
+		if( d == " " && cache == null ) return; //TODO ignore keepalive
 		
 		#if JABBER_DEBUG
 		try {
@@ -192,9 +199,12 @@ class StreamBase implements jabber.Stream {
 		
 		switch( status ) {
 			
-			case closed : return;
+			case closed :
+				return;
 			
-			case pending : processStreamInit( XmlUtil.removeXmlHeader( d ) );
+			case pending :
+				//#if JABBER_DEBUG trace( d, false ); #end
+				processStreamInit( XmlUtil.removeXmlHeader( d ) );
 				
 			case open :
 				var x : Xml = null;

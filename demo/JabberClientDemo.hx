@@ -17,7 +17,7 @@ import jabber.client.VCardTemp;
 	* load vcard
 	* discover server infos
 	* discover server items
-		
+	
 */
 class JabberClientDemo {
 	
@@ -58,7 +58,7 @@ class JabberClientDemo {
 		// The socketbridge handles keepalive on its own.
 		var keepAlive = new net.util.KeepAlive( cast( stream.connection, jabber.SocketConnection ).socket ).start();
 		#end
-		/*
+		
 		roster = new Roster( s );
 		roster.load();
 		roster.onLoad = function( r : Roster ) {
@@ -73,7 +73,7 @@ class JabberClientDemo {
 			trace( "VCARD LOADED: "+vc.from );
 		};
 		vcard.load();
-		*/
+		
 		service = new ServiceDiscovery( stream );
 		service.onInfo = function( e ) {
 			trace( "SERVICE INFO RESULT: "+e.from );

@@ -382,3 +382,16 @@ class TestLastActivityExtension extends haxe.unit.TestCase {
 		assertEquals( 903, secs );
 	}
 }
+
+
+
+/**
+	Testunit for xmpp.Bind
+*/
+class TestBindExtension extends haxe.unit.TestCase {
+	
+	public function testBindPacket() {
+		//TODO
+	}
+	
+}

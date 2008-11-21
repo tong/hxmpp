@@ -8,7 +8,7 @@ import jabber.MessageListener;
 import jabber.ServiceDiscovery;
 import jabber.ServiceDiscoveryListener;
 import jabber.SocketConnection;
-import jabber.client.MUChat;
+import jabber.client.MUC;
 import jabber.client.NonSASLAuthentication;
 import jabber.client.Roster;
 import jabber.client.SASLAuthentication;
