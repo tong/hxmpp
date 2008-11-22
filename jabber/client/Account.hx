@@ -18,11 +18,9 @@ class Account {
 	
 	public var stream(default,null) : Stream;
 	
-	
 	public function new( stream : Stream ) {
 		this.stream = stream;
 	}
-	
 	
 	/**
 		TODO
@@ -67,7 +65,6 @@ class Account {
 							default : //#
 						}
 					} );
-					
 				case error : self.onError( new jabber.event.XMPPErrorEvent<Stream>( self.stream, r ) );
 				default : //#
 			}
@@ -78,7 +75,7 @@ class Account {
 	/**
 		Requests to delete account from server.
 	*/	
-	public function delete() {
+	public function remove() {
 		var iq = new xmpp.IQ( xmpp.IQType.set );
 		var ext = new xmpp.Register();
 		ext.remove = true;
@@ -89,15 +86,14 @@ class Account {
 				case result :
 					var l = xmpp.Register.parse( iq.ext.toXml() );
 					self.onRemoved( new IQResult<Stream,xmpp.Register>( self.stream, r, l ) );
-				case error : self.onError( new jabber.event.XMPPErrorEvent<Stream>( self.stream, r ) );
+				case error :
+					self.onError( new jabber.event.XMPPErrorEvent<Stream>( self.stream, r ) );
 				default : //#
 			}
 		} );
 	}
 	
 	/**
-		TODO check since openfire seems to be buggy (?)
-		
 		Requests to change the account password.
 	*/
 	public function changePassword( node : String, pass : String ) {

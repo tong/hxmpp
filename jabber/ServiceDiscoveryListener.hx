@@ -26,7 +26,7 @@ class ServiceDiscoveryListener {
 	var item_result_ext : xmpp.disco.Item;
 	
 	
-	public function new( stream : StreamBase,  ?identity : xmpp.disco.Identity ) {
+	public function new( stream : StreamBase,  ?identity : xmpp.disco.Identity, listening : Bool = true ) {
 		
 		this.stream = stream;
 		this.identity = if( identity != null ) identity else defaultIdentity;
@@ -43,7 +43,7 @@ class ServiceDiscoveryListener {
 		col_info = new PacketCollector( [ cast new IQFilter( xmpp.disco.Info.XMLNS, null, IQType.get ) ], handleInfoQuery, true );
 		col_item = new PacketCollector( [ cast new IQFilter( xmpp.disco.Items.XMLNS, null, IQType.get ) ], handleItemQuery, true );
 		
-		setActive( true );
+		setListening( listening );
 	}
 	
 	

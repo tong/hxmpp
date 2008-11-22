@@ -23,6 +23,7 @@ class TestXMPPPacket {
 		r.add( new TestIQPacket() );
 		r.add( new TestErrorExtension() );
 		r.add( new TestXMPPDate() );
+		r.add( new TestXMPPCompression() );
 		r.run();
 	}
 	
@@ -164,7 +165,7 @@ class TestIQPacket extends haxe.unit.TestCase   {
 
 
 
-class TestErrorExtension extends haxe.unit.TestCase   {
+class TestErrorExtension extends haxe.unit.TestCase {
 	
 	public function testExtension() {
 		var err = xmpp.Error.parse( Xml.parse( '<error type="cancel"><conflict xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>' ).firstElement() );
@@ -177,7 +178,7 @@ class TestErrorExtension extends haxe.unit.TestCase   {
 
 
 
-class TestXMPPDate extends haxe.unit.TestCase   {
+class TestXMPPDate extends haxe.unit.TestCase {
 	
 	public function testDateFormatting() {
 		
@@ -197,4 +198,21 @@ class TestXMPPDate extends haxe.unit.TestCase   {
 		formatted = xmpp.Date.format( now, 2 );
 		assertEquals( "2008-11-01T19:06:02-02:00", formatted );
 	}
+}
+
+
+
+class TestXMPPCompression extends haxe.unit.TestCase {
+		
+	public function testPacket() {
+		
+		var p = xmpp.Compression.createPacket( ["zlib"] );
+		assertEquals( '<compress xmlns="http://jabber.org/protocol/compress"><method>zlib</method></compress>', p.toString() );
+
+		var x = Xml.parse( '<compression xmlns="http://jabber.org/features/compress"><method>zlib</method></compression>' ).firstElement();
+		var methods = xmpp.Compression.parseMethods( x );
+		assertEquals( 1, methods.length );
+		assertEquals( "zlib", methods[0] );
+	}
+		
 }

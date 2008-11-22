@@ -49,12 +49,9 @@ class Stream extends jabber.core.StreamBase {
 	override function dataHandler( data : String ) {
 		super.dataHandler( data );
 		switch( status ) {
-			case closed :
-				return;
+			case closed : return;
 			case pending :
-				
-			case open :
-				collectPackets( Xml.parse( data ) );
+			case open : collectPackets( Xml.parse( data ) );
 		}
 	}
 	
@@ -63,6 +60,7 @@ class Stream extends jabber.core.StreamBase {
 		var dx = Xml.parse( d+"</stream:stream>" ).firstChild();
 		id = dx.get( "id" );
 		status = StreamStatus.open;
+		onOpen( this );
 		collectors.add( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], handshakeResponseHandler, false ) );
 		var handshake = Xml.createElement( "handshake" );
 		handshake.addChild( Xml.createPCData( crypt.SHA1.encode( id+password ) ) );
@@ -70,7 +68,7 @@ class Stream extends jabber.core.StreamBase {
 	}
 	
 	function handshakeResponseHandler( p : xmpp.Packet ) {
-		serviceListener = new ServiceDiscoveryListener( this, { category:"component", name:"norc", type:"server-pc" } );
+		serviceListener = new ServiceDiscoveryListener( this, { category : "component", name : "norc", type : "server-pc" } );
 		authenticated = true;
 		onAuthenticated( this );
 	}

@@ -27,6 +27,9 @@ class SASLAuthentication {
 	public var resource(default,null) : String;
 	public var active(default,null) : Bool;
 	
+	var negotiated : Bool;
+	var availableMechanisms : Array<String>;
+	
 	var col_error : PacketCollector;
 	var col_challenge : PacketCollector;
 	var col_success : PacketCollector;
@@ -34,9 +37,14 @@ class SASLAuthentication {
 	
 	public function new( stream : Stream, mechanisms : Iterable<net.sasl.Mechanism> ) {
 		
+		var x = stream.server.features.get( "mechanisms" );
+		if( x == null ) throw "Server does not support SASL";
+		availableMechanisms = xmpp.SASL.parseMechanisms( x );
+		
 		this.stream = stream;
 		
 		active = false;
+		negotiated = false;
 		handshake = new net.sasl.Handshake();
 		for( m in mechanisms ) handshake.mechanisms.push( m );
 	}
@@ -47,7 +55,7 @@ class SASLAuthentication {
 		Returns false if no compatible sasl mechanism was found.
 	*/
 	public function authenticate( password : String, ?resource : String ) : Bool {
-		
+	
 		if( active ) return false;
 		this.resource = resource; 
 		
@@ -57,7 +65,7 @@ class SASLAuthentication {
 		
 		// locate mechanism to use.
 		if( handshake.mechanism == null ) {
-			for( availableMechanism in stream.sasl.availableMechanisms ) {
+			for( availableMechanism in availableMechanisms ) {
 				for( m in handshake.mechanisms ) {
 					if( m.id != availableMechanism ) continue;
 					handshake.mechanism = m;
@@ -71,6 +79,9 @@ class SASLAuthentication {
 			trace( "No matching SASL mechanism found." );
 			return false;
 		}
+		#if JABBER_DEBUG
+		trace( "Used SASL mechanism: "+handshake.mechanism.id );
+		#end
 		active = true;
 		
 		// collect errors, failures,..
@@ -114,13 +125,14 @@ class SASLAuthentication {
 	}
 	
 	function handleSASLSuccess( p : xmpp.Packet ) {
-		stream.sasl.negotiated = true;
-		stream.version = null;
+		//stream.sasl.negotiated = true;
+		negotiated = true;
+		stream.version = false;
 		stream.open(); // reopen stream
 	}
 	
 	function handleStreamOpen( s : Stream ) {
-		if( stream.sasl.negotiated ) {
+		if( negotiated ) {
 			// bind resource
 			var iq = new IQ( IQType.set );
 			iq.ext = new xmpp.Bind( resource );
@@ -131,11 +143,13 @@ class SASLAuthentication {
 	function handleBind( iq : IQ ) {
 		switch( iq.type ) {
 			case IQType.result :
+				/*
 				// TODO required ?
 				var b = xmpp.Bind.parse( iq.ext.toXml() );
 				if( jabber.util.JIDUtil.parseResource( b.jid ) != resource ) {
 					throw "Unexpected resource bound ?";
 				}
+				*/
 				onSuccess( this );
 					
 			case IQType.error :

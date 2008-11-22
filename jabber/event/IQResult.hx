@@ -1,13 +1,13 @@
 package jabber.event;
 
 
-class IQResult<T:jabber.Stream,Data> extends XMPPPacketEvent<T> {
+class IQResult<T:jabber.Stream,P> extends XMPPPacketEvent<T> {
 	
-	public var data(default,null) : Data;
+	public var packet(default,null) : P;
 	
-	public function new( s : T, iq : xmpp.IQ, ?data : Data ) {
+	public function new( s : T, iq : xmpp.IQ, ?packet : P ) {
 		super( s, iq );
-		this.data = data;
+		this.packet = packet;
 	}
 	
 }

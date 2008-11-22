@@ -6,31 +6,9 @@ import xmpp.filter.PacketIDFilter;
 import util.XmlUtil;
 
 
-/*
-TODO
-private class FeatureList {
-
-	var features : List<String>;
-	
-	public function new() {
-		features = new List();
-	}
-	public function has( name : String ) {
-		for( f in features ) if( f == name ) return f;
-		return null;
-	}
-	
-	public function add( name : String  ) {
-	}
-	
-	public function remove( name : String  ) {
-	}
-	
-	public function clear() {
-		features = new List();
-	}
+private typedef Server = {
+	var features(default,null) : Hash<Xml>;
 }
-*/
 
 
 /**
@@ -43,29 +21,27 @@ class StreamBase implements jabber.Stream {
 	public dynamic function onError<T>( s : T, m : Dynamic ) {}
 	
 	public var status : StreamStatus;
-	//public var authenticated : Bool;
 	public var connection(default,setConnection) : StreamConnection;
 	public var id(default,null) : String;
-	public var features(default,null) : Array<String>; //TODO
-//	public var serverFeatures : Hash<>;
 	public var lang(default,setLang) : String;
 	public var collectors : List<IPacketCollector>;
 	public var interceptors : List<IPacketInterceptor>;
+	public var server(default,null) : Server;
+	//public var authenticated : Bool;
 	
-	//var myJID : String; // must not be a JID for components
 	var packetsSent : Int; // num xmpp packets sent
 	var cache : StringBuf;
 	
 	
-	function new( connection : StreamConnection ) {
+	function new( cnx : StreamConnection ) {
 		
 		status = StreamStatus.closed;
-		this.setConnection( connection );
+		this.setConnection( cnx );
 		
 		collectors = new List();
 		interceptors = new List();
+		server = { features : new Hash() };
 		packetsSent = 0;
-		features = new Array();
 	}
 	
 	
@@ -111,7 +87,6 @@ class StreamBase implements jabber.Stream {
 		Closes the outgoing xml stream.
 	*/
 	public function close( ?disconnect = false ) : Bool {
-		trace( "Closing jabber stream:" + status );
 		if( status == StreamStatus.open ) {
 			sendData( xmpp.XMPPStream.CLOSE );
 			status = StreamStatus.closed;
@@ -123,10 +98,9 @@ class StreamBase implements jabber.Stream {
 	}
 	
 	/**
-		Intercepts, sends and returns a xmpp packet.
+		Intercepts, sends and returns the given xmpp packet.
 	*/
 	public function sendPacket<T>( p : xmpp.Packet, ?intercept : Bool = true ) : T {
-		// TODO cache packets sent while fe: initializing stream compression.
 		if( !connection.connected || status != StreamStatus.open ) return null;
 		if( intercept ) for( i in interceptors ) i.interceptPacket( p );
 		if( sendData( p.toString() ) ) return cast p;
@@ -140,7 +114,9 @@ class StreamBase implements jabber.Stream {
 		if( !connection.connected ) return false;
 		if( !connection.send( data ) ) return false;
 		packetsSent++;
-		#if JABBER_DEBUG trace( data, true ); #end
+		#if JABBER_DEBUG
+		trace( data, "xmpp-o" );
+		#end
 		return true;
 	}
 	
@@ -166,7 +142,7 @@ class StreamBase implements jabber.Stream {
 		return { iq : sent, collector : c };
 	}
 	
-	/**
+	/*
 	public function sendMessage( to : String ) {
 	}
 	*/
@@ -180,9 +156,9 @@ class StreamBase implements jabber.Stream {
 		#if JABBER_DEBUG
 		try {
 			var x = Xml.parse( d );
-			for( e in x.elements() ) trace( e, false );
+			for( e in x.elements() ) trace( e, "xmpp-i" );
 		} catch( e : Dynamic ) {
-			trace( d, false );
+			trace( d, "xmpp-i" );
 		}
 		#end
 		
@@ -203,7 +179,7 @@ class StreamBase implements jabber.Stream {
 				return;
 			
 			case pending :
-				//#if JABBER_DEBUG trace( d, false ); #end
+				//#if JABBER_DEBUG trace( d, "xmpp-i" ); #end
 				processStreamInit( XmlUtil.removeXmlHeader( d ) );
 				
 			case open :
@@ -235,20 +211,7 @@ class StreamBase implements jabber.Stream {
 	function collectPackets( d : Xml ) : Array<xmpp.Packet> {
 		var packets = new Array<xmpp.Packet>();
 		for( x in d.elements() ) {
-			/*
-			var p : xmpp.Packet = null;
-			try {
-				p = xmpp.Packet.parse( x );
-			} catch( e : Dynamic ) {
-				trace( "##### ERROR ##### ");
-				trace( e );
-				trace( x );
-				trace( "#################" );
-				return null;
-			}
-			*/ 
 			var p = xmpp.Packet.parse( x );
-			
 			packets.push( p );
 			var collected = false;
 			for( c in collectors ) {
@@ -265,7 +228,7 @@ class StreamBase implements jabber.Stream {
 			}
 			if( !collected ) {
 				#if JABBER_DEBUG
-				trace( "WARNING, xmpp packet not processed: "+p );
+				trace( "XMPP packet not processed: "+p, "warn" );
 				#end
 				//TODO create response
 			}
@@ -273,14 +236,16 @@ class StreamBase implements jabber.Stream {
 		return packets;
 	}
 	
-	
 	function parseStreamFeatures( x : Xml ) {
-		return null;
+		for( e in x.elements() ) server.features.set( e.nodeName, e );
 	}
 	
 	function connectHandler() {}
+	
 	function disconnectHandler() {}
-	function dataHandler( data : String ) {}
+	
+	function dataHandler( d : String ) {}
+	
 	function errorHandler( m : Dynamic ) {
 		onError( this, m  );
 	}

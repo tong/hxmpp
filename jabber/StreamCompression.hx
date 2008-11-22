@@ -5,7 +5,6 @@ import jabber.core.PacketCollector;
 
 // TODO
 
-
 typedef CompressionMethod = {
 	var name(default,null) : String;
 	function compress( data : String ) : String;
@@ -18,25 +17,33 @@ typedef CompressionMethod = {
 */
 class StreamCompression {
 	
-	public static var XMLNS = 'http://jabber.org/protocol/compress';
-	
 	public var stream(default,null) : StreamBase;
 	public var method(default,null) : CompressionMethod;
 
 	
 	public function new( stream : StreamBase ) {
+		if( stream.server.features.get( "compression" ) == null ) throw "Server doesnt support stream compression";
 		this.stream = stream;
 	}
 	
 	
 	/**
 	*/
-	public function init( method : CompressionMethod ) {
+	public function init( method : CompressionMethod ) : Bool {
+		var methods = xmpp.Compression.parseMethods( stream.server.features.get( "compression" ) );
+		var match = false;
+		for( m in methods ) {
+			if( m == method.name ) {
+				match = true;
+				break;
+			}
+		}
+		if( !match ) return false;
 		this.method = method;
-		//TODO add attibute filter
-		stream.collectors.add( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/compressed/ ) ], compressionInitSuccessHandler, false ) );
-		//stream.collectors.add( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( "failure" ) ], compressionInitFailedHandler, false ) );
-		stream.sendData( '<compress xmlns="'+XMLNS+'"><method>'+method.name+'</method></compress>' );
+		stream.collectors.add( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/compressed/ ) ], initSuccessHandler, false ) );
+		stream.collectors.add( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/failure/ ) ], initFailedHandler, false ) );
+		stream.sendData( xmpp.Compression.createPacket( [method.name] ).toString() );
+		return true;
 	}
 	
 	/**
@@ -49,16 +56,21 @@ class StreamCompression {
 	/**
 	*/
 	public function filterData( d : String ) : String {
-		return method.uncompress( d );
+		return method.decompress( d );
 	}
 	
 	
-	function compressionInitSuccessHandler( p ) {
+	function initSuccessHandler( p ) {
 		stream.connection.interceptors.push( this );
 		stream.connection.filters.push( this );
 		stream.status = jabber.StreamStatus.closed;
 		//stream.version = null;
 		stream.open();
+	}
+	
+	function initFailedHandler( p ) {
+		//TODO
+		trace("Stream compression failed");
 	}
 	
 }

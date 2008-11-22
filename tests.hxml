@@ -140,3 +140,13 @@
 -php bin/tests
 --php-front test_xmpp_iqs.php
 -main TestXMPPIQExtensions
+
+
+
+### TestXMPPMUC
+
+--next
+-cp ../core
+-cp test
+-neko bin/tests/test_xmpp_muc.n
+-main TestXMPPMUC

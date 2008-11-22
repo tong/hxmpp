@@ -20,18 +20,14 @@ class XMPPStream {
 	/**
 	*/
 	public static function createOpenStream( xmlns : String, to : String,
-											 ?version : String, ?lang : String, ?xmlHeader : Bool = true ) : String {
+											 ?version : Bool, ?lang : String, ?xmlHeader : Bool = true ) : String {
 		var b = new StringBuf();
 		b.add( '<stream:stream xmlns="' );
 		b.add( xmlns );
 		b.add( '" xmlns:stream="http://etherx.jabber.org/streams" to="' );
 		b.add( to );
 		b.add( '"' );
-		if( version != null ) {
-			b.add( ' version="' );
-			b.add( version );
-			b.add( '"' );
-		}
+		if( version ) b.add( ' version="1.0"' );
 		if( lang != null ) {
 			b.add( ' xml:lang="' );
 			b.add( lang );

@@ -27,18 +27,22 @@ class ResourceAccount {
 			jid = account[0];
 			password = account[1];
 		} catch( e : Dynamic ) {
-			throw new error.Exception( "Error parsing account information" );
+			throw new error.Exception( "Unable to parse account information" );
 		}
-		host = account[2] == "" ? null : account[2];
-		port = ( account[3] == "" || account[3] == null )  ? null : Std.parseInt( account[3] );
+		host = ( account[2] == "" || account[2] == null ) ? null : account[2];
+		port = ( account[3] == "" || account[3] == null ) ? null : Std.parseInt( account[3] );
 	}
 	
 	#if JABBER_DEBUG
-	
 	public function toString() : String {
 		return "ResourceAccount("+jid+","+password+","+host+","+port+")";
 	}
-	
 	#end
-		
+	
+	/*
+	public static function parse( t  : String ) {
+		return acc;
+	}
+	*/
+	
 }

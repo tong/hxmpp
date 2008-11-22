@@ -7,34 +7,6 @@ import xmpp.Message;
 
 
 /**
-	TODO
-*/
-private class SASL {
-	
-	//public var has : Bool;
-	//public var use : Bool;
-	public var negotiated : Bool;
-	public var resourceBound : Bool;
-	/** SASL mechanisms offered by server */
-	public var availableMechanisms : Array<String>;
-	//public var mechanismUsed : String;
-	
-	public function new( /*use : Bool = true*/ ) {
-		negotiated = false;
-		availableMechanisms = new Array();
-	}
-	
-	/*
-	#if JABBER_DEBUG
-	public function toString() : String {
-		return "SASL(has=>"+has+",use=>"+use+")";
-	}
-	#end
-	*/
-}
-
-
-/**
 	Base for Client-2-Server jabber streams.<br>
 */
 class Stream extends jabber.core.StreamBase {
@@ -43,18 +15,15 @@ class Stream extends jabber.core.StreamBase {
 	public static var defaultPort = STANDARD_PORT;
 	
 	public var jid(default,setJID) : JID;
-	public var sasl(default,null) : SASL;
-	public var version : String;
+	public var version : Bool;
 	
 	
-	public function new( jid : JID, connection : StreamConnection,
-						 ?version : String = "1.0" ) {
+	public function new( jid : JID, cnx : StreamConnection,
+						 version : Bool = true ) {
 		
-		super( connection );
+		super( cnx );
 		this.jid = jid;
 		this.version = version;
-		
-		sasl = new SASL();
 	}
 	
 	
@@ -71,7 +40,7 @@ class Stream extends jabber.core.StreamBase {
 			var s = d.substr( 0, sei ) + " />";
 			var sx = Xml.parse( s ).firstElement();
 			id = sx.get( "id" );
-			if( version == null ) {
+			if( !version ) {
 				status = StreamStatus.open;
 				onOpen( this );
 				return;
@@ -98,15 +67,6 @@ class Stream extends jabber.core.StreamBase {
 		status = StreamStatus.pending;
 		sendData( xmpp.XMPPStream.createOpenStream( xmpp.XMPPStream.XMLNS_CLIENT, jid.domain, version, lang ) );
 		connection.read( true ); // start reading input
-	}
-	
-	override function parseStreamFeatures( x : Xml ) {
-		var f = new haxe.xml.Fast( x );
-		if( f.hasNode.mechanisms && f.node.mechanisms.has.xmlns && f.node.mechanisms.att.xmlns == "urn:ietf:params:xml:ns:xmpp-sasl"  ) {
-			sasl.availableMechanisms = xmpp.SASL.parseMechanisms( f.node.mechanisms.x );
-		}
-		//..
-		return null;
 	}
 	
 }

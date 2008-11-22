@@ -1,8 +1,6 @@
 package jabber.util;
 
 
-/**
-*/
 class XMPPDebug {
 	
 	public static function redirectTraces() {
@@ -37,20 +35,15 @@ class XMPPDebug {
 			buf.add( inf.className+" "+inf.lineNumber );
 			buf.add( " => " );
 			buf.add( v );
-			
 		} else {
-			if( inf.customParams[0] ) {
-				c = 1;
-			} else {
-				c = 2;
-			}
+			if( inf.customParams[0] == "xmpp-i" ) c = 1;
+			else if( inf.customParams[0] == "xmpp-o" ) c = 2;
 			buf.add( v );
 		}
 		buf.add( "\n" );
-        //neko.Lib.print( buf.toString() );
 		printC( untyped buf.toString().__s, c );
     }
 	
-	#end
+	#end // neko
 	
 }
