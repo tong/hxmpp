@@ -145,8 +145,8 @@
 
 ### TestXMPPMUC
 
---next
--cp lib/core
--cp test
--neko bin/tests/test_xmpp_muc.n
--main TestXMPPMUC
+#--next
+#-cp lib/core
+#-cp test
+#-neko bin/tests/test_xmpp_muc.n
+#-main TestXMPPMUC
