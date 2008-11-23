@@ -21,7 +21,8 @@ class Stream extends jabber.core.StreamBase {
 	public dynamic function onAuthenticated( stream : Stream ) {}
 	
 	/** */
-	public var server(default,null) : String;
+	//public var server(default,null) : String;
+	public var host(default,null) : String;
 	/** Shared secret used to identify legacy components*/
 	public var password(default,null) : String;
 	/** */
@@ -29,11 +30,11 @@ class Stream extends jabber.core.StreamBase {
 	/** */
 	public var serviceListener(default,null) : ServiceDiscoveryListener;
 	
-	
-	public function new( server : String, password : String, cnx : jabber.StreamConnection ) {
+
+	public function new( host : String, password : String, cnx : jabber.StreamConnection ) {
 		
 		super( cnx );
-		this.server = server;
+		this.host = host;
 		this.password = password;
 		
 		authenticated = false;
@@ -41,7 +42,7 @@ class Stream extends jabber.core.StreamBase {
 	
 	
 	override function connectHandler() {
-		sendData( xmpp.XMPPStream.createOpenStream( xmpp.XMPPStream.XMLNS_COMPONENT, server ) );
+		sendData( xmpp.XMPPStream.createOpenStream( xmpp.XMPPStream.XMLNS_COMPONENT, host ) );
 		status = StreamStatus.pending;
 		connection.read( true );
 	}

@@ -36,19 +36,19 @@ class Field {
 	}
 	
 	public static function parse( x : Xml ) : Field  {
-		var field = new Field();
-		if( x.exists( "label" ) ) field.label = x.get( "label" );
-		if( x.exists( "type" ) ) field.type = Type.createEnum( FieldType, hack_enum_from.replace ( x.get( "type" ), "_" ) );
-		if( x.exists( "var" ) ) field.variable = x.get( "var" );
+		var f = new Field();
+		if( x.exists( "label" ) ) f.label = x.get( "label" );
+		if( x.exists( "type" ) ) f.type = Type.createEnum( FieldType, hack_enum_from.replace ( x.get( "type" ), "_" ) );
+		if( x.exists( "var" ) ) f.variable = x.get( "var" );
 		for( e in x.elements() ) {
 			switch( e.nodeName ) {
-				case "desc" : try { field.desc = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
-				case "required" : field.required = true;
-				case "option" : field.options.push( FieldOption.parse( e ) );
-				case "value" : try { field.values.push( e.firstChild().nodeValue ); } catch( e : Dynamic ) {}
+				case "desc" : try { f.desc = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
+				case "required" : f.required = true;
+				case "option" : f.options.push( FieldOption.parse( e ) );
+				case "value" : try { f.values.push( e.firstChild().nodeValue ); } catch( e : Dynamic ) {}
 			}
 		}
-		return field;
+		return f;
 	}
 	
 	/**

@@ -23,7 +23,7 @@ class LastActivity {
 	}
 	
 	
-	public static function parse( x : Xml ) : LastActivity {
+	public inline static function parse( x : Xml ) : LastActivity {
 		return new LastActivity( parseSeconds( x ) );
 	}
 	

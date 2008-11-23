@@ -3,18 +3,18 @@ package util;
 
 class StringUtil {
 	
-	public static var BASE64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	
 	/**
 		Creates a random string of given length.
 	*/
-	public static function random64( ?length : Int = 1 ) : String {
-		if( length < 1 ) throw "Out of bound";
-		var buf = new StringBuf();
-		for( i in 0...length ) {
-			buf.add( BASE64.charAt( Std.int( Math.random() * BASE64.length ) ) );
+	public static function random64( ?len : Int = 1 ) : String {
+		if( len < 1 ) throw "Out of bound";
+		var b = new StringBuf();
+		var len64 = Base64.CHARS.length;
+		for( i in 0...len ) {
+			b.add( Base64.CHARS.charAt( Std.int( Math.random() * len64 ) ) );
 		}
-		return buf.toString();
+		return b.toString();
 	}
 	
 	

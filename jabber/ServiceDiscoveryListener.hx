@@ -22,8 +22,8 @@ class ServiceDiscoveryListener {
 	var col_item : PacketCollector;
 	var info_result : IQ;
 	var info_result_ext : xmpp.disco.Info;
-	var item_result : IQ;
-	var item_result_ext : xmpp.disco.Item;
+//	var item_result : IQ;
+//	var item_result_ext : xmpp.disco.Item;
 	
 	
 	public function new( stream : StreamBase,  ?identity : xmpp.disco.Identity, listening : Bool = true ) {
@@ -36,12 +36,11 @@ class ServiceDiscoveryListener {
 		info_result_ext.identities = [ identity ];
 		info_result.ext = info_result_ext;
 		
-		item_result = new IQ( IQType.result );
-		item_result.ext = item_result;
-		//..
+//		item_result = new IQ( IQType.result );
+//		item_result.ext = item_result;
 		
 		col_info = new PacketCollector( [ cast new IQFilter( xmpp.disco.Info.XMLNS, null, IQType.get ) ], handleInfoQuery, true );
-		col_item = new PacketCollector( [ cast new IQFilter( xmpp.disco.Items.XMLNS, null, IQType.get ) ], handleItemQuery, true );
+//		col_item = new PacketCollector( [ cast new IQFilter( xmpp.disco.Items.XMLNS, null, IQType.get ) ], handleItemQuery, true );
 		
 		setListening( listening );
 	}
@@ -52,10 +51,10 @@ class ServiceDiscoveryListener {
 		listen = l;
 		if( l ) {
 			stream.collectors.add( col_info );
-			stream.collectors.add( col_item );
+//			stream.collectors.add( col_item );
 		} else {
 			stream.collectors.remove( col_info );
-			stream.collectors.remove( col_item );
+//			stream.collectors.remove( col_item );
 		}
 		return l;
 	}
@@ -71,10 +70,9 @@ class ServiceDiscoveryListener {
 		stream.sendIQ( info_result );
 	}
 	
+	/*
 	function handleItemQuery( iq : IQ ) {
-		trace("TODO handleItemQuery");
-		//..
-		stream.sendIQ( item_result );
 	}
+	*/
 	
 }

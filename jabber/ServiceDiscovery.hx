@@ -5,7 +5,6 @@ import jabber.core.PacketCollector;
 import jabber.event.IQResult;
 import xmpp.IQ;
 import xmpp.IQType;
-import xmpp.filter.IQFilter;
 
 
 /**
@@ -54,17 +53,10 @@ class ServiceDiscovery {
 		iq_item.to = jid;
 		stream.sendIQ( iq_item, handleItemRequest, false, new jabber.core.PacketTimeout( [timeoutHandler],2 ) );
 	}
-
-	/**
-	*/
-	public function publishItems( id : String, items : xmpp.disco.Items ) {
-		//TODO
-	}
 	
 	
 	function timeoutHandler( collector ) {
-		// TODO
-		//trace("timeoutHandlertimeoutHandlertimeoutHandlertimeoutHandler");
+		// TODO trace("timeoutHandlertimeoutHandlertimeoutHandlertimeoutHandler");
 		stream.collectors.remove( collector );
 	}
 	
@@ -91,10 +83,6 @@ class ServiceDiscovery {
 				onError( new jabber.event.XMPPErrorEvent<jabber.Stream>( stream, iq ) );
 			default: //#
 		}
-	}
-	
-	function handleItemPublish( iq : IQ ) {
-		//TODO
 	}
 	
 }

@@ -3,6 +3,10 @@
 #include <stdio.h>
 
 /**
+	0 = debug
+	1 = xmpp in
+	2 = xmpp out
+
 	30 grey
 	31 red
 	32 blue

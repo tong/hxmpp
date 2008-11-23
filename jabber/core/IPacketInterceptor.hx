@@ -9,6 +9,6 @@ interface IPacketInterceptor {
 	/**
 		Intercepts xmpp packet.
 	*/
-	function interceptPacket( packet : xmpp.Packet ) : xmpp.Packet;
+	function interceptPacket( p : xmpp.Packet ) : xmpp.Packet;
 	
 }

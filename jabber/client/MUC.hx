@@ -42,6 +42,7 @@ class MUCMessage {
 class MUC {
 	
 	public dynamic function onJoin( muc : MUC ) {}
+	public dynamic function onLeave( muc : MUC ) {}
 	public dynamic function onMessage( msg : MUCMessage ) {}
 	public dynamic function onPresence( occupant : jabber.muc.Occupant ) {}
 	public dynamic function onSubject( muc : MUC ) {}
@@ -126,11 +127,12 @@ class MUC {
 	/**
 		Sends unavailable presence to the room and returns the presence packet sent.
 	*/
-	public function leave( ?message : String ) : xmpp.Presence {
+	public function leave( ?message : String, ?forceEvent : Bool = false ) : xmpp.Presence {
 		if( !joined ) return null;
 		var p = new xmpp.Presence( xmpp.PresenceType.unavailable, null, message );
 		p.to = myJid;
 		presence.set( p );
+		if( forceEvent ) onLeave( this );
 		return p;
 	}
 	
@@ -207,7 +209,8 @@ class MUC {
 					case xmpp.PresenceType.unavailable : 
 						joined = false;
 						occupants = new Array();
-						onJoin( this );
+						onLeave( this ); //onJoin( this );
+						trace("<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 						
 					case null :
 						if( !joined ) {

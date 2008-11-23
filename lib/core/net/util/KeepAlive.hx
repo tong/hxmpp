@@ -2,10 +2,17 @@ package net.util;
 
 #if neko
 import neko.net.Socket;
+
 #elseif php
 import php.net.Socket;
+
 #elseif ( flash9 || flash10 )
 import flash.net.Socket;
+
+// TODO
+#elseif JABBER_SOCKETBRIDGE
+import jabber.SocketConnection;
+
 #end
 
 
@@ -19,7 +26,7 @@ class KeepAlive {
 	
 	public static inline var standardMessage = " ";
 	public static var defaultMessage = standardMessage;
-	public static var defaultTime = 30;
+	public static var defaultTime = 60;
 	
 	/**
 		Ping interval in seconds.

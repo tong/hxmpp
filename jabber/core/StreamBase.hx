@@ -27,6 +27,7 @@ class StreamBase implements jabber.Stream {
 	public var collectors : List<IPacketCollector>;
 	public var interceptors : List<IPacketInterceptor>;
 	public var server(default,null) : Server;
+	public var features : Array<String>;
 	//public var authenticated : Bool;
 	
 	var packetsSent : Int; // num xmpp packets sent
@@ -41,6 +42,8 @@ class StreamBase implements jabber.Stream {
 		collectors = new List();
 		interceptors = new List();
 		server = { features : new Hash() };
+		features = new Array();
+		
 		packetsSent = 0;
 	}
 	
@@ -156,9 +159,9 @@ class StreamBase implements jabber.Stream {
 		#if JABBER_DEBUG
 		try {
 			var x = Xml.parse( d );
-			for( e in x.elements() ) trace( e, "xmpp-i" );
+			for( e in x.elements() ) trace( "<<< "+e, "xmpp-i" );
 		} catch( e : Dynamic ) {
-			trace( d, "xmpp-i" );
+			trace( "<<< "+d, "xmpp-i" );
 		}
 		#end
 		

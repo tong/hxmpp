@@ -1,6 +1,6 @@
 
 ### JS client lib
--cp ../core
+-cp ../lib
 -js bin/hxmpp.js
 jabber.Lib
 -D JABBER_LIBCLIENT

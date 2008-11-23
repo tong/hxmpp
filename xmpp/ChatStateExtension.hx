@@ -31,13 +31,24 @@ class ChatStateExtension {
 	*/
 	public static function get( m : xmpp.Message ) : xmpp.ChatState {
 		for( e in m.properties ) {
-			var n = e.nodeName;
-			switch( n ) {
+			var s = e.nodeName;
+			switch( s ) {
 				case "active","composing","paused","inactive","gone" :
-					return Type.createEnum( xmpp.ChatState, n );
+					return Type.createEnum( xmpp.ChatState, s );
 			}
 		}
 		return null;
 	}
 	
+	/**
+	*/
+	public static function getString( m : xmpp.Message ) : String {
+		for( e in m.properties ) {
+			var s = e.nodeName;
+			switch( s ) {
+				case "active","composing","paused","inactive","gone" : return s;
+			}
+		}
+		return null;
+	}
 }

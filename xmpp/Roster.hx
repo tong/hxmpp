@@ -11,7 +11,9 @@ class Roster extends List<xmpp.roster.Item> {
 	
 	public function new( ?items : Iterable<xmpp.roster.Item> ) {
 		super();
-		if( items != null ) for( i in items ) add( i );
+		if( items != null ) {
+			for( i in items ) add( i );
+		}
 	}
 	
 	
@@ -28,8 +30,10 @@ class Roster extends List<xmpp.roster.Item> {
 	
 	public static function parse( x : Xml ) : xmpp.Roster {
 		var r = new xmpp.Roster();
-		for( item in x.elements() ) {
-			if( item.nodeName == "item" ) r.add( xmpp.roster.Item.parse( item ) );
+		for( i in x.elements() ) {
+			if( i.nodeName == "item" ) {
+				r.add( xmpp.roster.Item.parse( i ) );
+			}
 		}
 		return r;
 	}

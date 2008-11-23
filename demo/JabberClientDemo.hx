@@ -29,7 +29,7 @@ class JabberClientDemo {
 	static function init() {
 		//var account = new jabber.util.ResourceAccount();
 		var cnx = new SocketConnection( "127.0.0.1", 5222 );
-		stream = new Stream( new jabber.JID( "hxmpp@disktree" ), cnx, "1.0" );
+		stream = new Stream( new jabber.JID( "hxmpp@disktree" ), cnx );
 		stream.onError = function(s,err) { trace( "Stream ERROR: " + err ); };
 		stream.onClose = function(s) { trace( "Stream to: "+s.jid.domain+" closed." ); } ;
 		stream.onOpen = function(s) {
@@ -63,8 +63,8 @@ class JabberClientDemo {
 		roster.load();
 		roster.onLoad = function( r : Roster ) {
 			trace( "ROSTER LOADED:" );
-			for( entry in r.entries ) {
-				trace( "\t"+entry.jid );
+			for( item in r.items ) {
+				trace( "\t"+item.jid );
 			}
 		};
 		
@@ -78,9 +78,9 @@ class JabberClientDemo {
 		service.onInfo = function( e ) {
 			trace( "SERVICE INFO RESULT: "+e.from );
 			trace( "\tIDENTITIES: ");
-			for( identity in e.data.identities ) trace( "\t\t"+identity );
+			for( identity in e.packet.identities ) trace( "\t\t"+identity );
 			trace( "\tFEATURES: ");
-			for( feature in e.data.features ) trace( "\t\t"+feature );
+			for( feature in e.packet.features ) trace( "\t\t"+feature );
 			
 		};
 		service.discoverItems( "disktree" );

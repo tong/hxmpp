@@ -1,7 +1,7 @@
 
 DISKTREE.NET HAXE JABBER/XMPP - README
 ======================================
-hxmpp is a haXe[03] library for creation of jabber clients and components, targeting flash9+, neko, js, php.
+hxmpp is a haXe[03] library for creation of jabber clients and components.
 The library consists of two main parts:
 * xmpp: creation and manipulation of xmpp packets.
 * jabber: creation and handling of xmpp streams between jabber entities.
@@ -27,7 +27,6 @@ XEPS SUPPORTED
 ##* 0202 EntityTime
 * 0203 DelayedDelivery
 
-Some features are not supported on all platforms.
 
 
 BUILD+INSTALLATION
