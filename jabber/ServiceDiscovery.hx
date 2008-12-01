@@ -17,9 +17,9 @@ import xmpp.IQType;
 */
 class ServiceDiscovery {
 	
-	public dynamic function onInfo( e : IQResult<Stream,xmpp.disco.Info> ) {}
-	public dynamic function onItems( i : IQResult<Stream,xmpp.disco.Items> ) {}
-	public dynamic function onError( e : jabber.event.XMPPErrorEvent<Stream> ) {}
+	public dynamic function onInfo( e : IQResult<Stream,xmpp.disco.Info> ) : Void;
+	public dynamic function onItems( i : IQResult<Stream,xmpp.disco.Items> ) : Void;
+	public dynamic function onError( e : jabber.event.XMPPErrorEvent<Stream> ) : Void;
 	
 	public var stream(default,null) : jabber.Stream;
 	

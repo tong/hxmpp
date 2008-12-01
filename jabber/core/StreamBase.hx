@@ -16,9 +16,9 @@ private typedef Server = {
 */
 class StreamBase implements jabber.Stream {
 	
-	public dynamic function onOpen<T>( s : T ) {}
-	public dynamic function onClose<T>( s : T ) {}
-	public dynamic function onError<T>( s : T, m : Dynamic ) {}
+	public dynamic function onOpen<T>( s : T ) : Void;
+	public dynamic function onClose<T>( s : T ) : Void;
+	public dynamic function onError<T>( s : T, m : Dynamic ) : Void;
 	
 	public var status : StreamStatus;
 	public var connection(default,setConnection) : StreamConnection;
@@ -144,11 +144,6 @@ class StreamBase implements jabber.Stream {
 		}
 		return { iq : sent, collector : c };
 	}
-	
-	/*
-	public function sendMessage( to : String ) {
-	}
-	*/
 	
 	
 	

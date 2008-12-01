@@ -42,10 +42,10 @@ Run the hxml files in the main directory to build included demos, tests and util
 # neko
 Copy the ndlls to your neko installation.
 * sha1.ndll is required for SHA1 encoding.
-* hxmpp_debug.ndll for colored bash output (linux only).
+* hxmpp_debug.ndll for colored xmpp debug bash output (linux only).
 
 # php
-Untested!
+...
 
 # flash9+
 * You have to allow the flash player to connect to the web if running local ( [06] ).
@@ -62,7 +62,7 @@ Since ther is no BOSH implementation so far connections could be made with an (i
 ..
 
 # actionscript3
-Untested!
+...
 
 
 USAGE

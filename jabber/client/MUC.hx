@@ -41,11 +41,11 @@ class MUCMessage {
 */
 class MUC {
 	
-	public dynamic function onJoin( muc : MUC ) {}
-	public dynamic function onLeave( muc : MUC ) {}
-	public dynamic function onMessage( msg : MUCMessage ) {}
-	public dynamic function onPresence( occupant : jabber.muc.Occupant ) {}
-	public dynamic function onSubject( muc : MUC ) {}
+	public dynamic function onJoin( muc : MUC ) : Void;
+	public dynamic function onLeave( muc : MUC ) : Void;
+	public dynamic function onMessage( msg : MUCMessage ) : Void;
+	public dynamic function onPresence( occupant : jabber.muc.Occupant ) : Void;
+	public dynamic function onSubject( muc : MUC ) : Void;
 	
 	public var stream(default,null) : Stream;
 	public var jid(default,null) : String;

@@ -8,8 +8,8 @@ import xmpp.IQ;
 */
 class NonSASLAuthentication {
 	
-	public dynamic function onSuccess( s : Stream ) {}
-	public dynamic function onFailed( s : jabber.event.XMPPErrorEvent<Stream> ) {}
+	public dynamic function onSuccess( s : Stream ) : Void;
+	public dynamic function onFailed( s : jabber.event.XMPPErrorEvent<Stream> ) : Void;
 	
 	public var stream(default,null) : Stream;
 	public var active(default,null) : Bool;

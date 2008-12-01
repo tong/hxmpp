@@ -87,30 +87,30 @@
 
 ### TestXMPPStream
 
---next
--cp lib/core/
--cp test
--neko bin/tests/test_xmpp_stream.n
--main TestXMPPStream
+#--next
+#-cp lib/core/
+#-cp test
+#-neko bin/tests/test_xmpp_stream.n
+#-main TestXMPPStream
 
---next
--cp lib/core/
--cp test
--swf9 bin/tests/test_xmpp_stream.swf
--main TestXMPPStream
+#--next
+#-cp lib/core/
+#-cp test
+#-swf9 bin/tests/test_xmpp_stream.swf
+#-main TestXMPPStream
 
---next
--cp lib/core/
--cp test
--js bin/tests/test_xmpp_stream.js
--main TestXMPPStream
+#--next
+#-cp lib/core/
+#-cp test
+#-js bin/tests/test_xmpp_stream.js
+#-main TestXMPPStream
 
---next
--cp lib/core/
--cp test
--php bin/tests
---php-front test_xmpp_stream.php
--main TestXMPPStream
+#--next
+#-cp lib/core/
+#-cp test
+#-php bin/tests
+#--php-front test_xmpp_stream.php
+#-main TestXMPPStream
 
 
 

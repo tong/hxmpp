@@ -25,13 +25,13 @@ class Roster {
 
 	public static var defaultSubscriptionMode = SubscriptionMode.acceptAll;
 	
-	public dynamic function onLoad( r : Roster ) {}
-	public dynamic function onAdd( r : Roster, e : Array<Item> ) {}
-	public dynamic function onRemove( r : Roster, e : Array<Item> ) {}
-	public dynamic function onUpdate( r : Roster, e : Array<Item> ) {}
-	public dynamic function onPresence( r : Roster, i : Item, p: xmpp.Presence ) {}
-	public dynamic function onResourcePresence( r : Roster, resource : String, p: xmpp.Presence  ) {}
-	public dynamic function onSubscriptionRequest( r : Roster, i : Item ) {}
+	public dynamic function onLoad( r : Roster ) : Void;
+	public dynamic function onAdd( r : Roster, e : Array<Item> ) : Void;
+	public dynamic function onRemove( r : Roster, e : Array<Item> ) : Void;
+	public dynamic function onUpdate( r : Roster, e : Array<Item> ) : Void;
+	public dynamic function onPresence( r : Roster, i : Item, p: xmpp.Presence ) : Void;
+	public dynamic function onResourcePresence( r : Roster, resource : String, p: xmpp.Presence  ) : Void;
+	public dynamic function onSubscriptionRequest( r : Roster, i : Item ) : Void;
 	
 	public var stream(default,null) : Stream;
 	public var available(default,null) : Bool;

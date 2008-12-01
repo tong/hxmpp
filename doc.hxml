@@ -9,5 +9,5 @@ jabber.Lib
 -D JABBER_SOCKETBRIDGE
 -cmd rm lib.js
 -cmd cd doc/api/
--cmd haxedoc ../api.xml -f jabber -f xmpp;
+-cmd haxedoc ../api.xml -f jabber -f xmpp -f net -f crypt -f util -f error
 

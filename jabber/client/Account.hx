@@ -11,10 +11,10 @@ import jabber.event.XMPPErrorEvent;
 */
 class Account {
 	
-	public dynamic function onRegistered( e : IQResult<Stream,xmpp.Register> ) {}
-	public dynamic function onRemoved( e : IQResult<Stream,xmpp.Register> ) {}
-	public dynamic function onPasswordChange( e : IQResult<Stream,xmpp.Register> ) {}
-	public dynamic function onError( e : XMPPErrorEvent<Stream> ) {}
+	public dynamic function onRegistered( e : IQResult<Stream,xmpp.Register> ) : Void;
+	public dynamic function onRemoved( e : IQResult<Stream,xmpp.Register> ) : Void;
+	public dynamic function onPasswordChange( e : IQResult<Stream,xmpp.Register> ) : Void;
+	public dynamic function onError( e : XMPPErrorEvent<Stream> ) : Void;
 	
 	public var stream(default,null) : Stream;
 	

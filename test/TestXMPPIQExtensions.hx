@@ -20,7 +20,9 @@ class TestXMPPIQExtensions {
 		r.add( new TestDelayedDeliveryExtension() );
 		r.add( new TestChatStateExtension() );
 		r.add( new TestLastActivityExtension() );
+		//TODO
 		//r.add( new TestEntityTimeExtension() );
+		r.add( new TestFileExtension() );
 		r.run();
 	}
 	
@@ -381,6 +383,30 @@ class TestLastActivityExtension extends haxe.unit.TestCase {
 		assertEquals( 903, activity.seconds );
 		assertEquals( 903, secs );
 	}
+}
+
+
+
+/**
+	Testunit for xmpp.File
+*/
+class TestFileExtension extends haxe.unit.TestCase {
+	
+	public function testFilePacket() {
+		//TODO
+		
+		var ext = new xmpp.File();
+		
+		var x = ext.toXml();
+		
+		assertEquals( xmpp.File.XMLNS_SI, x.get( "xmlns" ) );
+		assertEquals( xmpp.File.XMLNS, x.get( "profile" ) );
+//		assertEquals( xmpp.File.XMLNS, x.get( "mime" ) );
+		
+		
+		assertTrue( true );
+	}
+	
 }
 
 

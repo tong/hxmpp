@@ -18,9 +18,9 @@ import xmpp.filter.PacketOrFilter;
 */
 class SASLAuthentication {
 
-	public dynamic function onFailed( s : SASLAuthentication ) {}
-	public dynamic function onNegotiated( s : SASLAuthentication ) {}
-	public dynamic function onSuccess( s : SASLAuthentication ) {} //-> stream, jid, resource
+	public dynamic function onFailed( s : SASLAuthentication )  : Void;
+	public dynamic function onNegotiated( s : SASLAuthentication ) : Void;
+	public dynamic function onSuccess( s : SASLAuthentication ) : Void; //-> stream, jid, resource
 	
 	public var stream(default,null) : Stream;
 	public var handshake(default,null) : net.sasl.Handshake;

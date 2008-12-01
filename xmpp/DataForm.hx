@@ -47,10 +47,8 @@ class DataForm {
 	
 	
 	public static function parse( x : Xml ) : DataForm {
-		
 		var f = new haxe.xml.Fast( x );
 		if( !f.has.xmlns || !f.has.type ) return null;
-		
 		var form = new DataForm();
 		form.type = Type.createEnum( xmpp.dataform.FormType, f.att.type );
 		if( f.hasNode.title ) form.title = f.node.title.innerData;

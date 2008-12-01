@@ -18,7 +18,7 @@ class Stream extends jabber.core.StreamBase {
 	public static inline var STANDARD_PORT = 5275;
 	public static var defaultPort = STANDARD_PORT;
 	
-	public dynamic function onAuthenticated( stream : Stream ) {}
+	public dynamic function onAuthenticated( stream : Stream ) : Void;
 	
 	/** */
 	//public var server(default,null) : String;

@@ -12,7 +12,7 @@ import xmpp.filter.PacketFromFilter;
 */
 class Chat {
 	
-	public dynamic function onMessage( c : Chat ) {}
+	public dynamic function onMessage( c : Chat ) : Void;
 	
 	public var stream(default,null) : StreamBase;
 	public var peer(default,null) : String;
@@ -26,13 +26,14 @@ class Chat {
 	public function new( stream : StreamBase, myJid : String, peer : String, ?threadID : String ) {
 		
 		m = new xmpp.Message( xmpp.MessageType.chat, null, null, null, threadID, myJid );
-
+		m.to = peer;
+		
 		this.stream = stream;
 		this.peer = peer;
 		this.threadID = threadID;
 		
 		var mf : PacketFilter = new xmpp.filter.MessageFilter( xmpp.MessageType.chat );
-		var ff : PacketFilter = new xmpp.filter.PacketFromFilter( peer );
+		var ff : PacketFilter = new xmpp.filter.PacketFromContainsFilter( peer );
 		c = new PacketCollector( [ mf, ff ], handleMessage, true );
 		stream.collectors.add( c );
 	}

@@ -9,9 +9,9 @@ import xmpp.IQ;
 */
 class VCardTemp {
 	
-	public dynamic function onLoad( r : IQResult<Stream,xmpp.VCard> ) {}
-	public dynamic function onUpdated( r : IQResult<Stream,xmpp.VCard> ) {}
-	public dynamic function onError( e : jabber.event.XMPPErrorEvent<Stream> ) {}
+	public dynamic function onLoad( r : IQResult<Stream,xmpp.VCard> ) : Void;
+	public dynamic function onUpdated( r : IQResult<Stream,xmpp.VCard> ) : Void;
+	public dynamic function onError( e : jabber.event.XMPPErrorEvent<Stream> ) : Void;
 	
 	public var stream(default,null) : Stream;
 	
