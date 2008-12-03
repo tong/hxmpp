@@ -25,11 +25,13 @@ class StreamConnectionBase {
 	public function connect() {}
 	public function disconnect() : Bool { return throw new error.AbstractError();  }
 	public function read( ?yes : Bool = true ) : Bool { return false; }
-	public function send( data : String ) : Bool { return false;}
+	public function send( data : String ) : Bool { return false; }
 	
 	
 	function dataHandler( data : String ) {
-		for( f in filters ) data = f.filterData( data );
+		for( f in filters ) {
+			data = f.filterData( data );
+		}
 		onData( data );
 	}
 	

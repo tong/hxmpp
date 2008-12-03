@@ -69,7 +69,7 @@ class Chat {
 			trace( "Chats can only handle chat-type messages" );
 			return;
 		}
-		#end;
+		#end
 		lastMessage = m;
 		onMessage( this );
 	}

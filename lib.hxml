@@ -9,6 +9,16 @@ jabber.Lib
 #--no-traces
 
 
+### SWF9 client lib
+--next
+-cp lib/core/
+-swf9 bin/hxmpp.swf
+jabber.Lib
+-D JABBER_LIBCLIENT
+#-D JABBER_DEBUG
+#--no-traces
+
+
 ### AS3 lib
 #--next
 #-cp lib/core/

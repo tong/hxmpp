@@ -28,9 +28,10 @@ class StreamBase implements jabber.Stream {
 	public var interceptors : List<IPacketInterceptor>;
 	public var server(default,null) : Server;
 	public var features : Array<String>;
+	public var version : Bool;
 	//public var authenticated : Bool;
 	
-	var packetsSent : Int; // num xmpp packets sent
+	var numPacketsSent : Int; // num xmpp packets sent
 	var cache : StringBuf;
 	
 	
@@ -43,8 +44,9 @@ class StreamBase implements jabber.Stream {
 		interceptors = new List();
 		server = { features : new Hash() };
 		features = new Array();
+		version = true;
 		
-		packetsSent = 0;
+		numPacketsSent = 0;
 	}
 	
 	
@@ -74,7 +76,7 @@ class StreamBase implements jabber.Stream {
 	*/
 	public function nextID() : String {
 		return util.StringUtil.random64( 5 );
-		//TODO return haxe.BaseCode.encode( util.StringUtil.random64( 5 )+packetsSent, util.StringUtil.BASE64 );
+		//TODO return haxe.BaseCode.encode( util.StringUtil.random64( 5 )+numPacketsSent, util.StringUtil.BASE64 );
 	}
 	
 	/**
@@ -104,7 +106,8 @@ class StreamBase implements jabber.Stream {
 		Intercepts, sends and returns the given xmpp packet.
 	*/
 	public function sendPacket<T>( p : xmpp.Packet, ?intercept : Bool = true ) : T {
-		if( !connection.connected || status != StreamStatus.open ) return null;
+		trace(">>>>>>>>> "+status );
+		if( !connection.connected /*|| status != StreamStatus.open*/ ) return null;
 		if( intercept ) for( i in interceptors ) i.interceptPacket( p );
 		if( sendData( p.toString() ) ) return cast p;
 		return null;
@@ -116,7 +119,7 @@ class StreamBase implements jabber.Stream {
 	public function sendData( data : String ) : Bool {
 		if( !connection.connected ) return false;
 		if( !connection.send( data ) ) return false;
-		packetsSent++;
+		numPacketsSent++;
 		#if JABBER_DEBUG
 		trace( data, "xmpp-o" );
 		#end
@@ -235,7 +238,9 @@ class StreamBase implements jabber.Stream {
 	}
 	
 	function parseStreamFeatures( x : Xml ) {
-		for( e in x.elements() ) server.features.set( e.nodeName, e );
+		for( e in x.elements() ) {
+			server.features.set( e.nodeName, e );
+		}
 	}
 	
 	function connectHandler() {}

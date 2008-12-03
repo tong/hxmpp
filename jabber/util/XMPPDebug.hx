@@ -1,3 +1,6 @@
+
+#if JABBER_DEBUG
+
 package jabber.util;
 
 
@@ -47,3 +50,5 @@ class XMPPDebug {
 	#end // neko
 	
 }
+
+#end // JABBER_DEBUG

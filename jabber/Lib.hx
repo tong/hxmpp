@@ -14,11 +14,13 @@ import jabber.client.Roster;
 import jabber.client.SASLAuthentication;
 import jabber.client.Stream;
 import jabber.client.VCardTemp;
-import jabber.util.XMPPDebug;
-import jabber.util.ResourceAccount;
 import xmpp.DataForm;
 import xmpp.DelayedDelivery;
-#end
+#if JABBER_DEBUG
+import jabber.util.XMPPDebug;
+import jabber.util.ResourceAccount;
+#end // JABBER_DEBUG
+#end // JABBER_LIBCLIENT
 
 #if JABBER_SOCKETBRIDGE
 import jabber.SocketConnection;
@@ -26,32 +28,23 @@ import jabber.SocketConnection;
 
 
 /**
-	[-]×|V||º|º<br/>
-	
-	If you want use hxmpp from plain javascript you have to compile this class including
-	all required class imports.
+	Modify the imports of this class file to (pre)compile a hxmpp library.
 */
 class Lib {
 	
 	#if JABBER_DEBUG
-	
-	/**
-		Current version: 0.2
-	*/
-	public static var VERSION = "0.2";
-	
+	/** Current version: 0.2.1 */
+	public static var VERSION = "0.2.1";
 	#end // JABBER_DEBUG
 	
 	
 	#if JABBER_SOCKETBRIDGE
-	
 	static function initSocketBridge( ?id : String = "f9bridge" ) {
 		jabber.SocketBridgeConnection.init( id, initialized );
 	}
 	static function initialized() {
 		#if JABBER_DEBUG trace( "Socket bridge hopefuly initialized" ); #end
 	}
-	
 	#end // JABBER_SOCKETBRIDGE
 	
 }

@@ -15,8 +15,7 @@ class Stream extends jabber.core.StreamBase {
 	public static var defaultPort = STANDARD_PORT;
 	
 	public var jid(default,setJID) : JID;
-	public var version : Bool;
-	
+
 	
 	public function new( jid : JID, cnx : StreamConnection,
 						 version : Bool = true ) {
@@ -35,8 +34,7 @@ class Stream extends jabber.core.StreamBase {
 	
 	override function processStreamInit( d : String ) {
 		var sei = d.indexOf( ">" );
-		if( id == null ) {
-			// parse open stream
+		if( id == null ) { // parse open stream
 			var s = d.substr( 0, sei ) + " />";
 			var sx = Xml.parse( s ).firstElement();
 			id = sx.get( "id" );
@@ -48,9 +46,9 @@ class Stream extends jabber.core.StreamBase {
 		}
 		if( id == null ) {
 			//TODO
-			throw new error.Exception( "Invalid xmpp stream, no id given" );
+			throw new error.Exception( "Invalid xmpp stream, no id" );
 		}
-		// check for stream features
+		// check stream features
 		var sfi =  d.indexOf( "<stream:features>" );
 		var sf = d.substr( d.indexOf( "<stream:features>" ) );
 		if( sfi != -1 ) {

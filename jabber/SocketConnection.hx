@@ -119,7 +119,9 @@ class SocketConnection extends jabber.core.StreamConnectionBase {
 	public override function send( data : String ) : Bool {
 		if( data == null || data == "" ) return false;
 		if( !connected ) return false;
-		for( i in interceptors ) data = i.interceptData( data );
+		for( i in interceptors ) {
+			data = i.interceptData( data );
+		}
 		#if JABBER_SOCKETBRIDGE
 		socket.send( data );
 		#elseif ( flash9 || flash10 )

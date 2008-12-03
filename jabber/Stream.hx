@@ -15,7 +15,12 @@ interface Stream {
 	dynamic function onError<T>( s : T, m : Dynamic ) : Void {}
 	
 	/**
-		Time value set by the application.
+		Indicates if the version attribute ("1.0") should be included in the opening xmpp packet.
+	*/
+	var version : Bool;
+	
+	/**
+		Time value set by the application for syncing.
 	*/
 	//var time : Float;
 	
