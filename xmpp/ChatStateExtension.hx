@@ -9,17 +9,25 @@ class ChatStateExtension {
 	public static var XMLNS = "http://jabber.org/protocol/chatstates";
 	
 	/**
-		Adds the given state to the properties of this package.
+		Adds (or changes if already has) the chat state property of the givent message packet.
 	*/
-	public static inline function add( m : xmpp.Message, state : ChatState ) : xmpp.Message {
+	public static function set( m : xmpp.Message, state : ChatState ) : xmpp.Message {
+		for( p in m.properties ) {
+			switch( p.nodeName ) {
+				case "active","composing","paused","inactive","gone" :
+					m.properties.remove( p );
+					m.properties.push( createXml( state ) );
+					return m;
+			}
+		}
 		m.properties.push( createXml( state ) );
 		return m;
 	}
 	
 	/**
-		Creates a chatstate extension xml.
+		Creates a chat state extension xml.
 	*/
-	public static function createXml( state : ChatState ) : Xml {
+	public static inline function createXml( state : ChatState ) : Xml {
 		var x = Xml.createElement( Type.enumConstructor( state ) );
 		x.set( "xmlns", XMLNS );
 		return x;
@@ -51,4 +59,5 @@ class ChatStateExtension {
 		}
 		return null;
 	}
+	
 }

@@ -106,7 +106,6 @@ class StreamBase implements jabber.Stream {
 		Intercepts, sends and returns the given xmpp packet.
 	*/
 	public function sendPacket<T>( p : xmpp.Packet, ?intercept : Bool = true ) : T {
-		trace(">>>>>>>>> "+status );
 		if( !connection.connected /*|| status != StreamStatus.open*/ ) return null;
 		if( intercept ) for( i in interceptors ) i.interceptPacket( p );
 		if( sendData( p.toString() ) ) return cast p;

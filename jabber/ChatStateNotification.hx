@@ -40,9 +40,8 @@ class ChatStateNotification implements jabber.core.IPacketInterceptor {
 	
 	function setChat( c : Chat ) : Chat {
 		if( c == chat ) return c;
-		Reflect.setField( this, "chat", c );
-		m.to = f_to.value = chat.peer;
-		return chat;
+		m.to = c.peer;
+		return chat = c;
 	}
 	
 	
@@ -52,26 +51,18 @@ class ChatStateNotification implements jabber.core.IPacketInterceptor {
 			return p;
 		}
 		if( state == null || !f_message.accept( p ) || !f_to.accept( p ) ) return p;
-		xmpp.ChatStateExtension.add( untyped p, state );
+		xmpp.ChatStateExtension.set( untyped p, state );
 		return p;
 	}
 	
 	/**
-		Force to send the current chat state in a empty message.
+		Force to send the current chat state in a standalone notification message.
 	*/
 	public function send( state : xmpp.ChatState ) : xmpp.Message {
 		if( state == null ) throw new error.Exception( "Cannot set null chat state" );
 		if( chat == null ) throw new error.Exception( "No chat given, cannot set chat state" );
-		this.state = state;
-		xmpp.ChatStateExtension.add( m, state );
-		chat.stream.sendPacket( m, false );
-		return m;
+		xmpp.ChatStateExtension.set( m, state );
+		return chat.stream.sendPacket( m , false );
 	}
-	
-/*	
-	public static function add( m : xmpp.Message, state : xmpp.ChatState ) {
-		xmpp.ChatStatePacket.add( m, state );
-	}
-*/
 
 }

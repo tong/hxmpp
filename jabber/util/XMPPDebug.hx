@@ -15,8 +15,11 @@ class XMPPDebug {
 				haxe.Log.trace = myTrace;
 			}
 		}
+		#elseif php
+		if( !php.Lib.isCli() ) haxe.Firebug.redirectTraces();
+		else haxe.Log.trace = myTrace;
 		#else
-		haxe.Firebug.redirectTraces();
+		if( haxe.Firebug.detect() ) haxe.Firebug.redirectTraces();
 		#end
 	}
 	
@@ -46,6 +49,14 @@ class XMPPDebug {
 		buf.add( "\n" );
 		printC( untyped buf.toString().__s, c );
     }
+	
+	#elseif php
+	
+	static function myTrace( v : Dynamic, ?inf : haxe.PosInfos ) {
+		 //echo -e '\E[30;41mblack on red'
+		 php.Lib.print( inf.lineNumber+"\t"+v+"\n" );
+	}
+	
 	
 	#end // neko
 	

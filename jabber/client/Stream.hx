@@ -33,6 +33,9 @@ class Stream extends jabber.core.StreamBase {
 	
 	
 	override function processStreamInit( d : String ) {
+		
+		trace("processStreamInit\n");
+		
 		var sei = d.indexOf( ">" );
 		if( id == null ) { // parse open stream
 			var s = d.substr( 0, sei ) + " />";
@@ -62,6 +65,9 @@ class Stream extends jabber.core.StreamBase {
 	}
 	
 	override function connectHandler() {
+		
+		trace("connectHandler\n");
+		
 		status = StreamStatus.pending;
 		sendData( xmpp.XMPPStream.createOpenStream( xmpp.XMPPStream.XMLNS_CLIENT, jid.domain, version, lang ) );
 		connection.read( true ); // start reading input
