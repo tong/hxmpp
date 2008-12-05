@@ -67,6 +67,7 @@ class SocketConnection extends jabber.core.StreamConnectionBase {
 		#elseif JABBER_SOCKETBRIDGE
 		socket.onConnect = sockConnectHandler;
 		socket.onDisconnect = sockDisconnectHandler;
+		socket.onError = sockErrorHandler;
 		
 		#end
 	}
@@ -102,9 +103,6 @@ class SocketConnection extends jabber.core.StreamConnectionBase {
 			
 			#elseif ( neko || php )
 			reading = true;
-			//c = { buf : haxe.io.Bytes.alloc( bufSize ), bufpos : 0 };
-//			buf = haxe.io.Bytes.alloc( BUF_SIZE_DEFAULT );
-//			bufpos = 0;
 			data = new StringBuf();
 			while( connected && reading ) {
 				readData();
@@ -228,9 +226,9 @@ class SocketConnection extends jabber.core.StreamConnectionBase {
 		onDisconnect();
 	}
 	
-	function sockErrorHandler() {
+	function sockErrorHandler( m : String ) {
 		connected = false;
-		onError( "Socket error" );
+		onError( m );
 	}
 	
 	function sockDataHandler( data : String ) {
@@ -252,9 +250,10 @@ class Socket {
 	
 	static var id_inc = 0;
 	
-	public dynamic function onConnect() : Void {}
-	public dynamic function onDisconnect() : Void {}
-	public dynamic function onData( ata : String ) : Void {}
+	public dynamic function onConnect() : Void;
+	public dynamic function onDisconnect() : Void;
+	public dynamic function onData( d : String ) : Void;
+	public dynamic function onError( e : String ) : Void;
 	
 	public var id(default,null) : Int;
 
@@ -310,6 +309,11 @@ class SocketBridgeConnection {
 	static function handleDisonnect( id : Int ) {
 		var s = sockets.get( id );
 		s.onDisconnect();
+	}
+	
+	static function handleError( id : Int, e : String ) {
+		var s = sockets.get( id );
+		s.onError( e );
 	}
 	
 	static function handleData( id : Int, d : String ) {

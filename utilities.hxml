@@ -5,3 +5,4 @@
 -swf-version 9
 -swf bin/f9_socketbridge.swf
 -main jabber.tool.SocketBridge
+#--no-traces

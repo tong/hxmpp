@@ -70,8 +70,8 @@ class SocketBridge {
 		var s = new Socket( id );
 		s.addEventListener( Event.CONNECT, sockConnectHandler );
 		s.addEventListener( Event.CLOSE, sockDisconnectHandler );
-		s.addEventListener( IOErrorEvent.IO_ERROR, sockDisconnectHandler );
-		s.addEventListener( SecurityErrorEvent.SECURITY_ERROR, sockDisconnectHandler );
+		s.addEventListener( IOErrorEvent.IO_ERROR, sockErrorHandler );
+		s.addEventListener( SecurityErrorEvent.SECURITY_ERROR, sockErrorHandler );
 		s.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
 		sockets.set( id, s );
 		return id;
@@ -105,6 +105,10 @@ class SocketBridge {
 
 	function sockDisconnectHandler( e : Event ) {
 		ExternalInterface.call( ctx+".handleDisconnect", e.target.id );
+	}
+	
+	function sockErrorHandler( e : Event ) {
+		ExternalInterface.call( ctx+".handleError", e.target.id, e.type );
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {

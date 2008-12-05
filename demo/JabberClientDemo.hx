@@ -30,7 +30,7 @@ class JabberClientDemo {
 		//var account = new jabber.util.ResourceAccount();
 		var cnx = new SocketConnection( "127.0.0.1", 5222 );
 		stream = new Stream( new jabber.JID( "hxmpp@disktree" ), cnx );
-		stream.onError = function(s,err) { trace( "Stream ERROR: " + err ); };
+		stream.onError = function(s,err) { trace( "Stream error: " + err ); };
 		stream.onClose = function(s) { trace( "Stream to: "+s.jid.domain+" closed." ); } ;
 		stream.onOpen = function(s) {
 			trace( "Jabber stream to "+stream.jid.domain+" opened" );
@@ -41,7 +41,7 @@ class JabberClientDemo {
 			};
 			auth.authenticate( "test", "norc" );
 		};
-		trace( "Initializing stream..." );
+		trace( "Initializing stream...\n" );
 		try {
 			stream.open();
 		} catch( e : jabber.error.SocketConnectionError ) {
@@ -92,12 +92,9 @@ class JabberClientDemo {
 		jabber.util.XMPPDebug.redirectTraces();
 		
 		#if JABBER_SOCKETBRIDGE
-		trace( "Using socket bridge to connect" );
 		jabber.SocketBridgeConnection.init( "f9bridge", init );
-		
 		#else
 		init();
-		
 		#end
 	}
 }

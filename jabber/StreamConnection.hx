@@ -17,7 +17,7 @@ typedef StreamConnection = {
 	var onConnect : Void->Void;
 	var onDisconnect : Void->Void;
 	var onData : String->Void;
-	var onError : Dynamic->Void;
+	var onError : String->Void;
 	
 	var connected(default,null) : Bool;
 	var interceptors : Array<DataInterceptor>;

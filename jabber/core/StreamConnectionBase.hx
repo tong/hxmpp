@@ -8,7 +8,7 @@ class StreamConnectionBase {
 	public dynamic function onConnect() : Void;
 	public dynamic function onDisconnect() : Void;
 	public dynamic function onData( data : String ) : Void;
-	public dynamic function onError( e : Dynamic ) : Void;
+	public dynamic function onError( e : String ) : Void;
 	
 	public var connected(default,null) : Bool;
 	public var interceptors : Array<DataInterceptor>;
