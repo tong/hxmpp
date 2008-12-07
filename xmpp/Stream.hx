@@ -4,7 +4,7 @@ import util.XmlUtil;
 
 
 //TODO rename to Stream, check with php. (?)
-class XMPPStream {
+class Stream {
 	
 	public static var XMLNS_STREAM 	  = "http://etherx.jabber.org/streams";
 	public static var XMLNS_CLIENT 	  = "jabber:client";

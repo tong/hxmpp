@@ -223,7 +223,7 @@ class VCard {
 					vc.addresses.push( adr );
 				case "LABEL" :
 					//TODO
-					trace("Missing implementation fro vcard label.");		
+					
 				case "LINE" : vc.line = node.firstChild().nodeValue;
 				case "TEL" :
 					var tel : Tel = untyped {};
@@ -285,7 +285,7 @@ class VCard {
 				case "LOGO" : vc.logo = parsePhoto( node );
 				case "AGENT" :
 					//TODO
-					trace("Missing implementation fro vcard agent.");
+					
 				case "ORG" :
 					vc.org = untyped {};
 					for( n in node.elements() ) {
