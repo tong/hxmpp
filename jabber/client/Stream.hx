@@ -14,23 +14,24 @@ class Stream extends jabber.core.StreamBase {
 	public static inline var STANDARD_PORT = 5222;
 	public static var defaultPort = STANDARD_PORT;
 	
-	public var jid(default,setJID) : JID;
-
 	
 	public function new( jid : JID, cnx : StreamConnection,
 						 version : Bool = true ) {
 		
-		super( cnx );
-		this.jid = jid;
+		super( cnx, jid );
 		this.version = version;
 	}
 	
-	
+	/*
 	function setJID( j : JID ) : JID {
 		if( status != closed ) throw "Cannot change jid on active jid";
 		return jid = j;
 	}
 	
+	override function getJID() : String {
+		return jid.toString();
+	}
+	*/
 	
 	override function processStreamInit( d : String ) {
 		

@@ -55,7 +55,10 @@ class Field {
 		Parses all dataformfields into the given dataformfield container.
 	*/
 	public static inline function parseFields( t : { fields : Array<Field> }, x : Xml ) : { fields : Array<Field> } {
-		for( e in x.elementsNamed( "field" ) ) t.fields.push( Field.parse( e.firstElement() ) );
+		for( e in x.elementsNamed( "field" ) ) {
+			t.fields.push( Field.parse( e.firstElement() ) );
+		}
 		return t;
 	}
+	
 }

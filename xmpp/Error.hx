@@ -25,7 +25,7 @@ class Error {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "error" );
-		x.set( "type", Type.enumConstructor( type ) );
+		if( type != null ) x.set( "type", Type.enumConstructor( type ) );
 		if( code != -1 ) x.set( "code", Std.string( code ) );
 		if( name != null ) {
 			var n = Xml.createElement( name );
@@ -33,6 +33,10 @@ class Error {
 			//..TODO
 		}
 		return x;
+	}
+	
+	public inline function toString() : String {
+		return toXml().toString();
 	}
 	
 	
@@ -53,11 +57,25 @@ class Error {
 		if( x.nodeName != "error" ) throw "This is not an error extension";
 		var e = new xmpp.Error();
 		e.code = Std.parseInt( x.get( "code" ) );
-		e.type = Type.createEnum( ErrorType, x.get( "type" ) );
-		var err = x.elements().next();
-		if( err != null && err.get( "xmlns" ) != XMLNS ) throw new error.Exception( "Invalid xmpp error" );
-		e.name = err.nodeName;
+		var etype = x.get( "type" );
+		if( etype != null ) e.type = Type.createEnum( ErrorType, x.get( "type" ) );
+		e.name = x.firstChild().toString();
 		return e;
+		/*
+		if( x.nodeName != "error" ) throw "This is not an error extension";
+		var e = new xmpp.Error();
+		e.code = Std.parseInt( x.get( "code" ) );
+		var etype = x.get( "type" );
+		if( etype != null ) e.type = Type.createEnum( ErrorType, x.get( "type" ) );
+		var err = x.elements().next();
+		if( err != null && err.get( "xmlns" ) != XMLNS ) {
+			throw new error.Exception( "Invalid xmpp error" );
+		}
+		if( err != null ) {
+			e.name = err.nodeName;
+		}
+		trace(e.toString());
+		*/
 	}
 	
 }

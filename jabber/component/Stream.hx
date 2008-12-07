@@ -33,7 +33,7 @@ class Stream extends jabber.core.StreamBase {
 
 	public function new( host : String, password : String, cnx : jabber.StreamConnection ) {
 		
-		super( cnx );
+		super( cnx, null );
 		this.host = host;
 		this.password = password;
 		

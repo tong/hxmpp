@@ -107,7 +107,7 @@ class SocketBridge {
 		ExternalInterface.call( ctx+".handleDisconnect", e.target.id );
 	}
 	
-	function sockErrorHandler( e : Event ) {
+	function sockErrorHandler( e ) {
 		ExternalInterface.call( ctx+".handleError", e.target.id, e.type );
 	}
 	

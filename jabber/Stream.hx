@@ -15,6 +15,10 @@ interface Stream {
 	dynamic function onError<T>( s : T, m : Dynamic ) : Void {}
 	
 	/**
+	*/
+	var jid(default,null) : jabber.JID;
+	
+	/**
 		Indicates if the version attribute ("1.0") should be included in the opening xmpp packet.
 	*/
 	var version : Bool;

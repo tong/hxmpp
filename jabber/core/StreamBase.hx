@@ -29,15 +29,18 @@ class StreamBase implements jabber.Stream {
 	public var server(default,null) : Server;
 	public var features : Array<String>;
 	public var version : Bool;
+	public var jid(default,null) : jabber.JID;
+	
 	//public var authenticated : Bool;
 	
 	var numPacketsSent : Int; // num xmpp packets sent
 	var cache : StringBuf;
 	
 	
-	function new( cnx : StreamConnection ) {
+	function new( cnx : StreamConnection, jid : jabber.JID ) {
 		
 		status = StreamStatus.closed;
+		this.jid = jid;
 		this.setConnection( cnx );
 		
 		collectors = new List();
@@ -49,6 +52,11 @@ class StreamBase implements jabber.Stream {
 		numPacketsSent = 0;
 	}
 	
+	/*
+	function getJID() : jabber.JID {
+		return throw "Abstract getter";
+	}
+	*/
 	
 	function setConnection( c : StreamConnection ) : StreamConnection {
 		switch( status ) {
