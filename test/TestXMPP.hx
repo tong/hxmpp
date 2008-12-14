@@ -31,6 +31,7 @@ class TestXMPP {
 		r.add( new TestDelayedDeliveryExtension() );
 		r.add( new TestChatStateExtension() );
 		r.add( new TestLastActivityExtension() );
+		r.add( new TestPrivacyListsExtension() );
 		
 		///// packet filters
 		r.add( new TestXPacketFilters() );

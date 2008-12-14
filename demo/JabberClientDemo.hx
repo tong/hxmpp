@@ -27,10 +27,9 @@ class JabberClientDemo {
 	static var vcard : VCardTemp;
 	
 	static function init() {
-		//var account = new jabber.util.ResourceAccount();
 		var cnx = new SocketConnection( "127.0.0.1", 5222 );
 		stream = new Stream( new jabber.JID( "hxmpp@disktree" ), cnx );
-		stream.onError = function(s,err) { trace( "Stream error: " + err ); };
+		stream.onError = function(s,e) { trace( "Stream error: "+e ); };
 		stream.onClose = function(s) { trace( "Stream to: "+s.jid.domain+" closed." ); } ;
 		stream.onOpen = function(s) {
 			trace( "Jabber stream to "+stream.jid.domain+" opened" );
@@ -74,8 +73,9 @@ class JabberClientDemo {
 		};
 		vcard.load();
 		
+		/* TODO
 		service = new ServiceDiscovery( stream );
-		service.onInfo = function( e ) {
+		service.onInfo = function( sd, e ) {
 			trace( "SERVICE INFO RESULT: "+e.from );
 			trace( "\tIDENTITIES: ");
 			for( identity in e.packet.identities ) trace( "\t\t"+identity );
@@ -85,6 +85,7 @@ class JabberClientDemo {
 		};
 		service.discoverItems( "disktree" );
 		service.discoverInfo( "disktree" );
+	*/
 	}
 	
 	static function main() {
@@ -92,7 +93,7 @@ class JabberClientDemo {
 		jabber.util.XMPPDebug.redirectTraces();
 		
 		#if JABBER_SOCKETBRIDGE
-		jabber.SocketBridgeConnection.init( "f9bridge", init );
+		jabber.SocketBridgeConnection.initDelayed( "f9bridge", init );
 		#else
 		init();
 		#end
