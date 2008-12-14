@@ -25,9 +25,9 @@ class StreamBase implements jabber.Stream {
 	public var id(default,null) : String;
 	public var lang(default,null) : String;
 	public var collectors : List<IPacketCollector>;
-	public var interceptors : List<IPacketInterceptor>;
+	public var interceptors : List<PacketInterceptor>;
 	public var server(default,null) : Server;
-	public var features : Array<String>;
+	public var features(default,null) : Array<String>;
 	public var version : Bool;
 	public var jid(default,null) : jabber.JID;
 	

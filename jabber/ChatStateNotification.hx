@@ -9,7 +9,7 @@ import xmpp.filter.PacketFieldFilter;
 	Extension for communicating the status of a user in a chat session.
 	<a href="http://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications.</a><br/>
 */
-class ChatStateNotification implements jabber.core.IPacketInterceptor {
+class ChatStateNotification {
 	
 	/**
 		The current state of this chat.

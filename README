@@ -12,10 +12,11 @@ For further information on jabber visit [04][05].
 
 XEPS SUPPORTED
 --------------
-## * 0004 DataForms
+# * 0004 DataForms
 ### * 0009 XML-RPC
-## * 0012 LastActivity
-## * 0030 ServiceDiscovery
+### * 0012 LastActivity
+## * 0016 PrivacyLists
+# * 0030 ServiceDiscovery
 ## * 0045 MUChat
 ### * 0047 In-Band Bytestreams
 * 0054 VCardTemp
@@ -26,7 +27,7 @@ XEPS SUPPORTED
 * 0091 DelayedDelivery
 * 0106 JID Escaping
 * 0114 Jabber Component Protocol
-##* 0202 EntityTime
+## * 0202 EntityTime
 * 0203 DelayedDelivery
 
 

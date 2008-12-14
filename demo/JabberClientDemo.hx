@@ -68,8 +68,8 @@ class JabberClientDemo {
 		};
 		
 		vcard = new VCardTemp( stream );
-		vcard.onLoad = function(vc) {
-			trace( "VCARD LOADED: "+vc.from );
+		vcard.onLoad = function(d,node,vc) {
+			trace( "VCARD LOADED: "+node );
 		};
 		vcard.load();
 		

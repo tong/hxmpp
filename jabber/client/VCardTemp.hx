@@ -1,6 +1,5 @@
 package jabber.client;
 
-import jabber.event.IQResult;
 import xmpp.IQ;
 
 
@@ -10,9 +9,11 @@ import xmpp.IQ;
 //TODO VCard
 class VCardTemp {
 	
-	public dynamic function onLoad( r : IQResult<Stream,xmpp.VCard> ) : Void;
-	public dynamic function onUpdated( r : IQResult<Stream,xmpp.VCard> ) : Void;
-	public dynamic function onError( e : jabber.event.XMPPErrorEvent<Stream> ) : Void;
+	//public dynamic function onLoad( r : IQResult<Stream,xmpp.VCard> ) : Void;
+	//public dynamic function onUpdated( r : IQResult<Stream,xmpp.VCard> ) : Void;
+	public dynamic function onLoad( d : VCardTemp, node : String, data : xmpp.VCard ) : Void;
+	public dynamic function onUpdated( d : VCardTemp, node : String, data : xmpp.VCard ) : Void;
+	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
 	
@@ -53,8 +54,7 @@ class VCardTemp {
 		switch( iq.type ) {
 			case result :
 				var l = xmpp.VCard.parse( iq.ext.toXml() );
-				var e = new IQResult<Stream,xmpp.VCard>( stream, iq, l );
-				onLoad( e );
+				onLoad( this, iq.from, l );
 				
 			case error :
 				//TODO

@@ -55,7 +55,7 @@ class Error {
 		e.code = Std.parseInt( x.get( "code" ) );
 		var etype = x.get( "type" );
 		if( etype != null ) e.type = Type.createEnum( ErrorType, x.get( "type" ) );
-		e.name = x.firstChild().toString();
+		e.name = x.firstChild().nodeName;//toString();
 		return e;
 	}
 	

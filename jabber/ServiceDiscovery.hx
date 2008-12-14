@@ -2,7 +2,6 @@ package jabber;
 
 import jabber.Stream;
 import jabber.core.PacketCollector;
-import jabber.event.IQResult;
 import xmpp.IQ;
 import xmpp.IQType;
 
@@ -17,9 +16,13 @@ import xmpp.IQType;
 */
 class ServiceDiscovery {
 	
-	public dynamic function onInfo( d : ServiceDiscovery, e : xmpp.disco.Info ) : Void;
-	public dynamic function onItems( d : ServiceDiscovery, i : xmpp.disco.Items ) : Void;
-	public dynamic function onError( e : jabber.event.XMPPErrorEvent<Stream> ) : Void;
+	//public dynamic function onInfo( e : IQResult<Stream,xmpp.disco.Info> ) : Void;
+	//public dynamic function onInfo( d : ServiceDiscovery, e : xmpp.disco.Info ) : Void;
+	//public dynamic function onItems( d : ServiceDiscovery, i : xmpp.disco.Items ) : Void;
+	
+	public dynamic function onInfo( d : ServiceDiscovery, node : String, data : xmpp.disco.Info ) : Void;
+	public dynamic function onItems( d : ServiceDiscovery, node : String, data : xmpp.disco.Items ) : Void;
+	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
 	public var stream(default,null) : jabber.Stream;
 	
@@ -43,7 +46,7 @@ class ServiceDiscovery {
 	*/
 	public function discoverInfo( jid : String ) {
 		iq_info.to = jid;
-		stream.sendIQ( iq_info, handleInfoRequest );
+		stream.sendIQ( iq_info, handleInfoResult );
 	}
 	
 	/**
@@ -54,7 +57,7 @@ class ServiceDiscovery {
 		//iq_item.ext = new xmpp.disco.Items( node );
 		var iq = new IQ( xmpp.IQType.get, null, jid );
 		iq.ext = new xmpp.disco.Items( node );
-		stream.sendIQ( iq, handleItemRequest, false, new jabber.core.PacketTimeout( [timeoutHandler],2 ) );
+		stream.sendIQ( iq, handleItemResult, false, new jabber.core.PacketTimeout( [timeoutHandler],2 ) );
 	}
 	
 	
@@ -64,32 +67,24 @@ class ServiceDiscovery {
 	}
 	
 	
-	function handleInfoRequest( iq : IQ ) {
+	function handleInfoResult( iq : IQ ) {
 		switch( iq.type ) {
 			case result :
-			/*
 				var l = xmpp.disco.Info.parse( iq.ext.toXml() );
-				var e = new IQResult<jabber.Stream,xmpp.disco.Info>( stream, iq, l );
-				onInfo( e );
-				*/
-				onInfo( this, xmpp.disco.Info.parse( iq.ext.toXml() ) );
+				onInfo( this, iq.from, l );
 			case error :
-				onError( new jabber.event.XMPPErrorEvent<jabber.Stream>( stream, iq ) );
+				onError( new jabber.XMPPError( this, iq ) );
 			default : //#
 		}
 	}
 	
-	function handleItemRequest( iq : IQ ) {
+	function handleItemResult( iq : IQ ) {
 		switch( iq.type ) {
 			case result :
-				/*
 				var l = xmpp.disco.Items.parse( iq.ext.toXml() );
-				var e = new IQResult<jabber.Stream,xmpp.disco.Items>( stream, iq, l );
-				onItems( e );
-				*/
-				onItems( this, xmpp.disco.Items.parse( iq.ext.toXml() ) );
+				onItems( this, iq.from, l );
 			case error :
-				onError( new jabber.event.XMPPErrorEvent<jabber.Stream>( stream, iq ) );
+				onError( new jabber.XMPPError( this, iq ) );
 			default: //#
 		}
 	}

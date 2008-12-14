@@ -4,8 +4,8 @@ package jabber.core;
 /**
 	Modifies xmpp.Packets before sending.
 */
-interface IPacketInterceptor {
-	
+//interface IPacketInterceptor {
+typedef PacketInterceptor = {
 	/**
 		Intercepts xmpp packet.
 	*/

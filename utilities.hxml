@@ -1,6 +1,6 @@
 
 # SWF9 socket bridge
--cp lib/core/
+-cp lib/
 -swf-header 0:0:60:eeeeee
 -swf-version 9
 -swf bin/f9_socketbridge.swf

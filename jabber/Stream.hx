@@ -1,7 +1,7 @@
 package jabber;
 
 import jabber.core.IPacketCollector;
-import jabber.core.IPacketInterceptor;
+import jabber.core.PacketInterceptor;
 import jabber.core.PacketTimeout;
 
 
@@ -10,13 +10,17 @@ import jabber.core.PacketTimeout;
 */
 interface Stream {
 	
-	dynamic function onOpen<T>( s : T ) : Void {}
-	dynamic function onClose<T>( s : T ) : Void {}
-	dynamic function onError<T>( s : T, m : Dynamic ) : Void {}
+	dynamic function onOpen<T>( s : T ) : Void;
+	dynamic function onClose<T>( s : T ) : Void;
+	dynamic function onError<T>( s : T, m : Dynamic ) : Void;
 	
 	/**
 	*/
 	var jid(default,null) : jabber.JID;
+	
+	/**
+	*/
+	var features(default,null) : Array<String>;
 	
 	/**
 		Indicates if the version attribute ("1.0") should be included in the opening xmpp packet.
@@ -46,7 +50,7 @@ interface Stream {
 	
 	/**
 	*/
-	var interceptors : List<IPacketInterceptor>;
+	var interceptors : List<PacketInterceptor>;
 	
 	/**
 	*/

@@ -31,11 +31,11 @@ interface IPacketCollector {
 	/**
 		Returns [true] if the given xmpp packet passes through all filters.
 	*/
-	function accept( packet : xmpp.Packet ) : Bool;
+	function accept( p : xmpp.Packet ) : Bool;
 	
 	/**
 		Delivers the xmpp packet to registerd handlers.
 	*/
-	function deliver( packet : xmpp.Packet ) : Void;
+	function deliver( p : xmpp.Packet ) : Void;
 	
 }

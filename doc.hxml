@@ -1,6 +1,6 @@
 
 # hxmpp doc
--cp lib/core/
+-cp lib/
 jabber.Lib
 -js lib.js
 -xml doc/api.xml

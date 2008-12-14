@@ -1,15 +1,12 @@
 package jabber.client;
 
-import jabber.event.IQResult;
-import xmpp.IQ;
-
 
 /**
 */
 class NonSASLAuthentication {
 	
 	public dynamic function onSuccess( s : Stream ) : Void;
-	public dynamic function onFailed( s : jabber.event.XMPPErrorEvent<Stream> ) : Void;
+	public dynamic function onFailed( r : jabber.XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
 	public var active(default,null) : Bool;
@@ -35,31 +32,30 @@ class NonSASLAuthentication {
 		this.password = password;
 		this.resource = resource;
 		active = true;
-		var iq = new IQ();
+		var iq = new xmpp.IQ();
 		iq.ext = new xmpp.Auth( username );
 		stream.sendIQ( iq, handleResponse );
 	}
 	
 	
-	function handleResponse( r : IQ ) {
+	function handleResponse( r : xmpp.IQ ) {
 		switch( r.type ) {
 			case result :
 				var hasDigest = ( !usePlainText && r.ext.toXml().elementsNamed( "digest" ).next() != null );
-				var iq = new IQ( xmpp.IQType.set );
+				var iq = new xmpp.IQ( xmpp.IQType.set );
 				iq.ext = if( hasDigest ) new xmpp.Auth( username, null, crypt.SHA1.encode( stream.id+password ), resource );
 				else new xmpp.Auth( username, password, null, resource );
 				stream.sendIQ( iq, handleResult );
-			case error :
-				onFailed( new jabber.event.XMPPErrorEvent<Stream>( stream, r ) );
+			case error : onFailed( new jabber.XMPPError( this, r ) );
 			default : //#
 		}
 	}
 	
-	function handleResult( iq : IQ ) {
+	function handleResult( iq : xmpp.IQ ) {
 		active = false;
 		switch( iq.type ) {
 			case result : onSuccess( stream );
-			case error : onFailed( new jabber.event.XMPPErrorEvent<Stream>( stream, iq ) );
+			case error :  onFailed( new jabber.XMPPError( this, iq ) );
 			default : //#
 		}
 	}

@@ -1,6 +1,6 @@
 
 ### JS client lib
--cp lib/core/
+-cp lib/
 -js bin/hxmpp.js
 jabber.Lib
 -D JABBER_LIBCLIENT
@@ -11,7 +11,7 @@ jabber.Lib
 
 ### SWF9 client lib
 --next
--cp lib/core/
+-cp lib/
 -swf9 bin/hxmpp.swf
 jabber.Lib
 -D JABBER_LIBCLIENT
@@ -21,7 +21,7 @@ jabber.Lib
 
 ### AS3 lib
 #--next
-#-cp lib/core/
+#-cp lib/
 #-as3 bin/as3
 #jabber.Lib
 #-D JABBER_LIBCLIENT
