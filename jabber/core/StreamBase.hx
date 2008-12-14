@@ -23,7 +23,7 @@ class StreamBase implements jabber.Stream {
 	public var status : StreamStatus;
 	public var connection(default,setConnection) : StreamConnection;
 	public var id(default,null) : String;
-	public var lang(default,setLang) : String;
+	public var lang(default,null) : String;
 	public var collectors : List<IPacketCollector>;
 	public var interceptors : List<IPacketInterceptor>;
 	public var server(default,null) : Server;
@@ -31,13 +31,13 @@ class StreamBase implements jabber.Stream {
 	public var version : Bool;
 	public var jid(default,null) : jabber.JID;
 	
-	//public var authenticated : Bool;
-	
-	var numPacketsSent : Int; // num xmpp packets sent
+	var numPacketsSent : Int;
 	var cache : StringBuf;
 	
 	
 	function new( cnx : StreamConnection, jid : jabber.JID ) {
+		
+		if( cnx == null ) throw "Missing connection argument";
 		
 		status = StreamStatus.closed;
 		this.jid = jid;
@@ -52,11 +52,6 @@ class StreamBase implements jabber.Stream {
 		numPacketsSent = 0;
 	}
 	
-	/*
-	function getJID() : jabber.JID {
-		return throw "Abstract getter";
-	}
-	*/
 	
 	function setConnection( c : StreamConnection ) : StreamConnection {
 		switch( status ) {
@@ -73,17 +68,12 @@ class StreamBase implements jabber.Stream {
 		return connection;
 	}
 	
-	function setLang( l : String ) : String {
-		if( status != StreamStatus.closed ) throw new error.Exception( "Cannot change language on active stream" );
-		return lang = l;
-	}
-	
 	
 	/**
 		Returns a unique (base64 encoded) id for this stream.
 	*/
 	public function nextID() : String {
-		return util.StringUtil.random64( 5 );
+		return util.StringUtil.random64( 5 )+numPacketsSent;
 		//TODO return haxe.BaseCode.encode( util.StringUtil.random64( 5 )+numPacketsSent, util.StringUtil.BASE64 );
 	}
 	
@@ -101,12 +91,13 @@ class StreamBase implements jabber.Stream {
 	*/
 	public function close( ?disconnect = false ) : Bool {
 		if( status == StreamStatus.open ) {
-			sendData( xmpp.XMPPStream.CLOSE );
+			sendData( xmpp.Stream.CLOSE );
 			status = StreamStatus.closed;
 			if( disconnect ) connection.disconnect();
 			onClose( this );
 			return true;
 		}
+		//if( status == StreamStatus.pending && disconnect && cnx.connected ) { 
 		return false;
 	}
 	
@@ -155,11 +146,21 @@ class StreamBase implements jabber.Stream {
 		return { iq : sent, collector : c };
 	}
 	
+	/* TODO
+	public function addCollector( c : PacketCollector ) {
+	}
+	public function addCollectors( c : Iterable<PacketCollector> ) {
+	}
 	
+	public function removeCollector( c : PacketCollector ) {
+	}
+	public function removeCollectors( c : Iterable<PacketCollector> ) {
+	}
+	*/
 	
 	function processData( d : String ) {
 		
-		if( d == " " && cache == null ) return; //TODO ignore keepalive
+		if( cache == null && d == " " ) return; // ignore keepalive
 		
 		#if JABBER_DEBUG
 		try {
@@ -170,12 +171,12 @@ class StreamBase implements jabber.Stream {
 		}
 		#end
 		
-		if( xmpp.XMPPStream.eregStreamClose.match( d ) ) {
+		if( xmpp.Stream.eregStreamClose.match( d ) ) {
 			//TODO
 			close( true );
 			return;
 		}
-		if( xmpp.XMPPStream.eregStreamError.match( d ) ) {
+		if( xmpp.Stream.eregStreamError.match( d ) ) {
 			//TODO
 			close( true );
 			return;
@@ -250,11 +251,14 @@ class StreamBase implements jabber.Stream {
 		}
 	}
 	
-	function connectHandler() {}
+	function connectHandler() {
+	}
 	
-	function disconnectHandler() {}
+	function disconnectHandler() {
+	}
 	
-	function dataHandler( d : String ) {}
+	function dataHandler( d : String ) {
+	}
 	
 	function errorHandler( m : Dynamic ) {
 		onError( this, m  );

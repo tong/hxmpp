@@ -7,6 +7,7 @@ import xmpp.IQ;
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0054.html">XEP-0054: vcard-temp</a>
 */
+//TODO VCard
 class VCardTemp {
 	
 	public dynamic function onLoad( r : IQResult<Stream,xmpp.VCard> ) : Void;

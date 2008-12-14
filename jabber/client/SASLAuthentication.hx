@@ -29,7 +29,6 @@ class SASLAuthentication {
 	
 	var negotiated : Bool;
 	var availableMechanisms : Array<String>;
-	
 	var col_error : PacketCollector;
 	var col_challenge : PacketCollector;
 	var col_success : PacketCollector;

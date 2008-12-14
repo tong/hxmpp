@@ -8,10 +8,6 @@ class Error {
 	
 	public static var XMLNS = "urn:ietf:params:xml:ns:xmpp-stanzas";
 	
-	public static var BAD_REQUEST = "bad-request";
-	public static var CONFLICT 	  = "conflict";
-	//..TODO
-	
 	public var type : ErrorType;
 	public var code : Int;
 	public var name : String;
@@ -61,21 +57,6 @@ class Error {
 		if( etype != null ) e.type = Type.createEnum( ErrorType, x.get( "type" ) );
 		e.name = x.firstChild().toString();
 		return e;
-		/*
-		if( x.nodeName != "error" ) throw "This is not an error extension";
-		var e = new xmpp.Error();
-		e.code = Std.parseInt( x.get( "code" ) );
-		var etype = x.get( "type" );
-		if( etype != null ) e.type = Type.createEnum( ErrorType, x.get( "type" ) );
-		var err = x.elements().next();
-		if( err != null && err.get( "xmlns" ) != XMLNS ) {
-			throw new error.Exception( "Invalid xmpp error" );
-		}
-		if( err != null ) {
-			e.name = err.nodeName;
-		}
-		trace(e.toString());
-		*/
 	}
 	
 }

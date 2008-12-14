@@ -1,32 +1,7 @@
 
 
-class TestXMPPIQExtensions {
-
-	static function main() {
-		
-		#if flash9
-		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
-		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
-		#end
-		
-		haxe.Firebug.redirectTraces();
-		
-		var r = new haxe.unit.TestRunner();
-		r.add( new TestAuthExtension() );
-		r.add( new TestRegisterExtension() );
-		r.add( new TestRosterExtension() );
-		r.add( new TestDataFormExtension() );
-		r.add( new TestDiscoExtension() );
-		r.add( new TestDelayedDeliveryExtension() );
-		r.add( new TestChatStateExtension() );
-		r.add( new TestLastActivityExtension() );
-		//TODO
-		//r.add( new TestEntityTimeExtension() );
-		r.add( new TestFileExtension() );
-		r.run();
-	}
+class TestXMPPIQExtensions {}
 	
-}
 
 
 /**
@@ -53,6 +28,7 @@ class TestAuthExtension extends haxe.unit.TestCase {
 }
 
 
+
 /**
 	Testunit for xmpp.Register
 */
@@ -77,6 +53,7 @@ class TestRegisterExtension extends haxe.unit.TestCase {
 }
 
 
+
 /**
 	Testunit for xmpp.Roster
 */
@@ -96,6 +73,7 @@ class TestRosterExtension extends haxe.unit.TestCase {
 		//.
 	}
 }
+
 
 
 /**
@@ -160,6 +138,7 @@ class TestDiscoExtension extends haxe.unit.TestCase {
 }
 
 
+
 /**
 	Testunit for xmpp.DataForm
 */
@@ -203,7 +182,6 @@ class TestDataFormExtension extends haxe.unit.TestCase {
 				<desc>Tell all your friends about your new bot!</desc>
 			</field>
 			</x>" ).firstElement() );
-    	
 
 		assertEquals( 'Bot Configuration', form.title );
 		assertEquals( 'Fill out this form to configure your new bot!', form.instructions );
@@ -286,6 +264,7 @@ class TestDataFormExtension extends haxe.unit.TestCase {
 }
 
 
+
 /**
 	Testunit for xmpp.DelayedDelivery
 */
@@ -319,6 +298,7 @@ class TestDelayedDeliveryExtension extends haxe.unit.TestCase {
 }
 
 
+
 /**
 	Testunit for xmpp.EntityTime
 //TODO
@@ -332,6 +312,7 @@ class TestDelayedDeliveryExtension extends haxe.unit.TestCase {
 	}
 }
 */
+
 
 
 /**
@@ -371,6 +352,7 @@ class TestChatStateExtension extends haxe.unit.TestCase {
 }
 
 
+
 /**
 	Testunit for xmpp.LastActivity
 */
@@ -383,41 +365,4 @@ class TestLastActivityExtension extends haxe.unit.TestCase {
 		assertEquals( 903, activity.seconds );
 		assertEquals( 903, secs );
 	}
-}
-
-
-
-/**
-	Testunit for xmpp.File
-*/
-class TestFileExtension extends haxe.unit.TestCase {
-	
-	public function testFilePacket() {
-		//TODO
-		
-		var ext = new xmpp.File();
-		
-		var x = ext.toXml();
-		
-		assertEquals( xmpp.File.XMLNS_SI, x.get( "xmlns" ) );
-		assertEquals( xmpp.File.XMLNS, x.get( "profile" ) );
-//		assertEquals( xmpp.File.XMLNS, x.get( "mime" ) );
-		
-		
-		assertTrue( true );
-	}
-	
-}
-
-
-
-/**
-	Testunit for xmpp.Bind
-*/
-class TestBindExtension extends haxe.unit.TestCase {
-	
-	public function testBindPacket() {
-		//TODO
-	}
-	
 }

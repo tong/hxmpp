@@ -1,6 +1,6 @@
 package jabber.event;
 
-
+//TODO IQResponse
 class IQResult<T:jabber.Stream,P> extends XMPPPacketEvent<T> {
 	
 	public var packet(default,null) : P;

@@ -26,11 +26,13 @@ class Roster {
 	public static var defaultSubscriptionMode = SubscriptionMode.acceptAll;
 	
 	public dynamic function onLoad( r : Roster ) : Void;
-	public dynamic function onAdd( r : Roster, e : Array<Item> ) : Void;
-	public dynamic function onRemove( r : Roster, e : Array<Item> ) : Void;
-	public dynamic function onUpdate( r : Roster, e : Array<Item> ) : Void;
+	public dynamic function onAdd( r : Roster, i : Array<Item> ) : Void;
+	public dynamic function onRemove( r : Roster, i : Array<Item> ) : Void;
+	public dynamic function onUpdate( r : Roster, i : Array<Item> ) : Void;
 	public dynamic function onPresence( r : Roster, i : Item, p: xmpp.Presence ) : Void;
 	public dynamic function onResourcePresence( r : Roster, resource : String, p: xmpp.Presence  ) : Void;
+	public dynamic function onSubscribed( r : Roster, i : Item ) : Void;
+	public dynamic function onUnsubscribed( r : Roster, i : Item ) : Void;
 	public dynamic function onSubscriptionRequest( r : Roster, i : Item ) : Void;
 	
 	public var stream(default,null) : Stream;
@@ -139,8 +141,8 @@ class Roster {
 			stream.sendIQ( iq, function(r) {
 				switch( r.type ) {
 					case result :
-						trace("TODO");
 						/*
+						trace("TODO");
 						TODO check if the item already got added (with iq.set frm server )
 						to the roster, if not -> abort.
 						if( me.getItem( jid ) == null ) {
@@ -173,19 +175,31 @@ class Roster {
 		return true;
 	}
 	
-	public inline function getPresence( jid : String ) : xmpp.Presence {
+	public function confirmSubscription( jid : String, allow : Bool = true ) {
+		//if( !available || getItem( jid ) == null ) return;
+		var p = new xmpp.Presence( ( allow ) ? xmpp.PresenceType.subscribed : xmpp.PresenceType.unsubscribed );
+		p.to = jid;
+		stream.sendPacket( p );
+	}
+	
+	public inline function hasItem( jid : String ) : Bool {
+		return getItem( jid ) != null;
+	}
+	
+	public function getPresence( jid : String ) : xmpp.Presence {
 		return presenceMap.get( jid );
 	}
 	
 	
 	function handleRosterPresence( p : xmpp.Presence ) {
-		trace("händleRosterPresence");
+//		trace("händleRosterPresence");
 		//if( !available ) return;
 		
 		var from = jabber.util.JIDUtil.parseBar( p.from );
 		var resource = jabber.util.JIDUtil.parseResource( p.from );
 		
 		if( from == stream.jid.bare ) { // handle account resource presence
+			if( resource == null ) return;
 			resources.set( resource, p );
 			onResourcePresence( this, resource, p );
 			
@@ -196,35 +210,40 @@ class Roster {
 					case subscribe :
 						switch( subscriptionMode ) {
 							case acceptAll :
-								var r = new xmpp.Presence( xmpp.PresenceType.subscribed );
-								r.to = p.from;
-								stream.sendPacket( r );
+								confirmSubscription( p.from, true );
 								//TODO subscribe to ?
-								
 							case rejectAll :
 								var r = new xmpp.Presence( xmpp.PresenceType.unsubscribed );
 								r.to = p.from;
 								stream.sendPacket( r );
-								
 							case manual :
-								var item = new xmpp.roster.Item( p.from );
-								onSubscriptionRequest( this, item );
+								onSubscriptionRequest( this, new xmpp.roster.Item( p.from ) );
 						}
-							
+						return;
+					
+					case subscribed :
+					//?	onSubscribed( this, i );
+					//?	return;
+					
+					case unsubscribed :
+						onUnsubscribed( this, i );
+						return;
+						
 					default :
-						trace("?????????????????????????????? "+p.type );
+						trace("???????????????? "+p.type );
 				}
 			}
 			if( i != null ) {
-				presenceMap.set( p.from, p );
+				presenceMap.set( from, p );
 				onPresence( this, i, p );
 			}
 		}
 	}
 	
 	function handleRosterIQ( iq : xmpp.IQ ) {
-		trace("händleRosterIQ","debug");
+//		trace("händleRosterIQ","debug");
 		switch( iq.type ) {
+			
 			case result :
 				var added = new Array<Item>();
 				var removed = new Array<Item>();
@@ -244,7 +263,6 @@ class Roster {
 							
 						} else { // update roster item
 							trace("TODO UPDATE ROSTER ITEM");
-							
 						}
 					}
 				}
@@ -256,29 +274,23 @@ class Roster {
 				if( removed.length > 0 ) onRemove( this, removed );
 			
 			case set :
-				//<iq id="854-337" to="hxmpp@disktree/norc" type="set"><query xmlns="jabber:iq:roster"><item jid="kilmou@disktree" subscription="none"/></query></iq>
-				trace("SETSETSETSETSETSETSETSETSETSETSETSETSETSETSETSETSETSET "+iq);
 				var loaded = xmpp.Roster.parse( iq.ext.toXml() );
 				for( i in loaded ) {
 					var item = getItem( i.jid );
-					if( item != null ) {
+					if( item != null ) { // update item
 						item = i;
 						onUpdate( this, [item] );
-					}
-					else {
+					} else { // new item
 						items.push( i );
-						trace("new item added (set) to roster", "debug" );
 						onAdd( this, [i] );
 					}
 				}
-				
 				
 			case error : 
 				trace("ERRRORRR");
 				//TODO
 				
 			default : 
-			
 		}
 	}
 	

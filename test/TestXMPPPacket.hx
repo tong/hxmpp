@@ -6,28 +6,8 @@ import xmpp.IQ;
 import xmpp.IQType;
 
 
-class TestXMPPPacket {
+class TestXMPPPacket {}
 
-	static function main() {
-		
-		#if flash9
-		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
-		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
-		#end
-		
-		haxe.Firebug.redirectTraces();
-		
-		var r = new haxe.unit.TestRunner();
-		r.add( new TestMessagePacket() );
-		r.add( new TestPresencePacket() );
-		r.add( new TestIQPacket() );
-		r.add( new TestErrorExtension() );
-		r.add( new TestXMPPDate() );
-		r.add( new TestXMPPCompression() );
-		r.run();
-	}
-	
-}
 
 
 class TestMessagePacket extends haxe.unit.TestCase   {
@@ -93,6 +73,7 @@ class TestMessagePacket extends haxe.unit.TestCase   {
 	}
 	
 }
+
 
 
 class TestPresencePacket extends haxe.unit.TestCase   {

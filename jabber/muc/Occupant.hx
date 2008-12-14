@@ -23,10 +23,12 @@ class Occupant {
 	}
 	*/
 	
+	/*
 	#if JABBER_DEBUG
 	public function toString() : String {
 		return "MUCOccupant(nick=>"+nick+",role=>"+role+",prsnc_show=>"+presence.show+")";
 	}
 	#end
+	*/
 	
 }

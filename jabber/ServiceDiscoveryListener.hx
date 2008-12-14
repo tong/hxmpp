@@ -6,7 +6,7 @@ import xmpp.filter.IQFilter;
 import xmpp.IQ;
 import xmpp.IQType;
 
-
+//TODO
 /**
 	Listens/Answers incoming service discovery requests.
 */
@@ -15,6 +15,7 @@ class ServiceDiscoveryListener {
 	public static var defaultIdentity = { category : "client", name : "hxmpp", type : "pc" };
 	
 	public var stream(default,null) : StreamBase;
+	//TODO public var node(default,null) : String;
 	public var listen(default,setListening) : Bool;
 	public var identity : xmpp.disco.Identity;
 	
@@ -64,6 +65,7 @@ class ServiceDiscoveryListener {
 		info_result.to = iq.from;
 		info_result_ext.identities = [identity];
 		info_result_ext.features = new Array();
+		// TODO 
 		for( f in stream.features ) {
 			info_result_ext.features.push( f );
 		}

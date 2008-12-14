@@ -24,12 +24,13 @@ class MUCMessage {
 		this.xmpp = m;
 		this.occupant = o;
 	}
-	
+	/*
 	#if JABBER_DEBUG
 	public function toString() : String {
 		return "MUCMessage(room=>"+muc.room+")";
 	}
 	#end
+	*/
 }
 
 
@@ -41,10 +42,11 @@ class MUCMessage {
 */
 class MUC {
 	
-	public dynamic function onJoin( muc : MUC ) : Void;
+	public dynamic function onJoin( muc : MUC ) {}
 	public dynamic function onLeave( muc : MUC ) : Void;
 	public dynamic function onMessage( msg : MUCMessage ) : Void;
-	public dynamic function onPresence( occupant : jabber.muc.Occupant ) : Void;
+	//public dynamic function onMessage( muc : MUC, o : Occupant, p : xmpp.Message ) : Void;
+	public dynamic function onPresence( o : jabber.muc.Occupant ) {}
 	public dynamic function onSubject( muc : MUC ) : Void;
 	
 	public var stream(default,null) : Stream;
@@ -53,10 +55,10 @@ class MUC {
 	public var joined(default,null)	: Bool;
 	//public var locked(default,null) : Bool;
 	public var myJid(default,null) : String;
-	public var me(getMe,null) : Occupant;
-	public var nick(default,null) : String;
-	public var role : Role;
-	public var affiliation : Affiliation;
+	public var me(default,null) : Occupant;
+//	public var nick(default,null) : String;
+//	public var role : Role;
+	//public var affiliation : Affiliation;
 	public var presence : PresenceManager;
 	public var occupants : Array<jabber.muc.Occupant>;
 	public var subject(default,null) : String;
@@ -79,6 +81,9 @@ class MUC {
 //		history = new Array();
 		message = new Message( MessageType.groupchat, jid );
 		
+		me = new Occupant();
+		me.presence = new xmpp.Presence( xmpp.PresenceType.unavailable );
+		
 		// collect all presences and messages from the room jid
 		var f_from : xmpp.filter.PacketFilter = new PacketFromContainsFilter( jid );
 		col_presence = new PacketCollector( [f_from, cast new PacketTypeFilter( PacketType.presence ) ], handlePresence, true );
@@ -87,17 +92,18 @@ class MUC {
 		stream.collectors.add( col_message );
 	}
 	
-	
+	/*
 	function getMe() : Occupant {
 		var o = new Occupant();
 		o.nick = nick;
 		o.jid = myJid;
 		o.presence = presence.get();
+		if( o.presence == null ) trace("öööööööööööööööööööööööööööööööööööö");
 		o.role = role;
 		o.affiliation = affiliation;
 		return o;
 	}
-	
+	*/
 	
 	/**
 	*/
@@ -114,7 +120,7 @@ class MUC {
 	public function join( nick : String, ?password : String ) : Bool {
 		if( joined ) return false;
 		if( nick == null || nick.length == 0 ) throw new error.Exception( "Nickname must be not null or blank" );
-		this.nick = nick;
+		me.nick = nick;
 		myJid = jid+"/"+nick;
 		var p = new xmpp.Presence();
 		p.priority = 5;
@@ -171,23 +177,21 @@ class MUC {
 	
 	//TODO
 	function handleMessage( m : xmpp.Message ) {
-	//	trace("händleMessage");
+		trace("händleMessage");
 	//	if( !joined ) return;
 		var from = getOccupantName( m.from );
 		var occupant = getOccupant( from );
-		if( occupant == null && from != jid && from != nick ) {
+		if( occupant == null && from != jid && from != me.nick ) {
 			trace( "??? Message from unknown muc occupant ??? "+from );
 			return;
 		}
 		if( occupant == null ) {
-			if( from == nick ) {
+			if( from == me.nick ) {
 				occupant = me;
 			}
 		}
 		if( m.subject != null ) {
-			if( subject != null ) {
-				if( m.subject == subject ) return;
-			}
+			if( subject != null && m.subject == subject ) return;
 			subject = m.subject;
 			onSubject( this );
 			return;
@@ -196,6 +200,8 @@ class MUC {
 	}
 	
 	function handlePresence( p : xmpp.Presence ) {
+		
+		trace("händlePresence");
 		
 		var x_user = xmpp.MUCUser.parse( p.toXml() );
 		if( x_user == null ) return;
@@ -216,7 +222,7 @@ class MUC {
 						if( !joined ) {
 							//.TODO check presence packet
 							joined = true;
-							onJoin( this );
+							this.onJoin( this );
 							// unlock room if required
 							if( x_user.item.role == Role.moderator &&
 								x_user.status != null &&
@@ -260,7 +266,12 @@ class MUC {
 				occupant.presence = p;
 				if( x_user.item.role != null ) occupant.role = x_user.item.role;
 				if( x_user.item.affiliation != null ) occupant.affiliation = x_user.item.affiliation;
-				onPresence( occupant );
+				try {
+					this.onPresence( occupant );
+				} catch( e : Dynamic ) {
+					trace("################################");
+					trace(e);
+				}
 		}
 	}
 	

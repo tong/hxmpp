@@ -18,31 +18,36 @@ class Stream extends jabber.core.StreamBase {
 	public static inline var STANDARD_PORT = 5275;
 	public static var defaultPort = STANDARD_PORT;
 	
-	public dynamic function onAuthenticated( stream : Stream ) : Void;
+	public dynamic function onAuthenticated( s : Stream ) : Void;
 	
-	/** */
-	//public var server(default,null) : String;
-	public var host(default,null) : String;
+	/** This components subdomain */
+	public var sub(default,null) : String;
+	
 	/** Shared secret used to identify legacy components*/
-	public var password(default,null) : String;
-	/** */
+	public var secret(default,null) : String;
+	
+	/** Indicates if the component is authenticated at server */
 	public var authenticated(default,null) : Bool;
+	
 	/** */
 	public var serviceListener(default,null) : ServiceDiscoveryListener;
 	
-
-	public function new( host : String, password : String, cnx : jabber.StreamConnection ) {
-		
+	
+	/**
+	*/
+	public function new( sub : String, secret : String, cnx : jabber.StreamConnection
+						 /*,?identity : { category : String, name : String, type : String }*/ ) {
+		if( sub == null || sub == "" ) throw "Invalid component subdomain specified";
 		super( cnx, null );
-		this.host = host;
-		this.password = password;
-		
+		this.sub = sub;
+		this.secret = secret;
 		authenticated = false;
+		serviceListener = new ServiceDiscoveryListener( this, { category : "component", name : "norc", type : "server-pc" } );
 	}
 	
 	
 	override function connectHandler() {
-		sendData( xmpp.XMPPStream.createOpenStream( xmpp.XMPPStream.XMLNS_COMPONENT, host ) );
+		sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_COMPONENT, sub ) );
 		status = StreamStatus.pending;
 		connection.read( true );
 	}
@@ -62,14 +67,13 @@ class Stream extends jabber.core.StreamBase {
 		id = dx.get( "id" );
 		status = StreamStatus.open;
 		onOpen( this );
-		collectors.add( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], handshakeResponseHandler, false ) );
+		collectors.add( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], authCompleteHandler, false ) );
 		var handshake = Xml.createElement( "handshake" );
-		handshake.addChild( Xml.createPCData( crypt.SHA1.encode( id+password ) ) );
+		handshake.addChild( Xml.createPCData( crypt.SHA1.encode( id+secret ) ) );
 		sendData( handshake.toString() );
 	}
 	
-	function handshakeResponseHandler( p : xmpp.Packet ) {
-		serviceListener = new ServiceDiscoveryListener( this, { category : "component", name : "norc", type : "server-pc" } );
+	function authCompleteHandler( p : xmpp.Packet ) {
 		authenticated = true;
 		onAuthenticated( this );
 	}

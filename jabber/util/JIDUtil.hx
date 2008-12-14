@@ -15,8 +15,8 @@ class JIDUtil {
 		//TODO: regexp jid resource
 		var r : EReg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?/i;
 		if( !r.match( jid ) ) return false;
-		var parts = getParts( jid );
-		for( part in parts ) if( part.length > jabber.JID.MAX_PART_SIZE ) return false;
+		var p = getParts( jid );
+		for( part in p ) if( part.length > jabber.JID.MAX_PART_SIZE ) return false;
 		return true;
 	}
 	
@@ -71,9 +71,9 @@ class JIDUtil {
      	Returns a String array with the parsed node, domain and resource.
     */
 	public static function getParts( jid : String ) : Array<String> {
-		var parts : Array<String> = [ parseNode( jid ), parseDomain( jid ) ];
-		if( hasResource( jid ) ) parts.push( parseResource( jid ) );
-		return parts;
+		var p : Array<String> = [ parseNode( jid ), parseDomain( jid ) ];
+		if( hasResource( jid ) ) p.push( parseResource( jid ) );
+		return p;
 	}
 
 	
@@ -88,28 +88,28 @@ class JIDUtil {
 	    TODO check XEP!! maybe minor errors (?)
     */
 	public static function escapeNode( node : String ) : String {
-		var buf = new StringBuf();
+		var b = new StringBuf();
 		for( i in 0...node.length ) {
 			var c = node.charAt( i );
 			switch( c ) {
-				case '"' 	: buf.add( "\\22" );
-				case '&' 	: buf.add( "\\26" );
-				case '\\' 	: buf.add( "\\27" );
-				case '/' 	: buf.add( "\\2f" ); // TODO:check xep!
-				case ':' 	: buf.add( "\\3a" );
-				case '<' 	: buf.add( "\\3c" );
-				case '>' 	: buf.add( "\\3e" );
-				case '@' 	: buf.add( "\\40" );
-				case '\\\\'	: buf.add( "\\5c" );
+				case '"' 	: b.add( "\\22" );
+				case '&' 	: b.add( "\\26" );
+				case '\\' 	: b.add( "\\27" );
+				case '/' 	: b.add( "\\2f" ); // TODO:check xep!
+				case ':' 	: b.add( "\\3a" );
+				case '<' 	: b.add( "\\3c" );
+				case '>' 	: b.add( "\\3e" );
+				case '@' 	: b.add( "\\40" );
+				case '\\\\'	: b.add( "\\5c" );
 				//TODO
 				/*
-				case " " : buf.add( "\\20" );
-				default : buf.add( c );
+				case " " : b.add( "\\20" );
+				default : b.add( c );
 				*/
-				default : if( c == " " ) buf.add( "\\20" ) else buf.add( c );
+				default : if( c == " " ) b.add( "\\20" ) else b.add( c );
 			}
 		}
-		return buf.toString();
+		return b.toString();
 	}
 
 
@@ -126,7 +126,7 @@ class JIDUtil {
     */
 	public static function unescapeNode( node : String ) : String {
 		var n = node.length;
-		var buf = new StringBuf();
+		var b = new StringBuf();
 		var i = 0;
 		while( i < n ) {
 			var c = node.charAt( i );
@@ -135,30 +135,30 @@ class JIDUtil {
 				var c3 = node.charAt( i+2 );
 				if( c2 == "2" ) {
 					switch( c3 ) {
-						case '0' : buf.add( ' ' );  i += 3;
-						case '2' : buf.add( '"' );  i += 3;
-						case '6' : buf.add( '&' );  i += 3;
-						case '7' : buf.add( '\\');  i += 3;
-						case 'f' : buf.add( '/' );  i += 3;
+						case '0' : b.add( ' ' );  i += 3;
+						case '2' : b.add( '"' );  i += 3;
+						case '6' : b.add( '&' );  i += 3;
+						case '7' : b.add( '\\');  i += 3;
+						case 'f' : b.add( '/' );  i += 3;
 					}
 				} else if( c2 == '3' ) {
 					switch( c3 ) {
-						case 'a' : buf.add( ':' ); i += 3;
-						case 'c' : buf.add( '<' ); i += 3;
-						case 'e' : buf.add( '>' ); i += 3;
+						case 'a' : b.add( ':' ); i += 3;
+						case 'c' : b.add( '<' ); i += 3;
+						case 'e' : b.add( '>' ); i += 3;
 					}
 				} else if( c2 == '4' ) {
-					if( c3 == '0' ) buf.add( '@' ); i += 3;
+					if( c3 == '0' ) b.add( '@' ); i += 3;
 					
 				} else if( c2 == '5' ) {
-					if( c3 == 'c' ) buf.add( '\\\\' ); i += 4;
+					if( c3 == 'c' ) b.add( '\\\\' ); i += 4;
 				}
 			} else {
-				buf.add( c );
+				b.add( c );
 				i++;
 			}	
 		}
-		return buf.toString();
+		return b.toString();
 	}
 	
 }

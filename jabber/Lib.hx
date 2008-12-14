@@ -40,7 +40,7 @@ class Lib {
 	
 	#if JABBER_SOCKETBRIDGE
 	static function initSocketBridge( ?id : String = "f9bridge" ) {
-		jabber.SocketBridgeConnection.init( id, initialized );
+		jabber.SocketBridgeConnection.initDelayed( id, initialized );
 	}
 	static function initialized() {
 		#if JABBER_DEBUG trace( "Socket bridge hopefuly initialized" ); #end

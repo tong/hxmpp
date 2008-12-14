@@ -70,7 +70,7 @@ class Stream extends jabber.core.StreamBase {
 		trace("connectHandler\n");
 		
 		status = StreamStatus.pending;
-		sendData( xmpp.XMPPStream.createOpenStream( xmpp.XMPPStream.XMLNS_CLIENT, jid.domain, version, lang ) );
+		sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_CLIENT, jid.domain, version, lang ) );
 		connection.read( true ); // start reading input
 	}
 	

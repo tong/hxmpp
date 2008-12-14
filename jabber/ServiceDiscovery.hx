@@ -17,8 +17,8 @@ import xmpp.IQType;
 */
 class ServiceDiscovery {
 	
-	public dynamic function onInfo( e : IQResult<Stream,xmpp.disco.Info> ) : Void;
-	public dynamic function onItems( i : IQResult<Stream,xmpp.disco.Items> ) : Void;
+	public dynamic function onInfo( d : ServiceDiscovery, e : xmpp.disco.Info ) : Void;
+	public dynamic function onItems( d : ServiceDiscovery, i : xmpp.disco.Items ) : Void;
 	public dynamic function onError( e : jabber.event.XMPPErrorEvent<Stream> ) : Void;
 	
 	public var stream(default,null) : jabber.Stream;
@@ -34,7 +34,7 @@ class ServiceDiscovery {
 		iq_info = new IQ();
 		iq_info.ext = new xmpp.disco.Info();
 		iq_item = new IQ();
-		iq_item.ext = new xmpp.disco.Items();
+		//iq_item.ext = new xmpp.disco.Items();
 	}
 	
 	
@@ -49,9 +49,12 @@ class ServiceDiscovery {
 	/**
 		Queries entity for items.
 	*/
-	public function discoverItems( jid : String ) {
-		iq_item.to = jid;
-		stream.sendIQ( iq_item, handleItemRequest, false, new jabber.core.PacketTimeout( [timeoutHandler],2 ) );
+	public function discoverItems( jid : String, ?node : String ) {
+		//iq_item.to = jid;
+		//iq_item.ext = new xmpp.disco.Items( node );
+		var iq = new IQ( xmpp.IQType.get, null, jid );
+		iq.ext = new xmpp.disco.Items( node );
+		stream.sendIQ( iq, handleItemRequest, false, new jabber.core.PacketTimeout( [timeoutHandler],2 ) );
 	}
 	
 	
@@ -64,9 +67,12 @@ class ServiceDiscovery {
 	function handleInfoRequest( iq : IQ ) {
 		switch( iq.type ) {
 			case result :
+			/*
 				var l = xmpp.disco.Info.parse( iq.ext.toXml() );
 				var e = new IQResult<jabber.Stream,xmpp.disco.Info>( stream, iq, l );
 				onInfo( e );
+				*/
+				onInfo( this, xmpp.disco.Info.parse( iq.ext.toXml() ) );
 			case error :
 				onError( new jabber.event.XMPPErrorEvent<jabber.Stream>( stream, iq ) );
 			default : //#
@@ -76,9 +82,12 @@ class ServiceDiscovery {
 	function handleItemRequest( iq : IQ ) {
 		switch( iq.type ) {
 			case result :
+				/*
 				var l = xmpp.disco.Items.parse( iq.ext.toXml() );
 				var e = new IQResult<jabber.Stream,xmpp.disco.Items>( stream, iq, l );
 				onItems( e );
+				*/
+				onItems( this, xmpp.disco.Items.parse( iq.ext.toXml() ) );
 			case error :
 				onError( new jabber.event.XMPPErrorEvent<jabber.Stream>( stream, iq ) );
 			default: //#

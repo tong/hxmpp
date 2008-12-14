@@ -7,14 +7,18 @@ class Items extends List<xmpp.disco.Item> {
 
 	public static var XMLNS = 'http://jabber.org/protocol/disco#items';
 	
+	public var node : String;
 	
-	public function new() {
+	
+	public function new( ?node : String ) {
 		super();
+		this.node = node;
 	}
 	
 	
 	public function toXml() : Xml {
 		var q = xmpp.IQ.createQueryXml( XMLNS );
+		if( node != null ) q.set( "node", node );
 		if( !isEmpty() ) {
 			for( i in iterator() ) {
 				var item = Xml.createElement( 'item' );

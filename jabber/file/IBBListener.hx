@@ -4,15 +4,6 @@ import jabber.core.PacketCollector;
 import xmpp.IBB;
 import xmpp.filter.PacketFilter;
 
-//?
-/*
-enum ListeningMode {
-	manual;
-	acceptAll;
-	rejectAll;
-}
-*/
-
 
 private class IncomingIBBStream {
 	
@@ -76,6 +67,7 @@ private class IncomingIBBStream {
 	
 	function handleStreamClose( iq : xmpp.IQ ) {
 		//cleanup(); destroy();
+		stream.collectors.remove();
 		listener.onComplete( this );
 	}
 	
@@ -84,6 +76,16 @@ private class IncomingIBBStream {
 	}
 	
 }
+
+
+/*
+//?
+enum ListeningMode {
+	manual;
+	acceptAll;
+	rejectAll;
+}
+*/
 
 
 /**

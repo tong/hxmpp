@@ -4,7 +4,6 @@ import jabber.core.PacketCollector;
 
 
 /**
-	Utility for listening to incoming messages.
 */
 class MessageListener {
 
@@ -16,14 +15,14 @@ class MessageListener {
 	public var listen(default,setListening) : Bool;
 	public var stream(default,setStream) : Stream;
 	
-	var collector : PacketCollector;
+	var coll : PacketCollector;
 	
 	
 	public function new( stream : Stream, ?listen : Bool = true ) {
 		
 		setStream( stream );
 		
-		collector = new PacketCollector( [cast new xmpp.filter.MessageFilter()], messageHandler, true );
+		coll = new PacketCollector( [cast new xmpp.filter.MessageFilter()], messageHandler, true );
 		setListening( listen );
 	}
 	
@@ -38,12 +37,12 @@ class MessageListener {
 	}
 	
 	function setListening( v : Bool ) : Bool {
-		if( v ) stream.collectors.add( collector );
-		else stream.collectors.remove( collector );
+		if( v ) stream.collectors.add( coll );
+		else stream.collectors.remove( coll );
 		return listen = v;
 	}
 	
-	// keep for possible override
+	// override me if you want
 	function messageHandler( m : xmpp.Message ) {
 		this.onMessage( m );
 	}

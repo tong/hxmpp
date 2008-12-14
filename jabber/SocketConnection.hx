@@ -286,13 +286,22 @@ class SocketBridgeConnection {
 	static var initialized = false;
 	static var sockets : IntHash<Socket>;
 	
-	public static function init( id : String, cb : Void->Void, ?delay : Int ) {
+	
+	public static function init( id : String ) {
+		_init( id);
+	}
+	
+	public static function initDelayed( id : String, cb : Void->Void, ?delay : Int ) {
+		if( delay == null || delay < 0 ) delay = defaultDelay;
+		_init( id );
+		haxe.Timer.delay( cb, delay );
+	}
+	
+	static function _init( id : String ) {
 		if( initialized ) throw "Socketbridge already initialized";
 		bridgeId = id;
-		if( delay == null || delay < 0 ) delay = defaultDelay;
 		sockets = new IntHash();
 		initialized = true;
-		haxe.Timer.delay( cb, delay );
 	}
 	
 	public static function createSocket( s : Socket ) {

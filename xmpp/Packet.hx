@@ -68,6 +68,8 @@ class Packet {
 	
 	/*
 	public static function reflectPacketAttributes<T>( x : Xml, p : T ) : T {
+		for( a in x.attributes ) {
+		}
 	}
 	*/
 

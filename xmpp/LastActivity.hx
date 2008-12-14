@@ -22,6 +22,8 @@ class LastActivity {
 		return q;
 	}
 	
+	#if JABBER_DEBUG public inline function toString() : String { return toXml().toString(); } #end
+	
 	
 	public inline static function parse( x : Xml ) : LastActivity {
 		return new LastActivity( parseSeconds( x ) );

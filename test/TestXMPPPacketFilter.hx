@@ -18,23 +18,12 @@ import xmpp.filter.PacketTypeFilter;
 import xmpp.filter.IQFilter;
 
 
-class TestXMPPPacketFilter {
-	
-	static function main() {
-		
-		#if flash9
-		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
-		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
-		#end
-		
-		var r = new haxe.unit.TestRunner();
-		r.add( new TestFilters() );
-		r.run();
-	}
-}
+
+class TestXMPPPacketFilter {}
 
 
-class TestFilters extends haxe.unit.TestCase {
+
+class TestXPacketFilters extends haxe.unit.TestCase {
 	
 	public function testMessageTypeFilter() {
 		

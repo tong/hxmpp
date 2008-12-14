@@ -1,152 +1,54 @@
 
-### TestXMPPPacket
+### XMPP
 
 -cp lib/core/
 -cp test
 -swf9 bin/tests/test_xmpp.swf
--main TestXMPPPacket
+-main TestXMPP
 
 --next
 -cp lib/core/
 -cp test
 -js bin/tests/test_xmpp.js
--main TestXMPPPacket
+-main TestXMPP
 
 --next
 -cp lib/core/
 -cp test
 -neko bin/tests/test_xmpp.n
--main TestXMPPPacket
+-main TestXMPP
 
 --next
 -cp lib/core/
 -cp test
 -php bin/tests
 --php-front test_xmpp.php
--main TestXMPPPacket
+-main TestXMPP
 
 
-
-### TestJID
-
---next
--cp lib/core/
--cp test
--swf9 bin/tests/test_jid.swf
--main TestJID
+### JABBER
 
 --next
 -cp lib/core/
 -cp test
--js bin/tests/test_jid.js
--main TestJID
+-swf9 bin/tests/test_jabber.swf
+-main TestJabber
 
 --next
 -cp lib/core/
 -cp test
--neko bin/tests/test_jid.n
--main TestJID
+-js bin/tests/test_jabber.js
+-main TestJabber
 
 --next
 -cp lib/core/
 -cp test
--php bin/tests
---php-front test_jid.php
--main TestJID
-
-
-
-### TestXMPPPacketFilter
-
---next
--cp lib/core/
--cp test
--swf9 bin/tests/test_xmpp_filter.swf
--main TestXMPPPacketFilter
-
---next
--cp lib/core/
--cp test
--js bin/tests/test_xmpp_filter.js
--main TestXMPPPacketFilter
-
---next
--cp lib/core/
--cp test
--neko bin/tests/test_xmpp_filter.n
--main TestXMPPPacketFilter
+-neko bin/tests/test_jabber.n
+-main TestJabber
 
 --next
 -cp lib/core/
 -cp test
 -php bin/tests
---php-front test_xmpp_filter.php
--main TestXMPPPacketFilter
-
-
-
-### TestXMPPStream
-
-#--next
-#-cp lib/core/
-#-cp test
-#-neko bin/tests/test_xmpp_stream.n
-#-main TestXMPPStream
-
-#--next
-#-cp lib/core/
-#-cp test
-#-swf9 bin/tests/test_xmpp_stream.swf
-#-main TestXMPPStream
-
-#--next
-#-cp lib/core/
-#-cp test
-#-js bin/tests/test_xmpp_stream.js
-#-main TestXMPPStream
-
-#--next
-#-cp lib/core/
-#-cp test
-#-php bin/tests
-#--php-front test_xmpp_stream.php
-#-main TestXMPPStream
-
-
-
-### TestXMPPIQExtensions
-
---next
--cp lib/core
--cp test
--neko bin/tests/test_xmpp_iqs.n
--main TestXMPPIQExtensions
-
---next
--cp lib/core
--cp test
--swf9 bin/tests/test_xmpp_iqs.swf
--main TestXMPPIQExtensions
-
---next
--cp lib/core
--cp test
--js bin/tests/test_xmpp_iqs.js
--main TestXMPPIQExtensions
-
---next
--cp lib/core
--cp test
--php bin/tests
---php-front test_xmpp_iqs.php
--main TestXMPPIQExtensions
-
-
-
-### TestXMPPMUC
-
-#--next
-#-cp lib/core
-#-cp test
-#-neko bin/tests/test_xmpp_muc.n
-#-main TestXMPPMUC
+--php-front test_jabber.php
+-main TestJabber

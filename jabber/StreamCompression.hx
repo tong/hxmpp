@@ -5,7 +5,7 @@ import jabber.core.PacketCollector;
 
 // TODO
 
-typedef CompressionMethod = {
+private typedef CompressionMethod = {
 	var name(default,null) : String;
 	function compress( data : String ) : String;
 	function decompress( data : String ) : String;
@@ -22,7 +22,7 @@ class StreamCompression {
 
 	
 	public function new( stream : StreamBase ) {
-		if( stream.server.features.get( "compression" ) == null ) throw "Server doesnt support stream compression";
+		if( stream.server.features.get( "compression" ) == null ) throw "Entity doesnt support stream compression";
 		this.stream = stream;
 	}
 	
@@ -49,7 +49,7 @@ class StreamCompression {
 	/**
 	*/
 	public function interceptData( d : String ) : String {
-		trace("INTERCEPT");
+		trace("INTERCEPT zlib ");
 		return method.compress( d );
 	}
 	
@@ -64,7 +64,7 @@ class StreamCompression {
 		stream.connection.interceptors.push( this );
 		stream.connection.filters.push( this );
 		stream.status = jabber.StreamStatus.closed;
-		//stream.version = null;
+		//stream.version = false;
 		stream.open();
 	}
 	

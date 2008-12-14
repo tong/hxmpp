@@ -25,12 +25,12 @@ class Chat {
 	
 	public function new( stream : StreamBase, myJid : String, peer : String, ?threadID : String ) {
 		
-		m = new xmpp.Message( xmpp.MessageType.chat, null, null, null, threadID, myJid );
-		m.to = peer;
-		
 		this.stream = stream;
 		this.peer = peer;
 		this.threadID = threadID;
+		
+		m = new xmpp.Message( xmpp.MessageType.chat, null, null, null, threadID, myJid );
+		m.to = peer;
 		
 		var mf : PacketFilter = new xmpp.filter.MessageFilter( xmpp.MessageType.chat );
 		var ff : PacketFilter = new xmpp.filter.PacketFromContainsFilter( peer );
