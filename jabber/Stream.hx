@@ -46,11 +46,20 @@ interface Stream {
 	
 	/**
 	*/
-	var collectors : List<IPacketCollector>;
+//	var collectors : List<IPacketCollector>;
+	function addCollector( c : IPacketCollector ) : Bool;
+	function addCollectors( iter : Iterable<IPacketCollector> ) : Bool;
+	function removeCollector( c : IPacketCollector ) : Bool;
+	function clearCollectors() : Void;
+	
 	
 	/**
 	*/
-	var interceptors : List<PacketInterceptor>;
+//	var interceptors : List<PacketInterceptor>;
+	function addInterceptor( i : PacketInterceptor ) : Bool;
+	function addInterceptors( iter : Iterable<PacketInterceptor> ) : Bool;
+	function removeInterceptor( i : PacketInterceptor ) : Bool;
+	function clearInterceptors() : Void;
 	
 	/**
 	*/
@@ -70,8 +79,11 @@ interface Stream {
 	
 	/**
 	*/
-	function sendIQ( iq : xmpp.IQ,?handler : xmpp.IQ->Void,
-					 ?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool )
+	function sendIQ( iq : xmpp.IQ,
+					 ?handler : xmpp.IQ->Void,
+					 ?permanent : Bool,
+					 ?timeout : PacketTimeout,
+					 ?block : Bool )
 	: { iq : xmpp.IQ, collector : IPacketCollector };
 	
 }

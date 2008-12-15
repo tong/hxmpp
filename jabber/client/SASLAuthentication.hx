@@ -94,15 +94,15 @@ class SASLAuthentication {
 		errorFilters.add( new PacketNameFilter( ~/mechanism-too-weak/ ) );
 		errorFilters.add( new PacketNameFilter( ~/temporary-auth-failure/ ) );
 		col_error = new PacketCollector( [cast errorFilters], handleSASLError, false );
-		stream.collectors.add( col_error );
+		stream.addCollector( col_error );
 
 		// collect challenge packets
 		col_challenge = new PacketCollector( [cast new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
-		stream.collectors.add( col_challenge );
+		stream.addCollector( col_challenge );
 		
 		// collect success packet
 		col_success = new PacketCollector( [cast new PacketNameFilter( ~/success/ )], handleSASLSuccess );
-		stream.collectors.add( col_success );
+		stream.addCollector( col_success );
 		
 		// send init auth
 		var t = handshake.mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password );
@@ -162,9 +162,9 @@ class SASLAuthentication {
 	
 	function cleanup() {
 		active = false;
-		stream.collectors.remove( col_challenge );
-		stream.collectors.remove( col_success );
-		stream.collectors.remove( col_error );
+		stream.removeCollector( col_challenge );
+		stream.removeCollector( col_success );
+		stream.removeCollector( col_error );
 		//col_challenge = col_success = collector_error = null;
 	}
 	

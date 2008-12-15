@@ -34,6 +34,7 @@ typedef StreamConnection = {
 	/**
 	*/
 	function send( data : String ) : Bool;
+	//function send( b : haxe.io.Bytes ) : Bool;
 	
 	/**
 		Starts/Stops reading from input.

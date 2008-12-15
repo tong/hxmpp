@@ -4,11 +4,16 @@ import jabber.StreamConnection;
 
 
 class StreamConnectionBase {
-	
+	/*
 	public dynamic function onConnect() : Void;
 	public dynamic function onDisconnect() : Void;
 	public dynamic function onData( data : String ) : Void;
 	public dynamic function onError( e : String ) : Void;
+	*/
+	public var onConnect : Void->Void;
+	public var onDisconnect : Void->Void;
+	public var onData : String->Void;
+	public var onError : String->Void;
 	
 	public var connected(default,null) : Bool;
 	public var interceptors : Array<DataInterceptor>;

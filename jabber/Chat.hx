@@ -35,7 +35,7 @@ class Chat {
 		var mf : PacketFilter = new xmpp.filter.MessageFilter( xmpp.MessageType.chat );
 		var ff : PacketFilter = new xmpp.filter.PacketFromContainsFilter( peer );
 		c = new PacketCollector( [ mf, ff ], handleMessage, true );
-		stream.collectors.add( c );
+		stream.addCollector( c );
 	}
 	
 	
@@ -57,7 +57,7 @@ class Chat {
 		Removes the collector from this stream.
 	*/
 	public function destroy() {
-		stream.collectors.remove( c );
+		stream.removeCollector( c );
 	}
 	
 	/**

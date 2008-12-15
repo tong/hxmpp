@@ -63,7 +63,7 @@ class ServiceDiscovery {
 	
 	function timeoutHandler( collector ) {
 		// TODO trace("timeoutHandlertimeoutHandlertimeoutHandlertimeoutHandler");
-		stream.collectors.remove( collector );
+		stream.removeCollector( collector );
 	}
 	
 	

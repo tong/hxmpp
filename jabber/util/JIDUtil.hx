@@ -7,16 +7,19 @@ package jabber.util;
 */	
 class JIDUtil {
 	
+	// TODO: resource, local !!!
+	public static var ereg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?/i;
+	
 	
 	/**
 		Returns true if the given jid is valid formed.
 	*/
 	public static function isValid( jid : String ) : Bool {
-		//TODO: regexp jid resource
-		var r : EReg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?/i;
-		if( !r.match( jid ) ) return false;
+		if( !ereg.match( jid ) ) return false;
 		var p = getParts( jid );
-		for( part in p ) if( part.length > jabber.JID.MAX_PART_SIZE ) return false;
+		for( part in p ) {
+			if( part.length > jabber.JID.MAX_PART_SIZE ) return false;
+		}
 		return true;
 	}
 	
@@ -87,10 +90,10 @@ class JIDUtil {
 	    
 	    TODO check XEP!! maybe minor errors (?)
     */
-	public static function escapeNode( node : String ) : String {
+	public static function escapeNode( n : String ) : String {
 		var b = new StringBuf();
-		for( i in 0...node.length ) {
-			var c = node.charAt( i );
+		for( i in 0...n.length ) {
+			var c = n.charAt( i );
 			switch( c ) {
 				case '"' 	: b.add( "\\22" );
 				case '&' 	: b.add( "\\26" );
@@ -124,15 +127,15 @@ class JIDUtil {
      	
       TODO check XEP!! maybe minor errors (?)
     */
-	public static function unescapeNode( node : String ) : String {
-		var n = node.length;
+	public static function unescapeNode( n : String ) : String {
+		var l = n.length;
 		var b = new StringBuf();
 		var i = 0;
-		while( i < n ) {
-			var c = node.charAt( i );
-			if( c == '\\' && i+2 < n ) {
-				var c2 = node.charAt( i+1 );
-				var c3 = node.charAt( i+2 );
+		while( i < l ) {
+			var c = n.charAt( i );
+			if( c == '\\' && i+2 < l ) {
+				var c2 = n.charAt( i+1 );
+				var c3 = n.charAt( i+2 );
 				if( c2 == "2" ) {
 					switch( c3 ) {
 						case '0' : b.add( ' ' );  i += 3;
@@ -148,10 +151,15 @@ class JIDUtil {
 						case 'e' : b.add( '>' ); i += 3;
 					}
 				} else if( c2 == '4' ) {
-					if( c3 == '0' ) b.add( '@' ); i += 3;
-					
+					if( c3 == '0' ) {
+						b.add( '@' );
+						i += 3;
+					}
 				} else if( c2 == '5' ) {
-					if( c3 == 'c' ) b.add( '\\\\' ); i += 4;
+					if( c3 == 'c' ) {
+						b.add( '\\\\' );
+						i += 4;
+					}
 				}
 			} else {
 				b.add( c );

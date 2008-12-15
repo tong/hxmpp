@@ -10,7 +10,7 @@ package {
 	
 	/**
 	 * 
-	 * Example usage of the the hxmpp library from AS3 by loading required classes from a precompiled swf.
+	 * Example usage of the the HXMPP library from actionscript3 by loading required classes from a precompiled swf.
 	 * 
 	 * -) Loads required classes
 	 * -) Opens xmpp stream

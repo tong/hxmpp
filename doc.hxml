@@ -1,7 +1,8 @@
 
 # hxmpp doc
 -cp lib/
-jabber.Lib
+-cp doc/
+ImportAll
 -js lib.js
 -xml doc/api.xml
 -D JABBER_LIBCLIENT

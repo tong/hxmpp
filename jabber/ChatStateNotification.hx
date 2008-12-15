@@ -34,7 +34,7 @@ class ChatStateNotification {
 		
 		setChat( chat );
 		
-		chat.stream.interceptors.add( this );
+		chat.stream.addInterceptor( this );
 	}
 	
 	
@@ -47,7 +47,7 @@ class ChatStateNotification {
 	
 	public function interceptPacket( p : xmpp.Packet ) : xmpp.Packet {
 		if( chat == null ) {
-			chat.stream.interceptors.remove( this );
+			chat.stream.removeInterceptor( this );
 			return p;
 		}
 		if( state == null || !f_message.accept( p ) || !f_to.accept( p ) ) return p;

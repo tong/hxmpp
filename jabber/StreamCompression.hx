@@ -40,8 +40,8 @@ class StreamCompression {
 		}
 		if( !match ) return false;
 		this.method = method;
-		stream.collectors.add( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/compressed/ ) ], initSuccessHandler, false ) );
-		stream.collectors.add( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/failure/ ) ], initFailedHandler, false ) );
+		stream.addCollector( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/compressed/ ) ], initSuccessHandler, false ) );
+		stream.addCollector( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/failure/ ) ], initFailedHandler, false ) );
 		stream.sendData( xmpp.Compression.createPacket( [method.name] ).toString() );
 		return true;
 	}

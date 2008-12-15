@@ -57,8 +57,8 @@ class Roster {
 		resources = new Hash();
 		presenceMap = new Hash();
 		
-		stream.collectors.add( new PacketCollector( [cast new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence )], handleRosterPresence, true ) );
-		stream.collectors.add( new PacketCollector( [cast new xmpp.filter.IQFilter( xmpp.Roster.XMLNS )], handleRosterIQ, true ) );	
+		stream.addCollector( new PacketCollector( [cast new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence )], handleRosterPresence, true ) );
+		stream.addCollector( new PacketCollector( [cast new xmpp.filter.IQFilter( xmpp.Roster.XMLNS )], handleRosterIQ, true ) );	
 	}
 	
 	

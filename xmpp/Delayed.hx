@@ -26,12 +26,29 @@ typedef PacketDelay = {
 	
 	Use compiler flag 'XEP_0091' for backwards compatibility with <a href="http://xmpp.org/extensions/xep-0091.html">XEP-0091: Delayed Delivery</a>.
 */
-class DelayedDelivery {
+class Delayed {
 	
 	public static var XMLNS = "urn:xmpp:delay";
 	
+	/*
+	public var from : String;
+	public var stamp : String;
+	public var description : String;
+	
+	public function new() {}
+	
+	public function toXml() : Xml {
+		var x = Xml.createElement( "delay" );
+		x.set( "xmlns", XMLNS );
+		x.set( "from", from );
+		x.set( "stamp", stamp );
+		if( description != null ) x.set( "description", description );
+		return x;
+	}
+	*/
+	
 	/**
-		Parses/Returns the packet delay of the given packet.
+		Parses/Returns the packet delay from the properties of the given xmpp packet.
 	*/
 	public static function get( p : xmpp.Packet ) : xmpp.PacketDelay {
 		for( e in p.properties ) {

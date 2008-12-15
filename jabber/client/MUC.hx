@@ -87,9 +87,9 @@ class MUC {
 		// collect all presences and messages from the room jid
 		var f_from : xmpp.filter.PacketFilter = new PacketFromContainsFilter( jid );
 		col_presence = new PacketCollector( [f_from, cast new PacketTypeFilter( PacketType.presence ) ], handlePresence, true );
-		stream.collectors.add( col_presence );
+		stream.addCollector( col_presence );
 		col_message = new PacketCollector(  [f_from, cast new MessageFilter( MessageType.groupchat )], handleMessage, true );
-		stream.collectors.add( col_message );
+		stream.addCollector( col_message );
 	}
 	
 	/*
@@ -109,8 +109,8 @@ class MUC {
 	*/
 	public function destroy() {
 		if( joined ) return false;
-		stream.collectors.remove( col_presence );
-		stream.collectors.remove( col_message );
+		stream.removeCollector( col_presence );
+		stream.removeCollector( col_message );
 		return true;
 	}
 	

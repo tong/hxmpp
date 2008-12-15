@@ -37,8 +37,8 @@ class MessageListener {
 	}
 	
 	function setListening( v : Bool ) : Bool {
-		if( v ) stream.collectors.add( coll );
-		else stream.collectors.remove( coll );
+		if( v ) stream.addCollector( coll );
+		else stream.removeCollector( coll );
 		return listen = v;
 	}
 	

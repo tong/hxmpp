@@ -33,7 +33,6 @@ class Register {
 	public var registered : Bool;
 	//public var form : xmpp.DataForm;
 	*/
-	
 	public var remove : Bool;
 	
 	
@@ -59,12 +58,11 @@ class Register {
 		return q;
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
+	#if JABBER_DEBUG public inline function toString() : String { return toXml().toString(); } #end
 	
 	
 	public static function parse( x : Xml ) : xmpp.Register {
+		//TODO
 		var r = new xmpp.Register();
 		xmpp.Packet.reflectPacketNodes( x, r );
 		/*

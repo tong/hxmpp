@@ -15,7 +15,7 @@ import jabber.client.SASLAuthentication;
 import jabber.client.Stream;
 import jabber.client.VCardTemp;
 import xmpp.DataForm;
-import xmpp.DelayedDelivery;
+import xmpp.Delayed;
 #if JABBER_DEBUG
 import jabber.util.XMPPDebug;
 import jabber.util.ResourceAccount;

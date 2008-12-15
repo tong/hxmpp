@@ -13,7 +13,7 @@ class TestXMPPPacket {}
 class TestMessagePacket extends haxe.unit.TestCase   {
 	
 	/*
-	public function testMessageCreate() {
+	public function testCreation() {
 		
 		var m = new xmpp.Message();
 		
@@ -38,7 +38,7 @@ class TestMessagePacket extends haxe.unit.TestCase   {
 	}
 	*/
 
-	public function testMessageParse() {
+	public function testParsing() {
 		/*
 		var src = Xml.parse( '
 			<message type="chat" to="tong@igniterealtime.org" id="ab01a" >
@@ -78,7 +78,7 @@ class TestMessagePacket extends haxe.unit.TestCase   {
 
 class TestPresencePacket extends haxe.unit.TestCase   {
 	
-	public function testPresenceCreate() {
+	public function testCreation() {
 		
 		var p = new xmpp.Presence();
 		
@@ -94,7 +94,7 @@ class TestPresencePacket extends haxe.unit.TestCase   {
 		
 	}
 	
-	public function testPreseceParse() {
+	public function testParsing() {
 		
 		var src = Xml.parse( '
 			<presence>
@@ -116,14 +116,14 @@ class TestPresencePacket extends haxe.unit.TestCase   {
 
 class TestIQPacket extends haxe.unit.TestCase   {
 	
-	public function testIQCreate() {
+	public function testCreation() {
 		var iq = new xmpp.IQ( null, "123" );
 		assertEquals( iq.type, IQType.get );
 		assertEquals( iq.id, "123" );
 		//assertEquals( iq.toString(), '<iq type="get" id="123"/>' );
 	}
 
-	public function testIQParse() {
+	public function testParsing() {
 		
 		var src = Xml.parse( '
 			<iq type="get" to="jabber.spektral.at" id="ab08a" >
@@ -139,21 +139,17 @@ class TestIQPacket extends haxe.unit.TestCase   {
 		//TODO any properties
 	}
 	
-//	public function testIQAuth() {
-//	}
-	
 }
 
 
 
 class TestErrorExtension extends haxe.unit.TestCase {
 	
-	public function testExtension() {
-		var err = xmpp.Error.parse( Xml.parse( '<error type="cancel"><conflict xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>' ).firstElement() );
-		assertEquals( err.type, xmpp.ErrorType.cancel );
-		assertEquals( err.name, "conflict" );
-		assertEquals( err.text, null );
-		
+	public function testParsing() {
+		var e = xmpp.Error.parse( Xml.parse( '<error type="cancel"><conflict xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>' ).firstElement() );
+		assertEquals( e.type, xmpp.ErrorType.cancel );
+		assertEquals( e.name, "conflict" );
+		assertEquals( e.text, null );
 	}
 }
 
@@ -161,7 +157,7 @@ class TestErrorExtension extends haxe.unit.TestCase {
 
 class TestXMPPDate extends haxe.unit.TestCase {
 	
-	public function testDateFormatting() {
+	public function testParsing() {
 		
 		var now = "2008-11-01";
 		var formatted = xmpp.Date.format( now );

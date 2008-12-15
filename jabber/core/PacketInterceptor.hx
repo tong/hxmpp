@@ -6,8 +6,9 @@ package jabber.core;
 */
 //interface IPacketInterceptor {
 typedef PacketInterceptor = {
+	
 	/**
-		Intercepts xmpp packet.
+		Intercepts outgoing xmpp packet.
 	*/
 	function interceptPacket( p : xmpp.Packet ) : xmpp.Packet;
 	

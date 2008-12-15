@@ -51,10 +51,10 @@ class ServiceDiscoveryListener {
 		if( l == listen ) return l;
 		listen = l;
 		if( l ) {
-			stream.collectors.add( col_info );
+			stream.addCollector( col_info );
 //			stream.collectors.add( col_item );
 		} else {
-			stream.collectors.remove( col_info );
+			stream.removeCollector( col_info );
 //			stream.collectors.remove( col_item );
 		}
 		return l;

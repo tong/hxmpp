@@ -1,7 +1,7 @@
 
 HXMPP - README
 ==============
-hxmpp is a haXe[03] library for creation of jabber/xmpp clients and components.
+HXMPP is a haXe[03] library for creation of jabber/xmpp clients and components.
 The library mainly consists of two namespaces:
 * xmpp: creation and manipulation of xmpp data.
 * jabber: creation and handling of xmpp data streams between jabber entities.
