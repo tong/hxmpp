@@ -109,7 +109,7 @@ class PrivacyLists {
 		if( active != null ) xt.active = active;
 		else if( _default != null ) xt._default = _default; 
 		else if( list != null ) xt.list.push( list );
-		iq.xt = xt;
+		iq.ext = xt;
 		var me = this;
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			switch( r.type ) {
