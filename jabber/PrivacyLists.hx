@@ -105,11 +105,11 @@ class PrivacyLists {
 	function sendRequest( iqType : xmpp.IQType, resultHandler : xmpp.IQ->Void,
 						  ?active : String, ?_default : String, ?list : xmpp.PrivacyList ) {
 		var iq = new xmpp.IQ( iqType );
-		var ext = new xmpp.PrivacyLists();
-		if( active != null ) ext.active = active;
-		else if( _default != null ) ext._default = _default; 
-		else if( list != null ) ext.list.push( list );
-		iq.ext = ext;
+		var xt = new xmpp.PrivacyLists();
+		if( active != null ) xt.active = active;
+		else if( _default != null ) xt._default = _default; 
+		else if( list != null ) xt.list.push( list );
+		iq.xt = xt;
 		var me = this;
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			switch( r.type ) {

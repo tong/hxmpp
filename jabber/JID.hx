@@ -3,7 +3,6 @@ package jabber;
 import jabber.util.JIDUtil;
 
 //TODO move to xmpp package
-//TODO max part size checks
 
 /**
 	An XMPP address (JID).<br/>
@@ -21,7 +20,7 @@ import jabber.util.JIDUtil;
 */
 class JID {
 	
-	public static var MAX_PART_SIZE = 1023; // TODO
+	public static inline var MAX_PART_SIZE = 1023;
 	
 	public var node(default,null) : String;
     public var domain(default,null) : String;

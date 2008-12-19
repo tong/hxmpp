@@ -19,6 +19,4 @@ enum StreamStatus {
 	*/
 	open;
 	//open( info : String );
-	//open( ?i : T );
-	//open( authenticated : Bool );
 }

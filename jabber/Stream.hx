@@ -1,8 +1,8 @@
 package jabber;
 
 import jabber.core.TPacketCollector;
+import jabber.core.TPacketInterceptor;
 import jabber.core.PacketCollector;
-import jabber.core.PacketInterceptor;
 import xmpp.filter.PacketIDFilter;
 import jabber.core.PacketTimeout;
 import util.XmlUtil;
@@ -12,8 +12,10 @@ private typedef Server = {
 	var features(default,null) : Hash<Xml>;
 }
 
+//TODO make typedef, or if not possible a stream base class without implementation (?)
 
 /**
+	
 */
 class Stream {
 	
@@ -31,7 +33,7 @@ class Stream {
 	public var jid(default,null) : jabber.JID;
 	
 	var collectors : List<TPacketCollector>;
-	var interceptors : List<PacketInterceptor>;
+	var interceptors : List<TPacketInterceptor>;
 	var numPacketsSent : Int;
 	var cache : StringBuf;
 	
@@ -167,13 +169,13 @@ class Stream {
 		collectors = new List();
 	}
 	
-	public function addInterceptor(i : PacketInterceptor ) : Bool {
+	public function addInterceptor(i : TPacketInterceptor ) : Bool {
 		if( Lambda.has( interceptors, i ) ) return false;
 		interceptors.add( i );
 		return true;
 	}
 	
-	public function addInterceptors( iter : Iterable<PacketInterceptor> ) : Bool {
+	public function addInterceptors( iter : Iterable<TPacketInterceptor> ) : Bool {
 		for( i in iter ) {
 			if( Lambda.has( interceptors, i ) ) return false;
 		}
@@ -181,7 +183,7 @@ class Stream {
 		return true;
 	}
 	
-	public function removeInterceptor( i : PacketInterceptor ) : Bool {
+	public function removeInterceptor( i : TPacketInterceptor ) : Bool {
 		return interceptors.remove( i );
 	}
 	
