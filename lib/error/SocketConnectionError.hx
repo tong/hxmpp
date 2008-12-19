@@ -1,4 +1,4 @@
-package jabber.error;
+package error;
 
 
 class SocketConnectionError extends error.Exception {

@@ -2,7 +2,7 @@ package xmpp;
 
 
 /**
-	Xmpp packet error extension.
+	XMPP packet error extension.
 */
 class Error {
 	
@@ -13,11 +13,9 @@ class Error {
 	public var name : String;
 	public var text : String;
 	
-	
 	public function new() {
 		code = -1;
 	}
-	
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "error" );
@@ -31,10 +29,11 @@ class Error {
 		return x;
 	}
 	
+	#if JABBER_DEBUG
 	public inline function toString() : String {
 		return toXml().toString();
 	}
-	
+	#end
 	
 	/**
 		Parses the error from a given packet.

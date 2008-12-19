@@ -3,11 +3,14 @@ package jabber.core;
 
 /**
 */
-interface IPacketCollector {
+typedef TPacketCollector = {
 	
 	/**
 	*/
-	var filters : Array<xmpp.filter.PacketFilter>;
+	var filters : Array<xmpp.PacketFilter>;
+	//function addFilter( f : xmpp.PacketFilter ) : Bool;
+	//function removeFilter( f : xmpp.PacketFilter ) : Bool;
+	//function clearFilters() : Void;
 	
 	/**
 		Methods to which collected packets get delivered.
@@ -29,7 +32,7 @@ interface IPacketCollector {
 	var timeout(default,setTimeout) : PacketTimeout;
 	
 	/**
-		Returns [true] if the given xmpp packet passes through all filters.
+		Returns true if the given xmpp packet passes through all filters.
 	*/
 	function accept( p : xmpp.Packet ) : Bool;
 	

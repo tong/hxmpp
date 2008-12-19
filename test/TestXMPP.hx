@@ -23,15 +23,18 @@ class TestXMPP {
 	//	r.add( new TestBindExtension() );
 		
 		///// iq extension
-		r.add( new TestAuthExtension() );
-		r.add( new TestRegisterExtension() );
-		r.add( new TestRosterExtension() );
-		r.add( new TestDiscoExtension() );
-		r.add( new TestDataFormExtension() );
-		r.add( new TestDelayedDeliveryExtension() );
-		r.add( new TestChatStateExtension() );
-		r.add( new TestLastActivityExtension() );
-		r.add( new TestPrivacyListsExtension() );
+		r.add( new TestXMPPAuth() );
+		r.add( new TestXMPPRegister() );
+		r.add( new TestXMPPRoster() );
+		r.add( new TestXMPPDisco() );
+		r.add( new TestXMPPDataForm() );
+		r.add( new TestXMPPDelayedDelivery() );
+		r.add( new TestXMPPChatState() );
+		r.add( new TestXMPPLastActivity() );
+		r.add( new TestXMPPPrivacyLists() );
+		r.add( new TestXMPPMood() );
+		
+	//	r.add( new TestXMPPJingle() );
 		
 		///// packet filters
 		r.add( new TestXPacketFilters() );

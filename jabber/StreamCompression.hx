@@ -7,8 +7,8 @@ import jabber.core.PacketCollector;
 
 private typedef CompressionMethod = {
 	var name(default,null) : String;
-	function compress( data : String ) : String;
-	function decompress( data : String ) : String;
+	function compress( d : String ) : String;
+	function decompress( d : String ) : String;
 }
 
 
@@ -17,11 +17,11 @@ private typedef CompressionMethod = {
 */
 class StreamCompression {
 	
-	public var stream(default,null) : StreamBase;
+	public var stream(default,null) : Stream;
 	public var method(default,null) : CompressionMethod;
 
 	
-	public function new( stream : StreamBase ) {
+	public function new( stream : Stream ) {
 		if( stream.server.features.get( "compression" ) == null ) throw "Entity doesnt support stream compression";
 		this.stream = stream;
 	}

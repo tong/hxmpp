@@ -1,6 +1,7 @@
 package jabber.client;
 
 import jabber.core.PacketCollector;
+import jabber.core.PacketCollector;
 import jabber.core.PresenceManager;
 import jabber.muc.Occupant;
 import xmpp.muc.Affiliation;
@@ -85,7 +86,7 @@ class MUC {
 		me.presence = new xmpp.Presence( xmpp.PresenceType.unavailable );
 		
 		// collect all presences and messages from the room jid
-		var f_from : xmpp.filter.PacketFilter = new PacketFromContainsFilter( jid );
+		var f_from : xmpp.PacketFilter = new PacketFromContainsFilter( jid );
 		col_presence = new PacketCollector( [f_from, cast new PacketTypeFilter( PacketType.presence ) ], handlePresence, true );
 		stream.addCollector( col_presence );
 		col_message = new PacketCollector(  [f_from, cast new MessageFilter( MessageType.groupchat )], handleMessage, true );

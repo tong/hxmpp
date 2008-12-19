@@ -4,9 +4,8 @@ import xmpp.IBB;
 
 
 /**
-TODO !! jabber.Stream
 
-	Outgoing IBB bytestream.
+	Outgoing IBB.
 	
 	<a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams (IBB)</a>
 	
@@ -21,11 +20,11 @@ class IBB {
 	
 	public static var defaultBlockSize = 1<<12;
 	
-	public dynamic function onComplete( ibs : IBB ) {}
+	public dynamic function onComplete( s : IBB ) {}
 	//public dynamic function onError() {}
 	
-	public var stream(default,null) : jabber.client.Stream;
-	public var target(default,null) : String;
+	public var stream(default,null) : jabber.Stream;
+	public var reciever(default,null) : String;
 	public var blockSize(default,null) : Int;
 	public var active(default,null) : Bool;
 	public var seq(default,null) : Int;
@@ -36,74 +35,94 @@ class IBB {
 	var input : haxe.io.BytesInput;
 	var sid : String;
 	var baseCode : haxe.BaseCode;
+	var blocks : Array<haxe.io.Bytes>;
 	
 	
-	public function new( stream : jabber.client.Stream, target : String,
+	public function new( stream : jabber.Stream, reciever : String,
 						 ?blockSize : Int, ?iqMode : Bool = false ) {
 		
 		this.stream = stream;
-		this.target = target;
+		this.reciever = reciever;
 		this.blockSize = ( blockSize != null ) ? blockSize : defaultBlockSize;
 	//	this.iqMode = iqMode;
 		
 		active = false;
-		bytesSent = seq = 0;
+		bytesSent = 0;
+		seq = 0;
 		baseCode = new haxe.BaseCode( haxe.io.Bytes.ofString( util.Base64.CHARS ) );
 	}
 	
 	
+	//public function init( i : haxe.io.BytesInput ) {
 	public function init( bytes : haxe.io.Bytes ) {
-		
+			
 		if( active ) throw "Inband stream already active";
 		active = true;
+		
+		trace(bytes.length);
 		
 		this.bytes = bytes;
 		input = new haxe.io.BytesInput( bytes );
 		sid = util.StringUtil.random64( 8 );
 		
-		var iq = new xmpp.IQ( xmpp.IQType.set, null, target, stream.jid.toString() );
+		// TODO create blocks, encode blocks base64
+		blocks = new Array();
+		var pos = 0;
+		var added = 0;
+		
+		while( true ) {
+			var len = if( added > bytes.length-blockSize ) bytes.length-added else blockSize;
+			var next = bytes.sub( pos, len );
+			added += next.length;
+			var enc = baseCode.encodeBytes( next );
+			blocks.push( enc );
+			if( len < blockSize ) break;
+		}
+		//trace(blocks.join("").length);
+		trace("#############################");
+	//	var left = bytes.length-bytesSent;
+	//	var len = ( left < blockSize ) ? left : blockSize;
+	//	return bytes.sub( bytesSent, len );
+		
+		var iq = new xmpp.IQ( xmpp.IQType.set, null, reciever );
 		var ext = new xmpp.IBB( IBBType.open, sid, blockSize );
 		iq.ext = ext;
 		stream.sendIQ( iq, handleOpenResult );
 	}
 	
-	
-	function handleOpenResult( iq : xmpp.IQ ) {
-		switch( iq.type ) {
-			case result :
-				// start sending chunks
+	function sendNextPacket() {
+		var output = blocks[seq].toString();
+		var m = new xmpp.Message( null, reciever, null );
+		m.properties.push( xmpp.IBB.createDataElement( sid, seq, output.toString() ) );
+		m.id = "ibb_"+seq;
+		if( stream.sendData( m.toString() ) ) {
+			if( seq < blocks.length-1 ) {
+				trace("sending next packet..");
+				seq++;
 				sendNextPacket();
-				
-			case error :
-				//TODO
-			
-			default : //#
+			} else {
+				trace("transfer complete");
+				var iq = new xmpp.IQ( xmpp.IQType.set, null, reciever );
+				iq.ext = new xmpp.IBB( IBBType.close, sid );
+				stream.sendIQ( iq, handleStreamCloseResponse );
+			}
 		}
 	}
 	
-	function handleCloseResult( iq : xmpp.IQ ) {
-	}
-	
-	function handleIQAcknowledge( iq : xmpp.IQ ) {
-	}
-	
-	function handleStreamCloseResponse( iq : xmpp.IQ ) {
-		trace("handleStreamCloseResponse");
-	}
-	
+	/*
 	function sendNextPacket() {
 		var b = nextData();
 		var output = baseCode.encodeBytes( b ).toString();
-		var m = new xmpp.Message( null, target, null );
-		m.properties.push( xmpp.IBB.createDataElement( sid, seq, output ) );
+		var m = new xmpp.Message( null, reciever, null );
+		m.properties.push( xmpp.IBB.createDataElement( sid, seq, output.toString() ) );
 		m.id = "ibb_"+seq;
 		if( stream.sendData( m.toString() ) ) {
-			seq = if( ++seq == (1<<16) ) 0;
 			bytesSent += b.length;
 			if( bytesSent < bytes.length ) {
+				if( ++seq == (1<<16) ) seq = 0;
 				sendNextPacket();
 			} else {
-				var iq = new xmpp.IQ( xmpp.IQType.set, null, target );
+				var iq = new xmpp.IQ( xmpp.IQType.set, null, reciever );
 				iq.ext = new xmpp.IBB( IBBType.close, sid );
 				stream.sendIQ( iq, handleStreamCloseResponse );
 			}
@@ -114,6 +133,29 @@ class IBB {
 		var left = bytes.length-bytesSent;
 		var len = ( left < blockSize ) ? left : blockSize;
 		return bytes.sub( bytesSent, len );
+	}
+	*/
+	
+	function handleOpenResult( iq : xmpp.IQ ) {
+		switch( iq.type ) {
+			case result : // start sending data chunks
+				sendNextPacket();
+			case error :
+				//TODO
+			default : //#
+		}
+	}
+	
+	function handleCloseResult( iq : xmpp.IQ ) {
+		//TODO
+	}
+	
+	function handleIQAcknowledge( iq : xmpp.IQ ) {
+		//TODO
+	}
+	
+	function handleStreamCloseResponse( iq : xmpp.IQ ) {
+		trace("handleStreamCloseResponse");
 	}
 	
 }

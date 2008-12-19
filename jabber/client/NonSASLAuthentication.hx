@@ -51,11 +51,11 @@ class NonSASLAuthentication {
 		}
 	}
 	
-	function handleResult( iq : xmpp.IQ ) {
+	function handleResult( r : xmpp.IQ ) {
 		active = false;
-		switch( iq.type ) {
+		switch( r.type ) {
 			case result : onSuccess( stream );
-			case error :  onFailed( new jabber.XMPPError( this, iq ) );
+			case error : onFailed( new jabber.XMPPError( this, r ) );
 			default : //#
 		}
 	}

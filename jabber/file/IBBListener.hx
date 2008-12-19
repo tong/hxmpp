@@ -2,10 +2,9 @@ package jabber.file;
 
 import jabber.core.PacketCollector;
 import xmpp.IBB;
-import xmpp.filter.PacketFilter;
 
 
-private class IncomingIBBStream {
+class IBBStream {
 	
 	public var data(default,null) : String;
 	public var blockSize(default,null) : Int;
@@ -18,8 +17,8 @@ private class IncomingIBBStream {
 	var coll_close : PacketCollector;
 	
 	
-	public function new( listener : IBBListener ) {
-		this.listener = listener;
+	public function new( l : IBBListener ) {
+		this.listener = l;
 	}
 	
 	
@@ -33,23 +32,23 @@ private class IncomingIBBStream {
 			seq = 0;
 			
 			// collect message data packets
-			var f_from : PacketFilter = new xmpp.filter.PacketFromFilter( initiator );
-			var f_msg : PacketFilter = new  xmpp.filter.MessageFilter();
+			var f_from : xmpp.PacketFilter = new xmpp.filter.PacketFromFilter( initiator );
+			var f_msg : xmpp.PacketFilter = new  xmpp.filter.MessageFilter();
 	//TODO	var f_ext : PacketFilter = new xmpp.filter.PacketExtensionFilter();
 			coll_data_m = new PacketCollector( [ f_from, f_msg ], handleDataPacket, true );
-			listener.stream.collectors.add( coll_data_m );
+			listener.stream.addCollector( coll_data_m );
 			
 			// collect iq data packets
 			//TODO
 			//coll_data_iq
 			
 			// collect stream close iq packets
-			var f_iq : PacketFilter = new xmpp.filter.IQFilter( xmpp.IBB.XMLNS, Type.enumConstructor( IBBType.close ), xmpp.IQType.set );
+			var f_iq : xmpp.PacketFilter = new xmpp.filter.IQFilter( xmpp.IBB.XMLNS, Type.enumConstructor( IBBType.close ), xmpp.IQType.set );
 			coll_close = new PacketCollector( [f_iq], handleStreamClose );
-			listener.stream.collectors.add( coll_close );
+			listener.stream.addCollector( coll_close );
 			
-			var response = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, listener.stream.jid.toString() );
-			listener.stream.sendData( response.toString() );
+			var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, listener.stream.jid.toString() );
+			listener.stream.sendData( r.toString() );
 		}
 	}
 	
@@ -60,21 +59,21 @@ private class IncomingIBBStream {
 			trace("PACKET LOST");
 			//TODO error message
 			listener.onError( this );
+			return;
 		}
 		seq++;
-		handleData( util.Base64.decode( d.data ) );
+		data += d.data;
+		//handleData( util.Base64.decode( d.data ) );
+		//handleData( d.data );
 	}
 	
 	function handleStreamClose( iq : xmpp.IQ ) {
-		//cleanup(); destroy();
-		stream.collectors.remove();
+		//TODO
+		//stream.removeCollector();
 		listener.onComplete( this );
+		//dispose();
 	}
-	
-	function handleData( d : String ) {
-		data += d;
-	}
-	
+
 }
 
 
@@ -89,40 +88,37 @@ enum ListeningMode {
 
 
 /**
-	Listens for incoming IBB requests.
+	Listens/Manages incoming IBB.
 	
 	<a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams (IBB)</a>
 */
 class IBBListener {
 	
-	public dynamic function onRequest( ibs : IncomingIBBStream ) {}
-	public dynamic function onComplete( ibs : IncomingIBBStream ) {}
-	public dynamic function onError( ibs : IncomingIBBStream ) {}
+	public dynamic function onRequest( s : IBBStream ) {}
+	public dynamic function onComplete( s : IBBStream ) {}
+	public dynamic function onError( s : IBBStream ) {}
 	
 	public var stream(default,null) : jabber.Stream;
-	public var streams(default,null) : Array<IncomingIBBStream>;
+	/** Current active IBB streams */
+	public var streams(default,null) : Array<IBBStream>;
 	
-
 	public function new( stream : jabber.Stream ) {
 	
 		this.stream = stream;
 		
 		streams = new Array();
 		
-		// listen for incoming ibb requests
-		var iqFilter : xmpp.filter.PacketFilter= new xmpp.filter.IQFilter( xmpp.IBB.XMLNS, "open", xmpp.IQType.set );
-		stream.collectors.add( new jabber.core.PacketCollector( [ iqFilter ], handleRequest, true  ));
+		var iqFilter : xmpp.PacketFilter= new xmpp.filter.IQFilter( xmpp.IBB.XMLNS, "open", xmpp.IQType.set );
+		stream.addCollector( new jabber.core.PacketCollector( [ iqFilter ], handleRequest, true  ));
 	}
-
 
 	function handleRequest( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 			case set :
-				var bs = new IncomingIBBStream( this );
-				streams.push( bs );
-				bs.handleRequest( iq );
-				
-			default : 
+				var ibb = new IBBStream( this );
+				streams.push( ibb );
+				ibb.handleRequest( iq );
+			default : //#
 		}
 	}
 	

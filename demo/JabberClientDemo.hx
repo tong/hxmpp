@@ -43,7 +43,7 @@ class JabberClientDemo {
 		trace( "Initializing stream...\n" );
 		try {
 			stream.open();
-		} catch( e : jabber.error.SocketConnectionError ) {
+		} catch( e : error.SocketConnectionError ) {
 			trace( "Socket connection error " );
 			trace(e);
 		}

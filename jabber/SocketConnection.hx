@@ -81,7 +81,7 @@ class SocketConnection extends jabber.core.StreamConnectionBase {
 			socket.connect( new Host( host ), port );
 			connected = true;
 		} catch( e : Dynamic ) {
-			throw new jabber.error.SocketConnectionError( e );
+			throw new error.SocketConnectionError( e );
 		}
 		onConnect();
 		#else

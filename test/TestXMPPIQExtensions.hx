@@ -7,7 +7,7 @@ class TestXMPPIQExtensions {}
 /**
 	Testunit for xmpp.Auth
 */
-class TestAuthExtension extends haxe.unit.TestCase {
+class TestXMPPAuth extends haxe.unit.TestCase {
 	
 	public function testParsing() {
 		
@@ -48,7 +48,7 @@ class TestAuthExtension extends haxe.unit.TestCase {
 /**
 	Testunit for xmpp.Register
 */
-class TestRegisterExtension extends haxe.unit.TestCase {
+class TestXMPPRegister extends haxe.unit.TestCase {
 	
 	public function testParsing() {
 		var iq = xmpp.IQ.parse( Xml.parse(
@@ -81,7 +81,7 @@ class TestRegisterExtension extends haxe.unit.TestCase {
 /**
 	Testunit for xmpp.Roster
 */
-class TestRosterExtension extends haxe.unit.TestCase {
+class TestXMPPRoster extends haxe.unit.TestCase {
 	
 	public function testParsing() {
 		var r = xmpp.Roster.parse( Xml.parse(
@@ -104,7 +104,7 @@ class TestRosterExtension extends haxe.unit.TestCase {
 /**
 	Testunit for xmpp.disco.Info
 */
-class TestDiscoExtension extends haxe.unit.TestCase {
+class TestXMPPDisco extends haxe.unit.TestCase {
 	
 	public function testParsingInfo() {
 	
@@ -176,7 +176,7 @@ class TestDiscoExtension extends haxe.unit.TestCase {
 /**
 	Testunit for xmpp.DataForm
 */
-class TestDataFormExtension extends haxe.unit.TestCase {
+class TestXMPPDataForm extends haxe.unit.TestCase {
 	
 	public function testParsing() {
 		
@@ -295,6 +295,7 @@ class TestDataFormExtension extends haxe.unit.TestCase {
 		TODO test with example which include ALL elements!
 	}
 	*/
+	
 }
 
 
@@ -302,7 +303,7 @@ class TestDataFormExtension extends haxe.unit.TestCase {
 /**
 	Testunit for xmpp.DelayedDelivery
 */
-class TestDelayedDeliveryExtension extends haxe.unit.TestCase {
+class TestXMPPDelayedDelivery extends haxe.unit.TestCase {
 	
 	public function testParsing() {
 		
@@ -335,7 +336,7 @@ class TestDelayedDeliveryExtension extends haxe.unit.TestCase {
 /**
 	Testunit for xmpp.ChatStatePacket
 */
-class TestChatStateExtension extends haxe.unit.TestCase {
+class TestXMPPChatState extends haxe.unit.TestCase {
 	
 	public function testParsing() {
 		
@@ -373,7 +374,7 @@ class TestChatStateExtension extends haxe.unit.TestCase {
 /**
 	Testunit for xmpp.LastActivity
 */
-class TestLastActivityExtension extends haxe.unit.TestCase {
+class TestXMPPLastActivity extends haxe.unit.TestCase {
 	
 	public function testParsing() {
 		var q = Xml.parse( "<query xmlns='jabber:iq:last' seconds='903'/>" ).firstElement();
@@ -389,7 +390,7 @@ class TestLastActivityExtension extends haxe.unit.TestCase {
 /**
 	Testunit for xmpp.PrivacyLists
 */
-class TestPrivacyListsExtension extends haxe.unit.TestCase {
+class TestXMPPPrivacyLists extends haxe.unit.TestCase {
 	
 	public function testParsing() {
 		
@@ -454,3 +455,31 @@ class TestPrivacyListsExtension extends haxe.unit.TestCase {
 		*/
 	
 } 
+
+
+
+/**
+	Testunit for xmpp.Mood
+*/
+class TestXMPPMood extends haxe.unit.TestCase {
+	
+	public function testParsing() {
+		var q = Xml.parse( "
+<mood xmlns='http://jabber.org/protocol/mood'>
+  <happy/>
+  <text>Yay, the mood spec has been approved!</text>
+</mood>
+" ).firstElement();
+		var m = xmpp.UserMood.parse( q );
+		assertEquals( xmpp.Mood.happy, m.mood );
+		assertEquals( 'Yay, the mood spec has been approved!', m.text );
+	}
+	
+	public function testCreation() {
+		var m = new xmpp.UserMood( xmpp.Mood.happy, "Yay, the mood spec has been approved!" );
+		assertEquals( xmpp.Mood.happy, m.mood );
+		assertEquals( 'Yay, the mood spec has been approved!', m.text );
+	}
+	
+}
+

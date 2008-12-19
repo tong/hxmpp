@@ -1,6 +1,6 @@
 package jabber;
 
-import jabber.core.StreamBase;
+import jabber.core.PacketCollector;
 import jabber.core.PacketCollector;
 import xmpp.filter.IQFilter;
 import xmpp.IQ;
@@ -14,7 +14,7 @@ class ServiceDiscoveryListener {
 	
 	public static var defaultIdentity = { category : "client", name : "hxmpp", type : "pc" };
 	
-	public var stream(default,null) : StreamBase;
+	public var stream(default,null) : Stream;
 	//TODO public var node(default,null) : String;
 	public var listen(default,setListening) : Bool;
 	public var identity : xmpp.disco.Identity;
@@ -27,7 +27,7 @@ class ServiceDiscoveryListener {
 //	var item_result_ext : xmpp.disco.Item;
 	
 	
-	public function new( stream : StreamBase,  ?identity : xmpp.disco.Identity, listening : Bool = true ) {
+	public function new( stream : Stream,  ?identity : xmpp.disco.Identity, listening : Bool = true ) {
 		
 		this.stream = stream;
 		this.identity = if( identity != null ) identity else defaultIdentity;

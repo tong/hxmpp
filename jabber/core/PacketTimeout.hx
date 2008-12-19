@@ -8,19 +8,24 @@ class PacketTimeout {
 	/** Default packet timeout in seconds */
 	public static var defaultTimeout = 5;
 	
-	/** null = no timeout, 	0 = default timeout, value = value. */
+	/** null = no timeout
+		0 = default timeout
+		value = value.
+	*/
 	public var time(getTime,setTime) : Int;
+	
 	/** */
-	public var handlers : Array<IPacketCollector->Void>; //handler : IPacketCollector->Void
+	public var handlers : Array<TPacketCollector->Void>; //handler : IPacketCollector->Void
+	
 	/** The packet collector this timeout is working for. */
-	public var collector : IPacketCollector;
+	public var collector : TPacketCollector;
 	
 	var _time : Int;
 	var active : Bool;
 	//var current_time : Int;
 	
 	
-	public function new( handlers : Array<IPacketCollector->Void>, ?time : Int ) {
+	public function new( handlers : Array<TPacketCollector->Void>, ?time : Int ) {
 		active = false;
 		this.handlers = handlers;
 		setTime( time ); 

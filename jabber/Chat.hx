@@ -1,8 +1,6 @@
 package jabber;
 
 import jabber.core.PacketCollector;
-import jabber.core.StreamBase;
-import xmpp.filter.PacketFilter;
 import xmpp.filter.MessageFilter;
 import xmpp.filter.PacketFromFilter;
 
@@ -14,7 +12,7 @@ class Chat {
 	
 	public dynamic function onMessage( c : Chat ) : Void;
 	
-	public var stream(default,null) : StreamBase;
+	public var stream(default,null) : Stream;
 	public var peer(default,null) : String;
 	public var threadID(default,setThreadID) : String;
 	public var lastMessage(default,null) : xmpp.Message;
@@ -23,7 +21,7 @@ class Chat {
 	var m : xmpp.Message;
 	
 	
-	public function new( stream : StreamBase, myJid : String, peer : String, ?threadID : String ) {
+	public function new( stream : Stream, myJid : String, peer : String, ?threadID : String ) {
 		
 		this.stream = stream;
 		this.peer = peer;
@@ -32,8 +30,8 @@ class Chat {
 		m = new xmpp.Message( xmpp.MessageType.chat, null, null, null, threadID, myJid );
 		m.to = peer;
 		
-		var mf : PacketFilter = new xmpp.filter.MessageFilter( xmpp.MessageType.chat );
-		var ff : PacketFilter = new xmpp.filter.PacketFromContainsFilter( peer );
+		var mf : xmpp.PacketFilter = new xmpp.filter.MessageFilter( xmpp.MessageType.chat );
+		var ff : xmpp.PacketFilter = new xmpp.filter.PacketFromContainsFilter( peer );
 		c = new PacketCollector( [ mf, ff ], handleMessage, true );
 		stream.addCollector( c );
 	}
