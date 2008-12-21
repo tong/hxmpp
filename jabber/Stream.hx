@@ -1,5 +1,22 @@
 package jabber;
 
+/*
+
+TODO
+
+typedef Stream = {
+	
+	var onOpen : s<T>
+	var onClose
+	var
+	
+	
+	
+}
+
+*/
+
+
 import jabber.core.TPacketCollector;
 import jabber.core.TPacketInterceptor;
 import jabber.core.PacketCollector;

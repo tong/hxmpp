@@ -22,7 +22,9 @@ class PrivacyLists {
 	
 	
 	public function new( stream : Stream ) {
+		
 		this.stream = stream;
+		
 		// TODO add collectors for server push
 	}
 	

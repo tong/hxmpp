@@ -13,12 +13,10 @@ class Bind {
 	public var resource : String;
 	public var jid : String;
 	
-	
 	public function new( ?resource : String, ?jid : String) {
 		this.resource = resource;
 		this.jid = jid;
 	}
-	
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "bind" );
@@ -28,10 +26,7 @@ class Bind {
 		return x;
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	
+	#if JABBER_DEBUG public inline function toString() : String { return toXml().toString(); } #end
 	
 	public static function parse( x : Xml ) : xmpp.Bind {
 		var b = new Bind();

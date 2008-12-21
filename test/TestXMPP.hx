@@ -20,6 +20,10 @@ class TestXMPP {
 		r.add( new TestPresencePacket() );
 		r.add( new TestIQPacket() );
 		
+		r.add( new TestErrorExtension() );
+		r.add( new TestXMPPDate() );
+		r.add( new TestXMPPCompression() );
+		
 	//	r.add( new TestBindExtension() );
 		
 		///// iq extension
@@ -35,6 +39,10 @@ class TestXMPP {
 		r.add( new TestXMPPMood() );
 		
 	//	r.add( new TestXMPPJingle() );
+		r.add( new TestXMPPPubSub() );
+		
+		r.add( new TestXMPPCaps() );
+		
 		
 		///// packet filters
 		r.add( new TestXPacketFilters() );

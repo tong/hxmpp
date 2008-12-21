@@ -40,15 +40,7 @@ class ServiceDiscovery {
 		iq.ext = new xmpp.disco.Items( node );
 		stream.sendIQ( iq, handleItemResult, false );
 	}
-	
-	/*
-	function timeoutHandler( collector ) {
-		// TODO
-		trace("timeoutHandlertimeoutHandlertimeoutHandlertimeoutHandler");
-		//stream.removeCollector( collector );
-	}
-	*/
-	
+
 	
 	function handleInfoResult( iq : xmpp.IQ ) {
 		switch( iq.type ) {

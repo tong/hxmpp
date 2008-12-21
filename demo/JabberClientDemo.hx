@@ -90,7 +90,7 @@ class JabberClientDemo {
 	
 	static function main() {
 		
-		jabber.util.XMPPDebug.redirectTraces();
+		#if JABBER_DEBUG jabber.util.XMPPDebug.redirectTraces(); #end
 		
 		#if JABBER_SOCKETBRIDGE
 		jabber.SocketBridgeConnection.initDelayed( "f9bridge", init );

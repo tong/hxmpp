@@ -2,7 +2,6 @@ package jabber;
 
 import jabber.util.JIDUtil;
 
-//TODO move to xmpp package
 
 /**
 	An XMPP address (JID).<br/>

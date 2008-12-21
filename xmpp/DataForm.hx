@@ -29,7 +29,6 @@ class DataForm {
 	
 	
 	public function toXml() : Xml {
-		//TODO validate
 		var x = Xml.createElement( "x" );
 		x.set( "xmlns", XMLNS );
 		if( type != null ) x.set( "type", Type.enumConstructor( type ) );

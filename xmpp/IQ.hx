@@ -31,9 +31,15 @@ class IQ extends Packet {
 	public static function parse( x : Xml ) : IQ {
 		var iq = new IQ();
 		iq.type = Type.createEnum( IQType, x.get( "type" ) );
-		xmpp.Packet.parsePacketBase( iq, x );
+	//	xmpp.Packet.parsePacketBase( iq, x );
+		xmpp.Packet.parseAttributes( iq, x );
 		for( c in x.elements() ) {
-			iq.properties.push( c );
+			switch( c.nodeName ) {
+				case "error" : 
+					//trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><"+c);
+					iq.errors.push( xmpp.Error.parse( c ) );
+				default : iq.properties.push( c );
+			}
 		}
 		if( iq.properties.length > 0 ) iq.ext = new PlainPacket( iq.properties[0] );
 		return iq;

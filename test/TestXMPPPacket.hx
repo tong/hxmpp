@@ -12,11 +12,8 @@ class TestXMPPPacket {}
 
 class TestMessagePacket extends haxe.unit.TestCase   {
 	
-	/*
 	public function testCreation() {
-		
 		var m = new xmpp.Message();
-		
 		assertEquals( m.toString(), '<message type="normal"/>' );
 		m.type = xmpp.MessageType.chat;
 		assertEquals( m.toString(), '<message type="chat"/>' );
@@ -26,17 +23,8 @@ class TestMessagePacket extends haxe.unit.TestCase   {
 		assertEquals( m.toString(), '<message type="headline"/>' );
 		m.type = xmpp.MessageType.error;
 		assertEquals( m.toString(), '<message type="error"/>' );
-		
-		m.subject = "SUBJECT";
-		assertEquals( m.subject, "SUBJECT" );
-		
-		m.body = "BODY";
-		assertEquals( m.body, "BODY" );
-		
-		m.thread = "12345";
-		assertEquals( m.thread, "12345" );
+	//TODO
 	}
-	*/
 
 	public function testParsing() {
 		/*
@@ -53,7 +41,7 @@ class TestMessagePacket extends haxe.unit.TestCase   {
 		assertEquals( m.body, "abc" );
 		
 		*/
-		var src = Xml.parse( '
+		var x = Xml.parse( '
 			<message to="hxmpp@disktree">
 				<body>Wow, I&apos;m green with envy!</body>
 					<html xmlns="http://jabber.org/protocol/xhtml-im">
@@ -66,7 +54,7 @@ class TestMessagePacket extends haxe.unit.TestCase   {
 					</html>
 			</message>' ).firstElement();
 		
-		var m : Message = cast xmpp.Packet.parse( src );
+		var m : Message = cast xmpp.Packet.parse( x );
 		assertEquals( normal, m.type );
 		assertEquals( 'Wow, I&apos;m green with envy!', m.body );
 		assertEquals( 1, m.properties.length );

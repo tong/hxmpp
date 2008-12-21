@@ -10,7 +10,7 @@ class Error {
 	
 	public var type : ErrorType;
 	public var code : Int;
-	public var name : String;
+	public var name : String; //public var conditions : Array<String>;
 	public var text : String;
 	
 	public function new() {
@@ -29,11 +29,7 @@ class Error {
 		return x;
 	}
 	
-	#if JABBER_DEBUG
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	#end
+	#if JABBER_DEBUG public inline function toString() : String { return toXml().toString(); } #end
 	
 	/**
 		Parses the error from a given packet.
@@ -49,12 +45,12 @@ class Error {
 		Parses the error from given xml.
 	*/
 	public static function parse( x : Xml ) : xmpp.Error {
-		if( x.nodeName != "error" ) throw "This is not an error extension";
+//		if( x.nodeName != "error" ) throw "This is not an error extension";
 		var e = new xmpp.Error();
 		e.code = Std.parseInt( x.get( "code" ) );
 		var etype = x.get( "type" );
 		if( etype != null ) e.type = Type.createEnum( ErrorType, x.get( "type" ) );
-		e.name = x.firstChild().nodeName;//toString();
+		e.name = x.elements().next().nodeName;
 		return e;
 	}
 	

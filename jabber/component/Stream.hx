@@ -18,7 +18,8 @@ class Stream extends jabber.Stream {
 	public static inline var STANDARD_PORT = 5275;
 	public static var defaultPort = STANDARD_PORT;
 	
-	public dynamic function onAuthenticated( s : Stream ) : Void;
+	/** */
+	public dynamic function onAuthenticated( s : Stream, success : Bool ) : Void;
 	
 	/** This components subdomain */
 	public var sub(default,null) : String;
@@ -75,7 +76,7 @@ class Stream extends jabber.Stream {
 	
 	function authCompleteHandler( p : xmpp.Packet ) {
 		authenticated = true;
-		onAuthenticated( this );
+		onAuthenticated( this, true );
 	}
 	
 }

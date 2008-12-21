@@ -73,6 +73,12 @@ see: hxmpp/demo/*, hxmpp/test/jabber
 
 
 
+CODE CONVENTIONS
+----------------
+# ..
+
+
+
 AUTHOR
 ------
 xmpp: tong@jabber.spektral.at
@@ -82,8 +88,11 @@ mail: tong@disktree.net
 
 DOWNLOAD
 --------
+Source file are available from:
 http://hxmpp.disktree.net
-git://83.64.208.21/hxmpp.git
+
+To clone the latest development version from a git respository run:
+git clone git://83.64.208.21/hxmpp.git hxmpp
 
 
 

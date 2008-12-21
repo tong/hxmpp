@@ -35,5 +35,6 @@ import xmpp.XHTML;
 
 import net.sasl.AnonymousMechanism;
 import net.sasl.PlainMechanism;
+import net.util.KeepAlive;
 
 class ImportAll {}

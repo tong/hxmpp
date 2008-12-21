@@ -10,15 +10,18 @@ class NonSASLAuthentication {
 	
 	public var stream(default,null) : Stream;
 	public var active(default,null) : Bool;
-	public var usePlainText : Bool;
+	public var usePlainText(default,null) : Bool;
 	public var username(default,null) : String;
 	public var password(default,null) : String;
 	public var resource(default,null) : String;
 
-
-	public function new( stream : Stream, ?usePlainText : Bool ) {
+	public function new( stream : Stream,
+						 ?onSuccess : Stream->Void, ?onFailed : jabber.XMPPError->Void,
+					 	 ?usePlainText : Bool ) {
 	
 		this.stream = stream;
+		this.onSuccess = onSuccess;
+		this.onFailed = onFailed;
 		this.usePlainText = ( usePlainText != null ) ? usePlainText : false;
 		username = stream.jid.node;
 		resource = stream.jid.resource;
@@ -26,10 +29,9 @@ class NonSASLAuthentication {
 		active = false;
 	}
 
-
-	public function authenticate( password : String, ?resource : String ) {
+	public function authenticate( pw : String, ?resource : String ) {
 		if( active ) throw new error.Exception( "Authentication already in progress" );
-		this.password = password;
+		this.password = pw;
 		this.resource = resource;
 		active = true;
 		var iq = new xmpp.IQ();
