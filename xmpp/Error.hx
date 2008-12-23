@@ -46,7 +46,7 @@ class Error {
 	*/
 	public static function parse( x : Xml ) : xmpp.Error {
 //		if( x.nodeName != "error" ) throw "This is not an error extension";
-		var e = new xmpp.Error();
+		var e = new Error();
 		e.code = Std.parseInt( x.get( "code" ) );
 		var etype = x.get( "type" );
 		if( etype != null ) e.type = Type.createEnum( ErrorType, x.get( "type" ) );

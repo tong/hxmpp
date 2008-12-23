@@ -25,6 +25,7 @@ import xmpp.DataForm;
 import xmpp.Date;
 import xmpp.Delayed;
 import xmpp.Error;
+import xmpp.ErrorCondition;
 import xmpp.IBB;
 import xmpp.IQ;
 import xmpp.MUC;

@@ -173,6 +173,8 @@ class VCard {
 		return x;
 	}
 	
+	#if JABBER_DEBUG public inline function toString() : String { return toXml().toString(); } #end
+	
 	
 	public static function parse( x : Xml ) : xmpp.VCard  {
 		var vc = new xmpp.VCard();

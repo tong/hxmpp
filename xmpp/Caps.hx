@@ -8,10 +8,10 @@ class Caps {
 	/**
 		The hashing algorithm used to generate the verification string
 	*/
-	public var hash : String; // fe SHA-1
+	public var hash : String; // fe sha-1
 	/**
-		A URI that uniquely identifies a software application, typically
-		a URL at the website of the project or company that produces the software
+		A URI that uniquely identifies a software application,
+		typically a URL at the website of the project or company that produces the software
 	*/
 	public var node : String;
 	/**

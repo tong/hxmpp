@@ -8,7 +8,6 @@ class Roster extends List<xmpp.roster.Item> {
 	
 	public static var XMLNS = "jabber:iq:roster";
 	
-	
 	public function new( ?items : Iterable<xmpp.roster.Item> ) {
 		super();
 		if( items != null ) {
@@ -16,17 +15,13 @@ class Roster extends List<xmpp.roster.Item> {
 		}
 	}
 	
-	
 	public function toXml() : Xml {
 		var q = IQ.createQueryXml( XMLNS );
 		for( item in iterator() ) q.addChild( item.toXml() );
 		return q;
 	}
 	
-	public override function toString() : String {
-		return toXml().toString();
-	}
-	
+	#if JABBER_DEBUG public override function toString() : String { return toXml().toString(); } #end
 	
 	public static function parse( x : Xml ) : xmpp.Roster {
 		var r = new xmpp.Roster();

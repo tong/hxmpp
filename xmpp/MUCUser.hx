@@ -35,24 +35,46 @@ class MUCUser {
 		return x;
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
+	#if JABBER_DEBUG public inline function toString() : String { return toXml().toString(); } #end
 	
 	
 	public static function parse( x : Xml ) : xmpp.MUCUser {
-		var ext = new xmpp.MUCUser();
+		var p = new MUCUser();
 		for( e in x.elements() ) {
-			if( e.nodeName != "x" || e.get( "xmlns" ) != XMLNS ) continue;
+			switch( e.nodeName ) {
+				case "item" :
+					p.item = Item.parse( e );	
+				case "status" :
+					p.status = Status.parse( e );
+				}
+		}
+		return p;
+		
+		/*
+		var ext = new MUCUser();
+		for( e in x.elements() ) {
+			//trace(">>>>>>>>>>>>>>>>>>>>>>>>>> "+e.nodeName );
+			//trace("GO GO GO GO GO GO GO GO GO GO ");
+			//trace(e.nodeName);
+			//trace( e.get( "xmlns" ) );
+			
+		((	if( e.nodeName != "x" || e.get( "xmlns" ) != XMLNS ) continue;
+			
+			trace(">>>>>>>>>>>>>>>>>>>>>>>>>> "+ee.nodeName );
 			for( ee in e.elements() ) {
 				switch( ee.nodeName ) {
 					//
-					case "item" : ext.item = Item.parse( ee );
-					case "status" : ext.status = Status.parse( ee );
+					case "item" :
+						ext.item = Item.parse( ee );
+						trace(ext.item);
+						
+					case "status" :
+						ext.status = Status.parse( ee );
 				}
 			}
 		}
 		return ext;
+			*/
 	}
 	
 }

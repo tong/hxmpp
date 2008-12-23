@@ -2,7 +2,6 @@ package xmpp.disco;
 
 
 /**
-	Disco info packet.
 */
 class Info {
 	

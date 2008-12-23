@@ -3,6 +3,8 @@ package jabber;
 import jabber.util.JIDUtil;
 
 
+//TODO remove cache
+
 /**
 	An XMPP address (JID).<br/>
 	A JID is made up of a node (generally a username), a domain, and a resource.<br/>
@@ -26,8 +28,10 @@ class JID {
     public var resource(default,null) : String;
 	public var bare(getBare,null) : String;
 	
-	var cached 	: String;
-	var cached_bare : String;
+	var _full : String;
+	var _bare : String;
+	//var cached 	: String;
+	//var cached_bare : String;
 	
 	
 	public function new( str : String ) {
@@ -39,11 +43,24 @@ class JID {
 		this.node = JIDUtil.parseNode( str );
 		this.domain = JIDUtil.parseDomain( str );
 		this.resource = JIDUtil.parseResource( str );
- 
-		toString(); // cache it.
+ 		
+		_bare = node+"@"+domain;
+		_full = _bare;
+		if( resource != null ) _full += "/"+resource;
+		//toString(); // cache it.
 	}
 	
 	
+	function getBare() : String {
+		return _bare;
+	}
+	
+	
+	public function toString() : String {
+		return _full;
+	}
+	
+	/*
 	function getBare() : String {
 		if( cached_bare == null ) {
 			var b = new StringBuf();
@@ -70,5 +87,6 @@ class JID {
 		}
 		return cached;
 	}
+	*/
 	
 }

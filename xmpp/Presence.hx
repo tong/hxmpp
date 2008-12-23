@@ -26,7 +26,7 @@ class Presence extends Packet {
 	
 	function setStatus( s : String ) : String {
 		if( s == null ) return status = s;
-		if( s.length > 1023 || s.length == 0 ) throw "Presence status size exceeded";
+		if( s.length > 1023 || s.length == 0 ) throw "Invalid presence status size";
 		return status = s;
 	}
 	

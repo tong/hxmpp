@@ -3,7 +3,7 @@ package jabber.client;
 import jabber.core.PacketCollector;
 import jabber.core.PacketCollector;
 import jabber.core.PresenceManager;
-import jabber.muc.Occupant;
+//import jabber.muc.Occupant;
 import xmpp.muc.Affiliation;
 import xmpp.muc.Role;
 import xmpp.Message;
@@ -14,24 +14,13 @@ import xmpp.filter.PacketFromContainsFilter;
 import xmpp.filter.PacketTypeFilter;
 
 
-class MUCMessage {
+typedef Occupant = {
+	var nick : String;
+	var jid : String;
+	var presence : xmpp.Presence;
+	var role : xmpp.muc.Role;
+	var affiliation : xmpp.muc.Affiliation;
 	
-	public var muc(default,null) : MUC;
-	public var xmpp(default,null) : xmpp.Message;
-	public var occupant(default,null) : Occupant;
-	
-	public function new( muc : MUC, m : xmpp.Message, o : Occupant ) {
-		this.muc = muc;
-		this.xmpp = m;
-		this.occupant = o;
-	}
-	/*
-	#if JABBER_DEBUG
-	public function toString() : String {
-		return "MUCMessage(room=>"+muc.room+")";
-	}
-	#end
-	*/
 }
 
 
@@ -45,25 +34,27 @@ class MUC {
 	
 	public dynamic function onJoin( muc : MUC ) {}
 	public dynamic function onLeave( muc : MUC ) : Void;
-	public dynamic function onMessage( msg : MUCMessage ) : Void;
-	//public dynamic function onMessage( muc : MUC, o : Occupant, p : xmpp.Message ) : Void;
-	public dynamic function onPresence( o : jabber.muc.Occupant ) {}
+	//public dynamic function onRoomMessage( muc : MUC, m : xmpp.Message ) : Void;
+	public dynamic function onMessage( muc : MUC, o : Occupant, m : xmpp.Message ) : Void;
+	public dynamic function onPresence( muc : MUC, o : Occupant ) {}
 	public dynamic function onSubject( muc : MUC ) : Void;
+	
+	public dynamic function onKick( muc : MUC, nick : String ) : Void;
+	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
 	public var jid(default,null) : String;
 	public var room(default,null) : String;
 	public var joined(default,null)	: Bool;
 	//public var locked(default,null) : Bool;
-	public var myJid(default,null) : String;
-	public var me(default,null) : Occupant;
-//	public var nick(default,null) : String;
-//	public var role : Role;
-	//public var affiliation : Affiliation;
-	public var presence : PresenceManager;
-	public var occupants : Array<jabber.muc.Occupant>;
+	public var myjid(default,null) : String;
+	public var nick(default,null) : String;
+	public var role(default,null) : Role;
+	public var affiliation(default,null) : Affiliation;
+	public var presence(default,null) : PresenceManager;
+	public var occupants(default,null) : Array<Occupant>;
 	public var subject(default,null) : String;
-	//public var service(default,setServiceDiscovery) : MUChatDiscovery;
+	public var me(getMe,null) : Occupant;
 	
 	var message : xmpp.Message;
 	var col_presence : PacketCollector;
@@ -76,68 +67,43 @@ class MUC {
 		this.jid = roomName+"@"+host;
 		this.room = roomName;
 
-		joined = false;
-		presence = new PresenceManager( stream ); 
-		occupants = new Array();
-//		history = new Array();
-		message = new Message( MessageType.groupchat, jid );
+		message = new xmpp.Message( MessageType.groupchat, jid );
 		
-		me = new Occupant();
-		me.presence = new xmpp.Presence( xmpp.PresenceType.unavailable );
+		joined = false;
+		occupants = new Array();
 		
 		// collect all presences and messages from the room jid
 		var f_from : xmpp.PacketFilter = new PacketFromContainsFilter( jid );
 		col_presence = new PacketCollector( [f_from, cast new PacketTypeFilter( PacketType.presence ) ], handlePresence, true );
-		stream.addCollector( col_presence );
 		col_message = new PacketCollector(  [f_from, cast new MessageFilter( MessageType.groupchat )], handleMessage, true );
-		stream.addCollector( col_message );
 	}
+
 	
-	/*
 	function getMe() : Occupant {
-		var o = new Occupant();
-		o.nick = nick;
-		o.jid = myJid;
-		o.presence = presence.get();
-		if( o.presence == null ) trace("öööööööööööööööööööööööööööööööööööö");
-		o.role = role;
-		o.affiliation = affiliation;
-		return o;
-	}
-	*/
-	
-	/**
-	*/
-	public function destroy() {
-		if( joined ) return false;
-		stream.removeCollector( col_presence );
-		stream.removeCollector( col_message );
-		return true;
+		return { role : role, presence : presence.get(), nick : nick, jid : myjid, affiliation : affiliation };
 	}
 	
+	
 	/**
-		Sends initial available presence to muc-room.
+		Sends initial presence to room.
 	*/
 	public function join( nick : String, ?password : String ) : Bool {
 		if( joined ) return false;
 		if( nick == null || nick.length == 0 ) throw new error.Exception( "Nickname must be not null or blank" );
-		me.nick = nick;
-		myJid = jid+"/"+nick;
-		var p = new xmpp.Presence();
-		p.priority = 5;
-		p.to = myJid;
-		p.properties.push( xmpp.X.create( xmpp.MUC.XMLNS ) );
-		stream.sendPacket( p );
-		return true;
+		stream.addCollector( col_presence );
+		stream.addCollector( col_message );
+		this.nick = nick;
+		myjid = jid+"/"+nick;
+		return ( sendMyPresence() != null );
 	}
 	
 	/**
-		Sends unavailable presence to the room and returns the presence packet sent.
+		Sends unavailable presence to the room, exits room.
 	*/
 	public function leave( ?message : String, ?forceEvent : Bool = false ) : xmpp.Presence {
 		if( !joined ) return null;
 		var p = new xmpp.Presence( xmpp.PresenceType.unavailable, null, message );
-		p.to = myJid;
+		p.to = myjid;
 		presence.set( p );
 		if( forceEvent ) onLeave( this );
 		return p;
@@ -153,11 +119,8 @@ class MUC {
 		return stream.sendPacket( message );
 	}
 	
-	/*
-	public function hasService( jid : String, handler :  ) {
-		//service
-	}*/
-	
+	/**
+	*/
 	public function changeSubject( t : String ) : xmpp.Message {
 		if( !joined ) return null;
 		//TODO check/role .. only moderators can change
@@ -166,30 +129,52 @@ class MUC {
 		return stream.sendPacket( message );
 	}
 	
-	
-	#if JABBER_DEBUG
-	/*
-	public function toString() : String {
-		return "MUChat("+jid+")";
-	}
+	/**
 	*/
-	#end
+	public function changeNick( nick : String ) : xmpp.Presence {
+		if( !joined ) return null;
+		if( nick == null || nick.length == 0 ) throw new error.Exception( "Nickname must be not null or blank" );
+		this.nick = nick;
+		myjid = jid+"/"+nick;
+		return sendMyPresence();
+	}
+	
+	/**
+	*/
+	public function kick( nick : String, ?reason : String ) : Bool {
+		if( !joined ) return false;
+		var occupant = getOccupant( nick );
+		trace(occupant);
+		if( occupant == null ) {
+			trace("OCC not found, canot kick");
+			return false;
+		}
+		var iq = new xmpp.IQ( xmpp.IQType.set, null, myjid );
+		var xt = new xmpp.MUCAdmin();
+		var item = new xmpp.muc.Item();
+		item.nick = nick;
+		item.reason = reason;
+		item.role = xmpp.muc.Role.none;
+		xt.items.push( item );
+		iq.ext = xt;
+		var me = this;
+		stream.sendIQ( iq, function(r) {
+			switch( r.type ) {
+				case result : me.onKick( me, nick );
+				case error : me.onError( new jabber.XMPPError( me, r ) );
+				default : // #
+			}
+		} );
+		return true;
+	}
 	
 	
-	//TODO
 	function handleMessage( m : xmpp.Message ) {
-		trace("händleMessage");
-	//	if( !joined ) return;
 		var from = getOccupantName( m.from );
 		var occupant = getOccupant( from );
-		if( occupant == null && from != jid && from != me.nick ) {
+		if( occupant == null && from != jid && from != nick ) {
 			trace( "??? Message from unknown muc occupant ??? "+from );
 			return;
-		}
-		if( occupant == null ) {
-			if( from == me.nick ) {
-				occupant = me;
-			}
 		}
 		if( m.subject != null ) {
 			if( subject != null && m.subject == subject ) return;
@@ -197,57 +182,71 @@ class MUC {
 			onSubject( this );
 			return;
 		}
-		onMessage( new MUCMessage( this, m, occupant ) );
+		if( occupant == null && from == nick  ) occupant = me;
+		onMessage( this, occupant, m );
 	}
 	
 	function handlePresence( p : xmpp.Presence ) {
-		
-		trace("händlePresence");
-		
-		var x_user = xmpp.MUCUser.parse( p.toXml() );
+		var x_user : xmpp.MUCUser = null;
+		for( property in p.properties ) {
+			if( property.nodeName == "x" && property.get( "xmlns" ) == xmpp.MUCUser.XMLNS ) {
+				x_user = xmpp.MUCUser.parse( p.properties[0] );
+			}
+		}
 		if( x_user == null ) return;
-		
 		switch( p.from ) {
 			
-			case myJid :
-			
+			case myjid :
 				switch( p.type ) {
 					
 					case xmpp.PresenceType.unavailable : 
 						joined = false;
-						occupants = new Array();
-						onLeave( this ); //onJoin( this );
-						trace("<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+						dispose();
+						onLeave( this );
 						
 					case null :
 						if( !joined ) {
-							//.TODO check presence packet
+							//TODO check for valid presence packet
+							if( x_user.item != null ) {
+								if( x_user.item.role != null ) role = x_user.item.role;
+								if( x_user.item.affiliation != null ) affiliation = x_user.item.affiliation;
+							}
+							presence = new PresenceManager( stream, myjid );
 							joined = true;
 							this.onJoin( this );
 							// unlock room if required
-							if( x_user.item.role == Role.moderator &&
-								x_user.status != null &&
-								x_user.status.code == xmpp.muc.Status.WAITS_FOR_UNLOCK )
-							{
-								var iq = new xmpp.IQ( xmpp.IQType.set, null, jid );
-								var q = new xmpp.MUCOwner().toXml();
-								//TODO
-								//query.addChild( new xmpp.DataForm( xmpp.DataFormType.submit ).toXml() );
-								q.addChild( Xml.parse( '<x xmlns="jabber:x:data" type="submit" />' ) );
-								iq.properties.push( q );
-								stream.sendIQ( iq, function(iq) {
-									if( iq.type == xmpp.IQType.result ) {
-										trace("UNLOCKED MUC ROOM");
-										//unlocked = true;
-									}
-								} );
-							}
+							trace(">>>>>>>>>>>>>>>>>>>> "+x_user.item );
+						//	if( x_user.item != null ) {
+								if( x_user.item.role == Role.moderator &&
+									x_user.status != null &&
+									x_user.status.code == xmpp.muc.Status.WAITS_FOR_UNLOCK )
+								{
+									var iq = new xmpp.IQ( xmpp.IQType.set, null, jid );
+									var q = new xmpp.MUCOwner().toXml();
+									//TODO
+									//query.addChild( new xmpp.DataForm( xmpp.DataFormType.submit ).toXml() );
+									q.addChild( Xml.parse( '<x xmlns="jabber:x:data" type="submit"/>' ) );
+									iq.properties.push( q );
+									stream.sendIQ( iq, function(r) {
+										if( r.type == xmpp.IQType.result ) {
+											trace(" UNLOCKED MUC ROOM ");
+											//unlocked = true; //TODO
+										}
+									} );
+								}
+						//	}
+							
+						} else {
+							// changed my nick
+							role = x_user.item.role;
+							affiliation = x_user.item.affiliation;
+							presence.target = myjid;
+							onPresence( this, me );
 						}
 				}
 				
 			case jid :
 				trace("... process presence from room.");
-				//TODO
 				
 			default : // process occupant presence
 				var from = getOccupantName( p.from );
@@ -259,30 +258,45 @@ class MUC {
 					//..
 					
 				} else { // process new occupant
-					occupant = new Occupant();
-					occupant.nick = from;
-					//occupant.jid = null;
+					occupant = { role : null, presence : null, nick : from, jid : null, affiliation : null };
 					occupants.push( occupant );
 				}
 				occupant.presence = p;
-				if( x_user.item.role != null ) occupant.role = x_user.item.role;
-				if( x_user.item.affiliation != null ) occupant.affiliation = x_user.item.affiliation;
-				try {
-					this.onPresence( occupant );
-				} catch( e : Dynamic ) {
-					trace("################################");
-					trace(e);
+				if( x_user.item != null ) {
+					if( x_user.item.role != null ) occupant.role = x_user.item.role;
+					if( x_user.item.affiliation != null ) occupant.affiliation = x_user.item.affiliation;
 				}
+				onPresence( this, occupant );
 		}
 	}
 	
-	function getOccupant( n : String ) : jabber.muc.Occupant {
+	function sendMyPresence( priority : Int = 5 ) : xmpp.Presence {
+		var p = new xmpp.Presence( null, null, null, priority );
+		p.to = myjid;
+		p.properties.push( xmpp.X.create( xmpp.MUC.XMLNS ) );
+		return stream.sendPacket( p );
+	}
+	
+	function getOccupant( n : String ) : Occupant {
 		for( o in occupants ) if( o.nick == n ) return o;
 		return null;
 	}
 	
 	inline function getOccupantName( j : String ) : String {
 		return j.substr( j.lastIndexOf( "/" ) + 1 );
+	}
+	
+	function dispose() {
+		if( joined ) return false;
+		stream.removeCollector( col_presence );
+		stream.removeCollector( col_message );
+		occupants = new Array();
+		role = null;
+		affiliation = null;
+		presence = null;
+		myjid = null;
+		room = null;
+		return true;
 	}
 	
 }

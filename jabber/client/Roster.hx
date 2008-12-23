@@ -53,7 +53,7 @@ class Roster {
 		
 		available = false;
 		items = new Array();
-		presence = new PresenceManager( stream );
+		presence = new PresenceManager( stream, stream.jid.domain );
 		resources = new Hash();
 		presenceMap = new Hash();
 		
