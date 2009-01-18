@@ -1,5 +1,5 @@
 
-#if JABBER_DEBUG
+// #if JABBER_DEBUG
 
 package jabber.util;
 
@@ -57,9 +57,8 @@ class XMPPDebug {
 		 php.Lib.print( inf.lineNumber+"\t"+v+"\n" );
 	}
 	
-	
 	#end // neko
 	
 }
 
-#end // JABBER_DEBUG
+//#end // JABBER_DEBUG

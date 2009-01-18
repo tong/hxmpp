@@ -1,21 +1,13 @@
 package jabber;
 
 /*
-
-TODO
-
+TODO !!!!!!!!!!
 typedef Stream = {
-	
 	var onOpen : s<T>
 	var onClose
 	var
-	
-	
-	
 }
-
 */
-
 
 import jabber.core.TPacketCollector;
 import jabber.core.TPacketInterceptor;
@@ -26,6 +18,7 @@ import util.XmlUtil;
 
 
 private typedef Server = {
+	//var domain : String;
 	var features(default,null) : Hash<Xml>;
 }
 
@@ -234,14 +227,11 @@ class Stream {
 		}
 		
 		switch( status ) {
-			
 			case closed :
 				return;
-			
 			case pending :
 				//#if JABBER_DEBUG trace( d, "xmpp-i" ); #end
 				processStreamInit( XmlUtil.removeXmlHeader( d ) );
-				
 			case open :
 				var x : Xml = null;
 				try {

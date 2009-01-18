@@ -36,12 +36,15 @@ class Stream extends jabber.Stream {
 	
 	/**
 	*/
-	public function new( sub : String, secret : String, cnx : jabber.StreamConnection
+	public function new( host : String, sub : String, secret : String, cnx : jabber.StreamConnection
 						 /*,?identity : { category : String, name : String, type : String }*/ ) {
+						 	
 		if( sub == null || sub == "" ) throw "Invalid component subdomain specified";
+		
 		super( cnx, null );
 		this.sub = sub;
 		this.secret = secret;
+		
 		authenticated = false;
 		serviceListener = new ServiceDiscoveryListener( this, { category : "component", name : "norc", type : "server-pc" } );
 	}

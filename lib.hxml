@@ -19,6 +19,17 @@ jabber.Lib
 #--no-traces
 
 
+### SWC CLIENT LIB
+#TODO
+#--next
+#-swf9 bin/hxmpp.swc jabber.Temp
+
+
+### SWC COMPONENT LIB
+#--next
+#TODO
+
+
 ### AS3 lib
 #--next
 #-cp lib/

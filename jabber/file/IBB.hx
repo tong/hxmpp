@@ -4,7 +4,6 @@ import xmpp.IBB;
 
 
 /**
-
 	Outgoing IBB.
 	
 	<a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams (IBB)</a>
@@ -12,9 +11,7 @@ import xmpp.IBB;
 	Useful for sending small payloads, such as files that would otherwise be too
 	cumbersome to send as an instant message (such as a text file) or impossible
 	to send (such as a small binary image file).
-	
 	Generally, IBB should be used as a last resort.
-	
 */
 class IBB {
 	

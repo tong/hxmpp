@@ -14,6 +14,8 @@ import jabber.client.SASLAuthentication;
 import jabber.client.Stream;
 import jabber.client.VCardTemp;
 
+import jabber.component.Stream;
+
 import jabber.util.XMPPDebug;
 import jabber.util.ResourceAccount;
 

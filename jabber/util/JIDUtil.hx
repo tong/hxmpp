@@ -1,5 +1,6 @@
 package jabber.util;
 
+//TODO move to package "jabber"
 
 /**
 	Static methods for JabberID manipulation/validation.<br>

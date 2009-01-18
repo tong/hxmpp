@@ -5,10 +5,6 @@ import util.XmlUtil;
 
 class Field {
 	
-	// dirty hack for the enums.
-	static inline var hack_enum_from = ~/-/;
-	static inline var hack_enum_to = ~/_/;
-	
 	public var label : String;
 	public var type : FieldType;
 	public var variable : String;
@@ -26,7 +22,7 @@ class Field {
 	public function toXml() : Xml {
 		var x = Xml.createElement( "field" );
 		if( label != null ) x.set( "label", label );
-		if( type != null ) x.set( "type", hack_enum_to.replace( Type.enumConstructor( type ), "-" ) );
+		if( type != null ) x.set( "type", StringTools.replace( Type.enumConstructor( type ), "_", "-" ) );
 		if( variable != null ) x.set( "var", variable );
 		if( required ) x.addChild( XmlUtil.createElement( "required" ) );
 		if( desc != null ) x.addChild( XmlUtil.createElement( "desc", desc ) );
@@ -38,7 +34,7 @@ class Field {
 	public static function parse( x : Xml ) : Field  {
 		var f = new Field();
 		if( x.exists( "label" ) ) f.label = x.get( "label" );
-		if( x.exists( "type" ) ) f.type = Type.createEnum( FieldType, hack_enum_from.replace ( x.get( "type" ), "_" ) );
+		if( x.exists( "type" ) ) f.type = Type.createEnum( FieldType, StringTools.replace( x.get( "type" ), "-", "_" ) );
 		if( x.exists( "var" ) ) f.variable = x.get( "var" );
 		for( e in x.elements() ) {
 			switch( e.nodeName ) {

@@ -26,7 +26,7 @@ class Packet {
 
 	
 	/**
-		Creates/Returns the xml representaion of this xmpp packet.
+		Creates/Returns the xml representation of this XMPP packet.
 	*/
 	public function toXml() : Xml {
 		return throw new error.AbstractError();

@@ -33,6 +33,12 @@ class Stream extends jabber.Stream {
 	}
 	*/
 	
+	
+	public function toString() : String {
+		return "JabberClientStream("+jid+","+status+")";
+	}
+	
+	
 	override function processStreamInit( d : String ) {
 		var sei = d.indexOf( ">" );
 		if( id == null ) { // parse open stream

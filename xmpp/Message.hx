@@ -30,9 +30,7 @@ class Message extends xmpp.Packet {
 		if( subject != null ) x.addChild( XmlUtil.createElement( "subject", subject ) );
 		if( body != null ) x.addChild( XmlUtil.createElement( "body", body ) );
 		if( thread != null ) x.addChild( XmlUtil.createElement( "thread", thread ) );
-		for( p in properties ) {
-			x.addChild( p );
-		}
+		for( p in properties ) x.addChild( p );
 		return x;
     }
     

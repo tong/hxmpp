@@ -7,44 +7,37 @@ import jabber.core.PacketCollector;
 */
 class MessageListener {
 
-	public dynamic function onMessage( m : xmpp.Message ) {}
+	public dynamic function onMessage( m : xmpp.Message ) : Void;
 	
 	/**
-		Activates/Deactivates collecting message packets.
+		Activates/Deactivates message packet collecting.
 	*/
 	public var listen(default,setListening) : Bool;
-	public var stream(default,setStream) : Stream;
+	public var stream(default,null) : Stream;
 	
-	var coll : PacketCollector;
+	var c : PacketCollector;
 	
 	
-	public function new( stream : Stream, ?listen : Bool = true ) {
+	public function new( stream : Stream,
+						 ?onMessage : xmpp.Message->Void, ?listen : Bool = true ) {
 		
-		setStream( stream );
+		c = new PacketCollector( [cast new xmpp.filter.MessageFilter()], messageHandler, true );
 		
-		coll = new PacketCollector( [cast new xmpp.filter.MessageFilter()], messageHandler, true );
+		this.stream = stream;
+		if( onMessage != null ) this.onMessage = onMessage;
 		setListening( listen );
 	}
-	
-	
-	function setStream( s : Stream ) : Stream {
-		if( s == stream ) return s;
-		var wasListening = listen;
-		if( listen ) setListening( false );
-		Reflect.setField( this, "stream", s );
-		if( wasListening ) setListening( true );
-		return s;
-	}
+
 	
 	function setListening( v : Bool ) : Bool {
-		if( v ) stream.addCollector( coll );
-		else stream.removeCollector( coll );
+		if( v ) stream.addCollector( c ) else stream.removeCollector( c );
 		return listen = v;
 	}
+	
 	
 	// override me if you want
 	function messageHandler( m : xmpp.Message ) {
 		this.onMessage( m );
 	}
-	
+
 }
