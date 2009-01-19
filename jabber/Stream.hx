@@ -16,6 +16,10 @@ typedef Server = {
 
 interface Stream {
 	
+	dynamic function onOpen<T>( s : T ) : Void;
+	dynamic function onClose<T>( s : T ) : Void;
+	dynamic function onError<T>( s : T, ?m : Dynamic ) : Void;
+	
 	/** */
 	var status : StreamStatus;
 	

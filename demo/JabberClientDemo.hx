@@ -55,7 +55,7 @@ class JabberClientDemo {
 		
 		#if !JABBER_SOCKETBRIDGE
 		// The socketbridge handles keepalive on its own.
-		var keepAlive = new net.util.KeepAlive( cast( stream.connection, jabber.SocketConnection ).socket ).start();
+		var keepAlive = new net.util.KeepAlive( cast( stream.cnx, jabber.SocketConnection ).socket ).start();
 		#end
 		
 		roster = new Roster( s );

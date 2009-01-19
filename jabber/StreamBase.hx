@@ -9,15 +9,17 @@ import util.XmlUtil;
 import jabber.Stream;
 
 
-
+/**
+	Abstract base for jabber streams.
+*/
 class StreamBase implements Stream {
 	
 	public dynamic function onOpen<T>( s : T ) {}
 	public dynamic function onClose<T>( s : T ) {}
-	public dynamic function onError<T>( s : T, m : Dynamic ) {}
+	public dynamic function onError<T>( s : T, ?m : Dynamic ) {}
 	
 	public var status : StreamStatus;
-	public var connection(default,setConnection) : StreamConnection;
+	public var cnx(default,setConnection) : StreamConnection;
 	public var id(default,null) : String;
 	public var lang(default,null) : String;
 	public var server(default,null) : Server;
@@ -33,7 +35,7 @@ class StreamBase implements Stream {
 	
 	function new( cnx : StreamConnection, jid : jabber.JID ) {
 		
-		if( cnx == null ) throw "Missing connection argument";
+		if( cnx == null ) throw "Missing cnx argument";
 		
 		collectors = new List();
 		interceptors = new List();
@@ -53,14 +55,14 @@ class StreamBase implements Stream {
 			case open, pending :
 				close( true );
 			case closed :
-				if( connection != null && connection.connected ) connection.disconnect(); 
-				connection = c;
-				connection.onConnect = connectHandler;
-				connection.onDisconnect = disconnectHandler;
-				connection.onData = processData;
-				connection.onError = errorHandler;
+				if( cnx != null && cnx.connected ) cnx.disconnect(); 
+				cnx = c;
+				cnx.onConnect = connectHandler;
+				cnx.onDisconnect = disconnectHandler;
+				cnx.onData = processData;
+				cnx.onError = errorHandler;
 		}
-		return connection;
+		return cnx;
 	}
 	
 	
@@ -77,7 +79,7 @@ class StreamBase implements Stream {
 	*/
 	public function open() : Bool {
 //		if( status == StreamStatus.open ) return false;
-		if( !connection.connected ) connection.connect() else connectHandler();
+		if( !cnx.connected ) cnx.connect() else connectHandler();
 		return true;
 	}
 	
@@ -88,7 +90,7 @@ class StreamBase implements Stream {
 		if( status == StreamStatus.open ) {
 			sendData( xmpp.Stream.CLOSE );
 			status = StreamStatus.closed;
-			if( disconnect ) connection.disconnect();
+			if( disconnect ) cnx.disconnect();
 			numPacketsSent = 0;
 			onClose( this );
 			return true;
@@ -101,7 +103,7 @@ class StreamBase implements Stream {
 		Intercepts, sends and returns the given xmpp packet.
 	*/
 	public function sendPacket<T>( p : xmpp.Packet, ?intercept : Bool = true ) : T {
-		if( !connection.connected /*|| status != StreamStatus.open*/ ) return null;
+		if( !cnx.connected /*|| status != StreamStatus.open*/ ) return null;
 		if( intercept ) for( i in interceptors ) i.interceptPacket( p );
 		if( sendData( p.toString() ) ) return cast p;
 		return null;
@@ -111,8 +113,8 @@ class StreamBase implements Stream {
 		Sends raw data.
 	*/
 	public function sendData( d : String ) : Bool {
-		if( !connection.connected ) return false;
-		if( !connection.send( d ) ) return false;
+		if( !cnx.connected ) return false;
+		if( !cnx.send( d ) ) return false;
 		numPacketsSent++;
 		#if JABBER_DEBUG trace( d, "xmpp-o" ); #end
 		return true;
@@ -204,7 +206,7 @@ class StreamBase implements Stream {
 			return;
 		}
 		if( xmpp.Stream.eregStreamError.match( d ) ) {
-			//TODO
+			onError( this );
 			close( true );
 			return;
 		}

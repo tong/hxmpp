@@ -29,10 +29,13 @@ class Stream extends jabber.StreamBase {
 	public var serviceListener(default,null) : ServiceDiscoveryListener;
 	
 	
+	/**
+	*/
 	public function new( host : String, subdomain : String, secret : String, cnx : jabber.StreamConnection,
 						 ?identity : xmpp.disco.Identity ) {
 						 	
 		if( subdomain == null || subdomain == "" ) throw "Invalid subdomain";
+		if( secret == null ) throw "Invalid secret (null)";
 
 		super( cnx, null );
 		this.subdomain = subdomain;
@@ -46,7 +49,7 @@ class Stream extends jabber.StreamBase {
 	override function connectHandler() {
 		sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_COMPONENT, subdomain ) );
 		status = jabber.StreamStatus.pending;
-		connection.read( true );
+		cnx.read( true );
 	}
 
 	override function dataHandler( data : String ) {

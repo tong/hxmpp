@@ -71,7 +71,7 @@ class Stream extends jabber.StreamBase {
 	override function connectHandler() {
 		status = StreamStatus.pending;
 		sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_CLIENT, jid.domain, version, lang ) );
-		connection.read( true ); // start reading input
+		cnx.read( true ); // start reading input
 	}
 	
 }
