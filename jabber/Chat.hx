@@ -21,14 +21,14 @@ class Chat {
 	var m : xmpp.Message;
 	
 	
-	public function new( stream : Stream, myJid : String, peer : String, ?threadID : String ) {
+	public function new( stream : Stream, myJid : String, peer : String,
+					 	 ?threadID : String ) {
+		
+		m = new xmpp.Message( peer, null, null, xmpp.MessageType.chat, threadID, myJid );
 		
 		this.stream = stream;
 		this.peer = peer;
 		this.threadID = threadID;
-		
-		m = new xmpp.Message( xmpp.MessageType.chat, null, null, null, threadID, myJid );
-		m.to = peer;
 		
 		var mf : xmpp.PacketFilter = new xmpp.filter.MessageFilter( xmpp.MessageType.chat );
 		var ff : xmpp.PacketFilter = new xmpp.filter.PacketFromContainsFilter( peer );

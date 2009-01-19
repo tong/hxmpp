@@ -29,7 +29,7 @@ class JabberClientDemo {
 	static function init() {
 		var cnx = new SocketConnection( "127.0.0.1", 5222 );
 		stream = new Stream( new jabber.JID( "hxmpp@disktree" ), cnx );
-		stream.onError = function(s,e) { trace( "Stream error: "+e ); };
+		stream.onError = function(s,?e) { trace( "Stream error: "+e ); };
 		stream.onClose = function(s) { trace( "Stream to: "+stream.jid.domain+" closed." ); } ;
 		stream.onOpen = function(s) {
 			trace( "Jabber stream to "+stream.jid.domain+" opened" );

@@ -9,17 +9,18 @@ import util.XmlUtil;
 class Message extends xmpp.Packet {
 	
 	public var type : MessageType;
-	public var subject : String;
 	public var body : String;
+	public var subject : String;
     public var thread : String;
 	
 
-    public function new( ?type : MessageType, ?to : String, ?subject : String, ?body : String, ?thread : String, ?from : String ) {
+    public function new( ?to : String, ?body : String, ?subject : String, ?type : MessageType, ?thread : String,
+    					 ?from : String ) {
 		super( to, from );
 		_type = xmpp.PacketType.message;
 		this.type = if ( type != null ) type else xmpp.MessageType.normal;
-		this.subject = subject;
 		this.body = body;
+		this.subject = subject;
 		this.thread = thread;
 	}
     

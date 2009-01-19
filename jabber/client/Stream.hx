@@ -2,8 +2,6 @@ package jabber.client;
 
 import jabber.JID;
 import jabber.StreamConnection;
-import jabber.StreamStatus;
-import xmpp.Message;
 
 
 /**
@@ -22,21 +20,12 @@ class Stream extends jabber.StreamBase {
 		this.version = version;
 	}
 	
-	/*
-	function setJID( j : JID ) : JID {
-		if( status != closed ) throw "Cannot change jid on active jid";
-		return jid = j;
-	}
 	
-	override function getJID() : String {
-		return jid.toString();
-	}
-	*/
-	
-	
+	#if JABBER_DEBUG
 	public function toString() : String {
 		return "JabberClientStream("+jid+","+status+")";
 	}
+	#end
 	
 	
 	override function processStreamInit( d : String ) {
@@ -46,7 +35,7 @@ class Stream extends jabber.StreamBase {
 			var sx = Xml.parse( s ).firstElement();
 			id = sx.get( "id" );
 			if( !version ) {
-				status = StreamStatus.open;
+				status = jabber.StreamStatus.open;
 				onOpen( this );
 				return;
 			}
@@ -61,15 +50,15 @@ class Stream extends jabber.StreamBase {
 		if( sfi != -1 ) {
 			//TODO
 			parseStreamFeatures( Xml.parse( sf ).firstElement() );
-			if( status != StreamStatus.open ) {
-				status = StreamStatus.open;
+			if( status != jabber.StreamStatus.open ) {
+				status = jabber.StreamStatus.open;
 				onOpen( this );
 			}
 		}
 	}
 	
 	override function connectHandler() {
-		status = StreamStatus.pending;
+		status = jabber.StreamStatus.pending;
 		sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_CLIENT, jid.domain, version, lang ) );
 		cnx.read( true ); // start reading input
 	}
