@@ -1,8 +1,6 @@
 package jabber.component;
 
 import jabber.JID;
-import jabber.StreamStatus;
-import jabber.ServiceDiscovery;
 import jabber.ServiceDiscoveryListener;
 import jabber.core.PacketCollector;
 import jabber.core.PacketTimeout;
@@ -13,46 +11,41 @@ import xmpp.filter.PacketIDFilter;
 	Base for Component-2-Server jabber streams.<br/>
 	<a href="http://www.xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>
 */
-class Stream extends jabber.Stream {
+class Stream extends jabber.StreamBase {
 	
 	public static inline var STANDARD_PORT = 5275;
 	public static var defaultPort = STANDARD_PORT;
 	
-	/** */
-	public dynamic function onAuthenticated( s : Stream, success : Bool ) : Void;
+	/** Dispatched on authentication success */
+	public dynamic function onConnect( success : Bool ) : Void;
 	
 	/** This components subdomain */
-	public var sub(default,null) : String;
-	
+	public var subdomain(default,null) : String;
 	/** Shared secret used to identify legacy components*/
 	public var secret(default,null) : String;
-	
-	/** Indicates if the component is authenticated at server */
+	/**  */
 	public var authenticated(default,null) : Bool;
-	
 	/** */
 	public var serviceListener(default,null) : ServiceDiscoveryListener;
 	
 	
-	/**
-	*/
-	public function new( host : String, sub : String, secret : String, cnx : jabber.StreamConnection
-						 /*,?identity : { category : String, name : String, type : String }*/ ) {
+	public function new( host : String, subdomain : String, secret : String, cnx : jabber.StreamConnection,
+						 ?identity : xmpp.disco.Identity ) {
 						 	
-		if( sub == null || sub == "" ) throw "Invalid component subdomain specified";
-		
+		if( subdomain == null || subdomain == "" ) throw "Invalid subdomain";
+
 		super( cnx, null );
-		this.sub = sub;
+		this.subdomain = subdomain;
 		this.secret = secret;
 		
 		authenticated = false;
-		serviceListener = new ServiceDiscoveryListener( this, { category : "component", name : "norc", type : "server-pc" } );
+		serviceListener = new ServiceDiscoveryListener( this, identity );
 	}
 	
 	
 	override function connectHandler() {
-		sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_COMPONENT, sub ) );
-		status = StreamStatus.pending;
+		sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_COMPONENT, subdomain ) );
+		status = jabber.StreamStatus.pending;
 		connection.read( true );
 	}
 
@@ -69,17 +62,17 @@ class Stream extends jabber.Stream {
 		var d = util.XmlUtil.removeXmlHeader( s );
 		var dx = Xml.parse( d+"</stream:stream>" ).firstChild();
 		id = dx.get( "id" );
-		status = StreamStatus.open;
+		status = jabber.StreamStatus.open;
 		onOpen( this );
-		collectors.add( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], authCompleteHandler, false ) );
+		collectors.add( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], readyHandler, false ) );
 		var handshake = Xml.createElement( "handshake" );
 		handshake.addChild( Xml.createPCData( crypt.SHA1.encode( id+secret ) ) );
 		sendData( handshake.toString() );
 	}
 	
-	function authCompleteHandler( p : xmpp.Packet ) {
+	function readyHandler( p : xmpp.Packet ) {
 		authenticated = true;
-		onAuthenticated( this, true );
+		onConnect( true );
 	}
 	
 }

@@ -6,6 +6,8 @@ import xmpp.filter.IQFilter;
 import xmpp.IQ;
 import xmpp.IQType;
 
+
+
 //TODO
 /**
 	Listens/Answers incoming service discovery requests.
