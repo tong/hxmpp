@@ -1,11 +1,11 @@
 
-### haXe BUBG !! run from command line !
+### haXe2.03 bug !! run from command line !
 
-#
 -cp doc/
 -cp ../core
 -swf9 bin/hxmpp_client.swc
 -D JABBER_DEBUG
-
-# REQUIRED
+#--no-traces
 jabber.SocketConnection jabber.util.XMPPDebug jabber.client.Stream jabber.client.NonSASLAuthentication jabber.client.Stream jabber.client.Roster
+
+

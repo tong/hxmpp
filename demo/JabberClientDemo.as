@@ -1,8 +1,6 @@
 package {
 	
-	/**
-		mxmlc Test.as -default-size 800 600 -compiler.include-libraries ../hxmpp/bin/hxmpp.swc -output test.swf
-	*/
+	// mxmlc JabberClientDemo.as -default-size 800 600 -compiler.include-libraries ../bin/hxmpp.swc -output ../bin/test.swf
 
 	import flash.Boot;
 	import flash.display.MovieClip;
@@ -18,11 +16,11 @@ package {
 	/**
 		Example usage of the the HXMPP library.
 	*/
-	public class Test extends MovieClip {
+	public class JabberClientDemo extends MovieClip {
 		
 		private var tf : TextField;
 		
-		public function Test() {
+		public function JabberClientDemo() {
 			
 			new flash.Boot( this ); // init haXe
 			
