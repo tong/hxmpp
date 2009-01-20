@@ -1,91 +1,77 @@
 package {
 	
-	import flash.display.Loader;
+	/**
+		mxmlc Test.as -default-size 800 600 -compiler.include-libraries ../hxmpp/bin/hxmpp.swc -output test.swf
+	*/
+
+	import flash.Boot;
+	import flash.display.MovieClip;
 	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.net.URLRequest;
-	import flash.system.ApplicationDomain;
-	import flash.system.LoaderContext;
 	import flash.text.TextField;
+	import jabber.JID;
+	import jabber.SocketConnection;
+	import jabber.util.XMPPDebug;
+	import jabber.client.Stream;
+	import jabber.client.NonSASLAuthentication;
+	import jabber.client.Roster;
 	
 	/**
-	 * 
-	 * Example usage of the the HXMPP library from actionscript3 by loading required classes from a precompiled swf.
-	 * 
-	 * -) Loads required classes
-	 * -) Opens xmpp stream
-	 * -) Authenticates using non-sasl-authentication.
-	 * -) Loads roster items
-	 * 
-	 */
-	public class JabberClientDemo extends Sprite {
+		Example usage of the the HXMPP library.
+	*/
+	public class Test extends MovieClip {
 		
-		private static const HXMPP_PATH : String = "../bin/hxmpp.swf";
+		private var tf : TextField;
 		
-		public static var JID : Class;
-		public static var Stream : Class;
-		public static var SocketConnection : Class;
-		public static var NonSASLAuthentication : Class;
-		public static var Roster : Class;
-		
-		private var loader : Loader;
-		private var info : TextField;
-		
-		public function JabberClientDemo() {
+		public function Test() {
+			
+			new flash.Boot( this ); // init haXe
 			
 			stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 			stage.align = flash.display.StageAlign.TOP_LEFT;
-		
-			info = new TextField();
-			info.width = info.height = 800;
-			info.text = "loading HXMPP lib ..";
-			addChild( info );
 			
-			loader = new Loader();
-			var context : LoaderContext = new LoaderContext();
-			context.applicationDomain = ApplicationDomain.currentDomain;
-			loader.contentLoaderInfo.addEventListener( Event.COMPLETE, onHXMPPLoad );
-			loader.load( new URLRequest( HXMPP_PATH ), context );
-		}
-		
-		private function onHXMPPLoad( e : Event ) : void {
-			info.appendText( " .. HXMPP lib loaded.\n" );
-			try {
-				JID = getClass( "jabber.JID" );
-				Stream = getClass( "jabber.client.Stream" );
-				SocketConnection = getClass( "jabber.SocketConnection" );
-				NonSASLAuthentication = getClass( "jabber.client.NonSASLAuthentication" );
-				Roster = getClass( "jabber.client.Roster" );
-			} catch( e : * ) {
-				info.appendText( "Error loading class "+e );
-			}
-			var jid : Object = new JID( "hxmpp@disktree" );
-			var cnx : Object = new SocketConnection( "127.0.0.1", Stream.defaultPort ); 
-			var stream : Object = new Stream( jid, cnx );
-           		stream.onOpen = function(s:Object):void {
-           	 	info.appendText( "XMPP stream opened\n" );
-           	 	var auth : Object = new NonSASLAuthentication( s );
+			//haxe.Firebug.redirectTraces();
+			//XMPPDebug.redirectTraces();
+			//trace("HHXMPP HXMPP HXMPP HXMPP HXMPP HXMPP HXMPP XMPP ");
+			
+			tf = new TextField();
+			tf.y = 300;
+			tf.width = tf.height = 800;
+			info( "initializing HXMPP lib ..\n" );
+			addChild( tf );
+			
+			var jid : JID = new JID( "account@disktree" );
+			var cnx : SocketConnection = new SocketConnection( "127.0.0.1", Stream.defaultPort ); 
+			var stream : Stream = new Stream( jid, cnx );
+			stream.onOpen = streamOpenHandler;
+	
+           	stream.onOpen = function(s:Stream):void {
+           	 	info( "XMPP stream opened" );
+           	 	var auth : NonSASLAuthentication = new NonSASLAuthentication( stream );
            	 	auth.onSuccess = onLoginSuccess;
            	 	auth.authenticate( "test", "hxmpp" );
            	 };
-           	 info.appendText( "Connecting ...\n" );
+           	 stream.onClose = function(s:Stream):void {
+           		 info( "XMPP stream closed" );
+           	 };
+           	 stream.onError = function(s:Stream,e:*):void {
+           		 info( "XMPP stream error "+e );
+           	 };
            	 stream.open();
 		}
 		
-		private function getClass( id : String ) : Class {
-			return loader.contentLoaderInfo.applicationDomain.getDefinition( id ) as Class;
+		private function streamOpenHandler( s : Stream ) : void {
+			info( "Stream Opened" );
 		}
-		
+
 		private function onLoginSuccess( s : Object ) : void {
-			info.appendText( "Login success\n" );
-			var roster : Object = new Roster( s );
-			roster.onLoad = rosterLoadHandler;
-			roster.load();
+			info( "Login success" );
 		}
 		
-		private function rosterLoadHandler( r : Object ) : void {
-			info.appendText( "Roster loaded "+r.items.length+" items\n" );
+		private function info( t : String ) : void {
+			tf.appendText( t+"\n" );
 		}
-		
+			
 	}
+	
 }
+

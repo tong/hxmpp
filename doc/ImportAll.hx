@@ -1,4 +1,6 @@
 
+import haxe.Firebug;
+
 import jabber.Chat;
 import jabber.ChatStateNotification;
 import jabber.MessageListener;
