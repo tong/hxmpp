@@ -27,10 +27,6 @@ package {
 			stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 			stage.align = flash.display.StageAlign.TOP_LEFT;
 			
-			//haxe.Firebug.redirectTraces();
-			//XMPPDebug.redirectTraces();
-			//trace("HHXMPP HXMPP HXMPP HXMPP HXMPP HXMPP HXMPP XMPP ");
-			
 			tf = new TextField();
 			tf.y = 300;
 			tf.width = tf.height = 800;
@@ -61,8 +57,16 @@ package {
 			info( "Stream Opened" );
 		}
 
-		private function onLoginSuccess( s : Object ) : void {
+		private function onLoginSuccess( s : Stream ) : void {
 			info( "Login success" );
+			var roster : Roster = new Roster( s );
+			roster.onLoad = function(r:Roster) : void {
+				info( "Roster loaded("+r.items.length+" items):" );
+				for( var i : int = 0; i < r.items.length; i++ ) {
+					info( r.items[i].jid.toString() );
+				}
+			};
+			roster.load();
 		}
 		
 		private function info( t : String ) : void {
