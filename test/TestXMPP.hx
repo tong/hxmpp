@@ -39,9 +39,9 @@ class TestXMPP {
 		r.add( new TestXMPPMood() );
 		r.add( new TestXMPPCaps() );
 		
+	//	r.add( new TestXMPPMUC() );
+	//	r.add( new TestXMPPPubSub() );
 	//	r.add( new TestXMPPJingle() );
-		r.add( new TestXMPPPubSub() );
-		r.add( new TestXMPPMUC() );
 		
 		
 		///// packet filters
