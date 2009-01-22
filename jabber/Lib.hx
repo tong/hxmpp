@@ -17,9 +17,11 @@ import jabber.client.VCardTemp;
 import xmpp.DataForm;
 import xmpp.Delayed;
 import xmpp.Error;
+
 #if JABBER_DEBUG
 import jabber.util.XMPPDebug;
 import jabber.util.ResourceAccount;
+
 #end // JABBER_DEBUG
 #end // JABBER_LIBCLIENT
 

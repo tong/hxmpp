@@ -1,12 +1,12 @@
 package jabber;
 
+import jabber.Stream;
 import jabber.core.TPacketCollector;
 import jabber.core.TPacketInterceptor;
 import jabber.core.PacketCollector;
-import xmpp.filter.PacketIDFilter;
 import jabber.core.PacketTimeout;
+import xmpp.filter.PacketIDFilter;
 import util.XmlUtil;
-import jabber.Stream;
 
 
 /**
@@ -70,7 +70,6 @@ class StreamBase implements Stream {
 		Returns a unique (base64 encoded) id for this stream.
 	*/
 	public function nextID() : String {
-		//TODO return haxe.BaseCode.encode( util.StringUtil.random64( 5 )+numPacketsSent, util.StringUtil.BASE64 );
 		return util.StringUtil.random64( 5 )+numPacketsSent;
 	}
 	
@@ -198,10 +197,9 @@ class StreamBase implements Stream {
 		} catch( e : Dynamic ) {
 			trace( "<<< "+d, "xmpp-i" );
 		}
-		#end
+		#end //JABBER_DEBUG
 		
 		if( xmpp.Stream.eregStreamClose.match( d ) ) {
-			//TODO
 			close( true );
 			return;
 		}
@@ -240,7 +238,7 @@ class StreamBase implements Stream {
 	}
 	
 	function processStreamInit( d : String ) {
-		// override me //
+		///// override me /////
 	}
 	
 	function collectPackets( d : Xml ) : Array<xmpp.Packet> {
@@ -250,7 +248,7 @@ class StreamBase implements Stream {
 			packets.push( p );
 			var collected = false;
 			for( c in collectors ) {
-		//		if( c == null ) collectors.remove( c );
+				//if( c == null ) collectors.remove( c );
 				if( c.accept( p ) ) {
 					collected = true;
 					c.deliver( p );
@@ -278,12 +276,15 @@ class StreamBase implements Stream {
 	}
 	
 	function connectHandler() {
+		///// override me /////
 	}
 	
 	function disconnectHandler() {
+		///// override me /////
 	}
 	
 	function dataHandler( d : String ) {
+		///// override me /////
 	}
 	
 	function errorHandler( m : Dynamic ) {

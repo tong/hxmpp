@@ -4,18 +4,6 @@ package net.sasl;
 /**
 	Abstract SASL handshake.<br/>
 	<a href="http://tools.ietf.org/html/rfc4422">RFC 4422</a><br>
-
-	SASL is conceptually a framework that provides an abstraction layer
-	between protocols and mechanisms:
-	
-	  SMTP    LDAP    XMPP   Other protocols ...
-	 	\       |    |      /
-		 \      |    |     /
-		SASL abstraction layer
-		 /      |    |     \
-		/       |    |      \
-	EXTERNAL   GSSAPI  PLAIN   Other mechanisms ...
-	
 */
 class Handshake {
 	

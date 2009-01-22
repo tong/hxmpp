@@ -1,7 +1,6 @@
 package jabber;
 
 
-//class XMPPError {
 class XMPPError {
 	
 	public var dispatcher(default,null) : Dynamic; //TODO 
@@ -16,7 +15,7 @@ class XMPPError {
 		this.dispatcher = dispatcher;
 		this.from = p.from;
 		var e = p.errors[0];
-		if( e == null ) throw "Packet doesnt have a (error) property"; //TODO
+		if( e == null ) throw "Packet has no error";
 		type = e.type;
 		code = e.code;
 		name = e.name;

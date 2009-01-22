@@ -1,7 +1,6 @@
 package crypt;
 
 
-
 class SHA1 {
 	
 	static inline var hex_chr = "0123456789abcdef";

@@ -14,7 +14,7 @@ package {
 	import jabber.client.Roster;
 	
 	/**
-		Example usage of the the HXMPP library.
+		Example usage of the HXMPP library.
 	*/
 	public class JabberClientDemo extends MovieClip {
 		
@@ -30,7 +30,7 @@ package {
 			tf = new TextField();
 			tf.y = 300;
 			tf.width = tf.height = 800;
-			info( "initializing HXMPP lib ..\n" );
+			info( "initializing HXMPP lib .." );
 			addChild( tf );
 			
 			var jid : JID = new JID( "account@disktree" );

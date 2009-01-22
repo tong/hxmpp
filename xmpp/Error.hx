@@ -13,7 +13,7 @@ class Error {
 	public var name : String; //public var conditions : Array<String>;
 	public var text : String;
 	
-	public function new() {
+	public function new( code = -1 ) {
 		code = -1;
 	}
 	
@@ -46,8 +46,7 @@ class Error {
 	*/
 	public static function parse( x : Xml ) : xmpp.Error {
 //		if( x.nodeName != "error" ) throw "This is not an error extension";
-		var e = new Error();
-		e.code = Std.parseInt( x.get( "code" ) );
+		var e = new Error( Std.parseInt( x.get( "code" ) ) );
 		var etype = x.get( "type" );
 		if( etype != null ) e.type = Type.createEnum( ErrorType, x.get( "type" ) );
 		e.name = x.elements().next().nodeName;

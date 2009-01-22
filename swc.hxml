@@ -1,11 +1,22 @@
 
-### haXe2.03 bug !! run from command line !
-
+### HXMPP CLIENT SWC
 -cp doc/
 -cp ../core
 -swf9 bin/hxmpp_client.swc
 -D JABBER_DEBUG
+jabber.SocketConnection
+jabber.util.XMPPDebug
+jabber.client.Stream
+jabber.client.NonSASLAuthentication
+jabber.client.Stream
+jabber.client.Roster
 #--no-traces
-jabber.SocketConnection jabber.util.XMPPDebug jabber.client.Stream jabber.client.NonSASLAuthentication jabber.client.Stream jabber.client.Roster
 
 
+### HXMPP COMPONENT SWC
+--next
+-cp doc/
+-cp ../core
+-swf9 bin/hxmpp_component.swc
+jabber.component.Stream
+#--no-traces

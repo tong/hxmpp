@@ -3,8 +3,6 @@ package jabber;
 import jabber.util.JIDUtil;
 
 
-//TODO remove cache
-
 /**
 	An XMPP address (JID).<br/>
 	A JID is made up of a node (generally a username), a domain, and a resource.<br/>
@@ -26,18 +24,17 @@ class JID {
 	public var node(default,null) : String;
     public var domain(default,null) : String;
     public var resource(default,null) : String;
+    /** JID without resource */
 	public var bare(getBare,null) : String;
 	
 	var _full : String;
 	var _bare : String;
-	//var cached 	: String;
-	//var cached_bare : String;
 	
 	
 	public function new( str : String ) {
 		
-		#if !JABBER_DEBUG
-		if( !JIDUtil.isValid( str ) ) throw new error.Exception( "Invalid jabber id: "+str ); 
+		#if !JABBER_DEBUG // allows malformed jids for debugging
+		if( !JIDUtil.isValid( str ) ) throw new error.Exception( "Invalid jid: "+str ); 
 		#end
 		
 		this.node = JIDUtil.parseNode( str );
@@ -45,9 +42,7 @@ class JID {
 		this.resource = JIDUtil.parseResource( str );
  		
 		_bare = node+"@"+domain;
-		_full = _bare;
-		if( resource != null ) _full += "/"+resource;
-		//toString(); // cache it.
+		_full = ( resource == null ) ? _bare : _bare+"/"+resource;
 	}
 	
 	
@@ -59,34 +54,5 @@ class JID {
 	public function toString() : String {
 		return _full;
 	}
-	
-	/*
-	function getBare() : String {
-		if( cached_bare == null ) {
-			var b = new StringBuf();
-			b.add( node );
-			b.add( "@" );
-			b.add( domain );
-			cached_bare = b.toString();
-		}
-		return cached_bare;
-	}
-	
-	
-	public function toString() : String {
-		if( cached == null ) {
-			var b = new StringBuf();
-			b.add( node );
-			b.add( "@" );
-			b.add( domain );
-			if( resource != null ) {
-				b.add( "/" );
-				b.add( resource );
-			}
-			cached = b.toString();
-		}
-		return cached;
-	}
-	*/
 	
 }
