@@ -21,12 +21,15 @@ class JabberComponentDemo {
 		};
 		stream.onError = function(s,?m) { trace( "Stream error, "+m ); } ;
 		stream.onClose = function(s) { trace( "Stream closed." ); } ;
-		stream.onConnect = function(success) {
-			trace( "Stream opened. Have fun!" );
-			var keepAlive = new net.util.KeepAlive( cnx.socket ).start();
-			//..
+		stream.onConnect = function(success:Bool) {
+			
+			if( success ) {
+				trace( "Stream opened. Have fun!" );
+				// keep the stream alive
+				var keepAlive = new net.util.KeepAlive( cnx.socket ).start();
+			}
 		}
 		stream.open();
 	}
-		
+	
 }

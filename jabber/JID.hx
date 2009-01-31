@@ -6,7 +6,6 @@ import jabber.util.JIDUtil;
 /**
 	An XMPP address (JID).<br/>
 	A JID is made up of a node (generally a username), a domain, and a resource.<br/>
-	The node and resource are optional; domain is required.
 	
 	jid             = [ node "@" ] domain [ "/" resource ]<br/>
 	domain          = fqdn / address-literal<br/>

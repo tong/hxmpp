@@ -1,6 +1,6 @@
 
--cp demo
--cp ../lib/
+-cp demo/
+-cp lib/
 -neko bin/demos/component.n
 -main JabberComponentDemo
 -D JABBER_DEBUG

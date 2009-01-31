@@ -42,7 +42,7 @@ class Stream extends jabber.StreamBase {
 		}
 		if( id == null ) {
 			//TODO
-			throw new error.Exception( "Invalid xmpp stream, no id" );
+			throw new error.Exception( "Invalid XMPP stream, no id" );
 		}
 		// check stream features
 		var sfi =  d.indexOf( "<stream:features>" );

@@ -2,7 +2,7 @@ package jabber.client;
 
 
 /**
-	//TOD required fields handling, x:data form handling
+	//TODO required fields handling, x:data form handling
 
 	<a href="http://www.xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a>
 */
@@ -58,10 +58,8 @@ class Account {
 								//TODO
 								//var l = xmpp.Register.parse( iq.ext.toXml() );
 								self.onRegistered( self.stream, username );
-								
 							case error:
 								self.onError( new jabber.XMPPError( self, r ) );
-								
 							default : //#
 						}
 					} );
@@ -86,6 +84,7 @@ class Account {
 		stream.sendIQ( iq, function(r) {
 			switch( r.type ) {
 				case result :
+				//TODO
 					//var l = xmpp.Register.parse( iq.ext.toXml() );
 					self.onRemoved( self.stream );
 				case error :
@@ -96,7 +95,7 @@ class Account {
 	}
 	
 	/**
-		Requests to change the account password.
+		Requests to change accounts password.
 	*/
 	public function changePassword( node : String, pass : String ) {
 		var iq = new xmpp.IQ( xmpp.IQType.set );

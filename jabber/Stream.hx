@@ -27,14 +27,20 @@ interface Stream {
 	var features(default,null) : Array<String>;
 	
 	/** */
+	function nextID() : String;
+	
+	/** */
 	function sendIQ( iq : xmpp.IQ,
 					 ?handler : xmpp.IQ->Void,
 					 ?permanent : Bool,
 					 ?timeout : PacketTimeout,
 					 ?block : Bool ) : { iq : xmpp.IQ, collector : TPacketCollector };
 	
-	/** */
+	/** Sends xmpp packet */
 	function sendPacket<T>( p : xmpp.Packet, ?intercept : Bool = true ) : T;
+	
+	/** Sends raw data */
+	function sendData( d : String ) : Bool;
 
 	function addCollector( c : TPacketCollector ) : Bool;
 	function addCollectors( iter : Iterable<TPacketCollector> ) : Bool;

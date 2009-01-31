@@ -64,7 +64,6 @@ class PacketTimeout {
 		
 		#if !php
 		util.Delay.run( timeoutHandler, Std.int( _time ) );
-			
 		#end
 	}
 	

@@ -14,23 +14,26 @@ import xmpp.filter.PacketFromContainsFilter;
 import xmpp.filter.PacketTypeFilter;
 
 
-typedef Occupant = {
+/**
+*/
+typedef Occupant = { //TODO MUCOccupant
 	var nick : String;
 	var jid : String;
 	var presence : xmpp.Presence;
 	var role : xmpp.muc.Role;
 	var affiliation : xmpp.muc.Affiliation;
-	
 }
 
 
 /**
-	Represents a multi user chatroom conversation.
+	Multi-user chatroom.
 	
 	<a href="http://www.xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
 	<a href="http://www.xmpp.org/extensions/xep-0249.html">XEP-0249: Direct MUC Invitations</a>
 */
 class MUC {
+	
+	//TODO public static var defaultPresencePriority = 5;
 	
 	public dynamic function onJoin( muc : MUC ) {}
 	public dynamic function onLeave( muc : MUC ) : Void;
@@ -278,7 +281,9 @@ class MUC {
 	}
 	
 	function getOccupant( n : String ) : Occupant {
-		for( o in occupants ) if( o.nick == n ) return o;
+		for( o in occupants ) {
+			if( o.nick == n ) return o;
+		}
 		return null;
 	}
 	
