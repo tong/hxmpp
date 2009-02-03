@@ -2,10 +2,7 @@ package jabber;
 
 import jabber.core.TPacketCollector;
 import jabber.core.TPacketInterceptor;
-//import jabber.core.PacketCollector;
-//import xmpp.filter.PacketIDFilter;
 import jabber.core.PacketTimeout;
-//import util.XmlUtil;
 
 
 typedef Server = {
@@ -25,6 +22,9 @@ interface Stream {
 	
 	/** */
 	var features(default,null) : Array<String>;
+	
+	/** */
+	var jid(default,null) : jabber.JID;
 	
 	/** */
 	function nextID() : String;

@@ -2,10 +2,10 @@ package jabber;
 
 
 /**
-	<a href="http://www.xmpp.org/extensions/xep-0199.html">XEP 199 - XMPP Ping</a>
-	
 	Sends application-level pings over XML streams.
 	Such pings can be sent from a client to a server, from one server to another, or end-to-end.
+	
+	<a href="http://www.xmpp.org/extensions/xep-0199.html">XEP 199 - XMPP Ping</a>
 */
 class Ping {
 	
@@ -16,7 +16,7 @@ class Ping {
 	//TODO public dynamic function onError
 	
 	/** The ping interval in seconds */
-	public var interval : Int;
+	public var interval : Int; //(default,setInterval) TODO!!
 	public var stream(default,null) : Stream;
 	
 	
