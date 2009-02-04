@@ -19,7 +19,9 @@ class XMPPDebug {
 		if( !php.Lib.isCli() ) haxe.Firebug.redirectTraces();
 		else haxe.Log.trace = myTrace;
 		#else
-		if( haxe.Firebug.detect() ) haxe.Firebug.redirectTraces();
+		if( haxe.Firebug.detect() ) {
+			haxe.Firebug.redirectTraces();
+		}
 		#end
 	}
 	

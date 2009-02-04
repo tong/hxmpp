@@ -20,7 +20,7 @@ class Chat {
 	var c : PacketCollector;
 	var m : xmpp.Message;
 	
-	
+	// TODO myJid? needed ?
 	public function new( stream : Stream, myJid : String, peer : String,
 					 	 ?threadID : String ) {
 		

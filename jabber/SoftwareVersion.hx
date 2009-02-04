@@ -6,8 +6,8 @@ package jabber;
 */
 class SoftwareVersion {
 	
-	public var onLoad : String->xmpp.SoftwareVersion->Void;
-	public var onError : jabber.XMPPError->Void;
+	public dynamic function onLoad( jid : String, sv : xmpp.SoftwareVersion );
+	public dynamic function onError( e : jabber.XMPPError );
 	
 	public var stream(default,null) : Stream;
 	public var name : String;

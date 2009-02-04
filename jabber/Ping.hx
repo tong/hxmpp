@@ -10,7 +10,7 @@ package jabber;
 */
 class Ping {
 	
-	public static var defaultInterval = 3;
+	public static var defaultInterval = 60;
 	
 	public dynamic function onResponse( s : jabber.Stream ) : Void;
 	public dynamic function onTimeout( s : jabber.Stream  ) : Void;
@@ -22,9 +22,14 @@ class Ping {
 	
 	
 	public function new( stream : Stream, ?interval : Int ) {
+		
 		if( interval != null && interval <= 0 ) throw "Ping interval must be greater than 0";
 		this.stream = stream;
 		this.interval = if( interval != null ) interval else defaultInterval;
+		
+		var c = new jabber.core.PacketCollector( [ cast new xmpp.filter.IQFilter( xmpp.Ping.XMLNS, null, xmpp.IQType.get ) ], handlePing, true );
+		stream.addCollector( c );
+		stream.features.add( xmpp.Ping.XMLNS );
 	}
 	
 	
@@ -62,6 +67,14 @@ class Ping {
 	
 	function handleTimeout( c : jabber.core.TPacketCollector ) {
 		onTimeout( stream );
+	}
+	
+	function handlePing( iq : xmpp.IQ ) {
+		if( stream.status == jabber.StreamStatus.open ) {
+			var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
+			r.ext = new xmpp.Ping();
+			stream.sendData( r.toString() );
+		}
 	}
 	
 }
