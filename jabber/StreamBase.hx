@@ -9,6 +9,7 @@ import xmpp.filter.PacketIDFilter;
 import util.XmlUtil;
 
 
+
 /**
 	Abstract base for jabber streams.
 */
@@ -23,7 +24,7 @@ class StreamBase implements Stream {
 	public var id(default,null) : String;
 	public var lang(default,null) : String;
 	public var server(default,null) : Server;
-	public var features(default,null) : Array<String>;
+	public var features(default,null) : StreamFeatures;
 	public var version : Bool;
 	public var jid(default,null) : jabber.JID;
 	
@@ -40,7 +41,7 @@ class StreamBase implements Stream {
 		collectors = new List();
 		interceptors = new List();
 		server = { features : new Hash() };
-		features = new Array();
+		features = new StreamFeatures();
 		version = true;
 		numPacketsSent = 0;
 		

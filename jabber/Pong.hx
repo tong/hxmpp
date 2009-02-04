@@ -17,7 +17,7 @@ class Pong {
 		
 		var c = new jabber.core.PacketCollector( [ cast new xmpp.filter.IQFilter( xmpp.Ping.XMLNS, null, xmpp.IQType.get ) ], handlePing, true );
 		stream.addCollector( c );
-		stream.features.push( xmpp.Ping.XMLNS );
+		stream.features.add( xmpp.Ping.XMLNS );
 	}
 
 

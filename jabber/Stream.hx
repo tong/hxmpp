@@ -11,6 +11,32 @@ typedef Server = {
 }
 
 
+//TODO Hash map
+class StreamFeatures {
+	
+	var list : List<String>;
+	
+	public function new() {
+		list = new List();
+	}
+	
+	public function iterator() {
+		return list.iterator();
+	}
+	
+	public function add( f : String ) : Bool {
+		if( Lambda.has( list, f ) ) {
+			return false;
+		} else {
+			list.add( f );
+			return true;
+		}
+	}
+}
+
+
+/**
+*/
 interface Stream {
 	
 	dynamic function onOpen<T>( s : T ) : Void;
@@ -21,7 +47,7 @@ interface Stream {
 	var status : StreamStatus;
 	
 	/** */
-	var features(default,null) : Array<String>;
+	var features(default,null) : StreamFeatures;
 	
 	/** */
 	var jid(default,null) : jabber.JID;

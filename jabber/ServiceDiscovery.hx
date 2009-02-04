@@ -1,5 +1,6 @@
 package jabber;
 
+// TODO join with ServiceDiscoveryListener
 
 /**
 	Manages discovery of services from XMPP entities.<br>
@@ -29,7 +30,7 @@ class ServiceDiscovery {
 	public function discoverInfo( jid : String ) {
 		var iq = new xmpp.IQ( xmpp.IQType.get, null, jid );
 		iq.ext = new xmpp.disco.Info();
-		stream.sendIQ( iq, handleInfoResult, false );
+		stream.sendIQ( iq, handleInfoRequest, false );
 	}
 	
 	/**
@@ -38,11 +39,11 @@ class ServiceDiscovery {
 	public function discoverItems( jid : String, ?node : String ) {
 		var iq = new xmpp.IQ( xmpp.IQType.get, null, jid );
 		iq.ext = new xmpp.disco.Items( node );
-		stream.sendIQ( iq, handleItemResult, false );
+		stream.sendIQ( iq, handleItemRequest, false );
 	}
 
 	
-	function handleInfoResult( iq : xmpp.IQ ) {
+	function handleInfoRequest( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 			case result :
 				var l = xmpp.disco.Info.parse( iq.ext.toXml() );
@@ -52,7 +53,7 @@ class ServiceDiscovery {
 		}
 	}
 	
-	function handleItemResult( iq : xmpp.IQ ) {
+	function handleItemRequest( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 			case result :
 				var l = xmpp.disco.Items.parse( iq.ext.toXml() );

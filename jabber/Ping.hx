@@ -1,5 +1,6 @@
 package jabber;
 
+//TODO join with Pong ?
 
 /**
 	Sends application-level pings over XML streams.

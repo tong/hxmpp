@@ -20,6 +20,7 @@ class TestXMPP {
 		r.add( new TestPresencePacket() );
 		r.add( new TestIQPacket() );
 		
+		///// stuff
 		r.add( new TestXMPPError() );
 		r.add( new TestXMPPCompression() );
 		r.add( new TestXMPPDate() );
@@ -38,11 +39,10 @@ class TestXMPP {
 		r.add( new TestXMPPPrivacyLists() );
 		r.add( new TestXMPPMood() );
 		r.add( new TestXMPPCaps() );
-		
+		r.add( new TestXMPPSoftwareVersion() );
 	//	r.add( new TestXMPPMUC() );
 	//	r.add( new TestXMPPPubSub() );
 	//	r.add( new TestXMPPJingle() );
-		
 		
 		///// packet filters
 		r.add( new TestXPacketFilters() );
