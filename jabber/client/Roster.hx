@@ -10,11 +10,11 @@ import xmpp.roster.Subscription;
 
 enum SubscriptionMode {
 	/** Accepts all subscription and unsubscription requests. */
-	acceptAll; //TODO? acceptAll( subscribe : Bool );
+	acceptAll; //TODO acceptAll( subscribe : Bool = true );
 	/** Rejects all subscription requests. */
 	rejectAll;
 	/** Ask user how to proceed. */
-	manual;
+	manual; //TODO manual( ?subscribe : Bool = true );
 }
 
 
@@ -87,8 +87,7 @@ class Roster {
 	}
 	
 	public function addItem( jid : String ) : Bool {
-		if( !available ) return false;
-		if( getItem( jid ) != null ) return false;
+		if( !available || hasItem( jid ) ) return false;
 		requestItemAdd( jid );
 		return true;
 	}
@@ -114,8 +113,7 @@ class Roster {
 	}
 	
 	public function updateItem( item : Item ) : Bool {
-		if( !available ) return false;
-		if( getItem( item.jid ) == null ) return false;
+		if( !available || !hasItem( item.jid ) ) return false;
 		var iq = new xmpp.IQ( IQType.set );
 		iq.ext = new xmpp.Roster( [item] );
 		var me = this;
@@ -175,13 +173,6 @@ class Roster {
 		return true;
 	}
 	
-	public function confirmSubscription( jid : String, allow : Bool = true ) {
-		//if( !available || getItem( jid ) == null ) return;
-		var p = new xmpp.Presence( ( allow ) ? xmpp.PresenceType.subscribed : xmpp.PresenceType.unsubscribed );
-		p.to = jid;
-		stream.sendPacket( p );
-	}
-	
 	public inline function hasItem( jid : String ) : Bool {
 		return getItem( jid ) != null;
 	}
@@ -190,13 +181,21 @@ class Roster {
 		return presenceMap.get( jid );
 	}
 	
+	//public
+	function confirmSubscription( jid : String, allow : Bool = true ) {
+		//if( !available || getItem( jid ) == null ) return;
+		var p = new xmpp.Presence( ( allow ) ? xmpp.PresenceType.subscribed : xmpp.PresenceType.unsubscribed );
+		p.to = jid;
+		stream.sendPacket( p );
+	}
+	
 	
 	function handleRosterPresence( p : xmpp.Presence ) {
 //		trace("händleRosterPresence");
 		//if( !available ) return;
 		
-		var from = jabber.util.JIDUtil.parseBar( p.from );
-		var resource = jabber.util.JIDUtil.parseResource( p.from );
+		var from = jabber.JIDUtil.parseBar( p.from );
+		var resource = jabber.JIDUtil.parseResource( p.from );
 		
 		if( from == stream.jid.bare ) { // handle account resource presence
 			if( resource == null ) return;
@@ -230,7 +229,9 @@ class Roster {
 						return;
 						
 					default :
-						trace("???????????????? "+p.type );
+						//TODO check
+						trace( "???? check" );
+						onPresence( this, i, p );
 				}
 			}
 			if( i != null ) {

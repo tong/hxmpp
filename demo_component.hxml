@@ -1,5 +1,5 @@
 
--cp demo/
+-cp samples/
 -cp lib/
 -neko bin/demos/component.n
 -main JabberComponentDemo

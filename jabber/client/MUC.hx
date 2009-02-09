@@ -3,7 +3,6 @@ package jabber.client;
 import jabber.core.PacketCollector;
 import jabber.core.PacketCollector;
 import jabber.core.PresenceManager;
-//import jabber.muc.Occupant;
 import xmpp.muc.Affiliation;
 import xmpp.muc.Role;
 import xmpp.Message;
@@ -16,7 +15,8 @@ import xmpp.filter.PacketTypeFilter;
 
 /**
 */
-typedef Occupant = { //TODO MUCOccupant
+typedef MUCOccupant = { //TODO MUCOccupant
+	//TODO ? var muc : MUC;
 	var nick : String;
 	var jid : String;
 	var presence : xmpp.Presence;
@@ -26,9 +26,9 @@ typedef Occupant = { //TODO MUCOccupant
 
 
 /**
-	Multi-user chatroom.
+	Multi-user chatroom from client perspective.
 	
-	<a href="http://www.xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
+	<a href="http://www.xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a><br>
 	<a href="http://www.xmpp.org/extensions/xep-0249.html">XEP-0249: Direct MUC Invitations</a>
 */
 class MUC {
@@ -37,9 +37,9 @@ class MUC {
 	
 	public dynamic function onJoin( muc : MUC ) {}
 	public dynamic function onLeave( muc : MUC ) : Void;
-	//public dynamic function onRoomMessage( muc : MUC, m : xmpp.Message ) : Void;
-	public dynamic function onMessage( muc : MUC, o : Occupant, m : xmpp.Message ) : Void;
-	public dynamic function onPresence( muc : MUC, o : Occupant ) {}
+	//TODO public dynamic function onRoomMessage( muc : MUC, m : xmpp.Message ) : Void;
+	public dynamic function onMessage( muc : MUC, o : MUCOccupant, m : xmpp.Message ) : Void;
+	public dynamic function onPresence( muc : MUC, o : MUCOccupant ) {}
 	public dynamic function onSubject( muc : MUC ) : Void;
 	
 	public dynamic function onKick( muc : MUC, nick : String ) : Void;
@@ -55,9 +55,9 @@ class MUC {
 	public var role(default,null) : Role;
 	public var affiliation(default,null) : Affiliation;
 	public var presence(default,null) : PresenceManager;
-	public var occupants(default,null) : Array<Occupant>;
+	public var occupants(default,null) : Array<MUCOccupant>;
 	public var subject(default,null) : String;
-	public var me(getMe,null) : Occupant;
+	public var me(getMe,null) : MUCOccupant;
 	
 	var message : xmpp.Message;
 	var col_presence : PacketCollector;
@@ -70,19 +70,21 @@ class MUC {
 		this.jid = roomName+"@"+host;
 		this.room = roomName;
 
-		message = new xmpp.Message( MessageType.groupchat, jid );
+		message = new xmpp.Message( jid, null, null, MessageType.groupchat, null );
 		
 		joined = false;
 		occupants = new Array();
 		
+		//TODO add to features
+		
 		// collect all presences and messages from the room jid
 		var f_from : xmpp.PacketFilter = new PacketFromContainsFilter( jid );
-		col_presence = new PacketCollector( [f_from, cast new PacketTypeFilter( PacketType.presence ) ], handlePresence, true );
+		col_presence = new PacketCollector( [f_from, cast new PacketTypeFilter( PacketType.presence )], handlePresence, true );
 		col_message = new PacketCollector(  [f_from, cast new MessageFilter( MessageType.groupchat )], handleMessage, true );
 	}
 
 	
-	function getMe() : Occupant {
+	function getMe() : MUCOccupant {
 		return { role : role, presence : presence.get(), nick : nick, jid : myjid, affiliation : affiliation };
 	}
 	
@@ -171,8 +173,22 @@ class MUC {
 		return true;
 	}
 	
+	/**
+		Sends an invitation message to the given entity.
+		//TODO
+	*/
+	public function invite( jid : String, ?reason : String ) {
+		//if( !joined ) return false;
+		//if( !jabber.JIDUtil.isValid( jid ) )
+		var x = xmpp.X.create( xmpp.MUCUser.XMLNS, new xmpp.muc.Invite( reason, jid ).toXml() );
+		var m = new xmpp.Message( this.jid );
+		m.properties.push( x );
+		stream.sendPacket( m );
+	}
+	
 	
 	function handleMessage( m : xmpp.Message ) {
+		//trace("hääändleMessage-hääändleMessage-hääändleMessage-hääändleMessage-hääändleMessage");
 		var from = getOccupantName( m.from );
 		var occupant = getOccupant( from );
 		if( occupant == null && from != jid && from != nick ) {
@@ -218,7 +234,7 @@ class MUC {
 							joined = true;
 							this.onJoin( this );
 							// unlock room if required
-							trace(">>>>>>>>>>>>>>>>>>>> "+x_user.item );
+//							trace(">>>>>>>>>>>>>>>>>>>> "+x_user.item );
 						//	if( x_user.item != null ) {
 								if( x_user.item.role == Role.moderator &&
 									x_user.status != null &&
@@ -280,7 +296,7 @@ class MUC {
 		return stream.sendPacket( p );
 	}
 	
-	function getOccupant( n : String ) : Occupant {
+	function getOccupant( n : String ) : MUCOccupant {
 		for( o in occupants ) {
 			if( o.nick == n ) return o;
 		}

@@ -32,8 +32,7 @@ class Account {
 	/**
 		Requests to register a new account.
 	*/
-	public function register( username : String, password : String,
-							  email : String, name : String ) : Bool {
+	public function register( username : String, password : String, email : String, name : String ) : Bool {
 						  	
 		if( stream.status != jabber.StreamStatus.open ) return false;
 
@@ -108,7 +107,6 @@ class Account {
 			switch( r.type ) {
 				case result :
 					var l = xmpp.Register.parse( iq.ext.toXml() );
-					//self.onPasswordChange( new IQResult<Stream,xmpp.Register>( self.stream, r, l ) );
 					self.onPasswordChange( self.stream, pass );
 				case error :
 					self.onError( new jabber.XMPPError( self, r ) );

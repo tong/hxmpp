@@ -4,13 +4,16 @@ package xmpp.muc;
 class Decline {
 	
 	public var reason : String;
-	public var from : String;
 	public var to : String;
-	
+	public var from : String;
+
 	var nodeName : String;
 	
-	public function new() {
+	public function new( ?reason : String, ?to : String, ?from : String ) {
 		nodeName = "decline";
+		this.reason = reason;
+		this.to = to;
+		this.from = from;
 	}
 	
 	public function toXml() : Xml {
@@ -20,5 +23,7 @@ class Decline {
 		if( reason != null ) x.addChild( util.XmlUtil.createElement( "reason", reason ) );
 		return x;
 	}
+	
+	//TODO public static function parse( x : Xml ) :  {
 	
 }

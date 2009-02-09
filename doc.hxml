@@ -2,12 +2,60 @@
 # hxmpp doc
 -cp lib/
 -cp doc/
-ImportAll
+
+jabber.Chat
+jabber.ChatStateNotification
+jabber.JID
+jabber.JIDUtil
+jabber.MessageListener
+jabber.Ping
+jabber.PrivacyLists
+jabber.ServiceDiscovery
+jabber.ServiceDiscoveryListener
+jabber.SocketConnection
+jabber.SoftwareVersion
+jabber.XMPPDebug
+jabber.XMPPError
+
+jabber.client.Account
+jabber.client.MUC
+jabber.client.NonSASLAuthentication
+jabber.client.Roster
+jabber.client.SASLAuthentication
+jabber.client.Stream
+jabber.client.VCardTemp
+
+jabber.component.Stream
+
+xmpp.Bind
+xmpp.ChatState
+xmpp.ChatStateExtension
+xmpp.Compression
+xmpp.DataForm
+xmpp.Date
+xmpp.Delayed
+xmpp.Error
+xmpp.ErrorCondition
+xmpp.IQ
+xmpp.MUC
+xmpp.PlainPacket
+xmpp.Presence
+xmpp.PrivacyLists
+xmpp.SASL
+xmpp.XHTML
+
+net.sasl.AnonymousMechanism
+net.sasl.PlainMechanism
+net.util.KeepAlive
+
 -js lib.js
 -xml doc/api.xml
--D JABBER_LIBCLIENT
--D JABBER_DEBUG
+
+#-D JABBER_LIBCLIENT
+#-D JABBER_DEBUG
 -D JABBER_SOCKETBRIDGE
+
+
 -cmd rm lib.js
 -cmd cd doc/api/
 -cmd haxedoc ../api.xml -f jabber -f xmpp -f net -f crypt -f util -f error

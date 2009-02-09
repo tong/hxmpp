@@ -11,10 +11,16 @@ typedef Server = {
 }
 
 
+/*
+typedef StreamFeature = {
+	var streamFeatureName(default,null) : String;
+}
+*/
+
 //TODO Hash map
 class StreamFeatures {
 	
-	var list : List<String>;
+	var list : List<String>; // TODO var features : Hash<StreamFeature>;
 	
 	public function new() {
 		list = new List();
@@ -62,7 +68,7 @@ interface Stream {
 					 ?timeout : PacketTimeout,
 					 ?block : Bool ) : { iq : xmpp.IQ, collector : TPacketCollector };
 	
-	/** Sends xmpp packet */
+	/** Sends XMPP packet */
 	function sendPacket<T>( p : xmpp.Packet, ?intercept : Bool = true ) : T;
 	
 	/** Sends raw data */

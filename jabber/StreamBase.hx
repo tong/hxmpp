@@ -79,6 +79,7 @@ class StreamBase implements Stream {
 	*/
 	public function open() : Bool {
 //		if( status == StreamStatus.open ) return false;
+		//if( cnx = null ) throw
 		if( !cnx.connected ) cnx.connect() else connectHandler();
 		return true;
 	}
@@ -261,10 +262,13 @@ class StreamBase implements Stream {
 				}
 			}
 			if( !collected ) {
+				//TODO create response
+				//iq -> feature-not-implemented
+			//	if( p._type == xmpp.PacketType.iq ) {
+			//	}
 				#if JABBER_DEBUG
 				trace( "XMPP packet not processed: "+p, "warn" );
 				#end
-				//TODO create response
 			}
 		}
 		return packets;

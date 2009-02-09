@@ -12,7 +12,7 @@ class JabberComponentDemo {
 	
 	static function main() {
 		
-		jabber.util.XMPPDebug.redirectTraces();
+		jabber.XMPPDebug.redirectTraces();
 		
 		cnx = new jabber.SocketConnection( "127.0.0.1", Stream.defaultPort );
 		stream = new Stream( "disktree", "norc", "1234", cnx );

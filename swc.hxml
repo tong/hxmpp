@@ -1,11 +1,12 @@
 
-### HXMPP CLIENT SWC
+### HXMPP CLIENT FLASH-SWC
+### 
 -cp doc/
 -cp lib/
--swf9 bin/hxmpp_client.swc
+-swf9 bin/hxmpp.swc
 -D JABBER_DEBUG
 jabber.SocketConnection
-jabber.util.XMPPDebug
+jabber.XMPPDebug
 jabber.client.Stream
 jabber.client.NonSASLAuthentication
 jabber.client.Stream
@@ -13,7 +14,7 @@ jabber.client.Roster
 #--no-traces
 
 
-### HXMPP COMPONENT SWC
+### HXMPP COMPONENT FLASH-SWC
 --next
 -cp doc/
 -cp lib/

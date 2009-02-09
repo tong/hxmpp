@@ -1,7 +1,4 @@
-
-// #if JABBER_DEBUG
-
-package jabber.util;
+package jabber;
 
 
 class XMPPDebug {
@@ -27,11 +24,6 @@ class XMPPDebug {
 	
 	
 	#if neko
-	
-	//TODO send color value to ndll
-	//public static var WHITE = 33; 
-	//public static var WHITE = 33; 
-	//public static var WHITE = 33; 
 	
 	static var printC = neko.Lib.load( "hxmpp_debug", "printC", 2 );
 	
@@ -62,5 +54,3 @@ class XMPPDebug {
 	#end // neko
 	
 }
-
-//#end // JABBER_DEBUG

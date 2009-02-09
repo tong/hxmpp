@@ -73,7 +73,7 @@ class JabberClientDemo {
 		};
 		vcard.load();
 		
-		/* TODO
+		/*
 		service = new ServiceDiscovery( stream );
 		service.onInfo = function( sd, e ) {
 			trace( "SERVICE INFO RESULT: "+e.from );
@@ -90,7 +90,7 @@ class JabberClientDemo {
 	
 	static function main() {
 		
-		#if JABBER_DEBUG jabber.util.XMPPDebug.redirectTraces(); #end
+		#if JABBER_DEBUG jabber.XMPPDebug.redirectTraces(); #end
 		
 		#if JABBER_SOCKETBRIDGE
 		jabber.SocketBridgeConnection.initDelayed( "f9bridge", init );

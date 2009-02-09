@@ -1,6 +1,6 @@
 
 import jabber.JID;
-import jabber.util.JIDUtil;
+import jabber.JIDUtil;
 
 
 class TestJID extends haxe.unit.TestCase   {
@@ -32,6 +32,8 @@ class TestJID extends haxe.unit.TestCase   {
 		var parts2 = JIDUtil.getParts( j2 );
 		assertEquals( "node", parts2[0] );
 		assertEquals( "domain.net", parts2[1] );
+		
+		
 	}
 	
 	public function testJID() {

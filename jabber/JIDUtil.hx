@@ -1,4 +1,4 @@
-package jabber.util;
+package jabber;
 
 //TODO move to package "jabber"
 
@@ -8,9 +8,9 @@ package jabber.util;
 */	
 class JIDUtil {
 	
-	// TODO: resource, local !!!
-	public static var ereg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?/i;
-	
+	// TODO: resource
+	static var ereg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?/i;
+
 	
 	/**
 		Returns true if the given jid is valid formed.

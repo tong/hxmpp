@@ -1,6 +1,6 @@
 package jabber;
 
-import jabber.util.JIDUtil;
+import jabber.JIDUtil;
 
 
 /**
@@ -22,7 +22,7 @@ class JID {
 	
 	public var node(default,null) : String;
     public var domain(default,null) : String;
-    public var resource(default,null) : String;
+    public var resource : String;
     /** JID without resource */
 	public var bare(getBare,null) : String;
 	
@@ -32,9 +32,10 @@ class JID {
 	
 	public function new( str : String ) {
 		
-		#if !JABBER_DEBUG // allows malformed jids for debugging
-		if( !JIDUtil.isValid( str ) ) throw new error.Exception( "Invalid jid: "+str ); 
-		#end
+		//TODO
+			//#if !JABBER_DEBUG // allows malformed jids for debugging
+			//if( !JIDUtil.isValid( str ) ) throw new error.Exception( "Invalid jid: "+str ); 
+		//#end
 		
 		this.node = JIDUtil.parseNode( str );
 		this.domain = JIDUtil.parseDomain( str );

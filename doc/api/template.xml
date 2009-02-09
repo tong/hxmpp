@@ -1,6 +1,7 @@
 <html>
 <head>
-<title>hxmpp API</title>
+<title>HXMPP-API</title>
+
 <script type="text/javascript">
 function toggle(id) {
 	var e = document.getElementById(id);
@@ -14,8 +15,8 @@ function toggle(id) {
 body {
 	text-align: left;
 	font-family: sans-serif;
-	background-color : #222222;
-	color : #6CC8EF;
+	background-color : #000000;
+	color : #00A1EB;
 	font-size:10px;
 }
 
@@ -25,15 +26,15 @@ body {
 	margin : 0px auto 0px auto;*/
 	border : solid 0px #CFD0D4;
 	text-align : justify;
-	background-color: #222222;
+	background-color: #000000;
 }
 
 .title {
 	font-size: 18;
 	font-weight: normal;
 	text-align: left;
-	background-color : #222222;
-	color : #A80080;
+	background-color : #000000;
+	color : #FF7D00;
 }
 
 ul.entry {
@@ -58,7 +59,7 @@ a:hover {
 }
 
 a.package {
-	color : #6CC8EF;
+	color : #00A1EB;
 }
 
 img {
@@ -71,7 +72,7 @@ img {
 
 .kwd {
 	margin-left : 2px;
-	color : #6CC8EF;
+	color : #00A1EB;
 }
 
 .classname {

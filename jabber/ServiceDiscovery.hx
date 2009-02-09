@@ -1,6 +1,9 @@
 package jabber;
 
-// TODO join with ServiceDiscoveryListener
+import jabber.core.PacketCollector;
+import xmpp.filter.IQFilter;
+
+// TODO move stream.features into here ??
 
 /**
 	Manages discovery of services from XMPP entities.<br>
@@ -19,7 +22,7 @@ class ServiceDiscovery {
 	public var stream(default,null) : jabber.Stream;
 	
 	
-	public function new( stream : jabber.Stream ) {
+	public function new( stream : jabber.Stream, ?identity : xmpp.disco.Identity ) {
 		this.stream = stream;
 	}
 	
@@ -39,25 +42,27 @@ class ServiceDiscovery {
 	public function discoverItems( jid : String, ?node : String ) {
 		var iq = new xmpp.IQ( xmpp.IQType.get, null, jid );
 		iq.ext = new xmpp.disco.Items( node );
-		stream.sendIQ( iq, handleItemRequest, false );
+		stream.sendIQ( iq, handleItemsRequest, false );
 	}
-
+	
+	/**
+	public function publishItems( jid : String ) {
+		//TODO
+	}
+	*/
+	
 	
 	function handleInfoRequest( iq : xmpp.IQ ) {
 		switch( iq.type ) {
-			case result :
-				var l = xmpp.disco.Info.parse( iq.ext.toXml() );
-				onInfo( this, iq.from, l );
+			case result : onInfo( this, iq.from, xmpp.disco.Info.parse( iq.ext.toXml() ) );
 			case error : onError( new jabber.XMPPError( this, iq ) );
 			default : // #
 		}
 	}
 	
-	function handleItemRequest( iq : xmpp.IQ ) {
+	function handleItemsRequest( iq : xmpp.IQ ) {
 		switch( iq.type ) {
-			case result :
-				var l = xmpp.disco.Items.parse( iq.ext.toXml() );
-				onItems( this, iq.from, l );
+			case result : onItems( this, iq.from, xmpp.disco.Items.parse( iq.ext.toXml() ) );
 			case error : onError( new jabber.XMPPError( this, iq ) );
 			default: // #
 		}

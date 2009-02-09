@@ -19,7 +19,7 @@ import xmpp.Delayed;
 import xmpp.Error;
 
 #if JABBER_DEBUG
-import jabber.util.XMPPDebug;
+import jabber.XMPPDebug;
 import jabber.util.ResourceAccount;
 
 #end // JABBER_DEBUG

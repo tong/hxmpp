@@ -58,9 +58,9 @@ class SASLAuthentication {
 		if( active ) return false;
 		this.resource = resource; 
 		
-		// relay the stream opn event
+		// relay the stream open event
 		stream.onOpen = handleStreamOpen;
-		//TODO:save old handler and reassign on authentication success/fail
+		//TODO!!!!!!!! save old handler and reassign on authentication success/fail
 		
 		// locate mechanism to use.
 		if( handshake.mechanism == null ) {

@@ -14,10 +14,12 @@ class Message extends xmpp.Packet {
     public var thread : String;
 	
 
-    public function new( ?to : String, ?body : String, ?subject : String, ?type : MessageType, ?thread : String,
-    					 ?from : String ) {
-		super( to, from );
+    public function new( ?to : String, ?body : String, ?subject : String,
+    					 ?type : MessageType, ?thread : String, ?from : String ) {
+    					 	
 		_type = xmpp.PacketType.message;
+		
+		super( to, from );
 		this.type = if ( type != null ) type else xmpp.MessageType.normal;
 		this.body = body;
 		this.subject = subject;
@@ -37,9 +39,9 @@ class Message extends xmpp.Packet {
     
     
     public static function parse( x : Xml ) : xmpp.Message {
-    	var m = new Message( if( x.exists( "type" ) ) Type.createEnum( xmpp.MessageType, x.get( "type" ) ) );
+    	var m = new Message( null, null, null, if( x.exists( "type" ) ) Type.createEnum( xmpp.MessageType, x.get( "type" ) ) );
    		//Packet.parsePacketBase( m, x );
-   		Packet.parseAttributes( m, x );
+   		xmpp.Packet.parseAttributes( m, x );
    		for( c in x.elements() ) {
 			switch( c.nodeName ) {
 				case "subject" : m.subject = c.firstChild().nodeValue;

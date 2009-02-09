@@ -1,5 +1,5 @@
 
--cp demo
+-cp samples/
 -cp lib/
 -swf9 bin/demos/client.swf
 -main JabberClientDemo
@@ -7,7 +7,7 @@
 -debug
 
 --next
--cp demo
+-cp samples/
 -cp lib/
 -js bin/demos/client_bridged.js
 -main JabberClientDemo
@@ -15,7 +15,7 @@
 -D JABBER_DEBUG
 
 --next
--cp demo
+-cp samples/
 -cp lib/
 -neko bin/demos/client.n
 -main JabberClientDemo
@@ -23,7 +23,7 @@
 -debug
 
 --next
--cp demo
+-cp samples/
 -cp lib/
 -php bin/demos
 --php-front client.php
