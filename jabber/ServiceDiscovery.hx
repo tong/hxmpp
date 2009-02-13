@@ -21,7 +21,7 @@ class ServiceDiscovery {
 	public var stream(default,null) : jabber.Stream;
 	
 	
-	public function new( stream : jabber.Stream, ?identity : xmpp.disco.Identity ) {
+	public function new( stream : jabber.Stream ) {
 		this.stream = stream;
 	}
 	
@@ -43,11 +43,6 @@ class ServiceDiscovery {
 		iq.ext = new xmpp.disco.Items( node );
 		stream.sendIQ( iq, handleItemsRequest, false );
 	}
-	
-	/*
-	public function publishItems( jid : String ) {
-	}
-	*/
 	
 	
 	function handleInfoRequest( iq : xmpp.IQ ) {

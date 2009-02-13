@@ -36,6 +36,8 @@ private class Socket extends flash.net.Socket {
 }
 
 
+/**
+*/
 class SocketBridge {
 	
 	var ctx : String;

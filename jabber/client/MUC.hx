@@ -1,8 +1,8 @@
 package jabber.client;
 
+import jabber.PresenceManager;
 import jabber.core.PacketCollector;
 import jabber.core.PacketCollector;
-import jabber.core.PresenceManager;
 import xmpp.muc.Affiliation;
 import xmpp.muc.Role;
 import xmpp.Message;
@@ -15,13 +15,14 @@ import xmpp.filter.PacketTypeFilter;
 
 /**
 */
-typedef MUCOccupant = { //TODO MUCOccupant
+typedef MUCOccupant = {
 	//TODO ? var muc : MUC;
 	var nick : String;
 	var jid : String;
 	var presence : xmpp.Presence;
 	var role : xmpp.muc.Role;
 	var affiliation : xmpp.muc.Affiliation;
+	//?? var lastMessage : xmpp.Message;
 }
 
 

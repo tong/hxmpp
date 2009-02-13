@@ -13,8 +13,11 @@ class Error {
 	public var name : String; //public var conditions : Array<String>;
 	public var text : String;
 	
-	public function new( code = -1 ) {
-		code = -1;
+	public function new( ?type : ErrorType, ?code = -1, ?name : String, ?text : String ) {
+		this.type = type;
+		this.code = code;
+		this.name = name;
+		this.text = text;
 	}
 	
 	public function toXml() : Xml {
@@ -24,7 +27,7 @@ class Error {
 		if( name != null ) {
 			var n = Xml.createElement( name );
 			n.set( "xmlns", XMLNS );
-			//..TODO
+			x.addChild( n );
 		}
 		return x;
 	}
@@ -48,8 +51,8 @@ class Error {
 	public static function parse( x : Xml ) : xmpp.Error {
 //		if( x.nodeName != "error" ) throw "This is not an error extension";
 		var e = new Error( Std.parseInt( x.get( "code" ) ) );
-		var etype = x.get( "type" );
-		if( etype != null ) e.type = Type.createEnum( ErrorType, x.get( "type" ) );
+		var et = x.get( "type" );
+		if( et != null ) e.type = Type.createEnum( ErrorType, x.get( "type" ) );
 		e.name = x.elements().next().nodeName;
 		return e;
 	}

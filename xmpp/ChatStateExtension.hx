@@ -16,8 +16,6 @@ class ChatStateExtension {
 			switch( p.nodeName ) {
 				case "active","composing","paused","inactive","gone" :
 					m.properties.remove( p );
-					m.properties.push( createXml( state ) );
-					return m;
 			}
 		}
 		m.properties.push( createXml( state ) );

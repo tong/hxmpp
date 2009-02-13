@@ -1,7 +1,0 @@
-
--cp samples/
--cp lib/
--neko bin/demos/component.n
--main JabberComponentDemo
--D JABBER_DEBUG
--debug

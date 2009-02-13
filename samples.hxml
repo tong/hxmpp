@@ -34,3 +34,14 @@
 -D XMPP_DEBUG
 -D JABBER_DEBUG
 -debug
+
+
+
+--next
+##### COMPONENT SAMPLE
+-cp samples/
+-cp lib/
+-neko bin/demos/component.n
+-main JabberComponentDemo
+-D JABBER_DEBUG
+-debug

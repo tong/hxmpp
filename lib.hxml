@@ -1,37 +1,36 @@
 
-### JS client lib
+##### HXMPP CLIENT JS
 -cp lib/
 -js bin/hxmpp.js
-jabber.Lib
 -D JABBER_LIBCLIENT
 -D JABBER_SOCKETBRIDGE
 -D JABBER_DEBUG
+jabber.SocketConnection
+jabber.XMPPDebug
+jabber.client.Stream
+jabber.client.NonSASLAuthentication
+jabber.client.Stream
+jabber.client.Roster
 #--no-traces
 
 
-### SWF9 client lib
 --next
+##### HXMPP CLIENT SWC
+-cp doc/
 -cp lib/
--swf9 bin/hxmpp.swf
-jabber.Lib
--D JABBER_LIBCLIENT
-#-D JABBER_DEBUG
+-swf9 bin/hxmpp.swc
+-D JABBER_DEBUG
+jabber.SocketConnection
+jabber.XMPPDebug
+jabber.client.Stream
+jabber.client.NonSASLAuthentication
+jabber.client.Stream
+jabber.client.Roster
 #--no-traces
 
 
-### SWC CLIENT LIB
-#TODO
 #--next
-#-swf9 bin/hxmpp.swc jabber.Temp
-
-
-### SWC COMPONENT LIB
-#--next
-#TODO
-
-
-### AS3 lib
-#--next
+##### HXMPP AS3
 #-cp lib/
 #-as3 bin/as3
 #jabber.Lib

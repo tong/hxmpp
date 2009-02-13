@@ -10,8 +10,8 @@ class Caps {
 	*/
 	public var hash : String; // fe sha-1
 	/**
-		A URI that uniquely identifies a software application,
-		typically a URL at the website of the project or company that produces the software
+		A URI that uniquely identifies a software application, typically a URL at the website
+		of the project or company that produces the software
 	*/
 	public var node : String;
 	/**
@@ -19,11 +19,13 @@ class Caps {
 	*/
 	public var ver : String;
 	
+	
 	public function new( hash : String, node : String, ver : String) {
 		this.hash = hash;
 		this.node = node;
 		this.ver = ver;
 	}
+	
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "c" );
@@ -33,6 +35,7 @@ class Caps {
 		x.set( "ver", ver );
 		return x;
 	}
+	
 	
 	public static function parse( x : Xml ) : xmpp.Caps {
 		return new Caps( x.get( "hash" ), x.get( "node" ), x.get( "ver" ) );

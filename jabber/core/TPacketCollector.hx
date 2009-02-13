@@ -13,17 +13,17 @@ typedef TPacketCollector = {
 	//function clearFilters() : Void;
 	
 	/**
-		Methods to which collected packets get delivered.
+		Callbacks to which collected packets get delivered to.
 	*/
 	var handlers : Array<xmpp.Packet->Void>;
 	
 	/**
-		Indicates if the the collector should get removed from the streams after successful collecting.
+		Indicates if the the collector should get removed from the streams after collecting.
 	*/
 	var permanent : Bool;
 	
 	/**
-		Blocks the remaining stream collectors.
+		Blocks remaining collectors.
 	*/
 	var block : Bool;
 	

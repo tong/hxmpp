@@ -25,12 +25,12 @@ class Auth {
 
 	
 	public function toXml() : Xml {
-		var q = xmpp.IQ.createQueryXml( XMLNS );
-		if( username != null ) q.addChild( XmlUtil.createElement( "username", username ) );
-		if( password != null ) q.addChild( XmlUtil.createElement( "password", password ) );
-		if( digest != null )   q.addChild( XmlUtil.createElement( "digest", digest ) );
-		if( resource != null ) q.addChild( XmlUtil.createElement( "resource", resource ) );
-		return q;
+		var x = xmpp.IQ.createQueryXml( XMLNS );
+		if( username != null ) x.addChild( XmlUtil.createElement( "username", username ) );
+		if( password != null ) x.addChild( XmlUtil.createElement( "password", password ) );
+		if( digest != null )   x.addChild( XmlUtil.createElement( "digest", digest ) );
+		if( resource != null ) x.addChild( XmlUtil.createElement( "resource", resource ) );
+		return x;
 	}
 	
 	public inline function toString() : String { return toXml().toString(); }
