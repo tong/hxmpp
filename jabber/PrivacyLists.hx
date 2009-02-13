@@ -25,6 +25,8 @@ class PrivacyLists {
 		
 		this.stream = stream;
 		
+		stream.features.add( xmpp.PrivacyLists.XMLNS );
+		
 		// TODO add collectors for server push
 	}
 	

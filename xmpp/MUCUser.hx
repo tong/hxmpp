@@ -35,7 +35,7 @@ class MUCUser {
 		return x;
 	}
 	
-	#if JABBER_DEBUG public inline function toString() : String { return toXml().toString(); } #end
+	public inline function toString() : String { return toXml().toString(); }
 	
 	
 	public static function parse( x : Xml ) : xmpp.MUCUser {
@@ -49,12 +49,10 @@ class MUCUser {
 				}
 		}
 		return p;
-		
 		/*
 		var ext = new MUCUser();
 		for( e in x.elements() ) {
 			//trace(">>>>>>>>>>>>>>>>>>>>>>>>>> "+e.nodeName );
-			//trace("GO GO GO GO GO GO GO GO GO GO ");
 			//trace(e.nodeName);
 			//trace( e.get( "xmlns" ) );
 			

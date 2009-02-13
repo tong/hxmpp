@@ -3,7 +3,7 @@ package jabber;
 
 class XMPPError {
 	
-	public var dispatcher(default,null) : Dynamic; //TODO 
+	public var dispatcher(default,null) : Dynamic;
 	public var from(default,null) : String;
 	public var type(default,null) : xmpp.ErrorType;
 	public var code(default,null) : Int;

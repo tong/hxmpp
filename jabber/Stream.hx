@@ -31,12 +31,9 @@ class StreamFeatures {
 	}
 	
 	public function add( f : String ) : Bool {
-		if( Lambda.has( list, f ) ) {
-			return false;
-		} else {
-			list.add( f );
-			return true;
-		}
+		if( Lambda.has( list, f ) ) return false;
+		list.add( f );
+		return true;
 	}
 }
 

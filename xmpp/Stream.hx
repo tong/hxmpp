@@ -3,7 +3,6 @@ package xmpp;
 import util.XmlUtil;
 
 
-//TODO rename to Stream, check with php. (?)
 class Stream {
 	
 	public static var XMLNS_STREAM 	  = "http://etherx.jabber.org/streams";

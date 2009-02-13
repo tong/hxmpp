@@ -39,7 +39,7 @@ class SocketConnection extends jabber.core.StreamConnectionBase {
 	
 	public var host(default,null) : String;
 	public var port(default,null) : Int;
-	public var socket(default,null) : Socket; //TODO
+	public var socket(default,null) : Socket;
 	
 	
 	public function new( host : String, port : Int ) {

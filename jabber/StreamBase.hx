@@ -114,10 +114,11 @@ class StreamBase implements Stream {
 		Sends raw data.
 	*/
 	public function sendData( d : String ) : Bool {
-		if( !cnx.connected ) return false;
-		if( !cnx.send( d ) ) return false;
+		if( !cnx.connected || !cnx.send( d ) ) return false;
 		numPacketsSent++;
-		#if JABBER_DEBUG trace( d, "xmpp-o" ); #end
+		#if XMPP_DEBUG
+		trace( d, "xmpp-o" );
+		#end
 		return true;
 	}
 	
@@ -142,6 +143,12 @@ class StreamBase implements Stream {
 		}
 		return { iq : sent, collector : c };
 	}
+	
+	/* TODO
+		Short for sending normal type messages.
+	public function sendMessage() {
+	}
+	*/
 	
 	public function addCollector( c : TPacketCollector ) : Bool {
 		if( Lambda.has( collectors, c ) ) return false;
@@ -192,14 +199,14 @@ class StreamBase implements Stream {
 		
 		if( cache == null && d == " " ) return; // ignore keepalive
 		
-		#if JABBER_DEBUG
+		#if XMPP_DEBUG
 		try {
 			var x = Xml.parse( d );
 			for( e in x.elements() ) trace( "<<< "+e, "xmpp-i" );
 		} catch( e : Dynamic ) {
 			trace( "<<< "+d, "xmpp-i" );
 		}
-		#end //JABBER_DEBUG
+		#end
 		
 		if( xmpp.Stream.eregStreamClose.match( d ) ) {
 			close( true );
@@ -215,7 +222,7 @@ class StreamBase implements Stream {
 			case closed :
 				return;
 			case pending :
-				//#if JABBER_DEBUG trace( d, "xmpp-i" ); #end
+				//#if XMPP_DEBUG trace( d, "xmpp-i" ); #end
 				processStreamInit( XmlUtil.removeXmlHeader( d ) );
 			case open :
 				var x : Xml = null;
@@ -253,6 +260,7 @@ class StreamBase implements Stream {
 				//if( c == null ) collectors.remove( c );
 				if( c.accept( p ) ) {
 					collected = true;
+					//if( c.deliver == null ) collectors.remove( c );
 					c.deliver( p );
 					if( c.block ) break;
 					if( !c.permanent ) {

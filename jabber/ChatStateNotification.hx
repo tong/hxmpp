@@ -51,7 +51,7 @@ class ChatStateNotification {
 	
 	
 	/**
-		Internal only.
+		Internal.
 	*/
 	public function interceptPacket( p : xmpp.Packet ) : xmpp.Packet {
 		if( chat == null ) {

@@ -8,9 +8,12 @@ class XMPPDebug {
 		if( neko.Web.isModNeko ) {
 			haxe.Firebug.redirectTraces();
 		} else {
-			if( neko.Sys.systemName() == "Linux" ) {
-				haxe.Log.trace = myTrace;
+			var sysName = neko.Sys.systemName();
+			if( neko.Sys.systemName() != "Linux" ) {
+				trace( "XMPPDebug not supported on "+sysName );
+				return;
 			}
+			haxe.Log.trace = myTrace;
 		}
 		#elseif php
 		if( !php.Lib.isCli() ) haxe.Firebug.redirectTraces();
@@ -25,23 +28,25 @@ class XMPPDebug {
 	
 	#if neko
 	
-	static var printC = neko.Lib.load( "hxmpp_debug", "printC", 2 );
+	//TODO
+	
+	static var _print = neko.Lib.load( "hxmpp_debug", "printC", 2 );
 	
 	static function myTrace( v : Dynamic, ?inf : haxe.PosInfos ) {
 		var c = 0;
-		var buf = new StringBuf();
+		var b = new StringBuf();
 		if( inf.customParams == null ) {
-			buf.add( "\t" );
-			buf.add( inf.className+" "+inf.lineNumber );
-			buf.add( " => " );
-			buf.add( v );
+			b.add( "\t" );
+			b.add( inf.className+" "+inf.lineNumber );
+			b.add( " => " );
+			b.add( v );
 		} else {
 			if( inf.customParams[0] == "xmpp-i" ) c = 1;
 			else if( inf.customParams[0] == "xmpp-o" ) c = 2;
-			buf.add( v );
+			b.add( v );
 		}
-		buf.add( "\n" );
-		printC( untyped buf.toString().__s, c );
+		b.add( "\n" );
+		_print( untyped b.toString().__s, c );
     }
 	
 	#elseif php
@@ -51,6 +56,6 @@ class XMPPDebug {
 		 php.Lib.print( inf.lineNumber+"\t"+v+"\n" );
 	}
 	
-	#end // neko
+	#end
 	
 }

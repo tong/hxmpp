@@ -12,7 +12,7 @@ class PresenceManager {
 	var presence : xmpp.Presence;
 
 
-	public function new( stream : jabber.Stream, target : String ) {
+	public function new( stream : jabber.Stream, ?target : String ) {
 		this.stream = stream;
 		this.target = target;
 	}
@@ -27,10 +27,10 @@ class PresenceManager {
 	}
 	
 	public function set( ?p : xmpp.Presence ) {
-		if( stream.status != jabber.StreamStatus.open ) return null;
+//		if( stream.status != jabber.StreamStatus.open ) return null;
 //		if( p == presence ) return null;
-		presence = if( p == null ) new xmpp.Presence() else p;
-		p.to = target;
+		this.presence = if( p == null ) new xmpp.Presence() else p;
+		if( target != null ) p.to = target;
 		return stream.sendPacket( presence );
 	}
 	

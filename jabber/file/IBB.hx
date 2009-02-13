@@ -4,7 +4,7 @@ import xmpp.IBB;
 
 
 /**
-	Outgoing IBB.
+	Outgoing in-band bytestream.
 	
 	<a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams (IBB)</a>
 	
@@ -17,7 +17,7 @@ class IBB {
 	
 	public static var defaultBlockSize = 1<<12;
 	
-	public dynamic function onComplete( s : IBB ) {}
+	public dynamic function onComplete( bs : IBB ) {}
 	//public dynamic function onError() {}
 	
 	public var stream(default,null) : jabber.Stream;
@@ -86,6 +86,7 @@ class IBB {
 		iq.ext = ext;
 		stream.sendIQ( iq, handleOpenResult );
 	}
+	
 	
 	function sendNextPacket() {
 		var output = blocks[seq].toString();

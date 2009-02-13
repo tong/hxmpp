@@ -29,16 +29,18 @@ class TestXMPP {
 		
 		///// iq extension
 		r.add( new TestXMPPAuth() );
-		r.add( new TestXMPPRegister() );
-		r.add( new TestXMPPRoster() );
-		r.add( new TestXMPPDisco() );
+		r.add( new TestXMPPCaps() );
+		r.add( new TestXMPPChatState() );
 		r.add( new TestXMPPDataForm() );
 		r.add( new TestXMPPDelayedDelivery() );
-		r.add( new TestXMPPChatState() );
+		r.add( new TestXMPPDisco() );
+	//	r.add( new TestXMPPEntityTime() );
 		r.add( new TestXMPPLastActivity() );
-		r.add( new TestXMPPPrivacyLists() );
 		r.add( new TestXMPPMood() );
-		r.add( new TestXMPPCaps() );
+		r.add( new TestXMPPPrivacyLists() );
+		r.add( new TestXMPPRegister() );
+		r.add( new TestXMPPRoster() );
+		r.add( new TestXMPPSoftwareVersion() );
 		r.add( new TestXMPPSoftwareVersion() );
 	//	r.add( new TestXMPPMUC() );
 	//	r.add( new TestXMPPPubSub() );

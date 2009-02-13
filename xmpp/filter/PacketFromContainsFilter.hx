@@ -21,12 +21,4 @@ class PacketFromContainsFilter {
 		}
 	}
 	
-	#if JABBER_DEBUG
-	
-	public function toString() : String {
-		return "xmpp.PacketFromContainsFilter("+contained+")";
-	}
-	
-	#end
-	
 }

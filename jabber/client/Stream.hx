@@ -20,13 +20,13 @@ class Stream extends jabber.StreamBase {
 		this.version = version;
 	}
 	
-	
+	/*
 	#if JABBER_DEBUG
 	public function toString() : String {
 		return "JabberClientStream("+jid+","+status+")";
 	}
 	#end
-	
+	*/
 	
 	override function processStreamInit( d : String ) {
 		var sei = d.indexOf( ">" );

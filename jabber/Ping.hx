@@ -17,7 +17,7 @@ class Ping {
 	//TODO public dynamic function onError
 	
 	/** The ping interval in seconds */
-	public var interval : Int; //(default,setInterval) TODO!!
+	public var interval : Int; //(default,setInterval) TODO
 	public var stream(default,null) : Stream;
 	
 	
@@ -57,11 +57,9 @@ class Ping {
 	
 	function handlePong( iq : xmpp.IQ ) {
 		switch( iq.type ) {
-			case result :
-				onResponse( stream );
-			case error :
-				//TODO
-			default :
+			case result : onResponse( stream );
+			case error : //TODO onError( new jabber.XMPPError( iq ) );
+			default : //#
 		}
 	}
 	

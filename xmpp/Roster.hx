@@ -21,7 +21,8 @@ class Roster extends List<xmpp.roster.Item> {
 		return q;
 	}
 	
-	#if JABBER_DEBUG public override function toString() : String { return toXml().toString(); } #end
+	public override function toString() : String { return toXml().toString(); }
+	
 	
 	public static function parse( x : Xml ) : xmpp.Roster {
 		var r = new xmpp.Roster();

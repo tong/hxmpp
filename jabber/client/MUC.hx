@@ -70,14 +70,16 @@ class MUC {
 		this.jid = roomName+"@"+host;
 		this.room = roomName;
 
-		message = new xmpp.Message( jid, null, null, MessageType.groupchat, null );
+		//TODO add to features
+		stream.features.add( xmpp.MUC.XMLNS );
+		stream.features.add( xmpp.MUCUser.XMLNS );
 		
+		//presence = new PresenceManager( stream, myjid );
+		message = new xmpp.Message( jid, null, null, MessageType.groupchat, null );
 		joined = false;
 		occupants = new Array();
 		
-		//TODO add to features
-		
-		// collect all presences and messages from the room jid
+		// collect all presences and messages from the room
 		var f_from : xmpp.PacketFilter = new PacketFromContainsFilter( jid );
 		col_presence = new PacketCollector( [f_from, cast new PacketTypeFilter( PacketType.presence )], handlePresence, true );
 		col_message = new PacketCollector(  [f_from, cast new MessageFilter( MessageType.groupchat )], handleMessage, true );
@@ -105,12 +107,12 @@ class MUC {
 	/**
 		Sends unavailable presence to the room, exits room.
 	*/
-	public function leave( ?message : String, ?forceEvent : Bool = false ) : xmpp.Presence {
+	public function leave( ?message : String, ?forceEvent : Bool = true ) : xmpp.Presence {
 		if( !joined ) return null;
+		trace( presence.target );
 		var p = new xmpp.Presence( xmpp.PresenceType.unavailable, null, message );
-		p.to = myjid;
 		presence.set( p );
-		if( forceEvent ) onLeave( this );
+		if( forceEvent ) dispose();
 		return p;
 	}
 	
@@ -221,7 +223,7 @@ class MUC {
 					case xmpp.PresenceType.unavailable : 
 						joined = false;
 						dispose();
-						onLeave( this );
+						//onLeave( this );
 						
 					case null :
 						if( !joined ) {
@@ -308,7 +310,6 @@ class MUC {
 	}
 	
 	function dispose() {
-		if( joined ) return false;
 		stream.removeCollector( col_presence );
 		stream.removeCollector( col_message );
 		occupants = new Array();
@@ -317,7 +318,8 @@ class MUC {
 		presence = null;
 		myjid = null;
 		room = null;
-		return true;
+		// TODO remove
+		onLeave( this );
 	}
 	
 }

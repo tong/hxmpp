@@ -11,9 +11,8 @@ import xmpp.filter.PacketOrFilter;
 	Responsible for authenticating a client account using SASL, binding the resource to the connection
 	and establishing a session with the server.
 	
-	http://xmpp.org/rfcs/rfc3920.html#sasl
-	http://xmpp.org/rfcs/rfc3920.html#bind
-	
+	<a href="http://xmpp.org/rfcs/rfc3920.html#sasl">RFC3920-SASL</a><br>
+	<a href="http://xmpp.org/rfcs/rfc3920.html#bind">RFC3920-BIND</a><br>
 	http://www.ietf.org/mail-archive/web/isms/current/msg00063.html	
 */
 class SASLAuthentication {

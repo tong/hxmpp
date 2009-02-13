@@ -3,7 +3,6 @@ package jabber;
 import jabber.core.PacketCollector;
 import xmpp.filter.IQFilter;
 
-// TODO move stream.features into here ??
 
 /**
 	Manages discovery of services from XMPP entities.<br>
@@ -45,9 +44,8 @@ class ServiceDiscovery {
 		stream.sendIQ( iq, handleItemsRequest, false );
 	}
 	
-	/**
+	/*
 	public function publishItems( jid : String ) {
-		//TODO
 	}
 	*/
 	

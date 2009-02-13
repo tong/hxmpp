@@ -28,6 +28,7 @@ class JabberClientDemo {
 	
 	static function init() {
 		var cnx = new SocketConnection( "127.0.0.1", 5222 );
+		
 		stream = new Stream( new jabber.JID( "hxmpp@disktree" ), cnx );
 		stream.onError = function(s,?e) { trace( "Stream error: "+e ); };
 		stream.onClose = function(s) { trace( "Stream to: "+stream.jid.domain+" closed." ); } ;
@@ -90,7 +91,9 @@ class JabberClientDemo {
 	
 	static function main() {
 		
-		#if JABBER_DEBUG jabber.XMPPDebug.redirectTraces(); #end
+		#if XMPP_DEBUG
+		jabber.XMPPDebug.redirectTraces();
+		#end
 		
 		#if JABBER_SOCKETBRIDGE
 		jabber.SocketBridgeConnection.initDelayed( "f9bridge", init );

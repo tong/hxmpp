@@ -173,7 +173,7 @@ class VCard {
 		return x;
 	}
 	
-	#if JABBER_DEBUG public inline function toString() : String { return toXml().toString(); } #end
+	public inline function toString() : String { return toXml().toString(); }
 	
 	
 	public static function parse( x : Xml ) : xmpp.VCard  {

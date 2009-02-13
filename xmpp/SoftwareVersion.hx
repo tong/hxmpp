@@ -25,13 +25,8 @@ class SoftwareVersion {
 		return x;
 	}
 	
-	/*
-	#if JABBER_DEBUG
-	public function toString() : String {
-		return toXml().toString();	
-	}
-	#end
-	*/
+	public inline function toString() : String { return toXml().toString(); }
+	
 	
 	public static function parse( x : Xml ) : xmpp.SoftwareVersion {
 		var f = new haxe.xml.Fast( x );

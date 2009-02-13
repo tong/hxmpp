@@ -3,6 +3,7 @@
 -cp lib/
 -swf9 bin/demos/client.swf
 -main JabberClientDemo
+-D XMPP_DEBUG
 -D JABBER_DEBUG
 -debug
 
@@ -11,6 +12,7 @@
 -cp lib/
 -js bin/demos/client_bridged.js
 -main JabberClientDemo
+-D XMPP_DEBUG
 -D JABBER_SOCKETBRIDGE
 -D JABBER_DEBUG
 
@@ -19,6 +21,7 @@
 -cp lib/
 -neko bin/demos/client.n
 -main JabberClientDemo
+-D XMPP_DEBUG
 -D JABBER_DEBUG
 -debug
 
@@ -28,5 +31,6 @@
 -php bin/demos
 --php-front client.php
 -main JabberClientDemo
+-D XMPP_DEBUG
 -D JABBER_DEBUG
 -debug

@@ -26,7 +26,8 @@ class Bind {
 		return x;
 	}
 	
-	#if JABBER_DEBUG public inline function toString() : String { return toXml().toString(); } #end
+	public inline function toString() : String { return toXml().toString(); }
+	
 	
 	public static function parse( x : Xml ) : xmpp.Bind {
 		var b = new Bind();

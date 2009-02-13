@@ -4,6 +4,7 @@ import jabber.core.PacketCollector;
 
 
 /**
+	Listens for incoming message packets.
 */
 class MessageListener {
 
@@ -13,6 +14,7 @@ class MessageListener {
 		Activates/Deactivates message packet collecting.
 	*/
 	public var listen(default,setListening) : Bool;
+	//public var type(default,setMessageType) : xmpp.MessageType;
 	public var stream(default,null) : Stream;
 	
 	var c : PacketCollector;
@@ -20,7 +22,8 @@ class MessageListener {
 	
 	public function new( stream : Stream,
 						 ?onMessage : xmpp.Message->Void, ?listen : Bool = true ) {
-		
+						 /*TODO ?type : xmpp.MessageType */
+						 
 		c = new PacketCollector( [cast new xmpp.filter.MessageFilter()], messageHandler, true );
 		
 		this.stream = stream;

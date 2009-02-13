@@ -8,9 +8,9 @@ import xmpp.roster.AskType;
 import xmpp.roster.Subscription;
 
 
-enum SubscriptionMode {
+enum RosterSubscriptionMode {
 	/** Accepts all subscription and unsubscription requests. */
-	acceptAll; //TODO acceptAll( subscribe : Bool = true );
+	acceptAll; //TODO acceptAll( ?subscribe : Bool = true );
 	/** Rejects all subscription requests. */
 	rejectAll;
 	/** Ask user how to proceed. */
@@ -23,7 +23,7 @@ enum SubscriptionMode {
 */
 class Roster {
 
-	public static var defaultSubscriptionMode = SubscriptionMode.acceptAll;
+	public static var defaultSubscriptionMode = RosterSubscriptionMode.acceptAll;
 	
 	public dynamic function onLoad( r : Roster ) : Void;
 	public dynamic function onAdd( r : Roster, i : Array<Item> ) : Void;
@@ -37,7 +37,7 @@ class Roster {
 	
 	public var stream(default,null) : Stream;
 	public var available(default,null) : Bool;
-	public var subscriptionMode : SubscriptionMode;
+	public var subscriptionMode : RosterSubscriptionMode;
 	public var items(default,null) : Array<Item>;
 	public var groups(getGroups,null) : Array<String>;
 	public var presence(default,null) : PresenceManager;
@@ -46,14 +46,15 @@ class Roster {
 	var presenceMap : Hash<xmpp.Presence>;
 	
 
-	public function new( stream : Stream, ?subscriptionMode : SubscriptionMode ) {
+	public function new( stream : Stream, ?subscriptionMode : RosterSubscriptionMode ) {
 		
 		this.stream = stream;
 		this.subscriptionMode = subscriptionMode != null ? subscriptionMode : defaultSubscriptionMode;
 		
 		available = false;
 		items = new Array();
-		presence = new PresenceManager( stream, stream.jid.domain );
+		//presence = new PresenceManager( stream, stream.jid.domain );
+		presence = new PresenceManager( stream );
 		resources = new Hash();
 		presenceMap = new Hash();
 		
@@ -211,6 +212,7 @@ class Roster {
 							case acceptAll :
 								confirmSubscription( p.from, true );
 								//TODO subscribe to ?
+								//if( s ) subscribe( p.from );
 							case rejectAll :
 								var r = new xmpp.Presence( xmpp.PresenceType.unsubscribed );
 								r.to = p.from;
