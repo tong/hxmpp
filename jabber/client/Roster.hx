@@ -1,7 +1,7 @@
 package jabber.client;
 
 import jabber.core.PacketCollector;
-import jabber.core.PresenceManager;
+import jabber.PresenceManager;
 import xmpp.IQType;
 import xmpp.roster.Item;
 import xmpp.roster.AskType;
@@ -34,6 +34,7 @@ class Roster {
 	public dynamic function onSubscribed( r : Roster, i : Item ) : Void;
 	public dynamic function onUnsubscribed( r : Roster, i : Item ) : Void;
 	public dynamic function onSubscriptionRequest( r : Roster, i : Item ) : Void;
+	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
 	public var available(default,null) : Bool;
@@ -53,7 +54,6 @@ class Roster {
 		
 		available = false;
 		items = new Array();
-		//presence = new PresenceManager( stream, stream.jid.domain );
 		presence = new PresenceManager( stream );
 		resources = new Hash();
 		presenceMap = new Hash();
@@ -105,8 +105,7 @@ class Roster {
 				case result :
 					me.items.remove( i );
 					me.onRemove( me, [i] );
-				case error :
-					//TODO
+				case error : me.onError( new jabber.XMPPError( me, r ) );
 				default : //#
 			}
 		} );

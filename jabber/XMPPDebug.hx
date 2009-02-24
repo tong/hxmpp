@@ -19,16 +19,12 @@ class XMPPDebug {
 		if( !php.Lib.isCli() ) haxe.Firebug.redirectTraces();
 		else haxe.Log.trace = myTrace;
 		#else
-		if( haxe.Firebug.detect() ) {
-			haxe.Firebug.redirectTraces();
-		}
+		haxe.Firebug.redirectTraces();
 		#end
 	}
 	
 	
 	#if neko
-	
-	//TODO
 	
 	static var _print = neko.Lib.load( "hxmpp_debug", "printC", 2 );
 	
@@ -52,8 +48,15 @@ class XMPPDebug {
 	#elseif php
 	
 	static function myTrace( v : Dynamic, ?inf : haxe.PosInfos ) {
-		 //echo -e '\E[30;41mblack on red'
-		 php.Lib.print( inf.lineNumber+"\t"+v+"\n" );
+		var t = "";
+		if( inf.customParams == null ) {
+		 	t += "\t\n";
+		 	t += inf.className+" "+inf.lineNumber;
+		 	t += " => "+v+"\n";
+		} else {
+			t += "\n"+v+"\n";
+		}
+		php.Lib.print( t );
 	}
 	
 	#end

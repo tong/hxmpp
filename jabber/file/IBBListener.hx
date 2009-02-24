@@ -4,6 +4,9 @@ import jabber.core.PacketCollector;
 import xmpp.IBB;
 
 
+/**
+	Incoming IBBytestream.
+*/
 class IBBStream {
 	
 	public var data(default,null) : String;

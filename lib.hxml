@@ -6,11 +6,18 @@
 -D JABBER_SOCKETBRIDGE
 -D JABBER_DEBUG
 jabber.SocketConnection
+jabber.Chat
+jabber.ChatStateNotification
+jabber.MessageListener
+jabber.ServiceDiscovery
 jabber.XMPPDebug
 jabber.client.Stream
 jabber.client.NonSASLAuthentication
-jabber.client.Stream
 jabber.client.Roster
+jabber.client.VCardTemp
+jabber.client.SASLAuthentication
+net.sasl.AnonymousMechanism
+net.sasl.PlainMechanism
 #--no-traces
 
 
@@ -21,11 +28,18 @@ jabber.client.Roster
 -swf9 bin/hxmpp.swc
 -D JABBER_DEBUG
 jabber.SocketConnection
+jabber.Chat
+jabber.ChatStateNotification
+jabber.MessageListener
+jabber.ServiceDiscovery
 jabber.XMPPDebug
 jabber.client.Stream
 jabber.client.NonSASLAuthentication
-jabber.client.Stream
 jabber.client.Roster
+jabber.client.VCardTemp
+jabber.client.SASLAuthentication
+net.sasl.AnonymousMechanism
+net.sasl.PlainMechanism
 #--no-traces
 
 

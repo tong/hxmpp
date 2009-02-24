@@ -110,7 +110,6 @@ class Account {
 					self.onPasswordChange( self.stream, pass );
 				case error :
 					self.onError( new jabber.XMPPError( self, r ) );
-					//self.onError( new jabber.event.XMPPErrorEvent<Stream>( self.stream, r ) );
 				default : //#
 			}
 		} );

@@ -29,12 +29,12 @@ typedef StreamConnection = {
 	
 	/**
 	*/
-	function disconnect() : Bool;
+	function disconnect() : Void;//Bool;
 	
 	/**
 	*/
-	function send( data : String ) : Bool;
-	//function send( b : haxe.io.Bytes ) : Bool;
+	function send( data : String ) : String;
+	//function sendBytes( b : haxe.io.Bytes ) : haxe.io.Bytes;
 	
 	/**
 		Starts/Stops reading from input.

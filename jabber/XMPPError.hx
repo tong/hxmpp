@@ -24,7 +24,7 @@ class XMPPError {
 	
 	#if JABBER_DEBUG
 	public function toString() : String {
-		return "jabber.XMPPError("+from+","+name+","+code+","+text+")";
+		return "XMPPError( "+from+", "+name+", "+code+", "+text+" )";
 	}
 	#end
 	

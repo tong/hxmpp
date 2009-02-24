@@ -2,7 +2,7 @@ package xmpp;
 
 
 /**
-	Holds static methods for creation of xml data required for SASL authetication.
+	Static methods for creation of XMPP packets for SASL authentication.
 */
 class SASL {
 	
@@ -12,7 +12,8 @@ class SASL {
 	*/
 	public static function createAuthXml( mechansim : String, ?text : String ) : Xml {
 		if( mechansim == null ) return null;
-		var a = ( text == null ) ? Xml.createElement( "auth" ) : util.XmlUtil.createElement( "auth", text );
+		//var a = ( text == null ) ? Xml.createElement( "auth" ) : util.XmlUtil.createElement( "auth", text );
+		var a = util.XmlUtil.createElement( "auth", text );
 		a.set( "xmlns", XMLNS );
 		a.set( "mechanism", mechansim );
 		return a;
@@ -28,6 +29,7 @@ class SASL {
 	}
 	
 	/**
+		Parses list of SASL mechanisms from a stream:features packet.
 	*/
 	public static function parseMechanisms( x : Xml ) : Array<String> {
 		var m = new Array<String>();

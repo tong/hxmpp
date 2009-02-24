@@ -25,9 +25,9 @@ class StreamConnectionBase {
 	
 	
 	public function connect() {}
-	public function disconnect() : Bool { return throw new error.AbstractError();  }
+	public function disconnect() : Void; //: Bool { return throw new error.AbstractError();  }
 	public function read( ?yes : Bool = true ) : Bool { return false; }
-	public function send( data : String ) : Bool { return false; }
+	public function send( data : String ) : String { return null; }
 	
 	
 	function dataHandler( data : String ) {

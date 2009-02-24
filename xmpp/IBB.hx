@@ -8,6 +8,8 @@ enum IBBType {
 }
 
 
+/**
+*/
 class IBB {
 	
 	public static var XMLNS = "http://jabber.org/protocol/ibb";

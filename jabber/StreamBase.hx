@@ -9,7 +9,6 @@ import xmpp.filter.PacketIDFilter;
 import util.XmlUtil;
 
 
-
 /**
 	Abstract base for jabber streams.
 */
@@ -114,7 +113,7 @@ class StreamBase implements Stream {
 		Sends raw data.
 	*/
 	public function sendData( d : String ) : Bool {
-		if( !cnx.connected || !cnx.send( d ) ) return false;
+		if( !cnx.connected || cnx.send( d ) == null ) return false;
 		numPacketsSent++;
 		#if XMPP_DEBUG
 		trace( d, "xmpp-o" );
@@ -123,7 +122,7 @@ class StreamBase implements Stream {
 	}
 	
 	/**
-		Sends an IQ xmpp packet and forwards the collected response to the given handler function.
+		Sends an IQ packet and forwards the collected response to the given handler function.
 	*/
 	public function sendIQ( iq : xmpp.IQ, ?handler : xmpp.IQ->Void,
 							?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool )
@@ -144,11 +143,19 @@ class StreamBase implements Stream {
 		return { iq : sent, collector : c };
 	}
 	
-	/* TODO
-		Short for sending normal type messages.
-	public function sendMessage() {
-	}
+	/**
+		Short for sending messages.
 	*/
+	public function sendMessage( to : String, body : String, ?subject : String, ?type : xmpp.MessageType, ?thread : String, ?from : String ) : xmpp.Message {
+		return sendPacket( new xmpp.Message( to, body, subject, type, thread, from ) );
+	}
+	
+	/**
+		Short for sending presences.
+	*/
+	public function sendPresence( ?type : xmpp.PresenceType, ?show : String, ?status : String, ?priority : Int ) : xmpp.Presence {
+		return sendPacket( new xmpp.Presence( type, show, status, priority ) );
+	}
 	
 	public function addCollector( c : TPacketCollector ) : Bool {
 		if( Lambda.has( collectors, c ) ) return false;
@@ -196,9 +203,8 @@ class StreamBase implements Stream {
 
 
 	function processData( d : String ) {
-		
-		if( cache == null && d == " " ) return; // ignore keepalive
-		
+		// ignore keepalive
+		if( cache == null && d == " " ) return;
 		#if XMPP_DEBUG
 		try {
 			var x = Xml.parse( d );
@@ -207,7 +213,6 @@ class StreamBase implements Stream {
 			trace( "<<< "+d, "xmpp-i" );
 		}
 		#end
-		
 		if( xmpp.Stream.eregStreamClose.match( d ) ) {
 			close( true );
 			return;
@@ -217,32 +222,35 @@ class StreamBase implements Stream {
 			close( true );
 			return;
 		}
-		
 		switch( status ) {
-			case closed :
-				return;
-			case pending :
-				//#if XMPP_DEBUG trace( d, "xmpp-i" ); #end
-				processStreamInit( XmlUtil.removeXmlHeader( d ) );
-			case open :
-				var x : Xml = null;
-				try {
-					x = Xml.parse( d );
-					if( Std.string( x.firstChild().nodeType ) == "pcdata" ) throw new error.Exception( "Invalid xmpp" );
-				} catch( e : Dynamic ) {
-					if( cache == null ) {
-						cache = new StringBuf();
-						cache.add( d );
-						return;
-					} else {
-						cache.add( d );
-						try {
-							x = Xml.parse( cache.toString() );
-							if( Std.string( x.firstChild().nodeType ) == "pcdata" ) throw new error.Exception( "Invalid xmpp" );
-						} catch( e : Dynamic ) { return; /* wait for more data */ }
+		case closed :
+			return;
+		case pending :
+			//#if XMPP_DEBUG trace( d, "xmpp-i" ); #end
+			processStreamInit( XmlUtil.removeXmlHeader( d ) );
+		case open :
+			var x : Xml = null;
+			try {
+				x = Xml.parse( d );
+				if( Std.string( x.firstChild().nodeType ) == "pcdata" )
+					throw new error.Exception( "Invalid xmpp" );
+			} catch( e : Dynamic ) {
+				if( cache == null ) {
+					cache = new StringBuf();
+					cache.add( d );
+					return;
+				} else {
+					cache.add( d );
+					try {
+						x = Xml.parse( cache.toString() );
+						if( Std.string( x.firstChild().nodeType ) == "pcdata" )
+							throw new error.Exception( "Invalid xmpp" );
+					} catch( e : Dynamic ) {
+						return; /* wait for more data */
 					}
 				}
-				collectPackets( x );
+			}
+			collectPackets( x );
 		}
 	}
 	
@@ -271,9 +279,13 @@ class StreamBase implements Stream {
 			}
 			if( !collected ) {
 				//TODO create response
-				//iq -> feature-not-implemented
-			//	if( p._type == xmpp.PacketType.iq ) {
-			//	}
+				/*
+				if( p._type == xmpp.PacketType.iq ) {
+					var r = new xmpp.IQ( xmpp.IQType.error, p.id, p.from );
+					r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, 501, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );
+					sendPacket( r );
+				}
+				*/
 				#if JABBER_DEBUG
 				trace( "XMPP packet not processed: "+p, "warn" );
 				#end

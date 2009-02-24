@@ -1,7 +1,6 @@
 
 import TestXMPPPacket;
 import TestXMPPIQExtensions;
-import TestXMPPPacketFilter;
 
 
 class TestXMPP {
@@ -25,7 +24,8 @@ class TestXMPP {
 		r.add( new TestXMPPCompression() );
 		r.add( new TestXMPPDate() );
 		r.add( new TestXMPPXHTML() );
-	//	r.add( new TestBindExtension() );
+	//	r.add( new TestXMPPBind() );
+		/////r.add( new TestXMPPSASL() );
 		
 		///// iq extension
 		r.add( new TestXMPPAuth() );
@@ -40,14 +40,17 @@ class TestXMPP {
 		r.add( new TestXMPPPrivacyLists() );
 		r.add( new TestXMPPRegister() );
 		r.add( new TestXMPPRoster() );
+		r.add( new TestXMPPRPC() );
 		r.add( new TestXMPPSoftwareVersion() );
 		r.add( new TestXMPPSoftwareVersion() );
+	
 	//	r.add( new TestXMPPMUC() );
 	//	r.add( new TestXMPPPubSub() );
 	//	r.add( new TestXMPPJingle() );
+		r.add( new TestXMPPFileTransfer() );
 		
 		///// packet filters
-		r.add( new TestXPacketFilters() );
+		r.add( new TestXMPPPacketFilters() );
 		
 		r.run();
 	}

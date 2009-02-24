@@ -8,7 +8,7 @@ package {
 	import flash.text.TextField;
 	import jabber.JID;
 	import jabber.SocketConnection;
-	import jabber.util.XMPPDebug;
+	import jabber.XMPPDebug;
 	import jabber.client.Stream;
 	import jabber.client.NonSASLAuthentication;
 	import jabber.client.Roster;

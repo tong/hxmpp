@@ -53,7 +53,8 @@ class Error {
 		var e = new Error( Std.parseInt( x.get( "code" ) ) );
 		var et = x.get( "type" );
 		if( et != null ) e.type = Type.createEnum( ErrorType, x.get( "type" ) );
-		e.name = x.elements().next().nodeName;
+		var _n = x.elements().next();
+		if( _n != null ) e.name = _n.nodeName;
 		return e;
 	}
 	

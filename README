@@ -14,21 +14,20 @@ XEPS SUPPORTED
 --------------
 # * 0004 DataForms
 ### * 0009 XML-RPC
-### * 0012 LastActivity
+* 0012 LastActivity
 ## * 0016 PrivacyLists
 # * 0030 ServiceDiscovery
 ### * 0045 MUChat
-### * 0047 In-Band Bytestreams
 #* 0054 VCardTemp
 #* 0071 XHTML-IM
 * 0077 In-Band Registration
 * 0082 XMPP Date and Time Profiles
 * 0085 ChatStateNotification
 * 0091 DelayedDelivery
-# * 0092 SoftwareVersion
+* 0092 SoftwareVersion
 * 0106 JID Escaping
 * 0114 Jabber Component Protocol
-# * 0199 Ping 
+* 0199 Ping 
 ## * 0202 EntityTime
 * 0203 DelayedDelivery
 
@@ -44,22 +43,23 @@ Run the hxml files in the main directory to build included demos, tests and util
 * JABBER_SOCKETBRIDGE   Use a socket bridge as stream connection (see: jabber.tool.SocketBridge)
 * XEP_0091   Activates backward compatibility with XEP-0091 when using jabber.DelayedDelivery. 
 
-# neko
+# Neko
 Copy the ndlls to your neko installation.
 * sha1.ndll is required for SHA1 encoding.
 * hxmpp_debug.ndll for colored xmpp debug bash output (linux only).
 
-# php
+# PHP
 ...
 
 # flash9+
 ...
 
-# js
+# JS
 ...
 
-# actionscript3
-look at /samples/JabberClientDemo.as for an actionscript3 usage example.
+# Actionscript3
+* Create your own HXMPP-SWC by editing/compiling the hxmpp/lib.hxml build file.
+* See hxmpp/samples/JabberClientDemo.as for an Actionscript3 usage example.
 
 
 USAGE

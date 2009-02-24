@@ -8,9 +8,11 @@ package jabber;
 */	
 class JIDUtil {
 	
-	// TODO: resource
-	static var ereg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?/i;
-
+	#if JABBER_DEBUG
+	static var ereg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]/i;
+	#else
+	static var ereg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?+(\/[A-Z0-9])?/i;
+	#end
 	
 	/**
 		Returns true if the given jid is valid formed.

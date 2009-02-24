@@ -12,6 +12,7 @@ typedef TPacketCollector = {
 	//function removeFilter( f : xmpp.PacketFilter ) : Bool;
 	//function clearFilters() : Void;
 	
+	
 	/**
 		Callbacks to which collected packets get delivered to.
 	*/
@@ -24,12 +25,19 @@ typedef TPacketCollector = {
 	
 	/**
 		Blocks remaining collectors.
+		Default value should be false.
 	*/
 	var block : Bool;
 	
 	/**
 	*/
 	var timeout(default,setTimeout) : PacketTimeout;
+
+	/**
+		Last collected packet.
+		??????????????????????????????????????????????? needed
+	*/
+	var packet(default,null) : xmpp.Packet;
 	
 	/**
 		Returns true if the given xmpp packet passes through all filters.

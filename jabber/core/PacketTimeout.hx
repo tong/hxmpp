@@ -10,7 +10,7 @@ class PacketTimeout {
 	
 	/** null = no timeout
 		0 = default timeout
-		value = value.
+		value = value timeout
 	*/
 	public var time(getTime,setTime) : Int;
 	
@@ -43,11 +43,10 @@ class PacketTimeout {
 				if( t < 0 ) throw "Invalid packettimeout time: "+t; 
 				_time = t; 			     
 		}
-		if( _time == 0 ) {
+		if( _time == 0 )
 			active = false;
-		} else {
+		else
 			start( _time );
-		}
 		return _time;	
 	}
 	
@@ -80,6 +79,7 @@ class PacketTimeout {
 	public function forceTimeout() {
 		reportTimeout();
 		active = false;
+		//
 	}
 	
 	

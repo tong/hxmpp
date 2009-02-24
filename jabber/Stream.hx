@@ -50,13 +50,21 @@ interface Stream {
 	var status : StreamStatus;
 	
 	/** */
+	var cnx(default,setConnection) : StreamConnection;
+	
+	/** */
 	var features(default,null) : StreamFeatures;
+	
+	/** */
+	var server(default,null) : Server;
 	
 	/** */
 	var jid(default,null) : jabber.JID;
 	
 	/** */
 	function nextID() : String;
+	
+	function open() : Bool {}
 	
 	/** */
 	function sendIQ( iq : xmpp.IQ,
@@ -65,12 +73,13 @@ interface Stream {
 					 ?timeout : PacketTimeout,
 					 ?block : Bool ) : { iq : xmpp.IQ, collector : TPacketCollector };
 	
+	
 	/** Sends XMPP packet */
 	function sendPacket<T>( p : xmpp.Packet, ?intercept : Bool = true ) : T;
 	
 	/** Sends raw data */
 	function sendData( d : String ) : Bool;
-
+	
 	function addCollector( c : TPacketCollector ) : Bool;
 	function addCollectors( iter : Iterable<TPacketCollector> ) : Bool;
 	function removeCollector( c : TPacketCollector ) : Bool;

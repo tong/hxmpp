@@ -7,7 +7,6 @@ import xmpp.dataform.FormType;
 /**
 	DataForm packet extension (for iq and message packets).
 	<a href="http://xmpp.org/extensions/xep-0004.html">XEP-0004: Data Forms</a><br/>
-	
 */
 class DataForm {
 	
@@ -44,16 +43,18 @@ class DataForm {
 	
 	
 	public static function parse( x : Xml ) : DataForm {
-		var f = new haxe.xml.Fast( x );
-		if( !f.has.xmlns || !f.has.type ) return null;
-		var form = new DataForm();
-		form.type = Type.createEnum( xmpp.dataform.FormType, f.att.type );
-		if( f.hasNode.title ) form.title = f.node.title.innerData;
-		if( f.hasNode.instructions ) form.instructions = f.node.instructions.innerData;
-		for( field in f.nodes.field ) form.fields.push( xmpp.dataform.Field.parse( field.x ) );
-		for( item in f.nodes.item ) form.items.push( xmpp.dataform.Item.parse( item.x ) );
-		if( f.hasNode.reported ) form.reported = xmpp.dataform.Reported.parse( f.node.reported.x );
-		return form;
+		var f = new DataForm();
+		f.type = Type.createEnum( xmpp.dataform.FormType, x.get( "type" ) );
+		for( e in x.elements() ) {
+			switch( e.nodeName ) {
+			case "title" : f.title = e.firstChild().nodeValue;
+			case "field" : f.fields.push( xmpp.dataform.Field.parse( e ) );
+			case "item" : f.items.push( xmpp.dataform.Item.parse( e ) );
+			case "instructions" : f.instructions = e.firstChild().nodeValue;
+			case "reported" : f.reported = xmpp.dataform.Reported.parse( e );
+			}
+		}
+		return f;
 	}
 	
 }

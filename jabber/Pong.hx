@@ -9,7 +9,7 @@ class Pong {
 	/**
 		Informational callback that a ping has been recieved and responded to.
 	*/
-	public dynamic function onPing( entity : String ) : Void;
+	public dynamic function onPong( entity : String ) : Void;
 
 	public var stream(default,null) : Stream;
 	
@@ -21,15 +21,11 @@ class Pong {
 	}
 	
 	function handlePing( iq : xmpp.IQ ) {
-		switch( iq.type ) {
-		case get :
-			if( stream.status == jabber.StreamStatus.open ) {
-				var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
-				r.ext = new xmpp.Ping();
-				stream.sendData( r.toString() );
-			}
-			onPing( iq.from );
-		default : //#
+		if( stream.status == jabber.StreamStatus.open ) {
+			var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
+			r.ext = new xmpp.Ping();
+			stream.sendData( r.toString() );
+			onPong( iq.from );
 		}
 	}
 		

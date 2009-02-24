@@ -32,10 +32,7 @@ class JID {
 	
 	public function new( str : String ) {
 		
-		//TODO
-			//#if !JABBER_DEBUG // allows malformed jids for debugging
-			//if( !JIDUtil.isValid( str ) ) throw new error.Exception( "Invalid jid: "+str ); 
-		//#end
+		if( !JIDUtil.isValid( str ) ) throw new error.Exception( "Invalid jid: "+str ); 
 		
 		this.node = JIDUtil.parseNode( str );
 		this.domain = JIDUtil.parseDomain( str );

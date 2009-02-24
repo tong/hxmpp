@@ -1,6 +1,5 @@
 package jabber;
 
-import jabber.core.StreamBase;
 import jabber.core.PacketCollector;
 
 // TODO
@@ -22,7 +21,7 @@ class StreamCompression {
 
 	
 	public function new( stream : Stream ) {
-		if( stream.server.features.get( "compression" ) == null ) throw "Entity doesnt support stream compression";
+//TODO		if( stream.features.get( "compression" ) == null ) throw "Entity doesnt support stream compression";
 		this.stream = stream;
 	}
 	
@@ -61,11 +60,14 @@ class StreamCompression {
 	
 	
 	function initSuccessHandler( p ) {
-		stream.connection.interceptors.push( this );
-		stream.connection.filters.push( this );
+		stream.cnx.interceptors.push( this );
+		stream.cnx.filters.push( this );
 		stream.status = jabber.StreamStatus.closed;
 		//stream.version = false;
+		
 		stream.open();
+		//stream.sendData("<stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' to='disktree'>" );
+		//stream.cnx.sendBytes(haxe.io.Bytes.ofString('<stream:stream xmlns="jabber:client" xmlns:stream="http://etherx.jabber.org/streams" to="disktree" version="1.0">'));
 	}
 	
 	function initFailedHandler( p ) {

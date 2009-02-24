@@ -14,8 +14,8 @@ class ChatStateExtension {
 	public static function set( m : xmpp.Message, state : ChatState ) : xmpp.Message {
 		for( p in m.properties ) {
 			switch( p.nodeName ) {
-				case "active","composing","paused","inactive","gone" :
-					m.properties.remove( p );
+			case "active","composing","paused","inactive","gone" :
+				m.properties.remove( p );
 			}
 		}
 		m.properties.push( createXml( state ) );
@@ -39,8 +39,8 @@ class ChatStateExtension {
 		for( e in m.properties ) {
 			var s = e.nodeName;
 			switch( s ) {
-				case "active","composing","paused","inactive","gone" :
-					return Type.createEnum( xmpp.ChatState, s );
+			case "active","composing","paused","inactive","gone" :
+				return Type.createEnum( xmpp.ChatState, s );
 			}
 		}
 		return null;
@@ -52,7 +52,7 @@ class ChatStateExtension {
 		for( e in m.properties ) {
 			var s = e.nodeName;
 			switch( s ) {
-				case "active","composing","paused","inactive","gone" : return s;
+			case "active","composing","paused","inactive","gone" : return s;
 			}
 		}
 		return null;

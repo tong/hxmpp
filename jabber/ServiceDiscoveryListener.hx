@@ -4,14 +4,24 @@ import jabber.core.PacketCollector;
 import xmpp.filter.IQFilter;
 
 
-typedef NodeInfoProvider = {
-}
+//typedef NodeInfoProvider = {
+//}
 
 
 /**
 	Listens/Answers incoming service discovery requests.
 */
 class ServiceDiscoveryListener {
+	
+	/* TODO (?) (no)
+	static var listeners : List<{s:Stream,l:ServiceDiscoveryListener}>;
+	public static function getListener( stream : Stream ) : ServiceDiscoveryListener {
+		for( l in listeners ) {
+			if( l.s == stream ) return l.l;
+		}
+		return null;
+	}
+	*/
 	
 	public static var defaultIdentity = { category : "client", name : "HXMPP", type : "pc" };
 	
@@ -50,7 +60,8 @@ class ServiceDiscoveryListener {
 	
 	
 	function handleInfoQuery( iq : xmpp.IQ ) {
-		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, stream.jid.toString() );
+		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
+		//var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, stream.jid.toString() ); //TODO
 		r.ext = new xmpp.disco.Info( [identity], Lambda.array( stream.features ) );
 		stream.sendData( r.toString() );
 	}

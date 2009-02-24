@@ -51,6 +51,7 @@ class SocketBridge {
 		if( ExternalInterface.available ) {
 			try {
 				ExternalInterface.addCallback( "createSocket", createSocket );
+				ExternalInterface.addCallback( "destroySocket", destroySocket );
 				ExternalInterface.addCallback( "connect", connect );
 				ExternalInterface.addCallback( "disconnect", disconnect );
 				ExternalInterface.addCallback( "send", send );
@@ -77,6 +78,15 @@ class SocketBridge {
 		s.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
 		sockets.set( id, s );
 		return id;
+	}
+	
+	function destroySocket( id : Int ) : Bool {
+		if( !sockets.exists( id ) ) return false;
+		var s = sockets.get( id );
+		if( s.connected ) s.close();
+		sockets.remove( s.id );
+		s = null;
+		return true;
 	}
 	
 	function connect( id : Int, host : String, port : Int ) : Bool {

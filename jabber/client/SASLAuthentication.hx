@@ -36,13 +36,12 @@ class SASLAuthentication {
 	public function new( stream : Stream, mechanisms : Iterable<net.sasl.Mechanism> ) {
 		
 		var x = stream.server.features.get( "mechanisms" );
-		if( x == null ) throw "Server does not support SASL";
+		if( x == null ) throw "SASL not supported";
 		availableMechanisms = xmpp.SASL.parseMechanisms( x );
 		
 		this.stream = stream;
 		
-		active = false;
-		negotiated = false;
+		active = negotiated = false;
 		handshake = new net.sasl.Handshake();
 		for( m in mechanisms ) handshake.mechanisms.push( m );
 	}
@@ -83,16 +82,16 @@ class SASLAuthentication {
 		active = true;
 		
 		// collect errors, failures,..
-		var errorFilters = new PacketOrFilter();
-		errorFilters.add( new PacketNameFilter( ~/failure/ ) ); //?
-		errorFilters.add( new PacketNameFilter( ~/not-authorized/ ) );
-		errorFilters.add( new PacketNameFilter( ~/aborted/ ) );
-		errorFilters.add( new PacketNameFilter( ~/incorrect-encoding/ ) );
-		errorFilters.add( new PacketNameFilter( ~/invalid-authzid/ ) );
-		errorFilters.add( new PacketNameFilter( ~/invalid-mechanism/ ) );
-		errorFilters.add( new PacketNameFilter( ~/mechanism-too-weak/ ) );
-		errorFilters.add( new PacketNameFilter( ~/temporary-auth-failure/ ) );
-		col_error = new PacketCollector( [cast errorFilters], handleSASLError, false );
+		var filters = new PacketOrFilter();
+		filters.add( new PacketNameFilter( ~/failure/ ) ); //?
+		filters.add( new PacketNameFilter( ~/not-authorized/ ) );
+		filters.add( new PacketNameFilter( ~/aborted/ ) );
+		filters.add( new PacketNameFilter( ~/incorrect-encoding/ ) );
+		filters.add( new PacketNameFilter( ~/invalid-authzid/ ) );
+		filters.add( new PacketNameFilter( ~/invalid-mechanism/ ) );
+		filters.add( new PacketNameFilter( ~/mechanism-too-weak/ ) );
+		filters.add( new PacketNameFilter( ~/temporary-auth-failure/ ) );
+		col_error = new PacketCollector( [cast filters], handleSASLError, false );
 		stream.addCollector( col_error );
 
 		// collect challenge packets

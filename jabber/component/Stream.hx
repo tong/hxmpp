@@ -55,9 +55,9 @@ class Stream extends jabber.StreamBase {
 	override function dataHandler( data : String ) {
 		super.dataHandler( data );
 		switch( status ) {
-			case closed : return;
-			case pending :
-			case open : collectPackets( Xml.parse( data ) );
+		case closed : return;
+		case pending :
+		case open : collectPackets( Xml.parse( data ) );
 		}
 	}
 	

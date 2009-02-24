@@ -15,7 +15,7 @@ function toggle(id) {
 body {
 	text-align: left;
 	font-family: sans-serif;
-	background-color : #000000;
+	background-color : #ffffff;
 	color : #00A1EB;
 	font-size:10px;
 }
@@ -26,14 +26,14 @@ body {
 	margin : 0px auto 0px auto;*/
 	border : solid 0px #CFD0D4;
 	text-align : justify;
-	background-color: #000000;
+	background-color: #ffffff;
 }
 
 .title {
 	font-size: 18;
 	font-weight: normal;
 	text-align: left;
-	background-color : #000000;
+	background-color : #ffffff;
 	color : #FF7D00;
 }
 
@@ -48,13 +48,13 @@ ul.entry {
 }
 
 a {
-	color : #ffffff;
+	color : #00A1EB;
 	font-weight : bold;
 	text-decoration : none;
 }
 
 a:hover {
-	color : #ffffff;
+	color : #00A1EB;
 	text-decoration : underline;
 }
 
@@ -81,7 +81,7 @@ img {
 	margin-top : 10px;
 	margin-left : 0px;
 	margin-bottom : 20px;
-	color : #ffffff;
+	color : #00A1EB;
 }
 
 .classdoc {
@@ -89,7 +89,7 @@ img {
 	margin-left : 0px;
 	margin-right : 20px;
 	padding : 5 5 5 5;
-	color : #ffffff;
+	color : #00A1EB;
 }
 
 .importmod, .extends, .implements, .typedef, .platforms {

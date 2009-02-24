@@ -24,7 +24,7 @@ class Chat {
 	public function new( stream : Stream, myJid : String, peer : String,
 					 	 ?threadID : String ) {
 		
-		m = new xmpp.Message( peer, null, null, xmpp.MessageType.chat, threadID, myJid );
+		m = new xmpp.Message( peer, null, null, xmpp.MessageType.chat, threadID, stream.jid.toString() );
 		
 		this.stream = stream;
 		this.peer = peer;

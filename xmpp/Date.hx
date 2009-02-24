@@ -10,6 +10,17 @@ class Date {
 	*/
 	public static function isValid( t : String ) : Bool {
 		//TODO !! regexp
+		
+		//(?<Date>(?<Year>\d{4})-(?<Month>\d{2})-(?<Day>\d{2}))(?:T(?<Time>(?<SimpleTime>(?<Hour>\d{2}):(?<Minute>\d{2})(?::(?<Second>\d{2}))?)?(?:\.(?<FractionalSecond>\d{1,7}))?(?<Offset>-\d{2}\:\d{2})?))?
+		
+		//var r = ~/\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(?:.\d{7})?[+|-](0[0-9]|1[0-2]):(00|15|30|45)/;
+		
+		/*
+		var regexp = "([0-9]{4})(-([0-9]{2})(-([0-9]{2})" +
+        "(T([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?" +
+        "(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?";
+    	var d = string.match(new RegExp(regexp));
+		*/
 		return true;
 	}
 	
@@ -28,15 +39,14 @@ class Date {
 		b.add( k[0] );
 		b.add( "T" );
 		b.add( k[1] );
-		return if( offset == null ) {
+		if( offset == null )
 			b.add( "Z" );
-			b.toString();
-		} else {
+		else {
 			b.add( "-" );
 			b.add( if( offset > 9 ) Std.string( offset ) else ("0"+offset) );
 			b.add( ":00" );
-			b.toString();
 		}
+		return b.toString();
 	}
 	
 }

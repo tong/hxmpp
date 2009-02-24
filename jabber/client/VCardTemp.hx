@@ -1,7 +1,5 @@
 package jabber.client;
 
-import xmpp.IQ;
-
 
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0054.html">XEP-0054: vcard-temp</a>
@@ -9,26 +7,23 @@ import xmpp.IQ;
 //TODO VCard
 class VCardTemp {
 	
-	//TODO
 	public dynamic function onLoad( d : VCardTemp, node : String, data : xmpp.VCard ) : Void;
-	public dynamic function onUpdated( d : VCardTemp, node : String, data : xmpp.VCard ) : Void;
+	public dynamic function onUpdate( d : VCardTemp, data : xmpp.VCard ) : Void;
 	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
 	
-	var iq_load	: IQ;
-	var iq_update : IQ;
+	var iq_load	: xmpp.IQ;
+	var iq_update : xmpp.IQ;
 	
 	
 	public function new( stream : Stream ) {
 		
 		this.stream = stream;
-		//stream.features.add( this );
 		
-		iq_load = new IQ();
+		iq_load = new xmpp.IQ();
 		iq_load.ext = new xmpp.VCard();
-		iq_update = new IQ( xmpp.IQType.set, null, stream.jid.domain );
-		// collect/handle incoming vcard requests (?) jabber.VCardTempListener ?
+		iq_update = new xmpp.IQ( xmpp.IQType.set, null, stream.jid.domain );
 	}
 	
 	
@@ -49,26 +44,22 @@ class VCardTemp {
 	}
 	
 	
-	function handleLoad( iq : IQ ) {
+	function handleLoad( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 			case result :
-				var l = xmpp.VCard.parse( iq.ext.toXml() );
-				onLoad( this, iq.from, l );
-				
+				onLoad( this, iq.from, xmpp.VCard.parse( iq.ext.toXml() ) );
 			case error :
-				//TODO
-				//stream.onError.?
-				
+				onError( new jabber.XMPPError( this, iq ) );
 			default : //#
 		}
 	}
 	
-	function handleUpdate( iq : IQ ) {
+	function handleUpdate( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 			case result :
-				//onUpdate( { from : iq.from, data : IQVCard.parse( iq.extension.toXml() ) } );
+				onUpdate( this, xmpp.VCard.parse( iq.ext.toXml() ) );
 			case error :
-				//TODO
+				onError( new jabber.XMPPError( this, iq ) );
 			default : //
 		}
 	}

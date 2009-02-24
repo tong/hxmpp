@@ -15,7 +15,6 @@ class PrivacyLists {
 	public dynamic function onActivate( p : PrivacyLists, l : String ) {}
 	public dynamic function onDeactivate( p : PrivacyLists ) {}
 	public dynamic function onDefaultChange( p : PrivacyLists, l : String ) {}
-	
 	public dynamic function onError( e : jabber.XMPPError ) {}
 	
 	public var stream(default,null) : jabber.Stream;
@@ -74,7 +73,6 @@ class PrivacyLists {
 				case result :
 					me.onDefaultChange( me, name );
 				case error :
-					//TODO
 					me.onError( new jabber.XMPPError( me, r ) );
 				default :
 			}
@@ -118,8 +116,7 @@ class PrivacyLists {
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			switch( r.type ) {
 				case result : resultHandler( r );
-				case error :
-					me.onError( new jabber.XMPPError( me, r ) );
+				case error : me.onError( new jabber.XMPPError( me, r ) );
 				default : // #
 			}
 		} );

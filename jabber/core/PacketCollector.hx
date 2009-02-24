@@ -8,6 +8,7 @@ class PacketCollector {
 	public var permanent : Bool;
 	public var block : Bool;
 	public var timeout(default,setTimeout) : PacketTimeout;
+	public var packet(default,null) : xmpp.Packet;
 	
 	
 	public function new( filters : Array<xmpp.PacketFilter>, handler : Dynamic->Void,
@@ -39,8 +40,10 @@ class PacketCollector {
 	*/
 	public function accept( p : xmpp.Packet ) : Bool {
 		for( f in filters ) {
-			if( !f.accept( p ) ) return false;
+			if( !f.accept( p ) )
+				return false;
 		}
+		packet = p;
 		return true;
 	}
 	

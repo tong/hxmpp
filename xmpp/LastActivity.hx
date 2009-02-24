@@ -2,6 +2,8 @@ package xmpp;
 
 
 /**
+	Discover when a disconnected user last accessed its server.
+	
 	<a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a><br/>
 */
 class LastActivity {
@@ -12,17 +14,17 @@ class LastActivity {
 	
 	
 	public function new( ?seconds : Int ) {
-		this.seconds = seconds;
+		this.seconds = ( seconds != null ) ? seconds : -1;
 	}
 	
 	
 	public function toXml() : Xml {
 		var q = IQ.createQueryXml( XMLNS );
-		q.set( "seconds", Std.string( seconds ) );
+		if( seconds > 0 ) q.set( "seconds", Std.string( seconds ) );
 		return q;
 	}
 	
-	public inline function toString() : String { return toXml().toString(); }
+	public inline function toString() : String {return toXml().toString(); }
 	
 	
 	public static inline function parse( x : Xml ) : LastActivity {
