@@ -46,10 +46,10 @@ class Stream {
 	public var cnx(default,setConnection) : StreamConnection;
 	public var id(default,null) : String;
 	public var lang(default,null) : String;
+	public var jid(default,null) : jabber.JID;
 	public var server(default,null) : Server;
 	public var features(default,null) : StreamFeatures;
 	public var version : Bool;
-	public var jid(default,null) : jabber.JID;
 	
 	var collectors : List<TPacketCollector>;
 	var interceptors : List<TPacketInterceptor>;
@@ -59,7 +59,8 @@ class Stream {
 	
 	function new( cnx : StreamConnection, jid : jabber.JID ) {
 		
-		if( cnx == null ) throw "Missing cnx argument";
+		if( cnx == null )
+			throw "Missing cnx argument";
 		
 		collectors = new List();
 		interceptors = new List();
@@ -68,9 +69,9 @@ class Stream {
 		version = true;
 		numPacketsSent = 0;
 		
-		this.status = StreamStatus.closed;
 		this.jid = jid;
-		this.setConnection( cnx );
+		status = StreamStatus.closed;
+		setConnection( cnx );
 	}
 	
 	
@@ -186,7 +187,7 @@ class Stream {
 		collectors.add( c );
 		return true;
 	}
-	
+	/*
 	public function addCollectors( iter : Iterable<TPacketCollector> ) : Bool {
 		for( i in iter ) {
 			if( Lambda.has( collectors, i ) ) return false;
@@ -194,21 +195,22 @@ class Stream {
 		for( i in iter ) collectors.add( i );
 		return true;
 	}
-	
+	*/
 	public function removeCollector( c : TPacketCollector ) : Bool {
 		return collectors.remove( c );
 	}
+	/*
 	
 	public function clearCollectors() {
 		collectors = new List();
 	}
-	
+	*/
 	public function addInterceptor(i : TPacketInterceptor ) : Bool {
 		if( Lambda.has( interceptors, i ) ) return false;
 		interceptors.add( i );
 		return true;
 	}
-	
+	/*
 	public function addInterceptors( iter : Iterable<TPacketInterceptor> ) : Bool {
 		for( i in iter ) {
 			if( Lambda.has( interceptors, i ) ) return false;
@@ -216,19 +218,21 @@ class Stream {
 		for( i in iter ) interceptors.add( i );
 		return true;
 	}
-	
+	*/
 	public function removeInterceptor( i : TPacketInterceptor ) : Bool {
 		return interceptors.remove( i );
 	}
-	
+	/*
 	public function clearInterceptors() {
 		interceptors = new List();
 	}
+	*/
 
 
 	function processData( d : String ) {
 		// ignore keepalive
-		if( cache == null && d == " " ) return;
+		if( cache == null && d == " " )
+			return;
 		#if XMPP_DEBUG
 		try {
 			var x = Xml.parse( d );
@@ -237,15 +241,25 @@ class Stream {
 			trace( "<<< "+d, "xmpp-i" );
 		}
 		#end
+		
 		if( xmpp.Stream.eregStreamClose.match( d ) ) {
 			close( true );
 			return;
 		}
 		if( xmpp.Stream.eregStreamError.match( d ) ) {
-			onError( this );
+			var err : xmpp.StreamError = null;
+			try {
+				err = xmpp.StreamError.parse( Xml.parse( d ) );
+			} catch( e : Dynamic ) {
+				onError( "Invalid stream:error" );
+				close();
+				return;
+			}
+			onError( err );
 			close( true );
 			return;
 		}
+		
 		switch( status ) {
 		case closed :
 			return;
