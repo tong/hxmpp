@@ -10,7 +10,7 @@ class LastActivityListener {
 	public var time : Int;
 	public var stream(default,null) : Stream;
 	
-	public function new( stream : StreamBase ) {
+	public function new( stream : Stream ) {
 		if( !stream.features.add( xmpp.LastActivity.XMLNS ) )
 			throw "Last activity already added";
 		this.stream = stream;

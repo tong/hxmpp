@@ -88,7 +88,7 @@ class MUC {
 
 	
 	function getMe() : MUCOccupant {
-		return { role : role, presence : presence.get(), nick : nick, jid : myjid, affiliation : affiliation };
+		return { role : role, presence : presence.last, nick : nick, jid : myjid, affiliation : affiliation };
 	}
 	
 	

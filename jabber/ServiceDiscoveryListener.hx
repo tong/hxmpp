@@ -61,7 +61,6 @@ class ServiceDiscoveryListener {
 	
 	function handleInfoQuery( iq : xmpp.IQ ) {
 		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
-		//var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, stream.jid.toString() ); //TODO
 		r.ext = new xmpp.disco.Info( [identity], Lambda.array( stream.features ) );
 		stream.sendData( r.toString() );
 	}
@@ -73,7 +72,6 @@ class ServiceDiscoveryListener {
 		var r = new xmpp.IQ( xmpp.IQType.error, iq.id, iq.from );
 		r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, -1, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );
 		stream.sendPacket( r );
-		
 		/*
 		var items = new xmpp.disco.Items();
 		for( p in itemProvider.items ) {

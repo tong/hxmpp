@@ -2,19 +2,18 @@ package jabber;
 
 
 /**
-	Block communication with unknown or undesirable entities.
-	
+	Extension for blocking communication with unknown or undesirable entities.
 	<a href="http://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>
 */
 class PrivacyLists {
 	
-	public dynamic function onLists( p : PrivacyLists, lists : xmpp.PrivacyLists  ) {}
-	public dynamic function onInfo( p : PrivacyLists, l : xmpp.PrivacyList ) {}
-	public dynamic function onUpdate( p : PrivacyLists, l : xmpp.PrivacyList ) {}
-	public dynamic function onRemoved( p : PrivacyLists, l : xmpp.PrivacyList ) {}
-	public dynamic function onActivate( p : PrivacyLists, l : String ) {}
-	public dynamic function onDeactivate( p : PrivacyLists ) {}
-	public dynamic function onDefaultChange( p : PrivacyLists, l : String ) {}
+	public dynamic function onLists( l : xmpp.PrivacyLists  ) {}
+	public dynamic function onInfo( l : xmpp.PrivacyList ) {}
+	public dynamic function onUpdate( l : xmpp.PrivacyList ) {}
+	public dynamic function onRemoved( l : xmpp.PrivacyList ) {}
+	public dynamic function onActivate( l : String ) {}
+	public dynamic function onDeactivate() {}
+	public dynamic function onDefaultChange( l : String ) {}
 	public dynamic function onError( e : jabber.XMPPError ) {}
 	
 	public var stream(default,null) : jabber.Stream;
@@ -22,42 +21,42 @@ class PrivacyLists {
 	
 	public function new( stream : Stream ) {
 		
+		if( !stream.features.add( xmpp.PrivacyLists.XMLNS ) )
+			throw "PrivacyLists feature already added";
 		this.stream = stream;
 		
-		stream.features.add( xmpp.PrivacyLists.XMLNS );
-		
-		// TODO add collectors for server push
+		stream.addCollector( new jabber.core.PacketCollector([cast new xmpp.filter.IQFilter(xmpp.PrivacyLists.XMLNS,xmpp.IQType.set)], handleListPush, true ) );
 	}
 	
 	
 	public function loadLists() {
 		var me = this;
 		sendRequest( xmpp.IQType.get, function(r) {
-			var lists = xmpp.PrivacyLists.parse( r.ext.toXml() );
-			me.onLists( me, lists );
+			var l = xmpp.PrivacyLists.parse( r.ext.toXml() );
+			me.onLists( l );
 		} );
 	}
 	
 	public function load( name : String ) {
 		var me = this;
 		sendRequest( xmpp.IQType.get, function(r) {
-			var lists = xmpp.PrivacyLists.parse( r.ext.toXml() );
-			me.onInfo( me, lists.list[0] );
+			var l = xmpp.PrivacyLists.parse( r.ext.toXml() );
+			me.onInfo( l.list[0] );
 		}, null, null, new xmpp.PrivacyList( name ) );
 	}
 	
 	public function activate( name : String ) {
 		var me = this;
 		sendRequest( xmpp.IQType.set, function(r) {
-			var lists = xmpp.PrivacyLists.parse( r.ext.toXml() );
-			me.onActivate( me, lists.active );
+			var l = xmpp.PrivacyLists.parse( r.ext.toXml() );
+			me.onActivate( l.active );
 		}, name );
 	}
 	
 	public function deactivate() {
 		var me = this;
 		sendRequest( xmpp.IQType.set, function(r) {
-			me.onDeactivate( me );
+			me.onDeactivate();
 		}, "" );
 	}
 	
@@ -71,7 +70,7 @@ class PrivacyLists {
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			switch( r.type ) {
 				case result :
-					me.onDefaultChange( me, name );
+					me.onDefaultChange( name );
 				case error :
 					me.onError( new jabber.XMPPError( me, r ) );
 				default :
@@ -79,19 +78,19 @@ class PrivacyLists {
 		} );
 	}
 	
-	public inline function update( list : xmpp.PrivacyList ) {
+	public function update( list : xmpp.PrivacyList ) {
 		_update( list );
 	}
 	
-	public inline function add( list : xmpp.PrivacyList ) {
+	public function add( list : xmpp.PrivacyList ) {
 		_update( list );
 	}
 	
 	public function remove( name : String ) {
 		var me = this;
 		sendRequest( xmpp.IQType.set, function(r) {
-			var lists = xmpp.PrivacyLists.parse( r.ext.toXml() );
-			me.onRemoved( me, lists.list[0] );
+			var l = xmpp.PrivacyLists.parse( r.ext.toXml() );
+			me.onRemoved( l.list[0] );
 		}, null, null, new xmpp.PrivacyList( name ) );
 	}
 	
@@ -99,8 +98,8 @@ class PrivacyLists {
 	function _update( list : xmpp.PrivacyList ) {
 		var me = this;
 		sendRequest( xmpp.IQType.set, function(r) {
-			var lists = xmpp.PrivacyLists.parse( r.ext.toXml() );
-			me.onUpdate( me, lists.list[0] );
+			var l = xmpp.PrivacyLists.parse( r.ext.toXml() );
+			me.onUpdate( l.list[0] );
 		}, null, null, list );
 	}
 	
@@ -123,7 +122,7 @@ class PrivacyLists {
 	}
 	
 	function handleListPush( iq : xmpp.IQ ) {
-		//TODO
+		trace("TODO händleListPush");
 	}
 	
 }

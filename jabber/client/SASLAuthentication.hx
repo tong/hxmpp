@@ -128,7 +128,7 @@ class SASLAuthentication {
 		stream.open(); // reopen stream
 	}
 	
-	function handleStreamOpen( s : Stream ) {
+	function handleStreamOpen() {
 		if( negotiated ) {
 			// bind resource
 			var iq = new IQ( IQType.set );

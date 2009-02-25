@@ -7,7 +7,7 @@ import jabber.StreamConnection;
 /**
 	Base for Client-2-Server jabber streams.<br>
 */
-class Stream extends jabber.StreamBase {
+class Stream extends jabber.Stream {
 	
 	public static inline var STANDARD_PORT = 5222;
 	public static var defaultPort = STANDARD_PORT;

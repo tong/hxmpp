@@ -9,7 +9,7 @@ package jabber;
 */
 class Ping {
 	
-	public static var defaultInterval = 60;
+	public static var defaultInterval = 2;
 	
 	public dynamic function onResponse( s : jabber.Stream, entity : String ) : Void;
 	public dynamic function onTimeout( s : jabber.Stream, entity : String ) : Void;

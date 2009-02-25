@@ -11,7 +11,7 @@ import xmpp.filter.PacketIDFilter;
 	Base for Component-2-Server jabber streams.<br/>
 	<a href="http://www.xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>
 */
-class Stream extends jabber.StreamBase {
+class Stream extends jabber.Stream {
 	
 	public static inline var STANDARD_PORT = 5275;
 	public static var defaultPort = STANDARD_PORT;
