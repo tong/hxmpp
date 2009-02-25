@@ -42,9 +42,9 @@ class StreamFeatures {
 */
 interface Stream {
 	
-	dynamic function onOpen<T>( s : T ) : Void;
-	dynamic function onClose<T>( s : T ) : Void;
-	dynamic function onError<T>( s : T, ?m : Dynamic ) : Void;
+	dynamic function onOpen() : Void;
+	dynamic function onClose() : Void;
+	dynamic function onError( ?e : Dynamic ) : Void;
 	
 	/** */
 	var status : StreamStatus;

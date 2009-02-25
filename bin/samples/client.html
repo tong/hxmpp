@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="author" content="disktree.net" />
-<title>hxmpp usage from plain javascript</title>
+<title>HXMPP-JS</title>
 <script type="text/javascript" src="../hxmpp.js"/></script>
 <script type="text/javascript" src="../swfobject.js"/></script>
 </head>
@@ -18,31 +18,30 @@
 </form>
 
 <div id="f9bridge">NO FLASHPLAYER DETECTED</div>
-<div id="jabberstatus"></div>
-<div id="streamstatus">Stream status: not initialized</div>
-
 <div id="haxe:trace"></div>
 
 <script type="text/javascript">swfobject.embedSWF("../f9_socketbridge.swf","f9bridge","0","0","9.0.0");</script>
 <script type="text/javascript">
 
-jabber.Lib.initSocketBridge();
+console.log("HXMPP");
 
-function printHtml(id,value) {
-	document.getElementById(id).innerHTML = value;
-}
+jabber.Lib.initSocketBridge();
+jabber.XMPPDebug.redirectTraces();
+
+var stream;
+
 
 function streamStatusChangeHandler(stream) {
 	switch( stream.status ) {
 	case jabber.StreamStatus.open :
 		var auth = new jabber.client.NonSASLAuthentication(stream);
-		auth.onSuccess = function(s) {
-			var roster = new jabber.client.Roster(s);
-			roster.onAvailable = function() {
-				printHtml("jabberstatus","Roster loaded");
+		auth.onSuccess = function() {
+			var roster = new jabber.client.Roster(stream);
+			roster.onLoad = function(r) {
+				console.info("Roster loaded");
 			}
+			console.info("Authenticated");
 			roster.load();
-			printHtml("jabberstatus","Authentication success");
 		};
 		auth.onFailed = function(s) { printHtml("jabberstatus","Authentication failed"); };
 		auth.authenticate(document.getElementById("pass").value,"norc");
@@ -51,22 +50,27 @@ function streamStatusChangeHandler(stream) {
 		//..
 		break;
 	}
-	printHtml("streamstatus","Stream status: "+stream.status);
+	console.info("Stream status: %s",stream.status);
 }
 
 function openStream() {
-	var jid = new jabber.JID(document.getElementById("jid").value);
+	var jidstr=document.getElementById("jid").value;
+	if(!jabber.JIDUtil.isValid(jidstr)) {
+		console.warn("Invalid JID ("+jidstr+")");
+		return;
+	}
+	var jid = new jabber.JID(jidstr);
 	var cnx = new jabber.SocketConnection(jid.host,jabber.client.Stream.defaultPort);
-	var stream = new jabber.client.Stream(jid,cnx);
+	stream = new jabber.client.Stream(jid,cnx);
 	stream.onOpen = streamStatusChangeHandler;
 	stream.onClose = streamStatusChangeHandler;
-	//stream.onError =
+	stream.onError = function(e){
+		console.error("%o",e);
+	};
 	stream.open();
 }
 
 </script>
-
-<div>Example usage of the hxmpp library from plain js (without the need of the haxe compiler), using a flash9 socketbridge to connect to the server.</div>
 
 </body>
 </html>

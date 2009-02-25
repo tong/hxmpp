@@ -29,7 +29,7 @@ class Stream extends jabber.StreamBase {
 			id = sx.get( "id" );
 			if( !version ) {
 				status = jabber.StreamStatus.open;
-				onOpen( this );
+				onOpen();
 				return;
 			}
 		}
@@ -45,7 +45,7 @@ class Stream extends jabber.StreamBase {
 			parseStreamFeatures( Xml.parse( sf ).firstElement() );
 			if( status != jabber.StreamStatus.open ) {
 				status = jabber.StreamStatus.open;
-				onOpen( this );
+				onOpen();
 			}
 		}
 	}

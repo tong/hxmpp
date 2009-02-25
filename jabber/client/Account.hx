@@ -8,9 +8,9 @@ package jabber.client;
 */
 class Account {
 	
-	public dynamic function onRegistered( s : jabber.client.Stream, node : String ) : Void;
-	public dynamic function onRemoved( s : jabber.client.Stream ) : Void;
-	public dynamic function onPasswordChange( s : jabber.client.Stream, pass : String ) : Void;
+	public dynamic function onRegistered( node : String ) : Void;
+	public dynamic function onRemoved() : Void;
+	public dynamic function onPasswordChange( pass : String ) : Void;
 	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
@@ -56,7 +56,7 @@ class Account {
 							case result :
 								//TODO
 								//var l = xmpp.Register.parse( iq.ext.toXml() );
-								self.onRegistered( self.stream, username );
+								self.onRegistered( username );
 							case error:
 								self.onError( new jabber.XMPPError( self, r ) );
 							default : //#
@@ -85,7 +85,7 @@ class Account {
 				case result :
 				//TODO
 					//var l = xmpp.Register.parse( iq.ext.toXml() );
-					self.onRemoved( self.stream );
+					self.onRemoved();
 				case error :
 					self.onError( new jabber.XMPPError( self, r ) );
 				default : //#
@@ -107,7 +107,7 @@ class Account {
 			switch( r.type ) {
 				case result :
 					var l = xmpp.Register.parse( iq.ext.toXml() );
-					self.onPasswordChange( self.stream, pass );
+					self.onPasswordChange( pass );
 				case error :
 					self.onError( new jabber.XMPPError( self, r ) );
 				default : //#

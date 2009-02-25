@@ -17,11 +17,11 @@ class JabberComponentDemo {
 		
 		cnx = new jabber.SocketConnection( "127.0.0.1", Stream.defaultPort );
 		stream = new Stream( "disktree", "norc", "1234", cnx );
-		stream.onOpen = function(s) {
+		stream.onOpen = function() {
 			trace( "XMPP stream opened.", "info" );
 		};
-		stream.onError = function(s,?m) { trace( "Stream error, "+m ); } ;
-		stream.onClose = function(s) { trace( "Stream closed." ); } ;
+		stream.onError = function(?m) { trace( "Stream error, "+m ); } ;
+		stream.onClose = function() { trace( "Stream closed." ); } ;
 		stream.onConnect = function(success:Bool) {
 			if( success ) {
 				trace( "Stream opened. Have fun!", "info" );

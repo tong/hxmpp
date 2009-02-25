@@ -14,9 +14,9 @@ import util.XmlUtil;
 */
 class StreamBase implements Stream {
 	
-	public dynamic function onOpen<T>( s : T ) {}
-	public dynamic function onClose<T>( s : T ) {}
-	public dynamic function onError<T>( s : T, ?m : Dynamic ) {}
+	public dynamic function onOpen() {}
+	public dynamic function onClose() {}
+	public dynamic function onError( ?e : Dynamic ) {}
 	
 	public var status : StreamStatus;
 	public var cnx(default,setConnection) : StreamConnection;
@@ -92,7 +92,7 @@ class StreamBase implements Stream {
 			status = StreamStatus.closed;
 			if( disconnect ) cnx.disconnect();
 			numPacketsSent = 0;
-			onClose( this );
+			onClose();
 			return true;
 		}
 		//if( status == StreamStatus.pending && disconnect && cnx.connected ) { 
@@ -313,7 +313,7 @@ class StreamBase implements Stream {
 	}
 	
 	function errorHandler( m : Dynamic ) {
-		onError( this, m  );
+		onError( m  );
 	}
 	
 }

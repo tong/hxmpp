@@ -1,5 +1,8 @@
 package jabber;
 
+#if JABBER_SOCKETBRIDGE
+import jabber.SocketConnection;
+#end
 
 class Lib {
 	

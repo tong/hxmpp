@@ -5,8 +5,8 @@ package jabber.client;
 */
 class NonSASLAuthentication {
 	
-	public dynamic function onSuccess( s : Stream ) : Void;
-	public dynamic function onFailed( r : jabber.XMPPError ) : Void;
+	public dynamic function onSuccess() {}
+	public dynamic function onFailed( e : jabber.XMPPError ) {}
 	
 	public var stream(default,null) : Stream;
 	public var active(default,null) : Bool;
@@ -16,16 +16,14 @@ class NonSASLAuthentication {
 	public var resource(default,null) : String;
 
 	public function new( stream : Stream,
-						 ?onSuccess : Stream->Void, ?onFailed : jabber.XMPPError->Void,
+						 ?onSuccess : Void->Void, ?onFailed : jabber.XMPPError->Void,
 					 	 ?usePlainText : Bool ) {
-	
 		this.stream = stream;
 		this.onSuccess = onSuccess;
 		this.onFailed = onFailed;
 		this.usePlainText = ( usePlainText != null ) ? usePlainText : false;
 		username = stream.jid.node;
 		resource = stream.jid.resource;
-		
 		active = false;
 	}
 
@@ -33,7 +31,7 @@ class NonSASLAuthentication {
 		if( active ) throw new error.Exception( "Authentication already in progress" );
 		this.password = pw;
 		this.resource = resource;
-if( resource != null ) stream.jid.resource = resource;
+		if( resource != null ) stream.jid.resource = resource; // ???
 		active = true;
 		var iq = new xmpp.IQ();
 		iq.ext = new xmpp.Auth( username );
@@ -41,24 +39,24 @@ if( resource != null ) stream.jid.resource = resource;
 	}
 	
 	
-	function handleResponse( r : xmpp.IQ ) {
-		switch( r.type ) {
+	function handleResponse( iq : xmpp.IQ ) {
+		switch( iq.type ) {
 			case result :
-				var hasDigest = ( !usePlainText && r.ext.toXml().elementsNamed( "digest" ).next() != null );
-				var iq = new xmpp.IQ( xmpp.IQType.set );
-				iq.ext = if( hasDigest ) new xmpp.Auth( username, null, crypt.SHA1.encode( stream.id+password ), resource );
+				var hasDigest = ( !usePlainText && iq.ext.toXml().elementsNamed( "digest" ).next() != null );
+				var r = new xmpp.IQ( xmpp.IQType.set );
+				r.ext = if( hasDigest ) new xmpp.Auth( username, null, crypt.SHA1.encode( stream.id+password ), resource );
 				else new xmpp.Auth( username, password, null, resource );
-				stream.sendIQ( iq, handleResult );
-			case error : onFailed( new jabber.XMPPError( this, r ) );
+				stream.sendIQ( r, handleResult );
+			case error : onFailed( new jabber.XMPPError( this, iq ) );
 			default : //#
 		}
 	}
 	
-	function handleResult( r : xmpp.IQ ) {
+	function handleResult( iq : xmpp.IQ ) {
 		active = false;
-		switch( r.type ) {
-			case result : onSuccess( stream );
-			case error : onFailed( new jabber.XMPPError( this, r ) );
+		switch( iq.type ) {
+			case result : onSuccess();
+			case error : onFailed( new jabber.XMPPError( this, iq ) );
 			default : //#
 		}
 	}
