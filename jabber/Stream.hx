@@ -65,6 +65,7 @@ interface Stream {
 	function nextID() : String;
 	
 	function open() : Bool {}
+	function close( disconnect : Bool = false ) : Bool {}
 	
 	/** */
 	function sendIQ( iq : xmpp.IQ,
@@ -75,7 +76,7 @@ interface Stream {
 	
 	
 	/** Sends XMPP packet */
-	function sendPacket<T>( p : xmpp.Packet, ?intercept : Bool = true ) : T;
+	function sendPacket<T>( p : xmpp.Packet, intercept : Bool = true ) : T;
 	
 	/** Sends raw data */
 	function sendData( d : String ) : Bool;

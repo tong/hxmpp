@@ -102,7 +102,7 @@ class StreamBase implements Stream {
 	/**
 		Intercepts, sends and returns the given xmpp packet.
 	*/
-	public function sendPacket<T>( p : xmpp.Packet, ?intercept : Bool = true ) : T {
+	public function sendPacket<T>( p : xmpp.Packet, intercept : Bool = true ) : T {
 		if( !cnx.connected /*|| status != StreamStatus.open*/ ) return null;
 		if( intercept ) for( i in interceptors ) i.interceptPacket( p );
 		if( sendData( p.toString() ) ) return cast p;
@@ -270,7 +270,8 @@ class StreamBase implements Stream {
 					collected = true;
 					//if( c.deliver == null ) collectors.remove( c );
 					c.deliver( p );
-					if( c.block ) break;
+					if( c.block )
+						break;
 					if( !c.permanent ) {
 						collectors.remove( c );
 						c = null;
@@ -278,17 +279,14 @@ class StreamBase implements Stream {
 				}
 			}
 			if( !collected ) {
-				//TODO create response
-				/*
+				#if JABBER_DEBUG
+				trace( "XMPP packet not processed", "warn" );
+				#end
 				if( p._type == xmpp.PacketType.iq ) {
-					var r = new xmpp.IQ( xmpp.IQType.error, p.id, p.from );
+					var r = new xmpp.IQ( xmpp.IQType.error, p.id, p.from, p.to );
 					r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, 501, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );
 					sendPacket( r );
 				}
-				*/
-				#if JABBER_DEBUG
-				trace( "XMPP packet not processed: "+p, "warn" );
-				#end
 			}
 		}
 		return packets;
@@ -313,7 +311,7 @@ class StreamBase implements Stream {
 	}
 	
 	function errorHandler( m : Dynamic ) {
-		onError( m  );
+		onError( m );
 	}
 	
 }
