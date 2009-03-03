@@ -17,39 +17,42 @@ import xmpp.filter.PacketOrFilter;
 */
 class SASLAuthentication {
 
-	public dynamic function onFailed( s : SASLAuthentication )  : Void;
-	public dynamic function onNegotiated( s : SASLAuthentication ) : Void;
-	public dynamic function onSuccess( s : SASLAuthentication ) : Void; //-> stream, jid, resource
+	public dynamic function onFailed()  : Void;
+	public dynamic function onNegotiated() : Void;
+	public dynamic function onSuccess() : Void;
 	
 	public var stream(default,null) : Stream;
 	public var handshake(default,null) : net.sasl.Handshake;
 	public var resource(default,null) : String;
 	public var active(default,null) : Bool;
+	/** Available mechanisms ids */
+	public var mechanisms : Array<String>;
+	public var negotiated(default,null) : Bool;
 	
-	var negotiated : Bool;
-	var availableMechanisms : Array<String>;
-	var col_error : PacketCollector;
-	var col_challenge : PacketCollector;
-	var col_success : PacketCollector;
+	var c_error : PacketCollector;
+	var c_challenge : PacketCollector;
+	var c_success : PacketCollector;
 	
 	
 	public function new( stream : Stream, mechanisms : Iterable<net.sasl.Mechanism> ) {
 		
 		var x = stream.server.features.get( "mechanisms" );
-		if( x == null ) throw "SASL not supported";
-		availableMechanisms = xmpp.SASL.parseMechanisms( x );
+		if( x == null )
+			throw "SASL not supported";
 		
+		this.mechanisms = xmpp.SASL.parseMechanisms( x );
 		this.stream = stream;
 		
 		active = negotiated = false;
 		handshake = new net.sasl.Handshake();
-		for( m in mechanisms ) handshake.mechanisms.push( m );
+		for( m in mechanisms )
+			handshake.mechanisms.push( m );
 	}
 	
 	
 	/**
 		Inits SASL authentication.
-		Returns false if no compatible sasl mechanism was found.
+		Returns false if no compatible SASL mechanism was found.
 	*/
 	public function authenticate( password : String, ?resource : String ) : Bool {
 	
@@ -62,9 +65,9 @@ class SASLAuthentication {
 		
 		// locate mechanism to use.
 		if( handshake.mechanism == null ) {
-			for( availableMechanism in availableMechanisms ) {
+			for( amechs in mechanisms ) {
 				for( m in handshake.mechanisms ) {
-					if( m.id != availableMechanism ) continue;
+					if( m.id != amechs ) continue;
 					handshake.mechanism = m;
 					break;
 				}
@@ -73,7 +76,9 @@ class SASLAuthentication {
 		}
 		
 		if( handshake.mechanism == null ) {
+			#if JABBER_DEBUG
 			trace( "No matching SASL mechanism found." );
+			#end
 			return false;
 		}
 		#if JABBER_DEBUG
@@ -91,16 +96,16 @@ class SASLAuthentication {
 		filters.add( new PacketNameFilter( ~/invalid-mechanism/ ) );
 		filters.add( new PacketNameFilter( ~/mechanism-too-weak/ ) );
 		filters.add( new PacketNameFilter( ~/temporary-auth-failure/ ) );
-		col_error = new PacketCollector( [cast filters], handleSASLError, false );
-		stream.addCollector( col_error );
+		c_error = new PacketCollector( [cast filters], handleSASLError, false );
+		stream.addCollector( c_error );
 
-		// collect challenge packets
-		col_challenge = new PacketCollector( [cast new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
-		stream.addCollector( col_challenge );
+		// collect challenge
+		c_challenge = new PacketCollector( [cast new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
+		stream.addCollector( c_challenge );
 		
-		// collect success packet
-		col_success = new PacketCollector( [cast new PacketNameFilter( ~/success/ )], handleSASLSuccess );
-		stream.addCollector( col_success );
+		// collect success
+		c_success = new PacketCollector( [cast new PacketNameFilter( ~/success/ )], handleSASLSuccess );
+		stream.addCollector( c_success );
 		
 		// send init auth
 		var t = handshake.mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password );
@@ -112,17 +117,16 @@ class SASLAuthentication {
 	function handleSASLChallenge( p : xmpp.Packet ) {
 		var c = p.toXml().firstChild().nodeValue;
 		// create/send challenge response
-		var enc = util.Base64.encode( handshake.getChallengeResponse( c ) );
-		stream.sendData( xmpp.SASL.createResponseXml( enc ).toString() );
+		var r = util.Base64.encode( handshake.getChallengeResponse( c ) );
+		stream.sendData( xmpp.SASL.createResponseXml( r ).toString() );
 	}
 	
 	function handleSASLError( p : xmpp.Packet ) {
 		active = false;
-		onFailed( this );
+		onFailed();
 	}
 	
 	function handleSASLSuccess( p : xmpp.Packet ) {
-		//stream.sasl.negotiated = true;
 		negotiated = true;
 		stream.version = false;
 		stream.open(); // reopen stream
@@ -147,23 +151,23 @@ class SASLAuthentication {
 					throw "Unexpected resource bound ?";
 				}
 				*/
-				onSuccess( this );
+				onSuccess();
 					
 			case IQType.error :
 				trace( "Unable to bind resource" );
 				//TODO
 				active = false;
-				onFailed( this );
+				onFailed();
 		}
 		cleanup();
 	}
 	
 	function cleanup() {
 		active = false;
-		stream.removeCollector( col_challenge );
-		stream.removeCollector( col_success );
-		stream.removeCollector( col_error );
-		//col_challenge = col_success = collector_error = null;
+		stream.removeCollector( c_challenge );
+		stream.removeCollector( c_success );
+		stream.removeCollector( c_error );
+		c_challenge = c_success = c_error = null;
 	}
 	
 }

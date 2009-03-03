@@ -1,7 +1,7 @@
 package jabber.client;
 
-import jabber.core.PacketCollector;
 import jabber.PresenceManager;
+import jabber.core.PacketCollector;
 import xmpp.IQType;
 import xmpp.roster.Item;
 import xmpp.roster.AskType;
@@ -25,15 +25,15 @@ class Roster {
 
 	public static var defaultSubscriptionMode = RosterSubscriptionMode.acceptAll;
 	
-	public dynamic function onLoad( r : Roster ) : Void;
-	public dynamic function onAdd( r : Roster, i : Array<Item> ) : Void;
-	public dynamic function onRemove( r : Roster, i : Array<Item> ) : Void;
-	public dynamic function onUpdate( r : Roster, i : Array<Item> ) : Void;
-	public dynamic function onPresence( r : Roster, i : Item, p: xmpp.Presence ) : Void;
-	public dynamic function onResourcePresence( r : Roster, resource : String, p: xmpp.Presence  ) : Void;
-	public dynamic function onSubscribed( r : Roster, i : Item ) : Void;
-	public dynamic function onUnsubscribed( r : Roster, i : Item ) : Void;
-	public dynamic function onSubscriptionRequest( r : Roster, i : Item ) : Void;
+	public dynamic function onLoad() : Void;
+	public dynamic function onAdd( i : Array<Item> ) : Void;
+	public dynamic function onRemove( i : Array<Item> ) : Void;
+	public dynamic function onUpdate( i : Array<Item> ) : Void;
+	public dynamic function onPresence( i : Item, p: xmpp.Presence ) : Void;
+	public dynamic function onResourcePresence( resource : String, p: xmpp.Presence  ) : Void;
+	public dynamic function onSubscribed( i : Item ) : Void;
+	public dynamic function onUnsubscribed( i : Item ) : Void;
+	public dynamic function onSubscriptionRequest( i : Item ) : Void;
 	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
@@ -104,7 +104,7 @@ class Roster {
 			switch( r.type ) {
 				case result :
 					me.items.remove( i );
-					me.onRemove( me, [i] );
+					me.onRemove( [i] );
 				case error : me.onError( new jabber.XMPPError( me, r ) );
 				default : //#
 			}
@@ -120,7 +120,7 @@ class Roster {
 		stream.sendIQ( iq, function(r) {
 			switch( r.type ) {
 				case result :
-					me.onUpdate( me, [item] );
+					me.onUpdate( [item] );
 				case error :
 					//TODO
 				default : //#
@@ -200,7 +200,7 @@ class Roster {
 		if( from == stream.jid.bare ) { // handle account resource presence
 			if( resource == null ) return;
 			resources.set( resource, p );
-			onResourcePresence( this, resource, p );
+			onResourcePresence( resource, p );
 			
 		} else {
 			var i = getItem( from );
@@ -217,7 +217,7 @@ class Roster {
 								r.to = p.from;
 								stream.sendPacket( r );
 							case manual :
-								onSubscriptionRequest( this, new xmpp.roster.Item( p.from ) );
+								onSubscriptionRequest( new xmpp.roster.Item( p.from ) );
 						}
 						return;
 					
@@ -226,18 +226,18 @@ class Roster {
 					//?	return;
 					
 					case unsubscribed :
-						onUnsubscribed( this, i );
+						onUnsubscribed( i );
 						return;
 						
 					default :
 						//TODO check
 						trace( "???? check" );
-						//onPresence( this, i, p );
+						//onPresence( i, p );
 				}
 			}
 			if( i != null ) {
 				presenceMap.set( from, p );
-				onPresence( this, i, p );
+				onPresence( i, p );
 			}
 		}
 	}
@@ -270,10 +270,10 @@ class Roster {
 				}
 				if( !available ) {
 					available = true;
-					onLoad( this );
+					onLoad();
 				}
-				if( added.length > 0 ) onAdd( this, added );
-				if( removed.length > 0 ) onRemove( this, removed );
+				if( added.length > 0 ) onAdd( added );
+				if( removed.length > 0 ) onRemove( removed );
 			
 			case set :
 				var loaded = xmpp.Roster.parse( iq.ext.toXml() );
@@ -281,10 +281,10 @@ class Roster {
 					var item = getItem( i.jid );
 					if( item != null ) { // update item
 						item = i;
-						onUpdate( this, [item] );
+						onUpdate( [item] );
 					} else { // new item
 						items.push( i );
-						onAdd( this, [i] );
+						onAdd( [i] );
 					}
 				}
 				
@@ -305,7 +305,7 @@ class Roster {
 				case result :
 					var item = new Item( jid );
 					me.items.push( item );
-					me.onAdd( me, [item] );
+					me.onAdd( [item] );
 				case error :
 					//TODO
 				default : //#
