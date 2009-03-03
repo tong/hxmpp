@@ -1,10 +1,6 @@
 package jabber.component;
 
-import jabber.JID;
 import jabber.ServiceDiscoveryListener;
-import jabber.core.PacketCollector;
-import jabber.core.PacketTimeout;
-import xmpp.filter.PacketIDFilter;
 
 
 /**
@@ -55,8 +51,8 @@ class Stream extends jabber.Stream {
 	override function dataHandler( data : String ) {
 		super.dataHandler( data );
 		switch( status ) {
+		case pending : return;
 		case closed : return;
-		case pending :
 		case open : collectPackets( Xml.parse( data ) );
 		}
 	}
@@ -67,7 +63,7 @@ class Stream extends jabber.Stream {
 		id = dx.get( "id" );
 		status = jabber.StreamStatus.open;
 		onOpen();
-		collectors.add( new PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], readyHandler, false ) );
+		collectors.add( new  jabber.core.PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], readyHandler, false ) );
 		var handshake = Xml.createElement( "handshake" );
 		handshake.addChild( Xml.createPCData( crypt.SHA1.encode( id+secret ) ) );
 		sendData( handshake.toString() );

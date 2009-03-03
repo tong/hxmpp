@@ -5,7 +5,7 @@ class StringUtil {
 	
 	
 	/**
-		Creates a random string of given length.
+		Creates a random (base64 encoded) string of given length.
 	*/
 	public static function random64( ?len : Int = 1 ) : String {
 		if( len < 1 ) throw "Out of bound";
@@ -24,4 +24,19 @@ class StringUtil {
 	}
 	*/
 	
+	
+	/*
+	public static function hexTable( bytes : haxe.io.Bytes ) : String {
+		var b = new StringBuf();
+		var i = new haxe.io.BytesInput( bytes );
+		for( l in 1...bytes.getData().length+1 ) {
+			b.add( "0x" );
+			b.add( StringTools.hex( i.readByte() ) );
+			if( l%4 == 0 ) b.add( " | " );
+			b.add( " " );
+			if( l%16 == 0 ) b.add( "\n" );
+		}
+		return b.toString();
+	}
+	*/
 }

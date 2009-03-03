@@ -18,12 +18,13 @@ class SoftwareVersion {
 	public function new( stream : Stream,
 						 name : String, version : String, ?os : String ) {
 		
+		if( !stream.features.add( xmpp.SoftwareVersion.XMLNS ) )
+			throw "SoftwareVersion feature already added";
+		
 		this.stream = stream;
 		this.name = name;
 		this.version = version;
 		this.os = ( os != null ) ? os : util.SystemUtil.systemName();
-		
-		stream.features.add( xmpp.SoftwareVersion.XMLNS );
 		
 		stream.addCollector( new jabber.core.PacketCollector( [ cast new xmpp.filter.IQFilter( xmpp.SoftwareVersion.XMLNS, null, xmpp.IQType.get ) ], handleQuery, true ) );
 	}

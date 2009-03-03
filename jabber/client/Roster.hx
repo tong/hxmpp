@@ -232,7 +232,7 @@ class Roster {
 					default :
 						//TODO check
 						trace( "???? check" );
-						onPresence( this, i, p );
+						//onPresence( this, i, p );
 				}
 			}
 			if( i != null ) {
@@ -289,8 +289,8 @@ class Roster {
 				}
 				
 			case error : 
-				trace("ERRRORRR");
 				//TODO
+				trace("ERROR");
 				
 			default : 
 		}

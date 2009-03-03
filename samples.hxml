@@ -1,7 +1,8 @@
 
+##### CLIENT SAMPLE
 -cp samples/
 -cp lib/
--swf9 bin/demos/client.swf
+-swf9 bin/samples/client.swf
 -main JabberClientDemo
 -D XMPP_DEBUG
 -D JABBER_DEBUG
@@ -10,16 +11,17 @@
 --next
 -cp samples/
 -cp lib/
--js bin/demos/client_bridged.js
+-js bin/samples/client.js
 -main JabberClientDemo
 -D XMPP_DEBUG
+-D JABBER_DEBUG
 -D JABBER_SOCKETBRIDGE
--D JABBER_DEBUG
+-debug
 
 --next
 -cp samples/
 -cp lib/
--neko bin/demos/client.n
+-neko bin/samples/client.n
 -main JabberClientDemo
 -D XMPP_DEBUG
 -D JABBER_DEBUG
@@ -28,7 +30,7 @@
 --next
 -cp samples/
 -cp lib/
--php bin/demos
+-php bin/samples/
 --php-front client.php
 -main JabberClientDemo
 -D XMPP_DEBUG
@@ -36,12 +38,31 @@
 -debug
 
 
-
 --next
 ##### COMPONENT SAMPLE
 -cp samples/
 -cp lib/
--neko bin/demos/component.n
+-neko bin/samples/component.n
 -main JabberComponentDemo
+-D XMPP_DEBUG
+-D JABBER_DEBUG
+-debug
+
+--next
+-cp samples/
+-cp lib/
+-swf9 bin/samples/component.swf
+-main JabberComponentDemo
+-D XMPP_DEBUG
+-D JABBER_DEBUG
+-debug
+
+--next
+-cp samples/
+-cp lib/
+-php bin/samples/
+--php-front component.php
+-main JabberComponentDemo
+-D XMPP_DEBUG
 -D JABBER_DEBUG
 -debug

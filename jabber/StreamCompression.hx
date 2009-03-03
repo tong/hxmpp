@@ -16,6 +16,8 @@ private typedef CompressionMethod = {
 */
 class StreamCompression {
 	
+	//public dynamic function on
+	
 	public var stream(default,null) : Stream;
 	public var method(default,null) : CompressionMethod;
 

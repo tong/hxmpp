@@ -18,5 +18,5 @@ enum StreamStatus {
 		XMPP stream is open and ready to exchange packets.
 	*/
 	open;
-	//open( info : String );
+	//open( ?info : String );
 }

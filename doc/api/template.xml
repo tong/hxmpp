@@ -59,7 +59,7 @@ a:hover {
 }
 
 a.package {
-	color : #00A1EB;
+	color : #FF7D00;
 }
 
 img {
@@ -68,6 +68,7 @@ img {
 
 .index {
 	margin-left : 0px;
+	color : #999;
 }
 
 .kwd {
@@ -89,7 +90,7 @@ img {
 	margin-left : 0px;
 	margin-right : 20px;
 	padding : 5 5 5 5;
-	color : #00A1EB;
+	color : #FF7D00;
 }
 
 .importmod, .extends, .implements, .typedef, .platforms {

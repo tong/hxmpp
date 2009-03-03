@@ -2,9 +2,7 @@
 import jabber.ServiceDiscovery;
 import jabber.SocketConnection;
 import jabber.client.NonSASLAuthentication;
-import jabber.client.Roster;
 import jabber.client.Stream;
-import jabber.client.VCardTemp;
 
 
 /**
@@ -15,27 +13,24 @@ import jabber.client.VCardTemp;
 	* login
 	* load roster
 	* load vcard
-	* discover server infos
-	* discover server items
+	* discover server infos+items
 	
 */
 class JabberClientDemo {
 	
 	static var stream : Stream;
-	static var roster : Roster;
-	static var service : ServiceDiscovery;
-	static var vcard : VCardTemp;
 	
 	static function init() {
-		var cnx = new SocketConnection( "127.0.0.1", 5222 );
 		
-		stream = new Stream( new jabber.JID( "hxmpp@disktree" ), cnx );
-		stream.onError = function(s,?e) { trace( "Stream error: "+e ); };
-		stream.onClose = function(s) { trace( "Stream to: "+stream.jid.domain+" closed." ); } ;
-		stream.onOpen = function(s) {
+		trace("HXMPP");
+		
+		stream = new Stream( new jabber.JID( "hxmpp@disktree" ), new SocketConnection( "127.0.0.1", Stream.defaultPort ) );
+		stream.onError = function(?e) { trace( "Stream error: "+e ); };
+		stream.onClose = function() { trace( "Stream to: "+stream.jid.domain+" closed." ); } ;
+		stream.onOpen = function() {
 			trace( "Jabber stream to "+stream.jid.domain+" opened" );
 			var auth = new NonSASLAuthentication( stream );
-			auth.onSuccess = loginSuccess;
+			auth.onSuccess = handleLogin;
 			auth.onFailed = function(e) {
 				trace( "Login failed "+e.name );
 			};
@@ -50,32 +45,35 @@ class JabberClientDemo {
 		}
 	}
 	
-	static function loginSuccess( s : Stream ) {
+	static function handleLogin() {
 		
-		trace( "Logged in as "+ s.jid.node+" at "+s.jid.domain );
+		trace( "Logged in as "+ stream.jid.node+" at "+stream.jid.domain );
 		
-		#if !JABBER_SOCKETBRIDGE
-		// The socketbridge handles keepalive on its own.
-		var keepAlive = new net.util.KeepAlive( cast( stream.cnx, jabber.SocketConnection ).socket ).start();
+		#if (neko||flash||js )
+		new net.util.KeepAlive( cast( stream.cnx, jabber.SocketConnection ).socket, 1000 ).start();
 		#end
 		
-		roster = new Roster( s );
+		var roster = new jabber.client.Roster( stream );
+		roster.presence.change( null, "online" );
 		roster.load();
-		roster.onLoad = function( r : Roster ) {
-			trace( "ROSTER LOADED:" );
+		roster.onLoad = function(r) {
+			trace( "Roster loaded:" );
 			for( item in r.items ) {
 				trace( "\t"+item.jid );
 			}
 		};
 		
-		vcard = new VCardTemp( stream );
+		var vcard = new jabber.client.VCardTemp( stream );
 		vcard.onLoad = function(d,node,vc) {
-			trace( "VCARD LOADED: "+node );
+			if( node == null )
+				trace( "VCard loaded." );
+			else
+				trace( "VCard from "+node+" loaded." );
 		};
 		vcard.load();
 		
 		/*
-		service = new ServiceDiscovery( stream );
+		var service = new ServiceDiscovery( s );
 		service.onInfo = function( sd, e ) {
 			trace( "SERVICE INFO RESULT: "+e.from );
 			trace( "\tIDENTITIES: ");
@@ -86,11 +84,13 @@ class JabberClientDemo {
 		};
 		service.discoverItems( "disktree" );
 		service.discoverInfo( "disktree" );
-	*/
+		*/
+		#if js
+		//haxe.Timer.delay( function() { stream.close(true); }, 1000 );
+		#end
 	}
 	
 	static function main() {
-		
 		#if XMPP_DEBUG
 		jabber.XMPPDebug.redirectTraces();
 		#end

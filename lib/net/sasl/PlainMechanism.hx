@@ -2,10 +2,10 @@ package net.sasl;
 
 
 /**
-	<a href="http://www.ietf.org/rfc/rfc4616.txt">The PLAIN Simple Authentication and Security Layer (SASL) Mechanism</a>
-	
 	The PLAIN mechanism should not be used without adequate data security protection
 	as this mechanism affords no integrity or confidentiality protections itself.
+	
+	<a href="http://www.ietf.org/rfc/rfc4616.txt">The PLAIN Simple Authentication and Security Layer (SASL) Mechanism</a>
 */
 class PlainMechanism {
 	

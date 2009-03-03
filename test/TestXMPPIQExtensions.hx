@@ -441,7 +441,7 @@ class TestXMPPPrivacyLists extends haxe.unit.TestCase {
 		assertEquals( 666, list.items[3].order );
 	}
 	
-			/* TODO
+	/* TODO
 	public function testCreation() {
 			
 		var nlist = new xmpp.PrivacyList( "mylist" );
@@ -452,7 +452,7 @@ class TestXMPPPrivacyLists extends haxe.unit.TestCase {
 		var l = new xmpp.PrivacyLists();
 		l.list.push( nlist );
 	}
-		*/
+	*/
 	
 } 
 

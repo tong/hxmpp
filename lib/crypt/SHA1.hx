@@ -3,7 +3,9 @@ package crypt;
 
 class SHA1 {
 	
-	static inline var hex_chr = "0123456789abcdef";
+	#if !php
+	static var hex_chr = "0123456789abcdef";
+	#end
 	
 	/**
 		Take a string and return the hex representation of its SHA-1.
@@ -11,21 +13,21 @@ class SHA1 {
 	public static  function encode( s : String ) {
 		#if neko
 			untyped return new String( base_encode( make_sha1( s.__s ), hex_chr.__s ) );
-		#elseif flash
-			return __jsflash_encode( s );
-		#elseif js
-			return __jsflash_encode( s );
 		#elseif php
+			return untyped __call__( "sha1", s );
+		#else
 			return __jsflash_encode( s );
-		//#else error
 		#end
 	}
 	
+	
 	#if neko
+	
 	static var base_encode = neko.Lib.load( "std", "base_encode", 2 );
 	static var make_sha1 = neko.Lib.load( "sha1","make_sha1", 1 );
-	#else
 	
+	#elseif ( flash || js)
+
 	
 	static function __jsflash_encode( s : String ) : String {
 		

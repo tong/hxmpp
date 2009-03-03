@@ -1,24 +1,23 @@
 
 HXMPP - README
 ==============
-HXMPP is a implementation of the XMPP[05] protocol in the haXe[03] programming language.
+HXMPP is a haXe[03] library for creating clients and components based on the XMPP protocol.
 The library mainly consists of two parts/namspaces:
-* xmpp: creation and manipulation of xmpp data.
-* jabber: creation and handling of xmpp data streams between jabber entities.
+* xmpp: creation and manipulation of XMPP data.
+* jabber: creation and handling of XMPP data streams between jabber entities.
 
-For further information on jabber visit [04][05].
+Please visit [04][05] for further information on XMPP.
 
 
 
 XEPS SUPPORTED
 --------------
 # * 0004 DataForms
-### * 0009 XML-RPC
 * 0012 LastActivity
 ## * 0016 PrivacyLists
 # * 0030 ServiceDiscovery
 ### * 0045 MUChat
-#* 0054 VCardTemp
+* 0054 VCardTemp
 #* 0071 XHTML-IM
 * 0077 In-Band Registration
 * 0082 XMPP Date and Time Profiles
@@ -43,7 +42,7 @@ Run the hxml files in the main directory to build included demos, tests and util
 * JABBER_SOCKETBRIDGE   Use a socket bridge as stream connection (see: jabber.tool.SocketBridge)
 * XEP_0091   Activates backward compatibility with XEP-0091 when using jabber.DelayedDelivery. 
 
-# Neko
+# NEKO
 Copy the ndlls to your neko installation.
 * sha1.ndll is required for SHA1 encoding.
 * hxmpp_debug.ndll for colored xmpp debug bash output (linux only).
@@ -51,15 +50,14 @@ Copy the ndlls to your neko installation.
 # PHP
 ...
 
-# flash9+
+# FLASH9+
 ...
 
 # JS
-...
+See hxmpp/bin/samples/client.html for an JS usage example.
 
-# Actionscript3
-* Create your own HXMPP-SWC by editing/compiling the hxmpp/lib.hxml build file.
-* See hxmpp/samples/JabberClientDemo.as for an Actionscript3 usage example.
+# AS3
+See hxmpp/samples/JabberClientDemo.as for an ActionScript3 usage example.
 
 
 USAGE
@@ -82,7 +80,6 @@ To clone the latest development version:
 git clone git://83.64.208.21/hxmpp.git hxmpp
 
 
-
 LINKS
 -----
 [01] http://hxmpp.disktree.net
@@ -90,7 +87,4 @@ LINKS
 [03] http://haxe.org
 [04] http://jabber.org
 [05] http://xmpp.org
-[06] http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html
-[07] http://www.adobe.com/devnet/flashplayer/articles/socket_policy_files.html
-[08] http://blog.disktree.net/?p=41
-[09] http://blog.disktree.net/?p=45
+[06] http://code.google.com/p/hxmpp

@@ -18,6 +18,7 @@ class TestXMPP {
 		r.add( new TestMessagePacket() );
 		r.add( new TestPresencePacket() );
 		r.add( new TestIQPacket() );
+		r.add( new TestXMPPStreamError() );
 		
 		///// stuff
 		r.add( new TestXMPPError() );
@@ -40,7 +41,7 @@ class TestXMPP {
 		r.add( new TestXMPPPrivacyLists() );
 		r.add( new TestXMPPRegister() );
 		r.add( new TestXMPPRoster() );
-		r.add( new TestXMPPRPC() );
+	//	r.add( new TestXMPPRPC() );
 		r.add( new TestXMPPSoftwareVersion() );
 		r.add( new TestXMPPSoftwareVersion() );
 	

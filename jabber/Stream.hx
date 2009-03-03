@@ -78,10 +78,13 @@ class Stream {
 	function setConnection( c : StreamConnection ) : StreamConnection {
 		switch( status ) {
 			case open, pending :
+				//TODO throw 
 				close( true );
 			case closed :
-				if( cnx != null && cnx.connected ) cnx.disconnect(); 
-				cnx = c;
+				if( cnx != null && cnx.connected )
+					cnx.disconnect();
+				Reflect.setField( this, "cnx", c );
+				//cnx = c;
 				cnx.onConnect = connectHandler;
 				cnx.onDisconnect = disconnectHandler;
 				cnx.onData = processData;
@@ -236,7 +239,8 @@ class Stream {
 		#if XMPP_DEBUG
 		try {
 			var x = Xml.parse( d );
-			for( e in x.elements() ) trace( "<<< "+e, "xmpp-i" );
+			for( e in x.elements() )
+				trace( "<<< "+e, "xmpp-i" );
 		} catch( e : Dynamic ) {
 			trace( "<<< "+d, "xmpp-i" );
 		}

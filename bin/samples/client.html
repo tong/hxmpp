@@ -30,8 +30,8 @@ jabber.XMPPDebug.redirectTraces();
 
 var stream;
 
-
-function streamStatusChangeHandler(stream) {
+function streamStatusChangeHandler() {
+	console.info("SSStream status: %s",stream.status);
 	switch( stream.status ) {
 	case jabber.StreamStatus.open :
 		var auth = new jabber.client.NonSASLAuthentication(stream);

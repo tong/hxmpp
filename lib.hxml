@@ -2,9 +2,10 @@
 ##### HXMPP CLIENT JS
 -cp lib/
 -js bin/hxmpp.js
--D JABBER_LIBCLIENT
 -D JABBER_SOCKETBRIDGE
 -D JABBER_DEBUG
+-D XMPP_DEBUG
+jabber.Lib
 jabber.SocketConnection
 jabber.Chat
 jabber.ChatStateNotification
@@ -43,11 +44,24 @@ net.sasl.PlainMechanism
 #--no-traces
 
 
-#--next
+--next
 ##### HXMPP AS3
-#-cp lib/
-#-as3 bin/as3
-#jabber.Lib
-#-D JABBER_LIBCLIENT
-#-D JABBER_DEBUG
+-cp lib/
+-as3 bin/as3
+jabber.Lib
+jabber.SocketConnection
+jabber.Chat
+jabber.ChatStateNotification
+jabber.MessageListener
+jabber.ServiceDiscovery
+jabber.XMPPDebug
+jabber.client.Stream
+jabber.client.NonSASLAuthentication
+jabber.client.Roster
+jabber.client.VCardTemp
+jabber.client.SASLAuthentication
+net.sasl.AnonymousMechanism
+net.sasl.PlainMechanism
+-D JABBER_LIBCLIENT
+-D JABBER_DEBUG
 #--no-traces

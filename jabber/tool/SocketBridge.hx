@@ -12,20 +12,21 @@ private class Socket extends flash.net.Socket {
 	
 	public var id(default,null) : UInt;
 	
-	var keepAlive : net.util.KeepAlive;
-	
 	public function new( id : UInt ) {
 		
 		super();
 		this.id = id;
 		
+		/*
 		keepAlive = new net.util.KeepAlive( this );
 		addEventListener( Event.CONNECT, onConnect );
 		addEventListener( Event.CLOSE, onDisconnect );
 		addEventListener( IOErrorEvent.IO_ERROR, onDisconnect );
 		addEventListener( SecurityErrorEvent.SECURITY_ERROR, onDisconnect );
+	*/
 	}
 	
+	/*
 	function onConnect( e : Event ) {
 		keepAlive.start();
 	}
@@ -33,6 +34,7 @@ private class Socket extends flash.net.Socket {
 	function onDisconnect( e : Event ) {
 		keepAlive.stop();
 	}
+	*/
 }
 
 
@@ -71,6 +73,9 @@ class SocketBridge {
 	function createSocket() : Int {
 		var id = Lambda.count( sockets );
 		var s = new Socket( id );
+		//#if flash10
+		//s.timeout = 
+		//#end
 		s.addEventListener( Event.CONNECT, sockConnectHandler );
 		s.addEventListener( Event.CLOSE, sockDisconnectHandler );
 		s.addEventListener( IOErrorEvent.IO_ERROR, sockErrorHandler );

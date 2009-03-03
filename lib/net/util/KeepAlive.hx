@@ -2,39 +2,30 @@ package net.util;
 
 #if neko
 import neko.net.Socket;
-
-#elseif php
-import php.net.Socket;
-
-#elseif ( flash9 || flash10 )
+#elseif flash9
 import flash.net.Socket;
-
-// TODO
-#elseif JABBER_SOCKETBRIDGE
-import jabber.SocketConnection;
-
+#elseif js
+typedef Socket = {
+	function send( m : String ) : Void;
+}
 #end
 
 
+#if !php
+
 /**
-	neko, php, flash9+.
+	neko, flash9+, (js).
 	
 	Utility to "keep a socket connection alive".
-	(flash9 sockets automaticly close after 360 sec of inactivity)
 */
 class KeepAlive {
 	
-	public static inline var standardMessage = " ";
-	public static var defaultMessage = standardMessage;
-	public static var defaultTime = 60;
+	public static var defaultMessage = " ";
+	public static var defaultTime = 60000;
 	
-	/**
-		Ping interval in seconds.
-	*/
+	/** Ping interval in seconds. */
 	public var time(default,setTime) : Int;
-	/**
-		Ping message, usually " ".
-	*/
+	/** Ping message, usually " ". */
 	public var message(default,setMessage) : String;
 	public var active : Bool;
 	public var socket : Socket;
@@ -42,7 +33,7 @@ class KeepAlive {
 	
 	public function new( s : Socket, ?time : Int, ?message = " " ) {
 		this.socket = s;
-		this.time = if( time != null ) time else defaultTime;
+		this.time = ( time != null ) ? time : defaultTime;
 		this.message = message;
 		active = false;
 	}
@@ -55,7 +46,7 @@ class KeepAlive {
 	}
 	
 	function setMessage( m : String ) : String {
-		if( m == null ) return standardMessage;
+		if( m == null ) m = defaultMessage;
 		Reflect.setField( this, "message", m );
 		return m;
 	}
@@ -63,11 +54,13 @@ class KeepAlive {
 	
 	public function ping( ?msg : String ) {
 		if( msg == null ) msg = message;
-		#if ( neko || php )
+		#if neko
 		socket.write( msg );
 		#elseif ( flash9 || flash10 )
 		socket.writeUTFBytes( msg ); 
 		socket.flush();
+		#elseif js
+		socket.send( msg );
 		#end
 	}
 	
@@ -83,7 +76,10 @@ class KeepAlive {
 	
 	function interval() {
 		ping( message );
-		if( active ) util.Delay.run( interval, time );//start();
+		if( active )
+			util.Delay.run( interval, time );
 	}
-	
+
 }
+
+#end // !php

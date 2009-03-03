@@ -1,6 +1,6 @@
 
 # hxmpp doc
--cp ../core/
+-cp lib/
 -cp doc/
 
 ###########

@@ -14,7 +14,6 @@ class Register {
 	public var password : String;
 	public var email : String;
 	public var name	: String;
-	
 	/* TODO
 	public var nick : String;
 	public var first : String;
@@ -62,9 +61,9 @@ class Register {
 	
 	
 	public static function parse( x : Xml ) : xmpp.Register {
-		//TODO
 		var r = new xmpp.Register();
 		xmpp.Packet.reflectPacketNodes( x, r );
+		//TODO
 		/*
 		for( e in x.elements() ) {
 			var v : String = null;

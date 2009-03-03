@@ -1,11 +1,8 @@
 package jabber.client;
 
-import jabber.JID;
-import jabber.StreamConnection;
-
 
 /**
-	Base for Client-2-Server jabber streams.<br>
+	Base for client XMPP streams.<br>
 */
 class Stream extends jabber.Stream {
 	
@@ -13,9 +10,7 @@ class Stream extends jabber.Stream {
 	public static var defaultPort = STANDARD_PORT;
 	
 	
-	public function new( jid : JID, cnx : StreamConnection,
-						 version : Bool = true ) {
-		
+	public function new( jid : jabber.JID, cnx : jabber.StreamConnection, version : Bool = true ) {
 		super( cnx, jid );
 		this.version = version;
 	}
