@@ -48,7 +48,7 @@ class TestXMPP {
 	//	r.add( new TestXMPPMUC() );
 	//	r.add( new TestXMPPPubSub() );
 	//	r.add( new TestXMPPJingle() );
-		r.add( new TestXMPPFileTransfer() );
+	//	r.add( new TestXMPPFileTransfer() );
 		
 		///// packet filters
 		r.add( new TestXMPPPacketFilters() );
