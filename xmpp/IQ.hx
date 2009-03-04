@@ -35,20 +35,21 @@ class IQ extends Packet {
 		xmpp.Packet.parseAttributes( iq, x );
 		for( c in x.elements() ) {
 			switch( c.nodeName ) {
-				case "error" : 
-					//trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><"+c);
-					iq.errors.push( xmpp.Error.parse( c ) );
-				default : iq.properties.push( c );
+			case "error" : 
+				iq.errors.push( xmpp.Error.parse( c ) );
+			default :
+				iq.properties.push( c );
 			}
 		}
-		if( iq.properties.length > 0 ) iq.ext = new PlainPacket( iq.properties[0] );
+		if( iq.properties.length > 0 )
+			iq.ext = new PlainPacket( iq.properties[0] );
 		return iq;
 	}
 	
 	/**
 		Creates a '<query xmlns="namspace"/>' xml tag.
 	*/
-    public static inline function createQueryXml( ns : String ) : Xml {
+    public static function createQueryXml( ns : String ) : Xml {
 		var q = Xml.createElement( "query" );
 		q.set( "xmlns", ns );
 		return q;

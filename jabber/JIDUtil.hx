@@ -74,7 +74,7 @@ class JIDUtil {
 	
 	
 	/**
-     	Returns a String array with the parsed node, domain and resource.
+     	Returns a String array with parsed node, domain and resource.
     */
 	public static function getParts( jid : String ) : Array<String> {
 		var p : Array<String> = [ parseNode( jid ), parseDomain( jid ) ];

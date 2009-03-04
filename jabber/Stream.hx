@@ -34,7 +34,7 @@ class StreamFeatures {
 }
 
 /**
-	Abstract base for jabber streams.
+	Abstract base for XMPP streams.
 */
 class Stream {
 	
@@ -60,7 +60,7 @@ class Stream {
 	function new( cnx : StreamConnection, jid : jabber.JID ) {
 		
 		if( cnx == null )
-			throw "Missing cnx argument";
+			throw "No connection passed to stream";
 		
 		collectors = new List();
 		interceptors = new List();
@@ -95,9 +95,10 @@ class Stream {
 	
 	
 	/**
-		Returns a unique (base64 encoded) id for this stream.
+		Returns the next unique (base64 encoded) id for this stream.
 	*/
 	public function nextID() : String {
+		//TODO
 		return util.StringUtil.random64( 5 )+numPacketsSent;
 	}
 	
@@ -106,13 +107,12 @@ class Stream {
 	*/
 	public function open() : Bool {
 //		if( status == StreamStatus.open ) return false;
-		//if( cnx = null ) throw
 		if( !cnx.connected ) cnx.connect() else connectHandler();
 		return true;
 	}
 	
 	/**
-		Closes the outgoing xml stream.
+		Close the outgoing xml stream.
 	*/
 	public function close( disconnect = false ) : Bool {
 		if( status == StreamStatus.open ) {
@@ -128,24 +128,21 @@ class Stream {
 	}
 	
 	/**
-		Intercepts, sends and returns the given xmpp packet.
+		Intercept, send and return the given XMPP packet.
 	*/
 	public function sendPacket<T>( p : xmpp.Packet, intercept : Bool = true ) : T {
 		if( !cnx.connected /*|| status != StreamStatus.open*/ ) return null;
 		if( intercept ) for( i in interceptors ) i.interceptPacket( p );
-		if( sendData( p.toString() ) ) return cast p;
-		return null;
+		return ( sendData( p.toString() ) ) ? cast p : null;
 	}
 	
 	/**
-		Sends raw data.
+		Send raw data.
 	*/
-	public function sendData( d : String ) : Bool {
-		if( !cnx.connected || cnx.send( d ) == null ) return false;
+	public function sendData( t : String ) : Bool {
+		if( !cnx.connected || cnx.send( t ) == null ) return false;
 		numPacketsSent++;
-		#if XMPP_DEBUG
-		trace( d, "xmpp-o" );
-		#end
+		#if XMPP_DEBUG trace( t, "xmpp-o" ); #end
 		return true;
 	}
 	
@@ -172,14 +169,14 @@ class Stream {
 	}
 	
 	/**
-		Short for sending messages.
+		Sends message packets.
 	*/
 	public function sendMessage( to : String, body : String, ?subject : String, ?type : xmpp.MessageType, ?thread : String, ?from : String ) : xmpp.Message {
 		return sendPacket( new xmpp.Message( to, body, subject, type, thread, from ) );
 	}
 	
 	/**
-		Short for sending presences.
+		Sends presence packet.
 	*/
 	public function sendPresence( ?type : xmpp.PresenceType, ?show : String, ?status : String, ?priority : Int ) : xmpp.Presence {
 		return sendPacket( new xmpp.Presence( type, show, status, priority ) );
@@ -230,30 +227,31 @@ class Stream {
 		interceptors = new List();
 	}
 	*/
-
-
-	function processData( d : String ) {
+	
+	/**
+	*/
+	public function processData( t : String ) {
 		// ignore keepalive
-		if( cache == null && d == " " )
+		if( cache == null && t == " " )
 			return;
 		#if XMPP_DEBUG
 		try {
-			var x = Xml.parse( d );
+			var x = Xml.parse( t );
 			for( e in x.elements() )
 				trace( "<<< "+e, "xmpp-i" );
 		} catch( e : Dynamic ) {
-			trace( "<<< "+d, "xmpp-i" );
+			trace( "<<< "+t, "xmpp-i" );
 		}
 		#end
 		
-		if( xmpp.Stream.eregStreamClose.match( d ) ) {
+		if( xmpp.Stream.eregStreamClose.match( t ) ) {
 			close( true );
 			return;
 		}
-		if( xmpp.Stream.eregStreamError.match( d ) ) {
+		if( xmpp.Stream.eregStreamError.match( t ) ) {
 			var err : xmpp.StreamError = null;
 			try {
-				err = xmpp.StreamError.parse( Xml.parse( d ) );
+				err = xmpp.StreamError.parse( Xml.parse( t ) );
 			} catch( e : Dynamic ) {
 				onError( "Invalid stream:error" );
 				close();
@@ -268,21 +266,21 @@ class Stream {
 		case closed :
 			return;
 		case pending :
-			//#if XMPP_DEBUG trace( d, "xmpp-i" ); #end
-			processStreamInit( XmlUtil.removeXmlHeader( d ) );
+			//#if XMPP_DEBUG trace( t, "xmpp-i" ); #end
+			processStreamInit( XmlUtil.removeXmlHeader( t ) );
 		case open :
 			var x : Xml = null;
 			try {
-				x = Xml.parse( d );
+				x = Xml.parse( t );
 				if( Std.string( x.firstChild().nodeType ) == "pcdata" )
 					throw new error.Exception( "Invalid xmpp" );
 			} catch( e : Dynamic ) {
 				if( cache == null ) {
 					cache = new StringBuf();
-					cache.add( d );
+					cache.add( t );
 					return;
 				} else {
-					cache.add( d );
+					cache.add( t );
 					try {
 						x = Xml.parse( cache.toString() );
 						if( Std.string( x.firstChild().nodeType ) == "pcdata" )
@@ -292,53 +290,66 @@ class Stream {
 					}
 				}
 			}
-			collectPackets( x );
+			collectXml( x );
 		}
 	}
 	
-	function processStreamInit( d : String ) {
-		///// override me /////
-	}
-	
-	function collectPackets( d : Xml ) : Array<xmpp.Packet> {
+	/**
+	*/
+	public function collectXml( x : Xml ) : Array<xmpp.Packet> {
 		var packets = new Array<xmpp.Packet>();
-		for( x in d.elements() ) {
-			var p = xmpp.Packet.parse( x );
+		for( xml in x.elements() ) {
+			var p = xmpp.Packet.parse( xml );
+			handlePacket( p );
 			packets.push( p );
-			var collected = false;
-			for( c in collectors ) {
-				//if( c == null ) collectors.remove( c );
-				if( c.accept( p ) ) {
-					collected = true;
-					//if( c.deliver == null ) collectors.remove( c );
-					c.deliver( p );
-					if( c.block )
-						break;
-					if( !c.permanent ) {
-						collectors.remove( c );
-						c = null;
-					}					
-				}
-			}
-			if( !collected ) {
-				#if JABBER_DEBUG
-				trace( "XMPP packet not processed", "warn" );
-				#end
-				if( p._type == xmpp.PacketType.iq ) {
-					var r = new xmpp.IQ( xmpp.IQType.error, p.id, p.from, p.to );
-					r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, 501, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );
-					sendPacket( r );
-				}
-			}
 		}
 		return packets;
 	}
 	
+	/**
+	*/
+	public function handlePacket( p : xmpp.Packet ) : Bool {
+		var collected = false;
+		for( c in collectors ) {
+			//if( c == null ) collectors.remove( c );
+			if( c.accept( p ) ) {
+				collected = true;
+				//if( c.deliver == null ) collectors.remove( c );
+				c.deliver( p );
+				if( !c.permanent ) {
+					collectors.remove( c );
+					//c = null;
+				}					
+				if( c.block ) break;
+			}
+		}
+		if( !collected ) {
+			#if JABBER_DEBUG
+			trace( "XMPP packet not processed", "warn" );
+			#end
+			if( p._type == xmpp.PacketType.iq ) {
+				var r = new xmpp.IQ( xmpp.IQType.error, p.id, p.from, p.to );
+				r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, 501, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );
+				sendPacket( r );
+			}
+			return false;
+		}
+		return true;
+	}
+	
+	
+	/*
 	function parseStreamFeatures( x : Xml ) {
 		for( e in x.elements() ) {
 			server.features.set( e.nodeName, e );
 		}
 	}
+	*/
+	
+	function processStreamInit( d : String ) {
+		///// override me /////
+	}
+	
 	
 	function connectHandler() {
 		///// override me /////

@@ -26,14 +26,14 @@ class Roster {
 	public static var defaultSubscriptionMode = RosterSubscriptionMode.acceptAll;
 	
 	public dynamic function onLoad() : Void;
-	public dynamic function onAdd( i : Array<Item> ) : Void;
-	public dynamic function onRemove( i : Array<Item> ) : Void;
-	public dynamic function onUpdate( i : Array<Item> ) : Void;
-	public dynamic function onPresence( i : Item, p: xmpp.Presence ) : Void;
-	public dynamic function onResourcePresence( resource : String, p: xmpp.Presence  ) : Void;
-	public dynamic function onSubscribed( i : Item ) : Void;
-	public dynamic function onUnsubscribed( i : Item ) : Void;
-	public dynamic function onSubscriptionRequest( i : Item ) : Void;
+	public dynamic function onAdd( items : Array<Item> ) : Void;
+	public dynamic function onRemove( items : Array<Item> ) : Void;
+	public dynamic function onUpdate( items : Array<Item> ) : Void;
+	public dynamic function onPresence( item : Item, p: xmpp.Presence ) : Void;
+	public dynamic function onResourcePresence( resource : String, p : xmpp.Presence  ) : Void;
+	public dynamic function onSubscribed( item : Item ) : Void;
+	public dynamic function onUnsubscribed( item : Item ) : Void;
+	public dynamic function onSubscriptionRequest( item : Item ) : Void;
 	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;

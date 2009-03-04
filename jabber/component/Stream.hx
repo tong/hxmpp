@@ -15,6 +15,8 @@ class Stream extends jabber.Stream {
 	/** Dispatched on authentication success */
 	public dynamic function onConnect( success : Bool ) : Void;
 	
+	/** */
+	public var host(default,null) : String;
 	/** This components subdomain */
 	public var subdomain(default,null) : String;
 	/** Shared secret used to identify legacy components*/
@@ -34,6 +36,7 @@ class Stream extends jabber.Stream {
 		if( secret == null ) throw "Invalid secret (null)";
 
 		super( cnx, null );
+		this.host = host;
 		this.subdomain = subdomain;
 		this.secret = secret;
 		
@@ -53,7 +56,7 @@ class Stream extends jabber.Stream {
 		switch( status ) {
 		case pending : return;
 		case closed : return;
-		case open : collectPackets( Xml.parse( data ) );
+		case open : collectXml( Xml.parse( data ) );
 		}
 	}
 	

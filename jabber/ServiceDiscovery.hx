@@ -32,7 +32,7 @@ class ServiceDiscovery {
 	public function discoverInfo( jid : String ) {
 		var iq = new xmpp.IQ( xmpp.IQType.get, null, jid );
 		iq.ext = new xmpp.disco.Info();
-		stream.sendIQ( iq, handleInfoRequest, false );
+		stream.sendIQ( iq, handleInfoResponse, false );
 	}
 	
 	/**
@@ -41,11 +41,11 @@ class ServiceDiscovery {
 	public function discoverItems( jid : String, ?node : String ) {
 		var iq = new xmpp.IQ( xmpp.IQType.get, null, jid );
 		iq.ext = new xmpp.disco.Items( node );
-		stream.sendIQ( iq, handleItemsRequest, false );
+		stream.sendIQ( iq, handleItemsResponse, false );
 	}
 	
 	
-	function handleInfoRequest( iq : xmpp.IQ ) {
+	function handleInfoResponse( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 			case result : onInfo( this, iq.from, xmpp.disco.Info.parse( iq.ext.toXml() ) );
 			case error : onError( new jabber.XMPPError( this, iq ) );
@@ -53,7 +53,7 @@ class ServiceDiscovery {
 		}
 	}
 	
-	function handleItemsRequest( iq : xmpp.IQ ) {
+	function handleItemsResponse( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 			case result : onItems( this, iq.from, xmpp.disco.Items.parse( iq.ext.toXml() ) );
 			case error : onError( new jabber.XMPPError( this, iq ) );

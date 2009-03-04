@@ -36,8 +36,11 @@ class Stream extends jabber.Stream {
 		var sfi =  d.indexOf( "<stream:features>" );
 		var sf = d.substr( d.indexOf( "<stream:features>" ) );
 		if( sfi != -1 ) {
-			//TODO
-			parseStreamFeatures( Xml.parse( sf ).firstElement() );
+			// get stream features
+			var fx = Xml.parse( sf ).firstElement();
+			for( e in fx.elements() )
+				server.features.set( e.nodeName, e );
+			// report open
 			if( status != jabber.StreamStatus.open ) {
 				status = jabber.StreamStatus.open;
 				onOpen();

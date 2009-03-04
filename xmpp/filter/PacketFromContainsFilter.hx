@@ -2,20 +2,27 @@ package xmpp.filter;
 
 
 /**
-	Filters xmpp packets where the from attribute contains the given string.
+	Filters XMPP packets where the from attribute contains the given string.
 */
 class PacketFromContainsFilter {
 	
-	public var contained : String;
+	public var contains(default,setContains) : String;
 	
-	public function new( contained : String ) {
-		this.contained = contained;
+	var reg : EReg;
+	
+	public function new( contains : String ) {
+		setContains( contains );
+	}
+	
+	function setContains( t : String ) : String {
+		reg = new EReg( t, "" );
+		return this.contains = t;
 	}
 	
 	public function accept( p : xmpp.Packet ) : Bool {
 		if( p.from == null ) return false;
 		try {
-			return new EReg( contained, "" ).match( p.from );
+			return reg.match( p.from );
 		} catch( e : Dynamic ) {
 			return false;
 		}
