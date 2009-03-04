@@ -48,6 +48,15 @@ class Caps {
 		return new Caps( x.get( "hash" ), x.get( "node" ), x.get( "ver" ), x.get( "ext" ) );
 	}
 	
+	/*
+	public static function fromPresence( p : xmpp.Presence ) : xmpp.Caps {
+		for( prop in p.properties )
+			if( prop.nodeName == "c" && prop.get( "xmlns" ) == XMLNS )
+				return parse( prop );
+	}
+	*/
+	
+	
 	/**
 		<a href="http://xmpp.org/extensions/xep-0115.html#ver">Verification String</a><br/>
 	*/
@@ -96,7 +105,7 @@ class Caps {
 			else if( a.type < b.type ) -1;
 			else {
 				//TODO lang
-				return 0;
+				0;
 			}
 		}
 	}

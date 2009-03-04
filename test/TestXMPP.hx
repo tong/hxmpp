@@ -1,6 +1,5 @@
 
 import TestXMPPPacket;
-import TestXMPPIQExtensions;
 
 
 class TestXMPP {
