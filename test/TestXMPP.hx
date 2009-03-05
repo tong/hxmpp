@@ -35,6 +35,7 @@ class TestXMPP {
 		r.add( new TestXMPPDelayedDelivery() );
 		r.add( new TestXMPPDisco() );
 	//	r.add( new TestXMPPEntityTime() );
+		r.add( new TestXMPPEntityCapabilities() );
 		r.add( new TestXMPPLastActivity() );
 		r.add( new TestXMPPMood() );
 		r.add( new TestXMPPPrivacyLists() );

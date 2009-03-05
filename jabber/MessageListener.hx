@@ -1,6 +1,6 @@
 package jabber;
 
-import jabber.core.PacketCollector;
+import jabber.stream.PacketCollector;
 
 
 /**

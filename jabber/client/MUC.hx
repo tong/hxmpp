@@ -1,8 +1,8 @@
 package jabber.client;
 
 import jabber.PresenceManager;
-import jabber.core.PacketCollector;
-import jabber.core.PacketCollector;
+import jabber.stream.PacketCollector;
+import jabber.stream.PacketCollector;
 import xmpp.muc.Affiliation;
 import xmpp.muc.Role;
 import xmpp.Message;
@@ -38,8 +38,8 @@ class MUC {
 	
 	public dynamic function onJoin( muc : MUC ) {}
 	public dynamic function onLeave( muc : MUC ) : Void;
-	//TODO public dynamic function onRoomMessage( muc : MUC, m : xmpp.Message ) : Void;
 	public dynamic function onMessage( muc : MUC, o : MUCOccupant, m : xmpp.Message ) : Void;
+	//TODO public dynamic function onRoomMessage( muc : MUC, m : xmpp.Message ) : Void;
 	public dynamic function onPresence( muc : MUC, o : MUCOccupant ) {}
 	public dynamic function onSubject( muc : MUC ) : Void;
 	
@@ -97,7 +97,8 @@ class MUC {
 	*/
 	public function join( nick : String, ?password : String ) : Bool {
 		if( joined ) return false;
-		if( nick == null || nick.length == 0 ) throw new error.Exception( "Nickname must be not null or blank" );
+		if( nick == null || nick.length == 0 )
+			throw new error.Exception( "Nickname must be not null or blank" );
 		stream.addCollector( col_presence );
 		stream.addCollector( col_message );
 		this.nick = nick;
@@ -168,9 +169,9 @@ class MUC {
 		var me = this;
 		stream.sendIQ( iq, function(r) {
 			switch( r.type ) {
-				case result : me.onKick( me, nick );
-				case error : me.onError( new jabber.XMPPError( me, r ) );
-				default : // #
+			case result : me.onKick( me, nick );
+			case error : me.onError( new jabber.XMPPError( me, r ) );
+			default : // #
 			}
 		} );
 		return true;

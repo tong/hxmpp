@@ -54,7 +54,7 @@ class Ping {
 	public function send( ?to : String ) {
 		var iq = new xmpp.IQ( null, null, to );
 		iq.ext = new xmpp.Ping();
-		stream.sendIQ( iq, handlePong, false, new jabber.core.PacketTimeout( [handleTimeout], interval*1000 ) );
+		stream.sendIQ( iq, handlePong, false, new jabber.stream.PacketTimeout( [handleTimeout], interval*1000 ) );
 	}
 	
 	
@@ -75,7 +75,7 @@ class Ping {
 		}
 	}
 	
-	function handleTimeout( c : jabber.core.TPacketCollector ) {
+	function handleTimeout( c : jabber.stream.TPacketCollector ) {
 		onTimeout( stream, c.packet.from );
 	}
 	

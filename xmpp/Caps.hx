@@ -1,6 +1,9 @@
 package xmpp;
 
 
+/**
+	<a href="http://xmpp.org/extensions/xep-0115.html">XEP-0085: Entity Capabilities</a><br/>
+*/
 class Caps {
 	
 	public static var XMLNS = "http://jabber.org/protocol/caps";
@@ -44,17 +47,20 @@ class Caps {
 	}
 	
 	
+	/**
+	*/
 	public static inline function parse( x : Xml ) : xmpp.Caps {
 		return new Caps( x.get( "hash" ), x.get( "node" ), x.get( "ver" ), x.get( "ext" ) );
 	}
 	
-	/*
+	/**
+	*/
 	public static function fromPresence( p : xmpp.Presence ) : xmpp.Caps {
 		for( prop in p.properties )
 			if( prop.nodeName == "c" && prop.get( "xmlns" ) == XMLNS )
 				return parse( prop );
+		return null;
 	}
-	*/
 	
 	
 	/**
@@ -63,6 +69,7 @@ class Caps {
 	public static function createVerfificationString( identities : Iterable<xmpp.disco.Identity>, features : Iterable<String>,
 													  ?dataform : xmpp.DataForm ) : String {
 		var b = new StringBuf();
+		
 		// sort/add identities
 		var _i = Lambda.array( identities );
 		_i.sort( sortIdentities );
@@ -75,11 +82,13 @@ class Caps {
 			b.add( i.name );
 			b.add( "<" );
 		}
+		
 		// sort/add features
 		var _f = Lambda.array( features );
 		_f.sort( util.StringUtil.sort );
 		b.add( _f.join( "<" ) );
 		b.add( "<" );
+		
 		// sort/add dataform
 		if( dataform != null ) {
 			//TODO xmpp.X FORM_TYPE
@@ -104,7 +113,7 @@ class Caps {
 			if( a.type > b.type ) 1;
 			else if( a.type < b.type ) -1;
 			else {
-				//TODO lang
+				//TODO lang ?
 				0;
 			}
 		}

@@ -1,4 +1,4 @@
-package jabber.core;
+package jabber.stream;
 
 
 /**

@@ -26,7 +26,7 @@ class SoftwareVersion {
 		this.version = version;
 		this.os = ( os != null ) ? os : util.SystemUtil.systemName();
 		
-		stream.addCollector( new jabber.core.PacketCollector( [ cast new xmpp.filter.IQFilter( xmpp.SoftwareVersion.XMLNS, null, xmpp.IQType.get ) ], handleQuery, true ) );
+		stream.addCollector( new jabber.stream.PacketCollector( [ cast new xmpp.filter.IQFilter( xmpp.SoftwareVersion.XMLNS, null, xmpp.IQType.get ) ], handleQuery, true ) );
 	}
 	
 	

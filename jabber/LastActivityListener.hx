@@ -15,7 +15,7 @@ class LastActivityListener {
 			throw "Last activity already added";
 		this.stream = stream;
 		time = 0;
-		stream.addCollector( new jabber.core.PacketCollector( [ cast new xmpp.filter.IQFilter( xmpp.LastActivity.XMLNS, "query", xmpp.IQType.get ) ], handleRequest, true ) );
+		stream.addCollector( new jabber.stream.PacketCollector( [ cast new xmpp.filter.IQFilter( xmpp.LastActivity.XMLNS, "query", xmpp.IQType.get ) ], handleRequest, true ) );
 	}
 	
 	function handleRequest( iq : xmpp.IQ ) {

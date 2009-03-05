@@ -17,7 +17,7 @@ class Pong {
 		if( !stream.features.add( xmpp.Ping.XMLNS ) )
 			throw "Ping listener feature already added";
 		this.stream = stream;
-		stream.addCollector(  new jabber.core.PacketCollector( [ cast new xmpp.filter.IQFilter( xmpp.Ping.XMLNS, null, xmpp.IQType.get ) ], handlePing, true ) );
+		stream.addCollector(  new jabber.stream.PacketCollector( [ cast new xmpp.filter.IQFilter( xmpp.Ping.XMLNS, null, xmpp.IQType.get ) ], handlePing, true ) );
 	}
 	
 	function handlePing( iq : xmpp.IQ ) {

@@ -56,9 +56,9 @@ class JabberClientDemo {
 		var roster = new jabber.client.Roster( stream );
 		roster.presence.change( null, "online" );
 		roster.load();
-		roster.onLoad = function(r) {
+		roster.onLoad = function() {
 			trace( "Roster loaded:" );
-			for( item in r.items ) {
+			for( item in roster.items ) {
 				trace( "\t"+item.jid );
 			}
 		};

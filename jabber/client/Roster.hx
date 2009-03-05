@@ -1,7 +1,7 @@
 package jabber.client;
 
 import jabber.PresenceManager;
-import jabber.core.PacketCollector;
+import jabber.stream.PacketCollector;
 import xmpp.IQType;
 import xmpp.roster.Item;
 import xmpp.roster.AskType;

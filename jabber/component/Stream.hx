@@ -66,7 +66,7 @@ class Stream extends jabber.Stream {
 		id = dx.get( "id" );
 		status = jabber.StreamStatus.open;
 		onOpen();
-		collectors.add( new  jabber.core.PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], readyHandler, false ) );
+		collectors.add( new  jabber.stream.PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], readyHandler, false ) );
 		var handshake = Xml.createElement( "handshake" );
 		handshake.addChild( Xml.createPCData( crypt.SHA1.encode( id+secret ) ) );
 		sendData( handshake.toString() );

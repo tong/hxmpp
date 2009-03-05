@@ -1,10 +1,10 @@
 package jabber;
 
 import jabber.Stream;
-import jabber.core.TPacketCollector;
-import jabber.core.TPacketInterceptor;
-import jabber.core.PacketCollector;
-import jabber.core.PacketTimeout;
+import jabber.stream.TPacketCollector;
+import jabber.stream.TPacketInterceptor;
+import jabber.stream.PacketCollector;
+import jabber.stream.PacketTimeout;
 import xmpp.filter.PacketIDFilter;
 import util.XmlUtil;
 
