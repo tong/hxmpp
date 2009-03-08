@@ -32,6 +32,8 @@ class Register {
 	public var registered : Bool;
 	//public var form : xmpp.DataForm;
 	*/
+	
+	/** */
 	public var remove : Bool;
 	
 	
@@ -40,24 +42,27 @@ class Register {
 		this.password = password;
 		this.email = email;
 		this.name = name;
+		remove = false;
 	}
 
 
 	public function toXml() : Xml {
-		var q = xmpp.IQ.createQueryXml( XMLNS );
+		var x = xmpp.IQ.createQueryXml( XMLNS );
 		if( remove ) {
-			q.addChild( Xml.createElement( "remove" ) );
+			x.addChild( Xml.createElement( "remove" ) );
 		} else {
-			if( username != null ) q.addChild( XmlUtil.createElement( "username", username ) );
-			if( password != null ) q.addChild( XmlUtil.createElement( "password", password ) );
-			if( email != null ) q.addChild( XmlUtil.createElement( "email", email ) );
-			if( name != null ) q.addChild( XmlUtil.createElement( "name", name ) );
+			if( username != null ) x.addChild( XmlUtil.createElement( "username", username ) );
+			if( password != null ) x.addChild( XmlUtil.createElement( "password", password ) );
+			if( email != null ) x.addChild( XmlUtil.createElement( "email", email ) );
+			if( name != null ) x.addChild( XmlUtil.createElement( "name", name ) );
 			//...
 		}
-		return q;
+		return x;
 	}
 	
-	public inline function toString() : String { return toXml().toString(); }
+	public inline function toString() : String {
+		return toXml().toString();
+	}
 	
 	
 	public static function parse( x : Xml ) : xmpp.Register {

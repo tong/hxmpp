@@ -41,16 +41,16 @@ class Presence extends Packet {
 	}
 	
 	
-	public static function parse( x : Xml ) : Presence {
+	public static function parse( x : Xml ) : xmpp.Presence {
 		var p = new Presence( x.get( "type" ) );
-		xmpp.Packet.parsePacketBase( p, x );
+		xmpp.Packet.parseAttributes( p, x );
 		if( x.exists( "type" ) ) p.type = Type.createEnum( PresenceType, x.get( "type" ) );
 		for( c in x.elements() ) {
 			switch( c.nodeName ) {
-				case "show" : p.show = c.firstChild().nodeValue;
-				case "status" : p.status = c.firstChild().nodeValue;
-				case "priority" : p.priority = Std.parseInt( c.firstChild().nodeValue );
-				default : p.properties.push( c );
+			case "show" : p.show = c.firstChild().nodeValue;
+			case "status" : p.status = c.firstChild().nodeValue;
+			case "priority" : p.priority = Std.parseInt( c.firstChild().nodeValue );
+			default : p.properties.push( c );
 			}
 		}
 		return p;

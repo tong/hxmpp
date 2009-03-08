@@ -11,7 +11,8 @@ class Item {
 	public var reason : String;
 	public var continue_ : String;
 	
-	public function new() {}
+	public function new() {
+	}
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "item" );

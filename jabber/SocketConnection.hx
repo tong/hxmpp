@@ -26,7 +26,7 @@ private typedef Buffer = {
 #end
 
 
-class SocketConnection extends jabber.stream.ConnectionBase {
+class SocketConnection extends jabber.stream.Connection {
 	
 	public var socket(default,null) : Socket;
 	public var host(default,null) : String;

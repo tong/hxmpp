@@ -16,51 +16,35 @@ class Item {
 		this.subscription = subscription;
 		this.name = name;
 		this.askType = askType;
-		this.groups = groups != null ? groups : new List();
+		this.groups = ( groups != null ) ? groups : new List();
 	}
 	
 	
 	public function toXml() : Xml {
-		if( jid == null ) throw new error.Exception( "Invalid roster item" );
+		if( jid == null )
+			throw new error.Exception( "Invalid roster item" );
 		var x = Xml.createElement( "item" );
 		x.set( "jid", jid );
 		if( name != null ) x.set( "name", name );
 		if( subscription != null ) x.set( "subscription", Type.enumConstructor( subscription ) );
 		if( askType != null ) x.set( "ask", Type.enumConstructor( askType ) );
-		for( group in groups ) {
+		for( group in groups )
 			x.addChild( util.XmlUtil.createElement( "group", group ) );
-		}
 		return x;
 	}
 	
 	public inline function toString() : String {
 		return toXml().toString();
 	}
-	
-	/*
-	public static function parse( x : Xml )
-		: { jid : String, subscription : Subscription, name : String, askType : AskType, groups : List<String> }
-	{
-		var groups = new List<String>();
-		for( g in x.elementsNamed( "group" ) ) {
-			groups.add( g.firstChild().nodeValue );
-		}
-		return { jid : x.get( "jid" ),
-				 subscription : Type.createEnum( Subscription, x.get( "subscription" ) ),
-				 name : x.get( "name" ),
-				 askType : if( x.exists( "ask" ) ) Type.createEnum( AskType, x.get( "ask" ) ) else null,
-				 groups : groups };
-	}
-	*/
+
 		
 	public static function parse( x : Xml ) : xmpp.roster.Item {
 		var i = new Item( x.get( "jid" ) );
 		i.subscription = Type.createEnum( Subscription, x.get( "subscription" ) );
 		i.name = x.get( "name" );
 		if( x.exists( "ask" ) ) i.askType = Type.createEnum( AskType, x.get( "ask" ) );
-		for( g in x.elementsNamed( "group" ) ) {
+		for( g in x.elementsNamed( "group" ) )
 			i.groups.add( g.firstChild().nodeValue );
-		}
 		return i;
 	}
 	

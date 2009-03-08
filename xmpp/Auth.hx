@@ -4,7 +4,7 @@ import util.XmlUtil;
 
 
 /**
-	IQ extension for account authenticating.
+	IQ extension used for account authentication.
 */
 class Auth {
 	
@@ -33,13 +33,15 @@ class Auth {
 		return x;
 	}
 	
-	public inline function toString() : String { return toXml().toString(); }
+	public inline function toString() : String {
+		return toXml().toString();
+	}
 	
 	
 	public static function parse( x : Xml ) : xmpp.Auth {
 		var a = new xmpp.Auth();
 		xmpp.Packet.reflectPacketNodes( x, a );
-		/*
+		/* TODO
 		for( e in x.elements() ) {
 			var v : String = null;
 			try { v = e.firstChild().nodeValue; } catch( e : Dynamic ) {}

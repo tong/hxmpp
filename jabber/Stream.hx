@@ -11,8 +11,12 @@ import util.XmlUtil;
 
 typedef Server = {
 	//var domain : String;
-	var features(default,null) : Hash<Xml>;
+	//var allowsRegister : Bool;
+	//var sasl : Bool;
+	//
+	var features : Hash<Xml>;
 }
+
 
 class StreamFeatures {
 	
@@ -32,6 +36,7 @@ class StreamFeatures {
 		return true;
 	}
 }
+
 
 /**
 	Abstract base for XMPP streams.
@@ -328,9 +333,12 @@ class Stream {
 			trace( "XMPP packet not processed", "warn" );
 			#end
 			if( p._type == xmpp.PacketType.iq ) {
-				var r = new xmpp.IQ( xmpp.IQType.error, p.id, p.from, p.to );
-				r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, 501, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );
-				sendPacket( r );
+				var q : xmpp.IQ = cast p;
+				if( q.type != xmpp.IQType.error ) {
+					var r = new xmpp.IQ( xmpp.IQType.error, p.id, p.from, p.to );
+					r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, 501, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );
+					sendPacket( r );
+				}
 			}
 			return false;
 		}

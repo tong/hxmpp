@@ -32,7 +32,9 @@ class Error {
 		return x;
 	}
 	
-	public inline function toString() : String { return toXml().toString(); }
+	public inline function toString() : String {
+		return toXml().toString();
+	}
 	
 	
 	/**

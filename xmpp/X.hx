@@ -3,10 +3,12 @@ package xmpp;
 
 class X {
 	
-	public static function create( xmlns : String, ?child : Xml ) : Xml {
+	public static function create( xmlns : String, ?childs : Iterable<Xml> ) : Xml {
 		var x = Xml.createElement( "x" );
 		x.set( "xmlns", xmlns );
-		if( child != null ) x.addChild( child );
+		if( childs != null ) 
+			for( c in childs )
+				x.addChild( c );
 		return x;
 	}
 	

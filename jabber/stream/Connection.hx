@@ -6,7 +6,7 @@ import jabber.StreamConnection;
 /**
 	Abstract base for jabber.StreamConnection.
 */
-class ConnectionBase {
+class Connection {
 
 	public var onConnect : Void->Void;
 	public var onDisconnect : Void->Void;

@@ -9,7 +9,9 @@ class Status {
 	
 	public var code : Int;
 	
-	public function new( code : Int ) { this.code = code; }
+	public function new( code : Int ) {
+		this.code = code;
+	}
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "status" );

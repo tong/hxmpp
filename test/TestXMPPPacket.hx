@@ -12,7 +12,7 @@ class TestXMPPPacket {}
 
 class TestMessagePacket extends haxe.unit.TestCase   {
 	
-	public function testCreation() {
+	public function testBuild() {
 		var m = new xmpp.Message();
 		assertEquals( m.toString(), '<message type="normal"/>' );
 		m.type = xmpp.MessageType.chat;
@@ -26,7 +26,7 @@ class TestMessagePacket extends haxe.unit.TestCase   {
 	//TODO
 	}
 
-	public function testParsing() {
+	public function testParse() {
 		/*
 		var src = Xml.parse( '
 			<message type="chat" to="tong@igniterealtime.org" id="ab01a" >
@@ -34,7 +34,7 @@ class TestMessagePacket extends haxe.unit.TestCase   {
 				<active xmlns="http://jabber.org/protocol/chatstates"/>
 			</message>' ).firstElement();
 		
-		var m = cast xmpp.Packet.parse( src );
+		var m : Message = cast xmpp.Packet.parse( src );
 		assertEquals( m.type, MessageType.chat );
 		assertEquals( m.to, "tong@igniterealtime.org" );
 		assertEquals( m.id, "ab01a" );
@@ -44,14 +44,14 @@ class TestMessagePacket extends haxe.unit.TestCase   {
 		var x = Xml.parse( '
 			<message to="hxmpp@disktree">
 				<body>Wow, I&apos;m green with envy!</body>
-					<html xmlns="http://jabber.org/protocol/xhtml-im">
-						<body xmlns="http://www.w3.org/1999/xhtml">
-							<p style="font-size:large">
-								<em>Wow</em>, I&apos;m <span style="color:green">green</span>
-								with <strong>envy</strong>!
-							</p>
-						</body>
-					</html>
+				<html xmlns="http://jabber.org/protocol/xhtml-im">
+					<body xmlns="http://www.w3.org/1999/xhtml">
+						<p style="font-size:large">
+							<em>Wow</em>, I&apos;m <span style="color:green">green</span>
+							with <strong>envy</strong>!
+						</p>
+					</body>
+				</html>
 			</message>' ).firstElement();
 		
 		var m : Message = cast xmpp.Packet.parse( x );
@@ -65,23 +65,27 @@ class TestMessagePacket extends haxe.unit.TestCase   {
 
 class TestPresencePacket extends haxe.unit.TestCase   {
 	
-	public function testCreation() {
+	public function testBuild() {
 		
 		var p = new xmpp.Presence();
 		
 		assertEquals( p.toString(), '<presence/>' );
+		
 		p.type = xmpp.PresenceType.subscribe;
 		assertEquals( p.toString(), '<presence type="subscribe"/>' );
+		
 		p.show = "dnd";
 		assertEquals( '<presence type="subscribe"><show>dnd</show></presence>', p.toString() );
+		
 		p.status = "be right back";
 		assertEquals( '<presence type="subscribe"><show>dnd</show><status>be right back</status></presence>', p.toString() );
+		
 		p.priority = 5;
 		assertEquals( '<presence type="subscribe"><show>dnd</show><status>be right back</status><priority>5</priority></presence>', p.toString() );
 		
 	}
 	
-	public function testParsing() {
+	public function testParse() {
 		
 		var src = Xml.parse( '
 			<presence>
@@ -102,14 +106,14 @@ class TestPresencePacket extends haxe.unit.TestCase   {
 
 class TestIQPacket extends haxe.unit.TestCase   {
 	
-	public function testCreation() {
+	public function testBuild() {
 		var iq = new xmpp.IQ( null, "123" );
 		assertEquals( iq.type, IQType.get );
 		assertEquals( iq.id, "123" );
 		//assertEquals( iq.toString(), '<iq type="get" id="123"/>' );
 	}
 
-	public function testParsing() {
+	public function testParse() {
 		
 		var src = Xml.parse( '
 			<iq type="get" to="jabber.spektral.at" id="ab08a" >
@@ -130,7 +134,7 @@ class TestIQPacket extends haxe.unit.TestCase   {
 
 class TestXMPPError extends haxe.unit.TestCase {
 	
-	public function testParsing() {
+	public function testParse() {
 		var e = xmpp.Error.parse( Xml.parse( '<error type="cancel"><conflict xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>' ).firstElement() );
 		assertEquals( e.type, xmpp.ErrorType.cancel );
 		assertEquals( e.name, "conflict" );
@@ -141,7 +145,7 @@ class TestXMPPError extends haxe.unit.TestCase {
 
 class TestXMPPDate extends haxe.unit.TestCase {
 	
-	public function testParsing() {
+	public function testParse() {
 		
 		var now = "2008-11-01";
 		var formatted = xmpp.Date.format( now );
@@ -164,15 +168,16 @@ class TestXMPPDate extends haxe.unit.TestCase {
 
 class TestXMPPCompression extends haxe.unit.TestCase {
 		
-	public function testPacket() {
-		
-		var p = xmpp.Compression.createPacket( ["zlib"] );
-		assertEquals( '<compress xmlns="http://jabber.org/protocol/compress"><method>zlib</method></compress>', p.toString() );
-
+	public function testParse() {
 		var x = Xml.parse( '<compression xmlns="http://jabber.org/features/compress"><method>zlib</method></compression>' ).firstElement();
 		var methods = xmpp.Compression.parseMethods( x );
 		assertEquals( 1, methods.length );
 		assertEquals( "zlib", methods[0] );
+	}
+	
+	public function testBuild() {
+		var p = xmpp.Compression.createPacket( ["zlib"] );
+		assertEquals( '<compress xmlns="http://jabber.org/protocol/compress"><method>zlib</method></compress>', p.toString() );
 	}
 		
 }

@@ -1,6 +1,9 @@
 package xmpp.roster;
 
 
+/**
+	Roster ask types.
+*/
 enum AskType {
 	
 	/** Denotes that  a request to subscribe to a entities presence has been made. */

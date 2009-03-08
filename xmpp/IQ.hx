@@ -2,7 +2,7 @@ package xmpp;
 
 
 /**
-	InfoQuery xmpp packet.
+	InfoQuery XMPP packet.
 */
 class IQ extends Packet {
 	

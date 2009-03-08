@@ -26,6 +26,7 @@ class Stream {
 		b.add( '" xmlns:stream="http://etherx.jabber.org/streams" to="' );
 		b.add( to );
 		b.add( '"' );
+		// TODO xmlns:xml="http://www.w3.org/XML/1998/namespace"
 		if( version ) b.add( ' version="1.0"' );
 		if( lang != null ) {
 			b.add( ' xml:lang="' );

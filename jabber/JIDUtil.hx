@@ -91,7 +91,7 @@ class JIDUtil {
 	    provided by a human user in unescaped form, or by a gateway to some external system
 	    (e.g., email or LDAP) that needs to generate a JID.
 	    
-	    TODO check XEP!! maybe minor errors (?)
+	    TODO check XEP!! maybe minor errors (?) .. replace by regexp ?
     */
 	public static function escapeNode( n : String ) : String {
 		var b = new StringBuf();
@@ -128,7 +128,7 @@ class JIDUtil {
      	external system (e.g., email or LDAP) that needs to generate identifiers
      	for foreign systems.
      	
-      TODO check XEP!! maybe minor errors (?)
+      TODO check XEP!! maybe minor errors (?) .. replace by regexp ?
     */
 	public static function unescapeNode( n : String ) : String {
 		var l = n.length;

@@ -32,13 +32,13 @@ class Stream extends jabber.Stream {
 			//TODO
 			throw new error.Exception( "Invalid XMPP stream, no id" );
 		}
+		
 		// check stream features
 		var sfi =  d.indexOf( "<stream:features>" );
 		var sf = d.substr( d.indexOf( "<stream:features>" ) );
 		if( sfi != -1 ) {
 			// get stream features
-			var fx = Xml.parse( sf ).firstElement();
-			for( e in fx.elements() )
+			for( e in Xml.parse( sf ).firstElement().elements() )
 				server.features.set( e.nodeName, e );
 			// report open
 			if( status != jabber.StreamStatus.open ) {

@@ -26,14 +26,14 @@ class Packet {
 
 	
 	/**
-		Creates/Returns the xml representation of this XMPP packet.
+		Creates/Returns the XML representation of this XMPP packet.
 	*/
 	public function toXml() : Xml {
 		return throw new error.AbstractError();
 	}
 	
 	/**
-		Creates/Returns the string representaion of this xmpp packet.
+		Creates/Returns the string representation of this XMPP packet.
 	*/
 	public inline function toString() : String {
 		return toXml().toString();
@@ -41,7 +41,7 @@ class Packet {
 	
 
 	/**
-		Adds the basic xmpp packet attributes to the given xml.
+		Adds the basic packet attributes to the given XML.
 	*/
 	function addAttributes( x : Xml ) : Xml {
 		if( to != null ) x.set( "to", to );
@@ -55,7 +55,7 @@ class Packet {
 
 	
 	/**
-		Parses xml into a xmpp.Packet object.
+		Parses given XML into a XMPP packet object.
 	*/
 	public static function parse( x : Xml ) : xmpp.Packet {
 		return switch( x.nodeName ) {
@@ -64,6 +64,35 @@ class Packet {
 			case "presence" : cast Presence.parse( x );
 			default : cast new PlainPacket( x );
 		}
+	}
+	
+	/**
+		Parses/adds basic attributes to the XMPP packet.
+	*/
+	static function parseAttributes( p : xmpp.Packet, x : Xml ) : xmpp.Packet {
+		p.to = x.get( "to" );
+		p.from = x.get( "from" );
+		p.id = x.get( "id" );
+		p.lang = x.get( "xml:lang" );
+		return p;
+	}
+	
+	/**
+		Reflects the elements of the XML into the packet.
+		TODO remove
+	*/
+	public static function reflectPacketNodes<T>( x : Xml, p : T ) : T {
+		for( e in x.elements() ) {
+			var v : String = null;
+			try {
+				v = e.firstChild().nodeValue;
+			} catch( e : Dynamic ) {
+				continue;
+			};
+			if( v != null )
+				Reflect.setField( p, e.nodeName, v );
+		}
+		return p;
 	}
 	
 	/*
@@ -76,35 +105,9 @@ class Packet {
 		}
 	}
 	*/
-
-	/**
-		Reflects the elements of the xml into the packet.
-	*/
-	public static function reflectPacketNodes<T>( x : Xml, p : T ) : T {
-		for( e in x.elements() ) {
-			var v : String = null;
-			try {
-				v = e.firstChild().nodeValue;
-			} catch( e : Dynamic ) {};
-			if( v != null ) Reflect.setField( p, e.nodeName, v );
-		}
-		return p;
-	}
 	
-	/**
-		Parses/adds basic attributes to the packet.
-	*/
-	static inline function parseAttributes( p : xmpp.Packet, x : Xml ) : xmpp.Packet {
-		p.to = x.get( "to" );
-		p.from = x.get( "from" );
-		p.id = x.get( "id" );
-		p.lang = x.get( "xml:lang" );
-		return p;
-	}
-	
-	/**
-	*/
-	static inline function parseChilds( p : xmpp.Packet, x : Xml ) : xmpp.Packet {
+	/*
+	static function parseChilds( p : xmpp.Packet, x : Xml ) : xmpp.Packet {
 		for( c in x.elements() ) {
 			switch( c.nodeName ) {
 				case "error" : p.errors.push( xmpp.Error.parse( c ) );
@@ -113,10 +116,12 @@ class Packet {
 		}
 		return p;
 	}
+	*/
 	
+	/*
 	static inline function parsePacketBase( p : xmpp.Packet, x : Xml ) {
 		xmpp.Packet.parseAttributes( p, x );
 		xmpp.Packet.parseChilds( p, x );
 	}
-	
+	*/
 }
