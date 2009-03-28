@@ -41,11 +41,6 @@ class Error {
 		Parses the error from a given packet.
 	*/
 	public static function parseFromPacket( p : xmpp.Packet ) : xmpp.Error {
-		/*
-		for( e in p.toXml().elements() )
-			if( e.nodeName == "error" )
-				return Error.parse( e );
-		*/
 		for( e in p.toXml().elementsNamed("error") )
 			return Error.parse( e );
 		return null;

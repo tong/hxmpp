@@ -23,7 +23,6 @@ typedef PacketDelay = {
 
 /**
 	<a href="http://xmpp.org/extensions/xep-0203.html">XEP-0203: Delayed Delivery</a><br/>
-	
 	Use compiler flag 'XEP_0091' for backwards compatibility with <a href="http://xmpp.org/extensions/xep-0091.html">XEP-0091: Delayed Delivery</a>.
 */
 class Delayed {
@@ -48,7 +47,7 @@ class Delayed {
 	*/
 	
 	/**
-		Parses/Returns the packet delay from the properties of the given xmpp packet.
+		Parses/Returns the packet delay from the properties of the given XMPP packet.
 	*/
 	public static function get( p : xmpp.Packet ) : xmpp.PacketDelay {
 		for( e in p.properties ) {

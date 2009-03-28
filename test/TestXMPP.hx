@@ -45,8 +45,8 @@ class TestXMPP {
 		r.add( new TestXMPPSoftwareVersion() );
 		r.add( new TestXMPPSoftwareVersion() );
 	
+		r.add( new TestXMPPPubSub() );
 	//	r.add( new TestXMPPMUC() );
-	//	r.add( new TestXMPPPubSub() );
 	//	r.add( new TestXMPPJingle() );
 	//	r.add( new TestXMPPFileTransfer() );
 		

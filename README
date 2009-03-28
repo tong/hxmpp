@@ -1,13 +1,47 @@
 
 HXMPP - README
 ==============
-HXMPP is a haXe[03] library for creating clients and components based on the XMPP protocol.
-The library mainly consists of two parts/namspaces:
+HXMPP is a haXe[03] library for creating jabber clients and components based on the XMPP protocol.
+
+The library mainly consists of two parts/namespaces:
 * xmpp: creation and manipulation of XMPP data.
 * jabber: creation and handling of XMPP data streams between jabber entities.
 
-Please visit [04][05] for further information on XMPP.
+Please visit [04][05] for further information.
 
+
+BUILD+INSTALLATION
+------------------
+Run the hxmpp/*.hxml files to build the included tests, samples, utilities and documentation.
+
+# Compiler flags:
+* XMPP_DEBUG	Print XMPP transfer
+* JABBER_DEBUG   Print debug information
+* JABBER_SOCKETBRIDGE   Use a socket bridge as stream connection (see: jabber.tool.SocketBridge)
+* XEP_0091   Activates backward compatibility with XEP-0091 when using jabber.DelayedDelivery. 
+
+# NEKO
+Copy hxmpp/ndll/$SYSTEM/*ndll files to your neko installation.
+* sha1.ndll is required for SHA1 encoding.
+* hxmpp_debug.ndll for colored XMPP debug output on command line (linux only so far).
+
+# PHP
+...
+
+# FLASH9+
+...
+
+# JS
+See hxmpp/bin/samples/client.html for an example.
+
+# AS3
+Run hxmpp/lib.hxml to build a SWC and/or actionscript3 source code.
+See hxmpp/samples/JabberClientDemo.as for an example.
+
+
+USAGE
+-----
+see: hxmpp/samples/*, hxmpp/test/jabber/*
 
 
 XEPS SUPPORTED
@@ -31,53 +65,16 @@ XEPS SUPPORTED
 * 0203 DelayedDelivery
 
 
-
-BUILD+INSTALLATION
-------------------
-Run the hxml files in the main directory to build included demos, tests and utilities.
-
-# Compiler flags:
-* XMPP_DEBUG	Debug/Print XMPP transfer
-* JABBER_DEBUG   Print debug information
-* JABBER_SOCKETBRIDGE   Use a socket bridge as stream connection (see: jabber.tool.SocketBridge)
-* XEP_0091   Activates backward compatibility with XEP-0091 when using jabber.DelayedDelivery. 
-
-# NEKO
-Copy the ndlls to your neko installation.
-* sha1.ndll is required for SHA1 encoding.
-* hxmpp_debug.ndll for colored xmpp debug bash output (linux only).
-
-# PHP
-...
-
-# FLASH9+
-...
-
-# JS
-See hxmpp/bin/samples/client.html for an JS usage example.
-
-# AS3
-See hxmpp/samples/JabberClientDemo.as for an ActionScript3 usage example.
-
-
-USAGE
------
-see: hxmpp/samples/*, hxmpp/test/jabber
-
-
 AUTHOR
 ------
-xmpp: tong@jabber.spektral.at
+xmpp://tong@jabber.spektral.at
 
 
 DOWNLOAD
 --------
-Source file are available from:
 http://hxmpp.disktree.net
 http://code.google.com/p/hxmpp
-
-To clone the latest development version:
-git clone git://83.64.208.21/hxmpp.git hxmpp
+git://83.64.208.21/hxmpp.git
 
 
 LINKS

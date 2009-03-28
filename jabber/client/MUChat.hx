@@ -32,18 +32,18 @@ typedef MUCOccupant = {
 	<a href="http://www.xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a><br>
 	<a href="http://www.xmpp.org/extensions/xep-0249.html">XEP-0249: Direct MUC Invitations</a>
 */
-class MUC {
+class MUChat {
 	
 	//TODO public static var defaultPresencePriority = 5;
 	
-	public dynamic function onJoin( muc : MUC ) {}
-	public dynamic function onLeave( muc : MUC ) : Void;
-	public dynamic function onMessage( muc : MUC, o : MUCOccupant, m : xmpp.Message ) : Void;
+	public dynamic function onJoin( muc : MUChat ) {}
+	public dynamic function onLeave( muc : MUChat ) : Void;
+	public dynamic function onMessage( muc : MUChat, o : MUCOccupant, m : xmpp.Message ) : Void;
 	//TODO public dynamic function onRoomMessage( muc : MUC, m : xmpp.Message ) : Void;
-	public dynamic function onPresence( muc : MUC, o : MUCOccupant ) {}
-	public dynamic function onSubject( muc : MUC ) : Void;
+	public dynamic function onPresence( muc : MUChat, o : MUCOccupant ) {}
+	public dynamic function onSubject( muc : MUChat ) : Void;
 	
-	public dynamic function onKick( muc : MUC, nick : String ) : Void;
+	public dynamic function onKick( muc : MUChat, nick : String ) : Void;
 	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;

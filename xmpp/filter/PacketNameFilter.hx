@@ -1,19 +1,18 @@
 package xmpp.filter;
 
-
 /**
-	//Filters (custom) packets with given nodename.
+	Filters (custom) XMPP packets with given nodename EReg.
 */
 class PacketNameFilter {
 	
-	public var regx : EReg;
+	public var ereg : EReg; //TODO string
 	
-	public function new( regx : EReg ) {
-		this.regx = regx;
+	public function new( ereg : EReg ) {
+		this.ereg = ereg;
 	}
 	
 	public function accept( p : xmpp.Packet ) : Bool {
-		return regx.match( p.toXml().nodeName );
+		return ereg.match( p.toXml().nodeName );
 	}
 	
 }

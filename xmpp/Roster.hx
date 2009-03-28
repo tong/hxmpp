@@ -1,6 +1,5 @@
 package xmpp;
 
-
 /**
 	IQ roster extension.
 */
@@ -28,9 +27,8 @@ class Roster extends List<xmpp.roster.Item> {
 	
 	public static function parse( x : Xml ) : xmpp.Roster {
 		var r = new xmpp.Roster();
-		for( i in x.elementsNamed( "item" ) ) {
+		for( i in x.elementsNamed( "item" ) )
 			r.add( xmpp.roster.Item.parse( i ) );
-		}
 		return r;
 	}
 	

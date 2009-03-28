@@ -1,9 +1,8 @@
 
-# hxmpp doc
+### HXMPP DOC
 -cp lib/
 -cp doc/
-
-###########
+#
 jabber.Chat
 jabber.ChatStateNotification
 jabber.JID
@@ -21,7 +20,7 @@ jabber.SoftwareVersion
 jabber.XMPPDebug
 jabber.XMPPError
 jabber.client.Account
-jabber.client.MUC
+jabber.client.MUChat
 jabber.client.NonSASLAuthentication
 jabber.client.Roster
 jabber.client.SASLAuthentication
@@ -47,8 +46,7 @@ xmpp.XHTML
 net.sasl.AnonymousMechanism
 net.sasl.PlainMechanism
 net.util.KeepAlive
-##################
-
+#
 -js lib.js
 -xml doc/api.xml
 -D JABBER_DEBUG
