@@ -14,8 +14,8 @@ import xmpp.filter.IQFilter;
 */
 class ServiceDiscovery {
 	
-	public dynamic function onInfo( d : ServiceDiscovery, node : String, data : xmpp.disco.Info ) : Void;
-	public dynamic function onItems( d : ServiceDiscovery, node : String, data : xmpp.disco.Items ) : Void;
+	public dynamic function onInfo( node : String, data : xmpp.disco.Info ) : Void;
+	public dynamic function onItems( node : String, data : xmpp.disco.Items ) : Void;
 	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
 	public var stream(default,null) : jabber.Stream;
@@ -47,7 +47,7 @@ class ServiceDiscovery {
 	
 	function handleInfoResponse( iq : xmpp.IQ ) {
 		switch( iq.type ) {
-			case result : onInfo( this, iq.from, xmpp.disco.Info.parse( iq.ext.toXml() ) );
+			case result : onInfo( iq.from, xmpp.disco.Info.parse( iq.ext.toXml() ) );
 			case error : onError( new jabber.XMPPError( this, iq ) );
 			default : // #
 		}
@@ -55,7 +55,7 @@ class ServiceDiscovery {
 	
 	function handleItemsResponse( iq : xmpp.IQ ) {
 		switch( iq.type ) {
-			case result : onItems( this, iq.from, xmpp.disco.Items.parse( iq.ext.toXml() ) );
+			case result : onItems( iq.from, xmpp.disco.Items.parse( iq.ext.toXml() ) );
 			case error : onError( new jabber.XMPPError( this, iq ) );
 			default: // #
 		}

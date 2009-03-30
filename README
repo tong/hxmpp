@@ -18,7 +18,6 @@ Run the hxmpp/*.hxml files to build the included tests, samples, utilities and d
 * XMPP_DEBUG	Print XMPP transfer
 * JABBER_DEBUG   Print debug information
 * JABBER_SOCKETBRIDGE   Use a socket bridge as stream connection (see: jabber.tool.SocketBridge)
-* XEP_0091   Activates backward compatibility with XEP-0091 when using jabber.DelayedDelivery. 
 
 # NEKO
 Copy hxmpp/ndll/$SYSTEM/*ndll files to your neko installation.

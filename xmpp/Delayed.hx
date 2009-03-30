@@ -23,7 +23,6 @@ typedef PacketDelay = {
 
 /**
 	<a href="http://xmpp.org/extensions/xep-0203.html">XEP-0203: Delayed Delivery</a><br/>
-	Use compiler flag 'XEP_0091' for backwards compatibility with <a href="http://xmpp.org/extensions/xep-0091.html">XEP-0091: Delayed Delivery</a>.
 */
 class Delayed {
 	
@@ -53,17 +52,17 @@ class Delayed {
 		for( e in p.properties ) {
 			var nodeName = e.nodeName;
 			var xmlns = e.get( "xmlns" );
-			#if XEP_0091 
-			if( nodeName == "x" && xmlns == "jabber:x:delay" ) {
-				var desc : String = null;
-				try { desc = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
-				return { from : e.get( "from" ), stamp : e.get( "stamp" ), description : desc };
-			}
-			#end
 			if( nodeName == "delay" ) {
 				var desc : String = null;
 				try { desc = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
 				return { from : e.get( "from" ), stamp : e.get( "stamp" ), description : desc };
+			} else {
+				if( nodeName == "x" && xmlns == "jabber:x:delay" ) {
+					var desc : String = null;
+					try { desc = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
+					return { from : e.get( "from" ), stamp : e.get( "stamp" ), description : desc };
+				}
+				continue;
 			}
 		}
 		return null;
