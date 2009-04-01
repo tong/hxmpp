@@ -6,7 +6,7 @@ package xmpp;
 */
 class XHTML {
 	
-	public static var XMLNS = "http://jabber.org/protocol/xhtml-im";
+	public static var XMLNS = xmpp.NS.PROTOCOL+"/xhtml-im";
 	
 	public var body : Xml;
 	
@@ -33,7 +33,7 @@ class XHTML {
 	*/
 	public static function fromMessage( m : xmpp.Message ) : Xml {
 		for( p in m.properties ) {
-			if( p.nodeName == "html" && p.get( "xmlns" ) == "http://jabber.org/protocol/xhtml-im" ) {
+			if( p.nodeName == "html" && p.get( "xmlns" ) == xmpp.NS.PROTOCOL+"/xhtml-im" ) {
 				var b = p.elements().next();
 				if( b != null && b.nodeName == "body" && b.get( "xmlns" ) == "http://www.w3.org/1999/xhtml" ) {
 					return b;

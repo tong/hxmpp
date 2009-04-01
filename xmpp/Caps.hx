@@ -6,7 +6,7 @@ package xmpp;
 */
 class Caps {
 	
-	public static var XMLNS = "http://jabber.org/protocol/caps";
+	public static var XMLNS = xmpp.NS.PROTOCOL+"/caps";
 	
 	/**
 		The hashing algorithm used to generate the verification string

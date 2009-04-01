@@ -3,7 +3,7 @@ package xmpp;
 
 class Compression {
 	
-	public static var XMLNS = 'http://jabber.org/protocol/compress';
+	public static var XMLNS = xmpp.NS.PROTOCOL+'/compress';
 	
 	/**
 	*/

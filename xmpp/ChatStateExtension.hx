@@ -6,7 +6,7 @@ package xmpp;
 */
 class ChatStateExtension {
 	
-	public static var XMLNS = "http://jabber.org/protocol/chatstates";
+	public static var XMLNS = xmpp.NS.PROTOCOL+"/chatstates";
 	
 	/**
 		Adds (or changes if already has) the chat state property of the givent message packet.

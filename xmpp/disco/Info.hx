@@ -5,7 +5,7 @@ package xmpp.disco;
 */
 class Info {
 	
-	public static var XMLNS = 'http://jabber.org/protocol/disco#info';
+	public static var XMLNS = xmpp.NS.PROTOCOL+'/disco#info';
 	
 	public var identities : Array<xmpp.disco.Identity>; 
 	public var features : Array<String>;

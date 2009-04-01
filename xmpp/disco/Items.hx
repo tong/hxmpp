@@ -5,7 +5,7 @@ package xmpp.disco;
 */
 class Items extends List<xmpp.disco.Item> {
 
-	public static var XMLNS = 'http://jabber.org/protocol/disco#items';
+	public static var XMLNS = xmpp.NS.PROTOCOL+'/disco#items';
 	
 	public var node : String;
 	

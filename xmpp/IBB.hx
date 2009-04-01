@@ -12,7 +12,7 @@ enum IBBType {
 */
 class IBB {
 	
-	public static var XMLNS = "http://jabber.org/protocol/ibb";
+	public static var XMLNS = xmpp.NS.PROTOCOL+"/ibb";
 	
 	public var type : IBBType;
 	public var sid : String;
