@@ -1,4 +1,4 @@
-package xmpp;
+package xmpp.pep;
 
 enum Mood {
 	afraid;

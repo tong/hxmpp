@@ -137,6 +137,7 @@ class PubSub {
 	
 	/**
 		Publisher deletes an item once it has been published to a node that supports persistent items.
+		//TODO ?? retractItems( node : String, ids : Array<String> )
 	*/
 	public function retract( retract : xmpp.pubsub.Retract ) {
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, service );
