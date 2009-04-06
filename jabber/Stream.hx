@@ -1,6 +1,7 @@
 package jabber;
 
 import jabber.Stream;
+import jabber.stream.Connection;
 import jabber.stream.TPacketCollector;
 import jabber.stream.TPacketInterceptor;
 import jabber.stream.PacketCollector;
@@ -48,7 +49,7 @@ class Stream {
 	public dynamic function onError( ?e : Dynamic ) {}
 	
 	public var status : StreamStatus;
-	public var cnx(default,setConnection) : StreamConnection;
+	public var cnx(default,setConnection) : Connection;
 	public var id(default,null) : String;
 	public var lang(default,null) : String;
 	public var jid(default,null) : jabber.JID;
@@ -62,7 +63,7 @@ class Stream {
 	var cache : StringBuf;
 	
 	
-	function new( cnx : StreamConnection, jid : jabber.JID ) {
+	function new( cnx : Connection, jid : jabber.JID ) {
 		
 		if( cnx == null )
 			throw "No connection passed to stream";
@@ -80,7 +81,7 @@ class Stream {
 	}
 	
 	
-	function setConnection( c : StreamConnection ) : StreamConnection {
+	function setConnection( c : Connection ) : Connection {
 		switch( status ) {
 			case open, pending :
 				//TODO throw 

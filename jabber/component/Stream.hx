@@ -1,7 +1,7 @@
 package jabber.component;
 
+import jabber.stream.Connection;
 import jabber.ServiceDiscoveryListener;
-
 
 /**
 	Base for Component-2-Server jabber streams.<br/>
@@ -29,7 +29,7 @@ class Stream extends jabber.Stream {
 	
 	/**
 	*/
-	public function new( host : String, subdomain : String, secret : String, cnx : jabber.StreamConnection,
+	public function new( host : String, subdomain : String, secret : String, cnx : Connection,
 						 ?identity : xmpp.disco.Identity ) {
 						 	
 		if( subdomain == null || subdomain == "" ) throw "Invalid subdomain";
