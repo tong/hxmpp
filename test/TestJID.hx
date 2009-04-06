@@ -8,9 +8,11 @@ class TestJID extends haxe.unit.TestCase   {
 	public function testJIDUtil() {
 		
 		var j1 = "nodemain.net/Resource";
+		assertTrue( !jabber.JIDUtil.ereg.match( j1 ) );
 		assertTrue( !JIDUtil.isValid( j1 ) );
 		
 		var j1 = "node@domain.net/Resource";
+		assertTrue( jabber.JIDUtil.ereg.match( j1 ) );
 		assertTrue( JIDUtil.isValid( j1 ) );
 		assertEquals( "node", JIDUtil.parseNode( j1 ) );
 		assertEquals( "domain.net", JIDUtil.parseDomain( j1 ) );
@@ -18,6 +20,7 @@ class TestJID extends haxe.unit.TestCase   {
 		assertEquals( "Resource", JIDUtil.parseResource( j1 ) );
 		
 		var j2 = "node@domain.net";
+		assertTrue( jabber.JIDUtil.ereg.match( j2 ) );
 		assertTrue( JIDUtil.isValid( j2 ) );
 		assertEquals(  "node", JIDUtil.parseNode( j2 ) );
 		assertEquals( "domain.net", JIDUtil.parseDomain( j2 ) );
@@ -32,8 +35,6 @@ class TestJID extends haxe.unit.TestCase   {
 		var parts2 = JIDUtil.getParts( j2 );
 		assertEquals( "node", parts2[0] );
 		assertEquals( "domain.net", parts2[1] );
-		
-		
 	}
 	
 	public function testJID() {

@@ -9,20 +9,20 @@ package jabber;
 class JIDUtil {
 	
 	#if JABBER_DEBUG
-	static var ereg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]/i;
+	public static var ereg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?/i;
 	#else
-	static var ereg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?+(\/[A-Z0-9])?/i;
+	public static var ereg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?+(\/[A-Z0-9])?/i;
 	#end
 	
 	/**
-		Returns true if the given jid is valid formed.
+		Returns true if the given JID is valid formed.
 	*/
 	public static function isValid( jid : String ) : Bool {
-		if( !ereg.match( jid ) ) return false;
-		var p = getParts( jid );
-		for( part in p ) {
-			if( part.length > jabber.JID.MAX_PART_SIZE ) return false;
-		}
+		if( !ereg.match( jid ) )
+			return false;
+		for( p in getParts( jid ) )
+			if( p.length > jabber.JID.MAX_PART_SIZE )
+				return false;
 		return true;
 	}
 	
