@@ -9,7 +9,7 @@ package jabber;
 class JIDUtil {
 	
 	#if JABBER_DEBUG
-	public static var ereg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?/i;
+	public static var ereg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+(\.[A-Z][A-Z][A-Z]?)?/i;
 	#else
 	public static var ereg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?+(\/[A-Z0-9])?/i;
 	#end

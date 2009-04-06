@@ -35,6 +35,24 @@ class TestJID extends haxe.unit.TestCase   {
 		var parts2 = JIDUtil.getParts( j2 );
 		assertEquals( "node", parts2[0] );
 		assertEquals( "domain.net", parts2[1] );
+		
+		#if JABBER_DEBUG
+		var j = "node@domain.net/Resource";
+		assertTrue( jabber.JIDUtil.ereg.match( j ) );
+		assertTrue( JIDUtil.isValid( j ) );
+		j = "node@domain.net";
+		assertTrue( jabber.JIDUtil.ereg.match( j ) );
+		assertTrue( JIDUtil.isValid( j ) );
+		j = "node@domain";
+		assertTrue( jabber.JIDUtil.ereg.match( j ) );
+		assertTrue( JIDUtil.isValid( j ) );
+		j = "node@domain/Resource";
+		assertTrue( jabber.JIDUtil.ereg.match( j ) );
+		assertTrue( JIDUtil.isValid( j ) );
+		j = "node";
+		assertTrue( !jabber.JIDUtil.ereg.match( j ) );
+		assertTrue( !JIDUtil.isValid( j ) );
+		#end
 	}
 	
 	public function testJID() {
