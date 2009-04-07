@@ -1,7 +1,7 @@
 package jabber;
 
 private typedef Listener = {
-	var nodeName : String;
+	//var nodeName : String;
 	var xmlns : String;
 	var handler : xmpp.Message->Xml->Void;
 	var type : Class<xmpp.pep.Event>;
@@ -32,12 +32,11 @@ class PersonalEventListener {
 	/**
 		Add listener for the given type.
 	*/
-	public function add( type : Class<xmpp.pep.Event>, handler : xmpp.Message->Xml->Void ) : Bool {
-		var l = getListener( type );
+	public function add( t : Class<xmpp.pep.Event>, handler : xmpp.Message->Xml->Void ) : Bool {
+		var l = getListener( t );
 		if( l != null ) return false;
 		else {
-			var _l = Type.createInstance( type, [] );
-			listeners.add( { nodeName : _l.nodeName, xmlns : _l.xmlns, handler : handler, type : type } );
+			listeners.add( { xmlns : untyped t.XMLNS, handler : handler, type : t } );
 			return true;
 		}
 	}
@@ -62,9 +61,7 @@ class PersonalEventListener {
 		Returns the listeners for the given type.
 	*/
 	public function getListener( type : Class<xmpp.pep.Event> ) : Listener {
-		var i = Type.createInstance( type, [] );
 		for( l in listeners )
-			//if( l.nodeName == i.nodeName && l.xmlns == i.xmlns )
 			if( l.type == type ) return l;
 		return null;
 	}
@@ -86,7 +83,7 @@ class PersonalEventListener {
 		}
 		for( i in event.items )
 			for( l in listeners )
-				if( l.nodeName == i.payload.nodeName && l.xmlns == i.payload.get( "xmlns" ) )
+				if( /*l.nodeName == i.payload.nodeName &&*/ l.xmlns == i.payload.get( "xmlns" ) )
 					l.handler( m, i.payload );
 	}
 	
