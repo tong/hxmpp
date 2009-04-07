@@ -4,19 +4,18 @@ package jabber;
 enum StreamStatus {
 	
 	/**
-		Stream is inactive.
+		XMPP stream is inactive.
 	*/
 	closed;
 	
 	/**
-		Stream opening sent, but no response so far.
+		Request to open XMPP stream sent but no response so far.
 	*/
-	pending;
-	//pending( ?info : String );
+	pending; //pending( ?info : String );
 	
 	/**
-		XMPP stream is open and ready to exchange packets.
+		XMPP stream is open and ready to exchange data.
 	*/
-	open;
-	//open( ?info : String );
+	open; //open( ?info : String );
+	
 }

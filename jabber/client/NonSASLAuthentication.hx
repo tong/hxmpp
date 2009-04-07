@@ -17,11 +17,11 @@ class NonSASLAuthentication {
 
 	public function new( stream : Stream,
 						 ?onSuccess : Void->Void, ?onFailed : jabber.XMPPError->Void,
-					 	 ?usePlainText : Bool ) {
+					 	 ?usePlainText : Bool = false ) {
 		this.stream = stream;
 		this.onSuccess = onSuccess;
 		this.onFailed = onFailed;
-		this.usePlainText = ( usePlainText != null ) ? usePlainText : false;
+		this.usePlainText = usePlainText;
 		username = stream.jid.node;
 		resource = stream.jid.resource;
 		active = false;

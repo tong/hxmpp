@@ -20,17 +20,13 @@ typedef Server = {
 
 
 class StreamFeatures {
-	
 	var list : List<String>; // TODO var features : Hash<StreamFeature>;
-	
 	public function new() {
 		list = new List();
 	}
-	
 	public function iterator() {
 		return list.iterator();
 	}
-	
 	public function add( f : String ) : Bool {
 		if( Lambda.has( list, f ) ) return false;
 		list.add( f );
@@ -48,13 +44,21 @@ class Stream {
 	public dynamic function onClose() {}
 	public dynamic function onError( ?e : Dynamic ) {}
 	
+	/** */
 	public var status : StreamStatus;
+	/** */
 	public var cnx(default,setConnection) : Connection;
+	/** */
 	public var id(default,null) : String;
+	/** */
 	public var lang(default,null) : String;
+	/** */
 	public var jid(default,null) : jabber.JID;
+	/** */
 	public var server(default,null) : Server;
+	/** */
 	public var features(default,null) : StreamFeatures;
+	/** */
 	public var version : Bool;
 	
 	var collectors : List<TPacketCollector>;
@@ -63,10 +67,12 @@ class Stream {
 	var cache : StringBuf;
 	
 	
-	function new( cnx : Connection, jid : jabber.JID ) {
+	function new( c : Connection, jid : jabber.JID ) {
 		
-		if( cnx == null )
-			throw "No connection passed to stream";
+		if( c == null )
+			throw "Missing XMPP connection argument";
+		
+		this.jid = jid;
 		
 		collectors = new List();
 		interceptors = new List();
@@ -74,27 +80,25 @@ class Stream {
 		features = new StreamFeatures();
 		version = true;
 		numPacketsSent = 0;
-		
-		this.jid = jid;
 		status = StreamStatus.closed;
-		setConnection( cnx );
+		setConnection( c );
 	}
 	
 	
 	function setConnection( c : Connection ) : Connection {
 		switch( status ) {
-			case open, pending :
-				//TODO throw 
-				close( true );
-			case closed :
-				if( cnx != null && cnx.connected )
-					cnx.disconnect();
-				Reflect.setField( this, "cnx", c );
-				//cnx = c;
-				cnx.onConnect = connectHandler;
-				cnx.onDisconnect = disconnectHandler;
-				cnx.onData = processData;
-				cnx.onError = errorHandler;
+		case open, pending :
+			close( true );
+			setConnection( c );
+			open();
+		case closed :
+			if( cnx != null && cnx.connected )
+				cnx.disconnect();
+			cnx = c;
+			cnx.onConnect = connectHandler;
+			cnx.onDisconnect = disconnectHandler;
+			cnx.onData = processData;
+			cnx.onError = errorHandler;
 		}
 		return cnx;
 	}
@@ -109,7 +113,7 @@ class Stream {
 	}
 	
 	/**
-		Opens the outgoing xml stream.
+		Opens the outgoing XMPP stream.
 	*/
 	public function open() : Bool {
 //		if( status == StreamStatus.open ) return false;
@@ -125,8 +129,7 @@ class Stream {
 			sendData( xmpp.Stream.CLOSE );
 			status = StreamStatus.closed;
 			if( disconnect ) cnx.disconnect();
-			numPacketsSent = 0;
-			onClose();
+			handleClose();
 			return true;
 		}
 		//if( status == StreamStatus.pending && disconnect && cnx.connected ) { 
@@ -193,46 +196,20 @@ class Stream {
 		collectors.add( c );
 		return true;
 	}
-	/*
-	public function addCollectors( iter : Iterable<TPacketCollector> ) : Bool {
-		for( i in iter ) {
-			if( Lambda.has( collectors, i ) ) return false;
-		}
-		for( i in iter ) collectors.add( i );
-		return true;
-	}
-	*/
+
 	public function removeCollector( c : TPacketCollector ) : Bool {
 		return collectors.remove( c );
 	}
-	/*
-	
-	public function clearCollectors() {
-		collectors = new List();
-	}
-	*/
+
 	public function addInterceptor(i : TPacketInterceptor ) : Bool {
 		if( Lambda.has( interceptors, i ) ) return false;
 		interceptors.add( i );
 		return true;
 	}
-	/*
-	public function addInterceptors( iter : Iterable<TPacketInterceptor> ) : Bool {
-		for( i in iter ) {
-			if( Lambda.has( interceptors, i ) ) return false;
-		}
-		for( i in iter ) interceptors.add( i );
-		return true;
-	}
-	*/
+
 	public function removeInterceptor( i : TPacketInterceptor ) : Bool {
 		return interceptors.remove( i );
 	}
-	/*
-	public function clearInterceptors() {
-		interceptors = new List();
-	}
-	*/
 	
 	/**
 	*/
@@ -290,7 +267,7 @@ class Stream {
 					try {
 						x = Xml.parse( cache.toString() );
 						if( Std.string( x.firstChild().nodeType ) == "pcdata" )
-							throw new error.Exception( "Invalid xmpp" );
+							throw new error.Exception( "Invalid XMPP data" );
 					} catch( e : Dynamic ) {
 						return; /* wait for more data */
 					}
@@ -313,6 +290,7 @@ class Stream {
 	}
 	
 	/**
+		Handles ncoming XMPP packets.
 	*/
 	public function handlePacket( p : xmpp.Packet ) : Bool {
 		var collected = false;
@@ -355,22 +333,27 @@ class Stream {
 	}
 	*/
 	
-	function processStreamInit( d : String ) {
-		///// override me /////
+	//function handleOpen() {
+	//}
+	
+	function handleClose() {
+		id = null;
+		numPacketsSent = 0;
+		onClose();
 	}
 	
+	function processStreamInit( t : String ) {
+	}
 	
 	function connectHandler() {
-		///// override me /////
 	}
 	
 	function disconnectHandler() {
-		///// override me /////
+		handleClose();
 	}
 	
-	function dataHandler( d : String ) {
-		///// override me /////
-	}
+	//function dataHandler( t : String ) {
+	//}
 	
 	function errorHandler( m : Dynamic ) {
 		onError( m );

@@ -55,4 +55,10 @@ class Stream extends jabber.Stream {
 		cnx.read( true ); // start reading input
 	}
 	
+	/*
+	override function disconnectHandler() {
+		id = null;
+	}
+	*/
+	
 }

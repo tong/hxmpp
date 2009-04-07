@@ -1,9 +1,6 @@
 
 import jabber.component.Stream;
 
-
-/**
-*/
 class JabberComponentDemo {
 	
 	static var cnx : jabber.SocketConnection;
@@ -22,17 +19,8 @@ class JabberComponentDemo {
 		};
 		stream.onError = function(?m) { trace( "Stream error, "+m ); } ;
 		stream.onClose = function() { trace( "Stream closed." ); } ;
-		stream.onConnect = function(success:Bool) {
-			if( success ) {
-				trace( "Stream opened. Have fun!", "info" );
-				// keep the stream alive
-				#if !php
-				var keepAlive = new net.util.KeepAlive( cnx.socket ).start();
-				#end
-				//..
-			} else {
-				trace( "Authentication failed" );
-			}
+		stream.onConnect = function() {
+			trace( "Component connected. Have fun!", "info" );
 		}
 		stream.open();
 	}
