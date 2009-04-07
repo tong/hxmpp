@@ -12,6 +12,7 @@ class TestXMPPRoster extends haxe.unit.TestCase {
 		</query>' ).firstElement() );
 		
 		var items = Lambda.array( xmpp.Roster.parse( r.toXml() ) );
+		
 		assertEquals( "test@disktree.net", items[0].jid );
 		assertEquals( xmpp.roster.Subscription.none, items[0].subscription );
 		assertEquals( xmpp.roster.AskType.subscribe, items[0].askType );
