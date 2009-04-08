@@ -42,25 +42,41 @@ class Connection {
 		filters = new Array();
 	}
 	
-	/** */
+	/**
+		Try to connect the stream data connection.
+	*/
 	public function connect() {
 		throw new error.AbstractError();
 	}
 	
-	/** */
+	/**
+		Disconnects stream connection.
+	*/
 	public function disconnect() { //: Bool
 		throw new error.AbstractError();
 	}
 	
-	/** */
+	/**
+		Starts/Stops reading data input.
+	*/
 	public function read( ?yes : Bool = true ) : Bool {
 		return throw new error.AbstractError();
 	}
 	
-	/** */
-	public function send( data : String ) : String {
+	/**
+		Send string.
+	*/
+	public function write( t : String ) : String {
 		return throw new error.AbstractError();
 	}
+	
+	/**
+		Send raw bytes.
+		TODO
+	public function writeBytes( t : haxe.io.Bytes ) : haxe.io.Bytes {
+		return throw new error.AbstractError();
+	}
+	*/
 	
 	function dataHandler( t : String ) {
 		for( f in filters )

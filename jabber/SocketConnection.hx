@@ -125,20 +125,25 @@ class SocketConnection extends jabber.stream.Connection {
 		return true;
 	}
 	
-	public override function send( data : String ) : String {
-		if( !connected || data == null || data == "" ) return null;
+	public override function write( t : String ) : String {
+		if( !connected || t == null || t == "" ) return null;
 		for( i in interceptors )
-			data = i.interceptData( data );
+			t = i.interceptData( t );
 		#if flash9
-		socket.writeUTFBytes( data ); 
+		socket.writeUTFBytes( t ); 
 		socket.flush();
 		#elseif (neko||php)
-		socket.write( data );
+		socket.write( t );
 		#elseif JABBER_SOCKETBRIDGE
-		socket.send( data );
+		socket.send( t );
 		#end
-		return data;
+		return t;
 	}
+	
+	/* TODO
+	public override function writeBytes( t : haxe.io.Bytes ) : haxe.io.Bytes {
+	}
+	*/
 	
 
 	#if (flash9)

@@ -6,11 +6,9 @@ import xmpp.IQType;
 import xmpp.filter.PacketNameFilter;
 import xmpp.filter.PacketOrFilter;
 
-
 /**
 	Responsible for authenticating a client account using SASL, binding the resource to the connection
-	and establishing a session with the server.
-	
+	and establishing a session with the server.<br>
 	<a href="http://xmpp.org/rfcs/rfc3920.html#sasl">RFC3920-SASL</a><br>
 	<a href="http://xmpp.org/rfcs/rfc3920.html#bind">RFC3920-BIND</a><br>
 	http://www.ietf.org/mail-archive/web/isms/current/msg00063.html
@@ -22,22 +20,23 @@ class SASLAuthentication {
 	public dynamic function onSuccess() : Void;
 	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
-	public var stream(default,null) : Stream;
+	/** Used SASL method */
 	public var handshake(default,null) : net.sasl.Handshake;
+	/** Used resource */
 	public var resource(default,null) : String;
 	/** Available mechanisms ids (from server) */
 	public var mechanisms(default,null) : Array<String>;
 	//public var negotiated(default,null) : Bool;
+	public var stream(default,null) : Stream;
 	
 	var onStreamOpenHandler : Void->Void;
 	var challengeCollector : PacketCollector;
-	
 	
 	public function new( stream : Stream, mechanisms : Iterable<net.sasl.Mechanism> ) {
 		
 		var x = stream.server.features.get( "mechanisms" );
 		if( x == null )
-			throw "Server does not support SASL";
+			throw "Server does't support SASL";
 		if( mechanisms == null || Lambda.count( mechanisms ) == 0 )
 			throw "No SASL mechanisms given";
 			
@@ -49,20 +48,16 @@ class SASLAuthentication {
 			handshake.mechanisms.push( m );
 	}
 	
-	
 	/**
 		Inits SASL authentication.
 		Returns false if no compatible SASL mechanism was found.
 	*/
 	public function authenticate( password : String, ?resource : String ) : Bool {
-	
+		
+		//TODO
 //		if( active )
 //			throw "SASL authentication already in progress";
 		this.resource = resource; 
-		
-		// relay the stream open event
-		//onStreamOpenHandler = stream.onOpen ;
-		//stream.onOpen = handleStreamOpen;
 		
 		// locate mechanism to use.
 		if( handshake.mechanism == null ) {
@@ -75,7 +70,6 @@ class SASLAuthentication {
 				if( handshake.mechanism != null ) break;
 			}
 		}
-		
 		if( handshake.mechanism == null ) {
 			#if JABBER_DEBUG
 			trace( "No matching SASL mechanism found." );
@@ -97,18 +91,15 @@ class SASLAuthentication {
 		f.add( new PacketNameFilter( ~/mechanism-too-weak/ ) );
 		f.add( new PacketNameFilter( ~/temporary-auth-failure/ ) );
 		stream.addCollector( new PacketCollector( [cast f], handleSASLFailed ) );
-
 		// collect success
 		stream.addCollector( new PacketCollector( [cast new PacketNameFilter( ~/success/ )], handleSASLSuccess ) );
-		
 		// collect challenge
 		challengeCollector = new PacketCollector( [cast new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
 		stream.addCollector( challengeCollector );
-		
 		// send init auth
 		var t = handshake.mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password );
 		if( t != null ) t = util.Base64.encode( t );
-		return stream.sendData( xmpp.SASL.createAuthXml( handshake.mechanism.id, t ).toString() );
+		return stream.sendData( xmpp.SASL.createAuthXml( handshake.mechanism.id, t ).toString() ) != null;
 	}
 	
 	
@@ -157,14 +148,13 @@ class SASLAuthentication {
 				throw "Unexpected resource bound ?";
 			}
 			*/
-			if( stream.server.features.exists("session") ) {
+			if( stream.server.features.exists( "session" ) ) {
 				// init session
 				var iq = new IQ( IQType.set );
 				iq.ext = new xmpp.PlainPacket( Xml.parse( '<session xmlns="urn:ietf:params:xml:ns:xmpp-session"/>' ) );
 				stream.sendIQ( iq, handleSession );
 			} else
 				onSuccess(); //?
-			
 		case IQType.error :
 			onError( new jabber.XMPPError( this, iq ) );
 		}

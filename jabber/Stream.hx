@@ -13,8 +13,6 @@ import util.XmlUtil;
 typedef Server = {
 	//var domain : String;
 	//var allowsRegister : Bool;
-	//var sasl : Bool;
-	//
 	var features : Hash<Xml>;
 }
 
@@ -90,7 +88,7 @@ class Stream {
 		case open, pending :
 			close( true );
 			setConnection( c );
-			open();
+			open(); // re-open stream
 		case closed :
 			if( cnx != null && cnx.connected )
 				cnx.disconnect();
@@ -142,18 +140,27 @@ class Stream {
 	public function sendPacket<T>( p : xmpp.Packet, intercept : Bool = true ) : T {
 		if( !cnx.connected /*|| status != StreamStatus.open*/ ) return null;
 		if( intercept ) for( i in interceptors ) i.interceptPacket( p );
-		return ( sendData( p.toString() ) ) ? cast p : null;
+		return ( sendData( p.toString() ) != null ) ? cast p : null;
 	}
 	
 	/**
-		Send raw data.
+		Send raw string data.
 	*/
-	public function sendData( t : String ) : Bool {
-		if( !cnx.connected || cnx.send( t ) == null ) return false;
+	public function sendData( t : String ) : String {
+		if( !cnx.connected ) return null;
+		var sent = cnx.write( t );
+		if( sent == null ) return null;
 		numPacketsSent++;
 		#if XMPP_DEBUG trace( t, "xmpp-o" ); #end
-		return true;
+		return sent;
 	}
+	
+	/**
+		Send raw bytes data.
+	public function sendBytes( t : haxe.io.Bytes ) : haxe.io.Bytes {
+		//TODO
+	}	
+	*/
 	
 	/**
 		Sends an IQ packet and forwards the collected response to the given handler function.
