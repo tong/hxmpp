@@ -2,7 +2,6 @@ package xmpp;
 
 import util.XmlUtil;
 
-
 /**
 	<a href="http://xmpp.org/rfcs/rfc3921.html">RFC-3921 - Instant Messaging and Presence</a></br>
 	<a href="http://www.xmpp.org/rfcs/rfc3921.html#presence">Exchanging Presence Information</a>
@@ -14,22 +13,20 @@ class Presence extends Packet {
     public var status(default,setStatus) : String;
     public var priority : Null<Int>;
     
-    
 	public function new( ?type : PresenceType, ?show : String, ?status : String, ?priority : Int ) {
 		super();
 		_type = xmpp.PacketType.presence;
 		this.type = type;
 		this.show = show;
+		this.status = status;
 		this.priority = priority;
 	}
-	
 	
 	function setStatus( s : String ) : String {
 		if( s == null ) return status = s;
 		if( s.length > 1023 || s.length == 0 ) throw "Invalid presence status size";
 		return status = s;
 	}
-	
 	
 	public override function toXml() : Xml {
 		var x = super.addAttributes( Xml.createElement( "presence" ) );
@@ -39,7 +36,6 @@ class Presence extends Packet {
 		if( priority != null ) x.addChild( XmlUtil.createElement( "priority", Std.string( priority ) ) );
 		return x;
 	}
-	
 	
 	public static function parse( x : Xml ) : xmpp.Presence {
 		var p = new Presence( x.get( "type" ) );
