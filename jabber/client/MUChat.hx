@@ -36,14 +36,14 @@ class MUChat {
 	
 	//TODO public static var defaultPresencePriority = 5;
 	
-	public dynamic function onJoin( muc : MUChat ) {}
-	public dynamic function onLeave( muc : MUChat ) : Void;
-	public dynamic function onMessage( muc : MUChat, o : MUCOccupant, m : xmpp.Message ) : Void;
-	//TODO public dynamic function onRoomMessage( muc : MUC, m : xmpp.Message ) : Void;
-	public dynamic function onPresence( muc : MUChat, o : MUCOccupant ) {}
-	public dynamic function onSubject( muc : MUChat ) : Void;
+	public dynamic function onJoin() {}
+	public dynamic function onLeave() : Void;
+	public dynamic function onMessage( o : MUCOccupant, m : xmpp.Message ) : Void;
+	//TODO public dynamic function onRoomMessage( m : xmpp.Message ) : Void;
+	public dynamic function onPresence( o : MUCOccupant ) {}
+	public dynamic function onSubject() : Void;
 	
-	public dynamic function onKick( muc : MUChat, nick : String ) : Void;
+	public dynamic function onKick( nick : String ) : Void;
 	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
@@ -169,7 +169,7 @@ class MUChat {
 		var me = this;
 		stream.sendIQ( iq, function(r) {
 			switch( r.type ) {
-			case result : me.onKick( me, nick );
+			case result : me.onKick( nick );
 			case error : me.onError( new jabber.XMPPError( me, r ) );
 			default : // #
 			}
@@ -202,11 +202,11 @@ class MUChat {
 		if( m.subject != null ) {
 			if( subject != null && m.subject == subject ) return;
 			subject = m.subject;
-			onSubject( this );
+			onSubject();
 			return;
 		}
 		if( occupant == null && from == nick  ) occupant = me;
-		onMessage( this, occupant, m );
+		onMessage( occupant, m );
 	}
 	
 	function handlePresence( p : xmpp.Presence ) {
@@ -236,7 +236,7 @@ class MUChat {
 							}
 							presence = new PresenceManager( stream, myjid );
 							joined = true;
-							this.onJoin( this );
+							this.onJoin();
 							// unlock room if required
 //							trace(">>>>>>>>>>>>>>>>>>>> "+x_user.item );
 						//	if( x_user.item != null ) {
@@ -264,7 +264,7 @@ class MUChat {
 							role = x_user.item.role;
 							affiliation = x_user.item.affiliation;
 							presence.target = myjid;
-							onPresence( this, me );
+							onPresence( me );
 						}
 				}
 				
@@ -289,7 +289,7 @@ class MUChat {
 					if( x_user.item.role != null ) occupant.role = x_user.item.role;
 					if( x_user.item.affiliation != null ) occupant.affiliation = x_user.item.affiliation;
 				}
-				onPresence( this, occupant );
+				onPresence( occupant );
 		}
 	}
 	
@@ -321,7 +321,7 @@ class MUChat {
 		myjid = null;
 		room = null;
 		// TODO remove
-		onLeave( this );
+		onLeave();
 	}
 	
 }
