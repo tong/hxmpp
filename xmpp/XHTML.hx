@@ -6,6 +6,7 @@ package xmpp;
 class XHTML {
 	
 	public static var XMLNS = xmpp.NS.PROTOCOL+"/xhtml-im";
+	static var BODY_NS = "http://www.w3.org/1999/xhtml";
 	
 	public var body : String;
 	
@@ -16,7 +17,7 @@ class XHTML {
 	public function toXml() : Xml {
 		var x = Xml.createElement( "html" );
 		x.set( "xmlns", XMLNS );
-		x.addChild( Xml.parse( "<body xmlns='"+XMLNS+"'>"+body+"</body>" ) );
+		x.addChild( Xml.parse( "<body xmlns='"+BODY_NS+"'>"+body+"</body>" ) );
 		return x;
 	}
 	
@@ -26,7 +27,7 @@ class XHTML {
 
 	public static function parse( x : Xml ) : XHTML {
 		for( e in x.elementsNamed( "body" ) )
-			if( e.get( "xmlns" ) == "http://www.w3.org/1999/xhtml" )
+			if( e.get( "xmlns" ) == BODY_NS )
 				return new XHTML( parseBody( e ) );
 		return null;
 	}
