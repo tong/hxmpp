@@ -2,7 +2,6 @@ package jabber;
 
 import jabber.JIDUtil;
 
-
 /**
 	An XMPP address (JID).<br/>
 	A JID is made up of a node (generally a username), a domain, and a resource.<br/>
@@ -26,10 +25,6 @@ class JID {
     /** JID without resource */
 	public var bare(getBare,null) : String;
 	
-	var _full : String;
-	var _bare : String;
-	
-	
 	public function new( str : String ) {
 		
 		if( !JIDUtil.isValid( str ) )
@@ -38,19 +33,15 @@ class JID {
 		this.node = JIDUtil.parseNode( str );
 		this.domain = JIDUtil.parseDomain( str );
 		this.resource = JIDUtil.parseResource( str );
- 		
-		_bare = node+"@"+domain;
-		_full = ( resource == null ) ? _bare : _bare+"/"+resource;
 	}
-	
 	
 	function getBare() : String {
-		return _bare;
+		return node+"@"+domain;
 	}
 	
-	
 	public function toString() : String {
-		return _full;
+		var j = getBare();
+		return ( resource == null ) ? j : j += "/"+resource;
 	}
 	
 }
