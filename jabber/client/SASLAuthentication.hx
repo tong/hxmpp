@@ -13,21 +13,16 @@ import xmpp.filter.PacketOrFilter;
 	<a href="http://xmpp.org/rfcs/rfc3920.html#bind">RFC3920-BIND</a><br>
 	http://www.ietf.org/mail-archive/web/isms/current/msg00063.html
 */
-class SASLAuthentication {
+class SASLAuthentication extends Authentication {
 
-	public dynamic function onFailed()  : Void;
 	public dynamic function onNegotiated() : Void;
-	public dynamic function onSuccess() : Void;
-	public dynamic function onError( e : jabber.XMPPError ) : Void;
+	public dynamic function onError( e : jabber.XMPPError ) : Void; //TODO
 	
 	/** Used SASL method */
 	public var handshake(default,null) : net.sasl.Handshake;
-	/** Used resource */
-	public var resource(default,null) : String;
 	/** Available mechanisms ids (from server) */
 	public var mechanisms(default,null) : Array<String>;
 	//public var negotiated(default,null) : Bool;
-	public var stream(default,null) : Stream;
 	
 	var onStreamOpenHandler : Void->Void;
 	var challengeCollector : PacketCollector;
@@ -40,7 +35,7 @@ class SASLAuthentication {
 		if( mechanisms == null || Lambda.count( mechanisms ) == 0 )
 			throw "No SASL mechanisms given";
 			
-		this.stream = stream;
+		super( stream );
 		this.mechanisms = xmpp.SASL.parseMechanisms( x );
 		
 		handshake = new net.sasl.Handshake();
@@ -52,7 +47,7 @@ class SASLAuthentication {
 		Inits SASL authentication.
 		Returns false if no compatible SASL mechanism was found.
 	*/
-	public function authenticate( password : String, ?resource : String ) : Bool {
+	public override function authenticate( password : String, ?resource : String ) : Bool {
 		
 		//TODO
 //		if( active )
@@ -72,12 +67,12 @@ class SASLAuthentication {
 		}
 		if( handshake.mechanism == null ) {
 			#if JABBER_DEBUG
-			trace( "No matching SASL mechanism found." );
+			trace( "No matching SASL mechanism found.", "warn" );
 			#end
 			return false;
 		}
 		#if JABBER_DEBUG
-		trace( "Used SASL mechanism: "+handshake.mechanism.id );
+		trace( "Used SASL mechanism: "+handshake.mechanism.id, "info" );
 		#end
 		
 		// collect failures
@@ -104,7 +99,7 @@ class SASLAuthentication {
 	
 	
 	function handleSASLFailed( p : xmpp.Packet ) {
-		onFailed();
+		onFail();
 	}
 	
 	function handleSASLChallenge( p : xmpp.Packet ) {
