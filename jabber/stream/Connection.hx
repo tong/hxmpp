@@ -3,12 +3,12 @@ package jabber.stream;
 
 typedef DataFilter = {
 	/** Filters incoming data before further processing ( fe: uncompression ). */
-	function filterData( d : String ) : String;
+	function filterData( t : haxe.io.Bytes ) : haxe.io.Bytes;
 }
 
 typedef DataInterceptor = {
 	/** Modifies raw data before sending ( fe: compression ). */
-	function interceptData( d : String ) : String;
+	function interceptData( d : haxe.io.Bytes ) : haxe.io.Bytes;
 }
 
 /**
@@ -21,13 +21,10 @@ class Connection {
 	/** Callback for disconnecting event */
 	public var onDisconnect : Void->Void;
 	/** Callback data recieved event */
-	public var onData : String->Void;
+	//public var onData : String->Void;
+	public var onData : haxe.io.Bytes->Int->Int->Int;
 	/** Callback connection level errors */
 	public var onError : String->Void;
-	
-	//TODO
-	//public var input : haxe.io.Input;
-	//public var output : haxe.io.Output;
 	
 	/** Indicates whether is currently connected. */
 	public var connected(default,null) : Bool;
@@ -37,6 +34,7 @@ class Connection {
 	public var filters : Array<DataFilter>;
 	
 	function new() {
+		//this.secure = secure;
 		connected = false;
 		interceptors = new Array();
 		filters = new Array();
@@ -70,7 +68,7 @@ class Connection {
 		return throw new error.AbstractError();
 	}
 	
-	/**
+	/*
 		Send raw bytes.
 		TODO
 	public function writeBytes( t : haxe.io.Bytes ) : haxe.io.Bytes {
@@ -78,10 +76,17 @@ class Connection {
 	}
 	*/
 	
+	/* 
 	function dataHandler( t : String ) {
 		for( f in filters )
 			t = f.filterData( t );
-		onData( t );
+		processConnectionData( t );
 	}
-	
+	TODO
+	function handleData( t : haxe.io.Bytes, pos : Int, len : Int ) : haxe.io.Bytes {
+		for( f in filters )
+			t = f.filterData( t );
+		onData( t, pos, len );
+	}
+	*/
 }

@@ -48,12 +48,7 @@ class SASLAuthentication extends Authentication {
 		Returns false if no compatible SASL mechanism was found.
 	*/
 	public override function authenticate( password : String, ?resource : String ) : Bool {
-		
-		//TODO
-//		if( active )
-//			throw "SASL authentication already in progress";
 		this.resource = resource; 
-		
 		// locate mechanism to use.
 		if( handshake.mechanism == null ) {
 			for( amechs in mechanisms ) {
@@ -74,7 +69,6 @@ class SASLAuthentication extends Authentication {
 		#if JABBER_DEBUG
 		trace( "Used SASL mechanism: "+handshake.mechanism.id, "info" );
 		#end
-		
 		// collect failures
 		var f = new PacketOrFilter();
 		f.add( new PacketNameFilter( ~/failure/ ) ); //?
@@ -103,6 +97,7 @@ class SASLAuthentication extends Authentication {
 	}
 	
 	function handleSASLChallenge( p : xmpp.Packet ) {
+		//trace( "#############"+p, "xmpp-i" );
 		// create/send challenge response
 		var c = p.toXml().firstChild().nodeValue;
 		var r = util.Base64.encode( handshake.getChallengeResponse( c ) );
@@ -119,6 +114,7 @@ class SASLAuthentication extends Authentication {
 		onNegotiated();
 		//stream.version = false;
 		stream.open(); // re-open XMPP stream
+		//return p.toString().length;
 	}
 	
 	function handleStreamOpen() {
@@ -129,7 +125,7 @@ class SASLAuthentication extends Authentication {
 			iq.ext = new xmpp.Bind( resource );
 			stream.sendIQ( iq, handleBind );
 		} else {
-			onSuccess(); //?
+			onSuccess(); // TODO ?
 		}
 	}
 	

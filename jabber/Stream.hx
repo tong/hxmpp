@@ -13,9 +13,9 @@ import util.XmlUtil;
 typedef Server = {
 	//var domain : String;
 	//var allowsRegister : Bool;
+	//var secure : { has : Bool, required : Bool };
 	var features : Hash<Xml>;
 }
-
 
 class StreamFeatures {
 	var list : List<String>; // TODO var features : Hash<StreamFeature>;
@@ -26,12 +26,12 @@ class StreamFeatures {
 		return list.iterator();
 	}
 	public function add( f : String ) : Bool {
-		if( Lambda.has( list, f ) ) return false;
+		if( Lambda.has( list, f ) )
+			return false;
 		list.add( f );
 		return true;
 	}
 }
-
 
 /**
 	Abstract base for XMPP streams.
@@ -62,7 +62,7 @@ class Stream {
 	var collectors : List<TPacketCollector>;
 	var interceptors : List<TPacketInterceptor>;
 	var numPacketsSent : Int;
-	var cache : StringBuf;
+	//var cache : StringBuf;
 	
 	
 	function new( c : Connection, jid : jabber.JID ) {
@@ -71,7 +71,6 @@ class Stream {
 			throw "Missing XMPP connection argument";
 		
 		this.jid = jid;
-		
 		collectors = new List();
 		interceptors = new List();
 		server = { features : new Hash() };
@@ -115,23 +114,28 @@ class Stream {
 	*/
 	public function open() : Bool {
 //		if( status == StreamStatus.open ) return false;
-		if( !cnx.connected ) cnx.connect() else connectHandler();
+		if( !cnx.connected ) {
+			cnx.connect();
+		} else {
+			connectHandler();
+		}
 		return true;
 	}
 	
 	/**
 		Close the outgoing xml stream.
 	*/
-	public function close( disconnect = false ) : Bool {
+	public function close( disconnect = false ) {
 		if( status == StreamStatus.open ) {
 			sendData( xmpp.Stream.CLOSE );
 			status = StreamStatus.closed;
-			if( disconnect ) cnx.disconnect();
+			if( disconnect )
+				cnx.disconnect();
 			handleClose();
-			return true;
+			//return true;
 		}
 		//if( status == StreamStatus.pending && disconnect && cnx.connected ) { 
-		return false;
+		//return false;
 	}
 	
 	/**
@@ -218,8 +222,62 @@ class Stream {
 		return interceptors.remove( i );
 	}
 	
+	
+	function processData( buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) : Int {
+		
+		//#if (neko||php)
+		//if( !cnx.reading ) return -1;
+		//#end
+		if( status == StreamStatus.closed ) {
+			return -1;
+		}
+		
+		var t = buf.readString( bufpos, buflen );
+		trace("POC "+t);
+		
+		//TODO 
+		if( xmpp.Stream.eregStreamClose.match( t ) ) {
+			close( true );
+			return -1;
+		}
+		
+		if( ~/stream:error/.match( t ) ) {
+			trace(t);
+			var err : xmpp.StreamError = null;
+			try {
+				err = xmpp.StreamError.parse( Xml.parse( t ) );
+			} catch( e : Dynamic ) {
+				onError( "Invalid stream:error" );
+				close();
+				return -1;
+			}
+			onError( err );
+			close( true );
+			return -1;
+		}
+		
+		switch( status ) {
+		case closed :
+			return buflen;
+		case pending :
+			//return processStreamInit( t, buflen );
+			return processStreamInit( XmlUtil.removeXmlHeader( t ), buflen );
+		case open :
+			var x : Xml = null;
+			try {
+				x = Xml.parse( t );
+			} catch( e : Dynamic ) {
+				return 0;
+			}
+			collectXml( x );
+			return buflen;
+		}
+		return 0;
+	}
+	
 	/**
 	*/
+	/*
 	public function processData( t : String ) {
 		// ignore keepalive
 		if( cache == null && t == " " )
@@ -276,20 +334,24 @@ class Stream {
 						if( Std.string( x.firstChild().nodeType ) == "pcdata" )
 							throw new error.Exception( "Invalid XMPP data" );
 					} catch( e : Dynamic ) {
-						return; /* wait for more data */
+						return;  // wait for more data
 					}
 				}
 			}
 			collectXml( x );
 		}
 	}
+	*/
 	
 	/**
 	*/
 	public function collectXml( x : Xml ) : Array<xmpp.Packet> {
 		var packets = new Array<xmpp.Packet>();
-		for( xml in x.elements() ) {
-			var p = xmpp.Packet.parse( xml );
+		for( x in x.elements() ) {
+			#if XMPP_DEBUG
+			trace( "<<< "+x, "xmpp-i" );
+			#end
+			var p = xmpp.Packet.parse( x );
 			handlePacket( p );
 			packets.push( p );
 		}
@@ -316,7 +378,7 @@ class Stream {
 		}
 		if( !collected ) {
 			#if JABBER_DEBUG
-			trace( "XMPP packet not processed", "warn" );
+			trace( "\tXMPP packet not processed", "warn" );
 			#end
 			if( p._type == xmpp.PacketType.iq ) {
 				var q : xmpp.IQ = cast p;
@@ -349,7 +411,9 @@ class Stream {
 		onClose();
 	}
 	
-	function processStreamInit( t : String ) {
+	function processStreamInit( t : String, buflen : Int ) : Int {
+		// overridden
+		return throw new error.AbstractError();
 	}
 	
 	function connectHandler() {
