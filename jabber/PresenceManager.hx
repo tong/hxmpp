@@ -1,6 +1,5 @@
 package jabber;
 
-
 /**
 	Presence handling wrapper.
 */
@@ -8,9 +7,7 @@ class PresenceManager {
 	
 	public var target : String;
 	public var last(default,null) : xmpp.Presence;
-	
 	var stream : jabber.Stream;
-
 
 	public function new( stream : jabber.Stream, ?target : String ) {
 		this.stream = stream;

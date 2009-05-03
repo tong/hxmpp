@@ -1,6 +1,7 @@
 package jabber.client;
 
 /**
+	<a href="http://xmpp.org/extensions/xep-0078.html">XEP-0078: Multi-User Chat</a><br>
 */
 class NonSASLAuthentication extends Authentication {
 	

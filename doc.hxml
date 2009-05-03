@@ -2,7 +2,7 @@
 ### HXMPP DOC
 -cp lib/
 -cp doc/
-#
+
 jabber.Chat
 jabber.ChatStateNotification
 jabber.JID
@@ -13,6 +13,9 @@ jabber.MessageListener
 jabber.Ping
 jabber.Pong
 jabber.PrivacyLists
+jabber.PubSub
+jabber.PersonalEvent
+jabber.PersonalEventListener
 jabber.ServiceDiscovery
 jabber.ServiceDiscoveryListener
 jabber.SocketConnection
@@ -46,11 +49,11 @@ xmpp.XHTML
 net.sasl.AnonymousMechanism
 net.sasl.PlainMechanism
 net.util.KeepAlive
-#
+
 -js lib.js
 -xml doc/api.xml
 -D JABBER_DEBUG
 -D JABBER_SOCKETBRIDGE
 -cmd rm lib.js
 -cmd cd doc/api/
--cmd haxedoc ../api.xml -f jabber -f xmpp -f net -f crypt -f util -f error
+-cmd haxedoc ../api.xml -f jabber -f jabber.tool -f xmpp -f net -f crypt -f util -f error

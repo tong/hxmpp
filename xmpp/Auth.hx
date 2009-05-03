@@ -2,9 +2,8 @@ package xmpp;
 
 import util.XmlUtil;
 
-
 /**
-	IQ extension used for account authentication.
+	IQ extension used for inband account authentication.
 */
 class Auth {
 	
@@ -15,14 +14,12 @@ class Auth {
 	public var digest : String;
 	public var resource : String;
 	
-	
 	public function new( ?username:	String, ?password : String, ?digest : String, ?resource : String ) {
 		this.username = username;
 		this.password = password;
 		this.digest = digest;
 		this.resource = resource;
 	}
-
 	
 	public function toXml() : Xml {
 		var x = xmpp.IQ.createQueryXml( XMLNS );
@@ -36,7 +33,6 @@ class Auth {
 	public inline function toString() : String {
 		return toXml().toString();
 	}
-	
 	
 	public static function parse( x : Xml ) : xmpp.Auth {
 		var a = new xmpp.Auth();

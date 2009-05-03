@@ -3,15 +3,14 @@ package jabber.client;
 import jabber.PresenceManager;
 import jabber.stream.PacketCollector;
 import jabber.stream.PacketCollector;
-import xmpp.muc.Affiliation;
-import xmpp.muc.Role;
 import xmpp.Message;
 import xmpp.MessageType;
 import xmpp.PacketType;
+import xmpp.muc.Affiliation;
+import xmpp.muc.Role;
 import xmpp.filter.MessageFilter;
 import xmpp.filter.PacketFromContainsFilter;
 import xmpp.filter.PacketTypeFilter;
-
 
 /**
 */
@@ -25,7 +24,6 @@ typedef MUCOccupant = {
 	//?? var lastMessage : xmpp.Message;
 }
 
-
 /**
 	Multi-user chatroom from client perspective.
 	
@@ -33,20 +31,20 @@ typedef MUCOccupant = {
 	<a href="http://www.xmpp.org/extensions/xep-0249.html">XEP-0249: Direct MUC Invitations</a>
 */
 class MUChat {
-	
+//class MUChat<Occupant:MUCOccupant> ?????? lets ci
+
 	//TODO public static var defaultPresencePriority = 5;
 	
 	public dynamic function onJoin() {}
 	public dynamic function onLeave() : Void;
+	public dynamic function onUnlock() : Void;
 	public dynamic function onMessage( o : MUCOccupant, m : xmpp.Message ) : Void;
 	//TODO public dynamic function onRoomMessage( m : xmpp.Message ) : Void;
 	public dynamic function onPresence( o : MUCOccupant ) {}
 	public dynamic function onSubject() : Void;
-	
 	public dynamic function onKick( nick : String ) : Void;
 	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
-	public var stream(default,null) : Stream;
 	public var jid(default,null) : String;
 	public var room(default,null) : String;
 	public var joined(default,null)	: Bool;
@@ -59,6 +57,7 @@ class MUChat {
 	public var occupants(default,null) : Array<MUCOccupant>;
 	public var subject(default,null) : String;
 	public var me(getMe,null) : MUCOccupant;
+	public var stream(default,null) : Stream;
 	
 	var message : xmpp.Message;
 	var col_presence : PacketCollector;
@@ -152,10 +151,10 @@ class MUChat {
 	*/
 	public function kick( nick : String, ?reason : String ) : Bool {
 		if( !joined ) return false;
+		// TODO check role
 		var occupant = getOccupant( nick );
-		trace(occupant);
 		if( occupant == null ) {
-			trace("OCC not found, canot kick");
+			#if JABBER_DEBUG trace("MUC occupant to kick not found"); #end
 			return false;
 		}
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, myjid );
@@ -178,21 +177,31 @@ class MUChat {
 	}
 	
 	/**
-		Sends an invitation message to the given entity.
-		//TODO
+		Sends an (mediated) invitation message to the given entity .
 	*/
 	public function invite( jid : String, ?reason : String ) {
-		//if( !joined ) return false;
-		//if( !jabber.JIDUtil.isValid( jid ) )
-		var x = xmpp.X.create( xmpp.MUCUser.XMLNS, new xmpp.muc.Invite( reason, jid ).toXml() );
-		var m = new xmpp.Message( this.jid );
+		var m = new xmpp.Message( jid );
+		var x = xmpp.X.create( xmpp.MUCUser.XMLNS );
+		x.addChild( new xmpp.muc.Invite( jid, reason ).toXml() );
 		m.properties.push( x );
 		stream.sendPacket( m );
 	}
 	
+	/*
+	public function inviteDirect( jid : String, ?reason : String ) {
+		var m = new xmpp.Message( jid );
+		m.from = stream.jid.toString();
+		var x = xmpp.X.create( "jabber:x:conference" );
+		x.set( "jid", this.jid );
+		if( reason != null ) x.set( "reason", reason ); 
+		m.properties.push( x );
+		stream.sendPacket( m );
+	}
+	*/
+	
 	
 	function handleMessage( m : xmpp.Message ) {
-		//trace("hääändleMessage-hääändleMessage-hääändleMessage-hääändleMessage-hääändleMessage");
+		//trace("händle MUC room Message");
 		var from = getOccupantName( m.from );
 		var occupant = getOccupant( from );
 		if( occupant == null && from != jid && from != nick ) {
@@ -218,78 +227,71 @@ class MUChat {
 		}
 		if( x_user == null ) return;
 		switch( p.from ) {
-			
-			case myjid :
-				switch( p.type ) {
-					
-					case xmpp.PresenceType.unavailable : 
-						joined = false;
-						dispose();
-						//onLeave( this );
-						
-					case null :
-						if( !joined ) {
-							//TODO check for valid presence packet
-							if( x_user.item != null ) {
-								if( x_user.item.role != null ) role = x_user.item.role;
-								if( x_user.item.affiliation != null ) affiliation = x_user.item.affiliation;
-							}
-							presence = new PresenceManager( stream, myjid );
-							joined = true;
-							this.onJoin();
-							// unlock room if required
-//							trace(">>>>>>>>>>>>>>>>>>>> "+x_user.item );
-						//	if( x_user.item != null ) {
-								if( x_user.item.role == Role.moderator &&
-									x_user.status != null &&
-									x_user.status.code == xmpp.muc.Status.WAITS_FOR_UNLOCK )
-								{
-									var iq = new xmpp.IQ( xmpp.IQType.set, null, jid );
-									var q = new xmpp.MUCOwner().toXml();
-									//TODO
-									//query.addChild( new xmpp.DataForm( xmpp.DataFormType.submit ).toXml() );
-									q.addChild( Xml.parse( '<x xmlns="jabber:x:data" type="submit"/>' ) );
-									iq.properties.push( q );
-									stream.sendIQ( iq, function(r) {
-										if( r.type == xmpp.IQType.result ) {
-											trace(" UNLOCKED MUC ROOM ");
-											//unlocked = true; //TODO
-										}
-									} );
-								}
-						//	}
-							
-						} else {
-							// changed my nick
-							role = x_user.item.role;
-							affiliation = x_user.item.affiliation;
-							presence.target = myjid;
-							onPresence( me );
-						}
-				}
-				
-			case jid :
-				trace("... process presence from room.");
-				
-			default : // process occupant presence
-				var from = getOccupantName( p.from );
-				var occupant = getOccupant( from );
-				if( occupant != null ) { // update existing occupant
-					if( p.type == xmpp.PresenceType.unavailable ) {
-						occupants.remove( occupant );
+		case myjid :
+			switch( p.type ) {
+			case xmpp.PresenceType.unavailable : 
+				joined = false;
+				dispose();
+				//onLeave( this );
+			case null :
+				if( !joined ) {
+					//TODO check for valid presence packet
+					if( x_user.item != null ) {
+						if( x_user.item.role != null ) role = x_user.item.role;
+						if( x_user.item.affiliation != null ) affiliation = x_user.item.affiliation;
 					}
-					//..
-					
-				} else { // process new occupant
-					occupant = { role : null, presence : null, nick : from, jid : null, affiliation : null };
-					occupants.push( occupant );
+					presence = new PresenceManager( stream, myjid );
+					// unlock room if required
+					//if( x_user.item != null ) {
+					if( x_user.item.role == Role.moderator && x_user.status != null && x_user.status.code == xmpp.muc.Status.WAITS_FOR_UNLOCK ) {
+						var iq = new xmpp.IQ( xmpp.IQType.set, null, jid );
+						var q = new xmpp.MUCOwner().toXml();
+						q.addChild( new xmpp.DataForm( xmpp.dataform.FormType.submit ).toXml() );
+						iq.properties.push( q );
+						var self = this;
+						stream.sendIQ( iq, function(r:xmpp.IQ) {
+							if( r.type == xmpp.IQType.result ) {
+								#if JABBER_DEBUG trace( "Unlocked MUC room" ); #end
+								//unlocked = true; //TODO
+								//self.onUnlock();
+								self.joined = true;
+								self.onJoin();
+							}
+						} );
+					} else {
+						joined = true;
+						this.onJoin();
+					}
+				} else {
+					// changed my nick
+					role = x_user.item.role;
+					affiliation = x_user.item.affiliation;
+					presence.target = myjid;
+					onPresence( me );
 				}
-				occupant.presence = p;
-				if( x_user.item != null ) {
-					if( x_user.item.role != null ) occupant.role = x_user.item.role;
-					if( x_user.item.affiliation != null ) occupant.affiliation = x_user.item.affiliation;
+			}
+		case jid :
+			trace( "??? process presence from MUC room ???" );
+			
+		default : // process occupant presence
+			var from = getOccupantName( p.from );
+			var occupant = getOccupant( from );
+			if( occupant != null ) { // update existing occupant
+				if( p.type == xmpp.PresenceType.unavailable ) {
+					occupants.remove( occupant );
 				}
-				onPresence( occupant );
+				//..
+				
+			} else { // process new occupant
+				occupant = { role : null, presence : null, nick : from, jid : null, affiliation : null };
+				occupants.push( occupant );
+			}
+			occupant.presence = p;
+			if( x_user.item != null ) {
+				if( x_user.item.role != null ) occupant.role = x_user.item.role;
+				if( x_user.item.affiliation != null ) occupant.affiliation = x_user.item.affiliation;
+			}
+			onPresence( occupant );
 		}
 	}
 	

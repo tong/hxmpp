@@ -22,6 +22,7 @@ enum RosterSubscriptionMode {
 	Jabber client roster.
 */
 class Roster {
+//TODO class Roster<RosterItem:xmpp.roster.Item>
 
 	public static var defaultSubscriptionMode = RosterSubscriptionMode.acceptAll;
 	
@@ -119,11 +120,11 @@ class Roster {
 		var me = this;
 		stream.sendIQ( iq, function(r) {
 			switch( r.type ) {
-				case result :
-					me.onUpdate( [item] );
-				case error :
-					//TODO
-				default : //#
+			case result :
+				me.onUpdate( [item] );
+			case error :
+				//TODO
+			default : //#
 			}
 		} );
 		return true;
@@ -138,19 +139,18 @@ class Roster {
 			var me = this;
 			stream.sendIQ( iq, function(r) {
 				switch( r.type ) {
-					case result :
-						/*
-						trace("TODO");
-						TODO check if the item already got added (with iq.set frm server )
-						to the roster, if not -> abort.
-						if( me.getItem( jid ) == null ) {
-							trace("?????????? result but not added to roster. ????");
-						}
-						*/
-						
-					case error :
-						//TODO
-					default : //#
+				case result :
+					/*
+					trace("TODO");
+					TODO check if the item already got added (with iq.set frm server )
+					to the roster, if not -> abort.
+					if( me.getItem( jid ) == null ) {
+						trace("?????????? result but not added to roster. ????");
+					}
+					*/
+				case error :
+					//TODO
+				default : //#
 				}
 			} );
 		} else if( i.subscription == Subscription.both ) {
@@ -231,7 +231,7 @@ class Roster {
 						
 					default :
 						//TODO check
-						trace( "???? check" );
+						trace( "???? check "+p.type );
 						//onPresence( i, p );
 				}
 			}
@@ -245,70 +245,66 @@ class Roster {
 	function handleRosterIQ( iq : xmpp.IQ ) {
 //		trace("händleRosterIQ","debug");
 		switch( iq.type ) {
-			
-			case result :
-				var added = new Array<Item>();
-				var removed = new Array<Item>();
-				var loaded = xmpp.Roster.parse( iq.ext.toXml() );
-				for( i in loaded ) {
-					var item = getItem( i.jid );
-					if( i.subscription == Subscription.remove ) {
-						if( item != null ) {
-							items.remove( item );
-							removed.push( item );
-						}
-					} else {
-						if( item == null ) { // new roster item
-							item = i;
-							items.push( item );
-							added.push( item );
-							
-						} else { // update roster item
-							trace("TODO UPDATE ROSTER ITEM");
-						}
+		case result :
+			var added = new Array<Item>();
+			var removed = new Array<Item>();
+			var loaded = xmpp.Roster.parse( iq.ext.toXml() );
+			for( i in loaded ) {
+				var item = getItem( i.jid );
+				if( i.subscription == Subscription.remove ) {
+					if( item != null ) {
+						items.remove( item );
+						removed.push( item );
 					}
-				}
-				if( !available ) {
-					available = true;
-					onLoad();
-				}
-				if( added.length > 0 ) onAdd( added );
-				if( removed.length > 0 ) onRemove( removed );
-			
-			case set :
-				var loaded = xmpp.Roster.parse( iq.ext.toXml() );
-				for( i in loaded ) {
-					var item = getItem( i.jid );
-					if( item != null ) { // update item
+				} else {
+					if( item == null ) { // new roster item
 						item = i;
-						onUpdate( [item] );
-					} else { // new item
-						items.push( i );
-						onAdd( [i] );
+						items.push( item );
+						added.push( item );
+					} else { // update roster item
+						trace("TODO UPDATE ROSTER ITEM");
 					}
 				}
-				
-			case error : 
-				//TODO
-				trace("ERROR");
-				
-			default : 
+			}
+			if( !available ) {
+				available = true;
+				onLoad();
+			}
+			if( added.length > 0 ) onAdd( added );
+			if( removed.length > 0 ) onRemove( removed );
+		case set :
+			var loaded = xmpp.Roster.parse( iq.ext.toXml() );
+			for( i in loaded ) {
+				var item = getItem( i.jid );
+				if( item != null ) { // update item
+					item = i;
+					onUpdate( [item] );
+				} else { // new item
+					items.push( i );
+					onAdd( [i] );
+				}
+			}
+		case error : 
+			//TODO
+			trace("ERROR");
+		default : 
+			trace("??? unhandled");
 		}
 	}
 	
-	function requestItemAdd( jid : String ) {
+	function requestItemAdd( j : String ) {
 		var iq = new xmpp.IQ( IQType.set );
-		iq.ext = new xmpp.Roster( [new xmpp.roster.Item( jid )] );
+		iq.ext = new xmpp.Roster( [new xmpp.roster.Item( j )] );
 		var me = this;
 		stream.sendIQ( iq, function(r) {
 			switch( r.type ) {
-				case result :
-					var item = new Item( jid );
-					me.items.push( item );
-					me.onAdd( [item] );
-				case error :
-					//TODO
-				default : //#
+			case result :
+				var item = new Item( j );
+				me.items.push( item );
+				me.onAdd( [item] );
+			case error :
+				//TODO
+			default : //#
 			}
 		} );
 	}

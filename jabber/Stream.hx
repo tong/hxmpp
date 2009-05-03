@@ -62,7 +62,6 @@ class Stream {
 	var collectors : List<TPacketCollector>;
 	var interceptors : List<TPacketInterceptor>;
 	var numPacketsSent : Int;
-	//var cache : StringBuf;
 	
 	
 	function new( c : Connection, jid : jabber.JID ) {
@@ -102,7 +101,7 @@ class Stream {
 	
 	
 	/**
-		Returns the next unique (base64 encoded) id for this stream.
+		Get the next unique (base64 encoded) id for this stream.
 	*/
 	public function nextID() : String {
 		//TODO
@@ -110,20 +109,16 @@ class Stream {
 	}
 	
 	/**
-		Opens the outgoing XMPP stream.
+		Open the XMPP stream.
 	*/
 	public function open() : Bool {
 //		if( status == StreamStatus.open ) return false;
-		if( !cnx.connected ) {
-			cnx.connect();
-		} else {
-			connectHandler();
-		}
+		if( !cnx.connected ) cnx.connect() else connectHandler();
 		return true;
 	}
 	
 	/**
-		Close the outgoing xml stream.
+		Close the XMPP stream.
 	*/
 	public function close( disconnect = false ) {
 		if( status == StreamStatus.open ) {
@@ -148,18 +143,18 @@ class Stream {
 	}
 	
 	/**
-		Send raw string data.
+		Send raw string.
 	*/
 	public function sendData( t : String ) : String {
 		if( !cnx.connected ) return null;
-		var sent = cnx.write( t );
-		if( sent == null ) return null;
+		var s = cnx.write( t );
+		if( s == null ) return null;
 		numPacketsSent++;
 		#if XMPP_DEBUG trace( t, "xmpp-o" ); #end
-		return sent;
+		return s;
 	}
 	
-	/**
+	/*
 		Send raw bytes data.
 	public function sendBytes( t : haxe.io.Bytes ) : haxe.io.Bytes {
 		//TODO
@@ -167,7 +162,7 @@ class Stream {
 	*/
 	
 	/**
-		Sends an IQ packet and forwards the collected response to the given handler function.
+		Send an IQ packet and forward the collected response to the given handler function.
 	*/
 	public function sendIQ( iq : xmpp.IQ, ?handler : xmpp.IQ->Void,
 							?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool )
@@ -179,68 +174,72 @@ class Stream {
 			c = new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block );
 			collectors.add( c );
 		}
-		var sent = sendPacket( iq );
-		if( sent == null && handler != null ) {
+		var s = sendPacket( iq );
+		if( s == null && handler != null ) {
 			collectors.remove( c );
 			c = null;
 			return null;
 		}
-		return { iq : sent, collector : c };
+		return { iq : s, collector : c };
 	}
 	
 	/**
-		Sends message packets.
+		Send a message packet.
 	*/
 	public function sendMessage( to : String, body : String, ?subject : String, ?type : xmpp.MessageType, ?thread : String, ?from : String ) : xmpp.Message {
 		return sendPacket( new xmpp.Message( to, body, subject, type, thread, from ) );
 	}
 	
 	/**
-		Sends presence packet.
+		Send a presence packet.
 	*/
 	public function sendPresence( ?type : xmpp.PresenceType, ?show : String, ?status : String, ?priority : Int ) : xmpp.Presence {
 		return sendPacket( new xmpp.Presence( type, show, status, priority ) );
 	}
 	
+	/**
+	*/
 	public function addCollector( c : TPacketCollector ) : Bool {
 		if( Lambda.has( collectors, c ) ) return false;
 		collectors.add( c );
 		return true;
 	}
-
+	
+	/**
+	*/
 	public function removeCollector( c : TPacketCollector ) : Bool {
 		return collectors.remove( c );
 	}
-
+	
+	/**
+	*/
 	public function addInterceptor(i : TPacketInterceptor ) : Bool {
 		if( Lambda.has( interceptors, i ) ) return false;
 		interceptors.add( i );
 		return true;
 	}
-
+	
+	/**
+	*/
 	public function removeInterceptor( i : TPacketInterceptor ) : Bool {
 		return interceptors.remove( i );
 	}
 	
-	
-	function processData( buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) : Int {
+	/**
+	*/
+	public function processData( buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) : Int {
 		
-		//#if (neko||php)
-		//if( !cnx.reading ) return -1;
-		//#end
 		if( status == StreamStatus.closed ) {
 			return -1;
 		}
-		
 		var t = buf.readString( bufpos, buflen );
-		trace("POC "+t);
 		
 		//TODO 
 		if( xmpp.Stream.eregStreamClose.match( t ) ) {
 			close( true );
 			return -1;
 		}
-		
+		// TODO
 		if( ~/stream:error/.match( t ) ) {
 			trace(t);
 			var err : xmpp.StreamError = null;
@@ -258,9 +257,8 @@ class Stream {
 		
 		switch( status ) {
 		case closed :
-			return buflen;
+			return buflen; //hm?
 		case pending :
-			//return processStreamInit( t, buflen );
 			return processStreamInit( XmlUtil.removeXmlHeader( t ), buflen );
 		case open :
 			var x : Xml = null;
@@ -277,80 +275,10 @@ class Stream {
 	
 	/**
 	*/
-	/*
-	public function processData( t : String ) {
-		// ignore keepalive
-		if( cache == null && t == " " )
-			return;
-		#if XMPP_DEBUG
-		try {
-			var x = Xml.parse( t );
-			for( e in x.elements() )
-				trace( "<<< "+e, "xmpp-i" );
-		} catch( e : Dynamic ) {
-			trace( "<<< "+t, "xmpp-i" );
-		}
-		#end
-		
-		if( xmpp.Stream.eregStreamClose.match( t ) ) {
-			close( true );
-			return;
-		}
-		if( xmpp.Stream.eregStreamError.match( t ) ) {
-			var err : xmpp.StreamError = null;
-			try {
-				err = xmpp.StreamError.parse( Xml.parse( t ) );
-			} catch( e : Dynamic ) {
-				onError( "Invalid stream:error" );
-				close();
-				return;
-			}
-			onError( err );
-			close( true );
-			return;
-		}
-		
-		switch( status ) {
-		case closed :
-			return;
-		case pending :
-			//#if XMPP_DEBUG trace( t, "xmpp-i" ); #end
-			processStreamInit( XmlUtil.removeXmlHeader( t ) );
-		case open :
-			var x : Xml = null;
-			try {
-				x = Xml.parse( t );
-				if( Std.string( x.firstChild().nodeType ) == "pcdata" )
-					throw new error.Exception( "Invalid xmpp" );
-			} catch( e : Dynamic ) {
-				if( cache == null ) {
-					cache = new StringBuf();
-					cache.add( t );
-					return;
-				} else {
-					cache.add( t );
-					try {
-						x = Xml.parse( cache.toString() );
-						if( Std.string( x.firstChild().nodeType ) == "pcdata" )
-							throw new error.Exception( "Invalid XMPP data" );
-					} catch( e : Dynamic ) {
-						return;  // wait for more data
-					}
-				}
-			}
-			collectXml( x );
-		}
-	}
-	*/
-	
-	/**
-	*/
 	public function collectXml( x : Xml ) : Array<xmpp.Packet> {
 		var packets = new Array<xmpp.Packet>();
 		for( x in x.elements() ) {
-			#if XMPP_DEBUG
-			trace( "<<< "+x, "xmpp-i" );
-			#end
+			#if XMPP_DEBUG trace( "<<< "+x, "xmpp-i" ); #end
 			var p = xmpp.Packet.parse( x );
 			handlePacket( p );
 			packets.push( p );
@@ -359,7 +287,7 @@ class Stream {
 	}
 	
 	/**
-		Handles ncoming XMPP packets.
+		Handle incoming XMPP packets.
 	*/
 	public function handlePacket( p : xmpp.Packet ) : Bool {
 		var collected = false;
@@ -371,9 +299,9 @@ class Stream {
 				c.deliver( p );
 				if( !c.permanent ) {
 					collectors.remove( c );
-					//c = null;
 				}					
-				if( c.block ) break;
+				if( c.block )
+					break;
 			}
 		}
 		if( !collected ) {
@@ -412,7 +340,6 @@ class Stream {
 	}
 	
 	function processStreamInit( t : String, buflen : Int ) : Int {
-		// overridden
 		return throw new error.AbstractError();
 	}
 	

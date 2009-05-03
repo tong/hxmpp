@@ -11,7 +11,7 @@ class PubSubListener {
 	/** Just the pubsub event ( message may contain additional information, like delay,.. ! ) */
 	//public dynamic function onEvent( service : String, event : xmpp.PubSubEvent ) : Void;
 	/** New pubsub items recieved */
-	public dynamic function onItems( entity : String, items : xmpp.pubsub.Items ) : Void;
+	public dynamic function onItems( service : String, items : xmpp.pubsub.Items ) : Void;
 	/** Configuration got changed */
 	public dynamic function onConfig( service : String, config : { form : xmpp.DataForm, node : String } ) : Void;
 	/** Node got deleted */
@@ -21,7 +21,7 @@ class PubSubListener {
 	/** Subscription action notification */
 	public dynamic function onSubscription( service : String, subscription : xmpp.pubsub.Subscription ) : Void;
 	
-	/** PubSub services to listen for, others get ignored */
+	/////** PubSub services to listen for, others get ignored */
 	/////public var targets : List<String>;
 	public var stream(default,null) : Stream;
 	
@@ -33,9 +33,10 @@ class PubSubListener {
 	}
 	
 	function handlePubSubEvent( m : xmpp.Message ) {
+		
 		// fire EVERY event message
 		onMessage( m );
-		//
+		
 		var service = m.from;
 		var event : xmpp.PubSubEvent = null;
 		for( p in m.properties )
@@ -53,6 +54,7 @@ class PubSubListener {
 		} else if( event.subscription != null ) {
 			onSubscription( service, event.subscription );
 		} 
+		
 		//onEvent( service, event );
 	}
 	

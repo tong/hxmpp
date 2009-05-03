@@ -15,13 +15,27 @@ class XMPPDebug {
 			}
 			haxe.Log.trace = myTrace;
 		}
+		
 		#elseif php
-		if( !php.Lib.isCli() ) haxe.Firebug.redirectTraces();
-		else haxe.Log.trace = myTrace;
+		if( !php.Lib.isCli() ) haxe.Firebug.redirectTraces() else haxe.Log.trace = myTrace;
+		
+		#elseif XMPP_CONSOLE
+		haxe.Log.trace = consoleTrace;
+		
 		#else
 		haxe.Firebug.redirectTraces();
+		
 		#end
 	}
+	
+	
+	#if XMPP_CONSOLE
+	static var console = XMPPConsole.getInstance();
+	static function consoleTrace( v : Dynamic, ?inf : haxe.PosInfos ) {
+		//haxe.Firebug.trace( v, inf );
+		console.transfered( v, inf );
+	}
+	#end
 	
 	
 	#if neko

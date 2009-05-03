@@ -59,6 +59,10 @@ class SocketConnection extends jabber.stream.Connection {
 		bufbytes = 0;
 		reading = false;
 		
+		#if php
+		buffer = haxe.io.Bytes.alloc( (1<<16) );
+		#end
+		
 		#elseif JABBER_SOCKETBRIDGE
 		socket.onConnect = sockConnectHandler;
 		socket.onDisconnect = sockDisconnectHandler;
@@ -75,12 +79,12 @@ class SocketConnection extends jabber.stream.Connection {
 	public override function connect() {
 		#if (neko||php)
 		socket.connect( new Host( host ), port #if php, if( secure ) "tls" #end );
+//TODO	//socket.connect( new Host( host ), port );
 		connected = true;
 		onConnect();
 		#else
-		#if flash10
-//TODO	socket.timeout = timeout*1000;
-		#end
+		#if flash10 socket.timeout = timeout*1000; #end
+		//TODO socket.timeout = timeout*1000;
 		socket.connect( host, port );
 		#end
 	}
@@ -163,16 +167,15 @@ class SocketConnection extends jabber.stream.Connection {
 	
 	#elseif (neko||php)
 	
-	//TODO php
 	function readData() {
 		var buflen = buffer.length;
 		// eventually double the buffer size
 		if( bufbytes == buflen ) {
 			var nsize = buflen*2;
 			if( nsize > MAX_BUFSIZE ) {
-				//if( buflen == MAX_BUFSIZE )
-				//	throw "Max buffer size reached ("+MAX_BUFSIZE+")";
-				trace( "Max buffer size reached ("+MAX_BUFSIZE+")" );
+				if( buflen == MAX_BUFSIZE )
+					throw "Max buffer size reached ("+MAX_BUFSIZE+")";
+				//trace( "Max buffer size reached ("+MAX_BUFSIZE+")" );
 				nsize = MAX_BUFSIZE;
 			}
 			var buf2 = haxe.io.Bytes.alloc( nsize );
@@ -185,7 +188,6 @@ class SocketConnection extends jabber.stream.Connection {
 	}
 	
 	function processData() {
-		trace("processData");
 		var pos = 0;
 		while( bufbytes > 0 && reading ) {
 			var nbytes = onData( buffer, pos, bufbytes );
@@ -204,30 +206,6 @@ class SocketConnection extends jabber.stream.Connection {
 		if( reading && pos > 0 )
 			buffer.blit( 0, buffer, pos, bufbytes );
 	}
-
-	/*
-	#elseif php
-	
-	function readData() {
-		var available = buffer.length - bufbytes;
-		if( available == 0 ) {
-			var newsize = buffer.length * 2;
-			if( newsize > MAX_BUFSIZE ) {
-				newsize = MAX_BUFSIZE;
-				if( buffer.length == MAX_BUFSIZE )
-					throw "Max buffer size reached";
-			}
-			var newbuf = haxe.io.Bytes.alloc(newsize);
-			newbuf.blit( 0, buffer, 0, bufbytes );
-			buffer = newbuf;
-			available = newsize - bufbytes;
-		}
-		var bytes = socket.input.readBytes( buffer, bufbytes, available );
-		//var msg : String = buffer.readString( bufbytes, bytes );
-		onData( buffer, bufbytes, available );
-	}
-	*/
-	
 
 	#elseif JABBER_SOCKETBRIDGE
 	
@@ -259,11 +237,9 @@ class SocketConnection extends jabber.stream.Connection {
 #if JABBER_SOCKETBRIDGE
 
 /**
-	Socket for socket bridge use.
+	Socket for socketbridge use.
 */
 class Socket {
-	
-	//static var id_inc = 0;
 	
 	public dynamic function onConnect() : Void;
 	public dynamic function onDisconnect() : Void;
@@ -271,7 +247,8 @@ class Socket {
 	public dynamic function onError( e : String ) : Void;
 	
 	public var id(default,null) : Int;
-
+	//var timeout : Int;
+	
 	public function new() {
 		var id : Int = SocketBridgeConnection.createSocket( this );
 		if( id < 0 ) throw new error.Exception( "Error creating socket" );
@@ -283,9 +260,14 @@ class Socket {
 	}
 	
 	public function close() {
-		//TODO
-		//SocketBridgeConnection.destroySocket( id );
+		untyped js.Lib.document.getElementById( SocketBridgeConnection.bridgeId ).disconnect( id );
 	}
+	
+	/*
+	public function destroy() {
+		var _s = untyped js.Lib.document.getElementById( SocketBridgeConnection.bridgeId ).destroy( id );
+	}
+	*/
 	
 	public function send( d : String ) {
 		untyped js.Lib.document.getElementById( SocketBridgeConnection.bridgeId ).send( id, d );
@@ -297,29 +279,32 @@ class Socket {
 class SocketBridgeConnection {
 	
 	//public static var defaultBridgeId = "f9bridge";
-	public static var defaultDelay = 500;
+	public static var defaultDelay = 300;
 	public static var bridgeId(default,null) : String;
 	
 	static var sockets : IntHash<Socket>;
 	static var initialized = false;
 	
-	
+	/*
 	public static function init( id : String ) {
 		_init( id );
 	}
+	*/
 	
-	public static function initDelayed( id : String, cb : Void->Void, ?delay : Int ) {
-		if( delay == null || delay < 0 ) delay = defaultDelay;
-		_init( id );
-		haxe.Timer.delay( cb, delay );
-	}
-	
-	static function _init( id : String ) {
-		if( initialized ) throw "Socketbridge already initialized";
+	public static function init( id : String ) {
+		if( initialized )
+			throw "Socketbridge already initialized";
 		bridgeId = id;
 		sockets = new IntHash();
 		initialized = true;
 	}
+	
+	public static function initDelayed( id : String, cb : Void->Void, ?delay : Int ) {
+		if( delay == null || delay <= 0 ) delay = defaultDelay;
+		init( id );
+		haxe.Timer.delay( cb, delay );
+	}
+	
 	
 	public static function createSocket( s : Socket ) {
 		var id : Int = untyped js.Lib.document.getElementById( bridgeId ).createSocket();

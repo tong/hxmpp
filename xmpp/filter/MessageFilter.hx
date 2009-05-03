@@ -1,6 +1,5 @@
 package xmpp.filter;
 
-
 /** 
 	Filters message packets, optional with given xmpp.MessageType.
 */
@@ -16,7 +15,6 @@ class MessageFilter {
 		if( p._type != xmpp.PacketType.message ) return false;
 		if( this.type == null ) return true;
 		return this.type == cast( p, xmpp.Message ).type;
-		
 	}
 	
 }

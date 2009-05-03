@@ -2,9 +2,8 @@ package jabber;
 
 import jabber.stream.PacketCollector;
 
-
 /**
-	Listens for incoming message packets.
+	Utility to listen/report incoming message packets.
 */
 class MessageListener {
 

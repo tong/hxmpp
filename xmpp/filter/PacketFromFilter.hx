@@ -1,8 +1,7 @@
 package xmpp.filter;
 
-
 /**
-	Filters xmpp packets with matching from attribute.
+	Filters XMPP packets with matching from attribute.
 */
 class PacketFromFilter {
 	

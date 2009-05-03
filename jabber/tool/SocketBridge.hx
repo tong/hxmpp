@@ -9,45 +9,26 @@ import flash.external.ExternalInterface;
 
 
 private class Socket extends flash.net.Socket {
-	
 	public var id(default,null) : UInt;
-	
 	public function new( id : UInt ) {
-		
 		super();
 		this.id = id;
-		
-		/*
-		keepAlive = new net.util.KeepAlive( this );
-		addEventListener( Event.CONNECT, onConnect );
-		addEventListener( Event.CLOSE, onDisconnect );
-		addEventListener( IOErrorEvent.IO_ERROR, onDisconnect );
-		addEventListener( SecurityErrorEvent.SECURITY_ERROR, onDisconnect );
-	*/
 	}
-	
-	/*
-	function onConnect( e : Event ) {
-		keepAlive.start();
-	}
-	
-	function onDisconnect( e : Event ) {
-		keepAlive.stop();
-	}
-	*/
 }
-
 
 /**
 */
 class SocketBridge {
 	
+	static var defaultContext = "jabber.SocketBridgeConnection";
+	
 	var ctx : String;
 	var sockets : IntHash<Socket>;
 	
-	function new() {
+	function new( ctx : String ) {
 		
-		ctx = "jabber.SocketBridgeConnection";
+		this.ctx = ( ctx != null ) ? ctx : defaultContext;
+		
 		sockets = new IntHash();
 		
 		if( ExternalInterface.available ) {
@@ -56,6 +37,7 @@ class SocketBridge {
 				ExternalInterface.addCallback( "destroySocket", destroySocket );
 				ExternalInterface.addCallback( "connect", connect );
 				ExternalInterface.addCallback( "disconnect", disconnect );
+				//ExternalInterface.addCallback( "destroy", destroy );
 				ExternalInterface.addCallback( "send", send );
 			} catch( e : Dynamic ) {
 				trace( e );
@@ -73,9 +55,6 @@ class SocketBridge {
 	function createSocket() : Int {
 		var id = Lambda.count( sockets );
 		var s = new Socket( id );
-		//#if flash10
-		//s.timeout = 
-		//#end
 		s.addEventListener( Event.CONNECT, sockConnectHandler );
 		s.addEventListener( Event.CLOSE, sockDisconnectHandler );
 		s.addEventListener( IOErrorEvent.IO_ERROR, sockErrorHandler );
@@ -86,7 +65,8 @@ class SocketBridge {
 	}
 	
 	function destroySocket( id : Int ) : Bool {
-		if( !sockets.exists( id ) ) return false;
+		if( !sockets.exists( id ) )
+			return false;
 		var s = sockets.get( id );
 		if( s.connected ) s.close();
 		sockets.remove( s.id );
@@ -94,22 +74,40 @@ class SocketBridge {
 		return true;
 	}
 	
-	function connect( id : Int, host : String, port : Int ) : Bool {
-		if( !sockets.exists( id ) ) return false;
+	function connect( id : Int, host : String, port : Int, ?timeout : Int = -1 ) : Bool {
+		#if flash10 if( timeout > 0 ) s.timeout = timeout; #end
+		if( !sockets.exists( id ) )
+			return false;
 		var s = sockets.get( id );
 		s.connect( host, port );
 		return true;
 	}
 	
 	function disconnect( id : Int ) : Bool {
-		if( !sockets.exists( id ) ) return false;
+		if( !sockets.exists( id ) )
+			return false;
 		var s = sockets.get( id );
 		s.close();
 		return true;
 	}
 	
+	/*
+	function destroy( id : Int ) : Bool {
+		trace("SOCKETBRIDGE destroy: "+id );
+		if( !sockets.exists( id ) )
+			return false;
+		var s = sockets.get( id );
+		//s.close();
+		if( s.connected ) s.close();
+		sockets.remove( id );
+		s = null;
+		return true;
+	}
+	*/
+	
 	function send( id : Int, data : String ) : Bool {
-		if( !sockets.exists( id ) ) return false;
+		if( !sockets.exists( id ) )
+			return false;
 		var s = sockets.get( id );
 		s.writeUTFBytes( data ); 
 		s.flush();
@@ -136,8 +134,10 @@ class SocketBridge {
 	static function main() {
 		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
-		haxe.Firebug.redirectTraces();
-		var b = new SocketBridge();
+		var cm = new flash.ui.ContextMenu();
+		cm.hideBuiltInItems();
+		flash.Lib.current.contextMenu = cm;
+		new SocketBridge( flash.Lib.current.loaderInfo.parameters.ctx );
 	}
 	
 }
