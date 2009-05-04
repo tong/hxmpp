@@ -15,10 +15,12 @@ class Stream extends jabber.Stream {
 	/** Dispatched on authentication success */
 	public dynamic function onConnect() : Void;
 	
-	/** */
+	/** Server components host */
 	public var host(default,null) : String;
 	/** This components subdomain */
 	public var subdomain(default,null) : String;
+	/** Full component service name */
+	public var serviceName(default,null) : String;
 	/** Shared secret used to identify legacy components*/
 	public var secret(default,null) : String;
 	/**  */
@@ -27,8 +29,6 @@ class Stream extends jabber.Stream {
 	public var serviceListener(default,null) : ServiceDiscoveryListener;
 	
 	
-	/**
-	*/
 	public function new( host : String, subdomain : String, secret : String, cnx : Connection,
 						 ?identity : xmpp.disco.Identity ) {
 						 	
@@ -36,6 +36,7 @@ class Stream extends jabber.Stream {
 		if( secret == null ) throw "Invalid secret (null)";
 
 		super( cnx, null );
+		this.serviceName = subdomain+"."+host;
 		this.host = host;
 		this.subdomain = subdomain;
 		this.secret = secret;
