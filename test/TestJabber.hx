@@ -13,6 +13,7 @@ class TestJabber {
 		
 		/////
 		r.add( new TestJID() );
+		r.add( new TestMUCUtil() );
 		
 		r.run();
 	}
