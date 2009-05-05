@@ -3,7 +3,6 @@ package jabber;
 import jabber.stream.PacketCollector;
 import xmpp.filter.IQFilter;
 
-
 /**
 	Manages discovery of services from XMPP entities.<br>
 	Two kinds of information can be discovered:<br>
@@ -20,11 +19,9 @@ class ServiceDiscovery {
 	
 	public var stream(default,null) : jabber.Stream;
 	
-	
 	public function new( stream : jabber.Stream ) {
 		this.stream = stream;
 	}
-	
 	
 	/**
 		Queries entity for information.

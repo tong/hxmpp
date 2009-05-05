@@ -1,6 +1,5 @@
 package xmpp.disco;
 
-
 /**
 */
 class Items extends List<xmpp.disco.Item> {
@@ -9,12 +8,10 @@ class Items extends List<xmpp.disco.Item> {
 	
 	public var node : String;
 	
-	
 	public function new( ?node : String ) {
 		super();
 		this.node = node;
 	}
-	
 	
 	public function toXml() : Xml {
 		var q = xmpp.IQ.createQueryXml( XMLNS );
@@ -30,7 +27,6 @@ class Items extends List<xmpp.disco.Item> {
 		return q;
 	}
 	
-	
 	public static function parse( x : Xml ) : Items {
 		var items = new Items();
 		for( f in x.elements() ) {
@@ -40,5 +36,5 @@ class Items extends List<xmpp.disco.Item> {
 		}
 		return items;
 	}
-	
+
 }

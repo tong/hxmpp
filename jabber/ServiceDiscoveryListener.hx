@@ -3,13 +3,12 @@ package jabber;
 import jabber.stream.PacketCollector;
 import xmpp.filter.IQFilter;
 
-
 //typedef NodeInfoProvider = {
 //}
 
-
 /**
 	Listens/Answers incoming service discovery requests.
+	<a href="http://www.xmpp.org/extensions/xep-0030.html">XEP 30 - ServiceDiscovery</a>
 */
 class ServiceDiscoveryListener {
 	
@@ -29,12 +28,10 @@ class ServiceDiscoveryListener {
 	public var identity(default,setIdentity): xmpp.disco.Identity;
 	//TODO var nodeInfoProviders : List<TNodeInfoProvider>;
 	
-	
 	public function new( stream : Stream,  ?identity : xmpp.disco.Identity ) {
 		
-		if( !stream.features.add( xmpp.disco.Info.XMLNS ) || !stream.features.add( xmpp.disco.Items.XMLNS ) ) {
-			throw "ServiceDiscovery listener feature already added";
-		}
+		if( !stream.features.add( xmpp.disco.Info.XMLNS ) || !stream.features.add( xmpp.disco.Items.XMLNS ) )
+			throw "Service Discovery listener stream feature already added";
 		
 		this.stream = stream;
 		this.setIdentity( identity );
@@ -43,14 +40,12 @@ class ServiceDiscoveryListener {
 		stream.addCollector( new PacketCollector( [cast new xmpp.filter.IQFilter( xmpp.disco.Items.XMLNS, null, xmpp.IQType.get )], handleItemsQuery, true ) );
 	}
 	
-	
-	function setIdentity( id : xmpp.disco.Identity ) : xmpp.disco.Identity {
-		return identity = ( id == null ) ? defaultIdentity :  id;
+	function setIdentity( i : xmpp.disco.Identity ) : xmpp.disco.Identity {
+		return identity = ( i == null ) ? defaultIdentity :  i;
 	}
 	
 	/*
 	//TODO
-		
 	public function dispose() {
 	}
 	
@@ -58,26 +53,22 @@ class ServiceDiscoveryListener {
 	}
 	*/
 	
-	
 	function handleInfoQuery( iq : xmpp.IQ ) {
 		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
 		r.ext = new xmpp.disco.Info( [identity], Lambda.array( stream.features ) );
 		stream.sendData( r.toString() );
 	}
 	
-	//TODO nodeInfoProviders
-	// override me if you want
 	function handleItemsQuery( iq : xmpp.IQ ) {
-		// return error cancel
-		var r = new xmpp.IQ( xmpp.IQType.error, iq.id, iq.from );
-		r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, -1, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );
-		stream.sendPacket( r );
-		/*
-		var items = new xmpp.disco.Items();
-		for( p in itemProvider.items ) {
-			items.add( new xmpp.Item() );
+		if( Reflect.hasField( stream, "items" ) ) { // component stream
+			var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, Reflect.field( stream, "serviceName" ) );
+			r.ext = Reflect.field( stream, "items" );
+			stream.sendPacket( r );
+		} else { // client stream, return error cancel
+			var r = new xmpp.IQ( xmpp.IQType.error, iq.id, iq.from );
+			r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, -1, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );
+			stream.sendPacket( r );
 		}
-		*/
 	}
 	
 }

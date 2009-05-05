@@ -26,6 +26,8 @@ class Stream extends jabber.Stream {
 	/**  */
 	public var authenticated(default,null) : Bool;
 	/** */
+	public var items(default,null) : xmpp.disco.Items;
+	/** */
 	public var serviceListener(default,null) : ServiceDiscoveryListener;
 	
 	
@@ -41,6 +43,7 @@ class Stream extends jabber.Stream {
 		this.subdomain = subdomain;
 		this.secret = secret;
 		
+		items = new xmpp.disco.Items();
 		authenticated = false;
 		serviceListener = new ServiceDiscoveryListener( this, identity );
 	}
