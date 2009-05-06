@@ -1,6 +1,7 @@
 package xmpp.muc;
 
-
+/**
+*/
 class Item {
 	
 	public var affiliation : Affiliation;
@@ -11,7 +12,11 @@ class Item {
 	public var reason : String;
 	public var continue_ : String;
 	
-	public function new() {
+	public function new( ?affiliation : Affiliation, ?role : Role, ?nick : String, ?jid : String ) {
+		this.affiliation = affiliation;
+		this.role = role;
+		this.nick = nick;
+		this.jid = jid;
 	}
 	
 	public function toXml() : Xml {
@@ -35,7 +40,6 @@ class Item {
 		}
 		return x;
 	}
-	
 	
 	public static function parse( x : Xml ) : Item {
 		var p = new Item();

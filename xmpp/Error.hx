@@ -1,6 +1,5 @@
 package xmpp;
 
-
 /**
 	XMPP packet error extension.
 */
@@ -36,12 +35,11 @@ class Error {
 		return toXml().toString();
 	}
 	
-	
 	/**
 		Parses the error from a given packet.
 	*/
 	public static function parseFromPacket( p : xmpp.Packet ) : xmpp.Error {
-		for( e in p.toXml().elementsNamed("error") )
+		for( e in p.toXml().elementsNamed( "error" ) )
 			return Error.parse( e );
 		return null;
 	}
