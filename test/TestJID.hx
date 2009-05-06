@@ -2,56 +2,56 @@
 import jabber.JID;
 import jabber.JIDUtil;
 
-
-class TestJID extends haxe.unit.TestCase   {
+class TestJID extends haxe.unit.TestCase {
 	
-	public function testJIDUtil() {
+	public function testValidation() {
 		
-		var j1 = "nodemain.net/Resource";
-		assertTrue( !jabber.JIDUtil.ereg.match( j1 ) );
-		assertTrue( !JIDUtil.isValid( j1 ) );
-		
-		var j1 = "node@domain.net/Resource";
-		assertTrue( jabber.JIDUtil.ereg.match( j1 ) );
-		assertTrue( JIDUtil.isValid( j1 ) );
-		assertEquals( "node", JIDUtil.parseNode( j1 ) );
-		assertEquals( "domain.net", JIDUtil.parseDomain( j1 ) );
-		assertTrue( JIDUtil.hasResource( j1 ) );
-		assertEquals( "Resource", JIDUtil.parseResource( j1 ) );
-		
-		var j2 = "node@domain.net";
-		assertTrue( jabber.JIDUtil.ereg.match( j2 ) );
-		assertTrue( JIDUtil.isValid( j2 ) );
-		assertEquals(  "node", JIDUtil.parseNode( j2 ) );
-		assertEquals( "domain.net", JIDUtil.parseDomain( j2 ) );
-		assertTrue( !JIDUtil.hasResource( j2 ) );
-		assertEquals( null, JIDUtil.parseResource( j2 ) );
-		
-		var parts1 = JIDUtil.getParts( j1 );
-		assertEquals( "node", parts1[0] );
-		assertEquals( "domain.net", parts1[1] );
-		assertEquals( "Resource", parts1[2] );
-		
-		var parts2 = JIDUtil.getParts( j2 );
-		assertEquals( "node", parts2[0] );
-		assertEquals( "domain.net", parts2[1] );
+		assertFalse( JIDUtil.isValid( "nodedomain.net" ) );
+		assertTrue( JIDUtil.isValid( "node@domain" ) );
+		assertTrue( JIDUtil.isValid( "node@domain/Resource" ) );
+		assertTrue( JIDUtil.isValid( "node@domain.net/Resource" ) );
+		assertTrue( JIDUtil.isValid( "node@domain.net" ) );
+		assertTrue( JIDUtil.isValid( "node@sub.domain.com" ) );
+		assertTrue( JIDUtil.isValid( "node@sub.domain.com/Resource" ) );
 		
 		#if JABBER_DEBUG
-		var j = "node@domain.net/Resource";
-		assertTrue( jabber.JIDUtil.ereg.match( j ) );
-		assertTrue( JIDUtil.isValid( j ) );
-		j = "node@domain.net";
-		assertTrue( jabber.JIDUtil.ereg.match( j ) );
-		assertTrue( JIDUtil.isValid( j ) );
-		j = "node@domain";
-		assertTrue( jabber.JIDUtil.ereg.match( j ) );
-		assertTrue( JIDUtil.isValid( j ) );
-		j = "node@domain/Resource";
-		assertTrue( jabber.JIDUtil.ereg.match( j ) );
-		assertTrue( JIDUtil.isValid( j ) );
-		j = "node";
-		assertTrue( !jabber.JIDUtil.ereg.match( j ) );
-		assertTrue( !JIDUtil.isValid( j ) );
+		assertFalse( JIDUtil.isValid( "node@domain" ) );
+		assertTrue( JIDUtil.isValid( "node@domain" ) );
+		assertTrue( JIDUtil.isValid( "node@domain/Resource" ) );
+		assertTrue( JIDUtil.isValid( "node@sub.domain.com/Resource" ) );
+		#end
+	}
+		
+	public function testParse() {
+		
+		var t = "node@domain.net/Resource";
+		assertEquals( "node", JIDUtil.parseNode( t ) );
+		assertEquals( "domain.net", JIDUtil.parseDomain( t ) );
+		assertEquals( "Resource", JIDUtil.parseResource( t ) );
+		var parts = JIDUtil.getParts( t );
+		assertEquals( "node", parts[0] );
+		assertEquals( "domain.net", parts[1] );
+		assertEquals( "Resource", parts[2] );
+		
+		var t = "node@sub.domain.net/Resource";
+		assertEquals( "node", JIDUtil.parseNode( t ) );
+		assertEquals( "sub.domain.net", JIDUtil.parseDomain( t ) );
+		assertEquals( "Resource", JIDUtil.parseResource( t ) );
+		var parts = JIDUtil.getParts( t );
+		assertEquals( "node", parts[0] );
+		assertEquals( "sub.domain.net", parts[1] );
+		assertEquals( "Resource", parts[2] );
+		
+		#if JABBER_DEBUG
+		var t = "node@domain/Resource";
+		assertEquals( "node", JIDUtil.parseNode( t ) );
+		assertEquals( "domain", JIDUtil.parseDomain( t ) );
+		assertEquals( "Resource", JIDUtil.parseResource( t ) );
+		var parts = JIDUtil.getParts( t );
+		assertEquals( "node", parts[0] );
+		assertEquals( "domain", parts[1] );
+		assertEquals( "Resource", parts[2] );
+		
 		#end
 	}
 	
@@ -90,7 +90,7 @@ class TestJID extends haxe.unit.TestCase   {
 		assertEquals( "domain.net", parts[1] );
 	}
 	
-	public function testJIDEscaping() {
+	public function testEscaping() {
 		var node = 'joe smith"hugo&karl\\tom/che:ruth<elias>rotz@coma\\\\';
 		assertEquals( JIDUtil.unescapeNode( JIDUtil.escapeNode( node ) ), node );
 	}

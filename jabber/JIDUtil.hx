@@ -1,7 +1,5 @@
 package jabber;
 
-//TODO move to package "jabber"
-
 /**
 	Static methods for JabberID manipulation/validation.<br>
 	<a href="http://www.xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a><br>
@@ -9,9 +7,9 @@ package jabber;
 class JIDUtil {
 	
 	#if JABBER_DEBUG
-	public static var ereg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+(\.[A-Z][A-Z][A-Z]?)?/i;
+	public static var ereg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+(\.[A-Z][A-Z][A-Z]?)?(\/[A-Z0-9._%-])?/i;
 	#else
-	public static var ereg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?+(\/[A-Z0-9])?/i;
+	public static var ereg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?+(\/[A-Z0-9._%-])?/i;
 	#end
 	
 	/**
