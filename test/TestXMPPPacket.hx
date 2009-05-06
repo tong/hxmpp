@@ -143,29 +143,6 @@ class TestXMPPError extends haxe.unit.TestCase {
 }
 
 
-class TestXMPPDate extends haxe.unit.TestCase {
-	
-	public function testParse() {
-		
-		var now = "2008-11-01";
-		var formatted = xmpp.Date.format( now );
-		assertEquals( now, formatted );
-		
-		now = "2008-11-01";
-		formatted = xmpp.Date.format( now, 2 );
-		assertEquals( now, formatted );
-		
-		now = "2008-11-01 19:06:02";
-		formatted = xmpp.Date.format( now );
-		assertEquals( "2008-11-01T19:06:02Z", formatted );
-		
-		now = "2008-11-01 19:06:02";
-		formatted = xmpp.Date.format( now, 2 );
-		assertEquals( "2008-11-01T19:06:02-02:00", formatted );
-	}
-}
-
-
 class TestXMPPCompression extends haxe.unit.TestCase {
 		
 	public function testParse() {

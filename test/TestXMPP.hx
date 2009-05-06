@@ -22,7 +22,7 @@ class TestXMPP {
 		///// stuff
 		r.add( new TestXMPPError() );
 		r.add( new TestXMPPCompression() );
-		r.add( new TestXMPPDate() );
+		r.add( new TestXMPPDateTime() );
 		r.add( new TestXMPPXHTML() );
 	//	r.add( new TestXMPPBind() );
 		/////r.add( new TestXMPPSASL() );

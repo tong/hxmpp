@@ -1,6 +1,5 @@
 package xmpp;
 
-
 typedef PacketDelay = {
 	
 	/**
@@ -20,7 +19,6 @@ typedef PacketDelay = {
 	var description : String;
 }
 
-
 /**
 	<a href="http://xmpp.org/extensions/xep-0203.html">XEP-0203: Delayed Delivery</a><br/>
 */
@@ -28,27 +26,34 @@ class Delayed {
 	
 	public static var XMLNS = "urn:xmpp:delay";
 	
-	/*
 	public var from : String;
 	public var stamp : String;
 	public var description : String;
 	
-	public function new() {}
+	public function new( from : String, stamp : String, ?description : String ) {
+		this.from = from;
+		this.stamp = stamp;
+		this.description = description;
+	}
+	
+	public inline function toString() : String {
+		return toXml().toString();
+	}
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "delay" );
 		x.set( "xmlns", XMLNS );
 		x.set( "from", from );
 		x.set( "stamp", stamp );
-		if( description != null ) x.set( "description", description );
+		if( description != null )
+			x.set( "description", description );
 		return x;
 	}
-	*/
 	
 	/**
 		Parses/Returns the packet delay from the properties of the given XMPP packet.
 	*/
-	public static function get( p : xmpp.Packet ) : xmpp.PacketDelay {
+	public static function fromPacket( p : xmpp.Packet ) : xmpp.PacketDelay {
 		for( e in p.properties ) {
 			var nodeName = e.nodeName;
 			var xmlns = e.get( "xmlns" );
