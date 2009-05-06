@@ -11,7 +11,7 @@ import neko.net.Host;
 import neko.net.Socket;
 #elseif php
 import php.net.Host;
-import php.net.Socket;
+import net.php.Socket;
 #end
 
 /**
@@ -77,14 +77,20 @@ class SocketConnection extends jabber.stream.Connection {
 	
 	
 	public override function connect() {
+		#if neko
+		socket.connect( new Host( host ), port );
+		#end
+		#if php
+		if( secure )
+			socket.connectTLS( new Host( host ), port );
+		else
+			socket.connect( new Host( host ), port );
+		#end
 		#if (neko||php)
-		socket.connect( new Host( host ), port #if php, if( secure ) "tls" #end );
-//TODO	//socket.connect( new Host( host ), port );
 		connected = true;
 		onConnect();
 		#else
 		#if flash10 socket.timeout = timeout*1000; #end
-		//TODO socket.timeout = timeout*1000;
 		socket.connect( host, port );
 		#end
 	}
