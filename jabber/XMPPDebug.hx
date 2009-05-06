@@ -28,7 +28,7 @@ class XMPPDebug {
 		#end
 	}
 	
-	
+	/*
 	#if XMPP_CONSOLE
 	static var console = XMPPConsole.getInstance();
 	static function consoleTrace( v : Dynamic, ?inf : haxe.PosInfos ) {
@@ -36,7 +36,7 @@ class XMPPDebug {
 		console.transfered( v, inf );
 	}
 	#end
-	
+	*/
 	
 	#if neko
 	
@@ -61,6 +61,10 @@ class XMPPDebug {
 	
 	#elseif php
 	
+	static inline var YELLOW = 33;
+	static inline var CYAN = 32;
+	static inline var WHITE = 37;
+	
 	static function myTrace( v : Dynamic, ?inf : haxe.PosInfos ) {
 		var t = "";
 		if( inf.customParams == null ) {
@@ -70,7 +74,10 @@ class XMPPDebug {
 		} else {
 			t += "\n"+v+"\n";
 		}
-		php.Lib.print( t );
+		var c = if( inf.customParams[0] == "xmpp-i" ) YELLOW;
+		else if( inf.customParams[0] == "xmpp-o" ) CYAN;
+		else WHITE;
+		php.Lib.print( "\033["+c+"m"+t+"\033[37m" );
 	}
 	
 	#end
