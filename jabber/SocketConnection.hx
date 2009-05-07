@@ -24,8 +24,6 @@ class SocketConnection extends jabber.stream.Connection {
 	#end
 	
 	public var socket(default,null) : Socket;
-	public var host(default,null) : String;
-	public var port(default,null) : Int;
 	public var timeout(default,setTimeout) : Int;
 	public var secure(default,null) : Bool;
 	
@@ -38,13 +36,11 @@ class SocketConnection extends jabber.stream.Connection {
 	public function new( host : String, port : Int,
 						 ?secure : Bool = false , ?timeout : Int = 10) {
 		
-		super();
-		this.host = host;
-		this.port = port;
+		super( host, port );
 		#if (flash10||neko||php)
 		this.timeout = timeout;
-		this.secure = secure;
 		#end
+		this.secure = secure;
 		
 		socket = new Socket();
 		

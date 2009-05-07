@@ -26,6 +26,10 @@ class Connection {
 	/** Callback connection level errors */
 	public var onError : String->Void;
 	
+	/** Server IP/hostname*/
+	public var host(default,null) : String;
+	/** Server port to connect to */
+	public var port(default,null) : Int;
 	/** Indicates whether is currently connected. */
 	public var connected(default,null) : Bool;
 	/** Raw data filters for outgoing data. */
@@ -33,8 +37,9 @@ class Connection {
 	/** Raw data filters for incoming data. */
 	public var filters : Array<DataFilter>;
 	
-	function new() {
-		//this.secure = secure;
+	function new( host : String, port : Int ) {
+		this.host = host;
+		this.port = port;
 		connected = false;
 		interceptors = new Array();
 		filters = new Array();
