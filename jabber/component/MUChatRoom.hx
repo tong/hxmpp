@@ -10,7 +10,7 @@ private class HistoryMessage extends xmpp.Message {
 	}
 }
 
-private class History {
+class History {
 	
 	public var maxLength(default,setMaxLength) : Int; //TODO setMaxLength
 	var messages : Array<HistoryMessage>;
@@ -46,7 +46,7 @@ private class History {
 //TODO 
 //interface Occupant {
 
-private class Occupant {
+class Occupant {
 	
 	public var jid : String;
 	public var nick : String;
@@ -112,10 +112,11 @@ class MUChatRoom {
 	public function new( stream : Stream, name : String,
 						 ?password : String, ?maxOccupants : Int = -1, ?historyLength : Int = -1 ) {
 		
-		if( password == "" )
-			throw "Invalid password";
-		if( maxOccupants < 2 )
-			throw "Invalid max occupant length ("+maxOccupants+")";
+		// php bug ?
+//		if( password.length == 0 )
+//			throw "Invalid password";
+//		if( maxOccupants < 2 )
+//			throw "Invalid max occupant length ("+maxOccupants+")";
 			
 		this.stream = stream;
 		this.name = name;
@@ -169,88 +170,20 @@ class MUChatRoom {
 			}
 			trace( "NEW OCCUPANT", "info" );
 			newOccupant = true;
-			var hasMUCExt = false;
-			for( prop in p.properties ) {
-				if( prop.nodeName == "x" && prop.get( "xmlns" ) == xmpp.MUC.XMLNS ) {
-					hasMUCExt = true;
-					if( password != null ) {
-						//TODO check for password
-						//......
-					}
-					break;
-				}
-			}
-			if( !hasMUCExt ) {
-				//TODO notify client
+			occupant = handleNewOccupant( nick, p );
+			if( occupant == null )
 				return;
-			}
-			if( Lambda.count( occupants )+1 == maxOccupants ) {
-				sendErrorPresence( p.from, xmpp.ErrorType.wait, xmpp.ErrorCondition.SERVICE_UNAVAILABLE );
-				return;
-			}
-			occupant = new Occupant( p.from, nick, p.type, p.show );
-			occupants.set( nick, occupant );
-			if( locked ) {
-				owner = occupant.jid;
-				occupant.affiliation = xmpp.muc.Affiliation.owner;
-				occupant.role = xmpp.muc.Role.moderator;
-				var r = new xmpp.Presence( null, null, null/*, p.priority*/ );
-				r.to = p.from;
-				r.from = roomJID( nick );
-				r.properties.push( xmpp.X.create( xmpp.MUCUser.XMLNS, [ occupant.item.toXml(), new xmpp.muc.Status( 201 ).toXml()] ) );
-				stream.sendPacket( r );
-				var m = new xmpp.Message( p.from, defaultLockMessage, null, xmpp.MessageType.groupchat, null, jid );
-				stream.sendPacket( m );
-				return;
-			} else {
-				if( occupant.jid == owner ) {
-					occupant.affiliation = xmpp.muc.Affiliation.owner;
-					occupant.role = xmpp.muc.Role.moderator;
-				} else {
-					occupant.affiliation = xmpp.muc.Affiliation.member;
-					occupant.role = xmpp.muc.Role.participant;
-				}
-				// send presences from existing occupants to new occupant
-				var presence = new xmpp.Presence();
-				presence.to = occupant.jid;
-				for( o in occupants ) {
-					if( o.jid != occupant.jid ) {
-						presence.type = o.presenceType;
-						presence.show = o.presenceShow;
-						presence.from = roomJID( o.nick );
-						presence.properties = [xmpp.X.create( xmpp.MUCUser.XMLNS, [o.item.toXml()] )];
-						stream.sendPacket( presence );
-					}
-				}
-			}
 		}
 		
+		// handle occupant leave
 		if( !newOccupant && p.type == xmpp.PresenceType.unavailable ) {
-			//trace("OCCUPANT LEFT ROOM");
-			occupants.remove( occupant.nick );
-			var presence = new xmpp.Presence();
-			presence.type = xmpp.PresenceType.unavailable;
-			presence.from = roomJID( occupant.nick );
-			var x = xmpp.X.create( xmpp.MUCUser.XMLNS, [occupant.item.toXml()] );
-			presence.properties.push( x );
-			for( o in occupants ) {
-				presence.to = o.jid;
-				stream.sendPacket( presence );
-			}
+			handleRoomLeave( occupant );
 			return;
 		}
 		
 		// send updated presence to all occupants
-		var presence = new xmpp.Presence();
-		presence.type = occupant.presenceType;
-		presence.from = roomJID( occupant.nick );
-		var x = xmpp.X.create( xmpp.MUCUser.XMLNS, [occupant.item.toXml()] );
-		presence.properties.push( x );
-		for( o in occupants ) {
-			presence.to = o.jid;
-			stream.sendPacket( presence );
-		}
-		
+		publishPresence( occupant );
+	
 		// send message history to new occupant
 		if( newOccupant ) {
 			for( m in history ) {
@@ -276,8 +209,10 @@ class MUChatRoom {
 		if( occupant == null ) {
 			return;
 		}
-		if( m.subject != null )
-			subject = m.subject;
+		if( m.subject != null ) {
+			handleSubjectChange( occupant, m.subject );
+			//subject = m.subject;
+		}
 		
 		// add message to history
 		if( history.maxLength != -1 )
@@ -285,10 +220,7 @@ class MUChatRoom {
 		
 		// send message to all occupants
 		m.from = roomJID( occupant.nick );
-		for( o in occupants ) {
-			m.to = o.jid;
-			stream.sendPacket( m );
-		}
+		publishMessage( m );
 	}
 	
 	
@@ -309,6 +241,113 @@ class MUChatRoom {
 		}
 		//...
 	}
+	
+	/**
+		Handle inital presence from new occupants.
+	*/
+	function handleNewOccupant( nick : String, p : xmpp.Presence ) : Occupant {
+		var hasMUCExt = false;
+		for( prop in p.properties ) {
+			if( prop.nodeName == "x" && prop.get( "xmlns" ) == xmpp.MUC.XMLNS ) {
+				hasMUCExt = true;
+				if( password != null ) {
+					//TODO check for password
+					//......
+				}
+				break;
+			}
+		}
+		if( !hasMUCExt ) {
+			//TODO notify client
+			return null;
+		}
+		if( Lambda.count( occupants )+1 == maxOccupants ) {
+			sendErrorPresence( p.from, xmpp.ErrorType.wait, xmpp.ErrorCondition.SERVICE_UNAVAILABLE );
+			return null;
+		}
+		var occupant = new Occupant( p.from, nick, p.type, p.show );
+		if( locked ) {
+			occupants.set( nick, occupant );
+			owner = occupant.jid;
+			occupant.affiliation = xmpp.muc.Affiliation.owner;
+			occupant.role = xmpp.muc.Role.moderator;
+			var r = new xmpp.Presence( null, null, null );
+			r.to = p.from;
+			r.from = roomJID( nick );
+			r.properties.push( xmpp.X.create( xmpp.MUCUser.XMLNS, [ occupant.item.toXml(), new xmpp.muc.Status( 201 ).toXml()] ) );
+			stream.sendPacket( r );
+			var m = new xmpp.Message( p.from, defaultLockMessage, null, xmpp.MessageType.groupchat, null, jid );
+			stream.sendPacket( m );
+			return null;
+		} else {
+			if( occupant.jid == owner ) {
+				occupant.affiliation = xmpp.muc.Affiliation.owner;
+				occupant.role = xmpp.muc.Role.moderator;
+			} else {
+				occupant.affiliation = xmpp.muc.Affiliation.member;
+				occupant.role = xmpp.muc.Role.participant;
+			}
+			// send presences from existing occupants to new occupant
+			var presence = new xmpp.Presence();
+			presence.to = occupant.jid;
+			for( o in occupants ) {
+				presence.type = o.presenceType;
+				presence.show = o.presenceShow;
+				presence.from = roomJID( o.nick );
+				presence.properties = [xmpp.X.create( xmpp.MUCUser.XMLNS, [o.item.toXml()] )];
+				stream.sendPacket( presence );
+			}
+			occupants.set( nick, occupant );
+			return occupant;
+		}
+	}
+	
+	/**
+		Send updated presence to all occupants.
+	*/
+	function publishPresence( occupant : Occupant ) {
+		var p = new xmpp.Presence();
+		p.type = occupant.presenceType;
+		p.from = roomJID( occupant.nick );
+		var x = xmpp.X.create( xmpp.MUCUser.XMLNS, [occupant.item.toXml()] );
+		p.properties.push( x );
+		for( o in occupants ) {
+			p.to = o.jid;
+			stream.sendPacket( p );
+		}
+	}
+	
+	/**
+	*/
+	function handleRoomLeave( occupant : Occupant ) {
+		occupants.remove( occupant.nick );
+		var presence = new xmpp.Presence();
+		presence.type = xmpp.PresenceType.unavailable;
+		presence.from = roomJID( occupant.nick );
+		var x = xmpp.X.create( xmpp.MUCUser.XMLNS, [occupant.item.toXml()] );
+		presence.properties.push( x );
+		for( o in occupants ) {
+			presence.to = o.jid;
+			stream.sendPacket( presence );
+		}
+	}
+	
+	/**
+		Send message to all occupants.
+	*/
+	function publishMessage( m : xmpp.Message ) {
+		for( o in occupants ) {
+			m.to = o.jid;
+			stream.sendPacket( m );
+		}
+	}
+	
+	/**
+	*/
+	function handleSubjectChange( occupant : Occupant, subject : String ) {
+		this.subject = subject;
+	}
+	
 	
 	function roomJID( nick : String ) : String {
 		return jid+"/"+nick;
