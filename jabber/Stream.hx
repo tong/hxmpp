@@ -138,8 +138,11 @@ class Stream {
 	*/
 	public function sendPacket<T>( p : xmpp.Packet, intercept : Bool = true ) : T {
 		if( !cnx.connected /*|| status != StreamStatus.open*/ ) return null;
-		if( intercept ) for( i in interceptors ) i.interceptPacket( p );
+		if( intercept )
+			for( i in interceptors )
+				i.interceptPacket( p );
 		return ( sendData( p.toString() ) != null ) ? cast p : null;
+		//return ( sendBytes( haxe.io.Bytes.ofString( p.toString() ) ) != null ) ? cast p : null;
 	}
 	
 	/**
@@ -150,15 +153,23 @@ class Stream {
 		var s = cnx.write( t );
 		if( s == null ) return null;
 		numPacketsSent++;
-		#if XMPP_DEBUG trace( t, "xmpp-o" ); #end
+		#if XMPP_DEBUG XMPPDebug.outgoing( t ); #end
 		return s;
 	}
 	
 	/*
-		Send raw bytes data.
+		TODO Send raw bytes data.
+	*/
+	/*
 	public function sendBytes( t : haxe.io.Bytes ) : haxe.io.Bytes {
 		//TODO
-	}	
+		if( !cnx.connected ) return null;
+		var s = cnx.writeBytes( t );
+		if( s == null ) return null;
+		numPacketsSent++;
+		#if XMPP_DEBUG trace( t, "xmpp-o" ); #end
+		return s;
+	}
 	*/
 	
 	/**
@@ -232,6 +243,7 @@ class Stream {
 		if( status == StreamStatus.closed ) {
 			return -1;
 		}
+		
 		var t = buf.readString( bufpos, buflen );
 		
 		//TODO 
@@ -278,7 +290,7 @@ class Stream {
 	public function collectXml( x : Xml ) : Array<xmpp.Packet> {
 		var packets = new Array<xmpp.Packet>();
 		for( x in x.elements() ) {
-			#if XMPP_DEBUG trace( "<<< "+x, "xmpp-i" ); #end
+			#if XMPP_DEBUG XMPPDebug.incoming( x.toString() ); #end
 			var p = xmpp.Packet.parse( x );
 			handlePacket( p );
 			packets.push( p );
@@ -306,7 +318,7 @@ class Stream {
 		}
 		if( !collected ) {
 			#if JABBER_DEBUG
-			trace( "\tXMPP packet not processed", "warn" );
+			trace( p._type+" packet not handled", "warn" );
 			#end
 			if( p._type == xmpp.PacketType.iq ) {
 				var q : xmpp.IQ = cast p;

@@ -3,7 +3,7 @@ package jabber.stream;
 
 typedef DataFilter = {
 	/** Filters incoming data before further processing ( fe: uncompression ). */
-	function filterData( t : haxe.io.Bytes ) : haxe.io.Bytes;
+	function filterData( t : haxe.io.Bytes, pos : Int, len : Int ) : {  t : haxe.io.Bytes, pos : Int, len : Int };
 }
 
 typedef DataInterceptor = {
@@ -26,7 +26,7 @@ class Connection {
 	/** Callback connection level errors */
 	public var onError : String->Void;
 	
-	/** Server IP/hostname*/
+	/** Server IP/hostname */
 	public var host(default,null) : String;
 	/** Server port to connect to */
 	public var port(default,null) : Int;
@@ -76,22 +76,17 @@ class Connection {
 	/*
 		Send raw bytes.
 		TODO
+	*/
 	public function writeBytes( t : haxe.io.Bytes ) : haxe.io.Bytes {
 		return throw new error.AbstractError();
 	}
-	*/
 	
 	/* 
-	function dataHandler( t : String ) {
-		for( f in filters )
-			t = f.filterData( t );
-		processConnectionData( t );
-	}
 	TODO
-	function handleData( t : haxe.io.Bytes, pos : Int, len : Int ) : haxe.io.Bytes {
+	function handleData( t : haxe.io.Bytes, pos : Int, len : Int ) : Int {
 		for( f in filters )
-			t = f.filterData( t );
-		onData( t, pos, len );
+			t = f.filterData( t, pos, len );
+		return onData( t, pos, len );
 	}
 	*/
 }

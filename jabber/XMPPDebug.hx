@@ -1,83 +1,50 @@
 package jabber;
 
+#if (neko||php)
+import util.CL;
+#end
+#if neko
+import neko.Lib;
+#elseif php
+import php.Lib;
+#end
 
+/**
+*/
 class XMPPDebug {
 	
 	public static function redirectTraces() {
-		#if neko
-		if( neko.Web.isModNeko ) {
-			haxe.Firebug.redirectTraces();
-		} else {
-			var sysName = neko.Sys.systemName();
-			if( neko.Sys.systemName() != "Linux" ) {
-				trace( "XMPPDebug not supported on "+sysName );
-				return;
-			}
-			haxe.Log.trace = myTrace;
-		}
-		
-		#elseif php
-		if( !php.Lib.isCli() ) haxe.Firebug.redirectTraces() else haxe.Log.trace = myTrace;
-		
-		#elseif XMPP_CONSOLE
-		haxe.Log.trace = consoleTrace;
-		
-		#else
+		#if (flash||js)
 		haxe.Firebug.redirectTraces();
-		
 		#end
 	}
 	
-	/*
-	#if XMPP_CONSOLE
-	static var console = XMPPConsole.getInstance();
-	static function consoleTrace( v : Dynamic, ?inf : haxe.PosInfos ) {
-		//haxe.Firebug.trace( v, inf );
-		console.transfered( v, inf );
+	#if (flash||js)
+	
+	public static function incoming( t : String ) {
+		haxe.Log.trace( "IN: "+t );
 	}
-	#end
-	*/
 	
-	#if neko
+	public static function outgoing( t : String ) {
+		haxe.Log.trace( "OUT: "+t );
+	}
 	
-	static var _print = neko.Lib.load( "hxmpp_debug", "printC", 2 );
+	#elseif (neko||php)
 	
-	static function myTrace( v : Dynamic, ?inf : haxe.PosInfos ) {
-		var c = 0;
-		var b = new StringBuf();
-		if( inf.customParams == null ) {
-			b.add( "\t" );
-			b.add( inf.className+" "+inf.lineNumber );
-			b.add( " => " );
-			b.add( v );
-		} else {
-			if( inf.customParams[0] == "xmpp-i" ) c = 1;
-			else if( inf.customParams[0] == "xmpp-o" ) c = 2;
-			b.add( v );
-		}
-		b.add( "\n" );
-		_print( untyped b.toString().__s, c );
-    }
+	public static var COLOR_XMPP_INCOMING = { fg : CL.BLACK, bg : CL.BG_CYAN };
+	public static var COLOR_XMPP_OUTGOING = { fg : CL.BLACK, bg : CL.BG_ORANGE };
+	//TODO public static var COLOR_XMPP_ERROR = { fg : CL.BLACK, bg : CL.BG_RED };
 	
-	#elseif php
+	public static function print( t : String, ?colors : CommandLineColors ) {
+		CL.print( t+"\n", if( colors != null ) colors.fg, if( colors != null ) colors.bg );
+	}
 	
-	static inline var YELLOW = 33;
-	static inline var CYAN = 32;
-	static inline var WHITE = 37;
+	public static inline function incoming( t : String ) {
+		print( t, COLOR_XMPP_INCOMING );
+	}
 	
-	static function myTrace( v : Dynamic, ?inf : haxe.PosInfos ) {
-		var t = "";
-		if( inf.customParams == null ) {
-		 	t += "\t\n";
-		 	t += inf.className+" "+inf.lineNumber;
-		 	t += " => "+v+"\n";
-		} else {
-			t += "\n"+v+"\n";
-		}
-		var c = if( inf.customParams[0] == "xmpp-i" ) YELLOW;
-		else if( inf.customParams[0] == "xmpp-o" ) CYAN;
-		else WHITE;
-		php.Lib.print( "\033["+c+"m"+t+"\033[37m" );
+	public static inline function outgoing( t : String ) {
+		print( t, COLOR_XMPP_OUTGOING );
 	}
 	
 	#end

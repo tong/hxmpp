@@ -53,7 +53,8 @@ class Stream extends jabber.Stream {
 				for( e in sfx.elements() )
 					server.features.set( e.nodeName, e );
 				#if XMPP_DEBUG
-				trace( "<<< "+sfx, "xmpp-i" );
+				//trace( "<<< "+sfx, jabber.XMPPDebug.XMPP_IN );
+				jabber.XMPPDebug.incoming( sfx.toString() );
 				#end
 				status = jabber.StreamStatus.open;
 				onOpen();

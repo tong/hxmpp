@@ -55,7 +55,7 @@ class SocketConnection extends jabber.stream.Connection {
 		bufbytes = 0;
 		reading = false;
 		
-		#if php
+		#if php //TODO WTF
 		buffer = haxe.io.Bytes.alloc( (1<<16) );
 		#end
 		
@@ -73,15 +73,23 @@ class SocketConnection extends jabber.stream.Connection {
 	
 	
 	public override function connect() {
-		#if neko
-		socket.connect( new Host( host ), port );
-		#end
-		#if php
-		if( secure )
-			socket.connectTLS( new Host( host ), port );
-		else
+		
+		try {
+			#if neko
 			socket.connect( new Host( host ), port );
-		#end
+			#end
+			#if php
+			if( secure )
+				socket.connectTLS( new Host( host ), port );
+			else
+				socket.connect( new Host( host ), port );
+			#end
+		} catch( e : Dynamic ) {
+			trace( "Unable to connect socket on "+host+","+port, XMPPDebug.ERROR );
+			return;
+			//throw e;
+		}
+		
 		#if (neko||php)
 		connected = true;
 		onConnect();
@@ -124,7 +132,7 @@ class SocketConnection extends jabber.stream.Connection {
 	}
 	
 	public override function write( t : String ) : String {
-		if( !connected || t == null || t == "" ) return null;
+		if( !connected || t == null || t.length == 0 ) return null;
 		//TODO
 //		for( i in interceptors )
 //			t = i.interceptData( t );
@@ -139,8 +147,22 @@ class SocketConnection extends jabber.stream.Connection {
 		return t;
 	}
 	
-	/* TODO
+	// TODO
+	/*
 	public override function writeBytes( t : haxe.io.Bytes ) : haxe.io.Bytes {
+		if( !connected || t == null ) return null;
+		#if (neko||php)
+		for( i in interceptors )
+			t = i.interceptData( t );
+		socket.output.write( t );
+		#end
+		return t;
+	}
+	public function clearBuffer() {
+		#if (neko||php)
+		buffer = haxe.io.Bytes.alloc( DEFAULT_BUFSIZE );
+		bufbytes = 0;
+		#end
 	}
 	*/
 
@@ -193,8 +215,9 @@ class SocketConnection extends jabber.stream.Connection {
 		var pos = 0;
 		while( bufbytes > 0 && reading ) {
 			var nbytes = onData( buffer, pos, bufbytes );
+			//var nbytes = handleData( buffer, pos, bufbytes );
 			if( nbytes == 0 )
-				break;
+				return;
 			/*
 			if( nbytes == -1 ) {
 				reading = false;
