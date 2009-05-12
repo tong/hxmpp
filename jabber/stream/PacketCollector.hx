@@ -10,7 +10,8 @@ class PacketCollector {
 	public var timeout(default,setTimeout) : PacketTimeout;
 	public var packet(default,null) : xmpp.Packet;
 	
-	
+	/**
+	*/
 	public function new( filters : Array<xmpp.PacketFilter>, handler : Dynamic->Void,
 						 ?permanent : Bool = false, ?timeout : PacketTimeout, ?block : Bool = false ) {
 		

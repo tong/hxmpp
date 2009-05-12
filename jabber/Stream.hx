@@ -273,10 +273,12 @@ class Stream {
 		case pending :
 			return processStreamInit( XmlUtil.removeXmlHeader( t ), buflen );
 		case open :
+			trace("OPEN HANDLE");
 			var x : Xml = null;
 			try {
 				x = Xml.parse( t );
 			} catch( e : Dynamic ) {
+				//trace("Wait for more data...("+t+")");
 				return 0;
 			}
 			collectXml( x );
@@ -318,14 +320,14 @@ class Stream {
 		}
 		if( !collected ) {
 			#if JABBER_DEBUG
-			trace( p._type+" packet not handled", "warn" );
+			trace( Type.enumConstructor( p._type )+" packet not handled", "warn" );
 			#end
 			if( p._type == xmpp.PacketType.iq ) {
 				var q : xmpp.IQ = cast p;
 				if( q.type != xmpp.IQType.error ) {
 					var r = new xmpp.IQ( xmpp.IQType.error, p.id, p.from, p.to );
 					r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, 501, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );
-					sendPacket( r );
+					sendData( r.toString() );
 				}
 			}
 			return false;

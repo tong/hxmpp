@@ -48,7 +48,9 @@ class SASLAuthentication extends Authentication {
 		Returns false if no compatible SASL mechanism was found.
 	*/
 	public override function authenticate( password : String, ?resource : String ) : Bool {
-		this.resource = resource; 
+		this.resource = resource;
+		// update stream jid resource
+		stream.jid.resource = resource;
 		// locate mechanism to use.
 		if( handshake.mechanism == null ) {
 			for( amechs in mechanisms ) {

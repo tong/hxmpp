@@ -1,6 +1,6 @@
 package jabber;
 
-#if flash9 
+#if flash9
 import flash.net.Socket;
 import flash.events.Event;
 import flash.events.IOErrorEvent;
@@ -32,6 +32,9 @@ class SocketConnection extends jabber.stream.Connection {
 	var buffer : haxe.io.Bytes;
 	var bufbytes : Int;
 	#end
+	#if (flash||JABBER_SOCKETBRIDGE)
+	var cache : String;
+	#end
 	
 	public function new( host : String, port : Int,
 						 ?secure : Bool = false , ?timeout : Int = 10) {
@@ -45,6 +48,7 @@ class SocketConnection extends jabber.stream.Connection {
 		socket = new Socket();
 		
 		#if flash9
+		cache = "";
 		socket.addEventListener( Event.CONNECT, sockConnectHandler );
 		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
 		socket.addEventListener( IOErrorEvent.IO_ERROR, sockErrorHandler );
@@ -60,6 +64,7 @@ class SocketConnection extends jabber.stream.Connection {
 		#end
 		
 		#elseif JABBER_SOCKETBRIDGE
+		cache = "";
 		socket.onConnect = sockConnectHandler;
 		socket.onDisconnect = sockDisconnectHandler;
 		socket.onError = sockErrorHandler;
@@ -185,8 +190,8 @@ class SocketConnection extends jabber.stream.Connection {
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
-		var d = socket.readUTFBytes( e.bytesLoaded );
-		onData( haxe.io.Bytes.ofString( d ), 0, d.length );
+		var i = cache + socket.readUTFBytes( e.bytesLoaded );
+		cache = if( onData( haxe.io.Bytes.ofString( i ), 0, i.length ) == 0 ) i else "";
 	}
 	
 	#elseif (neko||php)
@@ -249,9 +254,9 @@ class SocketConnection extends jabber.stream.Connection {
 		onError( m );
 	}
 	
-	function sockDataHandler( d : String ) {
-		//handleData( d );
-		onData( haxe.io.Bytes.ofString(d), 0, d.length );
+	function sockDataHandler( t : String ) {
+		var i = cache+t;
+		cache = if( onData( haxe.io.Bytes.ofString( i ), 0, i.length ) == 0 ) i else "";
 	}
 	
 	#end
