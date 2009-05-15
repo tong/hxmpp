@@ -1,8 +1,8 @@
 
-#include "sha1.h"
 #include <stdio.h>
 #include <string.h>
 #include <neko.h>
+#include "sha1.h"
 
 // original code by Steve Reid
 
@@ -108,12 +108,11 @@ void sha1_final( SHA1_CTX *context, unsigned char digest[SHA1_SIZE] ) {
 
 
 value make_sha1( value t ) {
-	unsigned char *digest[20];
+	SHA1_DIGEST digest;
 	SHA1_CTX sha;
 	sha1_init( &sha );
-	sha1_update( &sha, (unsigned char*) val_string(t), val_strlen(t) );
-	sha1_final( &sha, (unsigned char*) digest );
-	return alloc_string( (char *)digest );
-
+	sha1_update( &sha, (unsigned char *) val_string(t), val_strlen(t) );
+	sha1_final( &sha,  (unsigned char *) digest );
+	return alloc_string((char *)digest);
 }
 DEFINE_PRIM( make_sha1, 1 );

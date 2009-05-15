@@ -1,12 +1,10 @@
 package xmpp;
 
-
 enum IBBType {
 	open;
 	close;
 	data;
 }
-
 
 /**
 */
@@ -19,13 +17,11 @@ class IBB {
 	public var blockSize : Null<Int>;
 	public var data : String;
 	
-	
 	public function new( type : IBBType, sid : String, ?blockSize : Null<Int> ) {
 		this.type = type;
 		this.sid = sid;
 		this.blockSize = blockSize;
 	}
-	
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( Type.enumConstructor( type ) );
@@ -39,7 +35,7 @@ class IBB {
 		return toXml().toString();
 	}
 	
-	public static function parse( x : Xml ) {
+	public static function parse( x : Xml ) : xmpp.IBB {
 		var _type = Type.createEnum( IBBType, x.nodeName );
 		var ibb = new xmpp.IBB( _type, x.get( "sid" ), Std.parseInt( x.get( "block-size" ) ) );
 		if( _type == data ) {

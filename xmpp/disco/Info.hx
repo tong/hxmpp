@@ -1,6 +1,5 @@
 package xmpp.disco;
 
-
 /**
 */
 class Info {
@@ -16,7 +15,6 @@ class Info {
 		this.features = ( features == null ) ? new Array() : features;
 		this.node = node;
 	}
-	
 
 	public function toXml() : Xml {
 		var x = xmpp.IQ.createQueryXml( XMLNS );
@@ -41,7 +39,6 @@ class Info {
 	public inline function toString() {
 		return toXml().toString();
 	}
-	
 	
 	public static function parse( x : Xml ) : xmpp.disco.Info {
 		var i = new Info( null, null, x.get( "node" ) );

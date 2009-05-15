@@ -52,12 +52,7 @@ class JabberClientDemo {
 			auth.authenticate( "test", #if neko "NEKO" #elseif flash9 "FLASH" #elseif js "JS" #elseif php "PHP" #end );
 		};
 		trace( "Initializing XMPP stream ..." );
-		try {
-			stream.open();
-		} catch( e : error.SocketConnectionError ) {
-			trace( "Socket connection error", "error" );
-			trace(e);
-		}
+		stream.open();
 	}
 	
 	static function handleLogin() {
