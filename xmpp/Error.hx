@@ -38,7 +38,7 @@ class Error {
 	/**
 		Parses the error from a given packet.
 	*/
-	public static function parseFromPacket( p : xmpp.Packet ) : xmpp.Error {
+	public static function fromPacket( p : xmpp.Packet ) : xmpp.Error {
 		for( e in p.toXml().elementsNamed( "error" ) )
 			return Error.parse( e );
 		return null;

@@ -12,23 +12,23 @@ private class HistoryMessage extends xmpp.Message {
 
 class History {
 	
-	public var maxLength(default,setMaxLength) : Int; //TODO setMaxLength
+	public static var defaultHistoryLength : Int = 20;
+	public var length(default,setLength) : Int;
 	var messages : Array<HistoryMessage>;
 	
-	public function new( maxLength : Int ) {
+	public function new( ?length : Int ) {
 		clear();
-		setMaxLength( maxLength );
+		setLength( ( length !=null ) ? length : defaultHistoryLength );
 	}
 	
-	function setMaxLength( l : Int ) : Int {
-		if( l < maxLength ) {
-			messages.splice( 0, maxLength-l );
-		}
-		return maxLength = l;
+	function setLength( l : Int ) : Int {
+		if( l < length )
+			messages.splice( 0, length-l );
+		return length = l;
 	}
 	
 	public function push( m : HistoryMessage ) {
-		if( messages.length+1 == maxLength )
+		if( messages.length+1 == length )
 			messages.shift();
 		messages.push( m ); 
 	}
@@ -47,6 +47,8 @@ class History {
 //interface Occupant {
 
 class Occupant {
+	
+	//public var room : MUChatRoom;
 	
 	public var jid : String;
 	public var nick : String;
@@ -75,10 +77,12 @@ class MUChatRoom {
 	
 	public static var defaultLockMessage = "This room is locked from entry until configuration is confirmed.";
 	public static var defaultUnlockMessage = "This room is now unlocked.";
-	public static var defaultHistoryLength : Int = 20;
 	
-	public dynamic function onMessage( room : MUChatRoom, m : xmpp.Message ) : Void;
-	public dynamic function onPresence( room : MUChatRoom, m : xmpp.Presence ) : Void;
+//	public dynamic function onNewOccupant( o : Occupant ) : Void;
+//	public dynamic function onOccupantLeave( o : Occupant ) : Void;
+//	public dynamic function onMessage( room : MUChatRoom, m : xmpp.Message ) : Void;
+//	public dynamic function onPresence( room : MUChatRoom, m : xmpp.Presence ) : Void;
+//	public dynamic function onSubjectChange( o : Occupant ) : Void;
 	
 	/** Room name */
 	public var name(default,null) : String;
@@ -96,23 +100,24 @@ class MUChatRoom {
 	//public var members(default,null) : List<String>;
 	/** List of banned jids */
 	//public var banned(default,null) : List<String>;
-	/** */
+	/** Chatroom subject */
 	public var subject(default,null) : String;
 	/** */
 	public var locked(default,null) : Bool;
 	/** JID of the room owner */
 	public var owner(default,null) : String;
-	/** */
+	/** Message history */
 	public var history : History;
+	/** */
 	//public var isLogging : Bool; // 7.1.14 Room Logging
-	
+	/** */
 	public var stream(default,null) : Stream;
 	
 	
 	public function new( stream : Stream, name : String,
-						 ?password : String, ?maxOccupants : Int = -1, ?historyLength : Int = -1 ) {
+						 ?password : String, ?maxOccupants : Int = -1, ?historyLength : Int) {
 		
-		// php bug ?
+		// phpbug ?
 //		if( password.length == 0 )
 //			throw "Invalid password";
 //		if( maxOccupants < 2 )
@@ -126,11 +131,11 @@ class MUChatRoom {
 		jid = name+"@"+stream.subdomain+"."+stream.host;
 		occupants = new Hash();
 		locked = true;
-		history = new History( ( historyLength != -1  ) ? historyLength : defaultHistoryLength );
+		history = new History( historyLength );
 		
 		// collect all packets addressed to the room
-		var f_to : xmpp.PacketFilter = new xmpp.filter.PacketToContainsFilter( jid );
-		stream.addCollector( new PacketCollector( [f_to], handlePacket, true ) );
+		var f : xmpp.PacketFilter = new xmpp.filter.PacketToContainsFilter( jid );
+		stream.addCollector( new PacketCollector( [f], handlePacket, true ) );
 	}
 	
 	
@@ -156,8 +161,6 @@ class MUChatRoom {
 			sendErrorPresence( p.from, xmpp.ErrorType.modify, xmpp.ErrorCondition.JID_MALFORMED, false );
 			return;
 		}
-		
-		trace(">>>>>>>>>>>>>>: "+nick );
 		
 		var occupant = occupants.get( nick );
 		var newOccupant = false;
@@ -215,7 +218,7 @@ class MUChatRoom {
 		}
 		
 		// add message to history
-		if( history.maxLength != -1 )
+		if( history.length != -1 )
 			history.push( new HistoryMessage( roomJID( occupant.nick ), occupant.jid, m.body, xmpp.DateTime.format( Date.now().toString() ) ) );
 		
 		// send message to all occupants
@@ -345,6 +348,7 @@ class MUChatRoom {
 	/**
 	*/
 	function handleSubjectChange( occupant : Occupant, subject : String ) {
+		//TODO
 		this.subject = subject;
 	}
 	

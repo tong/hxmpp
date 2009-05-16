@@ -1,8 +1,7 @@
 package xmpp;
 
-
 /**
-	Abstract/Basic xmpp packet.
+	Abstract base for XMPP packets.
 */
 class Packet {
 	
@@ -14,7 +13,6 @@ class Packet {
 	public var properties : Array<Xml>;
 	public var errors : Array<xmpp.Error>;
 	
-	
 	function new( ?to : String, ?from : String, ?id : String, ?lang : String ) {
 		this.to = to;
 		this.from = from;
@@ -24,7 +22,6 @@ class Packet {
 		properties = new Array();
 	}
 
-	
 	/**
 		Creates/Returns the XML representation of this XMPP packet.
 	*/

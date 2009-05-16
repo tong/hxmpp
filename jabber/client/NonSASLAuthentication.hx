@@ -23,9 +23,10 @@ class NonSASLAuthentication extends Authentication {
 		if( active )
 			throw new error.Exception( "Authentication already in progress" );
 		this.password = password;
-		this.resource = resource;
-		if( resource != null ) // update stream jid resource
-			stream.jid.resource = resource;
+		if( resource != null ) {
+			this.resource = resource;
+			stream.jid.resource = resource; // update stream jid resource
+		}
 		active = true;
 		var iq = new xmpp.IQ();
 		iq.ext = new xmpp.Auth( username );
