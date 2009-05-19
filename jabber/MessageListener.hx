@@ -1,45 +1,10 @@
 package jabber;
 
-import jabber.stream.PacketCollector;
-
 /**
-	Utility to listen/report incoming message packets.
+	Utility (shortcut) to listen/report incoming message packets.
 */
-class MessageListener {
-
-	public dynamic function onMessage( m : xmpp.Message ) : Void;
-	
-	/**
-		Activates/Deactivates message packet collecting.
-	*/
-	public var listen(default,setListening) : Bool;
-	//public var type(default,setMessageType) : xmpp.MessageType;
-	public var stream(default,null) : Stream;
-	
-	var c : PacketCollector;
-	
-	
-	public function new( stream : Stream,
-						 ?onMessage : xmpp.Message->Void, ?listen : Bool = true ) {
-						 /*TODO ?type : xmpp.MessageType */
-						 
-		c = new PacketCollector( [cast new xmpp.filter.MessageFilter()], messageHandler, true );
-		
-		this.stream = stream;
-		if( onMessage != null ) this.onMessage = onMessage;
-		setListening( listen );
+class MessageListener extends jabber.stream.TopLevelPacketListener<xmpp.Message> {
+	public function new( stream : Stream, handler : xmpp.Message->Void, ?listen : Bool = true ) {
+		super( stream, handler, xmpp.PacketType.message, listen );
 	}
-
-	
-	function setListening( v : Bool ) : Bool {
-		if( v ) stream.addCollector( c ) else stream.removeCollector( c );
-		return listen = v;
-	}
-	
-	
-	// override me if you want
-	function messageHandler( m : xmpp.Message ) {
-		this.onMessage( m );
-	}
-
 }
