@@ -1,8 +1,5 @@
 package jabber;
 
-import jabber.stream.PacketCollector;
-import xmpp.filter.IQFilter;
-
 /**
 	Manages discovery of services from XMPP entities.<br>
 	Two kinds of information can be discovered:<br>
