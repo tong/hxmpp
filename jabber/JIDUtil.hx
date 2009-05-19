@@ -56,7 +56,7 @@ class JIDUtil {
 	/**
 		Removes the resource from a jid.
 	*/
-	public static function parseBar( jid : String ) : String {
+	public static function parseBare( jid : String ) : String {
 		var i = jid.indexOf( "/" );
 		if( i != -1 ) return jid.substr( 0, i );
 		return jid;

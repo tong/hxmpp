@@ -21,14 +21,12 @@ class Item {
 		return x;
 	}
 	
-	public inline function toString() : String { return toXml().toString(); }
+	public inline function toString() : String {
+		return toXml().toString();
+	}
 	
 	public static function parse( x : Xml ) : xmpp.disco.Item {
-		var i = new Item( x.get( "jid" ) );
-		i.jid = x.get( "jid" );
-		i.name = x.get( "name" );
-		i.node = x.get( "node" );
-		return i;
+		return new Item( x.get( "jid" ), x.get( "name" ), x.get( "node" ) );
 	}
 	
 }

@@ -20,14 +20,14 @@ private class Socket extends flash.net.Socket {
 */
 class SocketBridge {
 	
-	static var defaultContext = "jabber.SocketBridgeConnection";
+	static var defaultBridgeContext = "jabber.SocketBridgeConnection";
 	
 	var ctx : String;
 	var sockets : IntHash<Socket>;
 	
 	function new( ctx : String ) {
 		
-		this.ctx = ( ctx != null ) ? ctx : defaultContext;
+		this.ctx = ( ctx != null ) ? ctx : defaultBridgeContext;
 		
 		sockets = new IntHash();
 		

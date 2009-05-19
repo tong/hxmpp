@@ -3,8 +3,6 @@ import jabber.component.Stream;
 
 class JabberComponentDemo {
 	
-	//static var HOST = ""127.0.0.1"";
-	
 	static var cnx : jabber.SocketConnection;
 	static var stream : Stream;
 	
@@ -14,7 +12,7 @@ class JabberComponentDemo {
 		jabber.XMPPDebug.redirectTraces();
 		#end
 		
-		trace( "HXMPP Server component example" );
+		trace( "HXMPP server component example" );
 		
 		cnx = new jabber.SocketConnection( "127.0.0.1", Stream.defaultPort );
 		stream = new Stream( "disktree", "norc", "1234", cnx );
@@ -26,7 +24,7 @@ class JabberComponentDemo {
 		stream.onConnect = function() {
 			trace( "Component connected. Have fun!", "info" );
 		}
-		trace( "Connecting to server ..." );
+		trace( "Connecting to server ("+stream.host+") ..." );
 		stream.open();
 	}
 	

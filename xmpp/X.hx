@@ -1,6 +1,5 @@
 package xmpp;
 
-
 class X {
 	
 	public static function create( xmlns : String, ?childs : Iterable<Xml> ) : Xml {
@@ -12,4 +11,8 @@ class X {
 		return x;
 	}
 	
+	/*
+	public static function parse( x : Xml ) { xmlns : String, attributes : Array<Xml>, childs : Array<Xml> } {
+	}
+	*/
 }

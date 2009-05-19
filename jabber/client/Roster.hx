@@ -191,10 +191,10 @@ class Roster {
 	
 	
 	function handleRosterPresence( p : xmpp.Presence ) {
-//		trace("händleRosterPresence");
+		//trace("händleRosterPresence");
 		//if( !available ) return;
 		
-		var from = jabber.JIDUtil.parseBar( p.from );
+		var from = jabber.JIDUtil.parseBare( p.from );
 		var resource = jabber.JIDUtil.parseResource( p.from );
 		
 		if( from == stream.jid.bare ) { // handle account resource presence

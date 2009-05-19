@@ -33,7 +33,8 @@ class XMPPDebug {
 	
 	public static var COLOR_XMPP_INCOMING = { fg : CL.BLACK, bg : CL.BG_CYAN };
 	public static var COLOR_XMPP_OUTGOING = { fg : CL.BLACK, bg : CL.BG_ORANGE };
-	//TODO public static var COLOR_XMPP_ERROR = { fg : CL.BLACK, bg : CL.BG_RED };
+	//public static var COLOR_XMPP_ERROR = { fg : CL.BLACK, bg : CL.BG_RED };
+	//public static var ERROR = { fg : CL.WHITE, bg : CL.BG_RED };
 	
 	public static function print( t : String, ?colors : CommandLineColors ) {
 		CL.print( t+"\n", if( colors != null ) colors.fg, if( colors != null ) colors.bg );

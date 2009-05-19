@@ -1,6 +1,5 @@
 package xmpp;
 
-
 class ErrorCondition {
 	
 	/**	

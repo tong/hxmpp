@@ -22,7 +22,6 @@ Run the hxmpp/*.hxml files to build the included tests, samples, utilities and d
 # NEKO
 Copy hxmpp/ndll/$SYSTEM/*ndll files to your neko installation.
 * sha1.ndll is required for SHA1 encoding.
-* hxmpp_debug.ndll for colored XMPP debug output on command line (linux only so far).
 
 # PHP
 ...

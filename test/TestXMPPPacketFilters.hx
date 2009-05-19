@@ -11,6 +11,7 @@ import xmpp.filter.MessageFilter;
 import xmpp.filter.PacketAllFilter;
 import xmpp.filter.PacketFieldFilter;
 import xmpp.filter.PacketFromContainsFilter;
+import xmpp.filter.PacketToContainsFilter;
 import xmpp.filter.PacketFromFilter;
 import xmpp.filter.PacketIDFilter;
 import xmpp.filter.PacketNameFilter;
@@ -62,14 +63,28 @@ class TestXMPPPacketFilters extends haxe.unit.TestCase {
 	public function testFromContainsFilter() {
 		var m = new Message();
 		m.from = "sender@domain.net/resource";
-		var fcf = new PacketFromContainsFilter( "sender" );
-		assertTrue( fcf.accept( m ) );
-		fcf = new PacketFromContainsFilter( "domain.net" );
-		assertTrue( fcf.accept( m ) );
-		fcf = new PacketFromContainsFilter( "resource" );
-		assertTrue( fcf.accept( m ) );
-		fcf = new PacketFromContainsFilter( "WRoNG" );
-		assertTrue( !fcf.accept( m ) );
+		var f = new PacketFromContainsFilter( "sender" );
+		assertTrue( f.accept( m ) );
+		f = new PacketFromContainsFilter( "domain.net" );
+		assertTrue( f.accept( m ) );
+		f = new PacketFromContainsFilter( "resource" );
+		assertTrue( f.accept( m ) );
+		f = new PacketFromContainsFilter( "WRoNG" );
+		assertFalse( f.accept( m ) );
+	}
+	
+	public function testToContainsFilter() {
+		var m = new Message( "sender@domain.net/resource", "mybody", "mysubject" );
+		var f = new PacketToContainsFilter( "sender" );
+		assertTrue( f.accept( m ) );
+		f = new PacketToContainsFilter( "senderx" );
+		assertFalse( f.accept( m ) );
+		f = new PacketToContainsFilter( "domain.net" );
+		assertTrue( f.accept( m ) );
+		f = new PacketToContainsFilter( "resource" );
+		assertTrue( f.accept( m ) );
+		f = new PacketToContainsFilter( "WRoNG" );
+		assertFalse( f.accept( m ) );
 	}
 	
 	public function testFromFilter() {

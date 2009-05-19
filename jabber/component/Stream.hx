@@ -24,7 +24,7 @@ class Stream extends jabber.Stream {
 	/** Shared secret used to identify legacy components*/
 	public var secret(default,null) : String;
 	/**  */
-	public var authenticated(default,null) : Bool;
+	public var authenticated(default,null) : Bool; // TODO move to jabber.Stream (?)
 	/** */
 	public var items(default,null) : xmpp.disco.Items;
 	/** */
@@ -34,8 +34,10 @@ class Stream extends jabber.Stream {
 	public function new( host : String, subdomain : String, secret : String, cnx : Connection,
 						 ?identity : xmpp.disco.Identity ) {
 						 	
-		if( subdomain == null || subdomain == "" ) throw "Invalid subdomain";
-		if( secret == null ) throw "Invalid secret (null)";
+		if( subdomain == null || subdomain == "" )
+			throw "Invalid subdomain";
+		if( secret == null )
+			throw "Invalid secret (null)";
 
 		super( cnx, null );
 		this.serviceName = subdomain+"."+host;

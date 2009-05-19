@@ -273,7 +273,6 @@ class Stream {
 		case pending :
 			return processStreamInit( XmlUtil.removeXmlHeader( t ), buflen );
 		case open :
-			trace("OPEN HANDLE");
 			var x : Xml = null;
 			try {
 				x = Xml.parse( t );
