@@ -48,7 +48,7 @@ class History {
 
 class Occupant {
 	
-	//public var room : MUChatRoom;
+	public var room : MUChatRoom;
 	
 	public var jid : String;
 	public var nick : String;
@@ -58,7 +58,8 @@ class Occupant {
 	public var role : xmpp.muc.Role;
 	public var item(getItem,null) : xmpp.muc.Item;
 	
-	public function new( jid : String, nick : String, presenceType : xmpp.PresenceType, ?presenceShow : String ) {
+	public function new( room : MUChatRoom, jid : String, nick : String, presenceType : xmpp.PresenceType, ?presenceShow : String ) {
+		this.room = room;
 		this.jid = jid;
 		this.nick = nick;
 		this.presenceType = presenceType;
@@ -78,11 +79,12 @@ class MUChatRoom {
 	public static var defaultLockMessage = "This room is locked from entry until configuration is confirmed.";
 	public static var defaultUnlockMessage = "This room is now unlocked.";
 	
-//	public dynamic function onNewOccupant( o : Occupant ) : Void;
-//	public dynamic function onOccupantLeave( o : Occupant ) : Void;
-//	public dynamic function onMessage( room : MUChatRoom, m : xmpp.Message ) : Void;
-//	public dynamic function onPresence( room : MUChatRoom, m : xmpp.Presence ) : Void;
-//	public dynamic function onSubjectChange( o : Occupant ) : Void;
+	public dynamic function onJoin( o : Occupant ) : Void;
+	public dynamic function onLeave( o : Occupant ) : Void;
+	public dynamic function onMessage( o : Occupant, m : xmpp.Message ) : Void;
+//TODO	public dynamic function onPresence( room : MUChatRoom, m : xmpp.Presence ) : Void;
+	public dynamic function onSubject( o : Occupant ) : Void;
+	//..
 	
 	/** Room name */
 	public var name(default,null) : String;
@@ -176,6 +178,9 @@ class MUChatRoom {
 			occupant = handleNewOccupant( nick, p );
 			if( occupant == null )
 				return;
+			else {
+				onJoin( occupant );
+			}
 		}
 		
 		// handle occupant leave
@@ -214,13 +219,13 @@ class MUChatRoom {
 		}
 		if( m.subject != null ) {
 			handleSubjectChange( occupant, m.subject );
-			//subject = m.subject;
+		} else {
+			// add message to history
+			if( history.length != -1 )
+				history.push( new HistoryMessage( roomJID( occupant.nick ), occupant.jid, m.body, xmpp.DateTime.format( Date.now().toString() ) ) );
+			// fire message event
+			onMessage( occupant, m );
 		}
-		
-		// add message to history
-		if( history.length != -1 )
-			history.push( new HistoryMessage( roomJID( occupant.nick ), occupant.jid, m.body, xmpp.DateTime.format( Date.now().toString() ) ) );
-		
 		// send message to all occupants
 		m.from = roomJID( occupant.nick );
 		publishMessage( m );
@@ -239,7 +244,8 @@ class MUChatRoom {
 			locked = false;
 			stream.sendPacket( new xmpp.Message( iq.from, defaultUnlockMessage, null, xmpp.MessageType.groupchat, null, jid ) );
 			stream.sendPacket( new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, jid ) );
-			trace("ROOM UNLOCKED");
+			//trace("ROOM UNLOCKED");
+			//onJoin( occupant );
 			return;
 		}
 		//...
@@ -268,12 +274,13 @@ class MUChatRoom {
 			sendErrorPresence( p.from, xmpp.ErrorType.wait, xmpp.ErrorCondition.SERVICE_UNAVAILABLE );
 			return null;
 		}
-		var occupant = new Occupant( p.from, nick, p.type, p.show );
+		var occupant = new Occupant( this, p.from, nick, p.type, p.show );
 		if( locked ) {
 			occupants.set( nick, occupant );
 			owner = occupant.jid;
 			occupant.affiliation = xmpp.muc.Affiliation.owner;
 			occupant.role = xmpp.muc.Role.moderator;
+	//hm		onJoin( occupant );
 			var r = new xmpp.Presence( null, null, null );
 			r.to = p.from;
 			r.from = roomJID( nick );
@@ -333,6 +340,7 @@ class MUChatRoom {
 			presence.to = o.jid;
 			stream.sendPacket( presence );
 		}
+		onLeave( occupant );
 	}
 	
 	/**
@@ -350,6 +358,7 @@ class MUChatRoom {
 	function handleSubjectChange( occupant : Occupant, subject : String ) {
 		//TODO
 		this.subject = subject;
+		onSubject( occupant );
 	}
 	
 	
