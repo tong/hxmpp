@@ -1,6 +1,5 @@
 package jabber;
 
-
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0092.html">XEP 0092 - Software Version</a>
 */

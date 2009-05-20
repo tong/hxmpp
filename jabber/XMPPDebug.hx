@@ -1,6 +1,6 @@
 package jabber;
 
-#if (neko||php)
+#if (neko||php||cpp)
 import util.CL;
 #end
 #if neko
@@ -29,7 +29,7 @@ class XMPPDebug {
 		haxe.Log.trace( "OUT: "+t );
 	}
 	
-	#elseif (neko||php)
+	#elseif (neko||php||cpp)
 	
 	public static var COLOR_XMPP_INCOMING = { fg : CL.BLACK, bg : CL.BG_CYAN };
 	public static var COLOR_XMPP_OUTGOING = { fg : CL.BLACK, bg : CL.BG_ORANGE };

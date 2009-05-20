@@ -1,8 +1,8 @@
 package jabber;
 
-
 /**
-	Listens for incoming ping messages and responds.
+	Listens for incoming ping messages and automaticly responds with a pong.
+	<a href="http://www.xmpp.org/extensions/xep-0199.html">XEP 199 - XMPP Ping</a>
 */
 class Pong {
 	
@@ -21,12 +21,10 @@ class Pong {
 	}
 	
 	function handlePing( iq : xmpp.IQ ) {
-		//if( stream.status == jabber.StreamStatus.open ) {
-			var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
-			r.ext = new xmpp.Ping();
-			stream.sendData( r.toString() );
-			onPong( iq.from );
-		//}
+		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
+		r.ext = new xmpp.Ping();
+		stream.sendData( r.toString() );
+		onPong( iq.from );
 	}
 		
 }

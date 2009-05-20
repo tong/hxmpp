@@ -12,6 +12,9 @@ import neko.net.Socket;
 #elseif php
 import php.net.Host;
 import net.php.Socket;
+#elseif cpp
+import cpp.net.Host;
+import cpp.net.Socket;
 #end
 
 /**
@@ -106,7 +109,7 @@ class SocketConnection extends jabber.stream.Connection {
 			//throw e;
 		}
 		
-		#if (neko||php)
+		#if (neko||php||cpp)
 		connected = true;
 		onConnect();
 		#else

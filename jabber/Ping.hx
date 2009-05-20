@@ -1,10 +1,9 @@
 package jabber;
 
-
 /**
+	flash,js(,neko)<br>
 	Sends application-level pings over XML streams.
-	Such pings can be sent from a client to a server, from one server to another, or end-to-end.
-	
+	Such pings can be sent from a client to a server, from one server to another, or end-to-end.<br>
 	<a href="http://www.xmpp.org/extensions/xep-0199.html">XEP 199 - XMPP Ping</a>
 */
 class Ping {
@@ -22,15 +21,13 @@ class Ping {
 	public var running(default,null) : Bool;
 	/** */
 	public var target : String;
-	
-	
+
 	public function new( stream : Stream, ?interval : Int ) {
 		if( interval != null && interval <= 0 )
 			throw "Ping interval must be greater than 0";
 		this.stream = stream;
 		this.interval = if( interval != null ) interval else defaultInterval;
 	}
-	
 	
 	/**
 		Starts the ping interval.
@@ -57,7 +54,6 @@ class Ping {
 		stream.sendIQ( iq, handlePong, false, new jabber.stream.PacketTimeout( [handleTimeout], interval*1000 ) );
 	}
 	
-	
 	function handleTimer() {
 		if( running ) {
 			send( target );
@@ -78,14 +74,5 @@ class Ping {
 	function handleTimeout( c : jabber.stream.TPacketCollector ) {
 		onTimeout( stream, c.packet.from );
 	}
-	
-	/*
-	function handlePing( iq : xmpp.IQ ) {
-		if( stream.status == jabber.StreamStatus.open ) {
-			var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
-			r.ext = new xmpp.Ping();
-			stream.sendData( r.toString() );
-		}
-	}
-	*/
+
 }

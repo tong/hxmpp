@@ -26,7 +26,7 @@ class MUCUtil {
 		Returns the room of the muc jid.
 	*/
 	public static function getRoom( t : String ) : String {
-		return t.substr( 0, t.indexOf( "@" ) );
+		return JIDUtil.parseNode( t );
 	}
 	
 	/**

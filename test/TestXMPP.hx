@@ -35,8 +35,10 @@ class TestXMPP {
 		r.add( new TestXMPPDelayedDelivery() );
 		r.add( new TestXMPPDisco() );
 		r.add( new TestXMPPEntityCapabilities() );
+		r.add( new TestXMPPEntityTime() );
 		r.add( new TestXMPPLastActivity() );
 		r.add( new TestXMPPPrivacyLists() );
+		r.add( new TestXMPPPrivateStorage() );
 		r.add( new TestXMPPRegister() );
 		r.add( new TestXMPPRoster() );
 		r.add( new TestXMPPSoftwareVersion() );
