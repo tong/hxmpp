@@ -29,6 +29,7 @@ class TestXMPP {
 		
 		///// IQ extension
 		r.add( new TestXMPPAuth() );
+		r.add( new TestXMPPBlockList() );
 		r.add( new TestXMPPCaps() );
 		r.add( new TestXMPPChatState() );
 		r.add( new TestXMPPDataForm() );
