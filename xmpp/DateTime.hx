@@ -22,8 +22,16 @@ class DateTime {
 		return ereg_date.match( t );
 	}
 	
+	/**
+	*/
 	public static function isValidTime( t : String ) : Bool {
 		return ereg_time.match( t );
+	}
+	
+	/**
+	*/
+	public static inline function current() : String {
+		return format( Date.now().toString() );
 	}
 	
 	/**
