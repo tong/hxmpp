@@ -21,8 +21,6 @@ class Stream extends jabber.Stream {
 	
 	override function processStreamInit( t : String, buflen : Int ) : Int {
 		
-		//trace("processStreamInit (id:"+id+")");
-		
 		var sei = t.indexOf( ">" );
 		if( sei == -1 ) {
 			return 0;
@@ -44,7 +42,6 @@ class Stream extends jabber.Stream {
 			onOpen();
 			return buflen;
 		}
-	//	trace(">>>>>>>>>>>>>>>>>>");
 		var sfi = t.indexOf( "<stream:features>" );
 		var sf = t.substr( t.indexOf( "<stream:features>" ) );
 		if( sfi != -1 ) {

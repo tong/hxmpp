@@ -66,24 +66,20 @@ class Register {
 	
 	
 	public static function parse( x : Xml ) : xmpp.Register {
-		var r = new xmpp.Register();
-		xmpp.Packet.reflectPacketNodes( x, r );
-		//TODO
-		/*
+		var p = new xmpp.Register();
+		//xmpp.Packet.reflectPacketNodes( x, r );
 		for( e in x.elements() ) {
-			var v : String = null;
-			try { v = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
+			var v = e.firstChild();
 			if( v != null ) {
 				switch( e.nodeName ) {
-					case "username" : r.username = v;
-					case "password" : r.password = v;
-					case "email"   : r.email = v;
-					case "name" : r.name = v;
+				case "username" : p.username = v.toString();
+				case "password" : p.password = v.toString();
+				case "email" : p.email = v.toString();
+				case "name" : p.name = v.toString();
 				}
 			}
 		}
-		*/
-		return r;
+		return p;
 	}
 	
 }

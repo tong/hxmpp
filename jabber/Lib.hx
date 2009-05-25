@@ -7,7 +7,7 @@ import jabber.SocketConnection;
 class Lib {
 	
 	#if JABBER_DEBUG
-	public static var VERSION = "0.2.3";
+	public static var VERSION = "0.4";
 	#end
 	
 	

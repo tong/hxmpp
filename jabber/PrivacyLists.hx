@@ -1,9 +1,9 @@
 package jabber;
 
-
 /**
-	Extension for blocking communication with unknown or undesirable entities.
-	<a href="http://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>
+	<a href="http://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a><br>
+	Extension for blocking communication with unknown or undesirable entities.<br>
+	Oooold extension, use jabber.ComBlock instead.
 */
 class PrivacyLists {
 	

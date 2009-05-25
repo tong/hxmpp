@@ -1,6 +1,5 @@
 package xmpp;
 
-
 /**
 	<a href="http://xmpp.org/extensions/xep-0115.html">XEP-0085: Entity Capabilities</a><br/>
 */
@@ -27,14 +26,12 @@ class Caps {
 	*/
 	public var ext : String;
 	
-	
 	public function new( hash : String, node : String, ver : String, ?ext : String ) {
 		this.hash = hash;
 		this.node = node;
 		this.ver = ver;
 		this.ext = ext;
 	}
-	
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "c" );
@@ -45,7 +42,6 @@ class Caps {
 		if( ext != null ) x.set( "ext", ext );
 		return x;
 	}
-	
 	
 	/**
 	*/
@@ -61,7 +57,6 @@ class Caps {
 				return parse( prop );
 		return null;
 	}
-	
 	
 	/**
 		<a href="http://xmpp.org/extensions/xep-0115.html#ver">Verification String</a><br/>
@@ -102,7 +97,6 @@ class Caps {
 				}
 			}
 		}
-		//trace(b.toString());
 		return util.Base64.encode( crypt.SHA1.encode( b.toString() ) );
 	}
 	

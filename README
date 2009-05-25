@@ -47,10 +47,12 @@ XEPS SUPPORTED
 # * 0004 DataForms
 * 0012 LastActivity
 ## * 0016 PrivacyLists
-# * 0030 ServiceDiscovery
-### * 0045 MUChat
+* 0030 ServiceDiscovery
+## * 0045 MUChat
+* 0049 Private XML Storage
 * 0054 VCardTemp
-#* 0071 XHTML-IM
+##* 0060 PubSub
+* 0071 XHTML-IM
 * 0077 In-Band Registration
 * 0082 XMPP Date and Time Profiles
 * 0085 ChatStateNotification
@@ -58,8 +60,10 @@ XEPS SUPPORTED
 * 0092 SoftwareVersion
 * 0106 JID Escaping
 * 0114 Jabber Component Protocol
+#* 0163 PersonalEvent 
+#* 0191 Simple Communications Blocking
 * 0199 Ping 
-## * 0202 EntityTime
+# * 0202 EntityTime
 * 0203 DelayedDelivery
 
 

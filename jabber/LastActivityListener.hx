@@ -1,6 +1,5 @@
 package jabber;
 
-
 /**
 	<a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a><br/>
 */

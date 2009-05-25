@@ -1,8 +1,8 @@
 package jabber;
 
 /**
-	Extension for comunicating the local time of an entity.<br>
-	<a href="http://www.xmpp.org/extensions/xep-0202.html">XEP 202 - EntityTime</a>
+	<a href="http://www.xmpp.org/extensions/xep-0202.html">XEP 202 - EntityTime</a><br>
+	Extension for comunicating the local time of an entity.
 */
 class EntityTime {
 	

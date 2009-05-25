@@ -9,7 +9,7 @@ class IBTransferListener extends TransferListener {
 	
 	public function new( stream : jabber.Stream, ?acceptMode : AcceptMode ) {
 		
-		super( stream, acceptMode );
+		super( xmpp.IBB.XMLNS, stream, acceptMode );
 		
 		// collect requests
 		var f : xmpp.PacketFilter= new xmpp.filter.IQFilter( xmpp.InBandByteStream.XMLNS, "open", xmpp.IQType.set );

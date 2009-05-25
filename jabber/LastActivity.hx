@@ -1,6 +1,5 @@
 package jabber;
 
-
 /**
 	<a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a><br/>
 */
@@ -25,7 +24,6 @@ class LastActivity {
 		iq.ext = new xmpp.LastActivity();
 		stream.sendIQ( iq, handleLoad );
 	}
-	
 	
 	function handleLoad( iq : xmpp.IQ ) {
 		switch( iq.type ) {

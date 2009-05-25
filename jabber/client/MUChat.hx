@@ -94,6 +94,7 @@ class MUChat {
 	/**
 		Sends initial presence to room.
 	*/
+	//TODO?? public function join( nick : String, ?password : String, ?properites : Array<Xml> ) : Bool {
 	public function join( nick : String, ?password : String ) : Bool {
 		if( joined ) return false;
 		if( nick == null || nick.length == 0 )

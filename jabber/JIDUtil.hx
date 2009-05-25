@@ -7,69 +7,64 @@ package jabber;
 class JIDUtil {
 	
 	#if JABBER_DEBUG
-	public static var ereg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+(\.[A-Z][A-Z][A-Z]?)?(\/[A-Z0-9._%-])?/i;
+	public static var EREG = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+(\.[A-Z][A-Z][A-Z]?)?(\/[A-Z0-9._%-])?/i;
 	#else
-	public static var ereg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?+(\/[A-Z0-9._%-])?/i;
+	public static var EREG = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?+(\/[A-Z0-9._%-])?/i;
 	#end
 	
 	/**
 		Returns true if the given JID is valid formed.
 	*/
-	public static function isValid( jid : String ) : Bool {
-		if( !ereg.match( jid ) )
+	public static function isValid( t : String ) : Bool {
+		if( !EREG.match( t ) )
 			return false;
-		for( p in getParts( jid ) )
+		for( p in getParts( t ) )
 			if( p.length > jabber.JID.MAX_PART_SIZE )
 				return false;
 		return true;
 	}
 	
-	
 	/**
-		Returns the node of the given jid.
+		Returns the node of the given JID.
 	*/
-	public static inline function parseNode( jid : String ) : String {
-		return jid.substr( 0, jid.indexOf( "@" ) );
+	public static inline function parseNode( t : String ) : String {
+		return t.substr( 0, t.indexOf( "@" ) );
 	}
 	
-	
 	/**
-		Returns the domain of the given jid.
+		Returns the domain of the given JID.
 	*/
-	public static function parseDomain( jid : String ) : String {
-		var i1 = jid.indexOf( "@" ) + 1;
-		var i2 = jid.indexOf( "/" );
-		if( i2 == -1 ) return jid.substr( i1 );
-		return jid.substr( i1, i2-i1 );
+	public static function parseDomain( t : String ) : String {
+		var i1 = t.indexOf( "@" ) + 1;
+		var i2 = t.indexOf( "/" );
+		if( i2 == -1 ) return t.substr( i1 );
+		return t.substr( i1, i2-i1 );
 	}
 	
-	
 	/**
-		Returns the resource of the given jid.
+		Returns the resource of the given JID.
 	*/
-	public static function parseResource( jid : String ) : String {
-		var i = jid.indexOf( "/" );
-		if( i != -1 ) return jid.substr( i+1  );
+	public static function parseResource( t : String ) : String {
+		var i = t.indexOf( "/" );
+		if( i != -1 ) return t.substr( i+1  );
 		return null;
 	}
 	
 	/**
-		Removes the resource from a jid.
+		Removes the resource from a JID.
 	*/
-	public static function parseBare( jid : String ) : String {
-		var i = jid.indexOf( "/" );
-		if( i != -1 ) return jid.substr( 0, i );
-		return jid;
+	public static function parseBare( t : String ) : String {
+		var i = t.indexOf( "/" );
+		if( i != -1 ) return t.substr( 0, i );
+		return t;
 	}
-	
 	
 	/**
-		Returns [true] if the given jid has a valid resource.
+		Returns true if the given JID has a valid resource.
 	*/
-	public static inline function hasResource( jid : String ) : Bool {
-		return jid.indexOf( "/" ) != -1;
+	public static inline function hasResource( t : String ) : Bool {
+		return t.indexOf( "/" ) != -1;
 	}
-	
 	
 	/**
      	Returns a String array with parsed node, domain and resource.
@@ -80,7 +75,6 @@ class JIDUtil {
 		return p;
 	}
 
-	
 	/**
 	    Escapes the node portion of a JID according to "JID Escaping" (XEP-0106).
 	    Escaping replaces characters prohibited by node-prep with escape sequences,
@@ -89,7 +83,7 @@ class JIDUtil {
 	    provided by a human user in unescaped form, or by a gateway to some external system
 	    (e.g., email or LDAP) that needs to generate a JID.
 	    
-	    TODO check XEP!! maybe minor errors (?) .. replace by regexp ?
+	    TODO check XEP!! maybe minor errors (?)
     */
 	public static function escapeNode( n : String ) : String {
 		var b = new StringBuf();
@@ -116,7 +110,6 @@ class JIDUtil {
 		return b.toString();
 	}
 
-
     /**
      	Un-escapes the node portion of a JID according to "JID Escaping" (XEP-0106 )
      	Escaping replaces characters prohibited by node-prep with escape sequences,
@@ -126,7 +119,7 @@ class JIDUtil {
      	external system (e.g., email or LDAP) that needs to generate identifiers
      	for foreign systems.
      	
-      TODO check XEP!! maybe minor errors (?) .. replace by regexp ?
+      TODO check XEP!! maybe minor errors (?)
     */
 	public static function unescapeNode( n : String ) : String {
 		var l = n.length;
@@ -139,17 +132,17 @@ class JIDUtil {
 				var c3 = n.charAt( i+2 );
 				if( c2 == "2" ) {
 					switch( c3 ) {
-						case '0' : b.add( ' ' );  i += 3;
-						case '2' : b.add( '"' );  i += 3;
-						case '6' : b.add( '&' );  i += 3;
-						case '7' : b.add( '\\');  i += 3;
-						case 'f' : b.add( '/' );  i += 3;
+					case '0' : b.add( ' ' );  i += 3;
+					case '2' : b.add( '"' );  i += 3;
+					case '6' : b.add( '&' );  i += 3;
+					case '7' : b.add( '\\');  i += 3;
+					case 'f' : b.add( '/' );  i += 3;
 					}
 				} else if( c2 == '3' ) {
 					switch( c3 ) {
-						case 'a' : b.add( ':' ); i += 3;
-						case 'c' : b.add( '<' ); i += 3;
-						case 'e' : b.add( '>' ); i += 3;
+					case 'a' : b.add( ':' ); i += 3;
+					case 'c' : b.add( '<' ); i += 3;
+					case 'e' : b.add( '>' ); i += 3;
 					}
 				} else if( c2 == '4' ) {
 					if( c3 == '0' ) {

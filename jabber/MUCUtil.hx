@@ -1,25 +1,25 @@
 package jabber;
 
 /**
-	Static methods for parsing mutliuser chat addresses.
+	Static methods for manipulation/validation of mutliuser chat addresses.
 */
 class MUCUtil {
 	
-	public static var ereg = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+(\/[A-Z0-9._%-]+)?/i;
-	public static var ereg_full = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\/[A-Z0-9._%-]+/i;
+	public static var EREG = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+(\/[A-Z0-9._%-]+)?/i;
+	public static var EREG_FULL = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\/[A-Z0-9._%-]+/i;
 	
 	/**
 		Returns Bool if the given string is a valid muchat address.
 	*/
 	public static function isValid( t : String ) : Bool {
-		return ereg.match( t );
+		return EREG.match( t );
 	}
 	
 	/**
 		Returns Bool if the given string is a full valid muchat address (including occupant name).
 	*/
 	public static function isValidFull( t : String ) : Bool {
-		return ereg_full.match( t );
+		return EREG_FULL.match( t );
 	}
 	
 	/**

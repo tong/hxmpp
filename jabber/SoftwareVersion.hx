@@ -13,7 +13,6 @@ class SoftwareVersion {
 	public var version : String;
 	public var os : String;
 	
-	
 	public function new( stream : Stream,
 						 name : String, version : String, ?os : String ) {
 		
@@ -28,7 +27,6 @@ class SoftwareVersion {
 		stream.addCollector( new jabber.stream.PacketCollector( [ cast new xmpp.filter.IQFilter( xmpp.SoftwareVersion.XMLNS, null, xmpp.IQType.get ) ], handleQuery, true ) );
 	}
 	
-	
 	/**
 		Requests the software version of the given entity.
 	*/
@@ -36,17 +34,14 @@ class SoftwareVersion {
 		var iq = new xmpp.IQ( xmpp.IQType.get, null, jid );
 		iq.ext = new xmpp.SoftwareVersion();
 		var me = this;
-		stream.sendIQ( iq, function( iq ) {
-			switch( iq.type ) {
-				case result :
-					me.onLoad( jid, xmpp.SoftwareVersion.parse( iq.ext.toXml() ) );
-				case error :
-					me.onError( new jabber.XMPPError( me, iq ) );
-				default : //
+		stream.sendIQ( iq, function( r ) {
+			switch( r.type ) {
+			case result : me.onLoad( jid, xmpp.SoftwareVersion.parse( r.ext.toXml() ) );
+			case error : me.onError( new jabber.XMPPError( me, r ) );
+			default : //
 			}
 		} );
 	}
-	
 	
 	function handleQuery( iq : xmpp.IQ ) {
 		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, stream.jid.toString() );

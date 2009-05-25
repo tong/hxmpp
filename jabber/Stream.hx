@@ -149,6 +149,8 @@ class Stream {
 		Send raw string.
 	*/
 	public function sendData( t : String ) : String {
+		//if( !cnx.connected ) return null;
+		//return sendBytes( haxe.io.Bytes.ofString( t ) ).toString();
 		if( !cnx.connected ) return null;
 		var s = cnx.write( t );
 		if( s == null ) return null;
@@ -167,7 +169,7 @@ class Stream {
 		var s = cnx.writeBytes( t );
 		if( s == null ) return null;
 		numPacketsSent++;
-		#if XMPP_DEBUG trace( t, "xmpp-o" ); #end
+		#if XMPPDebug.outgoing( t ); #end
 		return s;
 	}
 	*/

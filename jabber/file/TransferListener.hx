@@ -9,8 +9,10 @@ class TransferListener {
 	
 	public var stream(default,null) : jabber.Stream;
 	public var acceptMode : AcceptMode;
+	public var id(default,null) : String;
 	
-	function new( stream : jabber.Stream, ?acceptMode : AcceptMode ) {
+	function new( id : String, stream : jabber.Stream, ?acceptMode : AcceptMode ) {
+		this.id = id;
 		this.stream = stream;
 		this.acceptMode = ( acceptMode != null ) ? acceptMode : AcceptMode.manual;
 	}

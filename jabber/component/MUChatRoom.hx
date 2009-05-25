@@ -214,9 +214,8 @@ class MUChatRoom {
 				break;
 			}
 		}
-		if( occupant == null ) {
+		if( occupant == null )
 			return;
-		}
 		if( m.subject != null ) {
 			handleSubjectChange( occupant, m.subject );
 		} else {
