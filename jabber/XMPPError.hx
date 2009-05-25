@@ -9,7 +9,7 @@ class XMPPError {
 	public var code(default,null) : Int;
 	public var name(default,null) : String;
 	public var text(default,null) : String;
-	
+	//TODO public var packet(default,null) : xmpp.Packet; // reference to the error type XMPP packet.
 	
 	public function new( dispatcher : Dynamic, p : xmpp.Packet ) {
 		var e = p.errors[0];

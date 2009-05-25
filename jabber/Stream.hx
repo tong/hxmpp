@@ -195,7 +195,7 @@ class Stream {
 		}
 		return { iq : s, collector : c };
 	}
-	
+
 	/**
 		Send a message packet.
 	*/
@@ -279,10 +279,9 @@ class Stream {
 			try {
 				x = Xml.parse( t );
 			} catch( e : Dynamic ) {
-				//trace("Wait for more data...("+t+")");
 				return 0;
 			}
-			collectXml( x );
+			handleXml( x );
 			return buflen;
 		}
 		return 0;
@@ -290,21 +289,24 @@ class Stream {
 	
 	/**
 	*/
-	public function collectXml( x : Xml ) : Array<xmpp.Packet> {
-		var packets = new Array<xmpp.Packet>();
+	public function handleXml( x : Xml ) : Array<xmpp.Packet> {
+		var ps = new Array<xmpp.Packet>();
 		for( x in x.elements() ) {
-			#if XMPP_DEBUG XMPPDebug.incoming( x.toString() ); #end
 			var p = xmpp.Packet.parse( x );
 			handlePacket( p );
-			packets.push( p );
+			ps.push( p );
 		}
-		return packets;
+		return ps;
 	}
 	
 	/**
 		Handle incoming XMPP packets.
 	*/
 	public function handlePacket( p : xmpp.Packet ) : Bool {
+		#if XMPP_DEBUG
+		if( p.errors.length > 0 ) XMPPDebug.error( p.toString() );
+		else XMPPDebug.incoming( p.toString() );
+		#end
 		var collected = false;
 		for( c in collectors ) {
 			//if( c == null ) collectors.remove( c );
@@ -323,6 +325,7 @@ class Stream {
 			#if JABBER_DEBUG
 			trace( Type.enumConstructor( p._type )+" packet not handled", "warn" );
 			#end
+			// send feature not implementd response
 			if( p._type == xmpp.PacketType.iq ) {
 				var q : xmpp.IQ = cast p;
 				if( q.type != xmpp.IQType.error ) {
