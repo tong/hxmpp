@@ -20,7 +20,6 @@ class Stream extends jabber.Stream {
 	}
 	
 	override function processStreamInit( t : String, buflen : Int ) : Int {
-		
 		var sei = t.indexOf( ">" );
 		if( sei == -1 ) {
 			return 0;
@@ -54,7 +53,9 @@ class Stream extends jabber.Stream {
 				jabber.XMPPDebug.incoming( sfx.toString() );
 				#end
 				status = jabber.StreamStatus.open;
+		trace("processStreamInit "+onOpen );
 				onOpen();
+		trace("processStreamInit");
 				return buflen;
 			} catch( e : Dynamic ) {
 				return 0;

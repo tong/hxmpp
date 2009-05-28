@@ -9,11 +9,11 @@ import util.XmlUtil;
 class Presence extends Packet {
 	
    	public var type : PresenceType;
-   	public var show : String;
+   	public var show : PresenceShow;
     public var status(default,setStatus) : String;
     public var priority : Null<Int>;
     
-	public function new( ?type : PresenceType, ?show : String, ?status : String, ?priority : Int ) {
+	public function new( ?type : PresenceType, ?show : PresenceShow, ?status : String, ?priority : Int ) {
 		super();
 		_type = xmpp.PacketType.presence;
 		this.type = type;
@@ -31,7 +31,7 @@ class Presence extends Packet {
 	public override function toXml() : Xml {
 		var x = super.addAttributes( Xml.createElement( "presence" ) );
 		if( type != null ) x.set( "type", Type.enumConstructor( type ) );
-		if( show != null && show != "" ) x.addChild( XmlUtil.createElement( "show", show ) );
+		if( show != null ) x.addChild( XmlUtil.createElement( "show", Type.enumConstructor( show ) ) );
 		if( status != null && status != "" ) x.addChild( XmlUtil.createElement( "status", status ) );
 		if( priority != null ) x.addChild( XmlUtil.createElement( "priority", Std.string( priority ) ) );
 		return x;
@@ -43,8 +43,8 @@ class Presence extends Packet {
 		if( x.exists( "type" ) ) p.type = Type.createEnum( PresenceType, x.get( "type" ) );
 		for( c in x.elements() ) {
 			switch( c.nodeName ) {
-			case "show" : p.show = c.firstChild().nodeValue;
-			case "status" : p.status = c.firstChild().nodeValue;
+			case "show" : p.show = Type.createEnum( PresenceShow, c.firstChild().nodeValue );
+			case "status" : p.status =  c.firstChild().nodeValue;
 			case "priority" : p.priority = Std.parseInt( c.firstChild().nodeValue );
 			default : p.properties.push( c );
 			}

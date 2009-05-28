@@ -10,25 +10,25 @@ import xmpp.filter.PacketIDFilter;
 import util.XmlUtil;
 
 
-typedef Server = {
+private typedef Server = {
 	//var domain : String;
 	//var allowsRegister : Bool;
 	//var secure : { has : Bool, required : Bool };
 	var features : Hash<Xml>;
 }
 
-class StreamFeatures {
-	var list : List<String>; // TODO var features : Hash<StreamFeature>;
+private class StreamFeatures {
+	var l : List<String>; // TODO var features : Hash<StreamFeature>;
 	public function new() {
-		list = new List();
+		l = new List();
 	}
 	public function iterator() {
-		return list.iterator();
+		return l.iterator();
 	}
 	public function add( f : String ) : Bool {
-		if( Lambda.has( list, f ) )
+		if( Lambda.has( l, f ) )
 			return false;
-		list.add( f );
+		l.add( f );
 		return true;
 	}
 }
@@ -54,15 +54,16 @@ class Stream {
 	public var jid(default,null) : jabber.JID;
 	/** */
 	public var server(default,null) : Server;
-	/** */
+	/** List of features this stream offers */
 	public var features(default,null) : StreamFeatures;
-	/** */
+	/** Indicates if the version number of the XMPP stream ("1.0") should get added to the stream opening XML element */
 	public var version : Bool;
 	
-	var collectors : List<TPacketCollector>;
-	var interceptors : List<TPacketInterceptor>;
+	//var dataFilters : List<TDataFilter>;
+	//var dataInterceptors : List<TDataFilter>;
 	var numPacketsSent : Int;
-	
+	var collectors : List<TPacketCollector>; // TODO public var collectors : Array<TPacketCollector>; 
+	var interceptors : List<TPacketInterceptor>; // TODO public var interceptors : Array<TPacketCollector>; 
 	
 	function new( c : Connection, jid : jabber.JID ) {
 		
@@ -206,7 +207,7 @@ class Stream {
 	/**
 		Send a presence packet.
 	*/
-	public function sendPresence( ?type : xmpp.PresenceType, ?show : String, ?status : String, ?priority : Int ) : xmpp.Presence {
+	public function sendPresence( ?type : xmpp.PresenceType, ?show : xmpp.PresenceShow, ?status : String, ?priority : Int ) : xmpp.Presence {
 		return sendPacket( new xmpp.Presence( type, show, status, priority ) );
 	}
 	
@@ -242,10 +243,10 @@ class Stream {
 	*/
 	public function processData( buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) : Int {
 		
-		if( status == StreamStatus.closed ) {
+		if( status == StreamStatus.closed )
 			return -1;
-		}
 		
+		//TODO .. data filters
 		var t = buf.readString( bufpos, buflen );
 		
 		//TODO 
@@ -268,18 +269,13 @@ class Stream {
 			close( true );
 			return -1;
 		}
-		
 		switch( status ) {
-		case closed :
-			return buflen; //hm?
-		case pending :
-			return processStreamInit( XmlUtil.removeXmlHeader( t ), buflen );
+		case closed : return buflen; //hm?
+		case pending : return processStreamInit( XmlUtil.removeXmlHeader( t ), buflen );
 		case open :
 			var x : Xml = null;
-			try {
-				x = Xml.parse( t );
-			} catch( e : Dynamic ) {
-				return 0;
+			try x = Xml.parse( t ) catch( e : Dynamic ) {
+				return 0; // wait for more data
 			}
 			handleXml( x );
 			return buflen;
@@ -288,6 +284,7 @@ class Stream {
 	}
 	
 	/**
+		Handle incoming XML data.
 	*/
 	public function handleXml( x : Xml ) : Array<xmpp.Packet> {
 		var ps = new Array<xmpp.Packet>();
@@ -301,6 +298,7 @@ class Stream {
 	
 	/**
 		Handle incoming XMPP packets.
+		Returns true if the packet got handled.
 	*/
 	public function handlePacket( p : xmpp.Packet ) : Bool {
 		#if XMPP_DEBUG
@@ -312,11 +310,11 @@ class Stream {
 			//if( c == null ) collectors.remove( c );
 			if( c.accept( p ) ) {
 				collected = true;
-				//if( c.deliver == null ) collectors.remove( c );
+				//if( c.deliver == null )
+				//	collectors.remove( c );
 				c.deliver( p );
-				if( !c.permanent ) {
+				if( !c.permanent )
 					collectors.remove( c );
-				}					
 				if( c.block )
 					break;
 			}
@@ -325,8 +323,7 @@ class Stream {
 			#if JABBER_DEBUG
 			trace( Type.enumConstructor( p._type )+" packet not handled", "warn" );
 			#end
-			// send feature not implementd response
-			if( p._type == xmpp.PacketType.iq ) {
+			if( p._type == xmpp.PacketType.iq ) { // send a 'feature not implemented' response
 				var q : xmpp.IQ = cast p;
 				if( q.type != xmpp.IQType.error ) {
 					var r = new xmpp.IQ( xmpp.IQType.error, p.id, p.from, p.to );
@@ -334,9 +331,8 @@ class Stream {
 					sendData( r.toString() );
 				}
 			}
-			return false;
 		}
-		return true;
+		return collected;
 	}
 	
 	

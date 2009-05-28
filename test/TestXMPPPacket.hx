@@ -74,7 +74,7 @@ class TestPresencePacket extends haxe.unit.TestCase   {
 		p.type = xmpp.PresenceType.subscribe;
 		assertEquals( p.toString(), '<presence type="subscribe"/>' );
 		
-		p.show = "dnd";
+		p.show = xmpp.PresenceShow.dnd;
 		assertEquals( '<presence type="subscribe"><show>dnd</show></presence>', p.toString() );
 		
 		p.status = "be right back";
@@ -95,7 +95,7 @@ class TestPresencePacket extends haxe.unit.TestCase   {
 			</presence>' ).firstElement();
 		
 		var p = cast xmpp.Packet.parse( src );
-		assertEquals( p.show, 'away' );
+		assertEquals( p.show, xmpp.PresenceShow.away );
 		assertEquals( p.priority, 5 );
 		
 		//..TODO

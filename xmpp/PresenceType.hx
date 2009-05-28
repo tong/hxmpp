@@ -1,6 +1,5 @@
 package xmpp;
 
-
 enum PresenceType {
 	error;
 	probe;
@@ -9,5 +8,4 @@ enum PresenceType {
 	unavailable;
     unsubscribe;
     unsubscribed;
-    //?custom
 }

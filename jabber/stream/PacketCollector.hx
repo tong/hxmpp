@@ -1,6 +1,7 @@
 package jabber.stream;
 
-
+/**
+*/
 class PacketCollector {
 	
 	public var filters : Array<xmpp.PacketFilter>;
@@ -30,9 +31,8 @@ class PacketCollector {
 		timeout = null;
 		if( t == null ) return null;
 		if( permanent ) return null;
-		timeout = t;
 		timeout.collector = this;
-		return timeout;
+		return timeout = t;
 	}
 	
 	
@@ -52,7 +52,7 @@ class PacketCollector {
 		Delivers the given packet to all registerd packet handlers.
 	*/
 	public function deliver( p : xmpp.Packet ) {
-		for( handle in handlers ) handle( p );
+		for( h in handlers ) h( p );
 	}
 	
 }
