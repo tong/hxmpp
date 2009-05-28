@@ -98,7 +98,8 @@ class TestPresencePacket extends haxe.unit.TestCase   {
 		assertEquals( p.show, 'away' );
 		assertEquals( p.priority, 5 );
 		
-		//..
+		//..TODO
+		assertEquals( p.properties.length, 1 );
 	}
 	
 }

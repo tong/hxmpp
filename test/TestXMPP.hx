@@ -30,7 +30,6 @@ class TestXMPP {
 		///// IQ extension
 		r.add( new TestXMPPAuth() );
 		r.add( new TestXMPPBlockList() );
-		r.add( new TestXMPPCaps() );
 		r.add( new TestXMPPChatState() );
 		r.add( new TestXMPPDataForm() );
 		r.add( new TestXMPPDelayedDelivery() );
@@ -44,7 +43,7 @@ class TestXMPP {
 		r.add( new TestXMPPRoster() );
 		r.add( new TestXMPPSoftwareVersion() );
 		r.add( new TestXMPPSoftwareVersion() );
-	//	r.add( new TestXMPPEntityTime() );
+		r.add( new TestXMPPEntityTime() );
 	
 	//	r.add( new TestXMPPMUC() );
 		r.add( new TestXMPPPubSub() );

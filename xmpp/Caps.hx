@@ -8,9 +8,9 @@ class Caps {
 	public static var XMLNS = xmpp.NS.PROTOCOL+"/caps";
 	
 	/**
-		The hashing algorithm used to generate the verification string
+		The hashing algorithm used to generate the verification string, fe: sha-1.
 	*/
-	public var hash : String; // fe: sha-1
+	public var hash : String;
 	/**
 		A URI that uniquely identifies a software application, typically a URL at the website
 		of the project or company that produces the software
@@ -45,7 +45,7 @@ class Caps {
 	
 	/**
 	*/
-	public static inline function parse( x : Xml ) : xmpp.Caps {
+	public static function parse( x : Xml ) : xmpp.Caps {
 		return new Caps( x.get( "hash" ), x.get( "node" ), x.get( "ver" ), x.get( "ext" ) );
 	}
 	
@@ -64,7 +64,6 @@ class Caps {
 	public static function createVerfificationString( identities : Iterable<xmpp.disco.Identity>, features : Iterable<String>,
 													  ?dataform : xmpp.DataForm ) : String {
 		var b = new StringBuf();
-		
 		// sort/add identities
 		var _i = Lambda.array( identities );
 		_i.sort( sortIdentities );
@@ -77,13 +76,11 @@ class Caps {
 			b.add( i.name );
 			b.add( "<" );
 		}
-		
 		// sort/add features
 		var _f = Lambda.array( features );
 		_f.sort( util.StringUtil.sort );
 		b.add( _f.join( "<" ) );
 		b.add( "<" );
-		
 		// sort/add dataform
 		if( dataform != null ) {
 			//TODO xmpp.X FORM_TYPE
