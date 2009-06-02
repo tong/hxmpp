@@ -42,11 +42,14 @@ class Presence extends Packet {
 		xmpp.Packet.parseAttributes( p, x );
 		if( x.exists( "type" ) ) p.type = Type.createEnum( PresenceType, x.get( "type" ) );
 		for( c in x.elements() ) {
-			switch( c.nodeName ) {
-			case "show" : p.show = Type.createEnum( PresenceShow, c.firstChild().nodeValue );
-			case "status" : p.status =  c.firstChild().nodeValue;
-			case "priority" : p.priority = Std.parseInt( c.firstChild().nodeValue );
-			default : p.properties.push( c );
+			var _c = c.firstChild();
+			if( _c != null ) {
+				switch( c.nodeName ) {
+				case "show" : p.show = Type.createEnum( PresenceShow, _c.nodeValue );
+				case "status" : p.status =  _c.nodeValue;
+				case "priority" : p.priority = Std.parseInt( _c.nodeValue );
+				default : p.properties.push( c );
+				}
 			}
 		}
 		return p;
