@@ -43,14 +43,14 @@ class Presence extends Packet {
 		if( x.exists( "type" ) ) p.type = Type.createEnum( PresenceType, x.get( "type" ) );
 		for( c in x.elements() ) {
 			var _c = c.firstChild();
-			if( _c != null ) {
+			//if( _c != null ) { //TODO !
 				switch( c.nodeName ) {
 				case "show" : p.show = Type.createEnum( PresenceShow, _c.nodeValue );
 				case "status" : p.status =  _c.nodeValue;
 				case "priority" : p.priority = Std.parseInt( _c.nodeValue );
 				default : p.properties.push( c );
 				}
-			}
+			//}
 		}
 		return p;
 	}
