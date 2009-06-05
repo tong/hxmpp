@@ -11,9 +11,9 @@ import util.XmlUtil;
 
 
 private typedef Server = {
-	//var domain : String;
+	////var domain : String;
 	//var allowsRegister : Bool;
-	//var secure : { has : Bool, required : Bool };
+	////var tls : { has : Bool, required : Bool };
 	var features : Hash<Xml>;
 }
 
@@ -65,11 +65,10 @@ class Stream {
 	var collectors : List<TPacketCollector>; // TODO public var collectors : Array<TPacketCollector>; 
 	var interceptors : List<TPacketInterceptor>; // TODO public var interceptors : Array<TPacketCollector>; 
 	
+	
 	function new( c : Connection, jid : jabber.JID ) {
-		
 		if( c == null )
-			throw "Missing XMPP connection argument";
-		
+			throw "No connection";
 		this.jid = jid;
 		collectors = new List();
 		interceptors = new List();
@@ -152,6 +151,7 @@ class Stream {
 	public function sendData( t : String ) : String {
 		//if( !cnx.connected ) return null;
 		//return sendBytes( haxe.io.Bytes.ofString( t ) ).toString();
+		//TODO ??? intercept data here ?
 		if( !cnx.connected ) return null;
 		var s = cnx.write( t );
 		if( s == null ) return null;
@@ -273,6 +273,7 @@ class Stream {
 		case closed : return buflen; //hm?
 		case pending : return processStreamInit( XmlUtil.removeXmlHeader( t ), buflen );
 		case open :
+			// filter data here ?
 			var x : Xml = null;
 			try x = Xml.parse( t ) catch( e : Dynamic ) {
 				return 0; // wait for more data
@@ -312,6 +313,8 @@ class Stream {
 				collected = true;
 				//if( c.deliver == null )
 				//	collectors.remove( c );
+				//if( !c.deliver( p ) ) {
+				//}
 				c.deliver( p );
 				if( !c.permanent )
 					collectors.remove( c );

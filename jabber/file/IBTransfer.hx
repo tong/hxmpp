@@ -1,47 +1,49 @@
 package jabber.file;
 
 /**
-	Outgoing inband file transfer negotiator.
+	Outgoing in-band file transfer.
 */
-class IBTransfer extends jabber.file.Transfer {
+class IBTransfer extends FileTransfer {
 	
 	public static var defaultBlockSize = 1 << 12; // 4096
 	
+	//public var sid(default,null) : String;
 	public var blockSize(default,null) : Int;
-	public var sid(default,null) : String;
+	
+	//var output : IBOutput;
 	
 	public function new( stream : jabber.Stream, reciever : String, ?blockSize : Int ) {
-		super( stream, reciever );
+		super( stream, xmpp.file.IB.XMLNS, reciever );
 		this.blockSize = ( blockSize != null ) ? blockSize : defaultBlockSize;
 	}
 	
+	/**
+	*/
 	public override function init( bytes : haxe.io.Bytes ) {
 		this.data = bytes;
-		// create random sid
 		sid = util.StringUtil.random64( 8 );
 		// send init request
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, reciever, stream.jid.toString() );
 		iq.ext = new xmpp.InBandByteStream( xmpp.InBandByteStreamType.open, sid, blockSize );
-		stream.sendIQ( iq, handleOpenResult );
+		stream.sendIQ( iq, handleRequestResponse );
 	}
 	
-	function handleOpenResult( iq : xmpp.IQ ) {
+	function handleRequestResponse( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 		case result :
-			//var output = new IBFileOutput( this );
-			//output.start( data );
-			new IBOutput( this ).start( data );
+			//start sending output
+			var o = new jabber.file.io.IBOutput( stream, reciever, blockSize, sid );
+			o.__onComplete = handleTransferComplete;
+			//o.__onFail = handleTransferFail;
+			o.send( data );
 		case error :
-			var e = xmpp.Error.fromPacket( iq );
-			if( e.name == xmpp.ErrorCondition.NOT_ACCEPTABLE ) {
-				onReject( this );
-				return;
-			}
 			onError( new jabber.XMPPError( this, iq ) );
-			
 		default : //#
 		}
 	}
 	
+	function handleTransferComplete() {
+		onComplete( this );
+	}
+	
 }
-

@@ -55,4 +55,10 @@ class IQ extends Packet {
 		return q;
 	}
 	
+	/**
+	*/
+	public static inline function createResult( iq : IQ ) : IQ {
+		return new IQ( IQType.result, iq.id, iq.from );
+	}
+	
 }

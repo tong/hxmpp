@@ -3,7 +3,6 @@ package xmpp;
 import util.XmlUtil;
 import xmpp.dataform.FormType;
 
-
 /**
 	DataForm packet extension (for iq and message packets).
 	<a href="http://xmpp.org/extensions/xep-0004.html">XEP-0004: Data Forms</a><br/>
@@ -19,13 +18,11 @@ class DataForm {
 	public var reported : xmpp.dataform.Reported;
 	public var items : Array<xmpp.dataform.Item>;
 	
-	
 	public function new( ?type : FormType ) {
 		this.type = type;
 		fields = new Array();
 		items = new Array();
 	}
-	
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "x" );
@@ -40,7 +37,6 @@ class DataForm {
 	}
 	
 	public inline function toString() : String { return toXml().toString(); }
-	
 	
 	public static function parse( x : Xml ) : DataForm {
 		var f = new DataForm();

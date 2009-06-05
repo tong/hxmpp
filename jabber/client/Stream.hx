@@ -46,16 +46,15 @@ class Stream extends jabber.Stream {
 		if( sfi != -1 ) {
 			try {
 				var sfx = Xml.parse( sf ).firstElement();
-				for( e in sfx.elements() )
+				for( e in sfx.elements() ) {
+					//trace(e.nodeName);
 					server.features.set( e.nodeName, e );
+				}
 				#if XMPP_DEBUG
-				//trace( "<<< "+sfx, jabber.XMPPDebug.XMPP_IN );
 				jabber.XMPPDebug.incoming( sfx.toString() );
 				#end
 				status = jabber.StreamStatus.open;
-		trace("processStreamInit "+onOpen );
 				onOpen();
-		trace("processStreamInit");
 				return buflen;
 			} catch( e : Dynamic ) {
 				return 0;

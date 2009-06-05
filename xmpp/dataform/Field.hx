@@ -2,7 +2,6 @@ package xmpp.dataform;
 
 import util.XmlUtil;
 
-
 class Field {
 	
 	public var label : String;
@@ -13,7 +12,8 @@ class Field {
 	public var values : Array<String>;
 	public var options : Array<FieldOption>;
 	
-	public function new() {
+	public function new( ?type : FieldType ) {
+		this.type = type;
 		values = new Array();
 		options = new Array();
 		required = false;

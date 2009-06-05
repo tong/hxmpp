@@ -1,8 +1,7 @@
 package xmpp.filter;
 
-
 /**
-	Filters iq packets: namespace/nodeName/iqType
+	Filters IQ packets: namespace/nodeName/iqType
 */
 class IQFilter {
 	
