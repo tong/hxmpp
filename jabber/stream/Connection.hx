@@ -1,5 +1,10 @@
 package jabber.stream;
 
+/* TOFO
+typedef TDataFilter = {
+	function filterData( t : haxe.io.Bytes) : haxe.io.Bytes;
+}
+*/
 
 typedef DataFilter = {
 	/** Filters incoming data before further processing ( fe: uncompression ). */
@@ -16,6 +21,7 @@ typedef DataInterceptor = {
 */
 class Connection {
 	
+	///// INTERNAL
 	/** Callback for connecting event */
 	public var onConnect : Void->Void;
 	/** Callback for disconnecting event */
@@ -25,6 +31,7 @@ class Connection {
 	public var onData : haxe.io.Bytes->Int->Int->Int;
 	/** Callback connection level errors */
 	public var onError : String->Void;
+	///// INTERNAL
 	
 	/** Server IP/hostname */
 	public var host(default,null) : String;

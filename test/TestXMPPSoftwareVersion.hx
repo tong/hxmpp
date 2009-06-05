@@ -16,7 +16,7 @@ class TestXMPPSoftwareVersion extends haxe.unit.TestCase {
   </query>
 </iq>" ).firstElement();
 		var iq = xmpp.IQ.parse( x );
-		var sv = xmpp.SoftwareVersion.parse( iq.ext.toXml() );
+		var sv = xmpp.SoftwareVersion.parse( iq.x.toXml() );
 		assertEquals( "NORC", sv.name );
 		assertEquals( "0.7.0.4", sv.version );
 		assertEquals( "Windows-XP 5.01.2600", sv.os );

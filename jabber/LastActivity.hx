@@ -21,14 +21,14 @@ class LastActivity {
 	*/
 	public function request( jid : String ) {
 		var iq = new xmpp.IQ( null, null, jid );
-		iq.ext = new xmpp.LastActivity();
+		iq.x = new xmpp.LastActivity();
 		stream.sendIQ( iq, handleLoad );
 	}
 	
 	function handleLoad( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 		case result :
-			onLoad( iq.from, xmpp.LastActivity.parseSeconds( iq.ext.toXml() ) );
+			onLoad( iq.from, xmpp.LastActivity.parseSeconds( iq.x.toXml() ) );
 		case error :
 			onError( new XMPPError( this, iq ) );
 		default : //#

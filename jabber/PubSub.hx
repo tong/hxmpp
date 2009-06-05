@@ -35,7 +35,7 @@ class PubSub {
 		var xt = new xmpp.PubSub();
 		xt.create = name;
 		xt.configure = config;
-		iq.ext = xt;
+		iq.x = xt;
 		var me = this;
 		sendIQ( iq, function(r:xmpp.IQ) { me.onNodeCreate( name ); } );
 	}
@@ -47,7 +47,7 @@ class PubSub {
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, service );
 		var xt = new xmpp.PubSubOwner();
 		xt.delete = name;
-		iq.ext = xt;
+		iq.x = xt;
 		var me = this;
 		sendIQ( iq, function(r:xmpp.IQ) { me.onNodeDelete( name ); } );
 	}
@@ -65,7 +65,7 @@ class PubSub {
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, service );
 		var xt = new xmpp.PubSubOwner();
 		xt.configure = new xmpp.pubsub.Config( node, xmpp.DataForm( xmpp.dataform.FormType.cancel ) );
-		iq.ext = xt;
+		iq.x = xt;
 		stream.sendIQ( iq );
 	}
 	*/
@@ -77,9 +77,9 @@ class PubSub {
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, service );
 		var xt = new xmpp.PubSub();
 		xt.subscribe = { jid : stream.jid.toString() , node : node };
-		iq.ext = xt;
+		iq.x = xt;
 		var me = this;
-		sendIQ( iq, function(r:xmpp.IQ) { me.onSubscribe( xmpp.PubSub.parse( r.ext.toXml() ).subscription ); } );
+		sendIQ( iq, function(r:xmpp.IQ) { me.onSubscribe( xmpp.PubSub.parse( r.x.toXml() ).subscription ); } );
 	}
 	
 	/**
@@ -89,7 +89,7 @@ class PubSub {
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, service );
 		var xt = new xmpp.PubSub();
 		xt.unsubscribe = { jid : stream.jid.toString() , node : node, subid : subid };
-		iq.ext = xt;
+		iq.x = xt;
 		var me = this;
 		sendIQ( iq, function(r:xmpp.IQ) { me.onUnsubscribe( node ); } );
 	}
@@ -101,9 +101,9 @@ class PubSub {
 		var iq = new xmpp.IQ( null, null, service );
 		var xt = new xmpp.PubSub();
 		xt.subscriptions = new xmpp.pubsub.Subscriptions( node );
-		iq.ext = xt;
+		iq.x = xt;
 		var me = this;
-		sendIQ( iq, function(r:xmpp.IQ) { me.onSubscriptions( xmpp.PubSub.parse( r.ext.toXml() ).subscriptions ); } );
+		sendIQ( iq, function(r:xmpp.IQ) { me.onSubscriptions( xmpp.PubSub.parse( r.x.toXml() ).subscriptions ); } );
 	}
 	
 	/**
@@ -113,9 +113,9 @@ class PubSub {
 		var iq = new xmpp.IQ( null, null, service );
 		var xt = new xmpp.PubSub();
 		xt.affiliations = new xmpp.pubsub.Affiliations();
-		iq.ext = xt;
+		iq.x = xt;
 		var me = this;
-		sendIQ( iq, function(r:xmpp.IQ) { me.onAffiliations( xmpp.PubSub.parse( r.ext.toXml() ).affiliations ); } );
+		sendIQ( iq, function(r:xmpp.IQ) { me.onAffiliations( xmpp.PubSub.parse( r.x.toXml() ).affiliations ); } );
 	}
 	
 	/**
@@ -130,9 +130,9 @@ class PubSub {
 			for( id in ids )
 				xt.items.add( new xmpp.pubsub.Item( id ) );
 		}
-		iq.ext = xt;
+		iq.x = xt;
 		var me = this;
-		sendIQ( iq, function(r:xmpp.IQ) { me.onItems( xmpp.PubSub.parse( r.ext.toXml() ).items ); } );
+		sendIQ( iq, function(r:xmpp.IQ) { me.onItems( xmpp.PubSub.parse( r.x.toXml() ).items ); } );
 	}
 	
 	/**
@@ -143,7 +143,7 @@ class PubSub {
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, service );
 		var xt = new xmpp.PubSub();
 		xt.retract = retract;
-		iq.ext = xt;
+		iq.x = xt;
 		var me = this;
 		sendIQ( iq, function(r:xmpp.IQ) { me.onRetract( retract ); } );
 	}
@@ -156,7 +156,7 @@ class PubSub {
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, service );
 		var xt = new xmpp.PubSubOwner();
 		xt.purge = node;
-		iq.ext = xt;
+		iq.x = xt;
 		var me = this;
 		sendIQ( iq, function(r:xmpp.IQ) { me.onPurge( node ); } );
 	}
@@ -170,7 +170,7 @@ class PubSub {
 		var p = new xmpp.pubsub.Publish( node );
 		p.add( item );
 		xt.publish = p;
-		iq.ext = xt;
+		iq.x = xt;
 		// TODO check options ?
 		if( options != null ) {
 			var po = Xml.createElement( "publish-options" );

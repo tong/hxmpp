@@ -25,6 +25,11 @@
 --php-front test_xmpp.php
 -main TestXMPP
 
+#--next
+#-cp ../core/
+#-cp test
+#-cpp bin/tests/cpp_xmpp
+#-main TestXMPP
 
 ### JABBER
 
@@ -45,6 +50,7 @@
 -cp test
 -neko bin/tests/test_jabber.n
 -main TestJabber
+-D JABBER_DEBUG
 
 --next
 -cp ../core/
@@ -52,3 +58,9 @@
 -php bin/tests
 --php-front test_jabber.php
 -main TestJabber
+
+#--next
+#-cp ../core/
+#-cp test
+#-cpp bin/tests/cpp_jabber
+#-main TestJabber

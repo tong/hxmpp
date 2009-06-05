@@ -10,6 +10,8 @@ private class HistoryMessage extends xmpp.Message {
 	}
 }
 
+/**
+*/
 class History {
 	
 	public static var defaultHistoryLength : Int = 20;
@@ -45,7 +47,6 @@ class History {
 
 //TODO 
 //interface Occupant {
-
 class Occupant {
 	
 	public var room : MUChatRoom;
@@ -53,12 +54,12 @@ class Occupant {
 	public var jid : String;
 	public var nick : String;
 	public var presenceType : xmpp.PresenceType;
-	public var presenceShow : String;
+	public var presenceShow : xmpp.PresenceShow ;
 	public var affiliation : xmpp.muc.Affiliation;
 	public var role : xmpp.muc.Role;
 	public var item(getItem,null) : xmpp.muc.Item;
 	
-	public function new( room : MUChatRoom, jid : String, nick : String, presenceType : xmpp.PresenceType, ?presenceShow : String ) {
+	public function new( room : MUChatRoom, jid : String, nick : String, presenceType : xmpp.PresenceType, ?presenceShow : xmpp.PresenceShow ) {
 		this.room = room;
 		this.jid = jid;
 		this.nick = nick;
@@ -72,7 +73,7 @@ class Occupant {
 }
 
 /**
-	Represents a chatroom for muc services.
+	Chatroom for muc services.
 */
 class MUChatRoom {
 	
@@ -233,10 +234,10 @@ class MUChatRoom {
 	
 	function handleIQ( iq : xmpp.IQ ) {
 		if( locked ) {
-			if( iq.from != owner || iq.type != xmpp.IQType.set || iq.ext == null || iq.ext.toXml().firstElement() == null ) {
+			if( iq.from != owner || iq.type != xmpp.IQType.set || iq.x == null || iq.x.toXml().firstElement() == null ) {
 				return;
 			}
-			var x = xmpp.DataForm.parse( iq.ext.toXml().firstElement() );
+			var x = xmpp.DataForm.parse( iq.x.toXml().firstElement() );
 			if( x.type != xmpp.dataform.FormType.submit ) {
 				return;
 			}

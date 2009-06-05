@@ -21,7 +21,7 @@ class BlockList {
 	*/
 	public function load() {
 		var iq = new xmpp.IQ();
-		iq.ext = new xmpp.BlockList();
+		iq.x = new xmpp.BlockList();
 		stream.sendIQ( iq, handleLoad );
 	}
 	
@@ -30,7 +30,7 @@ class BlockList {
 	*/
 	public function block( jids : Array<String> ) {
 		var iq = new xmpp.IQ( xmpp.IQType.set );
-		iq.ext = new xmpp.BlockList( jids );
+		iq.x = new xmpp.BlockList( jids );
 		stream.sendIQ( iq, handleBlock );
 	}
 	
@@ -39,13 +39,13 @@ class BlockList {
 	*/
 	public function unblock( ?jids : Array<String> ) {
 		var iq = new xmpp.IQ( xmpp.IQType.set );
-		iq.ext = new xmpp.BlockList( jids, true );
+		iq.x = new xmpp.BlockList( jids, true );
 		stream.sendIQ( iq, handleUnblock );
 	}
 	
 	function handleLoad( iq : xmpp.IQ ) {
 		switch( iq.type ) {
-		case result : onLoad( xmpp.BlockList.parse( iq.ext.toXml() ).items );
+		case result : onLoad( xmpp.BlockList.parse( iq.x.toXml() ).items );
 		case error : onError( new jabber.XMPPError( this, iq ) );
 		default : //#
 		}
@@ -53,7 +53,7 @@ class BlockList {
 	
 	function handleBlock( iq : xmpp.IQ ) {
 		switch( iq.type ) {
-		case result : onBlock( xmpp.BlockList.parse( iq.ext.toXml() ).items );
+		case result : onBlock( xmpp.BlockList.parse( iq.x.toXml() ).items );
 		case error : onError( new jabber.XMPPError( this, iq ) );
 		default : //#
 		}
@@ -61,7 +61,7 @@ class BlockList {
 		
 	function handleUnblock( iq : xmpp.IQ ) {
 		switch( iq.type ) {
-		case result : onUnblock( xmpp.BlockList.parse( iq.ext.toXml() ).items );
+		case result : onUnblock( xmpp.BlockList.parse( iq.x.toXml() ).items );
 		case error : onError( new jabber.XMPPError( this, iq ) );
 		default : //#
 		}

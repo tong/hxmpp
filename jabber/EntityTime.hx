@@ -20,14 +20,14 @@ class EntityTime {
 	*/
 	public function load( jid : String ) {
 		var iq = new xmpp.IQ( null, null, jid );
-		iq.ext = new xmpp.EntityTime();
+		iq.x = new xmpp.EntityTime();
 		stream.sendIQ( iq, handleLoad );
 
 	}
 	
 	function handleLoad( iq : xmpp.IQ ) {
 		switch( iq.type ) {
-		case result : onLoad( iq.from, xmpp.EntityTime.parse( iq.ext.toXml() ) );
+		case result : onLoad( iq.from, xmpp.EntityTime.parse( iq.x.toXml() ) );
 		case error : onError( new XMPPError( this, iq ) );
 		default : //#
 		}

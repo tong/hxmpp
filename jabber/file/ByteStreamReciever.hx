@@ -21,7 +21,7 @@ class ByteStreamReciever extends FileReciever {
 	}
 	
 	public override function handleRequest( iq : xmpp.IQ ) {
-		var bs = xmpp.file.ByteStream.parse( iq.ext.toXml() );
+		var bs = xmpp.file.ByteStream.parse( iq.x.toXml() );
 		if( bs.streamhosts.length < 1 )
 			return false;
 		streamhosts = bs.streamhosts;
@@ -64,7 +64,7 @@ class ByteStreamReciever extends FileReciever {
 		var r = xmpp.IQ.createResult( request );
 		var bs = new xmpp.file.ByteStream();
 		bs.streamhost_used = streamhosts[currentStreamHostIndex].jid;
-		r.ext = bs;
+		r.x = bs;
 		stream.sendPacket( r );
 	}
 	

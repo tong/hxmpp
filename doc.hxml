@@ -1,10 +1,14 @@
 
 ### HXMPP DOC
--cp lib/
+-cp ../core/
 -cp doc/
 
+jabber.BOB
+jabber.BOBListener
+jabber.BlockList
 jabber.Chat
 jabber.ChatStateNotification
+jabber.EntityCapabilities
 jabber.JID
 jabber.JIDUtil
 jabber.LastActivity
@@ -35,7 +39,7 @@ xmpp.ChatState
 xmpp.ChatStateExtension
 xmpp.Compression
 xmpp.DataForm
-xmpp.Date
+xmpp.DateTime
 xmpp.Delayed
 xmpp.Error
 xmpp.ErrorCondition

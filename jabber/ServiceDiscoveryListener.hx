@@ -33,7 +33,7 @@ class ServiceDiscoveryListener {
 	function handleInfoQuery( iq : xmpp.IQ ) {
 		// return local stream features
 		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
-		r.ext = new xmpp.disco.Info( [identity], Lambda.array( stream.features ) );
+		r.x = new xmpp.disco.Info( [identity], Lambda.array( stream.features ) );
 		stream.sendData( r.toString() );
 	}
 	
@@ -41,7 +41,7 @@ class ServiceDiscoveryListener {
 		if( Reflect.hasField( stream, "items" ) ) { // component stream
 			// return local stream items
 			var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, Reflect.field( stream, "serviceName" ) );
-			r.ext = Reflect.field( stream, "items" );
+			r.x = Reflect.field( stream, "items" );
 			stream.sendPacket( r );
 		} else { // client streams do not have items, return a feature-not-implemented
 			var r = new xmpp.IQ( xmpp.IQType.error, iq.id, iq.from );

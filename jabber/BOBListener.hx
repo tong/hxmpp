@@ -19,7 +19,7 @@ class BOBListener {
 	}
 
 	function handleRequest( iq : xmpp.IQ ) {
-		var _bob = xmpp.BOB.parse( iq.ext.toXml() );
+		var _bob = xmpp.BOB.parse( iq.x.toXml() );
 		var _cid = xmpp.BOB.getCIDParts( _bob.cid );
 		var bob : xmpp.BOB = onRequest( iq.from, _cid[1] );
 		if( bob == null ) {
@@ -30,7 +30,7 @@ class BOBListener {
 			var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
 			// encode here?
 			bob.data =  new haxe.BaseCode( haxe.io.Bytes.ofString( util.Base64.CHARS ) ).encodeString( bob.data );
-			r.ext = bob;
+			r.x = bob;
 			stream.sendPacket( r );
 		}
 	}

@@ -22,7 +22,7 @@ class Pong {
 	
 	function handlePing( iq : xmpp.IQ ) {
 		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
-		r.ext = new xmpp.Ping();
+		r.x = new xmpp.Ping();
 		stream.sendData( r.toString() );
 		onPong( iq.from );
 	}

@@ -24,7 +24,7 @@ class Account {
 	public function requestRegistrationForm() {
 		var self = this;
 		var iq = new xmpp.IQ();
-		iq.ext = new xmpp.Register();
+		iq.x = new xmpp.Register();
 		stream.sendIQ( iq );
 	}
 	*/
@@ -38,24 +38,24 @@ class Account {
 
 		var self = this;
 		var iq = new xmpp.IQ();
-		iq.ext = new xmpp.Register();
+		iq.x = new xmpp.Register();
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			switch( r.type ) {
 				case result :
 					
 					//TODO check required register fields
-					//var p = xmpp.Register.parse( iq.ext.toXml() );
+					//var p = xmpp.Register.parse( iq.x.toXml() );
 					//var required = new Array<String>();
 					//onChange( new AccountEvent( self.stream ) );
 					
 					var iq = new xmpp.IQ( xmpp.IQType.set );
 					var submit = new xmpp.Register( username, password, email, name  );
-					iq.ext = submit;
+					iq.x = submit;
 					self.stream.sendIQ( iq, function(r:xmpp.IQ) {
 						switch( r.type ) {
 							case result :
 								//TODO
-								//var l = xmpp.Register.parse( iq.ext.toXml() );
+								//var l = xmpp.Register.parse( iq.x.toXml() );
 								self.onRegistered( username );
 							case error:
 								self.onError( new jabber.XMPPError( self, r ) );
@@ -78,13 +78,13 @@ class Account {
 		var iq = new xmpp.IQ( xmpp.IQType.set );
 		var ext = new xmpp.Register();
 		ext.remove = true;
-		iq.ext = ext;
+		iq.x = ext;
 		var self = this;
 		stream.sendIQ( iq, function(r) {
 			switch( r.type ) {
 				case result :
 				//TODO
-					//var l = xmpp.Register.parse( iq.ext.toXml() );
+					//var l = xmpp.Register.parse( iq.x.toXml() );
 					self.onRemoved();
 				case error :
 					self.onError( new jabber.XMPPError( self, r ) );
@@ -101,12 +101,12 @@ class Account {
 		var e = new xmpp.Register();
 		e.username = node;
 		e.password = pass;
-		iq.ext = e;
+		iq.x = e;
 		var self = this;
 		stream.sendIQ( iq, function(r) {
 			switch( r.type ) {
 				case result :
-					var l = xmpp.Register.parse( iq.ext.toXml() );
+					var l = xmpp.Register.parse( iq.x.toXml() );
 					self.onPasswordChange( pass );
 				case error :
 					self.onError( new jabber.XMPPError( self, r ) );

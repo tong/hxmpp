@@ -45,7 +45,7 @@ class Error {
 	}
 	
 	/**
-		Parses the error from given xml.
+		Parses the error from given XML.
 	*/
 	public static function parse( x : Xml ) : xmpp.Error {
 //		if( x.nodeName != "error" ) throw "This is not an error extension";

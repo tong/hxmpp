@@ -15,7 +15,7 @@ class ByteStreamListener {
 	}
 	
 	function handleRequest( iq : xmpp.IQ ) {
-		//var bs = xmpp.file.ByteStream.parse( iq.ext.toXml() );
+		//var bs = xmpp.file.ByteStream.parse( iq.x.toXml() );
 		var me = this;
 		
 		var r = new ByteStreamReciever( stream );

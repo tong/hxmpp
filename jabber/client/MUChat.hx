@@ -165,7 +165,7 @@ class MUChat {
 		item.reason = reason;
 		item.role = xmpp.muc.Role.none;
 		xt.items.push( item );
-		iq.ext = xt;
+		iq.x = xt;
 		var me = this;
 		stream.sendIQ( iq, function(r) {
 			switch( r.type ) {

@@ -124,7 +124,7 @@ class SASLAuthentication extends Authentication {
 		if( stream.server.features.exists( "bind" ) ) {
 			// bind the resource
 			var iq = new IQ( IQType.set );
-			iq.ext = new xmpp.Bind( resource );
+			iq.x = new xmpp.Bind( resource );
 			stream.sendIQ( iq, handleBind );
 		} else {
 			onSuccess(); // TODO ?
@@ -136,7 +136,7 @@ class SASLAuthentication extends Authentication {
 		case IQType.result :
 			/*
 			// TODO required ?
-			var b = xmpp.Bind.parse( iq.ext.toXml() );
+			var b = xmpp.Bind.parse( iq.x.toXml() );
 			if( jabber.util.JIDUtil.parseResource( b.jid ) != resource ) {
 				throw "Unexpected resource bound ?";
 			}
@@ -144,7 +144,7 @@ class SASLAuthentication extends Authentication {
 			if( stream.server.features.exists( "session" ) ) {
 				// init session
 				var iq = new IQ( IQType.set );
-				iq.ext = new xmpp.PlainPacket( Xml.parse( '<session xmlns="urn:ietf:params:xml:ns:xmpp-session"/>' ) );
+				iq.x = new xmpp.PlainPacket( Xml.parse( '<session xmlns="urn:ietf:params:xml:ns:xmpp-session"/>' ) );
 				stream.sendIQ( iq, handleSession );
 			} else
 				onSuccess(); //?

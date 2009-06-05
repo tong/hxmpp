@@ -19,7 +19,7 @@ class LastActivityListener {
 	
 	function handleRequest( iq : xmpp.IQ ) {
 		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
-		r.ext = new xmpp.LastActivity( time );
+		r.x = new xmpp.LastActivity( time );
 		stream.sendPacket( r );	
 	}
 	

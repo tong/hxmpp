@@ -1,16 +1,19 @@
 
-##### CLIENT SAMPLE
+##### HXMPP CLIENT SAMPLE
+
 -cp samples/
--cp lib/
+-cp ../core/
+-cp util/
 -swf9 bin/samples/client.swf
 -main JabberClientDemo
 -D XMPP_DEBUG
+#-D XMPP_CONSOLE
 -D JABBER_DEBUG
 -debug
 
 --next
 -cp samples/
--cp lib/
+-cp ../core/
 -js bin/samples/client.js
 -main JabberClientDemo
 -D XMPP_DEBUG
@@ -20,7 +23,7 @@
 
 --next
 -cp samples/
--cp lib/
+-cp ../core/
 -neko bin/samples/client.n
 -main JabberClientDemo
 -D XMPP_DEBUG
@@ -29,8 +32,8 @@
 
 --next
 -cp samples/
--cp lib/
--php bin/samples/
+-cp ../core/
+-php bin/samples/php
 --php-front client.php
 -main JabberClientDemo
 -D XMPP_DEBUG
@@ -38,10 +41,11 @@
 -debug
 
 
+##### HXMPP SERVER COMPONENT EXAMPLE
+
 --next
-##### COMPONENT SAMPLE
 -cp samples/
--cp lib/
+-cp ../core/
 -neko bin/samples/component.n
 -main JabberComponentDemo
 -D XMPP_DEBUG
@@ -50,7 +54,7 @@
 
 --next
 -cp samples/
--cp lib/
+-cp ../core/
 -swf9 bin/samples/component.swf
 -main JabberComponentDemo
 -D XMPP_DEBUG
@@ -59,10 +63,19 @@
 
 --next
 -cp samples/
--cp lib/
--php bin/samples/
+-cp ../core/
+-php bin/samples/php
 --php-front component.php
 -main JabberComponentDemo
 -D XMPP_DEBUG
 -D JABBER_DEBUG
 -debug
+
+#--next
+#-cp samples/
+#-cp ../core/
+#-cpp bin/samples/cpp
+#-main JabberComponentDemo
+#-D XMPP_DEBUG
+#-D JABBER_DEBUG
+#-debug

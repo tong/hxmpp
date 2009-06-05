@@ -37,7 +37,7 @@ class PersonalEvent {
 		var xt = new xmpp.PubSub();
 		xt.publish = p;
 		var iq = new xmpp.IQ( xmpp.IQType.set, null );
-		iq.ext = xt;
+		iq.x = xt;
 		var me = this;
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			switch( r.type ) {

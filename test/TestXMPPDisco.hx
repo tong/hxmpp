@@ -14,7 +14,7 @@ class TestXMPPDisco extends haxe.unit.TestCase {
 					<feature var="http://jabber.org/protocol/disco#info"/>
 				</query>
 			</iq>').firstElement() );
-		var info = xmpp.disco.Info.parse( iq.ext.toXml() );
+		var info = xmpp.disco.Info.parse( iq.x.toXml() );
 		
 		assertEquals( "registered", info.identities[0].type );
 		assertEquals( "account", info.identities[0].category );
@@ -47,7 +47,7 @@ class TestXMPPDisco extends haxe.unit.TestCase {
 			</query>
 		</iq>').firstElement() );
 		
-		var items = xmpp.disco.Items.parse( iq.ext.toXml() );
+		var items = xmpp.disco.Items.parse( iq.x.toXml() );
 		var results_name = [ "Public Chatrooms", "Socks 5 Bytestreams Proxy", "User Search", "Publish-Subscribe service" ];
 		var results_jid = [ "conference.disktree", "proxy.disktree", "search.disktree", "pubsub.disktree" ];
 		var results_node = [null,null,null,null];

@@ -20,7 +20,7 @@ class EntityTimeListener {
 	function handleRequest( iq : xmpp.IQ ) {
 		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
 		time.utc = xmpp.DateTime.current();
-		r.ext = time;
+		r.x = time;
 		stream.sendPacket( r );	
 	}
 	

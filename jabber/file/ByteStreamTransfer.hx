@@ -37,7 +37,7 @@ class ByteStreamTransfer extends FileTransfer {
 		// send init request
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, reciever, stream.jid.toString() );
 		var bs = new xmpp.file.ByteStream( sid, null, streamhosts );
-		iq.ext = bs;
+		iq.x = bs;
 		stream.sendIQ( iq, handleResponse );
 	}
 	
@@ -53,7 +53,7 @@ class ByteStreamTransfer extends FileTransfer {
 		case result :
 			
 			onInit( this );
-//			var bs = xmpp.file.ByteStream.parse( iq.ext.toXml() );
+//			var bs = xmpp.file.ByteStream.parse( iq.x.toXml() );
 			try {
 				output.write( data );
 				output.close();

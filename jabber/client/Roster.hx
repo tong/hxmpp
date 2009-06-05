@@ -7,12 +7,17 @@ import xmpp.roster.Item;
 import xmpp.roster.AskType;
 import xmpp.roster.Subscription;
 
+/* TODO
+interface RosterItem {
+}
+*/
+
 
 enum RosterSubscriptionMode {
 	/** Accepts all subscription and unsubscription requests. */
 	acceptAll; //TODO acceptAll( ?subscribe : Bool = true );
 	/** Rejects all subscription requests. */
-	rejectAll;
+	rejectAll; // ( reason : String ) ??
 	/** Ask user how to proceed. */
 	manual; //TODO manual( ?subscribe : Bool = true );
 }
@@ -32,9 +37,9 @@ class Roster {
 	public dynamic function onUpdate( items : Array<Item> ) : Void;
 	public dynamic function onPresence( item : Item, p: xmpp.Presence ) : Void;
 	public dynamic function onResourcePresence( resource : String, p : xmpp.Presence  ) : Void;
-	public dynamic function onSubscribed( item : Item ) : Void;
-	public dynamic function onUnsubscribed( item : Item ) : Void;
-	public dynamic function onSubscriptionRequest( item : Item ) : Void;
+	public dynamic function onSubscribed( i : Item ) : Void;
+	public dynamic function onUnsubscribed( i : Item ) : Void;
+	public dynamic function onSubscription( i : Item ) : Void;
 	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
@@ -84,7 +89,7 @@ class Roster {
 	
 	public function load() {
 		var iq = new xmpp.IQ();
-		iq.ext = new xmpp.Roster();
+		iq.x = new xmpp.Roster();
 		stream.sendIQ( iq );
 	}
 	
@@ -99,7 +104,7 @@ class Roster {
 		var i = getItem( jid );
 		if( i == null ) return false;
 		var iq = new xmpp.IQ( IQType.set );
-		iq.ext = new xmpp.Roster( [new xmpp.roster.Item( jid, Subscription.remove )] );
+		iq.x = new xmpp.Roster( [new xmpp.roster.Item( jid, Subscription.remove )] );
 		var me = this;
 		stream.sendIQ( iq, function(r) {
 			switch( r.type ) {
@@ -116,7 +121,7 @@ class Roster {
 	public function updateItem( item : Item ) : Bool {
 		if( !available || !hasItem( item.jid ) ) return false;
 		var iq = new xmpp.IQ( IQType.set );
-		iq.ext = new xmpp.Roster( [item] );
+		iq.x = new xmpp.Roster( [item] );
 		var me = this;
 		stream.sendIQ( iq, function(r) {
 			switch( r.type ) {
@@ -135,7 +140,7 @@ class Roster {
 		var i = getItem( jid );
 		if( i == null ) {
 			var iq = new xmpp.IQ( IQType.set );
-			iq.ext = new xmpp.Roster( [new xmpp.roster.Item( jid )] );
+			iq.x = new xmpp.Roster( [new xmpp.roster.Item( jid )] );
 			var me = this;
 			stream.sendIQ( iq, function(r) {
 				switch( r.type ) {
@@ -206,33 +211,35 @@ class Roster {
 			var i = getItem( from );
 			if( p.type != null ) {
 				switch( p.type ) {
-					case subscribe :
-						switch( subscriptionMode ) {
-							case acceptAll :
-								confirmSubscription( p.from, true );
-								//TODO subscribe to ?
-								//if( s ) subscribe( p.from );
-							case rejectAll :
-								var r = new xmpp.Presence( xmpp.PresenceType.unsubscribed );
-								r.to = p.from;
-								stream.sendPacket( r );
-							case manual :
-								onSubscriptionRequest( new xmpp.roster.Item( p.from ) );
-						}
-						return;
-					
-					case subscribed :
-					//?	onSubscribed( this, i );
-					//?	return;
-					
-					case unsubscribed :
-						onUnsubscribed( i );
-						return;
-						
-					default :
-						//TODO check
-						trace( "???? check "+p.type );
-						//onPresence( i, p );
+				case subscribe :
+					switch( subscriptionMode ) {
+					case acceptAll :
+						confirmSubscription( p.from, true );
+						//TODO subscribe to ?
+						//if( s ) subscribe( p.from );
+					case rejectAll :
+						var r = new xmpp.Presence( xmpp.PresenceType.unsubscribed );
+						r.to = p.from;
+						stream.sendPacket( r );
+					case manual :
+						onSubscription( new xmpp.roster.Item( p.from ) );
+					}
+					return;
+				
+				case subscribed :
+				//?	onSubscribed( this, i );
+				//?	return;
+				
+				case unsubscribed :
+					onUnsubscribed( i );
+					return;
+				
+				//TODO case unsubscribe :
+				
+				default :
+					//TODO check
+					trace( "???? check "+p.type );
+					//onPresence( i, p );
 				}
 			}
 			if( i != null ) {
@@ -248,7 +255,7 @@ class Roster {
 		case result :
 			var added = new Array<Item>();
 			var removed = new Array<Item>();
-			var loaded = xmpp.Roster.parse( iq.ext.toXml() );
+			var loaded = xmpp.Roster.parse( iq.x.toXml() );
 			for( i in loaded ) {
 				var item = getItem( i.jid );
 				if( i.subscription == Subscription.remove ) {
@@ -273,7 +280,8 @@ class Roster {
 			if( added.length > 0 ) onAdd( added );
 			if( removed.length > 0 ) onRemove( removed );
 		case set :
-			var loaded = xmpp.Roster.parse( iq.ext.toXml() );
+			// TODO check subscription
+			var loaded = xmpp.Roster.parse( iq.x.toXml() );
 			for( i in loaded ) {
 				var item = getItem( i.jid );
 				if( item != null ) { // update item
@@ -294,7 +302,7 @@ class Roster {
 	
 	function requestItemAdd( j : String ) {
 		var iq = new xmpp.IQ( IQType.set );
-		iq.ext = new xmpp.Roster( [new xmpp.roster.Item( j )] );
+		iq.x = new xmpp.Roster( [new xmpp.roster.Item( j )] );
 		var me = this;
 		stream.sendIQ( iq, function(r) {
 			switch( r.type ) {

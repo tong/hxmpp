@@ -129,9 +129,9 @@ class TestXMPPPacketFilters extends haxe.unit.TestCase {
 		assertTrue( !f.accept( new IQ( IQType.result ) ) );
 		
 		var iq_auth = new IQ();
-		iq_auth.ext = new xmpp.Auth();
+		iq_auth.x = new xmpp.Auth();
 		var iq_roster = new IQ();
-		iq_roster.ext = new xmpp.Roster();
+		iq_roster.x = new xmpp.Roster();
 		
 		f = new IQFilter( xmpp.Auth.XMLNS );
 		assertTrue( f.accept( iq_auth ) );

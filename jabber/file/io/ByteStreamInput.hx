@@ -37,6 +37,8 @@ typedef Buffer = {
 	Socket bytestream input.
 	! PHP does not support threads, means, this class blocks until transfer has ended.
 */
+//TODO SockInput
+//TODO SOCKSInput
 class ByteStreamInput {
 	
 	public var __onFail : Void->Void;

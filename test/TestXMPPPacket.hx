@@ -94,7 +94,7 @@ class TestPresencePacket extends haxe.unit.TestCase   {
 				<c xmlns="http://jabber.org/protocol/caps" node="http://psi-im.org/caps" ver="0.11-dev-rev8" ext="cs ep-notify html" />
 			</presence>' ).firstElement();
 		
-		var p = cast xmpp.Packet.parse( src );
+		var p : xmpp.Presence = cast xmpp.Packet.parse( src );
 		assertEquals( p.show, xmpp.PresenceShow.away );
 		assertEquals( p.priority, 5 );
 		
@@ -125,7 +125,7 @@ class TestIQPacket extends haxe.unit.TestCase   {
 		assertEquals( iq.type, get );
 		assertEquals( iq.to, 'jabber.spektral.at' );
 		assertEquals( iq.id, 'ab08a' );
-		assertEquals( iq.ext.toString(), '<query xmlns="http://jabber.org/protocol/disco#info"/>' );
+		assertEquals( iq.x.toString(), '<query xmlns="http://jabber.org/protocol/disco#info"/>' );
 		
 		//TODO any properties
 	}

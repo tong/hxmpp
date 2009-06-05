@@ -22,7 +22,7 @@ class PrivateStorage {
 	public function store( name : String, namespace : String, data : Xml ) {
 		var iq = new xmpp.IQ( xmpp.IQType.set );
 		var xt = new xmpp.PrivateStorage( name, namespace, data );
-		iq.ext = xt;
+		iq.x = xt;
 		var me = this;
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			switch( r.type ) {
@@ -38,11 +38,11 @@ class PrivateStorage {
 	*/
 	public function load( name : String, namespace : String ) {
 		var iq = new xmpp.IQ( xmpp.IQType.get );
-		iq.ext = new xmpp.PrivateStorage( name, namespace );
+		iq.x = new xmpp.PrivateStorage( name, namespace );
 		var me = this;
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			switch( r.type ) {
-			case result : me.onLoad( xmpp.PrivateStorage.parse( r.ext.toXml() ) );
+			case result : me.onLoad( xmpp.PrivateStorage.parse( r.x.toXml() ) );
 			case error : me.onError( new jabber.XMPPError( me, iq ) );
 			default://#
 			}

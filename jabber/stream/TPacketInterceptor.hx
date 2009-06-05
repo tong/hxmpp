@@ -1,13 +1,12 @@
 package jabber.stream;
 
-
 /**
-	Modifies xmpp.Packets before sending.
+	Modifies XMPP packets and/or runs additional processes before sending them.
 */
 typedef TPacketInterceptor = {
 	
 	/**
-		Intercepts outgoing xmpp packet.
+		Intercepts outgoing XMPP packet.
 	*/
 	function interceptPacket( p : xmpp.Packet ) : xmpp.Packet;
 	

@@ -22,7 +22,7 @@ class IBReciever extends FileReciever {
 	
 	public override function handleRequest( iq : xmpp.IQ ) : Bool {
 		//TODO
-		var ib = xmpp.file.IB.parse( iq.ext.toXml() );
+		var ib = xmpp.file.IB.parse( iq.x.toXml() );
 		trace( ib.blockSize );
 		sid = ib.sid;
 		return super.handleRequest( iq );

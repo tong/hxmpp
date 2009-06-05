@@ -64,7 +64,7 @@ class SocketConnection extends jabber.stream.Connection {
 		reading = false;
 		
 		#if php //TODO WTF
-		buf = haxe.io.Bytes.alloc( 1<<6 );
+		buf = haxe.io.Bytes.alloc( 1024 );
 		#end
 		
 		#elseif JABBER_SOCKETBRIDGE
@@ -92,23 +92,20 @@ class SocketConnection extends jabber.stream.Connection {
 	
 	
 	public override function connect() {
-		
 		try {
 			#if neko
 			socket.connect( new Host( host ), port );
 			#end
 			#if php
-			if( secure )
-				socket.connectTLS( new Host( host ), port );
-			else
-				socket.connect( new Host( host ), port );
+			trace("#########################################");
+			trace(secure);
+			if( secure ) socket.connectTLS( new Host( host ), port );
+			else socket.connect( new Host( host ), port );
 			#end
 		} catch( e : Dynamic ) {
-			trace( "Unable to connect socket on "+host+","+port, XMPPDebug.ERROR );
-			return;
-			//throw e;
+			trace( "Unable to connect socket: "+host+":"+port );
+			return; //throw e;
 		}
-		
 		#if (neko||php||cpp)
 		connected = true;
 		onConnect();

@@ -20,13 +20,13 @@ class BOB {
 	*/
 	public function load( from : String, cid : String ) {
 		var iq = new xmpp.IQ( null, null, from );
-		iq.ext = new xmpp.BOB( cid );
+		iq.x = new xmpp.BOB( cid );
 		stream.sendIQ( iq, handleResponse );
 	}
 	
 	function handleResponse( iq : xmpp.IQ ) {
 		switch( iq.type ) {
-		case result : onLoad( iq.from, xmpp.BOB.parse( iq.ext.toXml() ));
+		case result : onLoad( iq.from, xmpp.BOB.parse( iq.x.toXml() ));
 		case error : onError( new jabber.XMPPError( this, iq ) );
 		default : //#
 		}

@@ -14,7 +14,7 @@ class TestXMPPRegister extends haxe.unit.TestCase {
 				<email>juliet@capulet.com</email>
 			</query>
 		</iq>" ).firstElement() );
-		var r = xmpp.Register.parse( iq.ext.toXml() );
+		var r = xmpp.Register.parse( iq.x.toXml() );
 		assertEquals( r.username, 'juliet' );
 		assertEquals( r.password, 'R0m30' );
 		assertEquals( r.email, 'juliet@capulet.com' );

@@ -2,10 +2,8 @@ package jabber;
 
 import jabber.stream.PacketCollector;
 
-
 /**
-	Extension for broadcasting and dynamically discovering client, device, or generic entity capabilities.
-	
+	Extension for broadcasting and dynamically discovering client, device, or generic entity capabilities.<br>
 	<a href="http://xmpp.org/extensions/xep-0115.html">XEP-0085: Entity Capabilities</a><br/>
 */
 class EntityCapabilities {
@@ -73,7 +71,7 @@ class EntityCapabilities {
 	function handleInfoResponse( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 		case result :
-			var info = xmpp.disco.Info.parse( iq.ext.toXml() );
+			var info = xmpp.disco.Info.parse( iq.x.toXml() );
 			var ver : String = null;
 			if( info.node != null ) {
 				var ver_index = info.node.indexOf("#");
@@ -92,7 +90,7 @@ class EntityCapabilities {
 	
 	function requestDiscoInfo( from : String, ?node : String ) {
 		var iq = new xmpp.IQ( xmpp.IQType.get, null,from );
-		iq.ext = new xmpp.disco.Info( null, null, node );
+		iq.x = new xmpp.disco.Info( null, null, node );
 		stream.sendIQ( iq, handleInfoResponse );
 	}
 	

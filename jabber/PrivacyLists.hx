@@ -32,7 +32,7 @@ class PrivacyLists {
 	public function loadLists() {
 		var me = this;
 		sendRequest( xmpp.IQType.get, function(r) {
-			var l = xmpp.PrivacyLists.parse( r.ext.toXml() );
+			var l = xmpp.PrivacyLists.parse( r.x.toXml() );
 			me.onLists( l );
 		} );
 	}
@@ -40,7 +40,7 @@ class PrivacyLists {
 	public function load( name : String ) {
 		var me = this;
 		sendRequest( xmpp.IQType.get, function(r) {
-			var l = xmpp.PrivacyLists.parse( r.ext.toXml() );
+			var l = xmpp.PrivacyLists.parse( r.x.toXml() );
 			me.onInfo( l.list[0] );
 		}, null, null, new xmpp.PrivacyList( name ) );
 	}
@@ -48,7 +48,7 @@ class PrivacyLists {
 	public function activate( name : String ) {
 		var me = this;
 		sendRequest( xmpp.IQType.set, function(r) {
-			var l = xmpp.PrivacyLists.parse( r.ext.toXml() );
+			var l = xmpp.PrivacyLists.parse( r.x.toXml() );
 			me.onActivate( l.active );
 		}, name );
 	}
@@ -65,7 +65,7 @@ class PrivacyLists {
 		var iq = new xmpp.IQ( xmpp.IQType.set );
 		var ext = new xmpp.PrivacyLists();
 		ext._default = name;
-		iq.ext = ext;
+		iq.x = ext;
 		var me = this;
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			switch( r.type ) {
@@ -89,7 +89,7 @@ class PrivacyLists {
 	public function remove( name : String ) {
 		var me = this;
 		sendRequest( xmpp.IQType.set, function(r) {
-			var l = xmpp.PrivacyLists.parse( r.ext.toXml() );
+			var l = xmpp.PrivacyLists.parse( r.x.toXml() );
 			me.onRemoved( l.list[0] );
 		}, null, null, new xmpp.PrivacyList( name ) );
 	}
@@ -98,7 +98,7 @@ class PrivacyLists {
 	function _update( list : xmpp.PrivacyList ) {
 		var me = this;
 		sendRequest( xmpp.IQType.set, function(r) {
-			var l = xmpp.PrivacyLists.parse( r.ext.toXml() );
+			var l = xmpp.PrivacyLists.parse( r.x.toXml() );
 			me.onUpdate( l.list[0] );
 		}, null, null, list );
 	}
@@ -110,7 +110,7 @@ class PrivacyLists {
 		if( active != null ) xt.active = active;
 		else if( _default != null ) xt._default = _default; 
 		else if( list != null ) xt.list.push( list );
-		iq.ext = xt;
+		iq.x = xt;
 		var me = this;
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			switch( r.type ) {

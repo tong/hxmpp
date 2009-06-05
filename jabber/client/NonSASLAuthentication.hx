@@ -29,7 +29,7 @@ class NonSASLAuthentication extends Authentication {
 		}
 		active = true;
 		var iq = new xmpp.IQ();
-		iq.ext = new xmpp.Auth( username );
+		iq.x = new xmpp.Auth( username );
 		stream.sendIQ( iq, handleResponse );
 		return true;
 	}
@@ -38,9 +38,9 @@ class NonSASLAuthentication extends Authentication {
 	function handleResponse( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 			case result :
-				var hasDigest = ( !usePlainText && iq.ext.toXml().elementsNamed( "digest" ).next() != null );
+				var hasDigest = ( !usePlainText && iq.x.toXml().elementsNamed( "digest" ).next() != null );
 				var r = new xmpp.IQ( xmpp.IQType.set );
-				r.ext = if( hasDigest ) new xmpp.Auth( username, null, crypt.SHA1.encode( stream.id+password ), resource );
+				r.x = if( hasDigest ) new xmpp.Auth( username, null, crypt.SHA1.encode( stream.id+password ), resource );
 				else new xmpp.Auth( username, password, null, resource );
 				stream.sendIQ( r, handleResult );
 			case error : onFail( new jabber.XMPPError( this, iq ) );

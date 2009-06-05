@@ -19,13 +19,13 @@ class IQFilter {
 		if( p._type != xmpp.PacketType.iq ) return false;
 		var iq : xmpp.IQ = cast( p, xmpp.IQ );
 		if( xmlns != null ) {
-			if( iq.ext == null ) return false;
-			var _xmlns = iq.ext.toXml().get( "xmlns" );
+			if( iq.x == null ) return false;
+			var _xmlns = iq.x.toXml().get( "xmlns" );
 			if( xmlns != _xmlns ) return false;
 		}
 		if( nodeName != null ) {
-			if( iq.ext == null ) return false;
-			var name = iq.ext.toXml().nodeName;
+			if( iq.x == null ) return false;
+			var name = iq.x.toXml().nodeName;
 			if( nodeName != name ) return false;
 		}
 		if( iqType != null ) {

@@ -53,7 +53,7 @@ class IBOutput {
 				sendNextPacket();
 			} else { // complete, .. close bytestream
 				var iq = new xmpp.IQ( xmpp.IQType.set, null, reciever );
-				iq.ext = new xmpp.InBandByteStream( xmpp.InBandByteStreamType.close, sid );
+				iq.x = new xmpp.InBandByteStream( xmpp.InBandByteStreamType.close, sid );
 				var me = this;
 				stream.sendIQ( iq, function(r:xmpp.IQ) {
 					switch( r.type ) {
