@@ -1,8 +1,7 @@
 package xmpp.filter;
 
-
 /**
-	Filters xmpp packets with matching id attribute.
+	Filters XMPP packets with matching id attribute.
 */
 class PacketIDFilter {
 	
