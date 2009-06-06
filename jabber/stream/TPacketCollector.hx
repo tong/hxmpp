@@ -6,7 +6,7 @@ typedef TPacketCollector = {
 	
 	/**
 	*/
-	var filters : Array<xmpp.PacketFilter>;
+	var filters(getFilters,setFilters) : Array<xmpp.PacketFilter>;
 	
 	/**
 		Callbacks to which collected packets get delivered to.
