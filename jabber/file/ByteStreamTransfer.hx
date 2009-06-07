@@ -8,18 +8,20 @@ import jabber.file.io.ByteStreamOutput;
 */
 class ByteStreamTransfer extends FileTransfer {
 	
+	//public var udp(default,null) : Bool;
 	public var streamhosts : Array<xmpp.file.ByteStreamHost>;
 	
 	var output : ByteStreamOutput;
 	
-	public function new( stream : jabber.Stream, reciever : String, ?streamhosts : Array<xmpp.file.ByteStreamHost> ) {
+	public function new( stream : jabber.Stream, reciever : String, /*?udp = false,*/ ?streamhosts : Array<xmpp.file.ByteStreamHost> ) {
 		super( stream, xmpp.file.ByteStream.XMLNS, reciever );
+		//this.udp = udp;
 		this.streamhosts = ( streamhosts != null ) ? streamhosts : new Array();
 	}
 	
-	public override function init( data : haxe.io.Bytes ) {
+	public override function init( input : haxe.io.Input ) {
 		
-		this.data = data;
+		this.input = input;
 		sid = util.StringUtil.random64( 16 );
 
 		// activate stream host
@@ -31,7 +33,8 @@ class ByteStreamTransfer extends FileTransfer {
 		//	output.wait();
 		//}
 		
-		output = new ByteStreamOutput( streamhosts[0].host, streamhosts[0].port );
+		output = new ByteStreamOutput( streamhosts[0].host, streamhosts[0].port/*, udp*/ );
+		output.connect();
 		output.wait();
 		
 		// send init request
@@ -55,7 +58,7 @@ class ByteStreamTransfer extends FileTransfer {
 			onInit( this );
 //			var bs = xmpp.file.ByteStream.parse( iq.x.toXml() );
 			try {
-				output.write( data );
+				output.write( input );
 				output.close();
 			} catch( e : Dynamic ) {
 				trace(e);

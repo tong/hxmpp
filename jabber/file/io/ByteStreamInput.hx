@@ -45,15 +45,17 @@ class ByteStreamInput {
 	public var __onConnect : Void->Void;
 	public var __onComplete : Void->Void;
 	
+	//public var udp(default,null) : Bool;
 	public var data(getData,null) : haxe.io.Bytes;
 	
 	var socket : Socket;
 	var host : String;
 	var port : Int;
 	
-	public function new( host : String, port : Int ) {
+	public function new( host : String, port : Int/*, ?udp = false*/ ) {
 		this.host = host;
 		this.port = port;
+		//this.udp = udp;
 	}
 	
 	function getData() : haxe.io.Bytes {
@@ -65,14 +67,16 @@ class ByteStreamInput {
 	}
 	
 	public function connect() {
-		socket = new Socket();
 		#if flash
+		socket = new Socket();
 		socket.addEventListener( Event.CONNECT, handleSocketConnect  );
 		socket.addEventListener( Event.CLOSE, handleSocketDisconnect );
 		socket.addEventListener( IOErrorEvent.IO_ERROR, handleSocketError );
 		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, handleSocketError );
 		socket.connect( host, port );
 		#else
+		//socket = (udp) ? Socket.newUdpSocket() : new Socket();
+		socket = new Socket();
 		try {
 			socket.connect( new Host( host ), port );
 		} catch( e : Dynamic ) {
@@ -163,7 +167,7 @@ class ByteStreamInput {
 		input = Thread.readMessage( true );
 		//buffer = Thread.readMessage( true );
 		var cb : haxe.io.Bytes->Void = Thread.readMessage( true );
-		buffer = haxe.io.Bytes.alloc( 1024 );
+		buffer = haxe.io.Bytes.alloc( 1024 ); //TODO
 		bytes = 0;
 		while( readData() ) {};
 		cb( buffer );

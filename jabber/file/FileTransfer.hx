@@ -18,8 +18,10 @@ class FileTransfer {
 	public var sid(default,null) : String;
 	/** JID of the transfer reciever */
 	public var reciever(default,null) : String;
-	/** Data to be transfered */
-	public var data(default,null) : haxe.io.Bytes;
+//	/** Data to be transfered */
+//	public var data(default,null) : haxe.io.Bytes;
+	
+	var input : haxe.io.Input;
 	 
 	function new( stream : jabber.Stream, xmlns : String, reciever : String ) {
 		this.stream = stream;
@@ -27,8 +29,8 @@ class FileTransfer {
 		this.reciever = reciever;
 	}
 	
-	//TODO!! public function init( i : haxe.io.Input ) {
-	public function init( data : haxe.io.Bytes ) {
+	//TODO!!
+	public function init( i : haxe.io.Input ) {
 		throw "Abstract method";
 	}
 	

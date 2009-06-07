@@ -26,9 +26,9 @@ class IBInput {
 		seq = 0;
 		buf = new StringBuf();
 		var ff : xmpp.PacketFilter = new xmpp.filter.PacketFromFilter( initiator );
-		var cclose = new PacketCollector( [ ff, cast new IQFilter( xmpp.InBandByteStream.XMLNS, Type.enumConstructor( xmpp.InBandByteStreamType.close ), xmpp.IQType.set ) ], handleIBClose, false );
+		var cclose = new PacketCollector( [ ff, cast new IQFilter( xmpp.file.IB.XMLNS, Type.enumConstructor( xmpp.file.IBType.close ), xmpp.IQType.set ) ], handleIBClose, false );
 		stream.addCollector( cclose );
-		cdata = new PacketCollector( [ ff, cast new IQFilter( xmpp.InBandByteStream.XMLNS, Type.enumConstructor( xmpp.InBandByteStreamType.data ), xmpp.IQType.set ) ], handleIBData, true );
+		cdata = new PacketCollector( [ ff, cast new IQFilter( xmpp.file.IB.XMLNS, Type.enumConstructor( xmpp.file.IBType.data ), xmpp.IQType.set ) ], handleIBData, true );
 		stream.addCollector( cdata );
 	}
 	
@@ -37,7 +37,7 @@ class IBInput {
 	}
 	
 	function handleIBData( iq : xmpp.IQ ) {
-		var i = xmpp.InBandByteStream.parseData( iq ); //?
+		var i = xmpp.file.IB.parseData( iq ); //?
 		if( seq != i.seq ) {
 			__onFail( "In-band data packet loss ("+i.seq+")" );
 			return;

@@ -13,20 +13,30 @@ import cpp.vm.Thread;
 */
 class ByteStreamOutput {
 	
+	public var udp(default,null) : Bool;
+	
 	var socket : Socket;
 	var client : Socket;
+	var host : String;
+	var port : Int;
 	
-	public function new( host : String, port : Int ) {
-		socket = new Socket();
+	public function new( host : String, port : Int, ?udp = false ) {
+		this.host = host;
+		this.port = port;
+		this.udp = udp;
+	}
+	
+	public function connect() {
+		socket = (udp) ? Socket.newUdpSocket() : new Socket();
 		socket.bind( new neko.net.Host( host ), port );
         socket.listen( 1 );
 	}
 	
-	public function write( bytes : haxe.io.Bytes ) {
+	public function write( input : haxe.io.Input ) {
 		client = Thread.readMessage( false );
 		if( client == null )
 			throw "Client not connected";
-		client.output.write( bytes );
+		client.output.write( input.readAll() );
 	}
 	
 	public function close() {
@@ -45,6 +55,7 @@ class ByteStreamOutput {
 		var socket : Socket = Thread.readMessage ( true );
 		while( true ) {
 			var c = socket.accept();
+			//trace("CLIENT CONNECTED");
 			main.sendMessage( c );
 			break;
 		}

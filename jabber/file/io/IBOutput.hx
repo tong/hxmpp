@@ -41,7 +41,7 @@ class IBOutput {
 	
 	function sendNextPacket() {
 		iq.id = stream.nextID()+"_ib"+seq;
-		iq.properties = [xmpp.InBandByteStream.createDataElement( sid, seq, blocks[seq] )];
+		iq.properties = [xmpp.file.IB.createDataElement( sid, seq, blocks[seq] )];
 		stream.sendIQ( iq, handleChunkResponse );
 	}
 	
@@ -53,7 +53,7 @@ class IBOutput {
 				sendNextPacket();
 			} else { // complete, .. close bytestream
 				var iq = new xmpp.IQ( xmpp.IQType.set, null, reciever );
-				iq.x = new xmpp.InBandByteStream( xmpp.InBandByteStreamType.close, sid );
+				iq.x = new xmpp.file.IB( xmpp.file.IBType.close, sid );
 				var me = this;
 				stream.sendIQ( iq, function(r:xmpp.IQ) {
 					switch( r.type ) {
