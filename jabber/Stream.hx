@@ -2,13 +2,20 @@ package jabber;
 
 import jabber.Stream;
 import jabber.stream.Connection;
-import jabber.stream.TPacketCollector;
+//import jabber.stream.TPacketCollector;
 import jabber.stream.TPacketInterceptor;
 import jabber.stream.PacketCollector;
 import jabber.stream.PacketTimeout;
 import xmpp.filter.PacketIDFilter;
 import util.XmlUtil;
 
+typedef TDataFilter = {
+	function filterData( t : haxe.io.Bytes ) : haxe.io.Bytes;
+}
+
+typedef TDataInterceptor = {
+	function interceptData( t : haxe.io.Bytes ) : haxe.io.Bytes;
+}
 
 private typedef Server = {
 	////var domain : String;
@@ -51,7 +58,9 @@ class Stream {
 	/** */
 	public var lang(default,null) : String;
 	/** */
-	public var jid(default,null) : jabber.JID;
+	//public var jid(default,null) : jabber.JID;
+	/** */
+	public var jidstr(getJIDStr,null) : String;
 	/** */
 	public var server(default,null) : Server;
 	/** List of features this stream offers */
@@ -59,17 +68,19 @@ class Stream {
 	/** Indicates if the version number of the XMPP stream ("1.0") should get added to the stream opening XML element */
 	public var version : Bool;
 	
-	//var dataFilters : List<TDataFilter>;
-	//var dataInterceptors : List<TDataFilter>;
+	//TODO
+	public var dataFilters : List<TDataFilter>;
+	public var dataInterceptors : List<TDataInterceptor>;
+	
 	var numPacketsSent : Int;
-	var collectors : List<TPacketCollector>; // TODO public var collectors : Array<TPacketCollector>; 
+	var collectors : List<PacketCollector>; // TODO public var collectors : Array<TPacketCollector>; 
 	var interceptors : List<TPacketInterceptor>; // TODO public var interceptors : Array<TPacketCollector>; 
 	
 	
 	function new( c : Connection, jid : jabber.JID ) {
 		if( c == null )
 			throw "No connection";
-		this.jid = jid;
+		//this.jid = jid;
 		collectors = new List();
 		interceptors = new List();
 		server = { features : new Hash() };
@@ -78,6 +89,14 @@ class Stream {
 		numPacketsSent = 0;
 		status = StreamStatus.closed;
 		setConnection( c );
+		
+		dataFilters = new List();
+		dataInterceptors = new List();
+	}
+	
+	
+	function getJIDStr() : String {
+		return throw "Abstract getter";
 	}
 	
 	
@@ -149,16 +168,24 @@ class Stream {
 		Send raw string.
 	*/
 	public function sendData( t : String ) : String {
-		//if( !cnx.connected ) return null;
 		//return sendBytes( haxe.io.Bytes.ofString( t ) ).toString();
 		//TODO ??? intercept data here ?
 		if( !cnx.connected ) return null;
-		var s = cnx.write( t );
-		if( s == null ) return null;
-		numPacketsSent++;
 		#if XMPP_DEBUG XMPPDebug.outgoing( t ); #end
-		return s;
+//		var b = haxe.io.Bytes.ofString( t );
+		for( i in dataInterceptors )
+			t = i.interceptData( haxe.io.Bytes.ofString(t) ).toString();
+//		if( b == null ) return null;
+		cnx.write( t );
+		numPacketsSent++;
+		return t;
 	}
+	
+	/*
+	public function send( t : haxe.io.Bytes ) : haxe.io.Bytes  {
+		
+	}
+	*/
 	
 	/*
 		TODO Send raw bytes data.
@@ -180,10 +207,10 @@ class Stream {
 	*/
 	public function sendIQ( iq : xmpp.IQ, ?handler : xmpp.IQ->Void,
 							?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool )
-	: { iq : xmpp.IQ, collector : TPacketCollector }
+	: { iq : xmpp.IQ, collector : PacketCollector }
 	{
 		if( iq.id == null ) iq.id = nextID();
-		var c : TPacketCollector = null;
+		var c : PacketCollector = null;
 		if( handler != null ) {
 			c = new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block );
 			collectors.add( c );
@@ -207,13 +234,13 @@ class Stream {
 	/**
 		Send a presence packet.
 	*/
-	public function sendPresence( ?type : xmpp.PresenceType, ?show : xmpp.PresenceShow, ?status : String, ?priority : Int ) : xmpp.Presence {
-		return sendPacket( new xmpp.Presence( type, show, status, priority ) );
+	public function sendPresence( ?show : xmpp.PresenceShow, ?status : String, ?priority : Int, ?type : xmpp.PresenceType ) : xmpp.Presence {
+		return sendPacket( new xmpp.Presence( show, status, priority, type ) );
 	}
 	
 	/**
 	*/
-	public function addCollector( c : TPacketCollector ) : Bool {
+	public function addCollector( c : PacketCollector ) : Bool {
 		if( Lambda.has( collectors, c ) ) return false;
 		collectors.add( c );
 		return true;
@@ -221,7 +248,7 @@ class Stream {
 	
 	/**
 	*/
-	public function removeCollector( c : TPacketCollector ) : Bool {
+	public function removeCollector( c : PacketCollector ) : Bool {
 		return collectors.remove( c );
 	}
 	

@@ -28,7 +28,6 @@ private class Filters {
 		if( f_id.remove( _f ) ) return true;
 		if( f.remove( _f ) ) return true;
 		return false;
-	
 	}
 }
 
@@ -73,7 +72,7 @@ class PacketCollector {
 	}
 	
 	/**
-		Returns true if the XMPP packet passes through all filters.
+		Returns Bool if the XMPP packet passes through all filters.
 	*/
 	public function accept( p : xmpp.Packet ) : Bool {
 		for( f in filters ) {
@@ -85,7 +84,7 @@ class PacketCollector {
 	}
 	
 	/**
-		Delivers the given packet to all registerd packet handlers.
+		Delivers the given packet to all registerd handlers.
 	*/
 	public function deliver( p : xmpp.Packet ) {
 		for( h in handlers ) h( p );

@@ -16,7 +16,6 @@ import xmpp.filter.PacketOrFilter;
 class SASLAuthentication extends Authentication {
 
 	public dynamic function onNegotiated() : Void;
-	public dynamic function onError( e : jabber.XMPPError ) : Void; //TODO
 	
 	/** Used SASL method */
 	public var handshake(default,null) : net.sasl.Handshake;
@@ -25,19 +24,16 @@ class SASLAuthentication extends Authentication {
 	//public var negotiated(default,null) : Bool;
 	
 	var onStreamOpenHandler : Void->Void;
-	var challengeCollector : PacketCollector;
+	var c_challenge : PacketCollector;
 	
 	public function new( stream : Stream, mechanisms : Iterable<net.sasl.Mechanism> ) {
-		
 		var x = stream.server.features.get( "mechanisms" );
 		if( x == null )
 			throw "Server does't support SASL";
 		if( mechanisms == null || Lambda.count( mechanisms ) == 0 )
 			throw "No SASL mechanisms given";
-			
 		super( stream );
 		this.mechanisms = xmpp.SASL.parseMechanisms( x );
-		
 		handshake = new net.sasl.Handshake();
 		for( m in mechanisms )
 			handshake.mechanisms.push( m );
@@ -85,8 +81,8 @@ class SASLAuthentication extends Authentication {
 		// collect success
 		stream.addCollector( new PacketCollector( [cast new PacketNameFilter( ~/success/ )], handleSASLSuccess ) );
 		// collect challenge
-		challengeCollector = new PacketCollector( [cast new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
-		stream.addCollector( challengeCollector );
+		c_challenge = new PacketCollector( [cast new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
+		stream.addCollector( c_challenge );
 		// send init auth
 		var t = handshake.mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password );
 		if( t != null ) t = util.Base64.encode( t );
@@ -108,8 +104,8 @@ class SASLAuthentication extends Authentication {
 	
 	function handleSASLSuccess( p : xmpp.Packet ) {
 		// remove the challenge collector
-		stream.removeCollector( challengeCollector );
-		challengeCollector = null;
+		stream.removeCollector( c_challenge );
+		c_challenge = null;
 		// relay the stream open event
 		onStreamOpenHandler = stream.onOpen;
 		stream.onOpen = handleStreamOpen;
@@ -120,9 +116,9 @@ class SASLAuthentication extends Authentication {
 	}
 	
 	function handleStreamOpen() {
+		stream.onOpen = onStreamOpenHandler;
 		//onStreamOpenHandler = null;
-		if( stream.server.features.exists( "bind" ) ) {
-			// bind the resource
+		if( stream.server.features.exists( "bind" ) ) { // bind the resource
 			var iq = new IQ( IQType.set );
 			iq.x = new xmpp.Bind( resource );
 			stream.sendIQ( iq, handleBind );
@@ -149,14 +145,14 @@ class SASLAuthentication extends Authentication {
 			} else
 				onSuccess(); //?
 		case IQType.error :
-			onError( new jabber.XMPPError( this, iq ) );
+			onFail( new jabber.XMPPError( this, iq ) );
 		}
 	}
 	
-	function handleSession( iq : xmpp.IQ ) {
+	function handleSession( iq : IQ ) {
 		switch( iq.type ) {
 		case result : onSuccess();
-		case error : onError( new jabber.XMPPError( this, iq ) );
+		case error : onFail( new jabber.XMPPError( this, iq ) );
 		default : //#
 		}
 	}

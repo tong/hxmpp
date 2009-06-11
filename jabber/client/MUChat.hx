@@ -112,7 +112,7 @@ class MUChat {
 	public function leave( ?message : String, ?forceEvent : Bool = true ) : xmpp.Presence {
 		if( !joined ) return null;
 		trace( presence.target );
-		var p = new xmpp.Presence( xmpp.PresenceType.unavailable, null, message );
+		var p = new xmpp.Presence( null, message, null, xmpp.PresenceType.unavailable );
 		presence.set( p );
 		if( forceEvent ) dispose();
 		return p;
@@ -297,7 +297,7 @@ class MUChat {
 	}
 	
 	function sendMyPresence( priority : Int = 5 ) : xmpp.Presence {
-		var p = new xmpp.Presence( null, null, null, priority );
+		var p = new xmpp.Presence( null, null, priority, null );
 		p.to = myjid;
 		p.properties.push( xmpp.X.create( xmpp.MUC.XMLNS ) );
 		return stream.sendPacket( p );

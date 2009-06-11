@@ -12,11 +12,17 @@ class Stream extends jabber.Stream {
 	public static var defaultPort = STANDARD_PORT;
 	
 	//TODO public var secure(default,null) : Bool;
+	public var jid(default,null) : jabber.JID;
 	
 	public function new( jid : jabber.JID, cnx : Connection, version : Bool = true ) {
 		super( cnx, jid );
+		this.jid = jid;
 		this.version = version;
 		//this.secure = secure;
+	}
+	
+	override function getJIDStr() : String {
+		return jid.toString();
 	}
 	
 	override function processStreamInit( t : String, buflen : Int ) : Int {

@@ -19,8 +19,6 @@ class Stream extends jabber.Stream {
 	public var host(default,null) : String;
 	/** This components subdomain */
 	public var subdomain(default,null) : String;
-	/** Full component service name */
-	public var serviceName(default,null) : String;
 	/** Shared secret used to identify legacy components*/
 	public var secret(default,null) : String;
 	/**  */
@@ -30,26 +28,27 @@ class Stream extends jabber.Stream {
 	/** */
 	public var serviceListener(default,null) : ServiceDiscoveryListener;
 	
+	var servicename : String;
 	
 	public function new( host : String, subdomain : String, secret : String, cnx : Connection,
-						 ?identity : xmpp.disco.Identity ) {
-						 	
+						 ?identities : Array<xmpp.disco.Identity> ) {
 		if( subdomain == null || subdomain == "" )
 			throw "Invalid subdomain";
 		if( secret == null )
 			throw "Invalid secret (null)";
-
 		super( cnx, null );
-		this.serviceName = subdomain+"."+host;
 		this.host = host;
 		this.subdomain = subdomain;
 		this.secret = secret;
-		
+		servicename = subdomain+"."+host;
 		items = new xmpp.disco.Items();
 		authenticated = false;
-		serviceListener = new ServiceDiscoveryListener( this, identity );
+		serviceListener = new ServiceDiscoveryListener( this, identities );
 	}
 	
+	override function getJIDStr() : String {
+		return servicename;
+	}
 	
 	override function connectHandler() {
 		sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_COMPONENT, subdomain ) );

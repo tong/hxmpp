@@ -1,6 +1,5 @@
 package xmpp.roster;
 
-
 class Item {
 	
 	public var jid(default,null) : String;
@@ -8,7 +7,6 @@ class Item {
 	public var name : String;
 	public var askType : AskType;
 	public var groups : List<String>;
-	
 	
 	public function new( jid : String,
 						 ?subscription : Subscription, ?name : String, ?askType : AskType, ?groups : List<String> ) {
@@ -18,7 +16,6 @@ class Item {
 		this.askType = askType;
 		this.groups = ( groups != null ) ? groups : new List();
 	}
-	
 	
 	public function toXml() : Xml {
 		if( jid == null )
@@ -37,7 +34,6 @@ class Item {
 		return toXml().toString();
 	}
 
-		
 	public static function parse( x : Xml ) : xmpp.roster.Item {
 		var i = new Item( x.get( "jid" ) );
 		i.subscription = Type.createEnum( Subscription, x.get( "subscription" ) );

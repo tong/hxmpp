@@ -77,6 +77,7 @@ class Connection {
 		Send string.
 	*/
 	public function write( t : String ) : String {
+	//public function write( t : haxe.io.Bytes ) : haxe.io.Bytes {
 		return throw new error.AbstractError();
 	}
 	

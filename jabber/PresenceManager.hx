@@ -16,8 +16,8 @@ class PresenceManager {
 	
 	/**
 	*/
-	public function change( ?type : xmpp.PresenceType, ?show : xmpp.PresenceShow, ?status : String, ?priority : Int ) : xmpp.Presence {
-		return set( new xmpp.Presence( type, show, status, priority ) );
+	public function change( ?show : xmpp.PresenceShow, ?status : String, ?priority : Int, ?type : xmpp.PresenceType ) : xmpp.Presence {
+		return set( new xmpp.Presence( show, status, priority, type ) );
 	}
 	
 	/**

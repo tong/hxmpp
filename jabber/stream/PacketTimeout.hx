@@ -15,17 +15,17 @@ class PacketTimeout {
 	public var time(getTime,setTime) : Int;
 	
 	/** */
-	public var handlers : Array<TPacketCollector->Void>; //handler : IPacketCollector->Void
+	public var handlers : Array<PacketCollector->Void>; //handler : IPacketCollector->Void
 	
 	/** The packet collector this timeout is working for. */
-	public var collector : TPacketCollector;
+	public var collector : PacketCollector;
 	
 	var _time : Int;
 	var active : Bool;
 	//var current_time : Int;
 	
 	
-	public function new( handlers : Array<TPacketCollector->Void>, ?time : Int ) {
+	public function new( handlers : Array<PacketCollector->Void>, ?time : Int ) {
 		active = false;
 		this.handlers = handlers;
 		setTime( time ); 

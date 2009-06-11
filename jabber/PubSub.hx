@@ -76,7 +76,7 @@ class PubSub {
 	public function subscribe( node : String ) {
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, service );
 		var xt = new xmpp.PubSub();
-		xt.subscribe = { jid : stream.jid.toString() , node : node };
+		xt.subscribe = { jid : stream.jidstr, node : node };
 		iq.x = xt;
 		var me = this;
 		sendIQ( iq, function(r:xmpp.IQ) { me.onSubscribe( xmpp.PubSub.parse( r.x.toXml() ).subscription ); } );
@@ -88,7 +88,7 @@ class PubSub {
 	public function unsubscribe( node : String, ?subid : String ) {
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, service );
 		var xt = new xmpp.PubSub();
-		xt.unsubscribe = { jid : stream.jid.toString() , node : node, subid : subid };
+		xt.unsubscribe = { jid : stream.jidstr , node : node, subid : subid };
 		iq.x = xt;
 		var me = this;
 		sendIQ( iq, function(r:xmpp.IQ) { me.onUnsubscribe( node ); } );

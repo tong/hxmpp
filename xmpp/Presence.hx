@@ -8,23 +8,25 @@ import util.XmlUtil;
 */
 class Presence extends Packet {
 	
-   	public var type : PresenceType;
+	public var type : PresenceType;
    	public var show : PresenceShow;
     public var status(default,setStatus) : String;
     public var priority : Null<Int>;
     
-	public function new( ?type : PresenceType, ?show : PresenceShow, ?status : String, ?priority : Int ) {
+	public function new( ?show : PresenceShow, ?status : String, ?priority : Int, ?type : PresenceType ) {
 		super();
 		_type = xmpp.PacketType.presence;
-		this.type = type;
 		this.show = show;
 		this.status = status;
 		this.priority = priority;
+		this.type = type;
 	}
 	
 	function setStatus( s : String ) : String {
-		if( s == null ) return status = s;
-		if( s.length > 1023 || s.length == 0 ) throw "Invalid presence status size";
+		if( s == null )
+			return status = s;
+		if( s.length == 0 || s.length > 1023 )
+			throw "Invalid presence status size "+s.length;
 		return status = s;
 	}
 	
@@ -37,7 +39,7 @@ class Presence extends Packet {
 		return x;
 	}
 	
-	public static function parse( x : Xml ) : xmpp.Presence {
+	public static function parse( x : Xml ) : Presence {
 		var p = new Presence( x.get( "type" ) );
 		xmpp.Packet.parseAttributes( p, x );
 		if( x.exists( "type" ) ) p.type = Type.createEnum( PresenceType, x.get( "type" ) );

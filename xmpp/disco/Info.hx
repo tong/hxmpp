@@ -6,11 +6,11 @@ class Info {
 	
 	public static var XMLNS = xmpp.NS.PROTOCOL+'/disco#info';
 	
-	public var identities : Array<xmpp.disco.Identity>; 
+	public var identities : Array<Identity>; 
 	public var features : Array<String>;
 	public var node : String;
 	
-	public function new( ?identities : Array<xmpp.disco.Identity>, ?features : Array<String>, ?node : String ) {
+	public function new( ?identities : Array<Identity>, ?features : Array<String>, ?node : String ) {
 		this.identities = ( identities == null ) ? new Array() : identities;
 		this.features = ( features == null ) ? new Array() : features;
 		this.node = node;
@@ -36,11 +36,11 @@ class Info {
 		return x;
 	}
 	
-	public inline function toString() {
+	public inline function toString() : String {
 		return toXml().toString();
 	}
 	
-	public static function parse( x : Xml ) : xmpp.disco.Info {
+	public static function parse( x : Xml ) : Info {
 		var i = new Info( null, null, x.get( "node" ) );
 		for( f in x.elements() ) {
 			switch( f.nodeName ) {

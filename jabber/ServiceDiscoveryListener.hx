@@ -9,31 +9,30 @@ import xmpp.filter.IQFilter;
 */
 class ServiceDiscoveryListener {
 	
-	public static var defaultIdentity = { category : "client", name : "HXMPP", type : "pc" };
+	//public static var defaultIdentity = { category : "client", name : "HXMPP", type : "pc" };
 	
 	public var stream(default,null) : Stream;
-	public var identity(default,setIdentity): xmpp.disco.Identity;
+	public var identities : Array<xmpp.disco.Identity>; //TODO!!!!!
 	
-	public function new( stream : Stream,  ?identity : xmpp.disco.Identity ) {
-		
+	public function new( stream : Stream,  ?identities : Array<xmpp.disco.Identity> ) {
 		if( !stream.features.add( xmpp.disco.Info.XMLNS ) || !stream.features.add( xmpp.disco.Items.XMLNS ) )
 			throw "Service Discovery listener stream feature already added";
-		
 		this.stream = stream;
-		this.setIdentity( identity );
-	
+		this.identities = identities;
 		stream.addCollector( new PacketCollector( [cast new IQFilter( xmpp.disco.Info.XMLNS, null, xmpp.IQType.get )], handleInfoQuery, true ) );
 		stream.addCollector( new PacketCollector( [cast new IQFilter( xmpp.disco.Items.XMLNS, null, xmpp.IQType.get )], handleItemsQuery, true ) );
 	}
 	
+	/*
 	function setIdentity( i : xmpp.disco.Identity ) : xmpp.disco.Identity {
 		return identity = ( i == null ) ? defaultIdentity :  i;
 	}
+	*/
 
 	function handleInfoQuery( iq : xmpp.IQ ) {
-		// return local stream features
-		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
-		r.x = new xmpp.disco.Info( [identity], Lambda.array( stream.features ) );
+		// return identities and stream features
+		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, stream.jidstr );
+		r.x = new xmpp.disco.Info( identities, Lambda.array( stream.features ) );
 		stream.sendData( r.toString() );
 	}
 	

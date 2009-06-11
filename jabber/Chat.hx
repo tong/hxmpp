@@ -4,7 +4,6 @@ import jabber.stream.PacketCollector;
 import xmpp.filter.MessageFilter;
 import xmpp.filter.PacketFromFilter;
 
-
 /**
 	Represents a chat conversation between two jabber clients.
 */
@@ -24,7 +23,7 @@ class Chat {
 	public function new( stream : Stream, myJid : String, peer : String,
 					 	 ?threadID : String ) {
 		
-		m = new xmpp.Message( peer, null, null, xmpp.MessageType.chat, threadID, stream.jid.toString() );
+		m = new xmpp.Message( peer, null, null, xmpp.MessageType.chat, threadID, stream.jidstr );
 		
 		this.stream = stream;
 		this.peer = peer;
@@ -41,7 +40,6 @@ class Chat {
 		threadID = m.thread = id;
 		return id;
 	}
-	
 	
 	/**
 		Sends a chat message to the peer.

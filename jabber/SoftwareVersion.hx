@@ -15,15 +15,12 @@ class SoftwareVersion {
 	
 	public function new( stream : Stream,
 						 name : String, version : String, ?os : String ) {
-		
 		if( !stream.features.add( xmpp.SoftwareVersion.XMLNS ) )
 			throw "SoftwareVersion feature already added";
-		
 		this.stream = stream;
 		this.name = name;
 		this.version = version;
 		this.os = ( os != null ) ? os : util.SystemUtil.systemName();
-		
 		stream.addCollector( new jabber.stream.PacketCollector( [ cast new xmpp.filter.IQFilter( xmpp.SoftwareVersion.XMLNS, null, xmpp.IQType.get ) ], handleQuery, true ) );
 	}
 	
@@ -44,7 +41,7 @@ class SoftwareVersion {
 	}
 	
 	function handleQuery( iq : xmpp.IQ ) {
-		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, stream.jid.toString() );
+		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, stream.jidstr );
 		r.x = new xmpp.SoftwareVersion( name, version, os );
 		stream.sendData( r.toString() );
 	}

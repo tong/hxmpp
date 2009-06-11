@@ -71,7 +71,7 @@ class Ping {
 		}
 	}
 	
-	function handleTimeout( c : jabber.stream.TPacketCollector ) {
+	function handleTimeout( c : jabber.stream.PacketCollector ) {
 		onTimeout( stream, c.packet.from );
 	}
 
