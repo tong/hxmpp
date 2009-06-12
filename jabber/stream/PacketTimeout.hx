@@ -1,106 +1,91 @@
 package jabber.stream;
 
+import haxe.Timer;
+#if neko
+typedef Timer = util.Timer;
+#end
 
-// TODO TimeoutProcess
-
-class PacketTimeout {
+/**
+*/
+class PacketTimeout extends event.Dispatcher<PacketCollector> {
 	
-	/** Default packet timeout in seconds */
-	public static var defaultTimeout = 5;
+	/** Default packet timeout ms */
+	public static var defaultTimeout = 5000;
 	
-	/** null = no timeout
-		0 = default timeout
-		value = value timeout
-	*/
-	public var time(getTime,setTime) : Int;
-	
-	/** */
-	public var handlers : Array<PacketCollector->Void>; //handler : IPacketCollector->Void
-	
-	/** The packet collector this timeout is working for. */
+	public var time(default,setTime) : Int;
 	public var collector : PacketCollector;
 	
-	var _time : Int;
-	var active : Bool;
-	//var current_time : Int;
+	var timer : Timer;
 	
-	
-	public function new( handlers : Array<PacketCollector->Void>, ?time : Int ) {
-		active = false;
-		this.handlers = handlers;
-		setTime( time ); 
-	}
-	
-	
-	function getTime() : Int { return _time; }
-	function setTime( t : Null<Int> ) : Null<Int> {
-		switch( t ) {
-			case null : // no timeout
-				_time = 0;
-			case 0 : 	// default timeout 
-				_time = defaultTimeout;
-			default : 	// given timeout
-				if( t < 0 ) throw "Invalid packettimeout time: "+t; 
-				_time = t; 			     
+	public function new( handlers : Array<PacketCollector->Void>, ?time : Null<Int> = 0 ) {
+		super();
+		#if (php&&JABBER_DEBUG)
+		trace( "PHP does NOT support PacketTimouts", "warn" );
+		#else
+		if( handlers != null ) {
+			for( h in handlers )
+				addHandler( h );
 		}
-		if( _time == 0 )
-			active = false;
-		else
-			start( _time );
-		return _time;	
+		setTime( time );
+		#end
 	}
 	
+	function setTime( t : Int ) : Int  {
+		#if !php
+		if( t == 0 ) t = defaultTimeout;
+		time = t;
+		if( timer != null ) {
+			timer.stop();
+			startTimer();
+		}
+		#end
+		return time;
+	}
 	
 	/**
-		Starts timeout.
+		Start timeout.
 	*/
-	public function start( t : Int ) {
-		
-	//	if( active ) stop(); // TODO TimeoutProcess
-	
-		active = true;
-		_time = t;
-		
+	public function start( ?t : Int ) {
 		#if !php
-		util.Delay.run( timeoutHandler, Std.int( _time ) );
+		if( timer != null ) timer.stop();
+		if( t != null ) setTime( t );
+		startTimer();
 		#end
 	}
 	
 	/**
-		Stops reporting timeout to handlers.
+		Stop reporting timeout to handlers.
 	*/
 	public function stop() {
-		active = false;
+		#if !php
+		if( timer != null ) {
+			timer.stop();
+			timer = null;
+		}
+		#end
 	}
 	
 	/**
 		Force to report timeout and stop.
 	*/
 	public function forceTimeout() {
-		reportTimeout();
-		active = false;
-		//
+		dispatchEvent( collector );
+		stop();
 	}
 	
-	
-	function reportTimeout() {
-		for( handle in handlers ) handle( collector );
+	inline function startTimer() {
+		#if !php
+		timer = new Timer( time );
+		timer.run = handleTimeout;
+		#end
 	}
 	
-	function timeoutHandler() {
-		if( active ) {
-			reportTimeout();
-			active = false;
-		}
+	function handleTimeout() {
+		#if !php
+		timer.stop();
+		timer = null;
+		dispatchEvent( collector );
+		#end
 	}
 	
 }
-
-
-/*
-private class TimeoutProcess {
-	
-	public function new() {
-	}
-}
-*/

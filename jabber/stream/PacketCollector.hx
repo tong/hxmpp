@@ -46,7 +46,7 @@ class PacketCollector {
 	/** */
 	public var timeout(default,setTimeout) : PacketTimeout;
 	/** */
-	public var packet(default,null) : xmpp.Packet; //TODO remove
+//	public var packet(default,null) : xmpp.Packet; //TODO remove
 	
 	public function new( filters : Iterable<xmpp.PacketFilter>, handler : Dynamic->Void,
 						 ?permanent : Bool = false, ?timeout : PacketTimeout, ?block : Bool = false ) {
@@ -67,8 +67,9 @@ class PacketCollector {
 		timeout = null;
 		if( t == null ) return null;
 		if( permanent ) return null;
+		timeout = t;
 		timeout.collector = this;
-		return timeout = t;
+		return timeout;
 	}
 	
 	/**
@@ -79,7 +80,8 @@ class PacketCollector {
 			if( !f.accept( p ) )
 				return false;
 		}
-		packet = p;
+//		packet = p;
+		if( timeout != null ) timeout.stop();
 		return true;
 	}
 	
@@ -89,5 +91,5 @@ class PacketCollector {
 	public function deliver( p : xmpp.Packet ) {
 		for( h in handlers ) h( p );
 	}
-	
+
 }
