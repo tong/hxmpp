@@ -6,8 +6,7 @@ private class Filters {
 	var f : Array<xmpp.PacketFilter>;
 	
 	public function new() {
-		f_id = new Array<xmpp.PacketFilter>();
-		f = new Array<xmpp.PacketFilter>();
+		clear();
 	}
 	
 	public function iterator() : Iterator<xmpp.PacketFilter> {
@@ -29,6 +28,11 @@ private class Filters {
 		if( f.remove( _f ) ) return true;
 		return false;
 	}
+	
+	public function clear( ) {
+		f_id = new Array<xmpp.PacketFilter>();
+		f = new Array<xmpp.PacketFilter>();
+	}
 }
 
 /**
@@ -36,7 +40,7 @@ private class Filters {
 class PacketCollector {
 	
 	/** */
-	public var filters(default,null) : Filters;
+	public var filters(default,null) : Filters; //TODO Arrayfor sorting ?
 	/** Callbacks to which collected packets get delivered to. */
 	public var handlers : Array<xmpp.Packet->Void>;
 	/** Indicates if the the collector should get removed from the streams after collecting. */
@@ -45,8 +49,6 @@ class PacketCollector {
 	public var block : Bool;
 	/** */
 	public var timeout(default,setTimeout) : PacketTimeout;
-	/** */
-//	public var packet(default,null) : xmpp.Packet; //TODO remove
 	
 	public function new( filters : Iterable<xmpp.PacketFilter>, handler : Dynamic->Void,
 						 ?permanent : Bool = false, ?timeout : PacketTimeout, ?block : Bool = false ) {
@@ -80,7 +82,6 @@ class PacketCollector {
 			if( !f.accept( p ) )
 				return false;
 		}
-//		packet = p;
 		if( timeout != null ) timeout.stop();
 		return true;
 	}

@@ -7,7 +7,7 @@ package jabber;
 class Pong {
 	
 	/**
-		Informational callback that a ping has been recieved and responded to.
+		Informational event that a ping has been recieved and responded to.
 	*/
 	public dynamic function onPong( entity : String ) : Void;
 
@@ -21,7 +21,7 @@ class Pong {
 	}
 	
 	function handlePing( iq : xmpp.IQ ) {
-		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
+		var r = xmpp.IQ.createResult( iq );
 		r.x = new xmpp.Ping();
 		stream.sendData( r.toString() );
 		onPong( iq.from );

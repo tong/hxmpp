@@ -213,7 +213,7 @@ class Stream {
 		var c : PacketCollector = null;
 		if( handler != null ) {
 			c = new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block );
-			collectors.add( c );
+			addCollector( c );
 		}
 		var s = sendPacket( iq );
 		if( s == null && handler != null ) {
@@ -239,17 +239,21 @@ class Stream {
 	}
 	
 	/**
+		Adds a packet collector to this stream and starts the timeout if not null.
 	*/
 	public function addCollector( c : PacketCollector ) : Bool {
 		if( Lambda.has( collectors, c ) ) return false;
 		collectors.add( c );
+		if( c.timeout != null ) c.timeout.start();
 		return true;
 	}
 	
 	/**
 	*/
 	public function removeCollector( c : PacketCollector ) : Bool {
-		return collectors.remove( c );
+		if( !collectors.remove( c ) ) return false;
+		if( c.timeout != null ) c.timeout.stop();
+		return true;
 	}
 	
 	/**
