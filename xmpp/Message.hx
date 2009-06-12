@@ -14,9 +14,7 @@ class Message extends xmpp.Packet {
 	
     public function new( ?to : String, ?body : String, ?subject : String,
     					 ?type : MessageType, ?thread : String, ?from : String ) {
-    					 	
 		_type = xmpp.PacketType.message;
-		
 		super( to, from );
 		this.type = if ( type != null ) type else xmpp.MessageType.normal;
 		this.body = body;

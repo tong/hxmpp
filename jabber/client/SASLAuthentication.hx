@@ -25,6 +25,8 @@ class SASLAuthentication extends Authentication {
 	
 	var onStreamOpenHandler : Void->Void;
 	var c_challenge : PacketCollector;
+	var c_fail : PacketCollector;
+	var c_success : PacketCollector;
 	
 	public function new( stream : Stream, mechanisms : Iterable<net.sasl.Mechanism> ) {
 		var x = stream.server.features.get( "mechanisms" );
@@ -77,9 +79,11 @@ class SASLAuthentication extends Authentication {
 		f.add( new PacketNameFilter( ~/invalid-mechanism/ ) );
 		f.add( new PacketNameFilter( ~/mechanism-too-weak/ ) );
 		f.add( new PacketNameFilter( ~/temporary-auth-failure/ ) );
-		stream.addCollector( new PacketCollector( [cast f], handleSASLFailed ) );
+		c_fail = new PacketCollector( [cast f], handleSASLFailed );
+		stream.addCollector( c_fail );
 		// collect success
-		stream.addCollector( new PacketCollector( [cast new PacketNameFilter( ~/success/ )], handleSASLSuccess ) );
+		c_success = new PacketCollector( [cast new PacketNameFilter( ~/success/ )], handleSASLSuccess );
+		stream.addCollector( c_success );
 		// collect challenge
 		c_challenge = new PacketCollector( [cast new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
 		stream.addCollector( c_challenge );
@@ -89,8 +93,8 @@ class SASLAuthentication extends Authentication {
 		return stream.sendData( xmpp.SASL.createAuthXml( handshake.mechanism.id, t ).toString() ) != null;
 	}
 	
-	
 	function handleSASLFailed( p : xmpp.Packet ) {
+		removeSASLCollectors();
 		onFail();
 	}
 	
@@ -104,8 +108,7 @@ class SASLAuthentication extends Authentication {
 	
 	function handleSASLSuccess( p : xmpp.Packet ) {
 		// remove the challenge collector
-		stream.removeCollector( c_challenge );
-		c_challenge = null;
+		removeSASLCollectors();
 		// relay the stream open event
 		onStreamOpenHandler = stream.onOpen;
 		stream.onOpen = handleStreamOpen;
@@ -156,5 +159,14 @@ class SASLAuthentication extends Authentication {
 		default : //#
 		}
 	}
-
+	
+	function removeSASLCollectors() {
+		stream.removeCollector( c_challenge );
+		c_challenge = null;
+		stream.removeCollector( c_fail );
+		c_fail = null;
+		stream.removeCollector( c_success );
+		c_success = null;
+	}
+	
 }
