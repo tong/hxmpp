@@ -1,7 +1,7 @@
 
 import jabber.component.Stream;
 
-class JabberComponentDemo {
+class ComponentDemo {
 	
 	static var cnx : jabber.SocketConnection;
 	static var stream : Stream;
@@ -14,8 +14,10 @@ class JabberComponentDemo {
 		
 		trace( "HXMPP server component example" );
 		
+		var identity = { category : "conference", name : "MYSERVICE", type : "text" };
+		
 		cnx = new jabber.SocketConnection( "127.0.0.1", Stream.defaultPort );
-		stream = new Stream( "disktree", "norc", "1234", cnx );
+		stream = new Stream( "disktree", "norc", "1234", cnx, [identity] );
 		stream.onOpen = function() {
 			trace( "XMPP stream opened.", "info" );
 		};

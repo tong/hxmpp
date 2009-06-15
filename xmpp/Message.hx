@@ -3,7 +3,8 @@ package xmpp;
 import util.XmlUtil;
 
 /**
-	XMPP message packet.
+	XMPP message packet.<br>
+	Default type is 'chat'.
 */
 class Message extends xmpp.Packet {
 	
@@ -16,7 +17,7 @@ class Message extends xmpp.Packet {
     					 ?type : MessageType, ?thread : String, ?from : String ) {
 		_type = xmpp.PacketType.message;
 		super( to, from );
-		this.type = if ( type != null ) type else xmpp.MessageType.normal;
+		this.type = if ( type != null ) type else xmpp.MessageType.chat;
 		this.body = body;
 		this.subject = subject;
 		this.thread = thread;

@@ -24,11 +24,11 @@ package {
 	/**
 		Example usage of the HXMPP library.
 	*/
-	public class JabberClientDemo extends MovieClip {
+	public class ClientDemo extends MovieClip {
 		
 		private var tf : TextField;
 		
-		public function JabberClientDemo() {
+		public function ClientDemo() {
 			
 			new flash.Boot( this ); // init haXe SWC
 			

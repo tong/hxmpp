@@ -3,11 +3,13 @@ import jabber.ServiceDiscovery;
 import jabber.SocketConnection;
 import jabber.client.NonSASLAuthentication;
 import jabber.client.Stream;
+import jabber.client.Roster;
+import jabber.client.VCardTemp;
 
 /**
-	A basic jabber client.
+	Basic jabber client.
 */
-class JabberClientDemo {
+class ClientDemo {
 	
 	static function main() {
 		
@@ -28,6 +30,9 @@ class JabberClientDemo {
 	}
 	
 	static var stream : Stream;
+	static var roster : Roster;
+	static var service : ServiceDiscovery;
+	static var vcard : VCardTemp;
 	
 	static function init() {
 		stream = new Stream( new jabber.JID( "hxmpp@disktree" ), new SocketConnection( "127.0.0.1", Stream.defaultPort ) );
@@ -59,41 +64,48 @@ class JabberClientDemo {
 
 		trace( "Logged in as "+ stream.jid.node+" at "+stream.jid.domain );
 		
+		// load server disco infos
+		service = new ServiceDiscovery( stream );
+		service.onInfo = handleDiscoInfo;
+		service.onItems = handleDiscoItems;
+		service.discoverItems( stream.jid.domain );
+		service.discoverInfo( stream.jid.domain );
+		
 		// load roster
-		var roster = new jabber.client.Roster( stream );
+		roster = new jabber.client.Roster( stream );
 		roster.presence.change( null, "online" );
 		roster.load();
-		roster.onLoad = function() {
-			trace( "Roster loaded:" );
-			for( item in roster.items ) {
-				trace( "\t"+item.jid );
-			}
-		};
+		roster.onLoad = handleRosterLoad;
 		
 		// load own vcard
-		var vcard = new jabber.client.VCardTemp( stream );
-		vcard.onLoad = function(d,node,vc) {
+		vcard = new jabber.client.VCardTemp( stream );
+		vcard.onLoad = function(node,vc) {
 			if( node == null )
 				trace( "VCard loaded." );
 			else
 				trace( "VCard from "+node+" loaded." );
 		};
 		vcard.load();
-		
-		// load server disco infos
-		var service = new ServiceDiscovery( stream );
-		service.onInfo = function( node : String, info : xmpp.disco.Info ) {
-			trace( "Service info result: "+node );
-			trace( "\tIdentities: ");
-			for( identity in info.identities )
-				trace( "\t\t"+identity );
-			trace( "\tFeatures: ");
-			for( feature in info.features )
-				trace( "\t\t"+feature );
-			
-		};
-		service.discoverItems( stream.jid.domain );
-		service.discoverInfo( stream.jid.domain );
+	}
+	
+	static function handleRosterLoad() {
+		trace( "Roster loaded:" );
+		for( i in roster.items )
+			trace( "\t"+i.jid );
+	}
+	
+	static function handleDiscoInfo( node : String, info : xmpp.disco.Info ) {
+		trace( "Service info result: "+node );
+		trace( "\tIdentities: ");
+		for( identity in info.identities )
+			trace( "\t\t"+identity );
+		trace( "\tFeatures: ");
+		for( feature in info.features )
+			trace( "\t\t"+feature );
+	}
+	
+	static function handleDiscoItems( node : String, info : xmpp.disco.Items ) {
+		trace( "Service items result: "+node );
 	}
 	
 }
