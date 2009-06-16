@@ -15,7 +15,8 @@ class FileTransfer {
 	/** The namespace of the transfer method used */
 	public var xmlns(default,null) : String;
 	/** */
-	public var sid(default,null) : String;
+	//public var sid(default,null) : String;
+	public var sid : String;
 	/** JID of the transfer reciever */
 	public var reciever(default,null) : String;
 //	/** Data to be transfered */

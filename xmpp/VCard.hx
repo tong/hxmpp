@@ -276,7 +276,7 @@ class VCard {
 					for( n in node.elements() ) {
 						var value : String = null;
 						try { value = n.firstChild().nodeValue; } catch( e : Dynamic ) {}
-						if( value == null ) throw new error.Exception( "Invalid vcard tz" );
+						if( value == null ) throw "Invalid vcard tz";
 						switch( n.nodeName ) {
 							case "LAT" :  vc.geo.lat = Std.parseInt( value );
 							case "LON" :  vc.geo.lon = Std.parseInt( value );

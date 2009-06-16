@@ -29,7 +29,6 @@ class Jingle {
 		x.set( "initiator", initiator );
 		x.set( "sid", sid );
 		if( responder != null ) x.set( "responder", responder );
-		
 		for( c in content )
 			x.addChild( c.toXml() );
 		for( a in any )
@@ -39,10 +38,8 @@ class Jingle {
 	}
 	
 	public static function parse( x : Xml ) : xmpp.Jingle {
-		
 		var j = new xmpp.Jingle( Type.createEnum( xmpp.jingle.Action, StringTools.replace( x.get( "action" ), "-", "_" ) ), x.get( "initiator" ), x.get( "sid" )  );
 		//TODO
-		
 		for( e in x.elements() ) {
 			switch( e.nodeName ) {
 			case "content" :
@@ -52,7 +49,6 @@ class Jingle {
 				j.any.push( e );
 			}
 		}
-		
 		return j;
 	}
 	

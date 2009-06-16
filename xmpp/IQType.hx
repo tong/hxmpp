@@ -1,6 +1,5 @@
 package xmpp;
 
-
 enum IQType {
 	get;
 	set;

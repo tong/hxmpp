@@ -1,6 +1,5 @@
 package xmpp.filter;
 
-
 /**
 */
 class PacketFieldFilter {

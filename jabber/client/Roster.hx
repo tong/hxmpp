@@ -12,7 +12,6 @@ interface RosterItem {
 }
 */
 
-
 enum RosterSubscriptionMode {
 	/** Accepts all subscription and unsubscription requests. */
 	acceptAll; //TODO acceptAll( ?subscribe : Bool = true );
@@ -22,24 +21,23 @@ enum RosterSubscriptionMode {
 	manual; //TODO manual( ?subscribe : Bool = true );
 }
 
-
 /**
 	Jabber client roster.
 */
-class Roster {
 //TODO class Roster<RosterItem:xmpp.roster.Item>
+class Roster {
 
-	public static var defaultSubscriptionMode = RosterSubscriptionMode.acceptAll;
+	public static var defaultSubscriptionMode = RosterSubscriptionMode.manual;
 	
 	public dynamic function onLoad() : Void;
 	public dynamic function onAdd( items : Array<Item> ) : Void;
 	public dynamic function onRemove( items : Array<Item> ) : Void;
 	public dynamic function onUpdate( items : Array<Item> ) : Void;
-	public dynamic function onPresence( item : Item, p: xmpp.Presence ) : Void;
+	public dynamic function onPresence( item : Item, p : xmpp.Presence ) : Void;
 	public dynamic function onResourcePresence( resource : String, p : xmpp.Presence  ) : Void;
-	public dynamic function onSubscribed( i : Item ) : Void;
-	public dynamic function onUnsubscribed( i : Item ) : Void;
-	public dynamic function onSubscription( i : Item ) : Void;
+	public dynamic function onSubscribed( item : Item ) : Void;
+	public dynamic function onUnsubscribed( item : Item ) : Void;
+	public dynamic function onSubscription( item : Item ) : Void;
 	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
@@ -50,24 +48,19 @@ class Roster {
 	public var presence(default,null) : PresenceManager;
 	public var resources(default,null) : Hash<xmpp.Presence>;
 	
-	var presenceMap : Hash<xmpp.Presence>;
-	
+	var presenceMap : Hash<xmpp.Presence>; // remove ?
 
 	public function new( stream : Stream, ?subscriptionMode : RosterSubscriptionMode ) {
-		
 		this.stream = stream;
 		this.subscriptionMode = subscriptionMode != null ? subscriptionMode : defaultSubscriptionMode;
-		
 		available = false;
 		items = new Array();
 		presence = new PresenceManager( stream );
 		resources = new Hash();
 		presenceMap = new Hash();
-		
 		stream.addCollector( new PacketCollector( [cast new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence )], handleRosterPresence, true ) );
 		stream.addCollector( new PacketCollector( [cast new xmpp.filter.IQFilter( xmpp.Roster.XMLNS )], handleRosterIQ, true ) );	
 	}
-	
 	
 	function getGroups() : Array<String> {
 		var r = new Array<String>(); 
@@ -80,7 +73,6 @@ class Roster {
 		}
 		return r;
 	}
-	
 	
 	public function getItem( jid : String ) : Item {
 		for( i in items ) { if( i.jid == jid ) return i; }
@@ -191,9 +183,8 @@ class Roster {
 		//if( !available || getItem( jid ) == null ) return;
 		var p = new xmpp.Presence( ( allow ) ? xmpp.PresenceType.subscribed : xmpp.PresenceType.unsubscribed );
 		p.to = jid;
-		stream.sendPacket( p );
+		stream.sendData( p.toString() );
 	}
-	
 	
 	function handleRosterPresence( p : xmpp.Presence ) {
 		//trace("händleRosterPresence");
@@ -201,51 +192,50 @@ class Roster {
 		
 		var from = jabber.JIDUtil.parseBare( p.from );
 		var resource = jabber.JIDUtil.parseResource( p.from );
-		
 		if( from == stream.jid.bare ) { // handle account resource presence
 			if( resource == null ) return;
 			resources.set( resource, p );
 			onResourcePresence( resource, p );
-			
-		} else {
-			var i = getItem( from );
-			if( p.type != null ) {
-				switch( p.type ) {
-				case subscribe :
-					switch( subscriptionMode ) {
-					case acceptAll :
-						confirmSubscription( p.from, true );
-						//TODO subscribe to ?
-						//if( s ) subscribe( p.from );
-					case rejectAll :
-						var r = new xmpp.Presence( xmpp.PresenceType.unsubscribed );
-						r.to = p.from;
-						stream.sendPacket( r );
-					case manual :
-						onSubscription( new xmpp.roster.Item( p.from ) );
-					}
-					return;
-				
-				case subscribed :
-				//?	onSubscribed( this, i );
-				//?	return;
-				
-				case unsubscribed :
-					onUnsubscribed( i );
-					return;
-				
-				//TODO case unsubscribe :
-				
-				default :
-					//TODO check
-					trace( "???? check "+p.type );
-					//onPresence( i, p );
+			return;
+		}
+		var i = getItem( from );
+		if( p.type != null ) {
+			switch( p.type ) {
+			case subscribe :
+				switch( subscriptionMode ) {
+				case acceptAll :
+					confirmSubscription( p.from, true );
+					//TODO subscribe to ?
+					//if( s ) subscribe( p.from );
+				case rejectAll :
+					var r = new xmpp.Presence( xmpp.PresenceType.unsubscribed );
+					r.to = p.from;
+					stream.sendPacket( r );
+				case manual :
+					onSubscription( new xmpp.roster.Item( p.from ) );
 				}
+				return;
+			
+			case subscribed :
+				trace( "???? "+p.type );
+			//?	onSubscribed( this, i );
+			//?	return;
+			
+			case unsubscribed :
+				onUnsubscribed( i );
+				return;
+			
+			//TODO case unsubscribe :
+			
+			default :
+				//TODO check
+				trace( "???? check "+p.type );
+				//onPresence( i, p );
 			}
-			if( i != null ) {
-				presenceMap.set( from, p );
-				onPresence( i, p );
-			}
+		}
+		if( i != null ) {
+			presenceMap.set( from, p );
+			onPresence( i, p );
 		}
 	}
 	

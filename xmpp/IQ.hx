@@ -7,7 +7,7 @@ class IQ extends Packet {
 	
 	/** */
 	public var type : IQType;
-	/** */
+	/** The 'first and only child' or 'extension' of the IQ packet. */
 	public var x : PacketElement;
 	
 	public function new( ?type : IQType, ?id : String, ?to : String, ?from ) {
@@ -17,13 +17,12 @@ class IQ extends Packet {
 	}
 	
 	public override function toXml(): Xml {
-		//if( id == null ) throw "Invalid IQ packet, no id";
 		if( type == null ) type = IQType.get;
-		var xml = super.addAttributes( Xml.createElement( "iq" ) );
-		xml.set( "type", Type.enumConstructor( type ) );
-		xml.set( "id", id );
-		if( x != null ) xml.addChild( x.toXml() );
-		return xml;
+		var _x = super.addAttributes( Xml.createElement( "iq" ) );
+		_x.set( "type", Type.enumConstructor( type ) );
+		_x.set( "id", id );
+		if( x != null ) _x.addChild( x.toXml() );
+		return _x;
 	}
 	
 	public static function parse( x : Xml ) : IQ {

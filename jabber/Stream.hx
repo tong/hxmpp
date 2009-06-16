@@ -173,8 +173,10 @@ class Stream {
 		if( !cnx.connected ) return null;
 		#if XMPP_DEBUG XMPPDebug.outgoing( t ); #end
 //		var b = haxe.io.Bytes.ofString( t );
-		for( i in dataInterceptors )
+		for( i in dataInterceptors ) {
+			trace("INTERCCC");
 			t = i.interceptData( haxe.io.Bytes.ofString(t) ).toString();
+		}
 //		if( b == null ) return null;
 		cnx.write( t );
 		numPacketsSent++;
@@ -273,7 +275,6 @@ class Stream {
 	/**
 	*/
 	public function processData( buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) : Int {
-		
 		if( status == StreamStatus.closed )
 			return -1;
 		
@@ -339,7 +340,9 @@ class Stream {
 		#end
 		var collected = false;
 		for( c in collectors ) {
-			//if( c == null ) collectors.remove( c );
+			//if( c == null ) {
+				//collectors.remove( c );
+			//}
 			if( c.accept( p ) ) {
 				collected = true;
 				//if( c.deliver == null )

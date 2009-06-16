@@ -1,6 +1,5 @@
 package xmpp;
 
-
 /**
 	Discover when a disconnected user last accessed its server.
 	
@@ -12,11 +11,9 @@ class LastActivity {
 	
 	public var seconds : Int;
 	
-	
 	public function new( ?seconds : Int ) {
 		this.seconds = ( seconds != null ) ? seconds : -1;
 	}
-	
 	
 	public function toXml() : Xml {
 		var q = IQ.createQueryXml( XMLNS );
@@ -24,8 +21,9 @@ class LastActivity {
 		return q;
 	}
 	
-	public inline function toString() : String {return toXml().toString(); }
-	
+	public inline function toString() : String {
+		return toXml().toString();
+	}
 	
 	public static inline function parse( x : Xml ) : LastActivity {
 		return new LastActivity( parseSeconds( x ) );

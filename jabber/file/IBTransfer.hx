@@ -22,7 +22,7 @@ class IBTransfer extends FileTransfer {
 		this.input = input;
 		sid = util.StringUtil.random64( 8 );
 		// send init request
-		var iq = new xmpp.IQ( xmpp.IQType.set, null, reciever, stream.jid.toString() );
+		var iq = new xmpp.IQ( xmpp.IQType.set, null, reciever, stream.jidstr );
 		iq.x = new xmpp.file.IB( xmpp.file.IBType.open, sid, blockSize );
 		stream.sendIQ( iq, handleRequestResponse );
 	}

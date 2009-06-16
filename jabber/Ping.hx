@@ -13,7 +13,7 @@ typedef Timer = util.Timer;
 */
 class Ping {
 	
-	public static var defaultInterval = 2000;
+	public static var defaultInterval = 30000;
 	
 	public dynamic function onResponse( entity : String ) : Void;
 	public dynamic function onTimeout( entity : String ) : Void;

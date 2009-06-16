@@ -28,7 +28,7 @@ class JID {
 	public function new( str : String ) {
 		
 		if( !JIDUtil.isValid( str ) )
-			throw new error.Exception( "Invalid jid: "+str ); 
+			throw "Invalid JID: "+str; 
 		
 		this.node = JIDUtil.parseNode( str );
 		this.domain = JIDUtil.parseDomain( str );

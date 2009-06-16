@@ -16,7 +16,7 @@ class Authentication {
 	}
 	
 	public function authenticate( password : String, ?resource : String ) : Bool {
-		return throw new error.AbstractError();
+		return throw "Abstract error";
 	}
 	
 }

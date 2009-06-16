@@ -21,7 +21,7 @@ class NonSASLAuthentication extends Authentication {
 
 	public override function authenticate( password : String, ?resource : String ) {
 		if( active )
-			throw new error.Exception( "Authentication already in progress" );
+			throw "Authentication in progress";
 		this.password = password;
 		if( resource != null ) {
 			this.resource = resource;

@@ -9,9 +9,12 @@ import neko.Lib;
 import php.Lib;
 #end
 
+//	TODO move util.CL into here
+
 /**
-	Utility for debugging XMPP transfer.
-	For terminal targets you might want to set colors before using.
+	
+	Utility for debugging XMPP transfer.<br>
+	For terminal targets you might want to set colors before using since they might differ.
 */
 class XMPPDebug {
 	

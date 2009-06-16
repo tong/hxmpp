@@ -22,7 +22,7 @@ class ByteStreamTransfer extends FileTransfer {
 	public override function init( input : haxe.io.Input ) {
 		
 		this.input = input;
-		sid = util.StringUtil.random64( 16 );
+		if( sid == null ) sid = util.StringUtil.random64( 16 );
 
 		// activate stream host
 		//trace(streamhosts);
@@ -38,7 +38,7 @@ class ByteStreamTransfer extends FileTransfer {
 		output.wait();
 		
 		// send init request
-		var iq = new xmpp.IQ( xmpp.IQType.set, null, reciever, stream.jid.toString() );
+		var iq = new xmpp.IQ( xmpp.IQType.set, null, reciever, stream.jidstr );
 		var bs = new xmpp.file.ByteStream( sid, null, streamhosts );
 		iq.x = bs;
 		stream.sendIQ( iq, handleResponse );
@@ -54,7 +54,7 @@ class ByteStreamTransfer extends FileTransfer {
 	function handleResponse( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 		case result :
-			
+			trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 			onInit( this );
 //			var bs = xmpp.file.ByteStream.parse( iq.x.toXml() );
 			try {

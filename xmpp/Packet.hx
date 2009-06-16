@@ -35,7 +35,6 @@ class Packet {
 	public inline function toString() : String {
 		return toXml().toString();
 	}
-	
 
 	/**
 		Adds the basic packet attributes to the given XML.
@@ -49,7 +48,6 @@ class Packet {
 		for( e in errors ) x.addChild( e.toXml() );
         return x;
 	}
-
 	
 	/**
 		Parses given XML into a XMPP packet object.
@@ -93,6 +91,14 @@ class Packet {
 	}
 	
 	/*
+	public static function createPacketElementXml<T>( o : T, name : String ) : Xml {
+		trace( Reflect.field( o, name ) );
+		var v = Reflect.field( o, name );
+		if( v == null ) return null;
+		return util.XmlUtil.createElement( name, v );
+	}
+*/
+	/*
 	public static function reflectPacketAttributes<T>( x : Xml, p : T ) : T {
 		for( a in x.attributes ) {
 		}
@@ -102,19 +108,6 @@ class Packet {
 		}
 	}
 	*/
-	
-	/*
-	static function parseChilds( p : xmpp.Packet, x : Xml ) : xmpp.Packet {
-		for( c in x.elements() ) {
-			switch( c.nodeName ) {
-				case "error" : p.errors.push( xmpp.Error.parse( c ) );
-	//			default : p.properties.push( c );
-			}
-		}
-		return p;
-	}
-	*/
-	
 	/*
 	static inline function parsePacketBase( p : xmpp.Packet, x : Xml ) {
 		xmpp.Packet.parseAttributes( p, x );

@@ -68,8 +68,8 @@ class ChatStateNotification {
 	*/
 	public function send( state : xmpp.ChatState ) : xmpp.Message {
 		//TODO ? if( state == null ) state = xmpp.ChateState.active;
-		if( state == null ) throw new error.Exception( "Cannot set null chat state" );
-		if( chat == null ) throw new error.Exception( "No chat given, cannot set chat state" );
+		if( chat == null )
+			throw "No chat given, cannot set chat state";
 		xmpp.ChatStateExtension.set( m, state );
 		return chat.stream.sendPacket( m , false );
 	}

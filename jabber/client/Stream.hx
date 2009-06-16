@@ -32,6 +32,9 @@ class Stream extends jabber.Stream {
 		}
 		if( id == null ) { // parse open stream
 			var s = t.substr( 0, sei ) + " />";
+			#if XMPP_DEBUG
+			jabber.XMPPDebug.incoming( s );
+			#end
 			var sx = Xml.parse( s ).firstElement();
 			id = sx.get( "id" );
 			if( !version ) {
@@ -41,7 +44,7 @@ class Stream extends jabber.Stream {
 			}
 		}
 		if( id == null )
-			throw new error.Exception( "Invalid XMPP stream, no id" );
+			throw "Invalid XMPP stream, no id";
 		if( !version ) {
 			status = jabber.StreamStatus.open;
 			onOpen();

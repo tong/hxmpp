@@ -37,20 +37,21 @@ class TestXMPP {
 		r.add( new TestXMPPDisco() );
 		r.add( new TestXMPPEntityCapabilities() );
 		r.add( new TestXMPPEntityTime() );
+//r.add( new TestXMPPIBByteStream() );
 		r.add( new TestXMPPLastActivity() );
+		r.add( new TestXMPPPersonalEvent() );
 		r.add( new TestXMPPPrivacyLists() );
 		r.add( new TestXMPPPrivateStorage() );
+		r.add( new TestXMPPPubSub() );
 		r.add( new TestXMPPRegister() );
 		r.add( new TestXMPPRoster() );
 		r.add( new TestXMPPSoftwareVersion() );
 		r.add( new TestXMPPSoftwareVersion() );
 		r.add( new TestXMPPEntityTime() );
-	
+
 	//	r.add( new TestXMPPMUC() );
-		r.add( new TestXMPPPubSub() );
-		r.add( new TestXMPPPersonalEvent() );
 	//	r.add( new TestXMPPRPC() );
-	//	r.add( new TestXMPPJingle() );
+r.add( new TestXMPPJingle() );
 	//	r.add( new TestXMPPFileTransfer() );
 		
 		///// packet filters

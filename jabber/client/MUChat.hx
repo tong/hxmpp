@@ -98,7 +98,7 @@ class MUChat {
 	public function join( nick : String, ?password : String ) : Bool {
 		if( joined ) return false;
 		if( nick == null || nick.length == 0 )
-			throw new error.Exception( "Nickname must be not null or blank" );
+			throw "Nickname must be not null or blank";
 		stream.addCollector( col_presence );
 		stream.addCollector( col_message );
 		this.nick = nick;
@@ -142,7 +142,8 @@ class MUChat {
 	*/
 	public function changeNick( nick : String ) : xmpp.Presence {
 		if( !joined ) return null;
-		if( nick == null || nick.length == 0 ) throw new error.Exception( "Nickname must be not null or blank" );
+		if( nick == null || nick.length == 0 )
+			throw "Invalid nickname" );
 		this.nick = nick;
 		myjid = jid+"/"+nick;
 		return sendMyPresence();

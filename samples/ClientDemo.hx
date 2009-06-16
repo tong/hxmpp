@@ -35,7 +35,7 @@ class ClientDemo {
 	static var vcard : VCardTemp;
 	
 	static function init() {
-		stream = new Stream( new jabber.JID( "hxmpp@disktree" ), new SocketConnection( "127.0.0.1", Stream.defaultPort ) );
+		stream = new Stream( new jabber.JID( "hxmpp@disktree" ), new SocketConnection( "127.0.0.1", 5555 ) );
 		stream.onError = function(?e) { trace( "Stream error: "+e ); };
 		stream.onClose = function() { trace( "Stream to: "+stream.jid.domain+" closed." ); } ;
 		stream.onOpen = function() {

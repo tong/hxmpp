@@ -63,7 +63,7 @@ class SocketConnection extends jabber.stream.Connection {
 		bufbytes = 0;
 		reading = false;
 		
-		#if php //TODO WTF
+		#if php //TODO ! WTF !!!
 		buf = haxe.io.Bytes.alloc( 1024 );
 		#end
 		
@@ -97,8 +97,6 @@ class SocketConnection extends jabber.stream.Connection {
 			socket.connect( new Host( host ), port );
 			#end
 			#if php
-			trace("#########################################");
-			trace(secure);
 			if( secure ) socket.connectTLS( new Host( host ), port );
 			else socket.connect( new Host( host ), port );
 			#end
@@ -157,14 +155,41 @@ class SocketConnection extends jabber.stream.Connection {
 		socket.writeUTFBytes( t ); 
 		socket.flush();
 		#elseif (neko||php)
-		socket.write( t );
-		//socket.write( t );
+		socket.output.writeString( t );
 		#elseif JABBER_SOCKETBRIDGE
 		socket.send( t );
 		#end
 		return t;
 		//return writeBytes( haxe.io.Bytes.ofString( t ) ).toString();
 	}
+	/*
+	public override function write( t : haxe.io.Bytes ) : haxe.io.Bytes {
+		if( !connected || t == null || t.length == 0 ) return null;
+		#if flash9
+		//socket.writeUTFBytes( t ); 
+		socket.writeBytes( t.getData() ); 
+		socket.flush();
+		#elseif (neko||php)
+		socket.output.writeBytes( t, 0, t.length );
+		socket.output.flush();
+		#elseif JABBER_SOCKETBRIDGE
+		socket.send( t.toString() ); //TODO
+		#end
+		return t;
+	}
+	*/
+	/*
+	public override function writeBytes( t : haxe.io.Bytes ) : haxe.io.Bytes {
+		#if flash9
+		socket.writeBytes( t.getData() ); 
+		socket.flush();
+		#elseif (neko||php)
+		socket.output.writeBytes( t, 0, t.length );
+		socket.output.flush();
+		#end
+		return t;
+	}
+	*/
 	
 	/*
 	public override function writeBytes( t : haxe.io.Bytes ) : haxe.io.Bytes {
@@ -220,6 +245,7 @@ class SocketConnection extends jabber.stream.Connection {
 		var buflen = buf.length;
 		// eventually double the buffer size
 		if( bufbytes == buflen ) {
+			//trace("DOUBLE");
 			var nsize = buflen*2;
 			if( nsize > maxBufSize ) {
 				if( buflen == maxBufSize )
@@ -231,7 +257,16 @@ class SocketConnection extends jabber.stream.Connection {
 			buflen = nsize;
 			buf = buf2;
 		}
-		var nbytes = socket.input.readBytes( buf, bufbytes, buflen-bufbytes );
+			
+		var nbytes = 0;
+		try {
+			//trace(buf.length+"//"+buflen+"//"+bufbytes);
+			nbytes = socket.input.readBytes( buf, bufbytes, buflen-bufbytes);
+			//trace(nbytes);
+		} catch(e:Dynamic){
+			trace(e);
+			throw e;
+		}
 		bufbytes += nbytes;
 	}
 	
@@ -239,8 +274,9 @@ class SocketConnection extends jabber.stream.Connection {
 		var pos = 0;
 		while( bufbytes > 0 && reading ) {
 			var nbytes = onData( buf, pos, bufbytes );//var nbytes = handleData( buffer, pos, bufbytes );
-			if( nbytes == 0 )
+			if( nbytes == 0 ) {
 				return;
+			}
 			/*
 			if( nbytes == -1 ) {
 				reading = false;
@@ -303,7 +339,7 @@ class Socket {
 	
 	public function new() {
 		var id : Int = SocketBridgeConnection.createSocket( this );
-		if( id < 0 ) throw new error.Exception( "Error creating socket" );
+		if( id < 0 ) "Error creating socket";
 		this.id = id;
 	}
 	

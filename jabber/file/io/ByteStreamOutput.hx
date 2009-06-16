@@ -8,7 +8,17 @@ import cpp.net.Socket;
 import cpp.vm.Thread;
 #end
 
+
+enum SOCKS5State {
+	waitInit;
+	waitResponse;
+	complete;
+}
+
+
 /**
+	TODO SOCKS5 server
+	
 	neko,cpp.
 */
 class ByteStreamOutput {
@@ -34,6 +44,8 @@ class ByteStreamOutput {
 	
 	public function write( input : haxe.io.Input ) {
 		client = Thread.readMessage( false );
+		var ok = Thread.readMessage( false );
+		trace(ok);
 		if( client == null )
 			throw "Client not connected";
 		client.output.write( input.readAll() );
@@ -55,10 +67,63 @@ class ByteStreamOutput {
 		var socket : Socket = Thread.readMessage ( true );
 		while( true ) {
 			var c = socket.accept();
-			//trace("CLIENT CONNECTED");
+			trace("CLIENT CONNECTED");
+			i = c.input;
+			o = c.output;
 			main.sendMessage( c );
 			break;
 		}
+		maxBufSize = (1<<18);
+		buffer = haxe.io.Bytes.alloc( 1024 );
+		bytes = 0;
+		state = waitInit;
+		trace("READIND SOCKS5 input ");
+		while( read() ) {
+			//processData();
+		}
+		trace("FINISHEd SOCKS 5");
+		main.sendMessage( true );
 	}
+	
+	var state : SOCKS5State;
+	var maxBufSize : Int;
+	var i : haxe.io.Input;
+	var o : haxe.io.Output;
+	var buffer : haxe.io.Bytes;
+	var bytes : Int;
+	
+	function read() {
+		switch( state ) {
+		case waitInit :
+			//? i.bigEndian = true;
+			if( i.readByte() != 5 )
+				throw "Invalid socks5 protocol";
+			trace( i.readByte() );
+			trace( i.readByte() );
+			//o.writeByte( 0x05 );
+			//o.writeByte( 0x00 );
+			var b = haxe.io.Bytes.alloc(2);
+			b.set(0,5);
+			b.set(1,0);
+			o.write(b);
+			//? o.bigEndian = true;
+			trace("kk");
+			state = complete;
+			return true;
+			
+		case waitResponse :	
+			trace("##############");
+			//trace( i.readByte() );
+			//trace( i.readByte() );
+			return true;
+			
+		case complete :
+			trace("complete");
+			return false;
+		}
+		return false;
+	}
+	
+	
 	
 }
