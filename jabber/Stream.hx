@@ -68,6 +68,8 @@ class Stream {
 	/** Indicates if the version number of the XMPP stream ("1.0") should get added to the stream opening XML element */
 	public var version : Bool;
 	
+	//var bosh : Bool;
+	
 	//TODO
 	public var dataFilters : List<TDataFilter>;
 	public var dataInterceptors : List<TDataInterceptor>;
@@ -92,6 +94,8 @@ class Stream {
 		
 		dataFilters = new List();
 		dataInterceptors = new List();
+		
+		//bosh = Type.getClassName( Type.getClass( cnx ) ) == "jabber.BOSHConnection";
 	}
 	
 	
@@ -170,6 +174,7 @@ class Stream {
 	public function sendData( t : String ) : String {
 		//return sendBytes( haxe.io.Bytes.ofString( t ) ).toString();
 		//TODO ??? intercept data here ?
+	//	trace(">>>>>>>>>>>>>>>>>>>>>>>>>");
 		if( !cnx.connected ) return null;
 		#if XMPP_DEBUG XMPPDebug.outgoing( t ); #end
 //		var b = haxe.io.Bytes.ofString( t );

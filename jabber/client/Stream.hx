@@ -13,7 +13,7 @@ class Stream extends jabber.Stream {
 	
 	//TODO public var secure(default,null) : Bool;
 	public var jid(default,null) : jabber.JID;
-	
+
 	public function new( jid : jabber.JID, cnx : Connection, version : Bool = true ) {
 		super( cnx, jid );
 		this.jid = jid;
@@ -26,39 +26,47 @@ class Stream extends jabber.Stream {
 	}
 	
 	override function processStreamInit( t : String, buflen : Int ) : Int {
-		var sei = t.indexOf( ">" );
-		if( sei == -1 ) {
-			return 0;
-		}
-		if( id == null ) { // parse open stream
-			var s = t.substr( 0, sei ) + " />";
-			#if XMPP_DEBUG
-			jabber.XMPPDebug.incoming( s );
-			#end
-			var sx = Xml.parse( s ).firstElement();
-			id = sx.get( "id" );
+		//TODO HACK
+		if( Type.getClassName( Type.getClass( cnx ) ) != "jabber.BOSHConnection" ) {
+			var sei = t.indexOf( ">" );
+			if( sei == -1 ) {
+				return 0;
+			}
+			if( id == null ) { // parse open stream
+				var s = t.substr( 0, sei ) + " />";
+				#if XMPP_DEBUG
+				jabber.XMPPDebug.incoming( s );
+				#end
+				var sx = Xml.parse( s ).firstElement();
+				id = sx.get( "id" );
+				if( !version ) {
+					status = jabber.StreamStatus.open;
+					onOpen();
+					return buflen;
+				}
+			}
+			if( id == null )
+				throw "Invalid XMPP stream, no id";
 			if( !version ) {
 				status = jabber.StreamStatus.open;
 				onOpen();
 				return buflen;
 			}
-		}
-		if( id == null )
-			throw "Invalid XMPP stream, no id";
-		if( !version ) {
+		} else {
+			//TODO
+			var sx = Xml.parse( t ).firstElement();
+			var sf = sx.firstElement();
+			parseStreamFeatures( sf );
 			status = jabber.StreamStatus.open;
 			onOpen();
-			return buflen;
+			return buflen;	
 		}
 		var sfi = t.indexOf( "<stream:features>" );
 		var sf = t.substr( t.indexOf( "<stream:features>" ) );
 		if( sfi != -1 ) {
 			try {
 				var sfx = Xml.parse( sf ).firstElement();
-				for( e in sfx.elements() ) {
-					//trace(e.nodeName);
-					server.features.set( e.nodeName, e );
-				}
+				parseStreamFeatures( sfx );
 				#if XMPP_DEBUG
 				jabber.XMPPDebug.incoming( sfx.toString() );
 				#end
@@ -74,9 +82,17 @@ class Stream extends jabber.Stream {
 	}
 	
 	override function connectHandler() {
+		trace("connectHandler");
 		status = jabber.StreamStatus.pending;
-		sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_CLIENT, jid.domain, version, lang ) );
-		cnx.read( true ); // start reading input
+		// TODO HACK
+		if( Type.getClassName( Type.getClass( cnx ) ) != "jabber.BOSHConnection" ) {
+			sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_CLIENT, jid.domain, version, lang ) );
+			cnx.read( true ); // start reading input
+		} else {
+			if( cnx.connected ) {
+				cnx.connect();
+			}
+		}
 	}
 	
 	/*
@@ -85,4 +101,8 @@ class Stream extends jabber.Stream {
 	}
 	*/
 	
+	function parseStreamFeatures( x : Xml ) {
+		for( e in x.elements() )
+			server.features.set( e.nodeName, e );
+	}
 }

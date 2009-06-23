@@ -1,6 +1,5 @@
 package xmpp;
 
-
 /**
 	Static methods for creation of XMPP packets for SASL authentication.
 */

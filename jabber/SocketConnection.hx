@@ -26,6 +26,7 @@ class SocketConnection extends jabber.stream.Connection {
 	#end
 	public static var defaultMaxBufSize = (1<<18);
 	
+	public var port(default,null) : Int;
 	public var socket(default,null) : Socket;
 	public var secure(default,null) : Bool; //TODO move to jabber.socket.Connection
 	public var timeout(default,null) : Int;
@@ -42,7 +43,8 @@ class SocketConnection extends jabber.stream.Connection {
 	public function new( host : String, port : Int,
 						 ?secure : Bool = false , ?timeout : Int = 10, ?maxBufSize : Int ) {
 		
-		super( host, port );
+		super( host );
+		this.port = port;
 		#if (flash10||neko||php)
 		this.timeout = timeout;
 		#end
