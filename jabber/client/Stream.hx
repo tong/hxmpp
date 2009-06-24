@@ -82,16 +82,14 @@ class Stream extends jabber.Stream {
 	}
 	
 	override function connectHandler() {
-		trace("connectHandler");
 		status = jabber.StreamStatus.pending;
-		// TODO HACK
+		// TODO avoid HACK
 		if( Type.getClassName( Type.getClass( cnx ) ) != "jabber.BOSHConnection" ) {
 			sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_CLIENT, jid.domain, version, lang ) );
 			cnx.read( true ); // start reading input
 		} else {
-			if( cnx.connected ) {
-				cnx.connect();
-			}
+			if( cnx.connected )
+				cnx.connect(); // restart bosh
 		}
 	}
 	
