@@ -12,10 +12,13 @@ class PacketNameFilter {
 	}
 	
 	public function accept( p : xmpp.Packet ) : Bool {
+		/* HMMMM ? TODO
 		return switch( p._type ) {
 		case custom : reg.match( p.toXml().nodeName );
 		default : false;
 		}
+		*/
+		return reg.match( p.toXml().nodeName );
 	}
 	
 }

@@ -19,6 +19,7 @@ class TestXMPP {
 		r.add( new TestIQPacket() );
 		r.add( new TestXMPPStreamError() );
 		
+		
 		///// stuff
 		r.add( new TestXMPPError() );
 		r.add( new TestXMPPCompression() );

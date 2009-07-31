@@ -7,6 +7,8 @@ import util.CL;
 import neko.Lib;
 #elseif php
 import php.Lib;
+#elseif cpp
+import cpp.Lib;
 #end
 
 //	TODO move util.CL into here

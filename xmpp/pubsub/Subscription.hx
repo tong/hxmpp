@@ -1,6 +1,5 @@
 package xmpp.pubsub;
 
-
 class Subscription {
 	
 	public var jid : String;

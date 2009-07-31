@@ -99,11 +99,9 @@ class SASLAuthentication extends Authentication {
 	}
 	
 	function handleSASLChallenge( p : xmpp.Packet ) {
-		//trace( "#############"+p, "xmpp-i" );
 		// create/send challenge response
 		var c = p.toXml().firstChild().nodeValue;
 		var r = util.Base64.encode( handshake.getChallengeResponse( c ) );
-		//var r = handshake.getChallengeResponse( c );
 		stream.sendData( xmpp.SASL.createResponseXml( r ).toString() );
 	}
 	

@@ -5,7 +5,7 @@ import jabber.jingle.transport.RTMPOutput;
 import xmpp.jingle.TCandidateRTMP;
 
 /**
-	Outgoing RTMP session.
+	Outgoing jingle RTMP session.
 */
 class RTMPSession extends Session {
 	
@@ -22,12 +22,6 @@ class RTMPSession extends Session {
 		super( stream );
 		this.entity = entity;
 		transports = new Array();
-	}
-	
-	public override function terminate( reason : xmpp.jingle.Reason ) {
-		transport.close();
-		super.terminate( reason );
-		//onEnd( this );
 	}
 	
 	public function init() {
@@ -57,6 +51,12 @@ class RTMPSession extends Session {
 		// send offer
 		//stream.sendIQ( iq, handleSessionInitResponse );
 		stream.sendIQ( iq );
+	}
+	
+	public override function terminate( reason : xmpp.jingle.Reason ) {
+		transport.close();
+		super.terminate( reason );
+		//onEnd( this );
 	}
 	
 	/*
@@ -114,9 +114,7 @@ class RTMPSession extends Session {
 					// collect session close packets
 					// TODO
 				};
-				transport.__onConnect = function() {
-					me.transport.publish();
-				};
+				transport.__onConnect = transport.publish;
 				transport.connect();
 		
 			case session_info :

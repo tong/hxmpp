@@ -26,7 +26,7 @@ Copy hxmpp/ndll/$SYSTEM/*ndll files to your neko installation.
 # PHP
 ...
 
-# FLASH9+
+# FLASH
 ...
 
 # JS
@@ -40,6 +40,12 @@ See hxmpp/samples/JabberClientDemo.as for an example.
 USAGE
 -----
 see: hxmpp/samples/*, hxmpp/test/jabber/*
+
+
+USING THE BOSH CONNECTION
+-------------------------
+To use BOSH for connecting you have to proxy you requests.
+.....
 
 
 XEPS SUPPORTED

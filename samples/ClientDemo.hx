@@ -35,7 +35,7 @@ class ClientDemo {
 	static var vcard : VCardTemp;
 	
 	static function init() {
-		stream = new Stream( new jabber.JID( "hxmpp@disktree" ), new SocketConnection( "127.0.0.1", 5555 ) );
+		stream = new Stream( new jabber.JID( "hxmpp@disktree" ), new SocketConnection( "127.0.0.1", 5222 ) );
 		stream.onError = function(?e) { trace( "Stream error: "+e ); };
 		stream.onClose = function() { trace( "Stream to: "+stream.jid.domain+" closed." ); } ;
 		stream.onOpen = function() {
@@ -54,7 +54,7 @@ class ClientDemo {
 			auth.onFail = function(?e) {
 				trace( "Authentication failed", "warn" );
 			};
-			auth.authenticate( "test", #if neko "NEKO" #elseif flash9 "FLASH" #elseif js "JS" #elseif php "PHP" #end );
+			auth.authenticate( "test", #if neko "NEKO" #elseif flash9 "FLASH" #elseif js "JS" #elseif php "PHP" #elseif cpp "CPP" #end );
 		};
 		trace( "Initializing XMPP stream ..." );
 		stream.open();

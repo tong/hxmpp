@@ -40,6 +40,14 @@
 -D JABBER_DEBUG
 -debug
 
+#--next
+#-cp samples/
+#-cp ../core/
+#-cpp bin/samples/cpp
+#-main ClientDemo
+#-D XMPP_DEBUG
+#-D JABBER_DEBUG
+#-debug
 
 ##### HXMPP SERVER COMPONENT EXAMPLE
 
@@ -83,21 +91,21 @@
 
 ##### SEND MESSAGE
 
---next
--cp samples/
--cp ../core/
--neko bin/samples/sendmessage.n
--main SendMessage
--D XMPP_DEBUG
--D JABBER_DEBUG
--debug
+#--next
+#-cp samples/
+#-cp ../core/
+#-neko bin/samples/sendmessage.n
+#-main SendMessage
+#-D XMPP_DEBUG
+#-D JABBER_DEBUG
+#-debug
 
---next
--cp samples/
--cp ../core/
--php bin/samples/php
---php-front sendmessage.php
--main SendMessage
--D XMPP_DEBUG
--D JABBER_DEBUG
--debug
+#--next
+#-cp samples/
+#-cp ../core/
+#-php bin/samples/php
+#--php-front sendmessage.php
+#-main SendMessage
+#-D XMPP_DEBUG
+#-D JABBER_DEBUG
+#-debug

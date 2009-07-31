@@ -4,6 +4,8 @@ package jabber;
 	Emulates the semantics of a long-lived, bidirectional TCP connection
 	by efficiently using multiple synchronous HTTP request/response pairs
 	without requiring the use of frequent polling or chunked responses.
+	
+	TODO timeout timer
 */
 class BOSHConnection extends jabber.stream.Connection {
 	
@@ -20,11 +22,10 @@ class BOSHConnection extends jabber.stream.Connection {
 	var requestCount : Int;
 	var requestQueue : Array<Xml>;
 	var maxPause : Int;
-	
 	var active : Bool;
 	
 	public function new( host : String, path : String,
-						 ?secure : Bool = false, ?hold : Int = 1, ?wait : Int = 20 ) {
+						 ?secure : Bool = false, ?hold : Int = 1, ?wait : Int = 60 ) {
 		super( host );
 		this.path = path;
 		this.secure = secure;
@@ -34,7 +35,6 @@ class BOSHConnection extends jabber.stream.Connection {
 		rid = Std.int( Math.random()*10000000 );
 		requestCount = 0;
 		requestQueue = new Array();
-		
 		active = false;
 	}
 	
@@ -63,8 +63,13 @@ class BOSHConnection extends jabber.stream.Connection {
 	}
 	
 	public override function write( t : String ) {
-		sendQueuedRequests( Xml.parse(t) ); //TODO, remove Xmlparse
-		return null;
+		//if( !connected ) return null;
+		try {
+			sendQueuedRequests( Xml.parse( t ) ); //TODO, remove Xmlparse
+		} catch( e : Dynamic) {
+			return null;
+		}
+		return t;
 	}
 	
 	public override function read( ?yes : Bool = true ) : Bool {
@@ -213,7 +218,7 @@ class BOSHConnection extends jabber.stream.Connection {
 	
 	function createRequest( ?t : Array<Xml> ) : Xml {
 		var x = Xml.createElement( "body" );
-		x.set( 'xmlns', xmpp.BOSH.XMLNS );
+		x.set( "xmlns", xmpp.BOSH.XMLNS );
 		x.set( "xml:lang", "en" );
 		x.set( "rid", Std.string( ++rid ) );
 		x.set( "sid", sid );
@@ -223,6 +228,15 @@ class BOSHConnection extends jabber.stream.Connection {
 		}
 		return x;
 	}
+	
+	/*
+	function createStringRequest( t : String ) : String {
+		var x = createRequest();
+		var s = x.toString();
+		s = s.substr( 0, s.length-2 ) + t + "</body>";
+		return s;
+	}
+	*/
 	
 	inline function poll() {
 		sendRequests( null, true );

@@ -34,8 +34,8 @@ class TestXMPPPacketFilters extends haxe.unit.TestCase {
 		assertTrue( f.accept( new Message( headline ) ) );
 		
 		f = new MessageFilter( chat );
+		assertTrue( f.accept( new Message() ) );
 		assertTrue( f.accept( new Message( chat ) ) );
-		assertTrue( !f.accept( new Message() ) );
 		assertTrue( !f.accept( new Message( normal ) ) );
 		assertTrue( !f.accept( new Message( groupchat ) ) );
 		assertTrue( !f.accept( new Message( error ) ) );
@@ -49,8 +49,6 @@ class TestXMPPPacketFilters extends haxe.unit.TestCase {
 		
 		var f = new PacketFromContainsFilter( "disktree@conference.disktree" );
 		assertTrue( f.accept( m ) );
-		
-		trace("###################################");
 */
 	}
 	

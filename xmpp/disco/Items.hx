@@ -1,7 +1,5 @@
 package xmpp.disco;
 
-/**
-*/
 class Items extends List<xmpp.disco.Item> {
 
 	public static var XMLNS = xmpp.NS.PROTOCOL+'/disco#items';
@@ -28,12 +26,16 @@ class Items extends List<xmpp.disco.Item> {
 	}
 	
 	public static function parse( x : Xml ) : Items {
-		var items = new Items();
+		var items = new Items( x.get( "node" ) );
+		/*
 		for( f in x.elements() ) {
 			switch( f.nodeName ) {
-				case "item" : items.add( xmpp.disco.Item.parse( f ) );
+			case "item" : items.add( xmpp.disco.Item.parse( f ) );
 			}
 		}
+		*/
+		for( f in x.elementsNamed( "item" ) )
+			items.add( xmpp.disco.Item.parse( f ) );
 		return items;
 	}
 

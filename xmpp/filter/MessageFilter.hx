@@ -13,8 +13,7 @@ class MessageFilter {
 	
 	public function accept( p : xmpp.Packet ) {
 		if( p._type != xmpp.PacketType.message ) return false;
-		if( this.type == null ) return true;
-		return this.type == cast( p, xmpp.Message ).type;
+		return ( type == null ) ? true : type == cast( p, xmpp.Message ).type;
 	}
 	
 }

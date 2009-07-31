@@ -1,6 +1,5 @@
 package xmpp.disco;
 
-
 class Item {
 	
 	public var jid : String;

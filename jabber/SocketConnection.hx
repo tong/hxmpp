@@ -21,7 +21,7 @@ import cpp.net.Socket;
 */
 class SocketConnection extends jabber.stream.Connection {
 	
-	#if (neko||php)
+	#if (neko||php||cpp)
 	public static var defaultBufSize = (1<<6); // 64
 	#end
 	public static var defaultMaxBufSize = (1<<18);
@@ -32,7 +32,7 @@ class SocketConnection extends jabber.stream.Connection {
 	public var timeout(default,null) : Int;
 	public var maxBufSize(default,null) : Int;
 	
-	#if (neko||php)
+	#if (neko||php||cpp)
 	var reading : Bool;
 	var buf : haxe.io.Bytes;
 	var bufbytes : Int;
@@ -66,7 +66,7 @@ class SocketConnection extends jabber.stream.Connection {
 		reading = false;
 		
 		#if php //TODO ! WTF !!!
-		buf = haxe.io.Bytes.alloc( 1024 );
+//		buf = haxe.io.Bytes.alloc( 1024 );
 		#end
 		
 		#elseif JABBER_SOCKETBRIDGE
@@ -94,6 +94,7 @@ class SocketConnection extends jabber.stream.Connection {
 	
 	
 	public override function connect() {
+		//TODO
 		try {
 			#if neko
 			socket.connect( new Host( host ), port );

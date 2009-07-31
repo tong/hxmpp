@@ -140,11 +140,11 @@ class MUChat {
 	
 	/**
 	*/
-	public function changeNick( nick : String ) : xmpp.Presence {
+	public function changeNick( t : String ) : xmpp.Presence {
 		if( !joined ) return null;
-		if( nick == null || nick.length == 0 )
-			throw "Invalid nickname" );
-		this.nick = nick;
+		if( t == null || t.length == 0 )
+			throw "Invalid nickname";
+		nick = t;
 		myjid = jid+"/"+nick;
 		return sendMyPresence();
 	}
@@ -298,7 +298,7 @@ class MUChat {
 	}
 	
 	function sendMyPresence( priority : Int = 5 ) : xmpp.Presence {
-		var p = new xmpp.Presence( null, null, priority, null );
+		var p = new xmpp.Presence( null, null, priority );
 		p.to = myjid;
 		p.properties.push( xmpp.X.create( xmpp.MUC.XMLNS ) );
 		return stream.sendPacket( p );
