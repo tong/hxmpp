@@ -15,13 +15,22 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package jabber;
+package xmpp.filter;
 
 /**
-	Utility (shortcut) to listen/report incoming message packets.
+	Reverses a packet filter.
+	Usage example: Wrap a PacketFromFilter into this filter to ignore packets from the entity.
 */
-class MessageListener extends jabber.stream.TopLevelPacketListener<xmpp.Message> {
-	public function new( stream : Stream, handler : xmpp.Message->Void, ?listen : Bool = true ) {
-		super( stream, handler, xmpp.PacketType.message, listen );
+class FilterReverse {
+	
+	public var filter : xmpp.PacketFilter;
+	
+	public function new( filter : xmpp.PacketFilter ) {
+		this.filter = filter;
 	}
+	
+	public inline function accept( p : xmpp.Packet ) : Bool {
+		return !filter.accept( p );
+	}
+	
 }

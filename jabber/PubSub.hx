@@ -1,3 +1,20 @@
+/*
+ *	This file is part of HXMPP.
+ *	Copyright (c)2009 http://www.disktree.net
+ *	
+ *	HXMPP is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  HXMPP is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *	See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
+*/
 package jabber;
 
 /**
@@ -79,7 +96,9 @@ class PubSub {
 		xt.subscribe = { jid : stream.jidstr, node : node };
 		iq.x = xt;
 		var me = this;
-		sendIQ( iq, function(r:xmpp.IQ) { me.onSubscribe( xmpp.PubSub.parse( r.x.toXml() ).subscription ); } );
+		sendIQ( iq, function(r:xmpp.IQ) {
+			me.onSubscribe( xmpp.PubSub.parse( r.x.toXml() ).subscription );
+		} );
 	}
 	
 	/**
@@ -91,7 +110,9 @@ class PubSub {
 		xt.unsubscribe = { jid : stream.jidstr , node : node, subid : subid };
 		iq.x = xt;
 		var me = this;
-		sendIQ( iq, function(r:xmpp.IQ) { me.onUnsubscribe( node ); } );
+		sendIQ( iq, function(r:xmpp.IQ) {
+			me.onUnsubscribe( node );
+		} );
 	}
 	
 	/**
@@ -103,7 +124,9 @@ class PubSub {
 		xt.subscriptions = new xmpp.pubsub.Subscriptions( node );
 		iq.x = xt;
 		var me = this;
-		sendIQ( iq, function(r:xmpp.IQ) { me.onSubscriptions( xmpp.PubSub.parse( r.x.toXml() ).subscriptions ); } );
+		sendIQ( iq, function(r:xmpp.IQ) {
+			me.onSubscriptions( xmpp.PubSub.parse( r.x.toXml() ).subscriptions );
+		} );
 	}
 	
 	/**
@@ -115,7 +138,9 @@ class PubSub {
 		xt.affiliations = new xmpp.pubsub.Affiliations();
 		iq.x = xt;
 		var me = this;
-		sendIQ( iq, function(r:xmpp.IQ) { me.onAffiliations( xmpp.PubSub.parse( r.x.toXml() ).affiliations ); } );
+		sendIQ( iq, function(r:xmpp.IQ) {
+			me.onAffiliations( xmpp.PubSub.parse( r.x.toXml() ).affiliations );
+		} );
 	}
 	
 	/**
@@ -132,7 +157,9 @@ class PubSub {
 		}
 		iq.x = xt;
 		var me = this;
-		sendIQ( iq, function(r:xmpp.IQ) { me.onItems( xmpp.PubSub.parse( r.x.toXml() ).items ); } );
+		sendIQ( iq, function(r:xmpp.IQ) {
+			me.onItems( xmpp.PubSub.parse( r.x.toXml() ).items );
+		} );
 	}
 	
 	/**
@@ -145,12 +172,14 @@ class PubSub {
 		xt.retract = retract;
 		iq.x = xt;
 		var me = this;
-		sendIQ( iq, function(r:xmpp.IQ) { me.onRetract( retract ); } );
+		sendIQ( iq, function(r:xmpp.IQ) {
+			me.onRetract( retract );
+		} );
 	}
 	
 	/**
 		Remove all items from the persistent store, with the exception of the last published item, which MAY be cached.
-		This is a optional feature for a pubsub service.
+		(This is a optional feature for a pubsub service).
 	*/
 	public function purge( node : String ) {
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, service );
@@ -158,7 +187,9 @@ class PubSub {
 		xt.purge = node;
 		iq.x = xt;
 		var me = this;
-		sendIQ( iq, function(r:xmpp.IQ) { me.onPurge( node ); } );
+		sendIQ( iq, function(r:xmpp.IQ) {
+			me.onPurge( node );
+		} );
 	}
 
 	/**
@@ -178,15 +209,17 @@ class PubSub {
 			iq.properties.push( po );
 		}
 		var me = this;
-		sendIQ( iq, function(r:xmpp.IQ) { me.onPublish( node, item ); } );
+		sendIQ( iq, function(r:xmpp.IQ) {
+			me.onPublish( node, item );
+		} );
 	}
 	
 	
-	function sendIQ( iq : xmpp.IQ, h : xmpp.IQ->Void ) {
+	function sendIQ( iq : xmpp.IQ, handler : xmpp.IQ->Void ) {
 		var me = this;
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			switch( r.type ) {
-			case result : h( r );
+			case result : handler( r );
 			case error : me.onError( new jabber.XMPPError( me, r ) );
 			default : // #
 			}

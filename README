@@ -2,12 +2,11 @@
 HXMPP - README
 ==============
 HXMPP is a haXe[03] library for creating jabber clients and components based on the XMPP protocol.
-
 The library mainly consists of two parts/namespaces:
 * xmpp: creation and manipulation of XMPP data.
 * jabber: creation and handling of XMPP data streams between jabber entities.
-
 Please visit [04][05] for further information.
+
 
 
 BUILD+INSTALLATION
@@ -37,15 +36,38 @@ Run hxmpp/lib.hxml to build a SWC and/or actionscript3 source code.
 See hxmpp/samples/JabberClientDemo.as for an example.
 
 
+
 USAGE
 -----
 see: hxmpp/samples/*, hxmpp/test/jabber/*
+
 
 
 USING THE BOSH CONNECTION
 -------------------------
 To use BOSH for connecting you have to proxy you requests.
 .....
+
+# activate mod_proxy apache module
+sudo ln -s /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled/
+
+# if required add following line to proxy.load to activate the proxy-http module
+LoadModule proxy_http_module /usr/lib/apache2/modules/mod_proxy_http.so
+
+# add the proxy directive to the host settings in http.conf
+# This will proxy requests: htp://127.0.0.1/jabber -> http://127.0.0.1:7070/http-bind/
+<VirtualHost *:80>
+	...
+	ProxyRequests Off
+	ProxyPass /jabber http://127.0.0.1:7070/http-bind/
+	ProxyPassReverse /jabber http://127.0.0.1:7070/http-bind/
+	...
+</VirtualHost>
+
+# restart apache
+sudo /etc/init.d/apache2 restart
+
+# done
 
 
 XEPS SUPPORTED
@@ -73,9 +95,11 @@ XEPS SUPPORTED
 * 0203 DelayedDelivery
 
 
+
 AUTHOR
 ------
 xmpp://tong@jabber.spektral.at
+
 
 
 DOWNLOAD
@@ -83,6 +107,7 @@ DOWNLOAD
 http://hxmpp.disktree.net
 http://code.google.com/p/hxmpp
 git://83.64.208.21/hxmpp.git
+
 
 
 LINKS

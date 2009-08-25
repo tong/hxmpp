@@ -2,10 +2,10 @@
 ### HXMPP DOC
 -cp ../core/
 -cp doc/
-
+jabber.BlockList
 jabber.BOB
 jabber.BOBListener
-jabber.BlockList
+jabber.BOSHConnection
 jabber.Chat
 jabber.ChatStateNotification
 jabber.EntityCapabilities

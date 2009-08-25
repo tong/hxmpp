@@ -1,4 +1,33 @@
+/*
+ *	This file is part of HXMPP.
+ *	Copyright (c)2009 http://www.disktree.net
+ *	
+ *	HXMPP is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  HXMPP is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *	See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
+*/
 package jabber;
+
+#if flash
+import flash.events.Event;
+import flash.events.HTTPStatusEvent;
+#end
+#if (flash||js)
+import haxe.Timer;
+#elseif neko
+import util.Timer;
+#elseif cpp
+import util.Timer;
+#end
 
 /**
 	Emulates the semantics of a long-lived, bidirectional TCP connection
@@ -6,10 +35,15 @@ package jabber;
 	without requiring the use of frequent polling or chunked responses.
 	
 	TODO timeout timer
+	TODO polling
+	//TODO multiple streams over one connections
+	// sec keys
 */
 class BOSHConnection extends jabber.stream.Connection {
 	
 	public static inline var BOSH_VERSION = "1.6";
+	public static var XMLNS = "http://jabber.org/protocol/httpbind";
+	public static var XMLNS_XMPP = "urn:xmpp:xbosh";
 	
 	public var path(default,null) : String;
 	public var secure(default,null) : Bool;
@@ -21,44 +55,62 @@ class BOSHConnection extends jabber.stream.Connection {
 	var rid : Int;
 	var requestCount : Int;
 	var requestQueue : Array<Xml>;
-	var maxPause : Int;
 	var active : Bool;
+	var timer : Timer;
+	var maxPause : Int;
+	//var inactivity : Int;
+	//var request : #if flash flash.net.URLReques #else
+	//var key : String;
 	
 	public function new( host : String, path : String,
-						 ?secure : Bool = false, ?hold : Int = 1, ?wait : Int = 60 ) {
+						 ?secure : Bool = false, ?hold : Int = 1, ?wait : Int = 15,
+						 ?key : String ) {
+		
 		super( host );
 		this.path = path;
 		this.secure = secure;
 		this.hold = hold;
 		this.wait = wait;
-		maxConcurrentRequests = 2;
+		
+	//	this.key = key;
+		
+		maxConcurrentRequests = 2; // TODO -1;
 		rid = Std.int( Math.random()*10000000 );
 		requestCount = 0;
 		requestQueue = new Array();
 		active = false;
+		//timer = new haxe.Timer( 10000 );
 	}
 	
 	public override function connect() {
-		if( connected ) restart();
+		if( connected )
+			restart();
 		else {
 			var b = Xml.createElement( "body" );
+			b.set( 'xml:lang', 'en' );
+			b.set( 'xmlns', XMLNS );
+			b.set( 'xmlns:xmpp', 'urn:xmpp:xbosh' );
+			b.set( 'xmpp:version', '1.0' );
 			b.set( 'ver', BOSH_VERSION );
 			b.set( 'hold', Std.string( hold ) );
 			b.set( 'rid', Std.string( rid ) );
 			b.set( 'wait', Std.string( wait ) );
 			b.set( 'to', host );
-			//b.set( 'content', 'text/xml; charset=utf-8' );
 			b.set( 'secure', Std.string( secure ) );
+			//b.set( 'content', 'text/xml; charset=utf-8' );
 			//b.set( 'window', '5' );
-			b.set( 'xml:lang', 'en' );
-			//b.set( 'xmpp:version', '1.0' );
-			b.set( 'xmlns', xmpp.BOSH.XMLNS );
-			b.set( 'xmlns:xmpp', 'urn:xmpp:xbosh' );
+			//route='xmpp:jabber.org:9999'
+			//b.set( 'newkey', 'bfb06a6f113cd6fd3838ab9d300fdb4fe3da2f7d');
+			/*
+			if( key != null ) {
+				newkey='ca393b51b682f61f98e7877d61146407f3d0a770'
+			}
+			*/
 			sendRequests( b );
+			active = true;
 			#if XMPP_DEBUG
 			jabber.XMPPDebug.outgoing( b.toString() );
 			#end
-			active = true;
 		}
 	}
 	
@@ -108,6 +160,7 @@ class BOSHConnection extends jabber.stream.Connection {
 	}
 	
 	function handleHTTPError( e : String ) {
+		trace(e);
 		onError( e );
 	}
 	
@@ -134,9 +187,14 @@ class BOSHConnection extends jabber.stream.Connection {
 				return;
 			}
 			var b = haxe.io.Bytes.ofString( c.toString() );
-			onData( b, 0, b.length );
+			try {
+				onData( b, 0, b.length );
+			} catch( e : Dynamic ) {
+				trace(e);
+			}
 			if( requestCount == 0 && !sendQueuedRequests() )
 				poll();
+				
 		} else {
 			if( active ) {
 				#if XMPP_DEBUG
@@ -149,14 +207,27 @@ class BOSHConnection extends jabber.stream.Connection {
 					return;
 				}
 				*/
+				//lastKey = sid = x.get( "key" );
+				
 				sid = x.get( "sid" );
 				wait = Std.parseInt( x.get( "wait" ) );
 				// TODO
 				// <body xmlns="http://jabber.org/protocol/httpbind" xmlns:stream="http://etherx.jabber.org/streams" authid="764f197f" sid="764f197f" secure="true" requests="2" inactivity="30" polling="5" wait="20" hold="1" ack="5079633" maxpause="300" ver="1.6"><stream:features><mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><mechanism>DIGEST-MD5</mechanism><mechanism>PLAIN</mechanism><mechanism>ANONYMOUS</mechanism><mechanism>CRAM-MD5</mechanism></mechanisms><compression xmlns="http://jabber.org/features/compress"><method>zlib</method></compression><bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"/><session xmlns="urn:ietf:params:xml:ns:xmpp-session"/></stream:features></body>
+			
+				var t = x.get( "ver" );
+				if( t != null &&  t != BOSH_VERSION ) {
+					onError( "Invalid BOSH version ("+t+")" );
+					return;
+				}
+			//	var t = x.get( "polling" );
+			//	if( t != null ) polling = Std.parseInt( t );
+				//t = x.get( "inactivity" );
+				//if( t != null ) inactivity = Std.parseInt( t );
+				var t = x.get( "maxpause" );
+				if( t != null ) maxPause = Std.parseInt( t ) * 1000;
 				var t = x.get( "requests" );
 				if( t != null ) maxConcurrentRequests = Std.parseInt( t );
-				t = x.get( "maxpause" );
-				if( t != null ) maxPause = Std.parseInt( t ) * 1000;
+				//..
 				
 				onConnect();
 				connected = true;
@@ -169,7 +240,8 @@ class BOSHConnection extends jabber.stream.Connection {
 	}
 	
 	function sendQueuedRequests( ?t : Xml ) : Bool {
-		if( t != null ) requestQueue.push( t );
+		if( t != null )
+			requestQueue.push( t );
 		else if( requestQueue.length == 0 )
 			return false;
 		return sendRequests( null );
@@ -180,20 +252,22 @@ class BOSHConnection extends jabber.stream.Connection {
 			return false;
 		requestCount++;
 		if( t == null ) {
-			if( poll ) t = createRequest();
-			else {
+			t = if( poll ) {
+				//TODO create timeout timer
+				createRequest();
+			} else {
 				var i = 0;
 				var tmp = new Array<Xml>();
 				while( i++ < 10 && requestQueue.length > 0 )
 					tmp.push( requestQueue.shift() );
-				t = createRequest( tmp );
+				createRequest( tmp );
 			}
 		}
 		#if flash
 		var r = new flash.net.URLRequest( path );
 		r.method = flash.net.URLRequestMethod.POST;
-		r.data = t;
-		//r.contentType = "text/xml";
+		r.contentType = "text/xml";
+		r.data = t.toString();
 		//r.requestHeaders.push( new flash.net.URLRequestHeader( "Content-type", "text/xml" ) );
 		//r.requestHeaders.push( new flash.net.URLRequestHeader( "Accept", "text/xml" ) );
 		var me = this;
@@ -201,7 +275,15 @@ class BOSHConnection extends jabber.stream.Connection {
 		l.dataFormat = flash.net.URLLoaderDataFormat.TEXT;
 		l.addEventListener( flash.events.Event.COMPLETE, function(e) me.handleHTTPData( e.target.data ) );
 		l.addEventListener( flash.events.IOErrorEvent.IO_ERROR, function(e) me.handleHTTPError( e ) );
-		l.addEventListener( flash.events.HTTPStatusEvent.HTTP_STATUS, function(e) me.handleHTTPStatus(e) );
+		l.addEventListener( HTTPStatusEvent.HTTP_STATUS, function(e:HTTPStatusEvent) me.handleHTTPStatus( e.status ) );
+		l.addEventListener( flash.events.ProgressEvent.PROGRESS, function(e) {
+	//		trace( e );
+		} );
+		l.addEventListener( flash.events.ProgressEvent.SOCKET_DATA, function(e) {
+	//		trace( e );
+		} );
+	//	l.addEventListener( flash.events.Event.OPEN, function(e) trace( e ) );
+		l.addEventListener( flash.events.SecurityErrorEvent.SECURITY_ERROR, function(e) trace( e ) );
 		l.load( r );
 		#else
 		var r = new haxe.Http( path );
@@ -213,12 +295,29 @@ class BOSHConnection extends jabber.stream.Connection {
 		//r.setHeader( "Accept", "text/xml" );
 		r.request( true );
 		#end
+		if( poll ) {
+			/*
+			//trace("PPOLL");
+			if( timer != null )
+				timer.stop();
+			timer = new Timer( inactivity*1000 );//timer = new Timer( (wait-5)*1000 );
+			timer.run = handleTimeout;
+			*/
+		}
 		return true;
+	}
+	
+	function handleTimeout() {
+		trace("#################TODO timeout");
+		timer.stop();
+		//TODO handle timeout
+		//..
+		onDisconnect();
 	}
 	
 	function createRequest( ?t : Array<Xml> ) : Xml {
 		var x = Xml.createElement( "body" );
-		x.set( "xmlns", xmpp.BOSH.XMLNS );
+		x.set( "xmlns", XMLNS );
 		x.set( "xml:lang", "en" );
 		x.set( "rid", Std.string( ++rid ) );
 		x.set( "sid", sid );

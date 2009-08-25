@@ -1,3 +1,20 @@
+/*
+ *	This file is part of HXMPP.
+ *	Copyright (c)2009 http://www.disktree.net
+ *	
+ *	HXMPP is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  HXMPP is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *	See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
+*/
 package jabber.client;
 
 import jabber.stream.Connection;
@@ -11,14 +28,14 @@ class Stream extends jabber.Stream {
 	public static inline var STANDARD_PORT_SECURE = 5223;
 	public static var defaultPort = STANDARD_PORT;
 	
-	//TODO public var secure(default,null) : Bool;
+	//TODO public var tls(default,null) : Bool;
 	public var jid(default,null) : jabber.JID;
-
+	
 	public function new( jid : jabber.JID, cnx : Connection, version : Bool = true ) {
 		super( cnx, jid );
 		this.jid = jid;
 		this.version = version;
-		//this.secure = secure;
+		//this.tls = tls;
 	}
 	
 	override function getJIDStr() : String {
@@ -26,8 +43,17 @@ class Stream extends jabber.Stream {
 	}
 	
 	override function processStreamInit( t : String, buflen : Int ) : Int {
-		//TODO HACK
-		if( Type.getClassName( Type.getClass( cnx ) ) != "jabber.BOSHConnection" ) {
+		// TODO remove HACK
+		//if( Type.getClassName( Type.getClass( cnx ) ) == "jabber.BOSHConnection" ) {
+		if( isBOSH ) {
+			//TODO
+			var sx = Xml.parse( t ).firstElement();
+			var sf = sx.firstElement();
+			parseStreamFeatures( sf );
+			status = jabber.StreamStatus.open;
+			onOpen();
+			return buflen;	
+		} else {
 			var sei = t.indexOf( ">" );
 			if( sei == -1 ) {
 				return 0;
@@ -46,20 +72,12 @@ class Stream extends jabber.Stream {
 				}
 			}
 			if( id == null )
-				throw "Invalid XMPP stream, no id";
+				throw "Invalid XMPP stream, no ID";
 			if( !version ) {
 				status = jabber.StreamStatus.open;
 				onOpen();
 				return buflen;
 			}
-		} else {
-			//TODO
-			var sx = Xml.parse( t ).firstElement();
-			var sf = sx.firstElement();
-			parseStreamFeatures( sf );
-			status = jabber.StreamStatus.open;
-			onOpen();
-			return buflen;	
 		}
 		var sfi = t.indexOf( "<stream:features>" );
 		var sf = t.substr( t.indexOf( "<stream:features>" ) );

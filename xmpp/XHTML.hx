@@ -1,3 +1,20 @@
+/*
+ *	This file is part of HXMPP.
+ *	Copyright (c)2009 http://www.disktree.net
+ *	
+ *	HXMPP is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  HXMPP is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *	See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
+*/
 package xmpp;
 
 /**
@@ -6,7 +23,7 @@ package xmpp;
 class XHTML {
 	
 	public static var XMLNS = xmpp.NS.PROTOCOL+"/xhtml-im";
-	static var BODY_NS = "http://www.w3.org/1999/xhtml";
+	static var W3NS = "http://www.w3.org/1999/xhtml";
 	
 	public var body : String;
 	
@@ -17,7 +34,7 @@ class XHTML {
 	public function toXml() : Xml {
 		var x = Xml.createElement( "html" );
 		x.set( "xmlns", XMLNS );
-		x.addChild( Xml.parse( "<body xmlns='"+BODY_NS+"'>"+body+"</body>" ) );
+		x.addChild( Xml.parse( "<body xmlns='"+W3NS+"'>"+body+"</body>" ) );
 		return x;
 	}
 	
@@ -27,7 +44,7 @@ class XHTML {
 
 	public static function parse( x : Xml ) : XHTML {
 		for( e in x.elementsNamed( "body" ) )
-			if( e.get( "xmlns" ) == BODY_NS )
+			if( e.get( "xmlns" ) == W3NS )
 				return new XHTML( parseBody( e ) );
 		return null;
 	}

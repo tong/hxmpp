@@ -15,13 +15,27 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package jabber;
+package xmpp.filter;
 
 /**
-	Utility (shortcut) to listen/report incoming message packets.
+	Returns true if ANY of the filters accepts the packet.
 */
-class MessageListener extends jabber.stream.TopLevelPacketListener<xmpp.Message> {
-	public function new( stream : Stream, handler : xmpp.Message->Void, ?listen : Bool = true ) {
-		super( stream, handler, xmpp.PacketType.message, listen );
+class FilterGroup extends List<xmpp.PacketFilter> {
+	
+	public function new( ?filters : Iterable<xmpp.PacketFilter> ) {
+		super();
+		if( filters != null ) {
+			for( f in filters )
+				add( f );
+		}
 	}
+	
+	public function accept( p : xmpp.Packet ) : Bool {
+		for( f in iterator() ) {
+			if( f.accept( p ) )
+				return true;
+		}
+		return false;
+	}
+	
 }

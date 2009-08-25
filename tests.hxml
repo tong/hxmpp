@@ -31,6 +31,7 @@
 #-cpp bin/tests/cpp_xmpp
 #-main TestXMPP
 
+
 ### JABBER
 
 --next
@@ -38,19 +39,21 @@
 -cp test
 -swf9 bin/tests/test_jabber.swf
 -main TestJabber
+#-D JABBER_DEBUG
 
 --next
 -cp ../core/
 -cp test
 -js bin/tests/test_jabber.js
 -main TestJabber
+#-D JABBER_DEBUG
 
 --next
 -cp ../core/
 -cp test
 -neko bin/tests/test_jabber.n
 -main TestJabber
--D JABBER_DEBUG
+#-D JABBER_DEBUG
 
 --next
 -cp ../core/
@@ -58,9 +61,11 @@
 -php bin/tests
 --php-front test_jabber.php
 -main TestJabber
+#-D JABBER_DEBUG
 
 #--next
 #-cp ../core/
 #-cp test
 #-cpp bin/tests/cpp_jabber
 #-main TestJabber
+#-D JABBER_DEBUG

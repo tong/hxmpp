@@ -1,10 +1,27 @@
+/*
+ *	This file is part of HXMPP.
+ *	Copyright (c)2009 http://www.disktree.net
+ *	
+ *	HXMPP is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  HXMPP is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *	See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
+*/
 package jabber.client;
 
 import jabber.stream.PacketCollector;
 import xmpp.IQ;
 import xmpp.IQType;
 import xmpp.filter.PacketNameFilter;
-import xmpp.filter.PacketOrFilter;
+import xmpp.filter.FilterGroup;
 
 /**
 	Responsible for authenticating a client account using SASL, binding the resource to the connection
@@ -70,7 +87,7 @@ class SASLAuthentication extends Authentication {
 		trace( "Used SASL mechanism: "+handshake.mechanism.id, "info" );
 		#end
 		// collect failures
-		var f = new PacketOrFilter();
+		var f = new FilterGroup();
 		f.add( new PacketNameFilter( ~/failure/ ) ); //?
 		f.add( new PacketNameFilter( ~/not-authorized/ ) );
 		f.add( new PacketNameFilter( ~/aborted/ ) );

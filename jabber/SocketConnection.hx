@@ -1,3 +1,20 @@
+/*
+ *	This file is part of HXMPP.
+ *	Copyright (c)2009 http://www.disktree.net
+ *	
+ *	HXMPP is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  HXMPP is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *	See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
+*/
 package jabber;
 
 #if flash9
@@ -45,7 +62,7 @@ class SocketConnection extends jabber.stream.Connection {
 		
 		super( host );
 		this.port = port;
-		#if (flash10||neko||php)
+		#if (flash10||neko||php||cpp)
 		this.timeout = timeout;
 		#end
 		this.secure = secure;
@@ -96,7 +113,8 @@ class SocketConnection extends jabber.stream.Connection {
 	public override function connect() {
 		//TODO
 		try {
-			#if neko
+			#if (neko||cpp)
+			//TODO cpp
 			socket.connect( new Host( host ), port );
 			#end
 			#if php
@@ -118,8 +136,8 @@ class SocketConnection extends jabber.stream.Connection {
 	
 	public override function disconnect() {
 		if( !connected ) return;
-		#if (neko||php) reading = false; #end
-		connected = #if (neko||php) reading = #end false;
+		#if (neko||php||cpp) reading = false; #end
+		connected = #if (neko||php||cpp) reading = #end false;
 		socket.close();
 	}
 	
@@ -127,7 +145,7 @@ class SocketConnection extends jabber.stream.Connection {
 		if( yes ) {
 			#if flash9
 			socket.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
-			#elseif (neko||php)
+			#elseif (neko||php||cpp)
 			reading = true;
 			while( reading  && connected ) {
 				readData();
@@ -139,7 +157,7 @@ class SocketConnection extends jabber.stream.Connection {
 		} else {
 			#if flash9
 			socket.removeEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
-			#elseif (neko||php)
+			#elseif (neko||php||cpp)
 			reading = false;
 			#elseif JABBER_SOCKETBRIDGE
 			socket.onData = null;
@@ -157,7 +175,7 @@ class SocketConnection extends jabber.stream.Connection {
 		#if flash9
 		socket.writeUTFBytes( t ); 
 		socket.flush();
-		#elseif (neko||php)
+		#elseif (neko||php||cpp)
 		socket.output.writeString( t );
 		#elseif JABBER_SOCKETBRIDGE
 		socket.send( t );
@@ -242,7 +260,7 @@ class SocketConnection extends jabber.stream.Connection {
 		buf = ( onData( haxe.io.Bytes.ofString( i ), 0, i.length ) == 0 ) ? i : "";
 	}
 	
-	#elseif (neko||php)
+	#elseif (neko||php||cpp)
 	
 	function readData() {
 		var buflen = buf.length;

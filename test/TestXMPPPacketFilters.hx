@@ -7,6 +7,8 @@ import xmpp.Presence;
 import xmpp.PlainPacket;
 import xmpp.IQ;
 import xmpp.IQType;
+import xmpp.filter.FilterReverse;
+import xmpp.filter.FilterGroup;
 import xmpp.filter.MessageFilter;
 import xmpp.filter.PacketAllFilter;
 import xmpp.filter.PacketFieldFilter;
@@ -17,7 +19,6 @@ import xmpp.filter.PacketIDFilter;
 import xmpp.filter.PacketNameFilter;
 import xmpp.filter.PacketTypeFilter;
 import xmpp.filter.IQFilter;
-
 
 
 class TestXMPPPacketFilters extends haxe.unit.TestCase {
@@ -176,19 +177,39 @@ class TestXMPPPacketFilters extends haxe.unit.TestCase {
 	}
 	
 	public function testFieldFilter() {
-		
 		var m = new Message();
 		m.to = "node@disktree.net";
 		m.from = "me@disktree.net";
-		
 		var f = new PacketFieldFilter( "to", "node@disktree.net" );
 		assertTrue( f.accept( m ) );
-		
 		f = new PacketFieldFilter( "to" );
 		assertTrue( f.accept( m ) );
-		
 		f = new PacketFieldFilter( "toooooooo" );
 		assertTrue( !f.accept( m ) );
 	}
-
+	
+	public function testFilterReverse() {
+		var f = new PacketFromFilter("node@domain.net");
+		var r = new FilterReverse( f );
+		var m = new Message();
+		m.from = "node@domain.net";
+		assertTrue( f.accept( m ) );
+		assertFalse( r.accept( m ) );
+		m.from = "any@domain.net";
+		assertFalse( f.accept( m ) );
+		assertTrue( r.accept( m ) );
+	}
+	
+	public function testFilterGroup() {
+		var m = new Message();
+		m.from = "node@domain.net";
+		var f1 = new PacketTypeFilter( PacketType.message );
+		var f2 = new PacketTypeFilter( PacketType.presence );
+		var group = new FilterGroup( [cast f1, cast f2] );
+		assertTrue( group.accept( m ) );
+		f2 = new PacketTypeFilter( PacketType.presence );
+		group = new FilterGroup( [cast f2] );
+		assertFalse( group.accept( m ) );
+	}
+	
 }

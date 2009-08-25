@@ -5,19 +5,19 @@
 
 SYSTEM = Linux
 NDLL_PATH = ../ndll/$(SYSTEM)
-NEKO_INSTALL = /usr/lib/neko
 
 OBJECTS =
-#OBJECTS += hxmpp_debug.o
 OBJECTS += sha1.o
+#OBJECTS += hxmpp_debug.o
 
-CFLAGS = -g -Wall -O3
-CFLAGS += -I/usr/lib/neko
+CFLAGS =
+NEKO_FLAGS = -fPIC -shared -L/usr/lib/neko -lneko -lz -ldl
+LOCAL_FLAGS = -DLINUX -DXP_UNIX=1 -D_DEBUG
 
 all linux: sha1
 
 sha1: $(OBJECTS)
-	$(CC) $(CFLAGS) -shared $(OBJECTS) -o $(NDLL_PATH)/$@.ndll
+	$(CC) $(CFLAGS) $(NEKO_FLAGS) $(LOCAL_FLAGS) $(OBJECTS) -o $(NDLL_PATH)/$@.ndll
 	
 #hxmpp_debug: $(OBJECTS)
 #	$(CC) $(CFLAGS) -shared $(OBJECTS) -o $(NDLL_PATH)/hxmpp_debug.ndll 
