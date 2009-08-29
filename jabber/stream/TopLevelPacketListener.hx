@@ -38,10 +38,8 @@ class TopLevelPacketListener<T> {
 	public var stream(default,null) : jabber.Stream;
 	
 	function new( stream : jabber.Stream, handler : T->Void, packetType : xmpp.PacketType, ?listen : Bool = true ) {
-		
 		this.stream = stream;
 		this.onPacket = handler;
-		
 		collector = new PacketCollector( [cast new xmpp.filter.PacketTypeFilter(packetType)], handlePacket, true );
 		setListening( listen );
 	}

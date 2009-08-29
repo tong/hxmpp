@@ -25,7 +25,7 @@ import xmpp.vcard.Name;
 import xmpp.vcard.Org;
 import xmpp.vcard.Photo;
 import xmpp.vcard.Tel;
-
+import xmpp.vcard.Geo;
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0054.html">XEP-0054: vcard-temp</a>
 	
@@ -52,7 +52,7 @@ class VCard {
 	public var jid 			: String;
 	public var mailer 		: String;
 	public var tz 			: String;
-	public var geo 			: geom.TGeo<Float>;
+	public var geo 			: Geo<Float>;
 	public var title 		: String;
 	public var role 		: String;
 	public var logo 		: Photo;

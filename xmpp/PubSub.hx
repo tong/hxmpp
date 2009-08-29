@@ -64,6 +64,10 @@ class PubSub {
 			e.addChild( c );
 			return x;
 		}
+		if( subscription != null ) {
+			x.addChild( subscription.toXml() );
+			return x;
+		}
 		if( subscriptions != null ) {
 			x.addChild( subscriptions.toXml() );
 			return x;
@@ -101,6 +105,7 @@ class PubSub {
 				p.unsubscribe = { node : e.get( "node" ), jid : e.get( "jid" ), subid : e.get( "subid" )  };
 			case "create" :
 				p.create = e.get( "node" );
+				if( p.create == null ) p.create = "";
 			case "configure" :
 				p.configure = xmpp.DataForm.parse( e.firstElement() );
 			case "subscription" :

@@ -43,7 +43,7 @@ class Packet {
 		Creates/Returns the XML representation of this XMPP packet.
 	*/
 	public function toXml() : Xml {
-		return throw new error.AbstractError();
+		return throw "abstract";//throw new error.AbstractError();
 	}
 	
 	/**
@@ -106,6 +106,14 @@ class Packet {
 		}
 		return p;
 	}
+	
+	/*TODO replace util.XMLUtil
+	public static function createXMLElement( n : String, ?d : String ) : Xml {
+		var x = Xml.createElement( n );
+		if( d != null ) x.addChild( Xml.createPCData( d ) );
+		return x;
+	}
+	*/
 	
 	/*
 	public static function createPacketElementXml<T>( o : T, name : String ) : Xml {

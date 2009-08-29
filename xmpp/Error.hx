@@ -18,7 +18,7 @@
 package xmpp;
 
 /**
-	XMPP packet error extension.
+	XMPP error extension.
 */
 class Error {
 	
@@ -26,7 +26,8 @@ class Error {
 	
 	public var type : ErrorType;
 	public var code : Int;
-	public var name : String; //public var conditions : Array<String>;
+	public var name : String;
+	public var conditions : Array<{name:String,xmlns:String}>;
 	public var text : String;
 	
 	public function new( ?type : ErrorType, ?code = -1, ?name : String, ?text : String ) {
@@ -34,6 +35,7 @@ class Error {
 		this.code = code;
 		this.name = name;
 		this.text = text;
+		conditions = new Array();
 	}
 	
 	public function toXml() : Xml {
@@ -44,6 +46,9 @@ class Error {
 			var n = Xml.createElement( name );
 			n.set( "xmlns", XMLNS );
 			x.addChild( n );
+		}
+		for( c in conditions ) {
+			
 		}
 		return x;
 	}
@@ -69,8 +74,10 @@ class Error {
 		var e = new Error( Std.parseInt( x.get( "code" ) ) );
 		var et = x.get( "type" );
 		if( et != null ) e.type = Type.createEnum( ErrorType, x.get( "type" ) );
+		//TODO!!!!!!!!!!!!!! parse Conditions
 		var _n = x.elements().next();
-		if( _n != null ) e.name = _n.nodeName;
+		if( _n != null )
+			e.name = _n.nodeName;
 		return e;
 	}
 	

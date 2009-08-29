@@ -1,6 +1,6 @@
 
 /**
-	Testunit for xmpp.pep events.
+	Testunit for xmpp.pep classes.
 */
 class TestXMPPPersonalEvent extends haxe.unit.TestCase {
 	
@@ -88,7 +88,6 @@ class TestXMPPPersonalEvent extends haxe.unit.TestCase {
 	<accuracy>20</accuracy>
 </geoloc>" ).firstElement();
 		var xt = xmpp.pep.UserLocation.parse( x );
-		//trace(xt);
 		assertEquals( "Italy", xt.country );
 		assertEquals( 45.44, xt.lat );
 		assertEquals( "Venice", xt.locality );

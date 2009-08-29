@@ -29,10 +29,10 @@ Copy hxmpp/ndll/$SYSTEM/*ndll files to your neko installation.
 ...
 
 # JS
-See hxmpp/bin/samples/client.html for an example.
+...
 
 # AS3
-Run hxmpp/lib.hxml to build a SWC and/or actionscript3 source code.
+Run hxmpp/lib.hxml to build a SWC or ActionScript3 source code.
 See hxmpp/samples/JabberClientDemo.as for an example.
 
 
@@ -67,7 +67,7 @@ LoadModule proxy_http_module /usr/lib/apache2/modules/mod_proxy_http.so
 # restart apache
 sudo /etc/init.d/apache2 restart
 
-# done
+####
 
 
 XEPS SUPPORTED
@@ -88,6 +88,7 @@ XEPS SUPPORTED
 * 0092 SoftwareVersion
 * 0106 JID Escaping
 * 0114 Jabber Component Protocol
+* 0115 Entity Capabilities
 #* 0163 PersonalEvent 
 #* 0191 Simple Communications Blocking
 * 0199 Ping 

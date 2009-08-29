@@ -23,6 +23,7 @@ typedef Timer = util.Timer;
 #end
 
 /**
+	//TODO inline the event dispatcher stuff
 */
 class PacketTimeout extends event.Dispatcher<PacketCollector> {
 	

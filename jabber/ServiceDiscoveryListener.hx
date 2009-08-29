@@ -46,24 +46,23 @@ class ServiceDiscoveryListener {
 	}
 	*/
 
-	function handleInfoQuery( iq : xmpp.IQ ) {
-		// return identities and stream features
+	function handleInfoQuery( iq : xmpp.IQ ) { // return identities and stream features
 		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, stream.jidstr );
+		trace(stream.features);
 		r.x = new xmpp.disco.Info( identities, Lambda.array( stream.features ) );
 		stream.sendData( r.toString() );
 	}
 	
 	function handleItemsQuery( iq : xmpp.IQ ) {
-		if( Reflect.hasField( stream, "items" ) ) { // component stream
-			// return local stream items
-			var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, Reflect.field( stream, "serviceName" ) );
+		var r : xmpp.IQ;
+		if( Reflect.hasField( stream, "items" ) ) { // component stream .. return local stream items
+			r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, Reflect.field( stream, "serviceName" ) );
 			r.x = Reflect.field( stream, "items" );
-			stream.sendPacket( r );
-		} else { // client streams do not have items, return a feature-not-implemented
-			var r = new xmpp.IQ( xmpp.IQType.error, iq.id, iq.from );
+		} else { // client streams do not have items .. return a feature-not-implemented error
+			r = new xmpp.IQ( xmpp.IQType.error, iq.id, iq.from );
 			r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, -1, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );
-			stream.sendPacket( r );
 		}
+		stream.sendPacket( r );
 	}
 	
 }

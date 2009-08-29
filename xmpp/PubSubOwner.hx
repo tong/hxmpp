@@ -81,6 +81,7 @@ class PubSubOwner {
 			switch( e.nodeName ) {
 			case "delete" :
 				p.delete = e.get( "node" );
+				//TODO if( p.delete == null ) p.delete = "";
 			case "purge" :
 				p.purge = e.get( "node" );
 			case "configure" :

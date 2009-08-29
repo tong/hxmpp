@@ -24,9 +24,9 @@ import jabber.stream.Connection;
 */
 class Stream extends jabber.Stream {
 	
-	public static inline var STANDARD_PORT = 5222;
-	public static inline var STANDARD_PORT_SECURE = 5223;
-	public static var defaultPort = STANDARD_PORT;
+	public static inline var PORT_STANDARD = 5222;
+	public static inline var PORT_SECURE_STANDARD = 5223;
+	public static var defaultPort = PORT_STANDARD;
 	
 	//TODO public var tls(default,null) : Bool;
 	public var jid(default,null) : jabber.JID;

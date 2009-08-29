@@ -18,7 +18,7 @@
 package jabber;
 
 #if (neko||php||cpp)
-import util.CL;
+import util.TerminalUtil;
 #end
 #if neko
 import neko.Lib;
@@ -59,12 +59,12 @@ class XMPPDebug {
 	
 	#elseif (neko||php||cpp)
 	
-	public static var COLOR_XMPP_IN = { fg : CL.BLACK, bg : CL.BG_CYAN };
-	public static var COLOR_XMPP_OUT = { fg : CL.BLACK, bg : CL.BG_ORANGE };
-	public static var COLOR_XMPP_ERROR = { fg : CL.BLACK, bg : CL.BG_RED };
+	public static var COLOR_XMPP_IN = { fg : TerminalUtil.BLACK, bg : TerminalUtil.BG_CYAN };
+	public static var COLOR_XMPP_OUT = { fg : TerminalUtil.BLACK, bg : TerminalUtil.BG_ORANGE };
+	public static var COLOR_XMPP_ERROR = { fg : TerminalUtil.BLACK, bg : TerminalUtil.BG_RED };
 	
 	public static function print( t : String, ?colors : TerminalColor ) {
-		CL.print( t+"\n", if( colors != null ) colors.fg, if( colors != null ) colors.bg );
+		TerminalUtil.print( t+"\n", if( colors != null ) colors.fg, if( colors != null ) colors.bg );
 	}
 	
 	public static inline function incoming( t : String ) {

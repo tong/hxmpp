@@ -21,13 +21,13 @@ import jabber.stream.Connection;
 import jabber.ServiceDiscoveryListener;
 
 /**
-	Base for Component-2-Server jabber streams.<br/>
+	Base for Component-2-Server XMPP streams.<br/>
 	<a href="http://www.xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>
 */
 class Stream extends jabber.Stream {
 	
-	public static inline var STANDARD_PORT = 5275;
-	public static var defaultPort = STANDARD_PORT;
+	public static inline var PORT_STANDARD = 5275;
+	public static var defaultPort = PORT_STANDARD;
 	
 	/** Dispatched on authentication success */
 	public dynamic function onConnect() : Void;

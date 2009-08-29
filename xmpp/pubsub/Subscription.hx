@@ -25,8 +25,11 @@ class Subscription {
 	public var subscription : SubscriptionState;
 	// TODO subscribe_options : Array<>; // xmpp.PubSub only !
 	
-	public function new( jid : String ) {
+	public function new( jid : String, ?node : String, ?subid : String, ?subscription : SubscriptionState ) {
 		this.jid = jid;
+		this.node = node;
+		this.subid = subid;
+		this.subscription = subscription;
 	}
 	
 	public function toXml() : Xml {

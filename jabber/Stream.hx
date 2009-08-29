@@ -40,6 +40,7 @@ private typedef Server = {
 	var features : Hash<Xml>;
 }
 
+//TODO
 private class StreamFeatures {
 	var l : List<String>; // TODO var features : Hash<StreamFeature>;
 	public function new() {
@@ -107,9 +108,7 @@ class Stream {
 		dataFilters = new List();
 		dataInterceptors = new List();
 		
-		#if JABBER_DEBUG
 		numPacketsSent = 0;
-		#end
 	}
 	
 	
@@ -421,7 +420,7 @@ class Stream {
 	}
 	
 	function processStreamInit( t : String, buflen : Int ) : Int {
-		return throw new error.AbstractError();
+		return throw "abstract";//throw new error.AbstractError();
 	}
 	
 	function connectHandler() {

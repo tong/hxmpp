@@ -35,6 +35,10 @@ import cpp.net.Socket;
 #end
 
 /**
+	TODO
+	- php!
+	- flash/js maxBufSize
+	- split outgoing (big) packets
 */
 class SocketConnection extends jabber.stream.Connection {
 	
@@ -83,7 +87,7 @@ class SocketConnection extends jabber.stream.Connection {
 		reading = false;
 		
 		#if php //TODO ! WTF !!!
-//		buf = haxe.io.Bytes.alloc( 1024 );
+		buf = haxe.io.Bytes.alloc( 1024 );
 		#end
 		
 		#elseif JABBER_SOCKETBRIDGE
@@ -104,27 +108,17 @@ class SocketConnection extends jabber.stream.Connection {
 	}
 	
 	#if (neko||php)
-	
 	#end
-	
 	*/
 	
-	
 	public override function connect() {
-		//TODO
-		try {
-			#if (neko||cpp)
-			//TODO cpp
-			socket.connect( new Host( host ), port );
-			#end
-			#if php
-			if( secure ) socket.connectTLS( new Host( host ), port );
-			else socket.connect( new Host( host ), port );
-			#end
-		} catch( e : Dynamic ) {
-			trace( "Unable to connect socket: "+host+":"+port );
-			return; //throw e;
-		}
+		//TODO cpp
+		#if (neko||cpp)
+		socket.connect( new Host( host ), port );
+		#end
+		#if php
+		if( secure ) socket.connectTLS( new Host( host ), port ) else socket.connect( new Host( host ), port );
+		#end
 		#if (neko||php||cpp)
 		connected = true;
 		onConnect();
@@ -200,31 +194,6 @@ class SocketConnection extends jabber.stream.Connection {
 	}
 	*/
 	/*
-	public override function writeBytes( t : haxe.io.Bytes ) : haxe.io.Bytes {
-		#if flash9
-		socket.writeBytes( t.getData() ); 
-		socket.flush();
-		#elseif (neko||php)
-		socket.output.writeBytes( t, 0, t.length );
-		socket.output.flush();
-		#end
-		return t;
-	}
-	*/
-	
-	/*
-	public override function writeBytes( t : haxe.io.Bytes ) : haxe.io.Bytes {
-		if( !connected || t == null ) return null;
-		#if (neko||php)
-		for( i in interceptors )
-			t = i.interceptData( t );
-		trace("SENDING");
-		socket.output.writeBytes( t, 0, t.length );
-		#end
-		return t;
-	}
-	*/
-	/*
 	public function clearBuffer() {
 		#if (neko||php)
 		buf = haxe.io.Bytes.alloc( DEFAULT_BUFSIZE );
@@ -254,7 +223,7 @@ class SocketConnection extends jabber.stream.Connection {
 	function sockDataHandler( e : ProgressEvent ) {
 		var i = buf + socket.readUTFBytes( e.bytesLoaded );
 		if( i.length > maxBufSize ) {
-			#if JABBER_DEBUG trace( "Max buffer size reached ("+maxBufSize+")" ); #end
+			//TODO
 			throw "Max buffer size reached ("+maxBufSize+")";
 		}
 		buf = ( onData( haxe.io.Bytes.ofString( i ), 0, i.length ) == 0 ) ? i : "";

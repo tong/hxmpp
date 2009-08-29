@@ -37,9 +37,9 @@ class SASL {
 	
 	/**
 	*/
-	public static function createResponseXml( content : String ) : Xml {
-		if( content == null ) return null;
-		var r = util.XmlUtil.createElement( "response", content );
+	public static function createResponseXml( t : String ) : Xml {
+		if( t == null ) return null;
+		var r = util.XmlUtil.createElement( "response", t );
 		r.set( "xmlns", XMLNS );
 		return r;
 	}

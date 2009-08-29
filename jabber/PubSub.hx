@@ -22,11 +22,11 @@ package jabber;
 */
 class PubSub {
 	
+	public dynamic function onNodeCreate( node : String ) : Void;
+	public dynamic function onNodeDelete( node : String ) : Void;
 	public dynamic function onSubscribe( subscription : xmpp.pubsub.Subscription ) : Void;
 	public dynamic function onUnsubscribe( node : String ) : Void;
 	public dynamic function onSubscriptions( subscriptions : xmpp.pubsub.Subscriptions ) : Void;
-	public dynamic function onNodeCreate( node : String ) : Void;
-	public dynamic function onNodeDelete( node : String ) : Void;
 	public dynamic function onPublish( node : String, item : xmpp.pubsub.Item ) : Void;
 	public dynamic function onItems( items : xmpp.pubsub.Items ) : Void;
 	public dynamic function onAffiliations( a : xmpp.pubsub.Affiliations ) : Void;
@@ -36,6 +36,7 @@ class PubSub {
 	public dynamic function onError( e : XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
+	/** Name of the pubsub service */
 	public var service(default,null) : String;
 	
 	public function new( stream : Stream, service : String ) {

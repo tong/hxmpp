@@ -46,7 +46,7 @@ class BOB {
 		x.set( "cid", cid );
 		x.set( "type", type );
 		if( max_age >= 0 ) x.set( "max-age", Std.string( max_age ) );
-		if( data != null ) x.addChild(  Xml.createPCData( data ) );
+		if( data != null ) x.addChild( Xml.createPCData( data ) );
 		return x;
 	}
 	
@@ -84,7 +84,16 @@ class BOB {
 	/**
 	*/
 	public static function createCID( algo : String, hash : String ) : String {
+		#if (neko||cpp) //TODO test performance on cpp target
+		var b = new StringBuf();
+		b.add( algo );
+		b.add( "+" );
+		b.add( hash );
+		b.add( "@bob.xmpp.org" );
+		return b.toString();
+		#else
 		return algo+"+"+hash+"@bob.xmpp.org";
+		#end
 	}
 	
 	/*

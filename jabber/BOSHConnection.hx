@@ -34,10 +34,11 @@ import util.Timer;
 	by efficiently using multiple synchronous HTTP request/response pairs
 	without requiring the use of frequent polling or chunked responses.
 	
-	TODO timeout timer
-	TODO polling
+	TODO timeout timer (?)
+	TODO polling 
 	//TODO multiple streams over one connections
-	// sec keys
+	//TODO sec keys
+	
 */
 class BOSHConnection extends jabber.stream.Connection {
 	
@@ -52,6 +53,10 @@ class BOSHConnection extends jabber.stream.Connection {
 	public var wait(default,null) : Int;
 	public var maxConcurrentRequests(default,null) : Int;
 	
+	#if !js
+	//public var port(default,setPort) : Int;
+	#end
+	
 	var rid : Int;
 	var requestCount : Int;
 	var requestQueue : Array<Xml>;
@@ -59,11 +64,11 @@ class BOSHConnection extends jabber.stream.Connection {
 	var timer : Timer;
 	var maxPause : Int;
 	//var inactivity : Int;
-	//var request : #if flash flash.net.URLReques #else
+	//var request : #if flash flash.net.URLRequest #else
 	//var key : String;
 	
 	public function new( host : String, path : String,
-						 ?secure : Bool = false, ?hold : Int = 1, ?wait : Int = 15,
+						 secure : Bool = false, hold : Int = 1, wait : Int = 15,
 						 ?key : String ) {
 		
 		super( host );
@@ -71,7 +76,6 @@ class BOSHConnection extends jabber.stream.Connection {
 		this.secure = secure;
 		this.hold = hold;
 		this.wait = wait;
-		
 	//	this.key = key;
 		
 		maxConcurrentRequests = 2; // TODO -1;
@@ -264,7 +268,7 @@ class BOSHConnection extends jabber.stream.Connection {
 			}
 		}
 		#if flash
-		var r = new flash.net.URLRequest( path );
+		var r = new flash.net.URLRequest( getHTTPPath() );
 		r.method = flash.net.URLRequestMethod.POST;
 		r.contentType = "text/xml";
 		r.data = t.toString();
@@ -286,7 +290,7 @@ class BOSHConnection extends jabber.stream.Connection {
 		l.addEventListener( flash.events.SecurityErrorEvent.SECURITY_ERROR, function(e) trace( e ) );
 		l.load( r );
 		#else
-		var r = new haxe.Http( path );
+		var r = new haxe.Http( getHTTPPath() );
 		r.onStatus = handleHTTPStatus;
 		r.onError = handleHTTPError;
 		r.onData = handleHTTPData;
@@ -336,6 +340,21 @@ class BOSHConnection extends jabber.stream.Connection {
 		return s;
 	}
 	*/
+	
+	function getHTTPPath() : String {
+		#if (neko||cpp) 
+		var b = new StringBuf();
+		b.add( "http" );
+		if( secure ) b.add( "s" );
+		b.add( "://" );
+		b.add( path );
+		return b.toString();
+		#else
+		var t = "http";
+		if( secure ) t += "s";
+		return t+"://"+path;
+		#end
+	}
 	
 	inline function poll() {
 		sendRequests( null, true );
