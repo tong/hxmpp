@@ -142,7 +142,7 @@ class Stream {
 	*/
 	public function nextID() : String {
 		#if JABBER_DEBUG
-		return util.Base64.random( 5 )+"#"+numPacketsSent;
+		return util.Base64.random( 5 )+"_"+numPacketsSent;
 		#else
 		return util.Base64.random( packetIdLength );
 		#end
@@ -255,7 +255,7 @@ class Stream {
 	}
 
 	/**
-		Send a message packet.
+		Send a message packet (default type is 'chat').
 	*/
 	public function sendMessage( to : String, body : String, ?subject : String, ?type : xmpp.MessageType, ?thread : String, ?from : String ) : xmpp.Message {
 		return cast sendPacket( new xmpp.Message( to, body, subject, type, thread, from ) );

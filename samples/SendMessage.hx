@@ -16,7 +16,7 @@ class SendMessage {
 		trace( "Sending message ..." );
 		stream.sendMessage( "reciever@disktree/HXMPP", "Test message" );
 		trace( "Message sent." );
-		Sys.exit(0);
+		Sys.exit(1);
 	}
 	
 	static function main() {

@@ -55,17 +55,17 @@ class Field {
 		if( x.exists( "var" ) ) f.variable = x.get( "var" );
 		for( e in x.elements() ) {
 			switch( e.nodeName ) {
-				case "desc" : try { f.desc = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
-				case "required" : f.required = true;
-				case "option" : f.options.push( FieldOption.parse( e ) );
-				case "value" : try { f.values.push( e.firstChild().nodeValue ); } catch( e : Dynamic ) {}
+			case "desc" : try { f.desc = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
+			case "required" : f.required = true;
+			case "option" : f.options.push( FieldOption.parse( e ) );
+			case "value" : try { f.values.push( e.firstChild().nodeValue ); } catch( e : Dynamic ) {}
 			}
 		}
 		return f;
 	}
 	
 	/**
-		Parses all dataformfields into the given dataformfield container.
+		Parses all dataform fields into the given dataform field container.
 	*/
 	public static inline function parseFields( t : { fields : Array<Field> }, x : Xml ) : { fields : Array<Field> } {
 		for( e in x.elementsNamed( "field" ) ) {

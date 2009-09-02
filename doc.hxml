@@ -1,6 +1,6 @@
 
 ### HXMPP DOC
--cp ../core/
+-cp lib/
 -cp doc/
 jabber.BlockList
 jabber.BOB
@@ -52,7 +52,6 @@ xmpp.SASL
 xmpp.XHTML
 net.sasl.AnonymousMechanism
 net.sasl.PlainMechanism
-net.util.KeepAlive
 
 -js lib.js
 -xml doc/api.xml

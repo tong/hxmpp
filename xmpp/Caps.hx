@@ -95,7 +95,7 @@ class Caps {
 		}
 		// sort/add features
 		var _f = Lambda.array( features );
-		_f.sort( util.StringUtil.sort );
+		_f.sort( sort );
 		b.add( _f.join( "<" ) );
 		b.add( "<" );
 		// sort/add dataform
@@ -129,6 +129,10 @@ class Caps {
 
 	static function sortDataFormFields( a : xmpp.dataform.Field, b : xmpp.dataform.Field ) {
 		return if( a.variable == b.variable ) 0 else if( a.variable > b.variable ) 1 else -1; 
+	}
+	
+	static inline function sort( a : String, b : String ) : Int {
+		return ( a == b ) ? 0 : ( a > b ) ? 1 : -1;
 	}
 	
 }

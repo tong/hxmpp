@@ -94,8 +94,7 @@ class EntityCapabilities {
 				var ver_index = info.node.indexOf("#");
 				if( ver_index != -1 ) {
 					ver = info.node.substr( ver_index+1 );
-					// cache capabilities
-					caps.set( ver, info );
+					caps.set( ver, info ); // cache capabilities
 				}
 			}
 			onInfo( iq.from, info, ver );

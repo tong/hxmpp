@@ -27,7 +27,7 @@ class Packet {
 	public var from : String;
 	public var id : String;	
 	public var lang : String;
-	public var properties : Array<Xml>;
+	public var properties : Array<Xml>; // <PacketElement> hmm? 
 	public var errors : Array<xmpp.Error>;
 	
 	function new( ?to : String, ?from : String, ?id : String, ?lang : String ) {

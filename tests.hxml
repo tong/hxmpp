@@ -1,25 +1,25 @@
 
 ### XMPP
 
--cp ../core/
+-cp lib/
 -cp test
 -swf9 bin/tests/test_xmpp.swf
 -main TestXMPP
 
 --next
--cp ../core/
+-cp lib/
 -cp test
 -js bin/tests/test_xmpp.js
 -main TestXMPP
 
 --next
--cp ../core/
+-cp lib/
 -cp test
 -neko bin/tests/test_xmpp.n
 -main TestXMPP
 
 --next
--cp ../core/
+-cp lib/
 -cp test
 -php bin/tests
 --php-front test_xmpp.php
@@ -35,7 +35,7 @@
 ### JABBER
 
 --next
--cp ../core/
+-cp lib/
 -cp test
 -swf9 bin/tests/test_jabber.swf
 -main TestJabber
@@ -49,14 +49,14 @@
 #-D JABBER_DEBUG
 
 --next
--cp ../core/
+-cp lib/
 -cp test
 -neko bin/tests/test_jabber.n
 -main TestJabber
 #-D JABBER_DEBUG
 
 --next
--cp ../core/
+-cp lib/
 -cp test
 -php bin/tests
 --php-front test_jabber.php

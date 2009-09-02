@@ -64,7 +64,11 @@ class XMPPDebug {
 	public static var COLOR_XMPP_ERROR = { fg : TerminalUtil.BLACK, bg : TerminalUtil.BG_RED };
 	
 	public static function print( t : String, ?colors : TerminalColor ) {
+		#if cpp
+		cpp.Lib.print( t+"\n" );
+		#else
 		TerminalUtil.print( t+"\n", if( colors != null ) colors.fg, if( colors != null ) colors.bg );
+		#end
 	}
 	
 	public static inline function incoming( t : String ) {
