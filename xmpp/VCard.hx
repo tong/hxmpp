@@ -195,6 +195,7 @@ class VCard {
 	public static function parse( x : Xml ) : xmpp.VCard  {
 		var vc = new xmpp.VCard();
 		for( node in x.elements() ) {
+			
 			switch( node.nodeName ) {
 				case "FN" : vc.fullName = node.firstChild().nodeValue;
 				case "N" :
@@ -212,7 +213,7 @@ class VCard {
 							}
 						}
 					}
-				case "NICKNAME" : vc.nickName = node.firstChild().nodeValue;
+				//case "NICKNAME" : trace("#############################");vc.nickName = node.firstChild().nodeValue;
 				case "PHOTO" : vc.photo = parsePhoto( node );
 				case "BDAY" : vc.birthday = node.firstChild().nodeValue;
 				case "ADR" :

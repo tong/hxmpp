@@ -22,20 +22,45 @@ package xmpp;
 */
 class DateTime {
 	
+	static function __init__() {
+		//20091012T21:39:16
+		//1969-07-20T21:56:15-05:00
+		
+		//ereg_date = ~/^([0-9][0-9][0-9][0-9])-?([0-9][0-9])-?([0-9][0-9])T([0-9][0-9]:[0-9][0-9]:[0-9][0-9](\.[0-9][0-9][0-9])?(Z$)?(-[0-9][0-9]:[0-9][0-9])?)?$/;
+		
+		ereg_date = ~/^([0-9][0-9][0-9][0-9])-?([0-9][0-9])-?([0-9][0-9])T([0-9][0-9]):([0-9][0-9]):([0-9][0-9])/;
+		//(\.[0-9][0-9][0-9])?(Z$)?(-[0-9][0-9]:[0-9][0-9])?)?$/;
+		
+		//ereg_date_old = ~/([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])T([0-9][0-9]):([0-9][0-9]):([0-9][0-9])/;
+	}
+	
 	/**
 		UTC date expression.
 		TODO expression may contain minor missing checks in the offset part.
+		//TODO
+		CCYY-MM-DDThh:mm:ss[.sss]TZD
+	*/								
+	public static var ereg_date(default,null) : EReg;
+	
+	/**
+		Deprecated!
+		Implementd just for backwards compatibility.
+		20091012T21:39:16
 	*/
-	public static var ereg_date = ~/^([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9])(T[0-9][0-9]:[0-9][0-9]:[0-9][0-9](\.[0-9][0-9][0-9])?(Z$)?(-[0-9][0-9]:[0-9][0-9])?)?$/;
+//	public static var ereg_date_old(default,null)  : EReg;
 	
 	/**
 		UTC time expression.
+		//TODO
+		hh:mm:ss[.sss][TZD]
+		
 	*/
 	public static var ereg_time = ~/^([0-9][0-9]):([0-9][0-9]):([0-9][0-9])(\.[0-9][0-9][0-9]Z?)?$/;
 	
 	/**
 	*/
 	public static function isValidDate( t : String ) : Bool {
+	//	if( ereg_date_old.match( t ) ) return true;
 		return ereg_date.match( t );
 	}
 	
@@ -48,15 +73,15 @@ class DateTime {
 	/**
 	*/
 	public static inline function current() : String {
-		return format( Date.now().toString() );
+		return toUTC( Date.now().toString() );
 	}
 	
-	/**
+	/**   
 		Formats a (regular) date string to a XMPP compatible UTC date string (CCYY-MM-DDThh:mm:ss[.sss]TZD)<br>
 		For example: 2008-11-01 18:45:47 gets 2008-11-01T18:45:47Z<br>
 		Optionally a timezone offset could be attached.<br>
 	*/
-	public static function format( t : String, ?offset : Null<Int> ) : String {
+	public static function toUTC( t : String, ?offset : Null<Int> ) : String {
 		var k = t.split( " " );
 		if( k.length == 1 )
 			return t;
@@ -78,5 +103,20 @@ class DateTime {
 		}
 		return b.toString();
 	}
-
+	
+	/**
+		Create a Date object from a UTC datetime string.
+	*/
+	public static function toDate( t : String ) : Date {
+		if( !ereg_date.match( t ) )
+			return null;
+		var d = new Date( Std.parseInt( ereg_date.matched(1) ),
+						  Std.parseInt( ereg_date.matched(2) )-1, //TODO check if neko only ?
+						  Std.parseInt( ereg_date.matched(3) ),
+						  Std.parseInt( ereg_date.matched(4) ),
+						  Std.parseInt( ereg_date.matched(5) ),
+						  Std.parseInt( ereg_date.matched(6) ) );
+		return d;
+	}
+	
 }

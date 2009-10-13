@@ -41,7 +41,7 @@ class Item {
 		return toXml().toString();
 	}
 	
-	public static function parse( x : Xml ) : xmpp.disco.Item {
+	public static inline function parse( x : Xml ) : xmpp.disco.Item {
 		return new Item( x.get( "jid" ), x.get( "name" ), x.get( "node" ) );
 	}
 	

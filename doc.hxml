@@ -52,6 +52,7 @@ xmpp.SASL
 xmpp.XHTML
 net.sasl.AnonymousMechanism
 net.sasl.PlainMechanism
+net.sasl.MD5Mechanism
 
 -js lib.js
 -xml doc/api.xml

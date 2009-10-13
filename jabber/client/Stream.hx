@@ -32,7 +32,8 @@ class Stream extends jabber.Stream {
 	public var jid(default,null) : jabber.JID;
 	
 	public function new( jid : jabber.JID, cnx : Connection, version : Bool = true ) {
-		super( cnx, jid );
+		//super( cnx, jid );//TODO
+		super( cnx );
 		this.jid = jid;
 		this.version = version;
 		//this.tls = tls;

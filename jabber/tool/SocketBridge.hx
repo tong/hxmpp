@@ -32,9 +32,7 @@ private class Socket extends flash.net.Socket {
 	}
 }
 
-/**
-*/
-class SocketBridge {
+class SocketBridge extends flash.display.Sprite {
 	
 	static var defaultBridgeContext = "jabber.SocketBridgeConnection";
 	
@@ -42,11 +40,13 @@ class SocketBridge {
 	var sockets : IntHash<Socket>;
 	
 	function new( ctx : String ) {
-		
+		super();
 		this.ctx = ( ctx != null ) ? ctx : defaultBridgeContext;
-		
+		init();
+	}
+	
+	function init() {
 		sockets = new IntHash();
-		
 		if( ExternalInterface.available ) {
 			try {
 				ExternalInterface.addCallback( "createSocket", createSocket );
@@ -61,12 +61,6 @@ class SocketBridge {
 			}
 		}
 	}
-	
-	/*
-	function init( ctx : String ) : Bool {
-		this.ctx = ctx;
-		return true;
-	}*/
 	
 	function createSocket() : Int {
 		var id = Lambda.count( sockets );
@@ -144,16 +138,6 @@ class SocketBridge {
 	
 	function sockDataHandler( e : ProgressEvent ) {
 		ExternalInterface.call( ctx+".handleData", e.target.id, e.target.readUTFBytes( e.bytesLoaded ) );
-	}
-	
-	
-	static function main() {
-		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
-		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
-		var cm = new flash.ui.ContextMenu();
-		cm.hideBuiltInItems();
-		flash.Lib.current.contextMenu = cm;
-		new SocketBridge( flash.Lib.current.loaderInfo.parameters.ctx );
 	}
 	
 }

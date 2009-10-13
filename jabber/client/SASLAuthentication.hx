@@ -23,6 +23,8 @@ import xmpp.IQType;
 import xmpp.filter.PacketNameFilter;
 import xmpp.filter.FilterGroup;
 
+	//TODO use remaining mechanisms on fail (?)
+	
 /**
 	Responsible for authenticating a client account using SASL, binding the resource to the connection
 	and establishing a session with the server.<br>
@@ -70,11 +72,13 @@ class SASLAuthentication extends Authentication {
 		if( handshake.mechanism == null ) {
 			for( amechs in mechanisms ) {
 				for( m in handshake.mechanisms ) {
-					if( m.id != amechs ) continue;
+					if( m.id != amechs )
+						continue;
 					handshake.mechanism = m;
 					break;
 				}
-				if( handshake.mechanism != null ) break;
+				if( handshake.mechanism != null )
+					break;
 			}
 		}
 		if( handshake.mechanism == null ) {
@@ -83,9 +87,9 @@ class SASLAuthentication extends Authentication {
 			#end
 			return false;
 		}
-		#if JABBER_DEBUG
-		trace( "Used SASL mechanism: "+handshake.mechanism.id, "info" );
-		#end
+		//#if JABBER_DEBUG
+		//trace( "Used SASL mechanism: "+handshake.mechanism.id, "info" );
+		//#end
 		// collect failures
 		var f = new FilterGroup();
 		f.add( new PacketNameFilter( ~/failure/ ) ); //?

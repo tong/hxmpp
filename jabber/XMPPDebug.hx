@@ -30,6 +30,8 @@ import cpp.Lib;
 
 //	TODO move util.CL into here
 
+#if XMPP_DEBUG
+		
 /**
 	
 	Utility for debugging XMPP transfer.<br>
@@ -39,7 +41,8 @@ class XMPPDebug {
 	
 	public static function redirectTraces() {
 		#if (flash||js)
-		if( haxe.Firebug.detect() ) haxe.Firebug.redirectTraces();
+		if( haxe.Firebug.detect() )
+			haxe.Firebug.redirectTraces();
 		#end
 	}
 	
@@ -86,3 +89,5 @@ class XMPPDebug {
 	#end
 	
 }
+
+#end

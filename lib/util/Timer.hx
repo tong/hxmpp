@@ -1,5 +1,9 @@
 package util;
 
+#if !(neko||cpp)
+typedef Timer = haxe.Timer;
+#else
+
 #if neko
 import neko.vm.Thread;
 import neko.Sys;
@@ -114,3 +118,6 @@ class Timer {
 	}
 
 }
+
+#end
+

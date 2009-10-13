@@ -19,6 +19,7 @@ package xmpp.disco;
 
 typedef Identity = {
 	var category : String;
-	var name : String;
 	var type : String;
+	var name : String;
+	//var lang : String; // maybe inlcuded for localization
 }

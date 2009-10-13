@@ -25,7 +25,8 @@ class Subscription {
 	public var subscription : SubscriptionState;
 	// TODO subscribe_options : Array<>; // xmpp.PubSub only !
 	
-	public function new( jid : String, ?node : String, ?subid : String, ?subscription : SubscriptionState ) {
+	public function new( jid : String,
+						 ?node : String, ?subid : String, ?subscription : SubscriptionState ) {
 		this.jid = jid;
 		this.node = node;
 		this.subid = subid;
@@ -42,7 +43,7 @@ class Subscription {
 		return x;
 	}
 	
-	public static function parse( x : Xml ) : xmpp.pubsub.Subscription {
+	public static function parse( x : Xml ) : Subscription {
 		var s = new Subscription( x.get( "jid" ) );
 		if( x.exists( "node" ) ) s.node = x.get( "node" );
 		if( x.exists( "subid" ) ) s.subid = x.get( "subid" );

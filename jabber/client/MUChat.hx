@@ -114,8 +114,10 @@ class MUChat {
 	//TODO?? public function join( nick : String, ?password : String, ?properites : Array<Xml> ) : Bool {
 	public function join( nick : String, ?password : String ) : Bool {
 		if( joined ) return false;
-		if( nick == null || nick.length == 0 )
-			throw "Nickname must be not null or blank";
+		if( nick == null || nick.length == 0 ) {
+			trace( "Chatroom nickname must be not null or blank" );
+			return false;
+		}
 		stream.addCollector( col_presence );
 		stream.addCollector( col_message );
 		this.nick = nick;
@@ -224,7 +226,9 @@ class MUChat {
 		var from = getOccupantName( m.from );
 		var occupant = getOccupant( from );
 		if( occupant == null && from != jid && from != nick ) {
+			//TODO
 			trace( "??? Message from unknown muc occupant ??? "+from );
+			onMessage( null, m );
 			return;
 		}
 		if( m.subject != null ) {

@@ -52,7 +52,8 @@ class VCardTemp {
 	
 	function handleLoad( iq : xmpp.IQ ) {
 		switch( iq.type ) {
-		case result : onLoad( iq.from, if( iq.x != null ) xmpp.VCard.parse( iq.x.toXml() ) else null );
+		case result :
+			onLoad( iq.from, if( iq.x != null ) xmpp.VCard.parse( iq.x.toXml() ) else null );
 		case error : onError( new jabber.XMPPError( this, iq ) );
 		default : //#
 		}

@@ -8,7 +8,11 @@ package net.sasl;
 */
 class PlainMechanism {
 	
-	public static var ID = "PLAIN";
+	static function __init__() {
+		ID = "PLAIN";
+	}
+	
+	public static var ID(default,null) : String;
 	
 	public var id(default,null) : String;
 	

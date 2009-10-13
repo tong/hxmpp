@@ -2,7 +2,11 @@ package net.sasl;
 
 class AnonymousMechanism {
 	
-	public static var ID = "ANONYMOUS";
+	static function __init__() {
+		ID = "ANONYMOUS";
+	}
+	
+	public static var ID(default,null) : String;
 	
 	public var id(default,null) : String;
 	/**

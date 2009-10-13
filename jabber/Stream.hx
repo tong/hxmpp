@@ -25,19 +25,20 @@ import jabber.stream.PacketTimeout;
 import xmpp.filter.PacketIDFilter;
 import util.XmlUtil;
 
-typedef TDataFilter = {
+
+private typedef TDataFilter = {
 	function filterData( t : haxe.io.Bytes ) : haxe.io.Bytes;
 }
 
-typedef TDataInterceptor = {
+private typedef TDataInterceptor = {
 	function interceptData( t : haxe.io.Bytes ) : haxe.io.Bytes;
 }
 
 private typedef Server = {
+	var features : Hash<Xml>;
 	////var domain : String;
 	//var allowsRegister : Bool;
 	////var tls : { has : Bool, required : Bool };
-	var features : Hash<Xml>;
 }
 
 //TODO
@@ -57,6 +58,7 @@ private class StreamFeatures {
 	}
 }
 
+
 /**
 	Abstract base for XMPP streams.
 */
@@ -70,7 +72,6 @@ class Stream {
 	public var cnx(default,setConnection) : Connection;
 	public var id(default,null) : String;
 	public var lang(default,null) : String;
-	//public var jid(default,null) : jabber.JID;
 	public var jidstr(getJIDStr,null) : String;
 	public var server(default,null) : Server;
 	/** List of features this stream offers */
@@ -90,10 +91,10 @@ class Stream {
 	var numPacketsSent : Int;
 	//#end
 	
-	function new( c : Connection, jid : jabber.JID ) {
+	function new( c : Connection/*, jid : jabber.JID*/ ) {
 		if( c == null )
 			throw "No connection";
-		//this.jid = jid;
+	//	this.jid = jid;
 		collectors = new List();
 		interceptors = new List();
 		server = { features : new Hash() };
@@ -111,11 +112,9 @@ class Stream {
 		numPacketsSent = 0;
 	}
 	
-	
 	function getJIDStr() : String {
 		return throw "Abstract getter";
 	}
-	
 	
 	function setConnection( c : Connection ) : Connection {
 		switch( status ) {
@@ -304,12 +303,14 @@ class Stream {
 	/**
 	*/
 	public function processData( buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) : Int {
+		
+		
 		if( status == StreamStatus.closed )
 			return -1;
 		
 		//TODO .. data filters
 		var t = buf.readString( bufpos, buflen );
-		
+
 		//TODO 
 		if( xmpp.Stream.eregStreamClose.match( t ) ) {
 			close( true );
@@ -330,17 +331,35 @@ class Stream {
 			close( true );
 			return -1;
 		}
+		
 		switch( status ) {
 		case closed : return buflen; //hm?
 		case pending : return processStreamInit( XmlUtil.removeXmlHeader( t ), buflen );
 		case open :
+			//trace("PROCESS DATA "+buflen );
+		
 			// filter data here ?
 			var x : Xml = null;
-			try x = Xml.parse( t ) catch( e : Dynamic ) {
+			try {
+				x = Xml.parse( t );
+			} catch( e : Dynamic ) {
+				//trace("WAIT FOR MORE "+buflen );
 				return 0; // wait for more data
 			}
 			handleXml( x );
 			return buflen;
+			/*
+			if( x != null ) {
+				trace("handelXML "+x.toString().length );
+				for( ex in x.elements() ) {
+					var p = xmpp.Packet.parse( ex );
+					handlePacket( p );
+				}
+				return buflen;
+			} else {
+				return 0;
+			}
+			*/
 		}
 		return 0;
 	}
@@ -363,9 +382,12 @@ class Stream {
 		Returns true if the packet got handled.
 	*/
 	public function handlePacket( p : xmpp.Packet ) : Bool {
+		//trace("handlePacket");
 		#if XMPP_DEBUG
-		if( p.errors.length > 0 ) XMPPDebug.error( p.toString() );
-		else XMPPDebug.incoming( p.toString() );
+		if( p.errors.length > 0 )
+			XMPPDebug.error( p.toString() );
+		else
+			XMPPDebug.incoming( p.toString() );
 		#end
 		var collected = false;
 		for( c in collectors ) {

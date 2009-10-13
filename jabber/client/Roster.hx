@@ -30,8 +30,9 @@ interface RosterItem {
 */
 
 enum RosterSubscriptionMode {
-	/** Accepts all subscription and unsubscription requests. */
-	acceptAll; //TODO acceptAll( ?subscribe : Bool = true );
+	/** Accept all subscription and unsubscription requests. */
+	//acceptAll; //TODO
+	acceptAll( subscribe : Bool );
 	/** Rejects all subscription requests. */
 	rejectAll; // ( reason : String ) ??
 	/** Ask user how to proceed. */
@@ -92,7 +93,11 @@ class Roster {
 	}
 	
 	public function getItem( jid : String ) : Item {
-		for( i in items ) { if( i.jid == jid ) return i; }
+		for( i in items ) {
+			if( i.jid == jid ) {
+				return i;
+			}
+		}
 		return null;
 	}
 	
@@ -188,7 +193,7 @@ class Roster {
 	}
 	
 	public inline function hasItem( jid : String ) : Bool {
-		return getItem( jid ) != null;
+		return ( getItem(jid) != null );
 	}
 	
 	public function getPresence( jid : String ) : xmpp.Presence {
@@ -220,10 +225,11 @@ class Roster {
 			switch( p.type ) {
 			case subscribe :
 				switch( subscriptionMode ) {
-				case acceptAll :
+				case acceptAll(s) :
+					trace(">>>>>>>>>>>>>>>>>>>>>>>><<<");
 					confirmSubscription( p.from, true );
 					//TODO subscribe to ?
-					//if( s ) subscribe( p.from );
+					if( s ) subscribe( p.from );
 				case rejectAll :
 					var r = new xmpp.Presence( xmpp.PresenceType.unsubscribed );
 					r.to = p.from;
@@ -242,8 +248,12 @@ class Roster {
 				onUnsubscribed( i );
 				return;
 			
-			//TODO case unsubscribe :
-			
+			case unsubscribe :
+				//TODO
+				trace("UNSUBSCRIBE");
+				onUnsubscribed( i );
+				return;
+				
 			default :
 				//TODO check
 				trace( "???? check "+p.type );

@@ -20,6 +20,8 @@ package jabber.component;
 import jabber.stream.PacketCollector;
 
 
+/**
+*/
 private class HistoryMessage extends xmpp.Message {
 	public function new( roomJID : String, from : String, body : String, stamp : String ) {
 		super( null, body, null, xmpp.MessageType.groupchat, null, roomJID );
@@ -32,7 +34,9 @@ private class HistoryMessage extends xmpp.Message {
 class History {
 	
 	public static var defaultHistoryLength : Int = 20;
+	
 	public var length(default,setLength) : Int;
+	
 	var messages : Array<HistoryMessage>;
 	
 	public function new( ?length : Int ) {
@@ -62,9 +66,10 @@ class History {
 	
 }
 
+
 //TODO 
 //interface Occupant {
-class Occupant {
+class MUChatOccupant {
 	
 	public var room : MUChatRoom;
 	
@@ -89,6 +94,7 @@ class Occupant {
 	}
 }
 
+
 /**
 	Chatroom for muc services.
 */
@@ -107,7 +113,7 @@ class MUChatRoom {
 	/** Room name */
 	public var name(default,null) : String;
 	/** Room JID */
-	public var jid(default,null) : String; //TODO jabber.JID
+	public var jid(default,null) : String;
 	/** Hash of room occupants */
 	public var occupants(default,null) : Hash<Occupant>;
 	/** Max occupants allowed in room, default is infinite (-1) */

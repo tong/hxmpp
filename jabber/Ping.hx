@@ -17,10 +17,7 @@
 */
 package jabber;
 
-import haxe.Timer;
-#if neko
-typedef Timer = util.Timer;
-#end
+import util.Timer;
 
 /**
 	flash,js,neko<br>
@@ -30,7 +27,7 @@ typedef Timer = util.Timer;
 */
 class Ping {
 	
-	public static var defaultInterval = 30000;
+	public static var defaultInterval = 60000;
 	
 	public dynamic function onResponse( entity : String ) : Void;
 	public dynamic function onTimeout( entity : String ) : Void;
@@ -39,8 +36,9 @@ class Ping {
 	public var stream(default,null) : Stream;
 	/** Ping interval ms */
 	public var interval : Int; //(default,setInterval) TODO
-	public var active(default,null) : Bool;
+	/** The pinged target entity */
 	public var target : String;
+	public var active(default,null) : Bool;
 	
 	var timer : Timer;
 	

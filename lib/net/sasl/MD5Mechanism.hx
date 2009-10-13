@@ -1,8 +1,8 @@
 package net.sasl;
 
 /**
-	<a href="ftp://ietf.org//rfc/rfc2831.txt">Using Digest Authentication as a SASL Mechanism</a>
-	http://web.archive.org/web/20050224191820/http://cataclysm.cx/wip/digest-md5-crash.html
+	<a href="ftp://ietf.org//rfc/rfc2831.txt">Using Digest Authentication as a SASL Mechanism</a><br>
+	<a href="http://web.archive.org/web/20050224191820/http://cataclysm.cx/wip/digest-md5-crash.html">SASL and DIGEST-MD5 for XMPP</a>
 */
 class MD5Mechanism {
 	
