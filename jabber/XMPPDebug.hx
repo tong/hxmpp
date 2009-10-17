@@ -17,75 +17,110 @@
 */
 package jabber;
 
-#if (neko||php||cpp)
-import util.TerminalUtil;
-#end
 #if neko
 import neko.Lib;
 #elseif php
 import php.Lib;
 #elseif cpp
 import cpp.Lib;
+#elseif flash
+import flash.external.ExternalInterface;
 #end
-
-//	TODO move util.CL into here
 
 #if XMPP_DEBUG
 		
 /**
-	
-	Utility for debugging XMPP transfer.<br>
-	For terminal targets you might want to set colors before using since they might differ.
+	Utility for debugging XMPP transfer.<br/>
 */
 class XMPPDebug {
 	
-	public static function redirectTraces() {
-		#if (flash||js)
-		if( haxe.Firebug.detect() )
-			haxe.Firebug.redirectTraces();
-		#end
-	}
-	
 	#if (flash||js)
+	static var firebug : Bool;
+	#end
 	
-	public static inline function incoming( t : String ) {
-		haxe.Log.trace( "IN: "+t );
-	}
-	
-	public static inline function outgoing( t : String ) {
-		haxe.Log.trace( "OUT: "+t );
-	}
-	
-	public static inline function error( t : String ) {
-		haxe.Log.trace( "XMPP ERROR: "+t );
-	}
-	
-	#elseif (neko||php||cpp)
-	
-	public static var COLOR_XMPP_IN = { fg : TerminalUtil.BLACK, bg : TerminalUtil.BG_CYAN };
-	public static var COLOR_XMPP_OUT = { fg : TerminalUtil.BLACK, bg : TerminalUtil.BG_ORANGE };
-	public static var COLOR_XMPP_ERROR = { fg : TerminalUtil.BLACK, bg : TerminalUtil.BG_RED };
-	
-	public static function print( t : String, ?colors : TerminalColor ) {
-		#if cpp
-		cpp.Lib.print( t+"\n" );
-		#else
-		TerminalUtil.print( t+"\n", if( colors != null ) colors.fg, if( colors != null ) colors.bg );
+	static function __init__() {
+		#if js
+		try {
+			firebug = untyped console != null && console.error != null;
+		} catch( e : Dynamic ) {
+			firebug = false;
+		}
+		#elseif flash
+		firebug = if( ExternalInterface.available &&
+					  ExternalInterface.call( "console.error.toString" ) != null )
+			true else false;
 		#end
 	}
 	
-	public static inline function incoming( t : String ) {
-		print( t, COLOR_XMPP_IN );
+	public static function inc( t : String ) {
+		#if flash
+        if( firebug ) {
+        	ExternalInterface.call( "console."+"log", "XMPP-I "+t );
+        } else {
+			haxe.Log.trace( t, { 
+				className : "",
+				methodName : "",
+				fileName : "XMPP-I",
+				lineNumber : 0,
+				customParams : []
+		    } );
+        }
+        #elseif (cpp||neko||php)
+        print( t, 34, 42 );
+        #end
 	}
 	
-	public static inline function outgoing( t : String ) {
-		print( t, COLOR_XMPP_OUT );
+	public static function out( t : String ) {
+        #if flash
+        if( firebug ) {
+			ExternalInterface.call( "console."+"log", "XMPP-O "+t );
+		} else {
+        	haxe.Log.trace( t, { 
+	            className : "",
+	            methodName : "",
+	            fileName : "XMPP-O",
+	            lineNumber : 0,
+	            customParams : []
+	        } );
+        }
+        #elseif (cpp||neko||php)
+        print( t, 34, 43 );
+        #end
 	}
 	
 	public static inline function error( t : String ) {
-		print( t, COLOR_XMPP_ERROR );
+		#if (cpp||neko||php)
+        print( t, 30, 42 );
+        #end
 	}
 	
+	#if (cpp||neko||php)
+	
+	public static var defaultColor = 37;
+	public static var defaultBackgroundcolor = 44;
+	
+	static function print( t : String, color : Int, backgroundColor : Int ) {
+		if( color == null ) {
+			Lib.print( t );
+			return;
+		}
+		var b = new StringBuf();
+		b.add( "\033[" );
+		b.add( color );
+		if( backgroundColor != -1 ) {
+			b.add( ";" );
+			b.add( backgroundColor );
+		}
+		b.add( "m" );
+		b.add( t );
+		b.add( "\033[" );
+		b.add( defaultColor );
+		b.add( ";" );
+		b.add( defaultBackgroundcolor );
+		b.add( "m\n" );
+		Lib.print( b.toString() );
+	}
+		
 	#end
 	
 }
