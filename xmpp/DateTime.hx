@@ -18,26 +18,18 @@
 package xmpp;
 
 /**
+	Standardization of ISO 8601 profiles and their lexical representation.<br/>
 	<a href="http://xmpp.org/extensions/xep-0082.html">XMPP Date and Time Profiles</a>
 */
 class DateTime {
 	
 	static function __init__() {
-		//20091012T21:39:16
-		//1969-07-20T21:56:15-05:00
-		
-		//ereg_date = ~/^([0-9][0-9][0-9][0-9])-?([0-9][0-9])-?([0-9][0-9])T([0-9][0-9]:[0-9][0-9]:[0-9][0-9](\.[0-9][0-9][0-9])?(Z$)?(-[0-9][0-9]:[0-9][0-9])?)?$/;
-		
-		ereg_date = ~/^([0-9][0-9][0-9][0-9])-?([0-9][0-9])-?([0-9][0-9])T([0-9][0-9]):([0-9][0-9]):([0-9][0-9])/;
-		//(\.[0-9][0-9][0-9])?(Z$)?(-[0-9][0-9]:[0-9][0-9])?)?$/;
-		
-		//ereg_date_old = ~/([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])T([0-9][0-9]):([0-9][0-9]):([0-9][0-9])/;
+		ereg_date = ~/^([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9])(T([0-9][0-9]):([0-9][0-9]):([0-9][0-9])(\.[0-9][0-9][0-9])?(Z|(-[0-9][0-9]:[0-9][0-9]))?)?$/;
+		ereg_time = ~/^([0-9][0-9]):([0-9][0-9]):([0-9][0-9])(\.[0-9][0-9][0-9]Z?)?$/;
 	}
 	
 	/**
 		UTC date expression.
-		TODO expression may contain minor missing checks in the offset part.
-		//TODO
 		CCYY-MM-DDThh:mm:ss[.sss]TZD
 	*/								
 	public static var ereg_date(default,null) : EReg;
@@ -47,33 +39,42 @@ class DateTime {
 		Implementd just for backwards compatibility.
 		20091012T21:39:16
 	*/
-//	public static var ereg_date_old(default,null)  : EReg;
+	//public static var ereg_date_old(default,null)  : EReg;
 	
 	/**
 		UTC time expression.
-		//TODO
 		hh:mm:ss[.sss][TZD]
-		
 	*/
-	public static var ereg_time = ~/^([0-9][0-9]):([0-9][0-9]):([0-9][0-9])(\.[0-9][0-9][0-9]Z?)?$/;
+	public static var ereg_time(default,null) : EReg;
 	
 	/**
 	*/
-	public static function isValidDate( t : String ) : Bool {
-	//	if( ereg_date_old.match( t ) ) return true;
+	public static inline function isValidDate( t : String ) : Bool {
 		return ereg_date.match( t );
 	}
 	
 	/**
 	*/
-	public static function isValidTime( t : String ) : Bool {
+	public static inline function isValidTime( t : String ) : Bool {
 		return ereg_time.match( t );
 	}
 	
 	/**
 	*/
-	public static inline function current() : String {
-		return toUTC( Date.now().toString() );
+	public static inline function now( ?offset : Int ) : String {
+		return fromDate( Date.now(), offset );// utc( Date.now().toString(), offset );
+	}
+	
+	/**
+	*/
+	public static inline function fromDate( d : Date, ?offset : Int ) : String {
+		return utc( d.toString(), offset );
+	}
+	
+	/**
+	*/
+	public static inline function fromTime( t : Float, ?offset : Int ) {
+		return utc( Date.fromTime( t ).toString(), offset );
 	}
 	
 	/**   
@@ -81,7 +82,7 @@ class DateTime {
 		For example: 2008-11-01 18:45:47 gets 2008-11-01T18:45:47Z<br>
 		Optionally a timezone offset could be attached.<br>
 	*/
-	public static function toUTC( t : String, ?offset : Null<Int> ) : String {
+	public static function utc( t : String, ?offset : Null<Int> ) : String {
 		var k = t.split( " " );
 		if( k.length == 1 )
 			return t;
@@ -107,15 +108,27 @@ class DateTime {
 	/**
 		Create a Date object from a UTC datetime string.
 	*/
-	public static function toDate( t : String ) : Date {
+	public static function createDate( t : String ) : Date {
 		if( !ereg_date.match( t ) )
 			return null;
+			/*
+		trace(ereg_date.matched(1));
+		trace(ereg_date.matched(2));
+		trace(ereg_date.matched(3));
+		trace(ereg_date.matched(4));
+		trace(ereg_date.matched(5));
+		trace(ereg_date.matched(6));
+		trace(ereg_date.matched(7));
+		trace(ereg_date.matched(8));
+		trace(ereg_date.matched(9));
+		trace(ereg_date.matched(10));
+		*/
 		var d = new Date( Std.parseInt( ereg_date.matched(1) ),
-						  Std.parseInt( ereg_date.matched(2) )-1, //TODO check if neko only ?
+						  Std.parseInt( ereg_date.matched(2) )-1,
 						  Std.parseInt( ereg_date.matched(3) ),
-						  Std.parseInt( ereg_date.matched(4) ),
 						  Std.parseInt( ereg_date.matched(5) ),
-						  Std.parseInt( ereg_date.matched(6) ) );
+						  Std.parseInt( ereg_date.matched(6) ),
+						  Std.parseInt( ereg_date.matched(7) ) );
 		return d;
 	}
 	
