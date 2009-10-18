@@ -17,11 +17,12 @@
 */
 package jabber.file.io;
 
-class IBOutput {
-	
-	//TODO
-	public var __onComplete : Void->Void; 
-	public var __onFail : Void->Void; 
+//TODO encode chunks itself
+
+/**
+	Generic in-band file transfer output.
+*/
+class IBOutput extends IO {
 	
 	var stream : jabber.Stream;
 	var reciever : String;
@@ -32,16 +33,18 @@ class IBOutput {
 	var iq : xmpp.IQ;
 	
 	public function new( stream : jabber.Stream, reciever : String, blockSize : Int, sid : String ) {
+		super();
 		this.stream = stream;
 		this.reciever = reciever;
 		this.blockSize = blockSize;
 		this.sid = sid;
 	}
 	
+	//TODO! public function send( input : haxe.io.Input ) {
 	public function send( bytes : haxe.io.Bytes ) {
 		seq = 0;
 		blocks = new Array();
-		// create blocks
+		// create chunk blocks
 		var t = new haxe.BaseCode( haxe.io.Bytes.ofString( util.Base64.CHARS ) ).encodeBytes( bytes ).toString();
 		var pos = 0;
 		while( true ) {
@@ -52,6 +55,18 @@ class IBOutput {
 			if( pos == t.length )
 				break;
 		}
+		//TODO encode chunks on send
+		/*
+		var pos = 0;
+		while( true ) {
+			var len = if( pos > bytes.length-blockSize ) bytes.length-pos else blockSize;
+			var next = bytes.sub( pos, len );//t.substr( pos, len );
+			blocks.push( next.toString() );
+			pos += len;
+			if( pos == bytes.length )
+				break;
+		}
+		*/
 		iq = new xmpp.IQ( xmpp.IQType.set, null, reciever );
 		sendNextPacket();
 	}
@@ -59,6 +74,8 @@ class IBOutput {
 	function sendNextPacket() {
 		iq.id = stream.nextID()+"_ib"+seq;
 		iq.properties = [xmpp.file.IB.createDataElement( sid, seq, blocks[seq] )];
+		//TODO encode chunks on send
+		//iq.properties = [xmpp.file.IB.createDataElement( sid, seq, util.Base64.encode( blocks[seq] ) )];
 		stream.sendIQ( iq, handleChunkResponse );
 	}
 	
@@ -74,18 +91,14 @@ class IBOutput {
 				var me = this;
 				stream.sendIQ( iq, function(r:xmpp.IQ) {
 					switch( r.type ) {
-					case result :
-						me.__onComplete();
-					case error :
-//TODO					me.__onError( new jabber.XMPPError( me.transfer, r ) );
+					case result : me.__onComplete();
+					case error : me.__onFail();
 					default : //#
 					}
 				} );
 			}
-		case error :
-			//TODO 
-		default :
-			//TODO
+		case error : __onFail();
+		default : //
 		}
 	}
 	

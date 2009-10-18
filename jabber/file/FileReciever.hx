@@ -18,20 +18,24 @@
 package jabber.file;
 
 /**
-	Incoming file transfer handler base.
+	Abstract, incoming file transfer handler.
 */
 class FileReciever {
 	
 	public dynamic function onComplete( r : FileReciever ) : Void;
-	public dynamic function onFail( r : FileReciever, m : String ) : Void;
-	public dynamic function onError( e : jabber.XMPPError ) : Void;
+	public dynamic function onFail( r : FileReciever, e : jabber.XMPPError ) : Void;
+	//public var onComplete : FileReciever->Void;
+	//public var onFail : FileReciever->jabber.XMPPError->Void;
 	
 	public var stream(default,null) : jabber.Stream;
+	/** The namespace of this file transfer */
 	public var xmlns(default,null) : String;
 	public var initiator(default,null) : String;
+	/** Recieved data */
 	public var data(getData,null) : haxe.io.Bytes;
 	
 	var request : xmpp.IQ;
+	//var input : haxe.io.Input; //TODO move here
 	
 	function new( stream : jabber.Stream, xmlns : String ) {
 		this.stream = stream;

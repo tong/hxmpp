@@ -18,11 +18,11 @@
 package jabber.file;
 
 /**
-	Listens for incoming in-band file transfers.
+	A listener for incoming in-band file transfers.
 */
 class IBListener {
 	
-	/** */
+	/** Callback for incoming file transfer requests */
 	public var onRequest : IBReciever->Void;
 	public var stream(default,null) : jabber.Stream;
 	
@@ -35,9 +35,8 @@ class IBListener {
 	
 	function handleRequest( iq : xmpp.IQ ) {
 		var r = new IBReciever( stream );
-		if( r.handleRequest( iq ) ) {
+		if( r.handleRequest( iq ) )
 			onRequest( r );
-		}
 	}
 	
 }

@@ -24,13 +24,16 @@ import jabber.file.io.IBInput;
 */
 class IBReciever extends FileReciever {
 	
-	public var blockSize(default,null) : Int;
+	public static var defaultMaxBlockSize = 8192;
+	
+	public var maxBlockSize(default,null) : Int; 
+	public var sid(default,null) : String;
 	
 	var input : IBInput;
-	var sid : String;
 	
-	public function new( stream : jabber.Stream ) {
+	public function new( stream : jabber.Stream, ?maxBlockSize : Int ) {
 		super( stream, xmpp.file.IB.XMLNS );
+		this.maxBlockSize = ( maxBlockSize != null ) ? maxBlockSize : defaultMaxBlockSize;
 	}
 	
 	override function getData() : haxe.io.Bytes {
@@ -38,34 +41,56 @@ class IBReciever extends FileReciever {
 	}
 	
 	public override function handleRequest( iq : xmpp.IQ ) : Bool {
-		//TODO
 		var ib = xmpp.file.IB.parse( iq.x.toXml() );
-		trace( ib.blockSize );
+		if( ib.blockSize > maxBlockSize ) {
+			deny( new xmpp.Error( xmpp.ErrorType.modify, null, xmpp.ErrorCondition.RESOURCE_CONSTRAINT ) );
+			return false;
+		}
 		sid = ib.sid;
 		return super.handleRequest( iq );
 	}
 	
 	public override function accept( yes : Bool = true ) {
-		input = new IBInput( stream, initiator, sid );
-		input.__onClose = handleInputClose;
-		//input.__onComplete = handleIBClose;
-		input.__onFail = handleInputFail;
-		//input.__onProgress = handleIBProgress;
-		stream.sendPacket( xmpp.IQ.createResult( request ) );
+		if( yes ) {
+			input = new IBInput( stream, initiator, sid );
+			input.__onComplete = handleInputComplete;
+			input.__onFail = handleInputFail;
+			//input.__onProgress = handleIBProgress;
+			stream.sendPacket( xmpp.IQ.createResult( request ) );
+		} else {
+			deny( new xmpp.Error( xmpp.ErrorType.cancel, null, xmpp.ErrorCondition.NOT_ACCEPTABLE ) );
+		}
+	}
+	
+	function deny( e : xmpp.Error ) {
+		var r = xmpp.IQ.createErrorResult( request );
+		r.errors.push( e );
+		stream.sendPacket( r );
 	}
 	
 	/*
 	function handleInputProgress() {
-		trace("HANDLE DATA");
 	}
 	*/
 	
-	function handleInputClose() {
+	function handleInputComplete() {
+		if( onComplete == null ) {
+			#if JABBER_DEBUG
+			trace( "No file transfer complete handler specified", "warn" );
+			#end
+			return;
+		}
 		onComplete( this );
 	}
 	
-	function handleInputFail( m : String ) {
-		onFail( this, m );
+	function handleInputFail() {
+		if( onFail == null ) {
+			#if JABBER_DEBUG
+			trace( "No file transfer failed handler specified", "warn" );
+			#end
+			return;
+		} 
+		onFail( this, null );
 	}
 	
 }

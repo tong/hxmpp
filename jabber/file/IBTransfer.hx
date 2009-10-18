@@ -17,8 +17,11 @@
 */
 package jabber.file;
 
+import jabber.file.io.IBOutput;
+
 /**
-	Outgoing in-band file transfer.
+	Outgoing in-band file transfer negotiator.<br/>
+	Data is broken down into smaller chunks and transported in-band over XMPP.
 */
 class IBTransfer extends FileTransfer {
 	
@@ -26,7 +29,7 @@ class IBTransfer extends FileTransfer {
 	
 	public var blockSize(default,null) : Int;
 	
-	//var output : IBOutput;
+	var output : IBOutput;
 	
 	public function new( stream : jabber.Stream, reciever : String, ?blockSize : Int ) {
 		super( stream, xmpp.file.IB.XMLNS, reciever );
@@ -34,11 +37,12 @@ class IBTransfer extends FileTransfer {
 	}
 	
 	/**
+		Starts outgoing file transfer.
 	*/
 	public override function init( input : haxe.io.Input ) {
 		this.input = input;
-		sid = util.StringUtil.random64( 8 );
-		// send init request
+		sid = util.Base64.random( 8 );
+		// send initial request
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, reciever, stream.jidstr );
 		iq.x = new xmpp.file.IB( xmpp.file.IBType.open, sid, blockSize );
 		stream.sendIQ( iq, handleRequestResponse );
@@ -47,19 +51,23 @@ class IBTransfer extends FileTransfer {
 	function handleRequestResponse( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 		case result :
-			// send data
-			var o = new jabber.file.io.IBOutput( stream, reciever, blockSize, sid );
-			o.__onComplete = handleTransferComplete;
-			//TODO o.__onFail = handleTransferFail;
-			o.send( input.readAll() );
+			output = new jabber.file.io.IBOutput( stream, reciever, blockSize, sid );
+			output.__onComplete = handleTransferComplete;
+			output.__onFail = handleTransferFail;
+			onInit( this );
+			output.send( input.readAll() );
 		case error :
-			onError( new jabber.XMPPError( this, iq ) );
-		default : //#
+			onFail( this, new jabber.XMPPError( this, iq ) );
+		default : //
 		}
 	}
 	
 	function handleTransferComplete() {
 		onComplete( this );
+	}
+	
+	function handleTransferFail() {
+		onFail( this, null );
 	}
 	
 }
