@@ -22,15 +22,19 @@ package xmpp;
 */
 class Error {
 	
-	public static var XMLNS = "urn:ietf:params:xml:ns:xmpp-stanzas";
+	static function __init__() {
+		Error.XMLNS = "urn:ietf:params:xml:ns:xmpp-stanzas";
+	}
+	
+	public static var XMLNS(default,null) : String;
 	
 	public var type : ErrorType;
-	public var code : Int;
+	public var code : Null<Int>;
 	public var name : String;
 	public var conditions : Array<{name:String,xmlns:String}>;
 	public var text : String;
 	
-	public function new( ?type : ErrorType, ?code = -1, ?name : String, ?text : String ) {
+	public function new( ?type : xmpp.ErrorType, ?code : Null<Int>, ?name : String, ?text : String ) {
 		this.type = type;
 		this.code = code;
 		this.name = name;
@@ -41,15 +45,17 @@ class Error {
 	public function toXml() : Xml {
 		var x = Xml.createElement( "error" );
 		if( type != null ) x.set( "type", Type.enumConstructor( type ) );
-		if( code != -1 ) x.set( "code", Std.string( code ) );
+		if( code != null ) x.set( "code", Std.string( code ) );
 		if( name != null ) {
 			var n = Xml.createElement( name );
 			n.set( "xmlns", XMLNS );
 			x.addChild( n );
 		}
+			//TODO
+			/*
 		for( c in conditions ) {
-			
 		}
+		*/
 		return x;
 	}
 	

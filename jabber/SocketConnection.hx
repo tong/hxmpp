@@ -117,7 +117,9 @@ class SocketConnection extends jabber.stream.Connection {
 		socket.connect( new Host( host ), port );
 		#end
 		#if php
-		if( secure ) socket.connectTLS( new Host( host ), port ) else socket.connect( new Host( host ), port );
+		trace("SECURE: "+secure);
+		if( secure ) socket.connectTLS( new Host( host ), port )
+		else socket.connect( new Host( host ), port );
 		#end
 		#if (neko||php||cpp)
 		connected = true;
@@ -161,7 +163,8 @@ class SocketConnection extends jabber.stream.Connection {
 	}
 	
 	public override function write( t : String ) : String {
-		if( !connected || t == null || t.length == 0 ) return null;
+		if( !connected || t == null || t.length == 0 )
+			return null;
 		//TODO
 		//var b = haxe.io.Bytes.ofString(t);
 		//for( i in interceptors )
@@ -171,6 +174,7 @@ class SocketConnection extends jabber.stream.Connection {
 		socket.flush();
 		#elseif (neko||php||cpp)
 		socket.output.writeString( t );
+		socket.output.flush();
 		#elseif JABBER_SOCKETBRIDGE
 		socket.send( t );
 		#end
@@ -220,13 +224,28 @@ class SocketConnection extends jabber.stream.Connection {
 		onError( e );
 	}
 	
+	//static var mybuffer = new flash.utils.ByteArray();
+	
 	function sockDataHandler( e : ProgressEvent ) {
-		var i = buf + socket.readUTFBytes( e.bytesLoaded );
+		/*
+		socket.readBytes( mybuffer, mybuffer.length, e.bytesLoaded );
+		var r = onData( haxe.io.Bytes.ofData(mybuffer), 0, mybuffer.length );
+		if( r == 0 ) {
+			mybuffer.clear();// = 0;
+			//mybuffer = new flash.utils.ByteArray();
+		}
+		if( r == -1 ) {
+			return;
+		}
+		*/
+		var i = buf+socket.readUTFBytes( e.bytesLoaded );
 		if( i.length > maxBufSize ) {
 			//TODO
 			throw "Max buffer size reached ("+maxBufSize+")";
 		}
+		//var s = haxe.Timer.stamp();
 		buf = ( onData( haxe.io.Bytes.ofString( i ), 0, i.length ) == 0 ) ? i : "";
+		//trace( haxe.Timer.stamp()-s );
 	}
 	
 	#elseif (neko||php||cpp)

@@ -20,7 +20,7 @@ package jabber.client;
 import jabber.stream.Connection;
 
 /**
-	Base for client XMPP streams.<br>
+	Base for client XMPP streams.<br/>
 */
 class Stream extends jabber.Stream {
 	
@@ -62,7 +62,7 @@ class Stream extends jabber.Stream {
 			if( id == null ) { // parse open stream
 				var s = t.substr( 0, sei ) + " />";
 				#if XMPP_DEBUG
-				jabber.XMPPDebug.incoming( s );
+				jabber.XMPPDebug.inc( s );
 				#end
 				var sx = Xml.parse( s ).firstElement();
 				id = sx.get( "id" );
@@ -87,7 +87,7 @@ class Stream extends jabber.Stream {
 				var sfx = Xml.parse( sf ).firstElement();
 				parseStreamFeatures( sfx );
 				#if XMPP_DEBUG
-				jabber.XMPPDebug.incoming( sfx.toString() );
+				jabber.XMPPDebug.inc( sfx.toString() );
 				#end
 				status = jabber.StreamStatus.open;
 				onOpen();

@@ -74,7 +74,6 @@ class Stream {
 	public var lang(default,null) : String;
 	public var jidstr(getJIDStr,null) : String;
 	public var server(default,null) : Server;
-	/** List of features this stream offers */
 	public var features(default,null) : StreamFeatures;
 	/** Indicates if the version number of the XMPP stream ("1.0") should get added to the stream opening XML element */
 	public var version : Bool;
@@ -202,7 +201,7 @@ class Stream {
 			t = i.interceptData( haxe.io.Bytes.ofString(t) ).toString();
 		cnx.write( t );
 		#if XMPP_DEBUG
-		XMPPDebug.outgoing( t );
+		XMPPDebug.out( t );
 		#end
 		numPacketsSent++;
 		return t;
@@ -304,7 +303,6 @@ class Stream {
 	*/
 	public function processData( buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) : Int {
 		
-		
 		if( status == StreamStatus.closed )
 			return -1;
 		
@@ -333,39 +331,42 @@ class Stream {
 		}
 		
 		switch( status ) {
-		case closed : return buflen; //hm?
-		case pending : return processStreamInit( XmlUtil.removeXmlHeader( t ), buflen );
+		case closed :
+			return buflen; //hm?
+		case pending :
+			return processStreamInit( XmlUtil.removeXmlHeader( t ), buflen );
 		case open :
-			//trace("PROCESS DATA "+buflen );
+			//trace("PROCESS DATA ("+bufpos+"/"+buflen+") "+t );
+			
+			// HACK flash/js Xml bug !
+			#if (flash||js)
+			var r = ~/^(.+)(\/[a-zA-Z-]*)>$/;
+			if( !r.match( t ) ) {
+				//trace("XML fuk","error");
+				return 0;
+			}
+			#end
 		
 			// filter data here ?
 			var x : Xml = null;
 			try {
 				x = Xml.parse( t );
+				//trace("XML ok ");
 			} catch( e : Dynamic ) {
-				//trace("WAIT FOR MORE "+buflen );
+				#if JABBER_DEBUG
+				//trace("WAIT FOR MORE "+t,"warn" );
+				#end
 				return 0; // wait for more data
 			}
 			handleXml( x );
 			return buflen;
-			/*
-			if( x != null ) {
-				trace("handelXML "+x.toString().length );
-				for( ex in x.elements() ) {
-					var p = xmpp.Packet.parse( ex );
-					handlePacket( p );
-				}
-				return buflen;
-			} else {
-				return 0;
-			}
-			*/
 		}
 		return 0;
 	}
 	
 	/**
-		Handle incoming XML data.
+		Inject incoming XML data to handle.<br/>
+		Returns array of handled packets.
 	*/
 	public function handleXml( x : Xml ) : Array<xmpp.Packet> {
 		var ps = new Array<xmpp.Packet>();
@@ -378,16 +379,14 @@ class Stream {
 	}
 	
 	/**
-		Handle incoming XMPP packets.
+		Handles incoming XMPP packets.<br/>
 		Returns true if the packet got handled.
 	*/
 	public function handlePacket( p : xmpp.Packet ) : Bool {
 		//trace("handlePacket");
 		#if XMPP_DEBUG
-		if( p.errors.length > 0 )
-			XMPPDebug.error( p.toString() );
-		else
-			XMPPDebug.incoming( p.toString() );
+		if( p.errors.length > 0 ) XMPPDebug.error( p.toString() );
+		else XMPPDebug.inc( p.toString() );
 		#end
 		var collected = false;
 		for( c in collectors ) {

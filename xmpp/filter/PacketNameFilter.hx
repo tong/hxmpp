@@ -29,7 +29,7 @@ class PacketNameFilter {
 	}
 	
 	public function accept( p : xmpp.Packet ) : Bool {
-		/* HMMMM ? TODO
+		/* hmm
 		if( p._type != xmpp.PacketType.custom ) 
 			return false;
 		*/
