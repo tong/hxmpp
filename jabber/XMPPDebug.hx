@@ -17,6 +17,8 @@
 */
 package jabber;
 
+#if XMPP_DEBUG
+
 #if neko
 import neko.Lib;
 #elseif php
@@ -26,17 +28,11 @@ import cpp.Lib;
 #elseif flash
 import flash.external.ExternalInterface;
 #end
-
-#if XMPP_DEBUG
 		
 /**
 	Utility for debugging XMPP transfer.<br/>
 */
 class XMPPDebug {
-	
-	#if (flash||js)
-	static var firebug : Bool;
-	#end
 	
 	static function __init__() {
 		#if js
@@ -52,54 +48,61 @@ class XMPPDebug {
 		#end
 	}
 	
-	public static function inc( t : String ) {
-		#if flash
-        if( firebug ) {
-        	ExternalInterface.call( "console."+"log", "XMPP-I "+t );
-        } else {
-			haxe.Log.trace( t, { 
-				className : "",
-				methodName : "",
-				fileName : "XMPP-I",
-				lineNumber : 0,
-				customParams : []
-		    } );
-        }
-        #elseif (cpp||neko||php)
-        print( t, 34, 42 );
-        #end
+	public static inline function inc( t : String, ?level : String = "log" ) {
+		print( t, false, level );
 	}
 	
-	public static function out( t : String ) {
-        #if flash
-        if( firebug ) {
-			ExternalInterface.call( "console."+"log", "XMPP-O "+t );
-		} else {
-        	haxe.Log.trace( t, { 
-	            className : "",
-	            methodName : "",
-	            fileName : "XMPP-O",
-	            lineNumber : 0,
-	            customParams : []
-	        } );
-        }
-        #elseif (cpp||neko||php)
-        print( t, 34, 43 );
-        #end
+	public static inline function out( t : String, ?level : String = "log" ) {
+        print( t, true, level );
 	}
 	
+	/*
 	public static inline function error( t : String ) {
 		#if (cpp||neko||php)
         print( t, 30, 42 );
+        #else
+        _print( t ); 
         #end
 	}
+	*/
 	
-	#if (cpp||neko||php)
+	public static inline function print( t : String, out : Bool, level : String = "log" ) {
+		#if (flash||js)
+		_print( t, out, level );
+		#elseif (cpp||neko||php)
+		var fgc = (out) ? fgOut : fgInc;
+		var bgc = (out) ? bgOut : bgInc;
+		_print( t, fgc, bgc );
+		#end
+	}
 	
+	#if (flash||js)
+	
+	static var firebug : Bool;
+	
+	public static function _print( t : String, out : Bool = true, level : String = "log" ) {
+		var dir = "XMPP-"+((out)?"O ":"I ");
+		if( firebug ) {
+			#if flash
+			ExternalInterface.call( "console."+level, dir+t );
+			#else
+			untyped console[level]( dir+t );
+			#end
+		} else {
+			 haxe.Log.trace( t, { className : "", methodName : "", fileName : dir, lineNumber : 0, customParams : [] } );
+		}
+	}
+	
+	#elseif (cpp||neko||php)
+	
+	public static var fgInc = 34;
+	public static var bgInc = 42;
+	public static var fgOut = 34;
+	public static var bgOut = 43;
 	public static var defaultColor = 37;
 	public static var defaultBackgroundcolor = 44;
 	
-	static function print( t : String, color : Int, backgroundColor : Int ) {
+	public static function _print( t : String, color : Int, backgroundColor : Int ) {
 		if( color == null ) {
 			Lib.print( t );
 			return;
