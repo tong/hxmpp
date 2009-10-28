@@ -22,7 +22,7 @@ import xmpp.filter.MessageFilter;
 import xmpp.filter.PacketFromFilter;
 
 /**
-	Represents a chat conversation between two jabber clients.
+	Represents a chat conversation with another jabber entity.
 */
 class Chat {
 	
@@ -36,8 +36,7 @@ class Chat {
 	var c : PacketCollector;
 	var m : xmpp.Message;
 	
-	// TODO myJid? needed ?
-	public function new( stream : Stream, myJid : String, peer : String,
+	public function new( stream : Stream, peer : String,
 					 	 ?threadID : String ) {
 		
 		m = new xmpp.Message( peer, null, null, xmpp.MessageType.chat, threadID, stream.jidstr );
@@ -48,8 +47,9 @@ class Chat {
 		
 		var mf : xmpp.PacketFilter = new xmpp.filter.MessageFilter( xmpp.MessageType.chat );
 		var ff : xmpp.PacketFilter = new xmpp.filter.PacketFromContainsFilter( peer );
-		c = new PacketCollector( [ mf, ff ], handleMessage, true );
-		stream.addCollector( c );
+		//c = new PacketCollector( [ mf, ff ], handleMessage, true );
+		//stream.addCollector( c );
+		stream.collect( [ mf, ff ], handleMessage, true );
 	}
 	
 	

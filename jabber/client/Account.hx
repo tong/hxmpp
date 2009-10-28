@@ -17,15 +17,15 @@
 */
 package jabber.client;
 
-/**
 	//TODO required fields handling, x:data form handling
-	
-	<a href="http://www.xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a>
+/**
+	<a href="http://www.xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a><br/>
 */
 class Account {
 	
-	public dynamic function onRegistered( node : String ) : Void;
-	public dynamic function onRemoved() : Void;
+	public dynamic function onRegistrationFields( fields : Array<String> ) : Void;
+	public dynamic function onRegister( node : String ) : Void;
+	public dynamic function onRemove() : Void;
 	public dynamic function onPasswordChange( pass : String ) : Void;
 	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
@@ -36,52 +36,68 @@ class Account {
 	}
 	
 	/**
-		TODO
-	public function requestRegistrationForm() {
-		var self = this;
-		var iq = new xmpp.IQ();
-		iq.x = new xmpp.Register();
-		stream.sendIQ( iq );
-	}
 	*/
+	public function requestRegistrationFields( jid : String ) {
+		var iq = new xmpp.IQ( null, null, jid );
+		iq.x = new xmpp.Register();
+		var _this = this;
+		stream.sendIQ( iq, function(r:xmpp.IQ ) {
+			switch( r.type ) {
+			case result :
+				for( e in r.properties ) {
+					if( e.nodeName == "query" && e.get("xmlns") == xmpp.Register.XMLNS ) {
+						var fields = new Array<String>();
+						for( c in e.elements() ) {
+							if( c.nodeName == "x" ) {
+								//TODO
+							} else {
+								fields.push( c.nodeName );
+							}
+						}
+						_this.onRegistrationFields( fields );
+						return;
+					}
+				}
+			case error :
+				_this.onError( new jabber.XMPPError( _this, r ) );
+			default : //#
+			}
+		} );
+	}
 	
 	/**
 		Requests to register a new account.
 	*/
-	public function register( username : String, password : String, email : String, name : String ) : Bool {
-						  	
-		if( stream.status != jabber.StreamStatus.open ) return false;
-
+	//public function register( username : String, password : String, email : String, name : String ) : Bool {
+	public function register( reg : xmpp.Register ) : Bool {				  	
+		if( stream.status != jabber.StreamStatus.open )
+			return false;
 		var self = this;
 		var iq = new xmpp.IQ();
 		iq.x = new xmpp.Register();
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			switch( r.type ) {
-				case result :
-					
-					//TODO check required register fields
-					//var p = xmpp.Register.parse( iq.x.toXml() );
-					//var required = new Array<String>();
-					//onChange( new AccountEvent( self.stream ) );
-					
-					var iq = new xmpp.IQ( xmpp.IQType.set );
-					var submit = new xmpp.Register( username, password, email, name  );
-					iq.x = submit;
-					self.stream.sendIQ( iq, function(r:xmpp.IQ) {
-						switch( r.type ) {
-							case result :
-								//TODO
-								//var l = xmpp.Register.parse( iq.x.toXml() );
-								self.onRegistered( username );
-							case error:
-								self.onError( new jabber.XMPPError( self, r ) );
-							default : //#
-						}
-					} );
-				case error :
-					self.onError( new jabber.XMPPError( self, r ) );
-					
-				default : //#
+			case result :
+				//TODO check required register fields
+				//var p = xmpp.Register.parse( iq.x.toXml() );
+				//var required = new Array<String>();
+				var resp = new xmpp.IQ( xmpp.IQType.set );
+				resp.x = reg;
+				self.stream.sendIQ( resp, function(r:xmpp.IQ) {
+					switch( r.type ) {
+					case result :
+						//var l = xmpp.Register.parse( iq.x.toXml() );
+						//if( !l.registered ) {
+						//}
+						self.onRegister( reg.username );
+					case error:
+						self.onError( new jabber.XMPPError( self, r ) );
+					default : //#
+					}
+				} );
+			case error :
+				self.onError( new jabber.XMPPError( self, r ) );
+			default : //#
 			}
 		} );
 		return true;
@@ -98,13 +114,14 @@ class Account {
 		var self = this;
 		stream.sendIQ( iq, function(r) {
 			switch( r.type ) {
-				case result :
-				//TODO
-					//var l = xmpp.Register.parse( iq.x.toXml() );
-					self.onRemoved();
-				case error :
-					self.onError( new jabber.XMPPError( self, r ) );
-				default : //#
+			case result :
+				//var l = xmpp.Register.parse( iq.x.toXml() );
+				//if( !l.remove ) {
+				//}
+				self.onRemove();
+			case error :
+				self.onError( new jabber.XMPPError( self, r ) );
+			default : //#
 			}
 		} );
 	}
@@ -121,14 +138,16 @@ class Account {
 		var self = this;
 		stream.sendIQ( iq, function(r) {
 			switch( r.type ) {
-				case result :
-					var l = xmpp.Register.parse( iq.x.toXml() );
-					self.onPasswordChange( pass );
-				case error :
-					self.onError( new jabber.XMPPError( self, r ) );
-				default : //#
+			case result :
+				//var l = xmpp.Register.parse( iq.x.toXml() );
+				self.onPasswordChange( pass );
+			case error :
+				self.onError( new jabber.XMPPError( self, r ) );
+			default : //#
 			}
 		} );
 	}
+	
+	//function getRequiredFields()
 	
 }

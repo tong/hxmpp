@@ -31,6 +31,7 @@ import flash.external.ExternalInterface;
 		
 /**
 	Utility for debugging XMPP transfer.<br/>
+	Set the haXe compiler flag: -D XMPP_DEBUG to activate
 */
 class XMPPDebug {
 	

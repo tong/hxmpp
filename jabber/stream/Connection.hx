@@ -73,21 +73,21 @@ class Connection {
 		Try to connect the stream data connection.
 	*/
 	public function connect() {
-		throw "abstract";//new error.AbstractError();
+		throw "Abstract method";
 	}
 	
 	/**
 		Disconnects stream connection.
 	*/
 	public function disconnect() { //: Bool
-		throw "abstract"; //new error.AbstractError();
+		throw "abstract";
 	}
 	
 	/**
 		Starts/Stops reading data input.
 	*/
 	public function read( ?yes : Bool = true ) : Bool {
-		return throw "abstract";//throw new error.AbstractError();
+		return throw "Abstract method";
 	}
 	
 	/**
@@ -95,7 +95,7 @@ class Connection {
 	*/
 	public function write( t : String ) : String {
 	//public function write( t : haxe.io.Bytes ) : haxe.io.Bytes {
-		return throw "abstract";
+		return throw "Abstract method";
 	}
 	
 	/*

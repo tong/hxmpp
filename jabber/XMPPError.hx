@@ -17,6 +17,7 @@
 */
 package jabber;
 
+//TODO remove (?)
 class XMPPError {
 	
 	public var dispatcher(default,null) : Dynamic;

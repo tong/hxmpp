@@ -86,6 +86,21 @@ class DateTime {
 		var k = t.split( " " );
 		if( k.length == 1 )
 			return t;
+		#if (flash||php)
+		var b = k[0]+"T"+k[1];
+		if( offset == null )
+			b += "Z";
+		else {
+			b += "-";
+			if( offset > 9 )
+				b += Std.string( offset );
+			else {
+				b += "0"+Std.string( offset );
+			}
+			b += ":00";
+		}
+		return b;
+		#else
 		var b = new StringBuf();
 		b.add( k[0] );
 		b.add( "T" );
@@ -103,33 +118,7 @@ class DateTime {
 			b.add( ":00" );
 		}
 		return b.toString();
-	}
-	
-	/**
-		Create a Date object from a UTC datetime string.
-	*/
-	public static function createDate( t : String ) : Date {
-		if( !ereg_date.match( t ) )
-			return null;
-			/*
-		trace(ereg_date.matched(1));
-		trace(ereg_date.matched(2));
-		trace(ereg_date.matched(3));
-		trace(ereg_date.matched(4));
-		trace(ereg_date.matched(5));
-		trace(ereg_date.matched(6));
-		trace(ereg_date.matched(7));
-		trace(ereg_date.matched(8));
-		trace(ereg_date.matched(9));
-		trace(ereg_date.matched(10));
-		*/
-		var d = new Date( Std.parseInt( ereg_date.matched(1) ),
-						  Std.parseInt( ereg_date.matched(2) )-1,
-						  Std.parseInt( ereg_date.matched(3) ),
-						  Std.parseInt( ereg_date.matched(5) ),
-						  Std.parseInt( ereg_date.matched(6) ),
-						  Std.parseInt( ereg_date.matched(7) ) );
-		return d;
+		#end
 	}
 	
 }

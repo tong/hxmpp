@@ -48,13 +48,13 @@ USING THE BOSH CONNECTION
 To use BOSH for connecting you have to proxy you requests.
 .....
 
-# activate mod_proxy apache module
+# Activate mod_proxy apache module
 sudo ln -s /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled/
 
-# if required add following line to proxy.load to activate the proxy-http module
+# Add following line to proxy.load to activate the proxy-http module
 LoadModule proxy_http_module /usr/lib/apache2/modules/mod_proxy_http.so
 
-# add the proxy directive to the host settings in http.conf
+# Add the proxy directive to the host settings in your http.conf
 # This will proxy requests: htp://127.0.0.1/jabber -> http://127.0.0.1:7070/http-bind/
 <VirtualHost *:80>
 	...
@@ -64,10 +64,12 @@ LoadModule proxy_http_module /usr/lib/apache2/modules/mod_proxy_http.so
 	...
 </VirtualHost>
 
-# restart apache
+# Restart apache
 sudo /etc/init.d/apache2 restart
 
-####
+Now you can pass in the path to the constructor of the jabber.BOSHConection class:
+var cnx = new BOSHConnection( "domain.net", "localhost/jabber/" );
+
 
 
 XEPS SUPPORTED

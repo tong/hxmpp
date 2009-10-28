@@ -28,6 +28,6 @@ enum PresenceShow {
 	chat;
 	/** Busy */
 	dnd;
-	/** eXtended Away */
+	/** Extended Away */
 	xa;
 }

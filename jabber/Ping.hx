@@ -60,7 +60,7 @@ class Ping {
 	}
 	
 	/**
-		Stops the ping interval, if running-
+		Stops the ping interval.
 	*/
 	public function stop() {
 		active = false;

@@ -64,6 +64,8 @@ private class StreamFeatures {
 */
 class Stream {
 	
+	public static var packetIDLength = 5;
+	
 	public dynamic function onOpen() {}
 	public dynamic function onClose() {}
 	public dynamic function onError( ?e : Dynamic ) {}
@@ -77,7 +79,7 @@ class Stream {
 	public var features(default,null) : StreamFeatures;
 	/** Indicates if the version number of the XMPP stream ("1.0") should get added to the stream opening XML element */
 	public var version : Bool;
-	public var packetIdLength : Int;
+	//public var packetIdLength : Int;
 	
 	//TODO
 	public var dataFilters : List<TDataFilter>;
@@ -90,10 +92,9 @@ class Stream {
 	var numPacketsSent : Int;
 	//#end
 	
-	function new( c : Connection/*, jid : jabber.JID*/ ) {
+	function new( c : Connection ) {
 		if( c == null )
-			throw "No connection";
-	//	this.jid = jid;
+			throw "Stream connection is null";
 		collectors = new List();
 		interceptors = new List();
 		server = { features : new Hash() };
@@ -104,7 +105,6 @@ class Stream {
 		
 		setConnection( c );
 		
-		//packetIdLength = 5;
 		dataFilters = new List();
 		dataInterceptors = new List();
 		
@@ -140,7 +140,7 @@ class Stream {
 	*/
 	public function nextID() : String {
 		#if JABBER_DEBUG
-		return util.Base64.random( 5 )+"_"+numPacketsSent;
+		return util.Base64.random( packetIDLength )+"_"+numPacketsSent;
 		#else
 		return util.Base64.random( packetIdLength );
 		#end
@@ -199,11 +199,11 @@ class Stream {
 			return null;
 		for( i in dataInterceptors )
 			t = i.interceptData( haxe.io.Bytes.ofString(t) ).toString();
-		cnx.write( t );
+		var sent = cnx.write( t );
 		#if XMPP_DEBUG
-		XMPPDebug.out( t );
+		if( sent != null ) XMPPDebug.out( t );
 		#end
-		numPacketsSent++;
+		if( sent != null ) numPacketsSent++;
 		return t;
 	}
 	
@@ -268,12 +268,22 @@ class Stream {
 	}
 	
 	/**
-		Adds a packet collector to this stream and starts the timeout if not null.
+		Creates, adds and returns a packet collector.
+	*/
+	public function collect( filters : Iterable<xmpp.PacketFilter>, handler : Dynamic->Void, permanent : Bool = false ) : PacketCollector {
+		var c = new PacketCollector( filters, handler, permanent );
+		return ( addCollector( c ) ) ? c : null;
+	}
+	
+	/**
+		Adds a packet collector to this stream and starts the timeout if not null.<br/>
+		
 	*/
 	public function addCollector( c : PacketCollector ) : Bool {
 		if( Lambda.has( collectors, c ) ) return false;
 		collectors.add( c );
-		if( c.timeout != null ) c.timeout.start();
+		if( c.timeout != null )
+			c.timeout.start();
 		return true;
 	}
 	
@@ -303,6 +313,8 @@ class Stream {
 	*/
 	public function processData( buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) : Int {
 		
+		//trace("PROCESS DATA ("+bufpos+"/"+buflen+") " );
+			
 		if( status == StreamStatus.closed )
 			return -1;
 		
@@ -336,22 +348,28 @@ class Stream {
 		case pending :
 			return processStreamInit( XmlUtil.removeXmlHeader( t ), buflen );
 		case open :
-			//trace("PROCESS DATA ("+bufpos+"/"+buflen+") "+t );
 			
 			// HACK flash/js Xml bug !
 			#if (flash||js)
-			var r = ~/^(.+)(\/[a-zA-Z-]*)>$/;
-			if( !r.match( t ) ) {
+			/*
+			if( !~/^<([a-zA-Z0-9:_-]+)/.match(t) ) {
+				return 0;
+			}
+			*/
+			//if( !REG_HACK.match( t ) ) {
+			if( !StringTools.endsWith(t, ">") ) {
+				trace( "XML INVALID " );
 				//trace("XML fuk","error");
 				return 0;
 			}
 			#end
-		
+			
 			// filter data here ?
 			var x : Xml = null;
 			try {
+				//var s = haxe.Timer.stamp();
 				x = Xml.parse( t );
-				//trace("XML ok ");
+				//trace(t.length+"///"+(haxe.Timer.stamp()-s));
 			} catch( e : Dynamic ) {
 				#if JABBER_DEBUG
 				//trace("WAIT FOR MORE "+t,"warn" );
@@ -364,14 +382,18 @@ class Stream {
 		return 0;
 	}
 	
+	#if (flash||js)
+	static inline var REG_HACK = ~/(.+)(\/[a-zA-Z-]*)>$/;
+	#end
+	
 	/**
 		Inject incoming XML data to handle.<br/>
 		Returns array of handled packets.
 	*/
 	public function handleXml( x : Xml ) : Array<xmpp.Packet> {
 		var ps = new Array<xmpp.Packet>();
-		for( x in x.elements() ) {
-			var p = xmpp.Packet.parse( x );
+		for( e in x.elements() ) {
+			var p = xmpp.Packet.parse( e );
 			handlePacket( p );
 			ps.push( p );
 		}
@@ -383,10 +405,14 @@ class Stream {
 		Returns true if the packet got handled.
 	*/
 	public function handlePacket( p : xmpp.Packet ) : Bool {
-		//trace("handlePacket");
 		#if XMPP_DEBUG
-		if( p.errors.length > 0 ) XMPPDebug.error( p.toString() );
-		else XMPPDebug.inc( p.toString() );
+		/*
+		if( p.errors.length > 0 )
+			XMPPDebug.error( p.toString() );
+		else
+			XMPPDebug.inc( p.toString() );
+		*/
+		XMPPDebug.inc( p.toString() );
 		#end
 		var collected = false;
 		for( c in collectors ) {

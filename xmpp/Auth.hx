@@ -53,21 +53,19 @@ class Auth {
 	
 	public static function parse( x : Xml ) : xmpp.Auth {
 		var a = new xmpp.Auth();
-		xmpp.Packet.reflectPacketNodes( x, a );
-		/* TODO
+		//xmpp.Packet.reflectPacketNodes( x, a );
 		for( e in x.elements() ) {
 			var v : String = null;
-			try { v = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
+			try v = e.firstChild().nodeValue catch( e : Dynamic ) {}
 			if( v != null ) {
 				switch( e.nodeName ) {
-					case "username" : a.username = v;
-					case "password" : a.password = v;
-					case "digest"   : a.digest = v;
-					case "resource" : a.resource = v;
+				case "username" : a.username = v;
+				case "password" : a.password = v;
+				case "digest"   : a.digest = v;
+				case "resource" : a.resource = v;
 				}
 			}
 		}
-		*/
 		return a;
 	}
 	

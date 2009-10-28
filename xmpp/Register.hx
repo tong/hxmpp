@@ -19,6 +19,8 @@ package xmpp;
 
 import util.XmlUtil;
 
+//TODO  dataform, oob
+
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a>
 */
@@ -30,7 +32,6 @@ class Register {
 	public var password : String;
 	public var email : String;
 	public var name	: String;
-	/* TODO
 	public var nick : String;
 	public var first : String;
 	public var last	: String;
@@ -46,17 +47,15 @@ class Register {
 	public var key	: String;
 	
 	public var registered : Bool;
-	//public var form : xmpp.DataForm;
-	*/
-	/** */
 	public var remove : Bool;
+	//public var dataform : xmpp.DataForm;
 	
 	public function new( ?username:	String, ?password : String, ?email : String, ?name : String ) {
 		this.username = username;
 		this.password = password;
 		this.email = email;
 		this.name = name;
-		remove = false;
+		registered = remove = false;
 	}
 
 	public function toXml() : Xml {
@@ -64,17 +63,36 @@ class Register {
 		if( remove ) {
 			x.addChild( Xml.createElement( "remove" ) );
 		} else {
-			if( username != null ) x.addChild( XmlUtil.createElement( "username", username ) );
-			if( password != null ) x.addChild( XmlUtil.createElement( "password", password ) );
-			if( email != null ) x.addChild( XmlUtil.createElement( "email", email ) );
-			if( name != null ) x.addChild( XmlUtil.createElement( "name", name ) );
-			//...
+			createElement( x, "username" );
+			createElement( x, "password" );
+			createElement( x, "email" );
+			createElement( x, "name" );
+			createElement( x, "nick" );
+			createElement( x, "first" );
+			createElement( x, "last" );
+			createElement( x, "address" );
+			createElement( x, "city" );
+			createElement( x, "state" );
+			createElement( x, "zip" );
+			createElement( x, "phone" );
+			createElement( x, "url" );
+			createElement( x, "date" );
+			createElement( x, "misc" );
+			createElement( x, "text" );
+			createElement( x, "key" );
 		}
 		return x;
 	}
 	
 	public inline function toString() : String {
 		return toXml().toString();
+	}
+	
+	function createElement( x : Xml, id : String ) {
+		return if( Reflect.hasField( this, id ) )
+			x.addChild( XmlUtil.createElement( id, Reflect.field( this, id ) ) );
+		else
+			null;
 	}
 	
 	public static function parse( x : Xml ) : xmpp.Register {
@@ -88,6 +106,23 @@ class Register {
 				case "password" : p.password = v.toString();
 				case "email" : p.email = v.toString();
 				case "name" : p.name = v.toString();
+				case "nick" : p.nick = v.toString();
+				case "first" : p.first = v.toString();
+				case "last" : p.last = v.toString();
+				case "address" : p.address = v.toString();
+				case "city" : p.city = v.toString();
+				case "state" : p.state = v.toString();
+				case "zip" : p.zip = v.toString();
+				case "phone" : p.phone = v.toString();
+				case "url" : p.url = v.toString();
+				case "date" : p.date = v.toString();
+				case "misc" : p.misc = v.toString();
+				case "text" : p.text = v.toString();
+				case "key" : p.key = v.toString();
+				case "registered" : p.registered = true; 
+				case "remove" : p.remove = true; 
+			//	case "x" :
+				//TODO
 				//case "remove" :
 				//	p.remove = true;
 				//	break;

@@ -101,14 +101,26 @@ class Packet {
 			} catch( e : Dynamic ) {
 				continue;
 			};
-			if( v != null )
-				Reflect.setField( p, e.nodeName, v );
+			if( v != null ) {
+				try {
+					Reflect.setField( p, e.nodeName, v );
+				} catch( e : Dynamic ) {
+					#if JABBER_DEBUG
+					trace( "Unrecognized packet node "+e.nodeName );
+					#end
+				}
+			}
 		}
 		return p;
 	}
 	
+	public static function reflectAttribute( o : Dynamic, name : String ) {
+		var v = Reflect.field( o, name );
+		 
+	}
+	
 	/*TODO replace util.XMLUtil
-	public static function createXMLElement( n : String, ?d : String ) : Xml {
+	public static function createElement( n : String, ?d : String ) : Xml {
 		var x = Xml.createElement( n );
 		if( d != null ) x.addChild( Xml.createPCData( d ) );
 		return x;
