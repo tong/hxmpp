@@ -23,6 +23,7 @@ import flash.events.NetStatusEvent;
 
 /**
 	flash9
+	RTMP jingle transport base.
 */
 class RTMPTransport {
 	
@@ -55,7 +56,7 @@ class RTMPTransport {
 		nc.close();
 	}
 	
-	//public function ping() {
+	//TODO public function ping() {
 	
 	function netStatusHandler( e : NetStatusEvent ) {
 		if( StringTools.startsWith( e.info.code, "NetStream.Buffer" ) )

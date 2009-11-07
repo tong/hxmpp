@@ -91,9 +91,9 @@ class Packet {
 	
 	/**
 		Reflects the elements of the XML into the packet.
-		TODO remove
 	*/
 	public static function reflectPacketNodes<T>( x : Xml, p : T ) : T {
+		//TODO remove
 		for( e in x.elements() ) {
 			var v : String = null;
 			try {

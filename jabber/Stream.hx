@@ -25,7 +25,6 @@ import jabber.stream.PacketTimeout;
 import xmpp.filter.PacketIDFilter;
 import util.XmlUtil;
 
-
 private typedef TDataFilter = {
 	function filterData( t : haxe.io.Bytes ) : haxe.io.Bytes;
 }
@@ -38,12 +37,11 @@ private typedef Server = {
 	var features : Hash<Xml>;
 	////var domain : String;
 	//var allowsRegister : Bool;
-	////var tls : { has : Bool, required : Bool };
+	///var tls : { has : Bool, required : Bool };
 }
 
-//TODO
 private class StreamFeatures {
-	var l : List<String>; // TODO var features : Hash<StreamFeature>;
+	var l : List<String>;
 	public function new() {
 		l = new List();
 	}
@@ -57,7 +55,6 @@ private class StreamFeatures {
 		return true;
 	}
 }
-
 
 /**
 	Abstract base for XMPP streams.
@@ -82,8 +79,8 @@ class Stream {
 	//public var packetIdLength : Int;
 	
 	//TODO
-	public var dataFilters : List<TDataFilter>;
-	public var dataInterceptors : List<TDataInterceptor>;
+	//public var dataFilters : List<TDataFilter>;
+	//public var dataInterceptors : List<TDataInterceptor>;
 	
 	var collectors : List<PacketCollector>; // TODO public var collectors : Array<TPacketCollector>; 
 	var interceptors : List<TPacketInterceptor>; // TODO public var interceptors : Array<TPacketCollector>; 
@@ -105,8 +102,8 @@ class Stream {
 		
 		setConnection( c );
 		
-		dataFilters = new List();
-		dataInterceptors = new List();
+		//dataFilters = new List();
+		//dataInterceptors = new List();
 		
 		numPacketsSent = 0;
 	}
@@ -142,7 +139,7 @@ class Stream {
 		#if JABBER_DEBUG
 		return util.Base64.random( packetIDLength )+"_"+numPacketsSent;
 		#else
-		return util.Base64.random( packetIdLength );
+		return util.Base64.random( packetIDLength );
 		#end
 	}
 	
@@ -197,8 +194,8 @@ class Stream {
 	public function sendData( t : String ) : String {
 		if( !cnx.connected )
 			return null;
-		for( i in dataInterceptors )
-			t = i.interceptData( haxe.io.Bytes.ofString(t) ).toString();
+	//	for( i in dataInterceptors )
+	//		t = i.interceptData( haxe.io.Bytes.ofString(t) ).toString();
 		var sent = cnx.write( t );
 		#if XMPP_DEBUG
 		if( sent != null ) XMPPDebug.out( t );
@@ -213,15 +210,9 @@ class Stream {
 	*/
 	/*
 	public function send( t : haxe.io.Bytes ) : haxe.io.Bytes {
-		//TODO
-		if( !cnx.connected ) return null;
-		var s = cnx.writeBytes( t );
-		if( s == null ) return null;
-		numPacketsSent++;
-		#if XMPPDebug.outgoing( t ); #end
-		return s;
 	}
 	*/
+	
 	/*
 	public function interceptPacket( p : xmpp.Packet ) {
 		for( i in interceptors )
@@ -277,7 +268,6 @@ class Stream {
 	
 	/**
 		Adds a packet collector to this stream and starts the timeout if not null.<br/>
-		
 	*/
 	public function addCollector( c : PacketCollector ) : Bool {
 		if( Lambda.has( collectors, c ) ) return false;
@@ -290,15 +280,18 @@ class Stream {
 	/**
 	*/
 	public function removeCollector( c : PacketCollector ) : Bool {
-		if( !collectors.remove( c ) ) return false;
-		if( c.timeout != null ) c.timeout.stop();
+		if( !collectors.remove( c ) )
+			return false;
+		if( c.timeout != null )
+			c.timeout.stop();
 		return true;
 	}
 	
 	/**
 	*/
-	public function addInterceptor(i : TPacketInterceptor ) : Bool {
-		if( Lambda.has( interceptors, i ) ) return false;
+	public function addInterceptor( i : TPacketInterceptor ) : Bool {
+		if( Lambda.has( interceptors, i ) )
+			return false;
 		interceptors.add( i );
 		return true;
 	}
@@ -312,23 +305,15 @@ class Stream {
 	/**
 	*/
 	public function processData( buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) : Int {
-		
-		//trace("PROCESS DATA ("+bufpos+"/"+buflen+") " );
-			
 		if( status == StreamStatus.closed )
 			return -1;
-		
 		//TODO .. data filters
 		var t = buf.readString( bufpos, buflen );
-
-		//TODO 
-		if( xmpp.Stream.eregStreamClose.match( t ) ) {
+		if( xmpp.Stream.REGEXP_CLOSE.match( t ) ) {
 			close( true );
 			return -1;
 		}
-		// TODO
-		if( ~/stream:error/.match( t ) ) {
-			trace(t);
+		if( xmpp.Stream.REGEXP_ERROR.match( t ) ) {
 			var err : xmpp.StreamError = null;
 			try {
 				err = xmpp.StreamError.parse( Xml.parse( t ) );
@@ -341,39 +326,30 @@ class Stream {
 			close( true );
 			return -1;
 		}
-		
 		switch( status ) {
 		case closed :
-			return buflen; //hm?
+			return -1;//buflen; //hm?
 		case pending :
 			return processStreamInit( XmlUtil.removeXmlHeader( t ), buflen );
 		case open :
-			
 			// HACK flash/js Xml bug !
 			#if (flash||js)
-			/*
-			if( !~/^<([a-zA-Z0-9:_-]+)/.match(t) ) {
-				return 0;
-			}
-			*/
-			//if( !REG_HACK.match( t ) ) {
-			if( !StringTools.endsWith(t, ">") ) {
-				trace( "XML INVALID " );
-				//trace("XML fuk","error");
+			if( !REG_HACK.match( t ) ) {
+			//if( !StringTools.startsWith(t,"<") || !StringTools.endsWith(t, ">") ) {
+				#if JABBER_DEBUG
+				trace( "Invalid XML " );
+				#end
 				return 0;
 			}
 			#end
-			
 			// filter data here ?
 			var x : Xml = null;
 			try {
-				//var s = haxe.Timer.stamp();
 				x = Xml.parse( t );
-				//trace(t.length+"///"+(haxe.Timer.stamp()-s));
 			} catch( e : Dynamic ) {
-				#if JABBER_DEBUG
+				//#if JABBER_DEBUG
 				//trace("WAIT FOR MORE "+t,"warn" );
-				#end
+				//#end
 				return 0; // wait for more data
 			}
 			handleXml( x );

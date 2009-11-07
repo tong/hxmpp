@@ -86,7 +86,7 @@ XEPS SUPPORTED
 * 0077 In-Band Registration
 * 0082 XMPP Date and Time Profiles
 * 0085 ChatStateNotification
-* 0091 DelayedDelivery
+#* 0091 DelayedDelivery [deprectaed ]
 * 0092 SoftwareVersion
 * 0106 JID Escaping
 * 0114 Jabber Component Protocol

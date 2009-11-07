@@ -2,9 +2,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta name="description" content="open source haXe library for building XMPP/jabber based clients and components">
-<meta name="keywords" content="XMPP,jabber,haXe,bosh">
-<meta name="copyright" content="&copy; 2009 disktree.net">
+<meta name="description" content="Open source haXe library for building XMPP/jabber based clients and components">
+<meta name="keywords" content="XMPP,jabber,haXe,flash,javascript,neko,nekovm,client,component,source">
+<meta name="copyright" content="2009 disktree.net">
 <meta name="author" content="disktree">
 <meta name="publisher" content="disktree">
 <title>HXMPP - Jabber/XMPP haXe library</title>
@@ -23,19 +23,20 @@
 		<td class="content">
 			<h3>
 				HXMPP is an open source haXe library for building XMPP based clients and components,<br/>
-				targetting flash9+, javascript, neko, php and soon c++.
+				targetting flash9+, javascript, neko, php and  c++ (beta).
 			</h3>
 			
 			<h2 id="source">Source code.</h2>
 			<div>
-				Source code can be cloned from our GIT respository by typing:
+				Source code can be cloned from our GIT respository:
 				<pre class="command">git clone git://83.64.208.21/hxmpp.git</pre>
-				Or <a href="http://disktree.spektral.at/git/">browsed online</a>.<br/>
+				Or <a href="http://disktree.spektral.at/git/?a=summary&p=hxmpp">browsed online</a>.<br/>
 			</div>
 			
 			<h2>XEPs implemented.</h2>
-			The XEPs marked with an asterisk already got used in a project but are in a experimental state.
+			The <a href="http://xmpp.org/extensions">XEPs</a> marked with an asterisk already got used in a project but are in a experimental state.
 			<ul>
+				<li><a href="http://xmpp.org/extensions/xep-0004.html">XEP-0004 Data Forms</a></li>
 				<li><a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012 LastActivity</a></li>
 				<li><a href="http://xmpp.org/extensions/xep-0016.html">XEP-0016 PrivacyLists</a></li>
 				<li><a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030 ServiceDiscovery</a></li>
@@ -51,10 +52,12 @@
 				<li><a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106 JID Escaping</a></li>
 				<li><a href="http://xmpp.org/extensions/xep-0114.html">XEP-0114 Jabber Component Protocol</a></li>
 				<li><a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115 Entity Capabilities</a> *</li>
+				<li><a href="http://xmpp.org/extensions/xep-0124.html">XEP-0124 BOSH</a> ***</li>
 				<li><a href="http://xmpp.org/extensions/xep-0163.html">XEP-0163 PersonalEvent</a> *</li>
 				<li><a href="http://xmpp.org/extensions/xep-0191.html">XEP-0191 Simple Communications Blocking</a>  *</li>
 				<li><a href="http://xmpp.org/extensions/xep-0199.html">XEP-0199 Ping</a></li>
 				<li><a href="http://xmpp.org/extensions/xep-0203.html">XEP-0203 DelayedDelivery</a></li>
+				<li><a href="http://xmpp.org/extensions/xep-0203.html">XEP-0203 BOSH</a> ***</li>
 			</ul>
 			Please check the latest <a href="#source">source code</a>; there may reside quite useable protocol extensions not listed here.
 			
@@ -68,7 +71,11 @@
 				<ul>
 					<li class="biglist"><b>XMPP_DEBUG</b><br/>
 						Prints the XML input/output stream.<br/>
-						On flash/js firebug gets used if detected.</li>
+						<ul>
+							<li>On flash/js firebug gets used if detected.</li>
+							<li>On terminal targets output gets colored.</li>
+						</ul>
+					</li>
 					<li class="biglist"><b>JABBER_DEBUG</b><br/>
 						Verbose debug messages.</li>
 					<li class="biglist"><b>JABBER_SOCKETBRIDGE</b><br/>
@@ -84,15 +91,30 @@
 			
 			<h2>Issues.</h2>
 			<div>
-				Report any issues to the issue tracker at <a href="http://code.google.com/p/hxmpp/issues/list">code.google.com</a>.<br/>
-				Or send an IM.
+				Report any issues to the issue tracker at <a href="http://code.google.com/p/hxmpp/issues/list">code.google.com</a>, or send an IM.
 			</div>
 			
 			<h2>License.</h2>
 			<div>
-				HXMPP is licensed under <a href="http://www.gnu.org/licenses/lgpl-3.0.txt">GNU lesser general public license v3.</a>
+				HXMPP is licensed under <a href="http://www.gnu.org/licenses/lgpl-3.0.txt">GNU Lesser General Public License v3.</a>
 			</div>
 			
+			<!-- 
+			<h2>Apps built with HXMPP.</h2>
+			<div>While still under heavy development, several applications already got built with the library.<br/>
+				<ul>
+					<li><a href="http://roar.disktree.net">ROAR</a>, a public, push style microblogging service.</li>
+					<li>ZOD, a programmable multi user chat bot.</li>
+					<li>A anonymous, web based multi user chat.</li>
+					<li>Proximity, a web based, one2one online strategy game.</li>  
+				</ul>
+			</div>
+			
+			<h2>Links.</h2>
+			<div><a href="http://haxe.org">http://haxe.org</a></div>
+			<div><a href="http://xmpp.org">http://xmpp.org</a></div>
+			 -->
+			 
 			<h2>Credits/Contact.</h2>
 			<div>
 				xmpp://tong@jabber.spektral.at
@@ -101,4 +123,4 @@
 		</td>
 	</tr>
 </table>
-<div class="footer">© 2009 disktree.net</div>
+<div id="footer">© 2009 disktree.net</div>

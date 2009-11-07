@@ -21,16 +21,14 @@ import util.XmlUtil;
 
 class Stream {
 	
-	public static var XMLNS_STREAM 	  = "http://etherx.jabber.org/streams";
-	public static var XMLNS_CLIENT 	  = "jabber:client";
-	public static var XMLNS_SERVER 	  = "jabber:client";
-	public static var XMLNS_COMPONENT = "jabber:component:accept";
-	
-	public static var CLOSE = "</stream:stream>";
-	public static var ERROR = "</stream:error>";
-	
-	public static var eregStreamClose = new EReg( CLOSE, "" );
-	public static var eregStreamError = new EReg( ERROR, "" );
+	public static inline var XMLNS_STREAM 	  = "http://etherx.jabber.org/streams";
+	public static inline var XMLNS_CLIENT 	  = "jabber:client";
+	public static inline var XMLNS_SERVER 	  = "jabber:client";
+	public static inline var XMLNS_COMPONENT = "jabber:component:accept";
+	public static inline var CLOSE = "</stream:stream>";
+	public static inline var ERROR = "</stream:error>";
+	public static inline var REGEXP_CLOSE = new EReg( CLOSE, "" );
+	public static inline var REGEXP_ERROR = new EReg( ERROR, "" );
 	
 	/**
 	*/
@@ -39,18 +37,18 @@ class Stream {
 		var b = new StringBuf();
 		b.add( '<stream:stream xmlns="' );
 		b.add( xmlns );
-		b.add( '" xmlns:stream="http://etherx.jabber.org/streams" to="' );
+		b.add( '" xmlns:stream="'+XMLNS_STREAM+'" to="' );
 		b.add( to );
-		b.add( '"' );
-		// TODO xmlns:xml="http://www.w3.org/XML/1998/namespace"
-		if( version ) b.add( ' version="1.0"' );
+		b.add( '" xmlns:xml="http://www.w3.org/XML/1998/namespace" ' );
+		if( version )
+			b.add( 'version="1.0" ' );
 		if( lang != null ) {
-			b.add( ' xml:lang="' );
+			b.add( 'xml:lang="' );
 			b.add( lang );
 			b.add( '"' );
 		}
 		b.add( '>' );
-		return if( xmlHeader ) XmlUtil.XML_HEADER+b.toString() else b.toString();
+		return ( xmlHeader ) ? XmlUtil.XML_HEADER+b.toString() : b.toString();
 	}
 	
 	/*

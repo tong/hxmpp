@@ -20,7 +20,8 @@ package jabber.jingle.transport;
 #if flash
 
 /**
-	flash9
+	flash9.
+	A outgoing RTMP transport.
 */
 class RTMPOutput extends RTMPTransport {
 	

@@ -34,12 +34,11 @@ class PersonalEventListener {
 	//public dynamic function onEventMessage( m : xmpp.Message ) : Void;
 	
 	public var stream(default,null) : Stream;
+	
 	var listeners : List<Listener>;
 	
 	public function new( stream : Stream ) {
-		
 		this.stream = stream;
-		
 		listeners = new List();
 		stream.addCollector( new jabber.stream.PacketCollector( [ cast new xmpp.filter.MessageFilter( xmpp.MessageType.normal ),
 																  cast new xmpp.filter.PacketPropertyFilter( xmpp.PubSubEvent.XMLNS, "event" ) ],

@@ -30,6 +30,7 @@ import xmpp.vcard.Geo;
 	<a href="http://www.xmpp.org/extensions/xep-0054.html">XEP-0054: vcard-temp</a>
 	
 	Partial implemented!
+	TODO move less used fields into a hash
 */
 class VCard {
 	

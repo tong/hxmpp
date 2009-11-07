@@ -58,7 +58,8 @@ class ByteStream {
 		b.sid = x.get( "sid" );
 		for( e in x.elements() ) {
 			switch( e.nodeName ) {
-			case "streamhost" : b.streamhosts.push( ByteStreamHost.parse( e ) );
+			case "streamhost" :
+				b.streamhosts.push( ByteStreamHost.parse( e ) );
 			case "streamhost-used" :
 				b.streamhost_used = e.get( "jid" );
 				break;

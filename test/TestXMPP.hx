@@ -1,7 +1,6 @@
 
 import TestXMPPPacket;
 
-
 class TestXMPP {
 	
 	static function main() {
@@ -52,7 +51,7 @@ class TestXMPP {
 
 	//	r.add( new TestXMPPMUC() );
 	//	r.add( new TestXMPPRPC() );
-r.add( new TestXMPPJingle() );
+//r.add( new TestXMPPJingle() );
 	//	r.add( new TestXMPPFileTransfer() );
 		
 		///// packet filters

@@ -24,11 +24,6 @@ import xmpp.roster.Item;
 import xmpp.roster.AskType;
 import xmpp.roster.Subscription;
 
-/* TODO
-interface RosterItem {
-}
-*/
-
 enum RosterSubscriptionMode {
 	/** Accept all subscription and unsubscription requests. */
 	//acceptAll; //TODO
@@ -51,7 +46,7 @@ class Roster {
 	public dynamic function onAdd( items : Array<Item> ) : Void;
 	public dynamic function onRemove( items : Array<Item> ) : Void;
 	public dynamic function onUpdate( items : Array<Item> ) : Void;
-	public dynamic function onPresence( item : Item, p : xmpp.Presence ) : Void;
+	public dynamic function onPresence( item : Item, p : xmpp.Presence ) : Void; //TODO remove (?)
 	public dynamic function onResourcePresence( resource : String, p : xmpp.Presence  ) : Void;
 	public dynamic function onSubscribed( item : Item ) : Void;
 	public dynamic function onUnsubscribed( item : Item ) : Void;
@@ -76,6 +71,7 @@ class Roster {
 		presence = new PresenceManager( stream );
 		resources = new Hash();
 		presenceMap = new Hash();
+		// collect presences and roster IQs
 		stream.addCollector( new PacketCollector( [cast new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence )], handleRosterPresence, true ) );
 		stream.addCollector( new PacketCollector( [cast new xmpp.filter.IQFilter( xmpp.Roster.XMLNS )], handleRosterIQ, true ) );	
 	}
@@ -226,7 +222,7 @@ class Roster {
 			case subscribe :
 				switch( subscriptionMode ) {
 				case acceptAll(s) :
-					trace(">>>>>>>>>>>>>>>>>>>>>>>><<<");
+					//trace(">>>>>>>>>>>>>>>>>>>>>>>><<<");
 					confirmSubscription( p.from, true );
 					//TODO subscribe to ?
 					if( s ) subscribe( p.from );
@@ -256,7 +252,7 @@ class Roster {
 				
 			default :
 				//TODO check
-				trace( "???? check "+p.type );
+			//	trace( "???? check "+p.type );
 				//onPresence( i, p );
 			}
 		}

@@ -52,7 +52,6 @@ class TopLevelPacketListener<T> {
 	
 	// override me if you want
 	function handlePacket( p : T ) {
-		//trace("MMMMMMMMMMMMMMMMMMMMMMMMMM "+p );
 		this.onPacket( p );
 	}
 	

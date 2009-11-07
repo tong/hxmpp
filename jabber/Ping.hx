@@ -35,7 +35,7 @@ class Ping {
 	
 	public var stream(default,null) : Stream;
 	/** Ping interval ms */
-	public var interval : Int; //(default,setInterval) TODO
+	public var interval : Int;
 	/** The pinged target entity */
 	public var target : String;
 	public var active(default,null) : Bool;
@@ -50,7 +50,7 @@ class Ping {
 		this.interval = ( interval != null ) ? interval : defaultInterval;
 		active = false;
 	}
-	
+
 	/**
 		Starts the ping interval.
 	*/
@@ -78,6 +78,10 @@ class Ping {
 		iq.x = new xmpp.Ping();
 		var me = this;
 		var timeoutHandler = function( c : jabber.stream.PacketCollector ) {
+			if( me.active ) {
+				me.timer.stop();
+				me.timer = null;
+			}
 			me.onTimeout( to );
 		};
 		stream.sendIQ( iq, handlePong, false, new jabber.stream.PacketTimeout( [timeoutHandler], interval ) );

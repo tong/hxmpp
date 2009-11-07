@@ -17,13 +17,11 @@
 */
 package jabber.stream;
 
-import haxe.Timer;
-#if neko
-typedef Timer = util.Timer;
-#end
+import util.Timer;
+
+//TODO inline the event dispatcher code !
 
 /**
-	//TODO inline the event dispatcher stuff
 */
 class PacketTimeout extends event.Dispatcher<PacketCollector> {
 	

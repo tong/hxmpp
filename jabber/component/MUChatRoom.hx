@@ -19,12 +19,14 @@ package jabber.component;
 
 import jabber.stream.PacketCollector;
 
-
 /**
 */
-private class HistoryMessage extends xmpp.Message {
-	public function new( roomJID : String, from : String, body : String, stamp : String ) {
-		super( null, body, null, xmpp.MessageType.groupchat, null, roomJID );
+class HistoryMessage extends xmpp.Message {
+	public var nick(default,null) : String;
+	public function new( nick : String, body : String, from : String, stamp : String ) {
+		super( null, body );
+		type = xmpp.MessageType.groupchat;
+		this.nick = nick;
 		properties.push( new xmpp.Delayed( from, stamp ).toXml() );
 	}
 }
@@ -36,6 +38,7 @@ class History {
 	public static var defaultHistoryLength : Int = 20;
 	
 	public var length(default,setLength) : Int;
+	//public var currentLength(getCurrentLength,null) : Int;
 	
 	var messages : Array<HistoryMessage>;
 	
@@ -69,11 +72,11 @@ class History {
 
 //TODO 
 //interface Occupant {
-class MUChatOccupant {
+//class MUChatOccupant {
+class Occupant {
 	
 	public var room : MUChatRoom;
-	
-	public var jid : String;
+	public var jid : String; // real JID
 	public var nick : String;
 	public var presenceType : xmpp.PresenceType;
 	public var presenceShow : xmpp.PresenceShow ;
@@ -92,11 +95,15 @@ class MUChatOccupant {
 	function getItem() : xmpp.muc.Item {
 		return new xmpp.muc.Item( affiliation, role, null, jid );
 	}
+	
+	public function toString() : String {
+		return "MUChatOccupant("+jid+","+nick+","+presenceType+")";
+	}
 }
 
 
 /**
-	Chatroom for muc services.
+	Chatroom for MUC services.
 */
 class MUChatRoom {
 	
@@ -131,17 +138,18 @@ class MUChatRoom {
 	/** */
 	public var locked(default,null) : Bool;
 	/** JID of the room owner */
-	public var owner(default,null) : String;
+	public var owner(default,null) : Occupant;
 	/** Message history */
-	public var history : History;
+	public var history(default,null) : History;
 	/** */
 	//public var isLogging : Bool; // 7.1.14 Room Logging
 	/** */
 	public var stream(default,null) : Stream;
 	
-	
 	public function new( stream : Stream, name : String,
-						 ?password : String, ?maxOccupants : Int = -1, ?historyLength : Int) {
+						 ?password : String,
+						 ?maxOccupants : Int = -1,
+						 ?historyLength : Int) {
 		
 		// phpbug ?
 //		if( password.length == 0 )
@@ -164,9 +172,8 @@ class MUChatRoom {
 		stream.addCollector( new PacketCollector( [f], handlePacket, true ) );
 	}
 	
-	
 	/**
-		Inject a packet to handle.
+		Inject any packet for processing.
 	*/
 	public function handlePacket( p : xmpp.Packet ) {
 		switch( p._type ) {
@@ -181,44 +188,40 @@ class MUChatRoom {
 		Inject a presence packet to handle.
 	*/
 	public function handlePresence( p : xmpp.Presence ) {
-		
 		var nick = jabber.MUCUtil.getOccupant( p.to );
 		if( nick == null ) {
 			sendErrorPresence( p.from, xmpp.ErrorType.modify, xmpp.ErrorCondition.JID_MALFORMED, false );
 			return;
 		}
-		
 		var occupant = occupants.get( nick );
 		var newOccupant = false;
-		
-		// new occupant
-		if( occupant == null ) {
+		if( occupant == null ) { // new occupant
 			if( p.type != null || p.type == xmpp.PresenceType.unavailable ) {
-				trace( "INVALID PRESENCE", "warn" );
+				//trace( "INVALID PRESENCE", "warn" );
 				return;
 			}
 			trace( "NEW OCCUPANT", "info" );
 			newOccupant = true;
 			occupant = handleNewOccupant( nick, p );
-			if( occupant == null )
+			if( occupant == null ) {
 				return;
-			else {
+			} else {
 				onJoin( occupant );
 			}
+		} else {
+			// handle occupant leave
+			if( p.type == xmpp.PresenceType.unavailable ) {
+				handleRoomLeave( occupant );
+				return;
+			}
 		}
-		
-		// handle occupant leave
-		if( !newOccupant && p.type == xmpp.PresenceType.unavailable ) {
-			handleRoomLeave( occupant );
-			return;
-		}
-		
-		// send updated presence to all occupants
+		// broadcast updated presence to all occupants
 		publishPresence( occupant );
-	
 		// send message history to new occupant
 		if( newOccupant ) {
+			//trace("SÄND HISORY.." +Lambda.count(history) );
 			for( m in history ) {
+				m.from = roomJID( m.nick );
 				m.to = occupant.jid;
 				stream.sendData( m.toString() );
 			}
@@ -245,19 +248,46 @@ class MUChatRoom {
 		} else {
 			// add message to history
 			if( history.length != -1 )
-				history.push( new HistoryMessage( roomJID( occupant.nick ), occupant.jid, m.body, xmpp.DateTime.format( Date.now().toString() ) ) );
+				history.push( new HistoryMessage( occupant.nick, m.body, occupant.jid, xmpp.DateTime.toUTC( Date.now().toString() ) ) );
 			// fire message event
 			onMessage( occupant, m );
 		}
-		// send message to all occupants
+		// broadcast message to all occupants
 		m.from = roomJID( occupant.nick );
 		publishMessage( m );
 	}
 	
+	/**
+		Force send message history.
+	*/
+	/*
+	public function sendHistory( nick : String ) {
+	<message
+    from='darkcave@chat.shakespeare.lit/firstwitch'
+    to='hecate@shakespeare.lit/broom'
+    type='groupchat'>
+  <body>Thrice the brinded cat hath mew'd.</body>
+  <delay xmlns='urn:xmpp:delay'
+     from='crone1@shakespeare.lit/desktop'
+     stamp='2002-10-13T23:58:37Z'/>
+</message>
+	*/
+		//trace("SEND HISTORY");
+	/*
+		var o = occupants.get( nick );
+		trace("SEND HISTORY...................");
+		trace(o);
+		for( msg in history ) {
+			msg.to = jid+"/"+o.nick;
+			stream.sendData( msg.toString() );
+		}
+	}
+		*/
+	
 	
 	function handleIQ( iq : xmpp.IQ ) {
 		if( locked ) {
-			if( iq.from != owner || iq.type != xmpp.IQType.set || iq.x == null || iq.x.toXml().firstElement() == null ) {
+			if( iq.from != owner.jid || iq.type != xmpp.IQType.set || iq.x == null || iq.x.toXml().firstElement() == null ) {
 				return;
 			}
 			var x = xmpp.DataForm.parse( iq.x.toXml().firstElement() );
@@ -267,16 +297,12 @@ class MUChatRoom {
 			locked = false;
 			stream.sendPacket( new xmpp.Message( iq.from, defaultUnlockMessage, null, xmpp.MessageType.groupchat, null, jid ) );
 			stream.sendPacket( new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, jid ) );
-			//trace("ROOM UNLOCKED");
-			//onJoin( occupant );
+			trace("ROOM UNLOCKED "+owner );
 			return;
 		}
 		//...
 	}
 	
-	/**
-		Handle inital presence from new occupants.
-	*/
 	function handleNewOccupant( nick : String, p : xmpp.Presence ) : Occupant {
 		var hasMUCExt = false;
 		for( prop in p.properties ) {
@@ -299,11 +325,10 @@ class MUChatRoom {
 		}
 		var occupant = new Occupant( this, p.from, nick, p.type, p.show );
 		if( locked ) {
-			occupants.set( nick, occupant );
-			owner = occupant.jid;
+			owner = occupant;
 			occupant.affiliation = xmpp.muc.Affiliation.owner;
 			occupant.role = xmpp.muc.Role.moderator;
-	//hm		onJoin( occupant );
+			occupants.set( nick, occupant );
 			var r = new xmpp.Presence( null, null, null );
 			r.to = p.from;
 			r.from = roomJID( nick );
@@ -311,9 +336,15 @@ class MUChatRoom {
 			stream.sendPacket( r );
 			var m = new xmpp.Message( p.from, defaultLockMessage, null, xmpp.MessageType.groupchat, null, jid );
 			stream.sendPacket( m );
+	//hm		
+			//onJoin( occupant );
+			for( m in history ) {
+				m.to = occupant.jid;
+				stream.sendData( m.toString() );
+			}
 			return null;
 		} else {
-			if( occupant.jid == owner ) {
+			if( occupant.jid == owner.jid ) {
 				occupant.affiliation = xmpp.muc.Affiliation.owner;
 				occupant.role = xmpp.muc.Role.moderator;
 			} else {
@@ -335,23 +366,6 @@ class MUChatRoom {
 		}
 	}
 	
-	/**
-		Send updated presence to all occupants.
-	*/
-	function publishPresence( occupant : Occupant ) {
-		var p = new xmpp.Presence();
-		p.type = occupant.presenceType;
-		p.from = roomJID( occupant.nick );
-		var x = xmpp.X.create( xmpp.MUCUser.XMLNS, [occupant.item.toXml()] );
-		p.properties.push( x );
-		for( o in occupants ) {
-			p.to = o.jid;
-			stream.sendPacket( p );
-		}
-	}
-	
-	/**
-	*/
 	function handleRoomLeave( occupant : Occupant ) {
 		occupants.remove( occupant.nick );
 		var presence = new xmpp.Presence();
@@ -366,9 +380,18 @@ class MUChatRoom {
 		onLeave( occupant );
 	}
 	
-	/**
-		Send message to all occupants.
-	*/
+	function publishPresence( occupant : Occupant ) {
+		var p = new xmpp.Presence();
+		p.type = occupant.presenceType;
+		p.from = roomJID( occupant.nick );
+		var x = xmpp.X.create( xmpp.MUCUser.XMLNS, [occupant.item.toXml()] );
+		p.properties.push( x );
+		for( o in occupants ) {
+			p.to = o.jid;
+			stream.sendPacket( p );
+		}
+	}
+	
 	function publishMessage( m : xmpp.Message ) {
 		for( o in occupants ) {
 			m.to = o.jid;
@@ -376,27 +399,23 @@ class MUChatRoom {
 		}
 	}
 	
-	/**
-	*/
 	function handleSubjectChange( occupant : Occupant, subject : String ) {
 		//TODO
 		this.subject = subject;
 		onSubject( occupant );
 	}
 	
-	
-	function roomJID( nick : String ) : String {
-		return jid+"/"+nick;
-	}
-	
 	function sendErrorPresence( to : String, type : xmpp.ErrorType, name : String, x : Bool = true ) {
 		var p = new xmpp.Presence( xmpp.PresenceType.error );
 		p.from = jid;
 		p.to = to;
-		if( x )
-			p.properties.push( xmpp.X.create( xmpp.MUC.XMLNS ) );
+		if( x ) p.properties.push( xmpp.X.create( xmpp.MUC.XMLNS ) );
 		p.errors.push( new xmpp.Error( type, null, name ) );
 		stream.sendPacket( p );
+	}
+	
+	inline function roomJID( nick : String ) : String {
+		return jid+"/"+nick;
 	}
 	
 }

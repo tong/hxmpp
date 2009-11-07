@@ -59,7 +59,7 @@ private class Filters {
 class PacketCollector {
 	
 	/** */
-	public var filters(default,null) : Filters; //TODO Arrayfor sorting ?
+	public var filters(default,null) : Filters; //TODO Array(s) for sorting ?
 	/** Callbacks to which collected packets get delivered to. */
 	public var handlers : Array<xmpp.Packet->Void>;
 	/** Indicates if the the collector should get removed from the streams after collecting. */

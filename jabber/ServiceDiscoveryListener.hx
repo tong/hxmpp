@@ -27,7 +27,7 @@ import xmpp.filter.IQFilter;
 class ServiceDiscoveryListener {
 	
 	public var stream(default,null) : Stream;
-	public var identities : Array<xmpp.disco.Identity>; //TODO!!!!!
+	public var identities : Array<xmpp.disco.Identity>;
 	
 	public function new( stream : Stream,  ?identities : Array<xmpp.disco.Identity> ) {
 		if( !stream.features.add( xmpp.disco.Info.XMLNS ) ||

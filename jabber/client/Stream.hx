@@ -28,11 +28,11 @@ class Stream extends jabber.Stream {
 	public static inline var PORT_SECURE_STANDARD = 5223;
 	public static var defaultPort = PORT_STANDARD;
 	
-	//TODO public var tls(default,null) : Bool;
+	// public var tls(default,null) : Bool;
 	public var jid(default,null) : jabber.JID;
 	
-	public function new( jid : jabber.JID, cnx : Connection, version : Bool = true ) {
-		//super( cnx, jid );//TODO
+	public function new( jid : jabber.JID, cnx : Connection,
+						 version : Bool = true ) {
 		super( cnx );
 		this.jid = jid;
 		this.version = version;
@@ -44,10 +44,7 @@ class Stream extends jabber.Stream {
 	}
 	
 	override function processStreamInit( t : String, buflen : Int ) : Int {
-		// TODO remove HACK
-		//if( Type.getClassName( Type.getClass( cnx ) ) == "jabber.BOSHConnection" ) {
 		if( isBOSH ) {
-			//TODO
 			var sx = Xml.parse( t ).firstElement();
 			var sf = sx.firstElement();
 			parseStreamFeatures( sf );
@@ -72,8 +69,11 @@ class Stream extends jabber.Stream {
 					return buflen;
 				}
 			}
-			if( id == null )
-				throw "Invalid XMPP stream, no ID";
+			if( id == null ) {
+				//throw "Invalid XMPP stream, no ID";
+				close( true );
+				return -1;
+			}
 			if( !version ) {
 				status = jabber.StreamStatus.open;
 				onOpen();
@@ -103,7 +103,7 @@ class Stream extends jabber.Stream {
 	override function connectHandler() {
 		status = jabber.StreamStatus.pending;
 		// TODO avoid HACK
-		if( Type.getClassName( Type.getClass( cnx ) ) != "jabber.BOSHConnection" ) {
+		if( !isBOSH ) {
 			sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_CLIENT, jid.domain, version, lang ) );
 			cnx.read( true ); // start reading input
 		} else {

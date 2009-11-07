@@ -21,8 +21,7 @@ import xmpp.MessageType;
 import xmpp.filter.MessageFilter;
 import xmpp.filter.PacketFieldFilter;
 
-
-//TODO where do i listen ?????
+//TODO Listener ?????
 
 /**
 	Extension for communicating the status of a user in a chat session.<br>
@@ -42,7 +41,6 @@ class ChatStateNotification {
 	var f_to : PacketFieldFilter;
 	var m : xmpp.Message;
 	
-	
 	public function new( chat : Chat ) {
 		
 		// TODO if( chat == null ) throw 
@@ -59,13 +57,11 @@ class ChatStateNotification {
 		chat.stream.addInterceptor( this );
 	}
 	
-	
 	function setChat( c : Chat ) : Chat {
 		if( c == chat ) return c;
 		m.to = c.peer;
 		return chat = c;
 	}
-	
 	
 	/**
 		Internal.

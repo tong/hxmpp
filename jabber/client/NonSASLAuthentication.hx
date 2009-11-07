@@ -22,7 +22,7 @@ package jabber.client;
 */
 class NonSASLAuthentication extends Authentication {
 	
-	public var active(default,null) : Bool; // TODO remove?
+	public var active(default,null) : Bool;
 	public var usePlainText(default,null) : Bool;
 	public var username(default,null) : String;
 	public var password(default,null) : String;

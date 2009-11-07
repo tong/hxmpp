@@ -3,9 +3,22 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>hxmpp test</title>
+<script type="text/javascript" src="../swfobject.js"/></script>
 </head>
 <body>
-<div id="haxe:trace"></div>
-<script type="text/javascript" src="test_xmpp_iqs.js"/></script>
+<table>
+	<tr>
+		<td>
+			<div id="swf">NO FLASHPLAYER DETECTED</div>
+		</td>
+		<td>
+			<div id="haxe:trace"></div>
+		</td>
+	</tr>
+</table>
+<script type="text/javascript">
+swfobject.embedSWF("test_xmpp.swf","swf","800","1200","9");
+</script>
+<script type="text/javascript" src="test_xmpp.js"/></script>
 </body>
 </html>

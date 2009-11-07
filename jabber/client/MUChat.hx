@@ -77,8 +77,8 @@ class MUChat {
 	public var stream(default,null) : Stream;
 	
 	var message : xmpp.Message;
-	var col_presence : PacketCollector;
-	var col_message : PacketCollector;
+	var c_presence : PacketCollector;
+	var c_message : PacketCollector;
 	
 	
 	public function new( stream : Stream, host : String, roomName : String ) {
@@ -98,8 +98,8 @@ class MUChat {
 		
 		// collect all presences and messages from the room
 		var f_from : xmpp.PacketFilter = new PacketFromContainsFilter( jid );
-		col_presence = new PacketCollector( [f_from, cast new PacketTypeFilter( PacketType.presence )], handlePresence, true );
-		col_message = new PacketCollector(  [f_from, cast new MessageFilter( MessageType.groupchat )], handleMessage, true );
+		c_presence = new PacketCollector( [f_from, cast new PacketTypeFilter( PacketType.presence )], handlePresence, true );
+		c_message = new PacketCollector(  [f_from, cast new MessageFilter( MessageType.groupchat )], handleMessage, true );
 	}
 
 	
@@ -113,13 +113,10 @@ class MUChat {
 	*/
 	//TODO?? public function join( nick : String, ?password : String, ?properites : Array<Xml> ) : Bool {
 	public function join( nick : String, ?password : String ) : Bool {
-		if( joined ) return false;
-		if( nick == null || nick.length == 0 ) {
-			trace( "Chatroom nickname must be not null or blank" );
+		if( joined ||  nick == null || nick.length == 0 )
 			return false;
-		}
-		stream.addCollector( col_presence );
-		stream.addCollector( col_message );
+		stream.addCollector( c_presence );
+		stream.addCollector( c_message );
 		this.nick = nick;
 		myjid = jid+"/"+nick;
 		return ( sendMyPresence() != null );
@@ -133,7 +130,8 @@ class MUChat {
 		trace( presence.target );
 		var p = new xmpp.Presence( null, message, null, xmpp.PresenceType.unavailable );
 		presence.set( p );
-		if( forceEvent ) dispose();
+		if( forceEvent )
+			destroy();
 		return p;
 	}
 	
@@ -227,7 +225,7 @@ class MUChat {
 		var occupant = getOccupant( from );
 		if( occupant == null && from != jid && from != nick ) {
 			//TODO
-			trace( "??? Message from unknown muc occupant ??? "+from );
+			//trace( "??? Message from unknown muc occupant ??? "+from );
 			onMessage( null, m );
 			return;
 		}
@@ -254,7 +252,7 @@ class MUChat {
 			switch( p.type ) {
 			case xmpp.PresenceType.unavailable : 
 				joined = false;
-				dispose();
+				destroy();
 				//onLeave( this );
 			case null :
 				if( !joined ) {
@@ -274,7 +272,9 @@ class MUChat {
 						var self = this;
 						stream.sendIQ( iq, function(r:xmpp.IQ) {
 							if( r.type == xmpp.IQType.result ) {
-								#if JABBER_DEBUG trace( "Unlocked MUC room" ); #end
+								#if JABBER_DEBUG
+								trace( "Unlocked MUC room: "+self.room, "info" );
+								#end
 								//unlocked = true; //TODO
 								//self.onUnlock();
 								self.joined = true;
@@ -336,9 +336,9 @@ class MUChat {
 		return j.substr( j.lastIndexOf( "/" ) + 1 );
 	}
 	
-	function dispose() {
-		stream.removeCollector( col_presence );
-		stream.removeCollector( col_message );
+	function destroy() {
+		stream.removeCollector( c_presence );
+		stream.removeCollector( c_message );
 		occupants = new Array();
 		role = null;
 		affiliation = null;

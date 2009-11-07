@@ -107,17 +107,4 @@ class Connection {
 		return throw new error.AbstractError();
 	}
 	*/
-	
-	/* 
-	//TODO
-	function interceptData( t : haxe.io.Bytes ) : haxe.io.Bytes {
-	}
-	
-	TODO
-	function handleData( t : haxe.io.Bytes, pos : Int, len : Int ) : Int {
-		for( f in filters )
-			t = f.filterData( t, pos, len );
-		return onData( t, pos, len );
-	}
-	*/
 }

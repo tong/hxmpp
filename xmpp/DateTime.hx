@@ -121,4 +121,12 @@ class DateTime {
 		#end
 	}
 	
+	/*
+	public static function getParts( utc : String ) : Array<String> {
+		trace(utc );
+		//return { year : "2012" };
+		return [];
+	}
+	*/
+	
 }

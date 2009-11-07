@@ -41,7 +41,7 @@ class Stream extends jabber.Stream {
 	/** Shared secret used to identify legacy components*/
 	public var secret(default,null) : String;
 	/**  */
-	public var authenticated(default,null) : Bool; // TODO move to jabber.Stream (?)
+	public var connected(default,null) : Bool;
 	/** */
 	public var items(default,null) : xmpp.disco.Items;
 	/** */
@@ -59,7 +59,7 @@ class Stream extends jabber.Stream {
 		this.subdomain = subdomain;
 		this.secret = secret;
 		items = new xmpp.disco.Items();
-		authenticated = false;
+		connected = false;
 		serviceListener = new ServiceDiscoveryListener( this, identities );
 	}
 	
@@ -90,7 +90,7 @@ class Stream extends jabber.Stream {
 	}
 	
 	function readyHandler( p : xmpp.Packet ) {
-		authenticated = true;
+		connected = true;
 		onConnect();
 	}
 	

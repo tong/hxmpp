@@ -6,15 +6,13 @@ import xmpp.IQ;
 import xmpp.IQType;
 
 
-/** */
 class TestXMPPPacket {}
-
 
 class TestMessagePacket extends haxe.unit.TestCase   {
 	
 	public function testBuild() {
 		var m = new xmpp.Message();
-		assertEquals( m.toString(), '<message type="chat"/>' );
+		assertEquals( '<message type="chat"/>', m.toString() );
 		m.type = xmpp.MessageType.chat;
 		assertEquals( m.toString(), '<message type="chat"/>' );
 		m.type = xmpp.MessageType.groupchat;

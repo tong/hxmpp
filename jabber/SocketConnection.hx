@@ -23,6 +23,7 @@ import flash.events.Event;
 import flash.events.IOErrorEvent;
 import flash.events.SecurityErrorEvent;
 import flash.events.ProgressEvent;
+import flash.utils.ByteArray;
 #elseif neko
 import neko.net.Host;
 import neko.net.Socket;
@@ -38,14 +39,13 @@ import cpp.net.Socket;
 	TODO
 	- php!
 	- flash/js maxBufSize
-	- split outgoing (big) packets
+	- split outgoing (big) packets ?
 */
 class SocketConnection extends jabber.stream.Connection {
 	
 	#if (neko||php||cpp)
-	public static var defaultBufSize = (1<<6); // 64
+	public static var defaultBufSize = (1<<8); // 128
 	#end
-	public static var defaultMaxBufSize = (1<<18);
 	
 	public var port(default,null) : Int;
 	public var socket(default,null) : Socket;
@@ -57,38 +57,46 @@ class SocketConnection extends jabber.stream.Connection {
 	var reading : Bool;
 	var buf : haxe.io.Bytes;
 	var bufbytes : Int;
-	#elseif (flash||JABBER_SOCKETBRIDGE)
+	#elseif (JABBER_SOCKETBRIDGE)
 	var buf : String;
+	#elseif flash
+	var buf : ByteArray;
 	#end
 	
-	public function new( host : String, port : Int,
-						 ?secure : Bool = false , ?timeout : Int = 10, ?maxBufSize : Int ) {
-		
+	public function new( host : String,
+						 ?port : Int,
+						 ?secure : Bool = false ,
+						 ?timeout : Int = 10,
+						 ?maxBufSize : Int = 65536 ) {
+		if( port == null )
+			port = 5222;
 		super( host );
 		this.port = port;
 		#if (flash10||neko||php||cpp)
 		this.timeout = timeout;
 		#end
 		this.secure = secure;
-		this.maxBufSize = ( maxBufSize != null ) ? maxBufSize : defaultMaxBufSize;
+		this.maxBufSize = maxBufSize;
 		
 		socket = new Socket();
 		
 		#if flash9
-		buf = "";
+		buf = new ByteArray();
 		socket.addEventListener( Event.CONNECT, sockConnectHandler );
 		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
 		socket.addEventListener( IOErrorEvent.IO_ERROR, sockErrorHandler );
 		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, sockErrorHandler );
 	
-		#elseif (neko||php||cpp)
+		#elseif (neko||cpp)
+		socket = new Socket();
 		buf = haxe.io.Bytes.alloc( defaultBufSize );
 		bufbytes = 0;
 		reading = false;
 		
-		#if php //TODO ! WTF !!!
-		buf = haxe.io.Bytes.alloc( 1024 );
-		#end
+		#elseif php
+		buf = haxe.io.Bytes.alloc( maxBufSize ); //TODO ! WTF !!!
+		bufbytes = 0;
+		reading = false;
 		
 		#elseif JABBER_SOCKETBRIDGE
 		buf = "";
@@ -106,18 +114,13 @@ class SocketConnection extends jabber.stream.Connection {
 	function setMaxBufSize( t : Int ) : Int {
 		return timeout = ( t <= 0 ) ? 1 : t;
 	}
-	
-	#if (neko||php)
-	#end
 	*/
 	
 	public override function connect() {
-		//TODO cpp
 		#if (neko||cpp)
 		socket.connect( new Host( host ), port );
 		#end
 		#if php
-		trace("SECURE: "+secure);
 		if( secure ) socket.connectTLS( new Host( host ), port )
 		else socket.connect( new Host( host ), port );
 		#end
@@ -125,7 +128,9 @@ class SocketConnection extends jabber.stream.Connection {
 		connected = true;
 		onConnect();
 		#else
-		#if flash10 socket.timeout = timeout*1000; #end
+		#if flash10
+		socket.timeout = timeout*1000;
+		#end
 		socket.connect( host, port );
 		#end
 	}
@@ -168,7 +173,7 @@ class SocketConnection extends jabber.stream.Connection {
 		//TODO
 		//var b = haxe.io.Bytes.ofString(t);
 		//for( i in interceptors )
-			//TODO t = i.interceptData( haxe.io.Bytes.ofString(t) );
+			//t = i.interceptData( haxe.io.Bytes.ofString(t) );
 		#if flash9
 		socket.writeUTFBytes( t ); 
 		socket.flush();
@@ -181,22 +186,7 @@ class SocketConnection extends jabber.stream.Connection {
 		return t;
 		//return writeBytes( haxe.io.Bytes.ofString( t ) ).toString();
 	}
-	/*
-	public override function write( t : haxe.io.Bytes ) : haxe.io.Bytes {
-		if( !connected || t == null || t.length == 0 ) return null;
-		#if flash9
-		//socket.writeUTFBytes( t ); 
-		socket.writeBytes( t.getData() ); 
-		socket.flush();
-		#elseif (neko||php)
-		socket.output.writeBytes( t, 0, t.length );
-		socket.output.flush();
-		#elseif JABBER_SOCKETBRIDGE
-		socket.send( t.toString() ); //TODO
-		#end
-		return t;
-	}
-	*/
+
 	/*
 	public function clearBuffer() {
 		#if (neko||php)
@@ -207,7 +197,7 @@ class SocketConnection extends jabber.stream.Connection {
 	*/
 
 
-	#if (flash9)
+	#if (flash)
 
 	function sockConnectHandler( e : Event ) {
 		connected = true;
@@ -224,40 +214,23 @@ class SocketConnection extends jabber.stream.Connection {
 		onError( e );
 	}
 	
-	//static var mybuffer = new flash.utils.ByteArray();
-	
 	function sockDataHandler( e : ProgressEvent ) {
-		/*
-		socket.readBytes( mybuffer, mybuffer.length, e.bytesLoaded );
-		var r = onData( haxe.io.Bytes.ofData(mybuffer), 0, mybuffer.length );
-		if( r == 0 ) {
-			mybuffer.clear();// = 0;
-			//mybuffer = new flash.utils.ByteArray();
-		}
-		if( r == -1 ) {
-			return;
-		}
-		*/
-		var i = buf+socket.readUTFBytes( e.bytesLoaded );
-		if( i.length > maxBufSize ) {
-			//TODO
+		socket.readBytes( buf, buf.length, e.bytesLoaded);
+		var b = haxe.io.Bytes.ofData( buf );
+		if( b.length > maxBufSize )
 			throw "Max buffer size reached ("+maxBufSize+")";
-		}
-		//var s = haxe.Timer.stamp();
-		buf = ( onData( haxe.io.Bytes.ofString( i ), 0, i.length ) == 0 ) ? i : "";
-		//trace( haxe.Timer.stamp()-s );
+		if( onData(  b, 0, b.length ) > 0 )
+			buf = new flash.utils.ByteArray();
 	}
 	
 	#elseif (neko||php||cpp)
 	
 	function readData() {
 		var buflen = buf.length;
-		// eventually double the buffer size
-		if( bufbytes == buflen ) {
-			//trace("DOUBLE");
+		if( bufbytes == buflen ) { // eventually double the buffer size
 			var nsize = buflen*2;
 			if( nsize > maxBufSize ) {
-				if( buflen == maxBufSize )
+				if( buflen == maxBufSize  )
 					throw "Max buffer size reached ("+maxBufSize+")";
 				nsize = maxBufSize;
 			}
@@ -268,14 +241,14 @@ class SocketConnection extends jabber.stream.Connection {
 		}
 			
 		var nbytes = 0;
-		try {
+	//	try { 
 			//trace(buf.length+"//"+buflen+"//"+bufbytes);
-			nbytes = socket.input.readBytes( buf, bufbytes, buflen-bufbytes);
+			nbytes = socket.input.readBytes( buf, bufbytes, buflen-bufbytes );
 			//trace(nbytes);
-		} catch(e:Dynamic){
-			trace(e);
-			throw e;
-		}
+	//	} catch(e:Dynamic){
+	//		trace("ERRIR "+e);
+	//		throw e;
+	//	}
 		bufbytes += nbytes;
 	}
 	
@@ -381,12 +354,6 @@ class SocketBridgeConnection {
 	
 	static var sockets : IntHash<Socket>;
 	static var initialized = false;
-	
-	/*
-	public static function init( id : String ) {
-		_init( id );
-	}
-	*/
 	
 	public static function init( id : String ) {
 		if( initialized )

@@ -17,7 +17,6 @@
 */
 package xmpp.filter;
 
-
 /**
 */
 class PacketPropertyFilter {
@@ -31,7 +30,6 @@ class PacketPropertyFilter {
 	}
 	
 	public function accept( p : xmpp.Packet ) : Bool {
-		
 		for( p in p.properties ) {
 			if( ns != null ) {
 				if( p.get( "xmlns" ) != ns ) {

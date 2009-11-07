@@ -18,10 +18,6 @@ class ClientDemo {
 		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
 		#end
 		
-		#if XMPP_DEBUG
-		jabber.XMPPDebug.redirectTraces();
-		#end
-		
 		#if JABBER_SOCKETBRIDGE
 		jabber.SocketBridgeConnection.initDelayed( "f9bridge", init );
 		#else

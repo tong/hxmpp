@@ -93,7 +93,7 @@
 
 --next
 -cp samples/
--cp ../core/
+-cp lib/
 -neko bin/samples/sendmessage.n
 -main SendMessage
 -D XMPP_DEBUG

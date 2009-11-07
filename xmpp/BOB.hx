@@ -18,7 +18,7 @@
 package xmpp;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0231.html">XEP-0231: Bits of Binary</a>
+	<a href="http://xmpp.org/extensions/xep-0231.html">XEP-0231: Bits of Binary</a><br/>
 */
 class BOB {
 	
