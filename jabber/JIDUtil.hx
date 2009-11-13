@@ -26,7 +26,7 @@ class JIDUtil {
 	#if JABBER_DEBUG
 	public static var EREG = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+(\.[A-Z][A-Z][A-Z]?)?(\/[A-Z0-9._%-])?/i;
 	#else
-	public static var EREG = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?+(\/[A-Z0-9._%-])?/i;
+	public static var EREG = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?(\/[A-Z0-9._%-])?/i;
 	#end
 
 	/**
