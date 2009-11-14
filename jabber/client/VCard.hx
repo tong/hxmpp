@@ -20,7 +20,7 @@ package jabber.client;
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0054.html">XEP-0054: vcard-temp</a>
 */
-class VCardTemp {
+class VCard {
 	
 	public dynamic function onLoad( node : String, data : xmpp.VCard ) : Void;
 	public dynamic function onUpdate( data : xmpp.VCard ) : Void;
