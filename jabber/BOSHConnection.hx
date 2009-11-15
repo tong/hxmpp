@@ -24,15 +24,14 @@ import flash.events.IOErrorEvent;
 import flash.events.ProgressEvent;
 import flash.events.SecurityErrorEvent;
 #end
-//import util.Timer;
 	
-	//TODO reconnect fuk
-	//TODO timeout timer (?)
-	//TODO polling 
-	///TODO multiple streams over one connection)
-	//TODO secure!
-	//TODO secure keys
-	//TODO pause
+	//TODO
+	// timeout timer (?)
+	// polling 
+	/// multiple streams over one connection)
+	// secure!
+	// secure keys
+	// pause
 	
 /**
 	<p>
@@ -40,53 +39,62 @@ import flash.events.SecurityErrorEvent;
 	by efficiently using multiple synchronous HTTP request/response pairs
 	without requiring the use of frequent polling or chunked responses.
 	</p>
-	
 	<a href="http://xmpp.org/extensions/xep-0124.html">Bidirectional-streams Over Synchronous HTTP (BOSH)</a><br/>
 	<a href="http://xmpp.org/extensions/xep-0206.html">XMPP Over BOSH</a><br/>
 */
 class BOSHConnection extends jabber.stream.Connection {
 	
 	public static inline var BOSH_VERSION = "1.6";
-	public static var XMLNS = "http://jabber.org/protocol/httpbind";
-	public static var XMLNS_XMPP = "urn:xmpp:xbosh";
+	public static inline var XMLNS = "http://jabber.org/protocol/httpbind";
+	public static inline var XMLNS_XMPP = "urn:xmpp:xbosh";
 	
+	/** BOSH path */
 	public var path(default,null) : String;
 	/** Maximum number of requests the connection manager is allowed to keep waiting at any one time during the session. */
 	public var hold(default,null) : Int;
 	/** Longest time (in seconds) that the connection manager is allowed to wait before responding to any request during the session. */
 	public var wait(default,null) : Int;
+	/** BOSH Session id */
 	public var sid(default,null) : String;
+	/** */
 	public var maxConcurrentRequests(default,null) : Int;
+	/** */
 	public var secure(default,null) : Bool;
 	
 	var initialized : Bool;
-	//var restarted : Bool; //TODO replace connected ?
 	var rid : Int;
 	var maxPause : Int;
 	var requestCount : Int;
-	var requestQueue : Array<Xml>;
-	//var responseQueue : Array<Xml>;
+	var requestQueue : Array<String>;
+	var inactivity : Int;
+	var pauseEnabled : Bool;
+	var pollingEnabled : Bool;
 	//var responseTimer : Timer;
+	var pauseTimer : util.Timer;
 	
 	public function new( host : String, path : String,
 						 hold : Int = 1, wait : Int = 30,
-						 secure : Bool = false ) {
+						 secure : Bool = true,
+						 maxConcurrentRequests : Int = 2 ) {
 		super( host );
 		this.path = path;
 		this.hold = hold;
 		this.wait = wait;
 		this.secure = secure;
-		maxConcurrentRequests = 2; //TODO
+		this.maxConcurrentRequests = maxConcurrentRequests;
 		initialized = false;
 		rid = Std.int( Math.random()*10000000 );
 		requestCount = 0;
 		requestQueue = new Array();
+		pauseEnabled = pollingEnabled = false;
 	}
-
+	
+	/**
+	*/
 	public override function connect() {
-		if( connected )
+		if( connected ) {
 			restart();
-		else {
+		} else {
 			var b = Xml.createElement( "body" );
 			b.set( 'xml:lang', 'en' );
 			b.set( 'xmlns', XMLNS );
@@ -99,79 +107,96 @@ class BOSHConnection extends jabber.stream.Connection {
 			b.set( 'to', host );
 			b.set( 'secure', Std.string( secure ) );
 			initialized = true;
-			sendRequests( b );
+			sendRequests( b.toString() );
 		}
 	}
 	
+	/**
+	*/
 	public override function disconnect() {
 		if( connected ) {
 			var r = createRequest();
 			r.set( "type", "terminate" );
 			r.addChild( new xmpp.Presence(null,null,null,xmpp.PresenceType.unavailable).toXml() );
-			sendRequests( r );
-			/*
-			connected = initialized = false;
-			requestCount = 0;
-			requestQueue = new Array();
-			sid = null;
-			*/
+			//sendQueuedRequests( r.toString() );
+			sendRequests( r.toString() );
 			cleanup();
 			//onDisconnect();
 		}
 	}
 	
-	public override function write( t : String ) : String {
-		try {
-			var x = Xml.parse( t );
-			sendQueuedRequests( x ); //TODO, remove Xmlparse
-		} catch( e : Dynamic ) {
-			return null;
-		}
-		return t;
+	/**
+	*/
+	public override function write( t : String ) : Bool {
+		return sendQueuedRequests( t );
+	}
+	
+	/**
+		Set the value of the 'secs' attribute to null to force the connection manager
+		to return all the requests it is holding.
+	*/
+	public function pause( secs : Null<Int> ) : Bool {
+		#if JABBER_DEBUG
+		trace( "Pausing BOSH session for "+secs+" seconds" );
+		#end
+		if( secs == null )
+			secs = inactivity;
+		if( !pauseEnabled || secs > maxPause )
+			return false;
+		pollingEnabled = false;
+		var r = createRequest();
+		r.set( "pause", Std.string( secs ) );
+		sendRequests( r.toString() );
+		pauseTimer = new util.Timer( secs*1000 );
+		pauseTimer.run = handlePauseTimeout;
+		return true;
 	}
 	
 	function restart() {
-		//trace("BOSH RESTART");
 		var r = createRequest();
 		r.set( "xmpp:restart", "true" );
 		r.set( "xmlns:xmpp", XMLNS_XMPP );
 		r.set( 'xmlns', XMLNS );
 		r.set( "xml:lang", "en" );
 		r.set( "to", host );
-		sendRequests( r );
+		sendRequests( r.toString() );
 	}
 	
-	function sendQueuedRequests( ?t : Xml ) : Bool {
+	function sendQueuedRequests( ?t : String ) : Bool {
 		if( t != null )
 			requestQueue.push( t );
 		else if( requestQueue.length == 0 )
 			return false;
-		return sendRequests( null );
+		return sendRequests();
 	}
 	
-	function sendRequests( t : Xml, ?poll : Bool = false ) : Bool {
+	function sendRequests( ?t : String, poll : Bool = false ) : Bool {
 		if( requestCount >= maxConcurrentRequests ) {
-			trace("maxConcurrentRequests limit");
+			#if JABBER_DEBUG
+			trace( "maxConcurrentRequests limit reached ("+maxConcurrentRequests+")" );
+			#end
 			return false;
 		}
 		requestCount++;
+		var out : Xml = null;
 		if( t == null ) {
 			if( poll ) {
-				//TODO create timeout timer
-				t = createRequest();
+				out = createRequest();
 			} else {
 				var i = 0;
-				var tmp = new Array<Xml>();
+				var tmp = new Array<String>();
 				while( i++ < 10 && requestQueue.length > 0 )
 					tmp.push( requestQueue.shift() );
-				t = createRequest( tmp );
+				 out= createRequest( tmp );
 			}
 		}
+		if( out == null )
+			out = untyped t; //HACK
 		#if flash
 		var r = new flash.net.URLRequest( getHTTPPath() );
 		r.method = flash.net.URLRequestMethod.POST;
 		r.contentType = "text/xml";
-		r.data = t.toString();
+		r.data = out.toString();
 		r.requestHeaders.push( new flash.net.URLRequestHeader( "Accept", "text/xml" ) );
 		var me = this;
 		var l = new flash.net.URLLoader();
@@ -197,7 +222,7 @@ class BOSHConnection extends jabber.stream.Connection {
 	//	r.setHeader( "Content-Type", "text/plain; charset=UTF-8" );
 	//	r.noShutdown = true;
 	//	#end
-		r.setPostData( t.toString() );
+		r.setPostData( out.toString() );
 		r.request( true );
 		#end
 	//	if( poll ) {
@@ -205,59 +230,54 @@ class BOSHConnection extends jabber.stream.Connection {
 		return true;
 	}
 	
-	//function sendQueuedRequestsAsString
-	
 	function handleHTTPStatus( s : Int ) {
-		//if( s != 200 ) 
 		//trace( "handleHTTPStatus "+s );
 	}
 	
 	function handleHTTPError( e : String ) {
 		//trace("handleHTTPError "+e);
+		cleanup();
 		onError( e );
 	}
 	
 	function handleHTTPData( t : String ) {
-		trace("handleHTTPData "+connected);
-		requestCount--;
 		var x = Xml.parse( t ).firstElement();
-//		trace("handleHTTPData " );
+		requestCount--;
 		if( connected ) {
-			if( x.get( "type" ) == "terminate" ) {
-				//TODO
-				trace("BOSH TERMINATED");
+			switch( x.get( "type" ) ) {
+			case "terminate" :
 				cleanup();
 				onDisconnect();
+				return;
+			case "error" :
+				//TODO	
 			}
 			var c = x.firstElement();
 			if( c == null ) {
-				//TODO check if rmpty terminate response
+				sendQueuedRequests();
+				if( requestCount == 0 )
+					poll();
+				/*
 				if( requestCount == 0 )
 					poll();
 				else
 					sendQueuedRequests();
+				*/
 				return;
 			} 
 			var b = haxe.io.Bytes.ofString( c.toString() );
-			try {
-				onData( b, 0, b.length );
-			} catch( e : Dynamic ) {
-				trace(e);
-			}
+			onData( b, 0, b.length );
 			if( requestCount == 0 && !sendQueuedRequests() ) {
-				//trace("pollit");
 				poll();
 			}
 			
 		} else {
 			if( initialized ) {
 				sid = x.get( "sid" );
-				/*
 				if( sid == null ) {
-					throw "No SID!";
-					connected = initialized = false;
+					cleanup();
+					onDisconnect();
 				}
-				*/
 				wait = Std.parseInt( x.get( "wait" ) );
 				var t = x.get( "ver" );
 				if( t != null &&  t != BOSH_VERSION ) {
@@ -265,68 +285,68 @@ class BOSHConnection extends jabber.stream.Connection {
 					return;
 				}
 				var t = x.get( "maxpause" );
-				if( t != null ) maxPause = Std.parseInt( t ) * 1000;
+				if( t != null ) {
+					maxPause = Std.parseInt( t )*1000;
+					pauseEnabled = true;
+				}
 				var t = x.get( "requests" );
 				if( t != null ) maxConcurrentRequests = Std.parseInt( t );
-				
+				var t = x.get( "inactivity" );
+				if( t != null ) inactivity = Std.parseInt( t );
 				onConnect();
 				connected = true;
 				var b = haxe.io.Bytes.ofString( x.toString() );
 				onData( b, 0, b.length );
-				
 			} else {
 				//trace("????????? "+ x );
 			}
 		}
 	}
 	
-	function createRequest( ?t : Array<Xml> ) : Xml {
+	function handlePauseTimeout() {
+		pauseTimer.stop();
+		pauseTimer = null;
+		pollingEnabled = true;
+		poll();
+	}
+	
+	function createRequest( ?t : Iterable<String> ) : Xml {
 		var x = Xml.createElement( "body" );
 		x.set( "xmlns", XMLNS );
 		x.set( "xml:lang", "en" );
 		x.set( "rid", Std.string( ++rid ) );
 		x.set( "sid", sid );
 		if( t != null ) {
-			for( e in t )
-				x.addChild( e );
+			for( e in t ) {
+				x.addChild( Xml.createPCData( e ) );
+			}
 		}
 		return x;
-	}
-	
-	function createRequestString( t : String ) : String {
-		var x = Xml.createElement( "body" );
-		x.set( "xmlns", XMLNS );
-		x.set( "xml:lang", "en" );
-		x.set( "rid", Std.string( ++rid ) );
-		x.set( "sid", sid );
-		var s = x.toString();
-		trace(s.length);
-		s = s.substr( 0, s.length-2 )+">";
-		s += t+"</body>";
-		trace(s);
-		return s;
 	}
 	
 	function getHTTPPath() : String {
 		var b = new StringBuf();
 		b.add( "http" );
-	//	if( secure ) b.add( "s" );
+		//if( secure ) b.add( "s" );
 		b.add( "://" );
 		b.add( path );
 		return b.toString();
 	}
 	
-	//TODO
+	inline function poll() {
+		if( pollingEnabled ) sendRequests( null, true );
+	}
+	
 	function cleanup() {
+		if( pauseTimer != null ) {
+			pauseTimer.stop();
+			pauseTimer = null;
+		}
 		connected = initialized = false;
 		sid = null;
 		rid = Std.int( Math.random()*10000000 );
 		requestCount = 0;
 		requestQueue = new Array();
-	}
-	
-	inline function poll() {
-		sendRequests( null, true );
 	}
 	
 }
