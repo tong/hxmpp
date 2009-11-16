@@ -24,7 +24,9 @@ import jabber.stream.PacketCollector;
 import jabber.stream.PacketTimeout;
 import xmpp.filter.PacketIDFilter;
 import util.XmlUtil;
+import util.Base64;
 
+/*
 private typedef TDataFilter = {
 	function filterData( t : haxe.io.Bytes ) : haxe.io.Bytes;
 }
@@ -32,11 +34,10 @@ private typedef TDataFilter = {
 private typedef TDataInterceptor = {
 	function interceptData( t : haxe.io.Bytes ) : haxe.io.Bytes;
 }
+*/
 
 private typedef Server = {
 	var features : Hash<Xml>;
-	////var domain : String;
-	//var allowsRegister : Bool;
 	///var tls : { has : Bool, required : Bool };
 }
 
@@ -45,12 +46,11 @@ private class StreamFeatures {
 	public function new() {
 		l = new List();
 	}
-	public function iterator() {
+	public inline function iterator() {
 		return l.iterator();
 	}
 	public function add( f : String ) : Bool {
-		if( Lambda.has( l, f ) )
-			return false;
+		if( Lambda.has( l, f ) ) return false;
 		l.add( f );
 		return true;
 	}
@@ -63,9 +63,8 @@ class Stream {
 	
 	public static var packetIDLength = 5;
 	
-	public dynamic function onOpen() {}
-	public dynamic function onClose() {}
-	public dynamic function onError( ?e : Dynamic ) {}
+	public dynamic function onOpen() : Void;
+	public dynamic function onClose( ?e : Dynamic ) : Void;
 	
 	public var status : StreamStatus;
 	public var cnx(default,setConnection) : Connection;
@@ -76,21 +75,17 @@ class Stream {
 	public var features(default,null) : StreamFeatures;
 	/** Indicates if the version number of the XMPP stream ("1.0") should get added to the stream opening XML element */
 	public var version : Bool;
-	//public var packetIdLength : Int;
-	
 	//TODO
 	//public var dataFilters : List<TDataFilter>;
 	//public var dataInterceptors : List<TDataInterceptor>;
 	
-	var collectors : List<PacketCollector>; // TODO public var collectors : Array<TPacketCollector>; 
-	var interceptors : List<TPacketInterceptor>; // TODO public var interceptors : Array<TPacketCollector>; 
+	var collectors : List<PacketCollector>; // public var collectors : Array<TPacketCollector>; 
+	var interceptors : List<TPacketInterceptor>; // public var interceptors : Array<TPacketCollector>; 
 	var isBOSH : Bool;
-	//#if JABBER_DEBUG
 	var numPacketsSent : Int;
-	//#end
 	
-	function new( c : Connection ) {
-		if( c == null )
+	function new( cnx : Connection ) {
+		if( cnx == null )
 			throw "Stream connection is null";
 		collectors = new List();
 		interceptors = new List();
@@ -99,17 +94,14 @@ class Stream {
 		version = true;
 		status = StreamStatus.closed;
 		isBOSH = false;
-		
-		setConnection( c );
-		
+		numPacketsSent = 0;
+		setConnection( cnx );
 		//dataFilters = new List();
 		//dataInterceptors = new List();
-		
-		numPacketsSent = 0;
 	}
 	
 	function getJIDStr() : String {
-		return throw "Abstract getter";
+		return null;
 	}
 	
 	function setConnection( c : Connection ) : Connection {
@@ -131,27 +123,24 @@ class Stream {
 		return cnx;
 	}
 	
-	
 	/**
-		Get the next unique id for packets on this stream.
+		Get the next unique id for a XMPP packet of this stream.
 	*/
 	public function nextID() : String {
 		#if JABBER_DEBUG
-		return util.Base64.random( packetIDLength )+"_"+numPacketsSent;
+		return Base64.random( packetIDLength )+"_"+numPacketsSent;
 		#else
-		return util.Base64.random( packetIDLength );
+		return Base64.random( packetIDLength );
 		#end
 	}
 	
 	/**
-		Open the XMPP stream.
+		Request to open the XMPP stream.
 	*/
 	public function open() : Bool {
 //		if( status == StreamStatus.open ) return false;
-		if( !cnx.connected )
-			cnx.connect()
-		else
-			connectHandler();
+		if( !cnx.connected ) cnx.connect()
+		else connectHandler();
 		return true;
 	}
 	
@@ -160,31 +149,22 @@ class Stream {
 	*/
 	public function close( ?disconnect = false ) {
 		if( status == StreamStatus.open ) {
-			sendData( xmpp.Stream.CLOSE );
+			if( !isBOSH ) sendData( xmpp.Stream.CLOSE );
 			status = StreamStatus.closed;
-	//		if( disconnect )
-	//			cnx.disconnect();
-	//		handleClose();
-			//return true;
 		}
 		if( disconnect )
 			cnx.disconnect();
 		handleClose();
-		//if( status == StreamStatus.pending && disconnect && cnx.connected ) { 
-		//return false;
 	}
 	
 	/**
-		Intercept, send and return the given XMPP packet.
+		Intercept/Send/Return the given XMPP packet.
 	*/
 	public function sendPacket<T>( p : T, intercept : Bool = true ) : T {
 		if( !cnx.connected /*|| status != StreamStatus.open*/ )
 			return null;
-//		if( !Std.is( p, xmpp.Packet ) )
-//			throw "Invalid XMPP packet";
 		if( intercept )
-			for( i in interceptors )
-				i.interceptPacket( untyped p );
+			interceptPacket( untyped p );
 		return ( sendData( untyped p.toString() ) != null ) ? p : null;
 	}
 	
@@ -194,13 +174,14 @@ class Stream {
 	public function sendData( t : String ) : String {
 		if( !cnx.connected )
 			return null;
-	//	for( i in dataInterceptors )
-	//		t = i.interceptData( haxe.io.Bytes.ofString(t) ).toString();
-		var sent = cnx.write( t );
+		//for( i in dataInterceptors )
+			//t = i.interceptData( t );
+		if( !cnx.write( t ) )
+			return null;
+		numPacketsSent++;
 		#if XMPP_DEBUG
-		if( sent != null ) XMPPDebug.out( t );
+		XMPPDebug.out( t );
 		#end
-		if( sent != null ) numPacketsSent++;
 		return t;
 	}
 	
@@ -210,15 +191,21 @@ class Stream {
 	*/
 	/*
 	public function send( t : haxe.io.Bytes ) : haxe.io.Bytes {
+		if( !cnx.connected )
+			return null;
+		//for( i in dataInterceptors )
+			//t = i.interceptData( t );
+		var sent = cnx.write( t );
 	}
 	*/
 	
-	/*
-	public function interceptPacket( p : xmpp.Packet ) {
-		for( i in interceptors )
-			i.interceptPacket( p );
-	}
+	/**
+		Runs the XMPP packet interceptor on the given packet.
 	*/
+	public function interceptPacket( p : xmpp.Packet ) : xmpp.Packet {
+		for( i in interceptors ) i.interceptPacket( p );
+		return p;
+	}
 	
 	/**
 		Send an IQ packet and forward the collected response to the given handler function.
@@ -314,15 +301,16 @@ class Stream {
 			return -1;
 		}
 		if( xmpp.Stream.REGEXP_ERROR.match( t ) ) {
+		//if( ~/stream:error/.match( t ) ) {
 			var err : xmpp.StreamError = null;
 			try {
 				err = xmpp.StreamError.parse( Xml.parse( t ) );
 			} catch( e : Dynamic ) {
-				onError( "Invalid stream:error" );
+				onClose( "Invalid stream:error" );
 				close();
 				return -1;
 			}
-			onError( err );
+			onClose( err );
 			close( true );
 			return -1;
 		}
@@ -334,12 +322,15 @@ class Stream {
 		case open :
 			// HACK flash/js Xml bug !
 			#if (flash||js)
-			if( !REG_HACK.match( t ) ) {
-			//if( !StringTools.startsWith(t,"<") || !StringTools.endsWith(t, ">") ) {
-				#if JABBER_DEBUG
-				trace( "Invalid XML " );
-				#end
-				return 0;
+			if( !StringTools.startsWith(t,"<") || !StringTools.endsWith(t, ">") ) {
+				if( !REG_HACK.match( t ) ) {
+				//if( !StringTools.startsWith(t,"<") || !StringTools.endsWith(t, ">") ) {
+					#if JABBER_DEBUG
+					trace( "Invalid XML " );
+					#end
+					return 0;
+				}
+				
 			}
 			#end
 			// filter data here ?
@@ -424,7 +415,6 @@ class Stream {
 		return collected;
 	}
 	
-	
 	/*
 	function parseStreamFeatures( x : Xml ) {
 		for( e in x.elements() ) {
@@ -432,9 +422,6 @@ class Stream {
 		}
 	}
 	*/
-	
-	//function handleOpen() {
-	//}
 	
 	function handleClose() {
 		id = null;
@@ -453,11 +440,8 @@ class Stream {
 		handleClose();
 	}
 	
-	//function dataHandler( t : String ) {
-	//}
-	
 	function errorHandler( m : Dynamic ) {
-		onError( m );
+		onClose( m );
 	}
 	
 }
