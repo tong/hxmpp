@@ -17,63 +17,31 @@
 */
 package jabber.stream;
 
-//TODO move into collector class.
-
-private class Filters {
-	
-	var f_id : Array<xmpp.PacketFilter>;
-	var f : Array<xmpp.PacketFilter>;
-	
-	public function new() {
-		clear();
-	}
-	
-	public function iterator() : Iterator<xmpp.PacketFilter> {
-		return f_id.concat( f ).iterator();
-	}
-	
-	public function push( _f : xmpp.PacketFilter ) {
-		if( Std.is( _f, xmpp.filter.PacketIDFilter ) ) f_id.push( _f );
-		else f.push( _f );
-	}
-	
-	public function unshift( _f : xmpp.PacketFilter ) {
-		if( Std.is( _f, xmpp.filter.PacketIDFilter ) ) f_id.unshift( _f );
-		else f.unshift( _f );
-	}
-	
-	public function remove( _f : xmpp.PacketFilter ) : Bool {
-		if( f_id.remove( _f ) ) return true;
-		if( f.remove( _f ) ) return true;
-		return false;
-	}
-	
-	public function clear( ) {
-		f_id = new Array<xmpp.PacketFilter>();
-		f = new Array<xmpp.PacketFilter>();
-	}
-}
+import xmpp.PacketFilter;
 
 /**
+	Mind! packet timeouts dont't work for PHP!
 */
 class PacketCollector {
 	
 	/** */
-	public var filters(default,null) : Filters; //TODO Array(s) for sorting ?
+	public var filters(default,null) : FilterList;
 	/** Callbacks to which collected packets get delivered to. */
 	public var handlers : Array<xmpp.Packet->Void>;
-	/** Indicates if the the collector should get removed from the streams after collecting. */
+	/** Indicates if the the collector should get removed from the stream after collecting. */
 	public var permanent : Bool;
-	/** Block remaining collectors. */
-	public var block : Bool;
+	/** Block remaining collectors */
+	public var block : Bool; //TODO remove
 	/** */
 	public var timeout(default,setTimeout) : PacketTimeout;
 	
-	public function new( filters : Iterable<xmpp.PacketFilter>, handler : Dynamic->Void,
-						 ?permanent : Bool = false, ?timeout : PacketTimeout, ?block : Bool = false ) {
-		
+	public function new( filters : Iterable<xmpp.PacketFilter>,
+						 handler : Dynamic->Void,
+						 ?permanent : Bool = false,
+						 ?timeout : PacketTimeout,
+						 ?block : Bool = false ) {
 		handlers = new Array();
-		this.filters = new Filters();
+		this.filters = new FilterList();
 		for( f in filters )
 			this.filters.push( f );
 		if( handler != null )
@@ -86,8 +54,7 @@ class PacketCollector {
 	function setTimeout( t : PacketTimeout ) : PacketTimeout {
 		if( timeout != null ) timeout.stop();
 		timeout = null;
-		if( t == null ) return null;
-		if( permanent ) return null;
+		if( t == null || permanent ) return null;
 		timeout = t;
 		timeout.collector = this;
 		return timeout;
@@ -101,7 +68,8 @@ class PacketCollector {
 			if( !f.accept( p ) )
 				return false;
 		}
-		if( timeout != null ) timeout.stop();
+		if( timeout != null )
+			timeout.stop();
 		return true;
 	}
 	
@@ -109,7 +77,7 @@ class PacketCollector {
 		Delivers the given packet to all registerd handlers.
 	*/
 	public function deliver( p : xmpp.Packet ) {
-		for( h in handlers ) h( p );
+		for( h in handlers ) { h( p ); }
 	}
 
 }
