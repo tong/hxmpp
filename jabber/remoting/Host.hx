@@ -20,45 +20,50 @@ package jabber.remoting;
 import haxe.remoting.Context;
 
 /**
-	haXe/XMPP remoting host .
+	haXe/XMPP remoting host.<br/>
+	<a href="http://haxe.org/doc/remoting">haXe-remoting</a>
 */
 class Host {
-	
+
+	/** Current/Last calling client JID */
+	public var client(default,null) : String;
+	public var ctx : Context;
 	public var stream(default,null) : jabber.Stream;
-	
-	var ctx : Context;
-	
-	public function new( stream : jabber.Stream, ctx :  haxe.remoting.Context ) {
+
+	public function new( stream : jabber.Stream, ctx : Context ) {
 		this.stream = stream;
 		this.ctx = ctx;
-		stream.features.add( xmpp.HaXe.XMLNS );
-		var f_type = new xmpp.filter.IQFilter( xmpp.HaXe.XMLNS );
-		stream.collect( [cast f_type], handleIQ, true );
+		stream.features.add( xmpp.HXR.XMLNS );
+		stream.collect( [cast new xmpp.filter.IQFilter( xmpp.HXR.XMLNS, null, xmpp.IQType.get )], handleIQ, true );
 	}
 	
 	function handleIQ( iq : xmpp.IQ ) {
-		switch( iq.type ) {
-		case get :
-			var request = xmpp.HaXe.getData( iq.x.toXml() );
-			var response = processRequest( request, ctx );
-			var r = xmpp.IQ.createResult( iq );
-			r.properties.push( xmpp.HaXe.create( response ) );
-			stream.sendPacket( r );
-		default :
-			//TODO check error settings
-			var r = xmpp.IQ.createErrorResult( iq, [new xmpp.Error(xmpp.ErrorType.modify,null,xmpp.ErrorCondition.NOT_ACCEPTABLE)] );
-			stream.sendPacket( r );
-		}
+		client = iq.from;
+		var request = xmpp.HXR.getData( iq.x.toXml() );
+		var response = processRequest( request, ctx );
+		var r = xmpp.IQ.createResult( iq );
+		//TODO send empty result IQ (void)
+		r.properties.push( xmpp.HXR.create( response ) );
+		stream.sendPacket( r );
+		/*
+		//TODO check error settings
+		var r = xmpp.IQ.createErrorResult( iq, [new xmpp.Error(xmpp.ErrorType.modify,null,xmpp.ErrorCondition.NOT_ACCEPTABLE)] );
+		stream.sendPacket( r );
+		*/
 	}
 	
-	public static function processRequest( requestData : String, ctx : Context ) : String {
+	/**
+	*/
+	public static function processRequest( data : String, ctx : Context ) : String {
 		try {
-			var u = new haxe.Unserializer( requestData );
+			var u = new haxe.Unserializer( data );
 			var path = u.unserialize();
+			//trace(path);
 			var args = u.unserialize();
-			var data = ctx.call( path, args );
+			//trace(args);
+			var d = ctx.call( path, args );
 			var s = new haxe.Serializer();
-			s.serialize( data );
+			s.serialize( d );
 			return "hxr"+s.toString();
 		} catch( e : Dynamic ) {
 			var s = new haxe.Serializer();

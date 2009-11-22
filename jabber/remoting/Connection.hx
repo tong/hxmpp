@@ -20,11 +20,13 @@ package jabber.remoting;
 import haxe.remoting.AsyncConnection;
 
 /**
-	haXe remoting connection over XMPP.
+	haXe remoting connection to a XMPP entity.<br/>
+	User Service Discovery to determine if an entity supports haXe-remoting.<br/>
 */
 class Connection implements AsyncConnection, implements Dynamic<AsyncConnection> {
 	
-	public var target(default,null) : String;
+	/** JID of the entity requested */
+	public var target : String;
 	public var stream(default,null) : jabber.Stream;
 	
 	var __error : Dynamic->Void;
@@ -44,21 +46,22 @@ class Connection implements AsyncConnection, implements Dynamic<AsyncConnection>
 	}
 	
 	public function setErrorHandler( h : Dynamic->Void ) {
-		__error = h; //TODO
+		__error = h;
 	}
 	
-	public function call( params : Array<Dynamic>, ?onResult : Dynamic -> Void ) {
+	/**
+	*/
+	public function call( params : Array<Dynamic>, ?onResult : Dynamic->Void ) {
 		var s = new haxe.Serializer();
 		s.serialize( __path );
 		s.serialize( params );
-		var iq = new xmpp.IQ( null, null, target );
-		iq.properties.push( xmpp.HaXe.create( s.toString() ) );
+		var iq = new xmpp.IQ( null, null, target, stream.jidstr );
+		iq.properties.push( xmpp.HXR.create( s.toString() ) );
 		var error = __error;
 		stream.sendIQ( iq, function(r) {
 			switch( r.type ) {
 			case result :
-				var x = r.x.toXml();
-				var v = x.firstChild().nodeValue;
+				var v = xmpp.HXR.getData( r.x.toXml() );
 				var ok = true;
 				var ret;
 				try {
@@ -72,15 +75,20 @@ class Connection implements AsyncConnection, implements Dynamic<AsyncConnection>
 					error( err );
 				}
 				if( ok && onResult != null )
-					onResult(ret);
+					onResult( ret );
 			case error :
 				var err = xmpp.Error.fromPacket( r );
 				error( err );
 			default :
+				#if JABBER DEBUG
+				trace( "Invalid remoting response type "+r.type );
+				#end
 			}
 		} );
 	}
 	
+	/**
+	*/
 	public static function connect( stream : jabber.Stream, target : String ) {
 		return new Connection( stream, target, [], function(e) throw e );
 	}
