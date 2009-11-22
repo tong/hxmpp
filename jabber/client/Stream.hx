@@ -17,10 +17,12 @@
 */
 package jabber.client;
 
+import jabber.JID;
+import jabber.StreamStatus;
 import jabber.stream.Connection;
 
 /**
-	Base for client XMPP streams.<br/>
+	Client XMPP stream base.<br/>
 */
 class Stream extends jabber.Stream {
 	
@@ -28,11 +30,12 @@ class Stream extends jabber.Stream {
 	public static inline var PORT_SECURE_STANDARD = 5223;
 	public static var defaultPort = PORT_STANDARD;
 	
+	public var jid(default,setJID) : JID;
 	// public var tls(default,null) : Bool;
-	public var jid(default,null) : jabber.JID;
 	
-	public function new( jid : jabber.JID, cnx : Connection,
-						 version : Bool = true ) {
+	public function new( ?jid : JID, ?cnx : Connection, ?version : Bool = true ) {
+		if( jid == null )
+			jid = new JID(null);
 		super( cnx );
 		this.jid = jid;
 		this.version = version;
@@ -43,12 +46,18 @@ class Stream extends jabber.Stream {
 		return jid.toString();
 	}
 	
+	function setJID( j : JID ) : JID {
+		if( status != StreamStatus.closed )
+			throw "Cannot change JID on active stream";
+		return jid = j;
+	}
+	
 	override function processStreamInit( t : String, buflen : Int ) : Int {
 		if( isBOSH ) {
 			var sx = Xml.parse( t ).firstElement();
 			var sf = sx.firstElement();
 			parseStreamFeatures( sf );
-			status = jabber.StreamStatus.open;
+			status = StreamStatus.open;
 			onOpen();
 			return buflen;	
 		} else {
@@ -64,7 +73,7 @@ class Stream extends jabber.Stream {
 				var sx = Xml.parse( s ).firstElement();
 				id = sx.get( "id" );
 				if( !version ) {
-					status = jabber.StreamStatus.open;
+					status = StreamStatus.open;
 					onOpen();
 					return buflen;
 				}
@@ -75,7 +84,7 @@ class Stream extends jabber.Stream {
 				return -1;
 			}
 			if( !version ) {
-				status = jabber.StreamStatus.open;
+				status = StreamStatus.open;
 				onOpen();
 				return buflen;
 			}
@@ -89,7 +98,7 @@ class Stream extends jabber.Stream {
 				#if XMPP_DEBUG
 				jabber.XMPPDebug.inc( sfx.toString() );
 				#end
-				status = jabber.StreamStatus.open;
+				status = StreamStatus.open;
 				onOpen();
 				return buflen;
 			} catch( e : Dynamic ) {
@@ -101,7 +110,7 @@ class Stream extends jabber.Stream {
 	}
 	
 	override function connectHandler() {
-		status = jabber.StreamStatus.pending;
+		status = StreamStatus.pending;
 		// TODO avoid HACK
 		if( !isBOSH ) {
 			sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_CLIENT, jid.domain, version, lang ) );

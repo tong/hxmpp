@@ -17,7 +17,6 @@
 */
 package jabber;
 
-import jabber.Stream;
 import jabber.stream.Connection;
 import jabber.stream.TPacketInterceptor;
 import jabber.stream.PacketCollector;
@@ -73,31 +72,31 @@ class Stream {
 	public var jidstr(getJIDStr,null) : String;
 	public var server(default,null) : Server;
 	public var features(default,null) : StreamFeatures;
-	/** Indicates if the version number of the XMPP stream ("1.0") should get added to the stream opening XML element */
-	public var version : Bool;
-	//TODO
+	public var version : Bool; //Indicates if the version number of the XMPP stream ("1.0") should get added to the stream opening XML element.
 	//public var dataFilters : List<TDataFilter>;
 	//public var dataInterceptors : List<TDataInterceptor>;
 	
-	var collectors : List<PacketCollector>; // public var collectors : Array<TPacketCollector>; 
-	var interceptors : List<TPacketInterceptor>; // public var interceptors : Array<TPacketCollector>; 
+	var collectors : List<PacketCollector>; // public var packetCollectors : Array<TPacketCollector>; 
+	var interceptors : List<TPacketInterceptor>; // public var packetInterceptors : Array<TPacketCollector>; 
 	var isBOSH : Bool;
 	var numPacketsSent : Int;
+	//var numPacketsRecieved : Int;
 	
-	function new( cnx : Connection ) {
-		if( cnx == null )
-			throw "Stream connection is null";
-		collectors = new List();
-		interceptors = new List();
+	function new( ?cnx : Connection ) {
+//		if( cnx == null )
+//			throw "Stream connection is null";
+		status = StreamStatus.closed;
 		server = { features : new Hash() };
 		features = new StreamFeatures();
 		version = true;
-		status = StreamStatus.closed;
+		collectors = new List();
+		interceptors = new List();
 		isBOSH = false;
 		numPacketsSent = 0;
-		setConnection( cnx );
 		//dataFilters = new List();
 		//dataInterceptors = new List();
+		if( cnx != null )
+			setConnection( cnx );
 	}
 	
 	function getJIDStr() : String {
@@ -119,7 +118,7 @@ class Stream {
 			cnx.onData = processData;
 			cnx.onError = errorHandler;
 		}
-		isBOSH = ( Type.getClassName( Type.getClass( c ) ) == "jabber.BOSHConnection" );
+		isBOSH = ( Type.getClassName( Type.getClass( cnx ) ) == "jabber.BOSHConnection" );
 		return cnx;
 	}
 	
@@ -137,10 +136,12 @@ class Stream {
 	/**
 		Request to open the XMPP stream.
 	*/
+	//TODO public function open( ?jid : String ) : Bool {
 	public function open() : Bool {
 //		if( status == StreamStatus.open ) return false;
 		if( !cnx.connected ) cnx.connect()
 		else connectHandler();
+		//( cnx.connected ) ? connectHandler() : cnx.connect();
 		return true;
 	}
 	
@@ -154,7 +155,7 @@ class Stream {
 		}
 		if( disconnect )
 			cnx.disconnect();
-		handleClose();
+		closeHandler();
 	}
 	
 	/**
@@ -186,7 +187,6 @@ class Stream {
 	}
 	
 	/*
-	/*
 		TODO Send raw bytes data.
 	*/
 	/*
@@ -216,6 +216,7 @@ class Stream {
 	{
 		if( iq.id == null )
 			iq.id = nextID();
+		//iq.from = jidstr;
 		var c : PacketCollector = null;
 		if( handler != null ) {
 			c = new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block );
@@ -291,23 +292,28 @@ class Stream {
 	
 	/**
 	*/
+	//TODO remove pos/length value 
+	//public function processData( buf : haxe.io.Bytes ) : Bool {
 	public function processData( buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) : Int {
 		if( status == StreamStatus.closed )
 			return -1;
 		//TODO .. data filters
-		var t = buf.readString( bufpos, buflen );
+		//
+		var t : String = buf.readString( bufpos, buflen );
+		//TODO
 		if( xmpp.Stream.REGEXP_CLOSE.match( t ) ) {
 			close( true );
 			return -1;
 		}
+		//TODO
 		if( xmpp.Stream.REGEXP_ERROR.match( t ) ) {
 		//if( ~/stream:error/.match( t ) ) {
 			var err : xmpp.StreamError = null;
 			try {
 				err = xmpp.StreamError.parse( Xml.parse( t ) );
 			} catch( e : Dynamic ) {
-				onClose( "Invalid stream:error" );
-				close();
+				onClose( "Invalid XMPP stream "+e );
+				close( true );
 				return -1;
 			}
 			onClose( err );
@@ -320,18 +326,22 @@ class Stream {
 		case pending :
 			return processStreamInit( XmlUtil.removeXmlHeader( t ), buflen );
 		case open :
+		
 			// HACK flash/js Xml bug !
 			#if (flash||js)
+			if(  t.charAt( 0 ) != "<" || t.charAt( t.length-1 ) != ">" ) {
+				return 0;
+			}
+			/*
 			if( !StringTools.startsWith(t,"<") || !StringTools.endsWith(t, ">") ) {
 				if( !REG_HACK.match( t ) ) {
-				//if( !StringTools.startsWith(t,"<") || !StringTools.endsWith(t, ">") ) {
 					#if JABBER_DEBUG
 					trace( "Invalid XML " );
 					#end
 					return 0;
 				}
-				
 			}
+			*/
 			#end
 			// filter data here ?
 			var x : Xml = null;
@@ -349,9 +359,11 @@ class Stream {
 		return 0;
 	}
 	
+	//HACK
 	#if (flash||js)
-	static inline var REG_HACK = ~/(.+)(\/[a-zA-Z-]*)>$/;
+	//static inline var REG_HACK = ~/(.+)(\/[a-zA-Z-]*)>$/;
 	#end
+	//HACK
 	
 	/**
 		Inject incoming XML data to handle.<br/>
@@ -373,12 +385,6 @@ class Stream {
 	*/
 	public function handlePacket( p : xmpp.Packet ) : Bool {
 		#if XMPP_DEBUG
-		/*
-		if( p.errors.length > 0 )
-			XMPPDebug.error( p.toString() );
-		else
-			XMPPDebug.inc( p.toString() );
-		*/
 		XMPPDebug.inc( p.toString() );
 		#end
 		var collected = false;
@@ -401,7 +407,7 @@ class Stream {
 		}
 		if( !collected ) {
 			#if JABBER_DEBUG
-			trace( Type.enumConstructor( p._type )+" packet not handled", "warn" );
+			trace( "incoming '"+Type.enumConstructor( p._type )+"' packet not handled ( "+p.from+" -> "+p.to+" )", "warn" );
 			#end
 			if( p._type == xmpp.PacketType.iq ) { // send a 'feature not implemented' response
 				var q : xmpp.IQ = cast p;
@@ -423,25 +429,25 @@ class Stream {
 	}
 	*/
 	
-	function handleClose() {
+	function processStreamInit( t : String, buflen : Int ) : Int {
+		return throw "abstract";
+	}
+	
+	function closeHandler() {
 		id = null;
 		numPacketsSent = 0;
 		onClose();
 	}
 	
-	function processStreamInit( t : String, buflen : Int ) : Int {
-		return throw "abstract";//throw new error.AbstractError();
-	}
-	
 	function connectHandler() {
-	}
-	
-	function disconnectHandler() {
-		handleClose();
 	}
 	
 	function errorHandler( m : Dynamic ) {
 		onClose( m );
+	}
+
+	function disconnectHandler() {
+		//? closeHandler();
 	}
 	
 }

@@ -43,7 +43,7 @@ class Stream extends jabber.Stream {
 	/**  */
 	public var connected(default,null) : Bool;
 	/** */
-	public var items(default,null) : xmpp.disco.Items;
+	public var items(default,null) : xmpp.disco.Items; //TODO move into jabber.Stream? ( allowed by clients ? )
 	/** */
 	public var serviceListener(default,null) : ServiceDiscoveryListener;
 	
@@ -68,6 +68,8 @@ class Stream extends jabber.Stream {
 	}
 	
 	function getServiceName() : String {
+		if( subdomain == null || host == null )
+			return null;
 		return subdomain+"."+host;
 	}
 	

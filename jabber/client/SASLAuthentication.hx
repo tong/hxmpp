@@ -23,13 +23,11 @@ import xmpp.IQType;
 import xmpp.filter.PacketNameFilter;
 import xmpp.filter.FilterGroup;
 
-	//TODO use remaining mechanisms on fail (?)
-	
 /**
-	Responsible for authenticating a client account using SASL, binding the resource to the connection
-	and establishing a session with the server.<br>
-	<a href="http://xmpp.org/rfcs/rfc3920.html#sasl">RFC3920-SASL</a><br>
-	<a href="http://xmpp.org/rfcs/rfc3920.html#bind">RFC3920-BIND</a><br>
+	Responsible for authenticating a client account using SASL,
+	binding the resource to the connection and establishing a session with the server.<br>
+	<a href="http://xmpp.org/rfcs/rfc3920.html#sasl">RFC3920-SASL</a><br/>
+	<a href="http://xmpp.org/rfcs/rfc3920.html#bind">RFC3920-BIND</a><br/>
 	http://www.ietf.org/mail-archive/web/isms/current/msg00063.html
 */
 class SASLAuthentication extends Authentication {
@@ -67,7 +65,8 @@ class SASLAuthentication extends Authentication {
 	public override function authenticate( password : String, ?resource : String ) : Bool {
 		this.resource = resource;
 		// update stream jid resource
-		stream.jid.resource = resource;
+		if( stream.jid != null && resource != null )
+			stream.jid.resource = resource;
 		// locate mechanism to use.
 		if( handshake.mechanism == null ) {
 			for( amechs in mechanisms ) {
@@ -87,9 +86,6 @@ class SASLAuthentication extends Authentication {
 			#end
 			return false;
 		}
-		//#if JABBER_DEBUG
-		//trace( "Used SASL mechanism: "+handshake.mechanism.id, "info" );
-		//#end
 		// collect failures
 		var f = new FilterGroup();
 		f.add( new PacketNameFilter( ~/failure/ ) ); //?
@@ -109,6 +105,7 @@ class SASLAuthentication extends Authentication {
 		c_challenge = new PacketCollector( [cast new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
 		stream.addCollector( c_challenge );
 		// send init auth
+		//trace("############## "+stream.jid );
 		var t = handshake.mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password );
 		if( t != null ) t = util.Base64.encode( t );
 		return stream.sendData( xmpp.SASL.createAuthXml( handshake.mechanism.id, t ).toString() ) != null;
@@ -127,10 +124,8 @@ class SASLAuthentication extends Authentication {
 	}
 	
 	function handleSASLSuccess( p : xmpp.Packet ) {
-		// remove the challenge collector
-		removeSASLCollectors();
-		// relay the stream open event
-		onStreamOpenHandler = stream.onOpen;
+		removeSASLCollectors(); // remove the challenge collector
+		onStreamOpenHandler = stream.onOpen; // relay the stream open event
 		stream.onOpen = handleStreamOpen;
 		onNegotiated();
 		//stream.version = false;
@@ -143,7 +138,7 @@ class SASLAuthentication extends Authentication {
 		//onStreamOpenHandler = null;
 		if( stream.server.features.exists( "bind" ) ) { // bind the resource
 			var iq = new IQ( IQType.set );
-			iq.x = new xmpp.Bind( resource );
+			iq.x = new xmpp.Bind( ( handshake.mechanism.id == "ANONYMOUS" ) ? null : resource );
 			stream.sendIQ( iq, handleBind );
 		} else {
 			onSuccess(); // TODO ?
@@ -160,6 +155,11 @@ class SASLAuthentication extends Authentication {
 				throw "Unexpected resource bound ?";
 			}
 			*/
+			//onBind();
+			var b = xmpp.Bind.parse( iq.x.toXml() );
+			var jid = new jabber.JID( b.jid );
+			stream.jid.node = jid.node;
+			stream.jid.resource = jid.resource;
 			if( stream.server.features.exists( "session" ) ) {
 				// init session
 				var iq = new IQ( IQType.set );
@@ -174,8 +174,11 @@ class SASLAuthentication extends Authentication {
 	
 	function handleSession( iq : IQ ) {
 		switch( iq.type ) {
-		case result : onSuccess();
-		case error : onFail( new jabber.XMPPError( this, iq ) );
+		case result :
+			////onSession();
+			onSuccess();
+		case error :
+			onFail( new jabber.XMPPError( this, iq ) );
 		default : //#
 		}
 	}
