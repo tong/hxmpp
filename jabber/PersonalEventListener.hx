@@ -88,7 +88,7 @@ class PersonalEventListener {
 	
 	
 	function handlePersonalEvent( m : xmpp.Message ) {
-		//TODO? var event = xmpp.pep.Event.fromMessage();
+		// var event = xmpp.pep.Event.fromMessage();
 		//onEventMessage( m );
 		var event : xmpp.PubSubEvent = null;
 		for( p in m.properties ) {

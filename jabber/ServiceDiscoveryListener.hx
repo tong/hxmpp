@@ -52,6 +52,7 @@ class ServiceDiscoveryListener {
 			r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, Reflect.field( stream, "serviceName" ) );
 			r.x = Reflect.field( stream, "items" );
 		} else { // client streams do not have items .. return a feature-not-implemented error
+			//???
 			r = new xmpp.IQ( xmpp.IQType.error, iq.id, iq.from );
 			r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, -1, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );
 		}

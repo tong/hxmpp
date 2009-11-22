@@ -22,7 +22,7 @@ package xmpp;
 */
 class Caps {
 	
-	public static var XMLNS = xmpp.NS.PROTOCOL+"/caps";
+	public static inline var XMLNS = xmpp.NS.PROTOCOL+"/caps";
 	
 	/**
 		The hashing algorithm used to generate the verification string, fe: sha-1.

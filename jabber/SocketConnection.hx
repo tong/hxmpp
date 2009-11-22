@@ -67,7 +67,7 @@ class SocketConnection extends jabber.stream.Connection {
 						 ?port : Int,
 						 ?secure : Bool = false ,
 						 ?timeout : Int = 10,
-						 ?maxBufSize : Int = 65536 ) {
+						 ?maxBufSize : Int = 131072 ) {
 		if( port == null )
 			port = 5222;
 		super( host );
@@ -126,7 +126,7 @@ class SocketConnection extends jabber.stream.Connection {
 		#end
 		#if (neko||php||cpp)
 		connected = true;
-		onConnect();
+		__onConnect();
 		#else
 		#if flash10
 		socket.timeout = timeout*1000;
@@ -167,13 +167,9 @@ class SocketConnection extends jabber.stream.Connection {
 		return true;
 	}
 	
-	public override function write( t : String ) : String {
+	public override function write( t : String ) : Bool {
 		if( !connected || t == null || t.length == 0 )
-			return null;
-		//TODO
-		//var b = haxe.io.Bytes.ofString(t);
-		//for( i in interceptors )
-			//t = i.interceptData( haxe.io.Bytes.ofString(t) );
+			return false;
 		#if flash9
 		socket.writeUTFBytes( t ); 
 		socket.flush();
@@ -183,8 +179,7 @@ class SocketConnection extends jabber.stream.Connection {
 		#elseif JABBER_SOCKETBRIDGE
 		socket.send( t );
 		#end
-		return t;
-		//return writeBytes( haxe.io.Bytes.ofString( t ) ).toString();
+		return true;
 	}
 
 	/*
@@ -255,7 +250,7 @@ class SocketConnection extends jabber.stream.Connection {
 	function processData() {
 		var pos = 0;
 		while( bufbytes > 0 && reading ) {
-			var nbytes = onData( buf, pos, bufbytes );//var nbytes = handleData( buffer, pos, bufbytes );
+			var nbytes = __onData( buf, pos, bufbytes ); //var nbytes = handleData( buffer, pos, bufbytes );
 			if( nbytes == 0 ) {
 				return;
 			}
@@ -296,7 +291,7 @@ class SocketConnection extends jabber.stream.Connection {
 			#if JABBER_DEBUG trace( "Max socket buffer size reached ("+maxBufSize+")" ); #end
 			throw "Max socket buffer size reached ("+maxBufSize+")";
 		}
-		buf = ( onData( haxe.io.Bytes.ofString( i ), 0, i.length ) == 0 ) ? i : "";
+		buf = ( __onData( haxe.io.Bytes.ofString( i ), 0, i.length ) == 0 ) ? i : "";
 	}
 	
 	#end
@@ -345,7 +340,8 @@ class Socket {
 	
 }
 
-
+/**
+*/
 class SocketBridgeConnection {
 	
 	//public static var defaultBridgeId = "f9bridge";

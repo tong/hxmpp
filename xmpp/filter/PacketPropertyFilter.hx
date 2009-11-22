@@ -31,18 +31,18 @@ class PacketPropertyFilter {
 	
 	public function accept( p : xmpp.Packet ) : Bool {
 		for( p in p.properties ) {
-			if( ns != null ) {
-				if( p.get( "xmlns" ) != ns ) {
-					continue;
-				}
+			if( ns != null && p.get( "xmlns" ) != ns ) {
+				continue;
 			}
 			if( name != null ) {
-				if( p.nodeName == name ) {
+				if( p.nodeName == name )
 					return true;
-				}
-			} else {
+			}
+			/*?
+			 else {
 				return true;
 			}
+			*/
 		}
 		return false;
 	}

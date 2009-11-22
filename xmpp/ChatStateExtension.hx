@@ -22,7 +22,7 @@ package xmpp;
 */
 class ChatStateExtension {
 	
-	public static var XMLNS = xmpp.NS.PROTOCOL+"/chatstates";
+	public static inline var XMLNS = xmpp.NS.PROTOCOL+"/chatstates";
 	
 	/**
 		Adds (or changes if already has) the chat state property of the givent message packet.

@@ -38,15 +38,15 @@ class PubSubListener {
 	/** Subscription action notification */
 	public dynamic function onSubscription( service : String, subscription : xmpp.pubsub.Subscription ) : Void;
 	
-	/////** PubSub services to listen for, others get ignored */
+	/////** Publishing entites to listen for, others get ignored */
 	/////public var targets : List<String>;
 	public var stream(default,null) : Stream;
 	
 	public function new( stream : Stream ) {
 		this.stream = stream;
-		stream.addCollector( new jabber.stream.PacketCollector( [ cast new xmpp.filter.MessageFilter( xmpp.MessageType.normal ),
-																  cast new xmpp.filter.PacketPropertyFilter( xmpp.PubSubEvent.XMLNS, "event" ) ],
-																  handlePubSubEvent, true ) );
+		stream.collect( [ cast new xmpp.filter.MessageFilter( xmpp.MessageType.normal ),
+						  cast new xmpp.filter.PacketPropertyFilter( xmpp.PubSubEvent.XMLNS, "event" ) ],
+						handlePubSubEvent, true );
 	}
 	
 	function handlePubSubEvent( m : xmpp.Message ) {
@@ -56,9 +56,12 @@ class PubSubListener {
 		
 		var service = m.from;
 		var event : xmpp.PubSubEvent = null;
-		for( p in m.properties )
-			if( p.nodeName == "event" )
+		for( p in m.properties ) {
+			if( p.nodeName == "event" ) {
 				event = xmpp.PubSubEvent.parse( p );
+				break; //?
+			}
+		}
 		// fire event
 		if( event.items != null ) {
 			onItems( service, event.items );

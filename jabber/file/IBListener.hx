@@ -33,6 +33,12 @@ class IBListener {
 		stream.addCollector( new jabber.stream.PacketCollector( [f], handleRequest, true ) );
 	}
 	
+	/*
+	public function dispose() {
+		//stream.removeCollector( c );
+	}
+	*/
+	
 	function handleRequest( iq : xmpp.IQ ) {
 		var r = new IBReciever( stream );
 		if( r.handleRequest( iq ) )

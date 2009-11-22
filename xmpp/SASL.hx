@@ -22,7 +22,7 @@ package xmpp;
 */
 class SASL {
 	
-	public static var XMLNS = "urn:ietf:params:xml:ns:xmpp-sasl";
+	public static inline var XMLNS = "urn:ietf:params:xml:ns:xmpp-sasl";
 	
 	/**
 	*/

@@ -24,7 +24,7 @@ package xmpp;
 */
 class LastActivity {
 	
-	public static var XMLNS = "jabber:iq:last";
+	public static inline var XMLNS = "jabber:iq:last";
 	
 	public var seconds : Int;
 	

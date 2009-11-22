@@ -18,8 +18,8 @@
 package jabber;
 
 /**
-	Static methods for JabberID manipulation/validation.<br>
-	<a href="http://www.xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a><br>
+	Static methods for JabberID manipulation/validation.<br/>
+	<a href="http://www.xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a><br/>
 */	
 class JIDUtil {
 	
@@ -93,16 +93,18 @@ class JIDUtil {
 	}
 
 	/**
-	    Escapes the node portion of a JID according to "JID Escaping" (XEP-0106).
-	    Escaping replaces characters prohibited by node-prep with escape sequences,
-	    
+		<p>
+	    Escapes the node portion of a JID according to "JID Escaping" (XEP-0106).<br/>
+	    Escaping replaces characters prohibited by node-prep with escape sequences.
+	    <p/>
+	    <p>
 	    Typically, escaping is performed only by a client that is processing information
 	    provided by a human user in unescaped form, or by a gateway to some external system
 	    (e.g., email or LDAP) that needs to generate a JID.
+	    </p>
 	    
     */
 	public static function escapeNode( n : String ) : String {
-	    //TODO check XEP!! maybe minor errors (?)
 		var b = new StringBuf();
 		for( i in 0...n.length ) {
 			var c = n.charAt( i );
@@ -128,17 +130,18 @@ class JIDUtil {
 	}
 
     /**
-     	Un-escapes the node portion of a JID according to "JID Escaping" (XEP-0106 )
-     	Escaping replaces characters prohibited by node-prep with escape sequences,
-     
+    	<p>
+     	Un-escapes the node portion of a JID according to "JID Escaping" (XEP-0106 ).<br/>
+     	Escaping replaces characters prohibited by node-prep with escape sequences.
+     	</p>
+     	<p>
      	Typically, unescaping is performed only by a client that wants to display JIDs
      	containing escaped characters to a human user, or by a gateway to some
      	external system (e.g., email or LDAP) that needs to generate identifiers
      	for foreign systems.
-     	
+     	</p>
     */
 	public static function unescapeNode( n : String ) : String {
-      	//TODO check XEP!! maybe minor errors (?)
 		var l = n.length;
 		var b = new StringBuf();
 		var i = 0;

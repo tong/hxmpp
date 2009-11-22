@@ -24,7 +24,7 @@ import util.XmlUtil;
 */
 class Bind {
 	
-	public static var XMLNS = "urn:ietf:params:xml:ns:xmpp-bind";
+	public static inline var XMLNS = "urn:ietf:params:xml:ns:xmpp-bind";
 	
 	public var resource : String;
 	public var jid : String;
@@ -51,8 +51,8 @@ class Bind {
 		//Packet.reflectPacketNodes( x, b );
 		for( e in x.elements() ) {
 			switch( e.nodeName ) {
-				case "resource" : b.resource = e.firstChild().nodeValue;
-				case "jid" : b.jid = e.firstChild().nodeValue;
+			case "resource" : b.resource = e.firstChild().nodeValue;
+			case "jid" : b.jid = e.firstChild().nodeValue;
 			}
 		}
 		return b;

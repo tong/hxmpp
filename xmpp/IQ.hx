@@ -54,13 +54,14 @@ class IQ extends Packet {
 		}
 		if( iq.properties.length > 0 )
 			iq.x = new PlainPacket( iq.properties[0] );
+			//TODO iq.x = new PlainPacket( iq.properties.shift() );
 		return iq;
 	}
 	
 	/**
 		Creates a '<query xmlns="namspace"/>' xml tag.
 	*/
-    public static function createQueryXml( ns : String ) : Xml {
+    public static inline function createQueryXml( ns : String ) : Xml {
 		var q = Xml.createElement( "query" );
 		q.set( "xmlns", ns );
 		return q;
@@ -76,8 +77,10 @@ class IQ extends Packet {
 	/**
 		Creates a error type IQ from the given request.
 	*/
-	public static inline function createErrorResult( iq : IQ ) : IQ {
-		return new IQ( IQType.error, iq.id, iq.from );
+	public static inline function createErrorResult( iq : IQ, ?errors : Array<Error> ) : IQ {
+		var r = new IQ( IQType.error, iq.id, iq.from );
+		if( errors != null ) r.errors = errors;
+		return r;
 	}
 	
 }

@@ -31,7 +31,7 @@ class Ping {
 	
 	public dynamic function onResponse( entity : String ) : Void;
 	public dynamic function onTimeout( entity : String ) : Void;
-	public dynamic function onError( e : jabber.XMPPError ) : Void;
+	public dynamic function onError( e : XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
 	/** Ping interval ms */
@@ -45,7 +45,7 @@ class Ping {
 	
 	public function new( stream : Stream, ?target : String, ?interval : Int ) {
 		if( interval != null && interval <= 0 )
-			throw "Invalid ping interval: "+interval;
+			throw "Invalid ping interval ("+interval+")";
 		this.target = target;
 		this.stream = stream;
 		this.interval = ( interval != null ) ? interval : defaultInterval;
@@ -56,25 +56,30 @@ class Ping {
 		Starts the ping interval.
 	*/
 	public function start() {
+		#if !php
 		active = true;
 		send( target );
+		#end
 	}
 	
 	/**
 		Stops the ping interval.
 	*/
 	public function stop() {
+		#if !php
 		active = false;
 		if( timer != null ) {
 			timer.stop();
 			timer = null;
 		}
+		#end
 	}
 	
 	/**
-		Sends a ping packet to the given entity, or to the entities server if the to attribute is omitted.
+		Sends a ping packet to the given entity, or to the server if the to attribute is omitted.
 	*/
 	public function send( ?to : String ) {
+		#if !php
 		var iq = new xmpp.IQ( null, null, to, stream.jidstr );
 		iq.x = new xmpp.Ping();
 		var me = this;
@@ -86,14 +91,18 @@ class Ping {
 			me.onTimeout( to );
 		};
 		stream.sendIQ( iq, handlePong, false, new jabber.stream.PacketTimeout( [timeoutHandler], interval ) );
+		#end
 	}
 	
 	function handleTimer() {
+		#if !php
 		timer.stop();
 		send( target );
+		#end
 	}
 	
 	function handlePong( iq : xmpp.IQ ) {
+		#if !php
 		switch( iq.type ) {
 		case result :
 			onResponse( iq.from );
@@ -102,9 +111,10 @@ class Ping {
 				timer.run = handleTimer;
 			}
 		case error :
-			onError( new jabber.XMPPError( this, iq ) );
+			onError( new XMPPError( this, iq ) );
 		default : //#
 		}
+		#end
 	}
 
 }

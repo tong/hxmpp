@@ -36,9 +36,21 @@ enum Action {
 	content_modify;
 	
 	/**
+	*/
+	content_reject;
+	
+	/**
 		Remove one or more content types from the session.
 	*/
 	content_remove;
+	
+	/**
+	*/
+	description_info;
+	
+	/**
+	*/
+	security_info;
 	
 	/**
 		Definitively accept a session negotiation (implicitly this action also serves as a content-accept).
@@ -64,5 +76,9 @@ enum Action {
 		Exchange transport candidates, it is mainly used in XEP-0176 but may be used in other transport specifications.
 	*/
 	transport_info;
+	
+	transport_accept;
+	transport_reject;
+	transport_replace;
 	
 }

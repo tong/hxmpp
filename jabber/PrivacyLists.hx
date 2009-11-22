@@ -78,7 +78,6 @@ class PrivacyLists {
 	}
 	
 	public function changeDefault( name : String ) {
-		//TODO!!!!!!!!!
 		var iq = new xmpp.IQ( xmpp.IQType.set );
 		var ext = new xmpp.PrivacyLists();
 		ext._default = name;
@@ -86,11 +85,11 @@ class PrivacyLists {
 		var me = this;
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			switch( r.type ) {
-				case result :
-					me.onDefaultChange( name );
-				case error :
-					me.onError( new jabber.XMPPError( me, r ) );
-				default :
+			case result :
+				me.onDefaultChange( name );
+			case error :
+				me.onError( new jabber.XMPPError( me, r ) );
+			default :
 			}
 		} );
 	}

@@ -50,10 +50,10 @@ class PubSub {
 	public function createNode( name : String, ?config : xmpp.DataForm ) {
 		//TODO config
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, service );
-		var xt = new xmpp.PubSub();
-		xt.create = name;
-		xt.configure = config;
-		iq.x = xt;
+		var x = new xmpp.PubSub();
+		x.create = name;
+		x.configure = config;
+		iq.x = x;
 		var me = this;
 		sendIQ( iq, function(r:xmpp.IQ) { me.onNodeCreate( name ); } );
 	}
@@ -215,12 +215,11 @@ class PubSub {
 		} );
 	}
 	
-	
-	function sendIQ( iq : xmpp.IQ, handler : xmpp.IQ->Void ) {
+	function sendIQ( iq : xmpp.IQ, h : xmpp.IQ->Void ) {
 		var me = this;
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			switch( r.type ) {
-			case result : handler( r );
+			case result : h( r );
 			case error : me.onError( new jabber.XMPPError( me, r ) );
 			default : // #
 			}

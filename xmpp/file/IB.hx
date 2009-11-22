@@ -19,7 +19,7 @@ package xmpp.file;
 
 class IB {
 	
-	public static var XMLNS = xmpp.NS.PROTOCOL+"/ibb";
+	public static inline var XMLNS = xmpp.NS.PROTOCOL+"/ibb";
 	
 	public var type : IBType;
 	public var sid : String;
@@ -63,6 +63,8 @@ class IB {
 		return ib;
 	}
 	
+	/**
+	*/
 	public static function parseData( p : xmpp.Packet ) : { sid : String , seq : Int, data : String } {
 		for( x in p.properties ) {
 			if( x.nodeName == "data" ) {
@@ -72,6 +74,8 @@ class IB {
 		return null;
 	}
 	
+	/**
+	*/
 	public static function createDataElement( sid : String, seq : Int, d : String ) : Xml {
 		var x = util.XmlUtil.createElement( "data", d );
 		x.set( "xmlns", XMLNS );

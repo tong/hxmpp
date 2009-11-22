@@ -41,6 +41,9 @@ typedef MUCOccupant = {
 	//?? var lastMessage : xmpp.Message;
 }
 
+//TODO
+//multiple logins/joins ? 
+
 /**
 	Multi-user chatroom from client perspective.
 	
@@ -56,7 +59,7 @@ class MUChat {
 	public dynamic function onLeave() : Void;
 	public dynamic function onUnlock() : Void;
 	public dynamic function onMessage( o : MUCOccupant, m : xmpp.Message ) : Void;
-	//TODO public dynamic function onRoomMessage( m : xmpp.Message ) : Void;
+	//public dynamic function onRoomMessage( m : xmpp.Message ) : Void;
 	public dynamic function onPresence( o : MUCOccupant ) {}
 	public dynamic function onSubject() : Void;
 	public dynamic function onKick( nick : String ) : Void;
@@ -70,7 +73,7 @@ class MUChat {
 	public var nick(default,null) : String;
 	public var role(default,null) : Role;
 	public var affiliation(default,null) : Affiliation;
-	public var presence(default,null) : PresenceManager;
+	public var presence(default,null) : PresenceManager; //TODO remove manager
 	public var occupants(default,null) : Array<MUCOccupant>;
 	public var subject(default,null) : String;
 	public var me(getMe,null) : MUCOccupant;
@@ -80,33 +83,28 @@ class MUChat {
 	var c_presence : PacketCollector;
 	var c_message : PacketCollector;
 	
-	
 	public function new( stream : Stream, host : String, roomName : String ) {
 		
 		this.stream = stream;
 		this.jid = roomName+"@"+host;
 		this.room = roomName;
 
-		//TODO add to features
 		stream.features.add( xmpp.MUC.XMLNS );
 		stream.features.add( xmpp.MUCUser.XMLNS );
-		
-		//presence = new PresenceManager( stream, myjid );
-		message = new xmpp.Message( jid, null, null, MessageType.groupchat, null );
-		joined = false;
-		occupants = new Array();
 		
 		// collect all presences and messages from the room
 		var f_from : xmpp.PacketFilter = new PacketFromContainsFilter( jid );
 		c_presence = new PacketCollector( [f_from, cast new PacketTypeFilter( PacketType.presence )], handlePresence, true );
 		c_message = new PacketCollector(  [f_from, cast new MessageFilter( MessageType.groupchat )], handleMessage, true );
+		
+		message = new xmpp.Message( jid, null, null, MessageType.groupchat, null );
+		joined = false;
+		occupants = new Array();
 	}
-
 	
 	function getMe() : MUCOccupant {
 		return { role : role, presence : presence.last, nick : nick, jid : myjid, affiliation : affiliation };
 	}
-	
 	
 	/**
 		Sends initial presence to room.

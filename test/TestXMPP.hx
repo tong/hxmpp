@@ -5,7 +5,7 @@ class TestXMPP {
 	
 	static function main() {
 
-		#if flash9
+		#if flash
 		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
 		#end
@@ -18,7 +18,6 @@ class TestXMPP {
 		r.add( new TestIQPacket() );
 		r.add( new TestXMPPStreamError() );
 		
-		
 		///// stuff
 		r.add( new TestXMPPError() );
 		r.add( new TestXMPPCompression() );
@@ -27,7 +26,7 @@ class TestXMPP {
 	//	r.add( new TestXMPPBind() );
 		/////r.add( new TestXMPPSASL() );
 		
-		///// IQ extension
+		///// IQ extensions
 		r.add( new TestXMPPAuth() );
 		r.add( new TestXMPPBlockList() );
 		r.add( new TestXMPPBOB() );
@@ -47,7 +46,7 @@ class TestXMPP {
 		r.add( new TestXMPPRoster() );
 		r.add( new TestXMPPSoftwareVersion() );
 		r.add( new TestXMPPSoftwareVersion() );
-		r.add( new TestXMPPEntityTime() );
+		r.add( new TestXMPPVCard() );
 
 	//	r.add( new TestXMPPMUC() );
 	//	r.add( new TestXMPPRPC() );

@@ -33,7 +33,8 @@ class PacketTimeout extends event.Dispatcher<PacketCollector> {
 	
 	var timer : Timer;
 	
-	public function new( handlers : Array<PacketCollector->Void>, ?time : Null<Int> = 0 ) {
+	public function new( handlers : Array<PacketCollector->Void>,
+						 ?time : Null<Int> = 0 ) {
 		super();
 		#if (php&&JABBER_DEBUG)
 		trace( "PHP does NOT support PacketTimouts", "warn" );

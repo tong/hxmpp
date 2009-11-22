@@ -20,36 +20,30 @@ package jabber;
 import jabber.stream.PacketCollector;
 
 /**
-	Extension for broadcasting and dynamically discovering client, device, or generic entity capabilities.<br>
 	<a href="http://xmpp.org/extensions/xep-0115.html">XEP-0085: Entity Capabilities</a><br/>
+	Extension for broadcasting and dynamically discovering client, device, or generic entity capabilities.<br>
 */
 class EntityCapabilities {
 	
-	/** */
 	public dynamic function onCaps( jid : String, caps : xmpp.Caps ) : Void;
-	/** */
 	public dynamic function onInfo( jid : String, info : xmpp.disco.Info, ?ver : String ) : Void;
 	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
-	/** Collected entity capabilities ( keys are the verfification strings ) */
+	/** Collected entity capabilities ( verfification strings are the keys ) */
 	public var caps(default,null) : Hash<xmpp.disco.Info>; //TODO extended info ( dataform )
-	public var stream(default,null) : Stream;
 	public var node : String;
 	public var ext : String;
-	
+	public var stream(default,null) : Stream;
 	
 	public function new( stream : Stream, node : String, ?ext : String ) {
-		
 		this.stream = stream;
 		this.node = node;
 		this.ext = ext;
-		
 		caps = new Hash();	
 		stream.addCollector( new PacketCollector( [cast new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence ),
 												   cast new xmpp.filter.PacketPropertyFilter( xmpp.Caps.XMLNS, "c" )],
 												  handlePresence, true ) );
 	}
-	
 	
 	/**
 		Publishes own capabilities.
@@ -62,20 +56,15 @@ class EntityCapabilities {
 		stream.sendData( p.toString() );			 
 	}
 	
-	
 	function handlePresence( p : xmpp.Presence ) {
 		for( prop in p.properties ) {
 			if( prop.nodeName == "c" ) {
-				
 				var _caps = xmpp.Caps.parse( prop );
-
 				onCaps( p.from, _caps );
-				
 				if( _caps.hash != "sha-1" ) {
 					requestDiscoInfo( p.from );
 					return;
 				}
-				
 				if( !caps.exists( _caps.ver ) ) {
 					caps.set( _caps.ver, null );
 					// discover infos

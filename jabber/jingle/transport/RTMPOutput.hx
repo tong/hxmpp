@@ -51,9 +51,11 @@ class RTMPOutput extends RTMPTransport {
 		super.netStatusHandler( e );
 	}
 	
+	/*
 	public static inline function ofCandidate( c : xmpp.jingle.TCandidateRTMP ) : RTMPOutput {
 		return new RTMPOutput( c.name, c.host, c.port, c.id );
 	}
+	*/
 	
 }
 

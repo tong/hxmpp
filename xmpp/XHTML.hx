@@ -22,8 +22,8 @@ package xmpp;
 */
 class XHTML {
 	
-	public static var XMLNS = xmpp.NS.PROTOCOL+"/xhtml-im";
-	static var W3NS = "http://www.w3.org/1999/xhtml";
+	public static inline var XMLNS = xmpp.NS.PROTOCOL+"/xhtml-im";
+	static inline var W3NS = "http://www.w3.org/1999/xhtml";
 	
 	public var body : String;
 	

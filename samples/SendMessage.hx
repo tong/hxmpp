@@ -14,13 +14,13 @@ class SendMessage {
 	
 	static function handleLogin() {
 		trace( "Sending message ..." );
-		stream.sendMessage( "reciever@disktree/HXMPP", "Test message" );
+		stream.sendMessage( "reciever@domain.net/Resource", "Test message" );
 		trace( "Message sent." );
-		Sys.exit(1);
+		Sys.exit(0);
 	}
 	
 	static function main() {
-		stream = new Stream( new jabber.JID( "hxmpp@disktree" ), new jabber.SocketConnection( "127.0.0.1", Stream.defaultPort ) );
+		stream = new Stream( new jabber.JID( "hxmpp@domain.net" ), new jabber.SocketConnection( "domain.net", Stream.defaultPort ) );
 		stream.onOpen = function() {
 			var auth = new jabber.client.NonSASLAuthentication( stream );
 			auth.onSuccess = handleLogin;

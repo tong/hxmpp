@@ -41,9 +41,9 @@ class PersonalEvent {
 		sendIQ( e, e.toXml(), onPublish );
 	}
 	
+	//TODO ?? hmm public function disable( c : Class<xmpp.pep.Event> ) {
 	/**
 		Disable publishing.
-		//TODO ?? hmm public function disable( c : Class<xmpp.pep.Event> ) {
 	*/
 	public function disable( e : xmpp.pep.Event ) {
 		sendIQ( e, e.empty(), onDisable );

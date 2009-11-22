@@ -19,7 +19,7 @@ package xmpp;
 
 class PubSubEvent {
 	
-	public static var XMLNS = xmpp.PubSub.XMLNS+"#event";
+	public static inline var XMLNS = xmpp.PubSub.XMLNS+"#event";
 	
 	public var items : xmpp.pubsub.Items;
 	public var configuration : { form : xmpp.DataForm, node : String };
@@ -27,11 +27,11 @@ class PubSubEvent {
 	public var purge : String;
 	public var subscription : xmpp.pubsub.Subscription;
 	
-	public function new() {
-	}
+	public function new() {}
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "event" );
+		x.set( "xmlns", XMLNS );
 		if( items != null ) {
 			x.addChild( items.toXml() );
 			return x;

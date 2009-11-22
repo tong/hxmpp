@@ -22,7 +22,7 @@ package xmpp;
 */
 class BOB {
 	
-	public static var XMLNS = "urn:xmpp:bob";
+	public static inline var XMLNS = "urn:xmpp:bob";
 	
 	/** Content ID */
 	public var cid : String;

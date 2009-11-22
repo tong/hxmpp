@@ -17,47 +17,36 @@
 */
 package jabber.stream;
 
-/* TOFO
-typedef TDataFilter = {
-	function filterData( t : haxe.io.Bytes) : haxe.io.Bytes;
-}
-*/
-
-typedef DataFilter = {
-	/** Filters incoming data before further processing ( fe: uncompression ). */
-	function filterData( t : haxe.io.Bytes) : haxe.io.Bytes;
-}
-
-typedef DataInterceptor = {
-	/** Modifies raw data before sending ( fe: compression ). */
-	function interceptData( t : haxe.io.Bytes ) : haxe.io.Bytes;
-}
-
 /**
 	Abstract base for XMPP stream connections.
 */
 class Connection {
 	
-	///// INTERNAL
 	/** Callback for connecting event */
-	public var onConnect : Void->Void;
+	public var __onConnect : Void->Void;
+	
 	/** Callback for disconnecting event */
-	public var onDisconnect : Void->Void;
+	public var __onDisconnect : Void->Void;
+	
 	/** Callback data recieved event */
 	//public var onData : String->Void;
-	public var onData : haxe.io.Bytes->Int->Int->Int;
+	public var __onData : haxe.io.Bytes->Int->Int->Int;
+	
 	/** Callback connection level errors */
-	public var onError : String->Void;
-	///// INTERNAL
+	public var __onError : String->Void;
 	
 	/** Server IP/hostname */
 	public var host(default,null) : String;
+	
 	/** Server port to connect to */
 	//public var port(default,null) : Int;
+	
 	/** Indicates whether is currently connected. */
 	public var connected(default,null) : Bool;
+	
 	/** Raw data filters for outgoing data. */
 	//public var interceptors : Array<DataInterceptor>;
+	
 	/** Raw data filters for incoming data. */
 	//public var filters : Array<DataFilter>;
 	
@@ -65,8 +54,6 @@ class Connection {
 		this.host = host;
 		//this.port = port;
 		connected = false;
-		//interceptors = new Array();
-		//filters = new Array();
 	}
 	
 	/**
@@ -80,7 +67,7 @@ class Connection {
 		Disconnects stream connection.
 	*/
 	public function disconnect() { //: Bool
-		throw "abstract";
+		throw "Abstract method";
 	}
 	
 	/**
@@ -93,18 +80,18 @@ class Connection {
 	/**
 		Send string.
 	*/
-	public function write( t : String ) : String {
-	//public function write( t : haxe.io.Bytes ) : haxe.io.Bytes {
+	public function write( t : String ) : Bool {
 		return throw "Abstract method";
 	}
 	
-	/*
+	//TODO
+	/**
 		Send raw bytes.
-		TODO
 	*/
 	/*
 	public function writeBytes( t : haxe.io.Bytes ) : haxe.io.Bytes {
 		return throw new error.AbstractError();
 	}
 	*/
+	
 }

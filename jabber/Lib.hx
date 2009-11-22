@@ -24,9 +24,8 @@ import jabber.SocketConnection;
 class Lib {
 	
 	#if JABBER_DEBUG
-	public static var VERSION = "0.4";
+	public static inline var VERSION = "0.4";
 	#end
-	
 	
 	#if JABBER_SOCKETBRIDGE
 	

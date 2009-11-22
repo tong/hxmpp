@@ -26,7 +26,7 @@ import xmpp.dataform.FormType;
 */
 class DataForm {
 	
-	public static var XMLNS = "jabber:x:data";
+	public static inline var XMLNS = "jabber:x:data";
 	
 	public var type : FormType;
 	public var title : String;

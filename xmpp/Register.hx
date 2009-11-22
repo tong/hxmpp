@@ -26,7 +26,7 @@ import util.XmlUtil;
 */
 class Register {
 	
-	public static var XMLNS = "jabber:iq:register";
+	public static inline var XMLNS = "jabber:iq:register";
 	
 	public var username : String;
 	public var password : String;

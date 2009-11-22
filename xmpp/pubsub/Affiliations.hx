@@ -19,10 +19,6 @@ package xmpp.pubsub;
 
 class Affiliations extends List<Affiliation> {
 	
-	public function new() {
-		super();
-	}
-	
 	public function toXml() {
 		var x = Xml.createElement( "affiliations" );
 		for( s in iterator() )

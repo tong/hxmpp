@@ -18,6 +18,6 @@
 package xmpp.vcard;
 
 typedef Org = {
-	var name : String;
-	var unit : String;
+	var orgname : String;
+	var orgunit : String;
 }

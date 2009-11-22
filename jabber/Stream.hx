@@ -113,10 +113,10 @@ class Stream {
 			if( cnx != null && cnx.connected )
 				cnx.disconnect();
 			cnx = c;
-			cnx.onConnect = connectHandler;
-			cnx.onDisconnect = disconnectHandler;
-			cnx.onData = processData;
-			cnx.onError = errorHandler;
+			cnx.__onConnect = connectHandler;
+			cnx.__onDisconnect = disconnectHandler;
+			cnx.__onData = processData;
+			cnx.__onError = errorHandler;
 		}
 		isBOSH = ( Type.getClassName( Type.getClass( cnx ) ) == "jabber.BOSHConnection" );
 		return cnx;
@@ -136,12 +136,11 @@ class Stream {
 	/**
 		Request to open the XMPP stream.
 	*/
-	//TODO public function open( ?jid : String ) : Bool {
+	// public function open( ?jid : String ) : Bool {
 	public function open() : Bool {
-//		if( status == StreamStatus.open ) return false;
-		if( !cnx.connected ) cnx.connect()
-		else connectHandler();
-		//( cnx.connected ) ? connectHandler() : cnx.connect();
+		if( cnx == null )
+			throw "No stream connection set";
+		cnx.connected ? connectHandler() : cnx.connect();
 		return true;
 	}
 	

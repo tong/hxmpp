@@ -22,11 +22,7 @@ package xmpp;
 */
 class Error {
 	
-	static function __init__() {
-		Error.XMLNS = "urn:ietf:params:xml:ns:xmpp-stanzas";
-	}
-	
-	public static var XMLNS(default,null) : String;
+	public static inline var XMLNS = "urn:ietf:params:xml:ns:xmpp-stanzas";
 	
 	public var type : ErrorType;
 	public var code : Null<Int>;
