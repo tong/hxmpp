@@ -25,8 +25,8 @@ import xmpp.filter.PacketIDFilter;
 */
 class FilterList {
 	
-	var f_id : Array<xmpp.PacketFilter>;
-	var f : Array<xmpp.PacketFilter>;
+	var f_id : Array<PacketFilter>;
+	var f : Array<PacketFilter>;
 	
 	public function new() {
 		clear();

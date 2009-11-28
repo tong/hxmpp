@@ -35,7 +35,7 @@ class PacketCollector {
 	/** */
 	public var timeout(default,setTimeout) : PacketTimeout;
 	
-	public function new( filters : Iterable<xmpp.PacketFilter>,
+	public function new( filters : Iterable<PacketFilter>,
 						 handler : Dynamic->Void,
 						 ?permanent : Bool = false,
 						 ?timeout : PacketTimeout,
