@@ -41,7 +41,6 @@ typedef MUCOccupant = {
 	//?? var lastMessage : xmpp.Message;
 }
 
-//TODO
 //multiple logins/joins ? 
 
 /**
@@ -51,16 +50,16 @@ typedef MUCOccupant = {
 	<a href="http://www.xmpp.org/extensions/xep-0249.html">XEP-0249: Direct MUC Invitations</a>
 */
 class MUChat {
-//class MUChat<Occupant:MUCOccupant> ?????? lets ci
+//class MUChat<Occupant:IMUCOccupant>
 
 	//TODO public static var defaultPresencePriority = 5;
 	
-	public dynamic function onJoin() {}
+	public dynamic function onJoin() : Void;
 	public dynamic function onLeave() : Void;
 	public dynamic function onUnlock() : Void;
 	public dynamic function onMessage( o : MUCOccupant, m : xmpp.Message ) : Void;
 	//public dynamic function onRoomMessage( m : xmpp.Message ) : Void;
-	public dynamic function onPresence( o : MUCOccupant ) {}
+	public dynamic function onPresence( o : MUCOccupant ) : Void;
 	public dynamic function onSubject() : Void;
 	public dynamic function onKick( nick : String ) : Void;
 	public dynamic function onError( e : jabber.XMPPError ) : Void;
