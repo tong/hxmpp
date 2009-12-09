@@ -70,7 +70,7 @@ class BOSHConnection extends jabber.stream.Connection {
 	var initialized : Bool;
 	var rid : Int;
 	var requestCount : Int;
-	var requestQueue : Array<Xml>;
+	var requestQueue : Array<String>;
 	var responseTimer : util.Timer;
 	var responseQueue : Array<Xml>;
 	var pollingEnabled : Bool;
@@ -142,7 +142,7 @@ class BOSHConnection extends jabber.stream.Connection {
 	/**
 	*/
 	public override function write( t : String ) : Bool {
-		 sendQueuedRequests( Xml.parse(t) ); //TODO not the xml parse again!
+		sendQueuedRequests( t );
 		return true;
 	}
 	
@@ -180,7 +180,7 @@ class BOSHConnection extends jabber.stream.Connection {
 		sendRequests( r );
 	}
 	
-	function sendQueuedRequests( ?t : Xml ) : Bool {
+	function sendQueuedRequests( ?t : String ) : Bool {
 		if( t != null )
 			requestQueue.push( t );
 		else if( requestQueue.length == 0 )
@@ -200,7 +200,7 @@ class BOSHConnection extends jabber.stream.Connection {
 				t = createRequest();
 			} else {
 				var i = 0;
-				var tmp = new Array<Xml>();
+				var tmp = new Array<String>();
 				while( i++ < 10 && requestQueue.length > 0 )
 					tmp.push( requestQueue.shift() );
 				 t = createRequest( tmp );
@@ -350,14 +350,14 @@ class BOSHConnection extends jabber.stream.Connection {
 		sendRequests( null, true );
 	}
 	
-	function createRequest( ?t : Iterable<Xml> ) : Xml {
+	function createRequest( ?t : Iterable<String> ) : Xml {
 		var x = Xml.createElement( "body" );
 		x.set( "xmlns", XMLNS );
 		x.set( "xml:lang", "en" );
 		x.set( "rid", Std.string( ++rid ) );
 		x.set( "sid", sid );
 		if( t != null ) {
-			for( e in t ) { x.addChild( e ); }
+			for( e in t ) { x.addChild( Xml.createPCData(e) ); }
 		}
 		return x;
 	}
