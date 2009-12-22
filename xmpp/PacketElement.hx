@@ -17,7 +17,6 @@
 */
 package xmpp;
 
-//TODO TPacketElement
 typedef PacketElement = {
 	function toXml() : Xml;
 }

@@ -42,6 +42,7 @@ class Ping {
 	public var active(default,null) : Bool;
 	
 	var timer : Timer;
+	var iq : xmpp.IQ;
 	
 	public function new( stream : Stream, ?target : String, ?interval : Int ) {
 		if( interval != null && interval <= 0 )
@@ -50,6 +51,10 @@ class Ping {
 		this.stream = stream;
 		this.interval = ( interval != null ) ? interval : defaultInterval;
 		active = false;
+		var x = Xml.createElement( "ping" );
+		x.set( "xmlns", "urn:xmpp:ping" );
+		iq = new xmpp.IQ( null, null, null, stream.jidstr );
+		iq.properties.push( x );
 	}
 
 	/**
@@ -78,10 +83,9 @@ class Ping {
 	/**
 		Sends a ping packet to the given entity, or to the server if the to attribute is omitted.
 	*/
-	public function send( ?to : String ) {
+	public function send( to : String = null ) {
 		#if !php
-		var iq = new xmpp.IQ( null, null, to, stream.jidstr );
-		iq.x = new xmpp.Ping();
+		iq.to = to;
 		var me = this;
 		var timeoutHandler = function( c : jabber.stream.PacketCollector ) {
 			if( me.active ) {
