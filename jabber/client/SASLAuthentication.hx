@@ -23,12 +23,13 @@ import xmpp.IQType;
 import xmpp.filter.PacketNameFilter;
 import xmpp.filter.FilterGroup;
 
+// try another mechanism on fail (?)
+
 /**
 	Responsible for authenticating a client account using SASL,
-	binding the resource to the connection and establishing a session with the server.<br>
+	binding the resource to the connection and establishing a session with the server.<br/>
 	<a href="http://xmpp.org/rfcs/rfc3920.html#sasl">RFC3920-SASL</a><br/>
 	<a href="http://xmpp.org/rfcs/rfc3920.html#bind">RFC3920-BIND</a><br/>
-	http://www.ietf.org/mail-archive/web/isms/current/msg00063.html
 */
 class SASLAuthentication extends Authentication {
 
@@ -36,7 +37,7 @@ class SASLAuthentication extends Authentication {
 	
 	/** Used SASL method */
 	public var handshake(default,null) : net.sasl.Handshake;
-	/** Available mechanisms ids (from server) */
+	/** Available mechanisms ids (server) */
 	public var mechanisms(default,null) : Array<String>;
 	//public var negotiated(default,null) : Bool;
 	
@@ -98,14 +99,13 @@ class SASLAuthentication extends Authentication {
 		f.add( new PacketNameFilter( ~/temporary-auth-failure/ ) );
 		c_fail = new PacketCollector( [cast f], handleSASLFailed );
 		stream.addCollector( c_fail );
-		// collect success
+		// collect success response
 		c_success = new PacketCollector( [cast new PacketNameFilter( ~/success/ )], handleSASLSuccess );
 		stream.addCollector( c_success );
-		// collect challenge
+		// collect challenge response
 		c_challenge = new PacketCollector( [cast new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
 		stream.addCollector( c_challenge );
-		// send init auth
-		//trace("############## "+stream.jid );
+		// init auth
 		var t = handshake.mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password );
 		if( t != null ) t = util.Base64.encode( t );
 		return stream.sendData( xmpp.SASL.createAuthXml( handshake.mechanism.id, t ).toString() ) != null;

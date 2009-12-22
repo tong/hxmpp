@@ -18,15 +18,16 @@
 package jabber;
 
 /**
+	PubSub client implementation.<br/>
 	<a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a>
 */
 class PubSub {
 	
 	public dynamic function onNodeCreate( node : String ) : Void;
 	public dynamic function onNodeDelete( node : String ) : Void;
-	public dynamic function onSubscribe( subscription : xmpp.pubsub.Subscription ) : Void;
+	public dynamic function onSubscribe( sub : xmpp.pubsub.Subscription ) : Void;
 	public dynamic function onUnsubscribe( node : String ) : Void;
-	public dynamic function onSubscriptions( subscriptions : xmpp.pubsub.Subscriptions ) : Void;
+	public dynamic function onSubscriptions( subs : xmpp.pubsub.Subscriptions ) : Void;
 	public dynamic function onPublish( node : String, item : xmpp.pubsub.Item ) : Void;
 	public dynamic function onItems( items : xmpp.pubsub.Items ) : Void;
 	public dynamic function onAffiliations( a : xmpp.pubsub.Affiliations ) : Void;
@@ -93,9 +94,9 @@ class PubSub {
 	*/
 	public function subscribe( node : String ) {
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, service );
-		var xt = new xmpp.PubSub();
-		xt.subscribe = { jid : stream.jidstr, node : node };
-		iq.x = xt;
+		var x = new xmpp.PubSub();
+		x.subscribe = { jid : stream.jidstr, node : node };
+		iq.x = x;
 		var me = this;
 		sendIQ( iq, function(r:xmpp.IQ) {
 			me.onSubscribe( xmpp.PubSub.parse( r.x.toXml() ).subscription );
@@ -105,11 +106,13 @@ class PubSub {
 	/**
 		Unsubscribe from the given pubsub node.
 	*/
-	public function unsubscribe( node : String, ?subid : String ) {
+	public function unsubscribe( node : String, ?jid : String, ?subid : String ) {
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, service );
-		var xt = new xmpp.PubSub();
-		xt.unsubscribe = { jid : stream.jidstr , node : node, subid : subid };
-		iq.x = xt;
+		var x = new xmpp.PubSub();
+		x.unsubscribe = { jid : ( jid != null ) ? jid : stream.jidstr ,
+						  node : node,
+						  subid : subid };
+		iq.x = x;
 		var me = this;
 		sendIQ( iq, function(r:xmpp.IQ) {
 			me.onUnsubscribe( node );
@@ -121,14 +124,28 @@ class PubSub {
 	*/
 	public function loadSubscriptions( ?node : String ) {
 		var iq = new xmpp.IQ( null, null, service );
-		var xt = new xmpp.PubSub();
-		xt.subscriptions = new xmpp.pubsub.Subscriptions( node );
-		iq.x = xt;
+		var x = new xmpp.PubSub();
+		x.subscriptions = new xmpp.pubsub.Subscriptions( node );
+		iq.x = x;
 		var me = this;
 		sendIQ( iq, function(r:xmpp.IQ) {
 			me.onSubscriptions( xmpp.PubSub.parse( r.x.toXml() ).subscriptions );
 		} );
 	}
+	
+	//TODO
+	/*
+	public function loadSubConfig() {
+	<iq type='get'
+    from='francisco@denmark.lit/barracks'
+    to='pubsub.shakespeare.lit'
+    id='options1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <options node='princely_musings' jid='francisco@denmark.lit'/>
+  </pubsub>
+</iq>
+	}
+	*/
 	
 	/**
 		Load list of affiliations for all nodes at the service.
@@ -150,13 +167,13 @@ class PubSub {
 	*/
 	public function loadItems( node : String, ?subid : String, ?maxItems : Int, ?ids : Array<String> ) {
 		var iq = new xmpp.IQ( null, null, service );
-		var xt = new xmpp.PubSub();
-		xt.items = new xmpp.pubsub.Items( node, subid, maxItems );
+		var x = new xmpp.PubSub();
+		x.items = new xmpp.pubsub.Items( node, subid, maxItems );
 		if( ids != null ) {
 			for( id in ids )
-				xt.items.add( new xmpp.pubsub.Item( id ) );
+				x.items.add( new xmpp.pubsub.Item( id ) );
 		}
-		iq.x = xt;
+		iq.x = x;
 		var me = this;
 		sendIQ( iq, function(r:xmpp.IQ) {
 			me.onItems( xmpp.PubSub.parse( r.x.toXml() ).items );
@@ -169,9 +186,9 @@ class PubSub {
 	*/
 	public function retract( retract : xmpp.pubsub.Retract ) {
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, service );
-		var xt = new xmpp.PubSub();
-		xt.retract = retract;
-		iq.x = xt;
+		var x = new xmpp.PubSub();
+		x.retract = retract;
+		iq.x = x;
 		var me = this;
 		sendIQ( iq, function(r:xmpp.IQ) {
 			me.onRetract( retract );
@@ -184,9 +201,9 @@ class PubSub {
 	*/
 	public function purge( node : String ) {
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, service );
-		var xt = new xmpp.PubSubOwner();
-		xt.purge = node;
-		iq.x = xt;
+		var x = new xmpp.PubSubOwner();
+		x.purge = node;
+		iq.x = x;
 		var me = this;
 		sendIQ( iq, function(r:xmpp.IQ) {
 			me.onPurge( node );
@@ -198,11 +215,11 @@ class PubSub {
 	*/
 	public function publish( node : String, item : xmpp.pubsub.Item, ?options : xmpp.DataForm ) {
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, service );
-		var xt = new xmpp.PubSub();
+		var x = new xmpp.PubSub();
 		var p = new xmpp.pubsub.Publish( node );
 		p.add( item );
-		xt.publish = p;
-		iq.x = xt;
+		x.publish = p;
+		iq.x = x;
 		// TODO check options ?
 		if( options != null ) {
 			var po = Xml.createElement( "publish-options" );

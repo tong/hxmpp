@@ -40,7 +40,7 @@ class Item {
 		return x;
 	}
 	
-	public function toString() : String {
+	public inline function toString() : String {
 		return toXml().toString();
 	}
 	

@@ -22,73 +22,56 @@ class PubSub {
 	public static var XMLNS = xmpp.NS.PROTOCOL+"/pubsub";
 	
 	public var subscribe : { node : String, jid : String };
-	public var unsubscribe : { node : String, jid : String, subid : String };
+	public var options : xmpp.pubsub.Options;
+	public var affiliations : xmpp.pubsub.Affiliations;
 	public var create : String;
 	public var configure : xmpp.DataForm;
-	public var subscription : xmpp.pubsub.Subscription;
-	public var subscriptions : xmpp.pubsub.Subscriptions;
 	public var items : xmpp.pubsub.Items;
 	public var publish : xmpp.pubsub.Publish;
 	public var retract : xmpp.pubsub.Retract;
-	public var affiliations : xmpp.pubsub.Affiliations;
-	public var options : xmpp.pubsub.Options;
+	public var subscription : xmpp.pubsub.Subscription;
+	public var subscriptions : xmpp.pubsub.Subscriptions;
+	//public var default : { node : String, type : NodeType };
+	public var unsubscribe : { node : String, jid : String, subid : String };
 	
-	public function new() {
-	}
+	public function new() {}
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "pubsub" );
 		x.set( "xmlns", XMLNS );
-		if( subscribe != null ) {
+		var c =	if( subscribe != null ) {
 			var e = Xml.createElement( "subscribe" );
 			e.set( "jid", subscribe.jid );
 			if( subscribe.node != null ) e.set( "node", subscribe.node );
-			x.addChild( e );
-			return x;
-		}
-		if( unsubscribe != null ) {
+			e;
+		} else if( unsubscribe != null ) {
 			var e = Xml.createElement( "unsubscribe" );
 			e.set( "jid", unsubscribe.jid );
 			if( unsubscribe.node != null ) e.set( "node", unsubscribe.node );
 			if( unsubscribe.subid != null ) e.set( "subid", unsubscribe.subid );
-			x.addChild( e );
-			return x;
-		}
-		if( create != null ) {
+			e;
+		} else if( create != null ) {
 			var e = Xml.createElement( "create" );
 			e.set( "node", create );
-			x.addChild( e );
-			var c = Xml.createElement( "configure" );
-			if( configure != null )
-				c.addChild( configure.toXml() );
-			e.addChild( c );
-			return x;
+			var conf = Xml.createElement( "configure" );
+			if( configure != null ) conf.addChild( configure.toXml() );
+			e.addChild( conf );
+			e;
+		} else if( subscription != null ) {
+			subscription.toXml();
+		} else if( subscriptions != null ) {
+			subscriptions.toXml();
+		} else if( publish != null ) {
+			publish.toXml();
+		} else if( items != null ) {
+			items.toXml();
+		} else if( retract != null ) {
+			retract.toXml();
+		} else if( affiliations != null ) {
+			affiliations.toXml();
 		}
-		if( subscription != null ) {
-			x.addChild( subscription.toXml() );
-			return x;
-		}
-		if( subscriptions != null ) {
-			x.addChild( subscriptions.toXml() );
-			return x;
-		}
-		if( publish != null ) {
-			x.addChild( publish.toXml() );
-			return x;
-		}
-		if( items != null ) {
-			x.addChild( items.toXml() );
-			return x;
-		}
-		if( retract != null ) {
-			x.addChild( retract.toXml() );
-			return x;
-		}
-		if( affiliations != null ) {
-			x.addChild( affiliations.toXml() );
-			return x;
-		}
-		return null;
+		if( c != null ) x.addChild( c );
+		return x;
 	}
 	
 	public inline function toString() : String {

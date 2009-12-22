@@ -4,6 +4,15 @@
 */
 class TestXMPPPubSub extends haxe.unit.TestCase {
 	
+	/*
+	public function testCreatePubSub() {
+		var ps = new xmpp.PubSub();
+		ps.subscribe = { node : "nodename", jid : "myjid@server.net" };
+		var x = ps.toXml();
+		trace(x);
+	}
+	*/
+	
 	public function testParsePubSub() {
 		
 		// test subscribe

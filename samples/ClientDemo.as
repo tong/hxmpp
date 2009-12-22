@@ -22,7 +22,7 @@ package {
 	import jabber.client.Roster;
 	
 	/**
-		Example usage of the HXMPP library.
+		Basic XMPP client exmaple.
 	*/
 	public class ClientDemo extends MovieClip {
 		

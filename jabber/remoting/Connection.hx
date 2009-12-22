@@ -89,7 +89,7 @@ class Connection implements AsyncConnection, implements Dynamic<AsyncConnection>
 	
 	/**
 	*/
-	public static function connect( stream : jabber.Stream, target : String ) {
+	public static function create( stream : jabber.Stream, target : String ) {
 		return new Connection( stream, target, [], function(e) throw e );
 	}
 	

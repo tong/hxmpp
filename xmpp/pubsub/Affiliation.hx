@@ -34,7 +34,7 @@ class Affiliation {
 		return x;
 	}
 	
-	public static function parse( x : Xml) : Affiliation {
+	public static inline function parse( x : Xml) : Affiliation {
 		return new Affiliation( x.get( "node" ), Type.createEnum( AffiliationState, x.get( "affiliation" ) ) );
 	}
 	

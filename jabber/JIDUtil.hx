@@ -23,6 +23,8 @@ package jabber;
 */	
 class JIDUtil {
 	
+	public static inline var MAX_PARTSIZE = 1023;
+	
 	#if JABBER_DEBUG
 	public static var EREG = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+(\.[A-Z]{3}?)?(\/[A-Z0-9._%-])?/i;
 	#else
@@ -36,7 +38,7 @@ class JIDUtil {
 		if( !EREG.match( t ) )
 			return false;
 		for( p in getParts( t ) )
-			if( p.length > jabber.JID.MAX_PART_SIZE )
+			if( p.length > MAX_PARTSIZE )
 				return false;
 		return true;
 	}
@@ -54,8 +56,7 @@ class JIDUtil {
 	public static function parseDomain( t : String ) : String {
 		var i1 = t.indexOf( "@" ) + 1;
 		var i2 = t.indexOf( "/" );
-		if( i2 == -1 ) return t.substr( i1 );
-		return t.substr( i1, i2-i1 );
+		return ( i2 == -1 ) ? t.substr( i1 ) : t.substr( i1, i2-i1 );
 	}
 	
 	/**
@@ -63,8 +64,7 @@ class JIDUtil {
 	*/
 	public static function parseResource( t : String ) : String {
 		var i = t.indexOf( "/" );
-		if( i != -1 ) return t.substr( i+1  );
-		return null;
+		return ( i == -1 ) ? null : t.substr( i+1  );
 	}
 	
 	/**
@@ -72,8 +72,7 @@ class JIDUtil {
 	*/
 	public static function parseBare( t : String ) : String {
 		var i = t.indexOf( "/" );
-		if( i != -1 ) return t.substr( 0, i );
-		return t;
+		return ( i == -1 ) ? t : t.substr( 0, i );
 	}
 	
 	/**
@@ -91,7 +90,14 @@ class JIDUtil {
 		if( hasResource( jid ) ) p.push( parseResource( jid ) );
 		return p;
 	}
-
+	
+	/**
+	*/
+	public static function splitBare( jid : String ) : Array<String> {
+		var i = jid.indexOf( "/" );
+		return ( i == -1 ) ? [jid] : [ jid.substr( 0, i ), jid.substr( i+1 ) ];
+	}
+	
 	/**
 		<p>
 	    Escapes the node portion of a JID according to "JID Escaping" (XEP-0106).<br/>

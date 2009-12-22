@@ -17,7 +17,8 @@
 */
 package jabber.tool;
 
-#if flash9
+#if flash
+
 import flash.events.Event;
 import flash.events.IOErrorEvent;
 import flash.events.SecurityErrorEvent;
@@ -32,14 +33,14 @@ private class Socket extends flash.net.Socket {
 	}
 }
 
-class SocketBridge extends flash.display.Sprite {
+class SocketBridge extends flash.display.Sprite { // why? extend?
 	
 	static var defaultBridgeContext = "jabber.SocketBridgeConnection";
 	
 	var ctx : String;
 	var sockets : IntHash<Socket>;
 	
-	function new( ctx : String ) {
+	function new( ?ctx : String ) {
 		super();
 		this.ctx = ( ctx != null ) ? ctx : defaultBridgeContext;
 		init();
@@ -48,17 +49,15 @@ class SocketBridge extends flash.display.Sprite {
 	function init() {
 		sockets = new IntHash();
 		if( ExternalInterface.available ) {
-			try {
-				ExternalInterface.addCallback( "createSocket", createSocket );
-				ExternalInterface.addCallback( "destroySocket", destroySocket );
-				ExternalInterface.addCallback( "connect", connect );
-				ExternalInterface.addCallback( "disconnect", disconnect );
-				//ExternalInterface.addCallback( "destroy", destroy );
-				ExternalInterface.addCallback( "send", send );
-			} catch( e : Dynamic ) {
-				trace( e );
-				throw e;
-			}
+			ExternalInterface.addCallback( "createSocket", createSocket );
+			ExternalInterface.addCallback( "destroySocket", destroySocket );
+			ExternalInterface.addCallback( "connect", connect );
+			ExternalInterface.addCallback( "disconnect", disconnect );
+			//ExternalInterface.addCallback( "destroy", destroy );
+			//ExternalInterface.addCallback( "destroyAll", destroyAll );
+			ExternalInterface.addCallback( "send", send );
+		} else {
+			throw "Unable to initialize external connection on socket bridge";
 		}
 	}
 	
@@ -142,4 +141,4 @@ class SocketBridge extends flash.display.Sprite {
 	
 }
 
-#end // flash9
+#end // flash

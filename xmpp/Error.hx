@@ -22,13 +22,15 @@ package xmpp;
 */
 class Error {
 	
-	public static inline var XMLNS = "urn:ietf:params:xml:ns:xmpp-stanzas";
+	public static var XMLNS = "urn:ietf:params:xml:ns:xmpp-stanzas";
 	
 	public var type : ErrorType;
 	public var code : Null<Int>;
 	public var name : String;
 	public var conditions : Array<{name:String,xmlns:String}>;
 	public var text : String;
+	/** Custom (non XMPP) field to */
+	//public var from : String;
 	
 	public function new( ?type : xmpp.ErrorType, ?code : Null<Int>, ?name : String, ?text : String ) {
 		this.type = type;
@@ -47,15 +49,14 @@ class Error {
 			n.set( "xmlns", XMLNS );
 			x.addChild( n );
 		}
-			//TODO
-			/*
-		for( c in conditions ) {
+		if( conditions != null ) {
+			for( c in conditions )
+				x.addChild( util.XmlUtil.createElement( c.name, c.xmlns ) );
 		}
-		*/
 		return x;
 	}
 	
-	public inline function toString() : String {
+	public function toString() : String {
 		return toXml().toString();
 	}
 	

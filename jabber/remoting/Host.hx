@@ -19,6 +19,15 @@ package jabber.remoting;
 
 import haxe.remoting.Context;
 
+//TODO
+/*
+enum Accept {
+	none;
+	whitelist( jids : List<String> );
+	all;
+}
+*/
+
 /**
 	haXe/XMPP remoting host.<br/>
 	<a href="http://haxe.org/doc/remoting">haXe-remoting</a>
@@ -29,10 +38,12 @@ class Host {
 	public var client(default,null) : String;
 	public var ctx : Context;
 	public var stream(default,null) : jabber.Stream;
-
+	//public var accept : Accept;
+	
 	public function new( stream : jabber.Stream, ctx : Context ) {
 		this.stream = stream;
 		this.ctx = ctx;
+		//this.accept = ( accept == null ) ? Accept.all : accept;
 		stream.features.add( xmpp.HXR.XMLNS );
 		stream.collect( [cast new xmpp.filter.IQFilter( xmpp.HXR.XMLNS, null, xmpp.IQType.get )], handleIQ, true );
 	}

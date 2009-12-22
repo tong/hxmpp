@@ -20,13 +20,19 @@
 <div id="f9bridge">NO FLASHPLAYER DETECTED</div>
 <div id="haxe:trace"></div>
 
-<script type="text/javascript">swfobject.embedSWF("../f9_socketbridge.swf","f9bridge","0","0","9.0.0");</script>
+<script type="text/javascript">
+swfobject.embedSWF("../f9_socketbridge.swf","f9bridge","100","100","9.0.0");
+</script>
 <script type="text/javascript">
 
 console.log("HXMPP");
 
-jabber.Lib.initSocketBridge();
-jabber.XMPPDebug.redirectTraces();
+jabber.SocketBridgeConnection.init("f9bridge");
+//jabber.Lib.initSocketBridge();
+//jabber.XMPPDebug.redirectTraces();
+
+console.log("FIN");
+
 
 var stream;
 

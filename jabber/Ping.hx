@@ -29,15 +29,15 @@ class Ping {
 	
 	public static var defaultInterval = 60000;
 	
-	public dynamic function onResponse( entity : String ) : Void;
-	public dynamic function onTimeout( entity : String ) : Void;
+	public dynamic function onResponse( jid : String ) : Void;
+	public dynamic function onTimeout( jid : String ) : Void;
 	public dynamic function onError( e : XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
 	/** Ping interval ms */
 	public var interval : Int;
 	/** The pinged target entity */
-	public var target : String;
+	public var target : String; //public var target : Array<String>; //hm??
 	/** Indicates if the ping interval is running */
 	public var active(default,null) : Bool;
 	
@@ -53,9 +53,9 @@ class Ping {
 	}
 
 	/**
-		Starts the ping interval.
+		Starts ping packet sending interval.
 	*/
-	public function start() {
+	public function run() {
 		#if !php
 		active = true;
 		send( target );

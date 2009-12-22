@@ -1,96 +1,107 @@
 
 * {
-	padding : 0 0 0 0;
+    padding: 0 0 0 0;
 }
 
 body {
-	margin : 0 0 0 0;
-	font-family : arial, verdana, sans-serif;
-	font-size : small;
-	background-color: #222222;
-	color: #999999;
+    margin: 0 0 0 0;
+    font-family: arial, verdana, sans-serif;
+    font-size: 11pt;
+    font-size-adjust: 0.46;
+    color: #666666;
+    background-color: white;
 }
 
 a img {
-	border: 0px;
+    border: 0px;
 }
 
 a {
-	color: #999999;
-	margin-right: 2px;
+    color: #666666;
+    margin-right: 2px;
 }
 
 a:hover {
-	color: #FFFFFF;
-}
-
-.main {
-	width : 100%;
-}
-
-.main tr.banner {	
-	background-image : url(img/banner_bg.png);
-	background-repeat : repeat-x;
-	height : 110px;
-}
-
-.main {
-	width : 100%;
-	vertical-align: top;
-}
-
-.main img {
-	padding-left: 30px;
-	padding-top: 10px;
-}
-
-.content {
-	padding-left: 30px;
-	padding-bottom: 60px;
-}
-
-.command {
-	margin-top: 0px;
-	margin-bottom: 0px;
-	color: #aaaaaa;
-}
-
-h2 {
-	color: #222222;
-	font-size : 16pt;
-	letter-spacing: -1px;
-	color: #aaaaaa;
-	margin-top: 40px;
-	margin-bottom: 2px;
+    color: #fff;
+    background-color: #666666;
 }
 
 h3 {
-	color: #bbbbbb;
+    font-size: 20pt;
+    font-family: "Franklin Gothic Heavy";
+	margin-right: 100px;
+	margin-bottom: -12px;
+}
+
+h2 {
+    font-size: 17pt;
+    font-family: "Franklin Gothic Heavy";
+    letter-spacing: -1px;
+    margin-top: 40px;
+    margin-bottom: 2px;
 }
 
 ul {
-	margin-left: 26px;
+    margin-left: 26px;
 }
 
 li {
-	padding-top: 3px;
+    padding-top: 3px;
 }
 
 li.biglist {
-	padding-bottom: 10px;
+    padding-bottom: 10px;
+}
+
+.main {
+    width: 100%;
+}
+
+.main tr.banner {
+	/*
+    background-image: url(img/banner_bg.png);
+    background-repeat: repeat-x;
+    */
+    height: 110px;
+}
+
+.main {
+    width: 100%;
+    vertical-align: top;
+}
+
+.main img {
+    padding-left: 30px;
+    padding-top: 10px;
+}
+
+.content {
+    padding-left: 30px;
+    padding-bottom: 60px;
+}
+
+.command {
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
 
 #footer {
-	font-size: 9pt;
-	text-decoration: none;
-	position: fixed;
-	width: 100%;
-	height: 16px;
-	background-color: #333333;
-	color : #222222;
-	padding-top: 4px;
-	padding-bottom: 4px;
-	padding-left: 10px;
-	bottom: 0;
-	z-index: 1;
+    font-size: 9pt;
+    text-decoration: none;
+    position: fixed;
+    width: 100%;
+    height: 12px;
+    background-color: #444444;
+    color: #444;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 10px;
+    bottom: 0;
+    z-index: 1;
+	-moz-box-shadow: -8px 0px 32px #777777, 0px 0px 10px #555555;
+}
+
+#footer a {
+    color: #444;
+    text-decoration: none;
 }

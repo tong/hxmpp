@@ -8,6 +8,7 @@ class TestJID extends haxe.unit.TestCase {
 		#if JABBER_DEBUG
 		assertFalse( JIDUtil.isValid( "aaa" ) );
 		assertFalse( JIDUtil.isValid( "nodedomain.net" ) );
+		assertFalse( JIDUtil.isValid( "nodedomain.at" ) );
 		assertTrue( JIDUtil.isValid( "node@domain" ) );
 		assertTrue( JIDUtil.isValid( "node@domain/Resource" ) );
 		assertTrue( JIDUtil.isValid( "node@domain.net/Resource" ) );

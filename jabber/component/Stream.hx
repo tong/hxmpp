@@ -74,12 +74,16 @@ class Stream extends jabber.Stream {
 	}
 	
 	override function connectHandler() {
-		sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_COMPONENT, subdomain ) );
+		var t = sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_COMPONENT, subdomain ) );
+		#if XMPP_DEBUG
+		//jabber.XMPPDebug.out( t );
+		#end
 		status = jabber.StreamStatus.pending;
 		cnx.read( true );
 	}
 	
 	override function processStreamInit( t : String, len : Int ) {
+		trace(t);
 		var i = t.indexOf( ">" );
 		if( i == -1 )
 			return 0;

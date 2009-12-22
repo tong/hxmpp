@@ -32,7 +32,7 @@ jabber.client.NonSASLAuthentication
 jabber.client.Roster
 jabber.client.SASLAuthentication
 jabber.client.Stream
-jabber.client.VCardTemp
+jabber.client.VCard
 jabber.component.Stream
 xmpp.Bind
 xmpp.ChatState

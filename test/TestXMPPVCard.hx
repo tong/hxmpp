@@ -1,14 +1,6 @@
 
 class TestXMPPVCard extends haxe.unit.TestCase   {
 	
-	/*
-	public function testCreate() {
-		var vc = new xmpp.VCard();
-		vc.n = untyped { family : "Saint-Andre" };
-		assertEquals( "Saint-Andre", vc.n.family );
-	}
-	*/
-	
 	public function testParse() {
 		var x = Xml.parse('<vCard xmlns="vcard-temp">
     <FN>Peter Saint-Andre</FN>

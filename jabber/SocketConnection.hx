@@ -196,17 +196,17 @@ class SocketConnection extends jabber.stream.Connection {
 
 	function sockConnectHandler( e : Event ) {
 		connected = true;
-		onConnect();
+		__onConnect();
 	}
 
 	function sockDisconnectHandler( e : Event ) {
 		connected = false;
-		onDisconnect();
+		__onDisconnect();
 	}
 	
 	function sockErrorHandler( e ) {
 		connected = false;
-		onError( e );
+		__onError( e );
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
@@ -214,7 +214,7 @@ class SocketConnection extends jabber.stream.Connection {
 		var b = haxe.io.Bytes.ofData( buf );
 		if( b.length > maxBufSize )
 			throw "Max buffer size reached ("+maxBufSize+")";
-		if( onData(  b, 0, b.length ) > 0 )
+		if( __onData(  b, 0, b.length ) > 0 )
 			buf = new flash.utils.ByteArray();
 	}
 	
@@ -272,17 +272,17 @@ class SocketConnection extends jabber.stream.Connection {
 	
 	function sockConnectHandler() {
 		connected = true;
-		onConnect();
+		__onConnect();
 	}
 	
 	function sockDisconnectHandler() {
 		connected = false;
-		onDisconnect();
+		__onDisconnect();
 	}
 	
 	function sockErrorHandler( m : String ) {
 		connected = false;
-		onError( m );
+		__onError( m );
 	}
 	
 	function sockDataHandler( t : String ) {
@@ -316,7 +316,8 @@ class Socket {
 	
 	public function new() {
 		var id : Int = SocketBridgeConnection.createSocket( this );
-		if( id < 0 ) "Error creating socket";
+		if( id < 0 )
+			throw "Error creating socket on socket bridge";
 		this.id = id;
 	}
 	
@@ -367,7 +368,12 @@ class SocketBridgeConnection {
 	
 	
 	public static function createSocket( s : Socket ) {
-		var id : Int = untyped js.Lib.document.getElementById( bridgeId ).createSocket();
+		var id : Int = -1;
+		try {
+			id = untyped js.Lib.document.getElementById( bridgeId ).createSocket();
+		} catch( e : Dynamic ) {
+			return -1;
+		}
 		sockets.set( id, s );
 		return id;
 	}
@@ -381,6 +387,9 @@ class SocketBridgeConnection {
 			s = null;
 		}
 	}
+	
+	public function destroyAllSockets() {}
+	
 	*/
 	
 	static function handleConnect( id : Int ) {

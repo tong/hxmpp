@@ -53,9 +53,12 @@ class Stream extends jabber.Stream {
 	}
 	
 	override function processStreamInit( t : String, buflen : Int ) : Int {
-		if( isBOSH ) {
+		if( http ) {
 			var sx = Xml.parse( t ).firstElement();
 			var sf = sx.firstElement();
+			#if XMPP_DEBUG
+			jabber.XMPPDebug.inc( sf.toString() );
+			#end
 			parseStreamFeatures( sf );
 			status = StreamStatus.open;
 			onOpen();
@@ -112,7 +115,7 @@ class Stream extends jabber.Stream {
 	override function connectHandler() {
 		status = StreamStatus.pending;
 		// TODO avoid HACK
-		if( !isBOSH ) {
+		if( !http ) {
 			sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_CLIENT, jid.domain, version, lang ) );
 			cnx.read( true ); // start reading input
 		} else {

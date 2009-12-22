@@ -16,8 +16,8 @@ class ComponentDemo {
 		stream.onOpen = function() {
 			trace( "XMPP stream opened.", "info" );
 		};
-		stream.onError = function(?m) { trace( "Stream error, "+m ); } ;
-		stream.onClose = function() { trace( "Stream closed." ); } ;
+		//stream.onError = function(?m) { trace( "Stream error, "+m ); } ;
+		stream.onClose = function(?e) { trace( "Stream closed." ); } ;
 		stream.onConnect = function() {
 			trace( "Component connected. Have fun!", "info" );
 		}

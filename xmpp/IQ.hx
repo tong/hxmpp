@@ -30,7 +30,7 @@ class IQ extends Packet {
 	public function new( ?type : IQType, ?id : String, ?to : String, ?from ) {
 		super( to, from, id );
 		_type = xmpp.PacketType.iq;
-		this.type = if( type != null ) type else xmpp.IQType.get;
+		this.type = ( type != null ) ? type : xmpp.IQType.get;
 	}
 	
 	public override function toXml(): Xml {
@@ -62,9 +62,9 @@ class IQ extends Packet {
 		Creates a '<query xmlns="namspace"/>' xml tag.
 	*/
     public static inline function createQueryXml( ns : String ) : Xml {
-		var q = Xml.createElement( "query" );
-		q.set( "xmlns", ns );
-		return q;
+		var x = Xml.createElement( "query" );
+		x.set( "xmlns", ns );
+		return x;
 	}
 	
 	/**

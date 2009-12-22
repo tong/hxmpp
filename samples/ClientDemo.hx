@@ -1,10 +1,10 @@
 
-import jabber.ServiceDiscovery;
 import jabber.SocketConnection;
+import jabber.ServiceDiscovery;
 import jabber.client.NonSASLAuthentication;
 import jabber.client.Stream;
 import jabber.client.Roster;
-import jabber.client.VCardTemp;
+import jabber.client.VCard;
 
 /**
 	Basic jabber client.
@@ -12,12 +12,10 @@ import jabber.client.VCardTemp;
 class ClientDemo {
 	
 	static function main() {
-		
 		#if flash
 		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
 		#end
-		
 		#if JABBER_SOCKETBRIDGE
 		jabber.SocketBridgeConnection.initDelayed( "f9bridge", init );
 		#else
@@ -27,13 +25,12 @@ class ClientDemo {
 	
 	static var stream : Stream;
 	static var roster : Roster;
-	static var service : ServiceDiscovery;
-	static var vcard : VCardTemp;
+	static var disco : ServiceDiscovery;
+	static var vcard : VCard;
 	
 	static function init() {
 		stream = new Stream( new jabber.JID( "hxmpp@disktree" ), new SocketConnection( "127.0.0.1", 5222 ) );
-		stream.onError = function(?e) { trace( "Stream error: "+e ); };
-		stream.onClose = function() { trace( "Stream to: "+stream.jid.domain+" closed." ); } ;
+		stream.onClose = function(?e) { trace( "Stream to: "+stream.jid.domain+" closed." ); } ;
 		stream.onOpen = function() {
 			trace( "XMPP stream to "+stream.jid.domain+" opened" );
 			/*
@@ -61,11 +58,11 @@ class ClientDemo {
 		trace( "Logged in as "+ stream.jid.node+" at "+stream.jid.domain );
 		
 		// load server disco infos
-		service = new ServiceDiscovery( stream );
-		service.onInfo = handleDiscoInfo;
-		service.onItems = handleDiscoItems;
-		service.discoverItems( stream.jid.domain );
-		service.discoverInfo( stream.jid.domain );
+		disco = new ServiceDiscovery( stream );
+		disco.onInfo = handleDiscoInfo;
+		disco.onItems = handleDiscoItems;
+		disco.discoverItems( stream.jid.domain );
+		disco.discoverInfo( stream.jid.domain );
 		
 		// load roster
 		roster = new jabber.client.Roster( stream );
@@ -74,7 +71,7 @@ class ClientDemo {
 		roster.onLoad = handleRosterLoad;
 		
 		// load own vcard
-		vcard = new jabber.client.VCardTemp( stream );
+		vcard = new jabber.client.VCard( stream );
 		vcard.onLoad = function(node,vc) {
 			if( node == null )
 				trace( "VCard loaded." );

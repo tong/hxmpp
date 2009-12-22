@@ -37,8 +37,8 @@ class TestMessagePacket extends haxe.unit.TestCase   {
 		assertEquals( m.to, "tong@igniterealtime.org" );
 		assertEquals( m.id, "ab01a" );
 		assertEquals( m.body, "abc" );
-		
 		*/
+		
 		var x = Xml.parse( '
 			<message to="hxmpp@disktree">
 				<body>Wow, I&apos;m green with envy!</body>
@@ -57,7 +57,6 @@ class TestMessagePacket extends haxe.unit.TestCase   {
 		assertEquals( 'Wow, I&apos;m green with envy!', m.body );
 		assertEquals( 1, m.properties.length );
 	}
-	
 }
 
 

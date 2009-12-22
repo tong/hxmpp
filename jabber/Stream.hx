@@ -25,7 +25,7 @@ import xmpp.filter.PacketIDFilter;
 import util.XmlUtil;
 import util.Base64;
 
-/*
+/* 
 private typedef TDataFilter = {
 	function filterData( t : haxe.io.Bytes ) : haxe.io.Bytes;
 }
@@ -75,10 +75,11 @@ class Stream {
 	public var version : Bool; //Indicates if the version number of the XMPP stream ("1.0") should get added to the stream opening XML element.
 	//public var dataFilters : List<TDataFilter>;
 	//public var dataInterceptors : List<TDataInterceptor>;
+	/** Indicates if this streams connection is a http connection */
+	public var http(default,null) : Bool;
 	
 	var collectors : List<PacketCollector>; // public var packetCollectors : Array<TPacketCollector>; 
 	var interceptors : List<TPacketInterceptor>; // public var packetInterceptors : Array<TPacketCollector>; 
-	var isBOSH : Bool;
 	var numPacketsSent : Int;
 	//var numPacketsRecieved : Int;
 	
@@ -91,7 +92,7 @@ class Stream {
 		version = true;
 		collectors = new List();
 		interceptors = new List();
-		isBOSH = false;
+		http = false;
 		numPacketsSent = 0;
 		//dataFilters = new List();
 		//dataInterceptors = new List();
@@ -118,7 +119,8 @@ class Stream {
 			cnx.__onData = processData;
 			cnx.__onError = errorHandler;
 		}
-		isBOSH = ( Type.getClassName( Type.getClass( cnx ) ) == "jabber.BOSHConnection" );
+		//HACK
+		http = ( Type.getClassName( Type.getClass( cnx ) ) == "jabber.BOSHConnection" );
 		return cnx;
 	}
 	
@@ -149,7 +151,7 @@ class Stream {
 	*/
 	public function close( ?disconnect = false ) {
 		if( status == StreamStatus.open ) {
-			if( !isBOSH ) sendData( xmpp.Stream.CLOSE );
+			if( !http ) sendData( xmpp.Stream.CLOSE );
 			status = StreamStatus.closed;
 		}
 		if( disconnect )
@@ -305,6 +307,7 @@ class Stream {
 			return -1;
 		}
 		//TODO
+		/*
 		if( xmpp.Stream.REGEXP_ERROR.match( t ) ) {
 		//if( ~/stream:error/.match( t ) ) {
 			var err : xmpp.StreamError = null;
@@ -319,6 +322,7 @@ class Stream {
 			close( true );
 			return -1;
 		}
+		*/
 		switch( status ) {
 		case closed :
 			return -1;//buflen; //hm?

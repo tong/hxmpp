@@ -17,6 +17,30 @@
 */
 package jabber;
 
+class XMPPError extends xmpp.Error {
+	
+	public var dispatcher(default,null) : Dynamic;
+	public var from(default,null) : String;
+	
+	public function new( dispatcher : Dynamic, p : xmpp.Packet ) {
+		var e = p.errors[0];
+		if( e == null )
+			throw "Packet has no errors";
+		super( e.type, e.code, e.name, e.text );
+		this.dispatcher = dispatcher;
+		this.from = p.from;
+	}
+	
+	#if JABBER_DEBUG
+	public override function toString() : String {
+		return "XMPPError( "+from+", "+name+", "+code+", "+text+" )";
+	}
+	#end
+	
+}
+
+
+/*
 //TODO remove (?)
 class XMPPError {
 	
@@ -47,3 +71,4 @@ class XMPPError {
 	#end
 	
 }
+*/

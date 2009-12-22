@@ -40,18 +40,15 @@ class Presence extends Packet {
 	}
 	
 	function setStatus( s : String ) : String {
-		if( s == null )
-			return status = s;
-		if( s.length == 0 || s.length > 1023 )
-			throw "Invalid presence status size "+s.length;
-		return status = s;
+		return status = ( ( s == null || s == "" )  ? null : ( s.length > 1023 ) ? s.substr( 0, 1023 ) : s );
 	}
 	
 	public override function toXml() : Xml {
 		var x = super.addAttributes( Xml.createElement( "presence" ) );
 		if( type != null ) x.set( "type", Type.enumConstructor( type ) );
 		if( show != null ) x.addChild( XmlUtil.createElement( "show", Type.enumConstructor( show ) ) );
-		if( status != null && status != "" ) x.addChild( XmlUtil.createElement( "status", status ) );
+		//if( status != null && status != "" ) x.addChild( XmlUtil.createElement( "status", status ) );
+		if( status != null ) x.addChild( XmlUtil.createElement( "status", status ) );
 		if( priority != null ) x.addChild( XmlUtil.createElement( "priority", Std.string( priority ) ) );
 		return x;
 	}

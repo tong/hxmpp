@@ -20,20 +20,20 @@ package xmpp.pubsub;
 class Item {
 	
 	public var id : String;
+	public var payload : Xml; // TODO String ?
 	/** The node attribute is allowed (required!) in pubsub-event namespace only! */
 	public var node : String;
-	public var payload : Xml; // TODO String ?
 	
-	public function new( ?id : String, ?payload : Xml, ?node : String ) {
+	public function new( ?id : String, ?payload : Xml/*, ?node : String*/ ) {
 		this.id = id;
 		this.payload = payload;
-		this.node = node;
+		//this.node = node;
 	}
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "item" );
 		if( id != null ) x.set( "id", id );
-		if( node != null ) x.set( "node", node );
+		//if( node != null ) x.set( "node", node );
 		if( payload != null ) x.addChild( payload );
 		return x;
 	}
@@ -43,9 +43,9 @@ class Item {
 	}
 	
 	public static function parse( x : Xml ) : Item {
-		var payload = x.firstElement();
-		if( payload == null ) payload = x.firstChild();
-		return new Item( x.get( "id" ), payload, x.get( "node" ) );
+		var pl = x.firstElement();
+		if( pl == null ) pl = x.firstChild();
+		return new Item( x.get( "id" ), pl/*, x.get( "node" )*/ );
 	}
 	
 }

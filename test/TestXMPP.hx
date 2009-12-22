@@ -46,7 +46,7 @@ class TestXMPP {
 		r.add( new TestXMPPRoster() );
 		r.add( new TestXMPPSoftwareVersion() );
 		r.add( new TestXMPPSoftwareVersion() );
-		r.add( new TestXMPPVCard() );
+//TODO		r.add( new TestXMPPVCard() );
 
 	//	r.add( new TestXMPPMUC() );
 	//	r.add( new TestXMPPRPC() );

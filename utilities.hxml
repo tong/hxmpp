@@ -1,5 +1,5 @@
 
-##### SWF9 socket bridge
+##### SWF socket bridge
 -cp util/
 -cp lib/
 -swf-version 9

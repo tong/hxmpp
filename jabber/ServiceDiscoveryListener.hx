@@ -29,6 +29,9 @@ class ServiceDiscoveryListener {
 	public var stream(default,null) : Stream;
 	public var identities : Array<xmpp.disco.Identity>;
 	
+	//public dynamic function onInfoQuery( iq : xmpp.IQ ) : Void;
+	//public dynamic function onItemQuery( iq : xmpp.IQ ) : Void;
+	
 	public function new( stream : Stream,  ?identities : Array<xmpp.disco.Identity> ) {
 		if( !stream.features.add( xmpp.disco.Info.XMLNS ) ||
 			!stream.features.add( xmpp.disco.Items.XMLNS ) )
@@ -40,14 +43,26 @@ class ServiceDiscoveryListener {
 	}
 
 	function handleInfoQuery( iq : xmpp.IQ ) { // return identities and stream features
+		/*
+		if( onInfoQuery != null ) {
+			onInfoQuery();
+			return;
+		}
+		*/
 		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, stream.jidstr );
 		r.x = new xmpp.disco.Info( identities, Lambda.array( stream.features ) );
 		stream.sendData( r.toString() );
 	}
 	
 	function handleItemsQuery( iq : xmpp.IQ ) {
+		/*
+		if( onItemQuery != null ) {
+			onItemQuery();
+			return;
+		}
+		*/
 		var r : xmpp.IQ;
-		// HACK
+		// TODO (HACK)
 		if( Reflect.hasField( stream, "items" ) ) { // component stream .. return local stream items
 			r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, Reflect.field( stream, "serviceName" ) );
 			r.x = Reflect.field( stream, "items" );

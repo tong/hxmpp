@@ -27,12 +27,14 @@ import flash.events.SecurityErrorEvent;
 #end
 	
 	//TODO
-	// timeout timer (?)
+	
+	// timeout timer (?), added but needed?
+	
 	// polling 
-	/// multiple streams over one connection)
+	/// multiple streams over one connection
 	// secure!
 	// secure keys
-	// pause
+	// pause -> test
 	
 /**
 	<p>
@@ -71,18 +73,20 @@ class BOSHConnection extends jabber.stream.Connection {
 	var rid : Int;
 	var requestCount : Int;
 	var requestQueue : Array<String>;
-	var responseTimer : util.Timer;
+	var responseTimer : Timer;
 	var responseQueue : Array<Xml>;
 	var pollingEnabled : Bool;
 	var pauseEnabled : Bool;
 	var pauseTimer : Timer;
 	var inactivity : Int;
 	var maxPause : Int;
+	var timeoutTimer : Timer;
+	var timeoutOffset : Int;
 	
 	public function new( host : String, path : String,
 						 hold : Int = 1,
 						 wait : Int = 30,
-						 secure : Bool = true,
+						 secure : Bool = false,
 						 maxConcurrentRequests : Int = 2 ) {
 		super( host );
 		this.path = path;
@@ -93,6 +97,7 @@ class BOSHConnection extends jabber.stream.Connection {
 		initialized = false;
 		pauseEnabled = false;
 		pollingEnabled = true;
+		timeoutOffset = 25;//TODO
 	}
 	
 	/**
@@ -227,12 +232,23 @@ class BOSHConnection extends jabber.stream.Connection {
 		l.addEventListener( SecurityErrorEvent.SECURITY_ERROR, handleHTTPError );
 		l.load( r );
 		#end
+		if( timeoutTimer != null )
+			timeoutTimer.stop();
+		timeoutTimer = new Timer( (wait*1000)+(timeoutOffset*1000) );
+		timeoutTimer.run = handleTimeout;
 		return true;
+	}
+	
+	function handleTimeout() {
+		//trace("TIMEOUT TIMEOUT TIMEOUT TIMEOUT ");
+		timeoutTimer.stop();
+		cleanup();
+		__onError( "BOSH timeout" );
 	}
 	
 	/*
 	function handleHTTPStatus( s : Int ) {
-		//trace( "handleHTTPStatus "+s );
+		trace( "handleHTTPStatus "+s );
 	}
 	*/
 	
@@ -255,6 +271,9 @@ class BOSHConnection extends jabber.stream.Connection {
 			return;
 		}
 		requestCount--;
+		if( timeoutTimer != null ) {
+			timeoutTimer.stop();
+		}
 		if( connected ) {
 			switch( x.get( "type" ) ) {
 			case "terminate" :
@@ -297,13 +316,15 @@ class BOSHConnection extends jabber.stream.Connection {
 				return;
 			}
 			wait = Std.parseInt( x.get( "wait" ) );
+			/*
 			var t = x.get( "ver" );
 			if( t != null &&  t != BOSH_VERSION ) {
 				cleanup();
 				__onError( "Invalid BOSH version ("+t+")" );
 				return;
 			}
-			t = null;
+			*/
+			var t = null;
 			t = x.get( "maxpause" );
 			if( t != null ) {
 				maxPause = Std.parseInt( t )*1000;
@@ -337,7 +358,7 @@ class BOSHConnection extends jabber.stream.Connection {
 	}
 	
 	function resetResponseProcessor() {
-		if( responseQueue.length > 0 ) {
+		if( responseQueue != null && responseQueue.length > 0 ) {
 			responseTimer.stop();
 			responseTimer = new Timer( 0 );
 			responseTimer.run = processResponse;
@@ -372,6 +393,7 @@ class BOSHConnection extends jabber.stream.Connection {
 	}
 	
 	function cleanup() {
+		timeoutTimer.stop();
 		responseTimer.stop();
 		connected = initialized = false;
 		sid = null;

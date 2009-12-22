@@ -8,6 +8,9 @@ import php.Sys;
 import cpp.Sys;
 #end
 
+/**
+	Login and send message.period.
+*/
 class SendMessage {
 	
 	static var stream : Stream;
@@ -16,6 +19,7 @@ class SendMessage {
 		trace( "Sending message ..." );
 		stream.sendMessage( "reciever@domain.net/Resource", "Test message" );
 		trace( "Message sent." );
+		stream.close( true );
 		Sys.exit(0);
 	}
 	

@@ -24,9 +24,9 @@ class Publish extends List<Item> {
 	public function new( node : String, ?items : Iterable<Item> ) {
 		super();
 		this.node = node;
-		if( items!= null )
-			for( i in items )
-				add( i );
+		if( items!= null ) {
+			for( i in items ) add( i );
+		}
 	}
 	
 	public function toXml() : Xml {

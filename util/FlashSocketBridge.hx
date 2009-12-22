@@ -2,7 +2,7 @@
 import jabber.tool.SocketBridge;
 
 /**
-	Flash9+ socket bridge for javascript applications.
+	Flash9+ socket bridge SWF for javascript applications.
 */
 class FlashSocketBridge extends jabber.tool.SocketBridge {
 
@@ -12,7 +12,7 @@ class FlashSocketBridge extends jabber.tool.SocketBridge {
 		var cm = new flash.ui.ContextMenu();
 		cm.hideBuiltInItems();
 		flash.Lib.current.contextMenu = cm;
-		new FlashSocketBridge( flash.Lib.current.loaderInfo.parameters.ctx );
+		new SocketBridge( flash.Lib.current.loaderInfo.parameters.ctx );
 	}
 	
 }

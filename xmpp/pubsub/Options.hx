@@ -33,6 +33,7 @@ class Options {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "options" );
+		if( jid != null ) x.set( "jid", jid );
 		if( node != null ) x.set( "node", node );
 		if( subid != null ) x.set( "subid", subid );
 		if( form != null ) x.addChild( form.toXml() );
