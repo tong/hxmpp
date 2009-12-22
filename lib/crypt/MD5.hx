@@ -7,7 +7,7 @@ package crypt;
 class MD5 {
 
 	public static function encode( s : String, raw : Bool = false ) : String {
-		#if neko
+		#if (neko||cpp)
 		return if( raw ) untyped new String(make_md5(s.__s));
 		else untyped new String(base_encode(make_md5(s.__s),"0123456789abcdef".__s));
 		#elseif php

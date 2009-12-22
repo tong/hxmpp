@@ -6,7 +6,11 @@ package net.sasl;
 */
 class MD5Mechanism {
 	
-	public static var ID = "DIGEST-MD5";
+	static function __init__() {
+		ID = "DIGEST-MD5";
+	}
+	
+	public static var ID(default,null) : String;
 	
 	public var id(default,null) : String;
 	public var serverType : String;
@@ -61,7 +65,6 @@ class MD5Mechanism {
 		b.add( ",response=" );
 		b.add( hh( hh( a1 )+":"+nonce+":00000001:"+cnonce+":"+"auth"+":"+hh( a2 ) ) );
 		b.add( ",charset=utf-8" );
-		trace(b.toString());
 		return b.toString();
 	}
 	

@@ -24,8 +24,8 @@ class SHA1 {
 	/**
 		Takes a string and returns the hex representation of its SHA-1.
 	*/
+	//TODO! public static function encode( t : String, raw : Bool = false ) : String {
 	public static function encode( t : String ) : String {
-	//TODO public static function encode( t : String, raw : Bool = false ) : String {
 		#if (neko||cpp)
 		return new String( base_encode( make_sha1( untyped t.__s ), untyped hex_chr.__s ) );
 		#elseif php
