@@ -28,24 +28,25 @@ import cpp.Lib;
 #elseif flash
 import flash.external.ExternalInterface;
 #end
-		
+
 /**
 	Utility for debugging XMPP transfer.<br/>
-	Set the haXe compiler flag: -D XMPP_DEBUG to activate
+	Set the haXe compiler flag: -D XMPP_DEBUG to activate it.
 */
 class XMPPDebug {
 	
-	static function __init__() {
+	static var instance = new XMPPDebug();
+	
+	function new() {
 		#if js
 		try {
-			firebug = untyped console != null && console.error != null;
+			useConsole = untyped console != null && console.error != null;
 		} catch( e : Dynamic ) {
-			firebug = false;
+			useConsole = false;
 		}
 		#elseif flash
-		firebug = if( ExternalInterface.available &&
-					  ExternalInterface.call( "console.error.toString" ) != null )
-			true else false;
+		useConsole = ( ExternalInterface.available &&
+					   ExternalInterface.call( "console.error.toString" ) != null );
 		#end
 	}
 	
@@ -54,42 +55,36 @@ class XMPPDebug {
 	}
 	
 	public static inline function out( t : String, ?level : String = "log" ) {
-        print( t, true, level );
+		print( t, true, level );
 	}
 	
 	/*
 	public static inline function error( t : String ) {
-		#if (cpp||neko||php)
-        print( t, 30, 42 );
-        #else
-        _print( t ); 
-        #end
 	}
 	*/
 	
-	public static inline function print( t : String, out : Bool, level : String = "log" ) {
+	public static function print( t : String, out : Bool, level : String = "log" ) {
 		#if (flash||js)
-		_print( t, out, level );
+		instance._print( t, out, level );
 		#elseif (cpp||neko||php)
-		var fgc = (out) ? fgOut : fgInc;
-		var bgc = (out) ? bgOut : bgInc;
-		_print( t, fgc, bgc );
+		instance._print( t, (out)?fgOut:fgInc, (out)?bgOut:bgInc );
 		#end
 	}
 	
 	#if (flash||js)
 	
-	static var firebug : Bool;
+	static var useConsole : Bool;
 	
-	public static function _print( t : String, out : Bool = true, level : String = "log" ) {
+	public function _print( t : String, out : Bool = true, level : String = "log" ) {
 		var dir = "XMPP-"+((out)?"O ":"I ");
-		if( firebug ) {
+		if( useConsole ) {
 			#if flash
 			ExternalInterface.call( "console."+level, dir+t );
 			#else
 			untyped console[level]( dir+t );
 			#end
 		} else {
+			//TODO
 			 haxe.Log.trace( t, { className : "", methodName : "", fileName : dir, lineNumber : 0, customParams : [] } );
 		}
 	}
@@ -103,7 +98,7 @@ class XMPPDebug {
 	public static var defaultColor = 37;
 	public static var defaultBackgroundcolor = 44;
 	
-	public static function _print( t : String, color : Int, backgroundColor : Int ) {
+	public function _print( t : String, color : Int, backgroundColor : Int ) {
 		if( color == null ) {
 			Lib.print( t );
 			return;
@@ -124,9 +119,9 @@ class XMPPDebug {
 		b.add( "m\n" );
 		Lib.print( b.toString() );
 	}
-		
-	#end
+	
+	#end // (cpp||neko||php)
 	
 }
 
-#end
+#end // XMPP_DEBUG
