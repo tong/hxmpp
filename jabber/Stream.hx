@@ -60,6 +60,16 @@ private class StreamFeatures {
 */
 class Stream {
 	
+	/*
+	#if XMPP_DEBUG
+	//public static function onXMPP( s : Stream, p : xmpp.Packet, out : Bool ) : Void;
+	public static function onXMPP(default,null) : EventDispatcher<XMPPTransfer>;
+	public static function debugXMPP( t : String ) {
+		
+	}
+	#end
+	*/
+	
 	public static var packetIDLength = 5;
 	
 	public dynamic function onOpen() : Void;
@@ -98,6 +108,9 @@ class Stream {
 		//dataInterceptors = new List();
 		if( cnx != null )
 			setConnection( cnx );
+		#if (flash&&JABBER_CONSOLE)
+		XMPPDebug.stream = this; // TODO HACK
+		#end
 	}
 	
 	function getJIDStr() : String {
@@ -183,6 +196,7 @@ class Stream {
 		numPacketsSent++;
 		#if XMPP_DEBUG
 		XMPPDebug.out( t );
+		//XMPPDebug.outPacket( t );
 		#end
 		return t;
 	}
@@ -252,17 +266,17 @@ class Stream {
 	*/
 	public function collect( filters : Iterable<xmpp.PacketFilter>, handler : Dynamic->Void, permanent : Bool = false ) : PacketCollector {
 		var c = new PacketCollector( filters, handler, permanent );
-		return ( addCollector( c ) ) ? c : null;
+		return addCollector( c ) ? c : null;
 	}
 	
 	/**
 		Adds a packet collector to this stream and starts the timeout if not null.<br/>
 	*/
 	public function addCollector( c : PacketCollector ) : Bool {
-		if( Lambda.has( collectors, c ) ) return false;
+		if( Lambda.has( collectors, c ) )
+			return false;
 		collectors.add( c );
-		if( c.timeout != null )
-			c.timeout.start();
+		if( c.timeout != null ) c.timeout.start();
 		return true;
 	}
 	
@@ -271,8 +285,7 @@ class Stream {
 	public function removeCollector( c : PacketCollector ) : Bool {
 		if( !collectors.remove( c ) )
 			return false;
-		if( c.timeout != null )
-			c.timeout.stop();
+		if( c.timeout != null ) c.timeout.stop();
 		return true;
 	}
 	
@@ -302,8 +315,19 @@ class Stream {
 		//
 		var t : String = buf.readString( bufpos, buflen );
 		//TODO
+		/*
 		if( xmpp.Stream.REGEXP_CLOSE.match( t ) ) {
 			close( true );
+			return -1;
+		}
+		*/
+		//TODO
+		if( StringTools.startsWith( t, '</stream:stream' ) ) {
+			close( true );
+			return -1;
+		} else if( StringTools.startsWith( t, '</stream:error' ) ) {
+			//close( true );
+			//TODO
 			return -1;
 		}
 		//TODO
@@ -433,7 +457,11 @@ class Stream {
 	*/
 	
 	function processStreamInit( t : String, buflen : Int ) : Int {
-		return throw "abstract";
+		#if JABBER_DEBUG
+		return throw "Abstract method";
+		#else
+		return -1;
+		#end
 	}
 	
 	function closeHandler() {

@@ -53,12 +53,18 @@ class IB {
 		var _type = Type.createEnum( IBType, x.nodeName );
 		var ib = new IB( _type, x.get( "sid" ), Std.parseInt( x.get( "block-size" ) ) );
 		if( _type == IBType.data ) {
+			ib.data = x.firstChild().nodeValue;
+			ib.sid = x.get( "sid" );
+			ib.seq = Std.parseInt( x.get( "seq" ) );
+			/*
 			for( e in x.elements() ) {
+				trace(">>>>>");
 				if( e.nodeName == "data" ) {
 					ib.data = e.firstChild().nodeValue;
 					break;
 				}
 			}
+			*/
 		}
 		return ib;
 	}
@@ -68,7 +74,10 @@ class IB {
 	public static function parseData( p : xmpp.Packet ) : { sid : String , seq : Int, data : String } {
 		for( x in p.properties ) {
 			if( x.nodeName == "data" ) {
-				return { sid : x.get( "sid" ) , seq : Std.parseInt( x.get( "seq" ) ), data : x.firstChild().nodeValue };
+				return { sid : x.get( "sid" ),
+						 seq : Std.parseInt( x.get( "seq" ) ),
+						 data : x.firstChild().nodeValue
+					   };
 			}
 		}
 		return null;

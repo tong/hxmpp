@@ -32,14 +32,14 @@ class Pong {
 	
 	public function new( stream : Stream ) {
 		if( !stream.features.add( xmpp.Ping.XMLNS ) )
-			throw "Ping feature already added";
+			throw "Ping listener already added";
 		this.stream = stream;
 		stream.addCollector( new jabber.stream.PacketCollector( [ cast new xmpp.filter.IQFilter( xmpp.Ping.XMLNS, null, xmpp.IQType.get ) ], handlePing, true ) );
 	}
 	
 	function handlePing( iq : xmpp.IQ ) {
 		var r = xmpp.IQ.createResult( iq );
-		r.x = new xmpp.Ping();
+		r.properties.push( xmpp.Ping.xml );
 		stream.sendData( r.toString() );
 		onPong( iq.from );
 	}

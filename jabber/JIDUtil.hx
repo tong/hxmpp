@@ -23,6 +23,8 @@ package jabber;
 */	
 class JIDUtil {
 	
+	public static inline var MIN_LENGTH = 8;
+	public static inline var MAX_LENGTH = 3071;
 	public static inline var MAX_PARTSIZE = 1023;
 	
 	#if JABBER_DEBUG
@@ -35,6 +37,8 @@ class JIDUtil {
 		Returns true if the given JID is valid formed.
 	*/
 	public static function isValid( t : String ) : Bool {
+		if( t.length < MIN_LENGTH || t.length > MAX_LENGTH )
+			return false;
 		if( !EREG.match( t ) )
 			return false;
 		for( p in getParts( t ) )

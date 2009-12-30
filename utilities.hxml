@@ -1,9 +1,9 @@
 
-##### SWF socket bridge
+### SWF socketbridge
 -cp util/
 -cp lib/
 -swf-version 9
 -swf-header 0:0:60:eeeeee
--swf bin/f9_socketbridge.swf
+-swf9 out/socketbridge.swf
 -main FlashSocketBridge
-#--no-traces
+--no-traces

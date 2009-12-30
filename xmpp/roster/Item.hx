@@ -26,12 +26,12 @@ class Item {
 	public var groups : List<String>;
 	
 	public function new( jid : String,
-						 ?subscription : Subscription, ?name : String, ?askType : AskType, ?groups : List<String> ) {
+						 ?subscription : Subscription, ?name : String, ?askType : AskType, ?groups : Iterable<String> ) {
 		this.jid = jid;
 		this.subscription = subscription;
 		this.name = name;
 		this.askType = askType;
-		this.groups = ( groups != null ) ? groups : new List();
+		this.groups = ( groups != null ) ? Lambda.list( groups ) : new List();
 	}
 	
 	public function toXml() : Xml {

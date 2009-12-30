@@ -40,8 +40,12 @@ class PrivateStorage {
 		return x;
 	}
 	
+	public inline function toString() : String {
+		return toXml().toString();
+	}
+	
 	public static function parse( x : Xml ) : PrivateStorage {
-		var e = x.firstChild();
+		var e = x.firstElement();
 		return new PrivateStorage( e.nodeName, e.get("xmlns" ), e.firstElement() );
 	}
 	

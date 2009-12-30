@@ -22,7 +22,7 @@ package xmpp;
 */
 class ChatStateExtension {
 	
-	public static inline var XMLNS = xmpp.NS.PROTOCOL+"/chatstates";
+	public static var XMLNS = xmpp.NS.PROTOCOL+"/chatstates";
 	
 	/**
 		Adds (or changes if already has) the chat state property of the givent message packet.
@@ -41,25 +41,18 @@ class ChatStateExtension {
 	/**
 		Creates a chat state extension xml.
 	*/
-	public static inline function createXml( state : ChatState ) : Xml {
+	public static function createXml( state : ChatState ) : Xml {
 		var x = Xml.createElement( Type.enumConstructor( state ) );
 		x.set( "xmlns", XMLNS );
 		return x;
 	}
 	
 	/**
-		Extracts the chat state of the given message.
-		Returns null if no state was found.
+		Extracts the chat state of the given message.<br/>
 	*/
 	public static function get( m : xmpp.Message ) : xmpp.ChatState {
-		for( e in m.properties ) {
-			var s = e.nodeName;
-			switch( s ) {
-			case "active","composing","paused","inactive","gone" :
-				return Type.createEnum( xmpp.ChatState, s );
-			}
-		}
-		return null;
+		var s = getString( m );
+		return ( s == null ) ? null : Type.createEnum( xmpp.ChatState, s );
 	}
 	
 	/**

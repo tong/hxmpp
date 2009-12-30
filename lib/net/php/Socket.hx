@@ -3,7 +3,7 @@ package net.php;
 import php.net.Host;
 
 /**
-	Patched version of php.net.Socket to be able to specify 'tls' as transport.
+	Extended version of php.net.Socket to be able to specify 'tls' as transport.
 */
 class Socket extends php.net.Socket {
 

@@ -51,10 +51,8 @@ class Ping {
 		this.stream = stream;
 		this.interval = ( interval != null ) ? interval : defaultInterval;
 		active = false;
-		var x = Xml.createElement( "ping" );
-		x.set( "xmlns", "urn:xmpp:ping" );
 		iq = new xmpp.IQ( null, null, null, stream.jidstr );
-		iq.properties.push( x );
+		iq.properties.push( xmpp.Ping.xml );
 	}
 
 	/**

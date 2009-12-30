@@ -266,7 +266,7 @@ class VCard {
 							}
 						}
 					}
-				//case "NICKNAME" : trace("#############################");vc.nickName = node.firstChild().nodeValue;
+				case "NICKNAME" : vc.nickname = node.firstChild().nodeValue;
 				case "PHOTO" : vc.photo = parsePhoto( node );
 				case "BDAY" : vc.birthday = node.firstChild().nodeValue;
 				case "ADR" :

@@ -43,9 +43,9 @@ class Stream extends jabber.Stream {
 	/**  */
 	public var connected(default,null) : Bool;
 	/** */
-	public var items(default,null) : xmpp.disco.Items; //TODO move into jabber.Stream? ( allowed by clients ? )
+	public var items(getItems,null) : xmpp.disco.Items; //TODO move into jabber.Stream? ( allowed by clients ? )
 	/** */
-	public var serviceListener(default,null) : ServiceDiscoveryListener;
+	public var discoListener(default,null) : ServiceDiscoveryListener;
 	
 	
 	public function new( host : String, subdomain : String, secret : String, cnx : Connection,
@@ -60,7 +60,7 @@ class Stream extends jabber.Stream {
 		this.secret = secret;
 		items = new xmpp.disco.Items();
 		connected = false;
-		serviceListener = new ServiceDiscoveryListener( this, identities );
+		discoListener = new ServiceDiscoveryListener( this, identities );
 	}
 	
 	override function getJIDStr() : String {
@@ -73,6 +73,10 @@ class Stream extends jabber.Stream {
 		return subdomain+"."+host;
 	}
 	
+	function getItems() : xmpp.disco.Items {
+		return items;
+	}
+	
 	override function connectHandler() {
 		var t = sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_COMPONENT, subdomain ) );
 		#if XMPP_DEBUG
@@ -83,7 +87,7 @@ class Stream extends jabber.Stream {
 	}
 	
 	override function processStreamInit( t : String, len : Int ) {
-		trace(t);
+		//TODO
 		var i = t.indexOf( ">" );
 		if( i == -1 )
 			return 0;

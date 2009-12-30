@@ -20,7 +20,8 @@ package jabber.stream;
 import xmpp.PacketFilter;
 
 /**
-	Mind! packet timeouts dont't work for PHP!
+	Default XMPP packet collector implementation.<br/> 
+	Mind! Packet timeouts dont't work for PHP!
 */
 class PacketCollector {
 	
@@ -68,8 +69,7 @@ class PacketCollector {
 			if( !f.accept( p ) )
 				return false;
 		}
-		if( timeout != null )
-			timeout.stop();
+		if( timeout != null ) timeout.stop();
 		return true;
 	}
 	

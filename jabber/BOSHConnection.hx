@@ -124,7 +124,7 @@ class BOSHConnection extends jabber.stream.Connection {
 			b.set( 'to', host );
 			b.set( 'secure', Std.string( secure ) );
 			#if XMPP_DEBUG
-			XMPPDebug.out( "/BOSH/ "+b.toString() );
+			XMPPDebug.out( b.toString() );
 			#end
 			sendRequests( b );
 		}
@@ -180,7 +180,7 @@ class BOSHConnection extends jabber.stream.Connection {
 		r.set( "xml:lang", "en" );
 		r.set( "to", host );
 		#if XMPP_DEBUG
-		XMPPDebug.out( "/BOSH/ "+r.toString() );
+		XMPPDebug.out( r.toString() );
 		#end
 		sendRequests( r );
 	}
@@ -336,6 +336,10 @@ class BOSHConnection extends jabber.stream.Connection {
 			t = null;
 			t = x.get( "inactivity" );
 			if( t != null ) inactivity = Std.parseInt( t );
+		//	#if XMPP_DEBUG
+		//	trace("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
+		//	XMPPDebug.inc( t );
+		//	#end
 			__onConnect();
 			connected = true;
 			var b = haxe.io.Bytes.ofString( x.toString() );

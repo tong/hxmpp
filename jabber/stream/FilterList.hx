@@ -25,46 +25,46 @@ import xmpp.filter.PacketIDFilter;
 */
 class FilterList {
 	
-	var f_id : Array<PacketFilter>;
+	var fid : Array<PacketFilter>;
 	var f : Array<PacketFilter>;
 	
 	public function new() {
 		clear();
 	}
 	
-	public function iterator() : Iterator<PacketFilter> {
-		return f_id.concat( f ).iterator();
+	public function clear( ) {
+		fid = new Array<PacketFilter>();
+		f = new Array<PacketFilter>();
 	}
 	
-	public function addIDFilter( _f : PacketIDFilter ) {
-		f_id.push( _f );
+	public inline function iterator() : Iterator<PacketFilter> {
+		return fid.concat( f ).iterator();
 	}
 	
-	public function addFilter( _f : PacketFilter ) {
+	public inline function addIDFilter( _f : PacketIDFilter ) {
+		fid.push( _f );
+	}
+	
+	public inline function addFilter( _f : PacketFilter ) {
 		f.push( _f );
 	}
 	
 	public function push( _f : PacketFilter ) {
-		( Std.is( _f, PacketIDFilter ) ) ? f_id.push( _f ) : f.push( _f );
+		( Std.is( _f, PacketIDFilter ) ) ? fid.push( _f ) : f.push( _f );
 	}
 	
 	public function unshift( _f : PacketFilter ) {
-		( Std.is( _f, PacketIDFilter ) ) ? f_id.unshift( _f ) : f.unshift( _f );
+		( Std.is( _f, PacketIDFilter ) ) ? fid.unshift( _f ) : f.unshift( _f );
 	}
 	
 	public function remove( _f : PacketFilter ) : Bool {
-		if( f_id.remove( _f ) || f.remove( _f ) ) return true;
+		if( fid.remove( _f ) || f.remove( _f ) ) return true;
 		return false;
-	}
-	
-	public function clear( ) {
-		f_id = new Array<PacketFilter>();
-		f = new Array<PacketFilter>();
 	}
 	
 	/*
 	public function destroy( ) {
-		for( f in f_id ) { f = null; }
+		for( f in fid ) { f = null; }
 		for( f in f ) { f = null; }
 		clear();
 	}

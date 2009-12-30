@@ -1,0 +1,37 @@
+
+-cp ../../
+-cp ../../lib
+-neko component.n
+-main ComponentDemo
+-D XMPP_DEBUG
+-D JABBER_DEBUG
+-debug
+
+--next
+-cp ../../
+-cp ../../lib
+-swf9 component.swf
+-main ComponentDemo
+-D XMPP_DEBUG
+-D JABBER_DEBUG
+-debug
+
+--next
+-cp ../../
+-cp ../../lib
+-php .
+--php-front component.php
+-main ComponentDemo
+-D XMPP_DEBUG
+-D JABBER_DEBUG
+-debug
+
+#--next
+#-cp ../../
+#-cp ../../lib
+#-cpp .
+#-main ComponentDemo
+#-D XMPP_DEBUG
+#-D JABBER_DEBUG
+#-D HXCPP_MULTI_THREADED
+#-debug

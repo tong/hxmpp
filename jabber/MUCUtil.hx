@@ -17,8 +17,10 @@
 */
 package jabber;
 
+//TODO ereg for debug and real
+
 /**
-	Static methods for manipulation/validation of mutliuser chat addresses.
+	Static methods for parsing of mutliuser chat addresses.
 */
 class MUCUtil {
 	
@@ -28,28 +30,28 @@ class MUCUtil {
 	/**
 		Returns Bool if the given string is a valid muchat address.
 	*/
-	public static function isValid( t : String ) : Bool {
+	public static inline function isValid( t : String ) : Bool {
 		return EREG.match( t );
 	}
 	
 	/**
 		Returns Bool if the given string is a full valid muchat address (including occupant name).
 	*/
-	public static function isValidFull( t : String ) : Bool {
+	public static inline  function isValidFull( t : String ) : Bool {
 		return EREG_FULL.match( t );
 	}
 	
 	/**
 		Returns the room of the muc jid.
 	*/
-	public static function getRoom( t : String ) : String {
+	public static inline function getRoom( t : String ) : String {
 		return JIDUtil.parseNode( t );
 	}
 	
 	/**
 		Returns the host of the muc jid.
 	*/
-	public static function getHost( t : String ) : String {
+	public inline static function getHost( t : String ) : String {
 		return getParts( t )[1];
 	}
 	

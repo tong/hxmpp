@@ -17,7 +17,7 @@
 */
 package jabber;
 
-#if flash9
+#if flash
 import flash.net.Socket;
 import flash.events.Event;
 import flash.events.IOErrorEvent;

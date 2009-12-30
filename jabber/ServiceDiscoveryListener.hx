@@ -29,8 +29,13 @@ class ServiceDiscoveryListener {
 	public var stream(default,null) : Stream;
 	public var identities : Array<xmpp.disco.Identity>;
 	
-	//public dynamic function onInfoQuery( iq : xmpp.IQ ) : Void;
-	//public dynamic function onItemQuery( iq : xmpp.IQ ) : Void;
+	public var onInfoQuery : xmpp.IQ->Void;
+	public var onItemQuery : xmpp.IQ->Void;
+	//public var onInfoQuery(default,setInfoQueryHandler) : xmpp.IQ->Void;
+	//public var onItemQuery(default,setItemQueryHandler) : xmpp.IQ->Void;
+	
+	//var cinfo : PacketCollector;
+	//var citems : PacketCollector;
 	
 	public function new( stream : Stream,  ?identities : Array<xmpp.disco.Identity> ) {
 		if( !stream.features.add( xmpp.disco.Info.XMLNS ) ||
@@ -41,26 +46,31 @@ class ServiceDiscoveryListener {
 		stream.collect( [cast new IQFilter( xmpp.disco.Info.XMLNS, null, xmpp.IQType.get )], handleInfoQuery, true );
 		stream.collect( [cast new IQFilter( xmpp.disco.Items.XMLNS, null, xmpp.IQType.get )], handleItemsQuery, true );
 	}
-
+	
+	/*
+	function setInfoQueryHandler( h : xmpp.Packet->Void ) : xmpp.IQ->Void {
+		if( h == null ) {
+			cinfo.handlers = [handleInfoQuery];
+		}
+		return h;
+	}
+	*/
+	
 	function handleInfoQuery( iq : xmpp.IQ ) { // return identities and stream features
-		/*
 		if( onInfoQuery != null ) {
-			onInfoQuery();
+			onInfoQuery( iq );
 			return;
 		}
-		*/
 		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, stream.jidstr );
 		r.x = new xmpp.disco.Info( identities, Lambda.array( stream.features ) );
 		stream.sendData( r.toString() );
 	}
 	
 	function handleItemsQuery( iq : xmpp.IQ ) {
-		/*
 		if( onItemQuery != null ) {
-			onItemQuery();
+			onItemQuery( iq );
 			return;
 		}
-		*/
 		var r : xmpp.IQ;
 		// TODO (HACK)
 		if( Reflect.hasField( stream, "items" ) ) { // component stream .. return local stream items
@@ -74,5 +84,27 @@ class ServiceDiscoveryListener {
 		r.from = stream.jidstr;
 		stream.sendPacket( r );
 	}
+	
+	/*
+	#if JABBER_DEBUG
+	
+	public function toString() : String {
+		var b = new StringBuf();
+		//for( 
+		trace( Reflect.hasField( stream, "items" ));
+		if( Reflect.hasField( stream, "items" ) ) {
+			trace("###########");
+			var items : Iterable<Dynamic> = Reflect.field( stream, "items" );
+			trace( items );
+			for( i in items ) {
+				trace(">>>>> "+i);
+				b.add( i );
+			}
+		}
+		return b.toString(); 
+	}
+	
+	#end
+	*/
 	
 }

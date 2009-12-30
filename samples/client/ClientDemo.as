@@ -1,11 +1,13 @@
 package {
 	
-	/*
+	/**
 	
-	# Compile with SWC
+	Example usage of HXMPP lib from AS3 (mxmlc).
+	
+	# Compile with HXMPP-SWC
 	mxmlc JabberClientDemo.as -default-size 800 600 -include-libraries ../bin/hxmpp.swc -output ../bin/test.swf
 	
-	# Compile with AS3
+	# Compile with HXMPP-AS3
 	mxmlc JabberClientDemo.as -default-size 800 600 -sp ../bin/as3/ -output ../bin/test.swf
 	
 	*/
@@ -16,10 +18,11 @@ package {
 	import flash.text.TextField;
 	import jabber.JID;
 	import jabber.SocketConnection;
-	import jabber.XMPPDebug;
+	import jabber.ServiceDiscovery;
 	import jabber.client.Stream;
 	import jabber.client.NonSASLAuthentication;
 	import jabber.client.Roster;
+	import jabber.client.VCard;
 	
 	/**
 		Basic XMPP client exmaple.
@@ -40,24 +43,19 @@ package {
 			tf.width = tf.height = 800;
 			addChild( tf );
 			
-			info( "initializing HXMPP lib .." );
+			info( "initializing HXMPP lib ..." );
 			
-			var jid : JID = new JID( "account@disktree" );
+			var jid : JID = new JID( "test@disktree" );
 			var cnx : SocketConnection = new SocketConnection( "127.0.0.1", Stream.defaultPort ); 
 			var stream : Stream = new Stream( jid, cnx );
-			stream.onOpen = streamOpenHandler;
-	
 			stream.onOpen = function():void {
 				info( "XMPP stream opened" );
            	 	var auth : NonSASLAuthentication = new NonSASLAuthentication( stream );
            	 	auth.onSuccess = onLoginSuccess;
            	 	auth.authenticate( "test", "hxmpp" );
 			};
-			stream.onClose = function():void {
-           		info( "XMPP stream closed" );
-			};
-			stream.onError = function(e:*):void {
-				info( "XMPP stream error "+e );
+			stream.onClose = function(e:*):void {
+				info( "XMPP stream closed ("+e+")" );
 			};
 			stream.open();
 		}

@@ -18,7 +18,7 @@
 package jabber;
 
 /**
-	Extension to store any arbitrary XML on the server side.
+	Extension to store any arbitrary XML on the server side.<br/>
 	<a href="http://xmpp.org/extensions/xep-0049.html">XEP-0049: Private XML Storage</a><br/>
 */
 class PrivateStorage {

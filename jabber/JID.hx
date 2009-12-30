@@ -46,7 +46,6 @@ class JID {
 		if( str != null ) {
 			if( !JIDUtil.isValid( str ) )
 				throw "Invalid JID: "+str; 
-			
 			this.node = JIDUtil.parseNode( str );
 			this.domain = JIDUtil.parseDomain( str );
 			this.resource = JIDUtil.parseResource( str );

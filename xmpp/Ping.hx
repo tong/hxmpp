@@ -18,18 +18,17 @@
 package xmpp;
 
 /**
-	This class is just a reference, not used.
 	<a href="http://www.xmpp.org/extensions/xep-0199.html">XEP 199 - XMPP Ping</a>
 */
 class Ping {
 	
-	public static var XMLNS = "urn:xmpp:ping";
+	public static var XMLNS(default,null) : String;
 	
 	static function __init__() {
 		xml = Xml.createElement( "ping" );
-		xml.set( "xmlns", XMLNS );
+		xml.set( "xmlns", XMLNS = "urn:xmpp:ping" );
 	}
 	
 	public static var xml(default,null) : Xml;
-
+	
 }

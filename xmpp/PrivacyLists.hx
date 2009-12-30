@@ -17,6 +17,8 @@
 */
 package xmpp;
 
+/**
+*/
 class PrivacyLists {
 	
 	public static var XMLNS = "jabber:iq:privacy";
@@ -24,12 +26,10 @@ class PrivacyLists {
 	public var active : String;
 	public var _default : String;
 	public var list : Array<xmpp.PrivacyList>;
-	
 
 	public function new() {
 		list = new Array();
 	}
-	
 	
 	public function toXml() : Xml {
 		var q = xmpp.IQ.createQueryXml( XMLNS );
@@ -47,8 +47,13 @@ class PrivacyLists {
 		return q;
 	}
 	
-	public inline function toString() : String { return toXml().toString(); }
+	public inline function toString() : String {
+		return toXml().toString();
+	}
 	
+	public function iterator() : Iterator<PrivacyList> {
+		return list.iterator();
+	}
 	
 	public static function parse( x : Xml ) : xmpp.PrivacyLists {
 		var p = new xmpp.PrivacyLists();

@@ -1,0 +1,50 @@
+
+-cp ../../
+-cp ../../lib
+-swf9 client.swf
+-main ClientDemo
+-D XMPP_DEBUG
+-D JABBER_DEBUG
+-debug
+
+--next
+-cp ../../
+-cp ../../lib
+-js client.js
+-main ClientDemo
+-D XMPP_DEBUG
+-D JABBER_DEBUG
+-D JABBER_SOCKETBRIDGE
+-debug
+
+--next
+-cp ../../
+-cp ../../lib
+-neko client.n
+-main ClientDemo
+-D XMPP_DEBUG
+-D JABBER_DEBUG
+-debug
+
+--next
+-cp ../../
+-cp ../../lib
+-php .
+--php-front client.php
+-main ClientDemo
+-D XMPP_DEBUG
+-D JABBER_DEBUG
+-debug
+
+#--next
+#-cp ../../
+#-cp ../../lib
+#-cpp client
+#-main ClientDemo
+#-D XMPP_DEBUG
+#-D JABBER_DEBUG
+#-D HXCPP_MULTI_THREADED
+#-debug
+
+### MXMLC-SWC
+-cmd mxmlc ClientDemo.as -default-size 800 600 -include-libraries ../../out//hxmpp.swc -output clientAS3.swf

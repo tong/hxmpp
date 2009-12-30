@@ -40,7 +40,7 @@ class Presence extends Packet {
 	}
 	
 	function setStatus( s : String ) : String {
-		return status = ( ( s == null || s == "" )  ? null : ( s.length > 1023 ) ? s.substr( 0, 1023 ) : s );
+		return status = ( ( s == null || s == "" ) ? null : ( s.length > 1023 ) ? s.substr( 0, 1023 ) : s );
 	}
 	
 	public override function toXml() : Xml {

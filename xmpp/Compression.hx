@@ -17,6 +17,9 @@
 */
 package xmpp;
 
+/**
+	<a href="http://www.xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
+*/
 class Compression {
 	
 	public static var XMLNS = xmpp.NS.PROTOCOL+'/compress';
@@ -31,6 +34,7 @@ class Compression {
 	}
 	
 	/**
+		Returns an array of parsed compression methods.
 	*/
 	public static function parseMethods( x : Xml ) : Array<String> {
 		var a = new Array<String>();

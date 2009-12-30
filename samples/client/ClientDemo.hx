@@ -11,17 +11,11 @@ import jabber.client.VCard;
 */
 class ClientDemo {
 	
-	static function main() {
-		#if flash
-		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
-		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
-		#end
-		#if JABBER_SOCKETBRIDGE
-		jabber.SocketBridgeConnection.initDelayed( "f9bridge", init );
-		#else
-		init();
-		#end
-	}
+	static inline var RESOURCE = #if neko "NEKO" #elseif flash "FLASH" #elseif js "JS" #elseif php "PHP" #elseif cpp "CPP" #end;
+	
+	static var jid = "hxmpp@disktree";
+	static var password = "test";
+	static var ip = "127.0.0.1";
 	
 	static var stream : Stream;
 	static var roster : Roster;
@@ -29,7 +23,17 @@ class ClientDemo {
 	static var vcard : VCard;
 	
 	static function init() {
-		stream = new Stream( new jabber.JID( "hxmpp@disktree" ), new SocketConnection( "127.0.0.1", 5222 ) );
+		var jid = new jabber.JID( ClientDemo.jid );
+#if js
+	#if JABBER_SOCKETBRIDGE
+		var cnx = new SocketConnection( ip, Stream.defaultPort );
+	#else
+		var cnx = new jabber.BOSHConnection( jid.domain, ip+"/http" );
+	#end
+#else
+		var cnx = new SocketConnection( ip, 5222 );
+#end
+		stream = new Stream( jid, cnx );
 		stream.onClose = function(?e) { trace( "Stream to: "+stream.jid.domain+" closed." ); } ;
 		stream.onOpen = function() {
 			trace( "XMPP stream to "+stream.jid.domain+" opened" );
@@ -47,7 +51,7 @@ class ClientDemo {
 			auth.onFail = function(?e) {
 				trace( "Authentication failed", "warn" );
 			};
-			auth.authenticate( "test", #if neko "NEKO" #elseif flash9 "FLASH" #elseif js "JS" #elseif php "PHP" #elseif cpp "CPP" #end );
+			auth.authenticate( password, RESOURCE );
 		};
 		trace( "Initializing XMPP stream ..." );
 		stream.open();
@@ -83,8 +87,10 @@ class ClientDemo {
 	
 	static function handleRosterLoad() {
 		trace( "Roster loaded:" );
-		for( i in roster.items )
+		for( i in roster.items ) {
 			trace( "\t"+i.jid );
+			
+		}
 	}
 	
 	static function handleDiscoInfo( node : String, info : xmpp.disco.Info ) {
@@ -99,6 +105,18 @@ class ClientDemo {
 	
 	static function handleDiscoItems( node : String, info : xmpp.disco.Items ) {
 		trace( "Service items result: "+node );
+	}
+	
+	static function main() {
+		#if flash
+		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
+		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
+		#end
+		#if JABBER_SOCKETBRIDGE
+		jabber.SocketBridgeConnection.initDelayed( "f9bridge", init );
+		#else
+		init();
+		#end
 	}
 	
 }

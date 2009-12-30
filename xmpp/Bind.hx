@@ -48,7 +48,6 @@ class Bind {
 	
 	public static function parse( x : Xml ) : xmpp.Bind {
 		var b = new Bind();
-		//Packet.reflectPacketNodes( x, b );
 		for( e in x.elements() ) {
 			switch( e.nodeName ) {
 			case "resource" : b.resource = e.firstChild().nodeValue;

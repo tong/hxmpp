@@ -59,13 +59,10 @@ class StreamError {
 			if( ns == null ) continue;
 			switch( e.nodeName ) {
 			case "text" :
-				if( ns == XMLNS )
-					p.text = e.firstChild().nodeValue;
+				if( ns == XMLNS ) p.text = e.firstChild().nodeValue;
 			default :
-				if( ns == XMLNS )
-					p.condition = e.nodeName;
-				else
-					p.app = { condition : e.nodeName, ns : ns };
+				if( ns == XMLNS ) p.condition = e.nodeName;
+				else p.app = { condition : e.nodeName, ns : ns };
 			}
 		}
 		if( p.condition == null )

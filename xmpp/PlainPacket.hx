@@ -27,10 +27,10 @@ class PlainPacket extends Packet {
 	*/
 	public var src : Xml;
 
-	public function new( src : Xml ) {
+	public function new( x : Xml ) {
 		super();
 		this._type = xmpp.PacketType.custom;
-		this.src = src;
+		this.src = x;
 	}
 	
 	override public function toXml(): Xml {

@@ -19,10 +19,10 @@ package jabber.stream;
 
 import util.Timer;
 
-//TODO inline the event dispatcher code !
 
 /**
 */
+//TODO inline the event dispatcher code !
 class PacketTimeout extends event.Dispatcher<PacketCollector> {
 	
 	/** Default packet timeout ms */

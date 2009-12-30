@@ -30,6 +30,10 @@ class NonSASLAuthentication extends Authentication {
 	public function new( stream : Stream,
 						 /*?onSuccess : Void->Void, ?onFail : jabber.XMPPError->Void,*/
 					 	 ?usePlainText : Bool = false ) {
+		#if JABBER_DEBUG
+		if( stream.http )
+			throw "NonSASL authentication is not supported on HTTP/BOSH connections";
+		#end
 		super( stream );
 		this.usePlainText = usePlainText;
 		username = stream.jid.node;
@@ -54,23 +58,24 @@ class NonSASLAuthentication extends Authentication {
 	
 	function handleResponse( iq : xmpp.IQ ) {
 		switch( iq.type ) {
-			case result :
-				var hasDigest = ( !usePlainText && iq.x.toXml().elementsNamed( "digest" ).next() != null );
-				var r = new xmpp.IQ( xmpp.IQType.set );
-				r.x = if( hasDigest ) new xmpp.Auth( username, null, crypt.SHA1.encode( stream.id+password ), resource );
-				else new xmpp.Auth( username, password, null, resource );
-				stream.sendIQ( r, handleResult );
-			case error : onFail( new jabber.XMPPError( this, iq ) );
-			default : //#
+		case result :
+			var hasDigest = ( !usePlainText && iq.x.toXml().elementsNamed( "digest" ).next() != null );
+			var r = new xmpp.IQ( xmpp.IQType.set );
+			trace(stream.id+" /// "+password);
+			r.x = if( hasDigest ) new xmpp.Auth( username, null, crypt.SHA1.encode( stream.id+password ), resource );
+			else new xmpp.Auth( username, password, null, resource );
+			stream.sendIQ( r, handleResult );
+		case error : onFail( new jabber.XMPPError( this, iq ) );
+		default : //#
 		}
 	}
 	
 	function handleResult( iq : xmpp.IQ ) {
 		active = false;
 		switch( iq.type ) {
-			case result : onSuccess();
-			case error : onFail( new jabber.XMPPError( this, iq ) );
-			default : //#
+		case result : onSuccess();
+		case error : onFail( new jabber.XMPPError( this, iq ) );
+		default : //#
 		}
 	}
 	

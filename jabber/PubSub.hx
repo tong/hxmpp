@@ -92,10 +92,11 @@ class PubSub {
 	/**
 		Subscribe to the given pubsub node.
 	*/
-	public function subscribe( node : String ) {
+	public function subscribe( node : String, ?jid : String ) {
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, service );
 		var x = new xmpp.PubSub();
-		x.subscribe = { jid : stream.jidstr, node : node };
+		x.subscribe = { node : node,
+						jid : ( jid == null ) ? stream.jidstr : jid };
 		iq.x = x;
 		var me = this;
 		sendIQ( iq, function(r:xmpp.IQ) {

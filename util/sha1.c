@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <neko.h>
+#include "neko.h"
 #include "sha1.h"
 
 // original code by Steve Reid

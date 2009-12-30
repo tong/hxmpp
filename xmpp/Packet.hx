@@ -89,7 +89,7 @@ class Packet {
 		return p;
 	}
 	
-	// remove ?
+	// TODO remove
 	/**
 		Reflects the elements of the XML into the packet.
 	*/

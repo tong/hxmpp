@@ -20,8 +20,9 @@ package xmpp;
 import util.XmlUtil;
 
 /**
-	XMPP message packet.<br>
-	Default type is 'chat'.
+	XMPP message packet.<br/>
+	Default type of message packets is 'normal' (if you set it to null),
+	but the class assigns 'chat' as default in the constructor.
 */
 class Message extends xmpp.Packet {
 	
@@ -46,8 +47,7 @@ class Message extends xmpp.Packet {
 		if( subject != null ) x.addChild( XmlUtil.createElement( "subject", subject ) );
 		if( body != null ) x.addChild( XmlUtil.createElement( "body", body ) );
 		if( thread != null ) x.addChild( XmlUtil.createElement( "thread", thread ) );
-		for( p in properties )
-			x.addChild( p );
+		for( p in properties ) x.addChild( p );
 		return x;
     }
     

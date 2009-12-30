@@ -33,17 +33,26 @@ class ServiceDiscovery {
 	
 	public var stream(default,null) : jabber.Stream;
 	
+	var iqInfo : xmpp.IQ;
+	var iqItems : xmpp.IQ;
+	
 	public function new( stream : jabber.Stream ) {
 		this.stream = stream;
+		iqInfo = new xmpp.IQ();
+		iqInfo.x = new xmpp.disco.Info();
+		iqInfo = new xmpp.IQ();
+		iqInfo.x = new xmpp.disco.Items();
 	}
 	
 	/**
 		Queries entity for information.
 	*/
 	public function discoverInfo( jid : String ) {
-		var iq = new xmpp.IQ( xmpp.IQType.get, null, jid );
-		iq.x = new xmpp.disco.Info();
-		stream.sendIQ( iq, handleInfoResponse, false );
+		//var iq = new xmpp.IQ( xmpp.IQType.get, null, jid );
+		//iq.x = new xmpp.disco.Info();
+		iqInfo.to = jid;
+		iqInfo.id = stream.nextID();
+		stream.sendIQ( iqInfo, handleInfoResponse, false );
 	}
 	
 	/**

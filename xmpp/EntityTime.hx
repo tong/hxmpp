@@ -25,22 +25,22 @@ class EntityTime {
 	public static var XMLNS = "urn:xmpp:time";
 	
 	/**
-		The entity's numeric time zone offset from UTC.
-		The format conforms to the Time Zone Definition (TZD) specified in XEP-0082 (http://www.xmpp.org/extensions/xep-0082.html).
-	*/
-	public var tzo : String;// (default,setTZO) : String;
-	
-	/**
 		 The UTC time according to the responding entity.
 		 The format conforms to the dateTime profile specified in XEP-0082 (http://www.xmpp.org/extensions/xep-0082.html)
 		 and MUST be expressed in UTC.
 	*/
 	public var utc : String; // (default,setUTC) : String;
 	
+	/**
+		The entity's numeric time zone offset from UTC.
+		The format conforms to the Time Zone Definition (TZD) specified in XEP-0082 (http://www.xmpp.org/extensions/xep-0082.html).
+	*/
+	public var tzo : String;// (default,setTZO) : String;
 	
-	public function new( ?tzo : String, ?utc : String ) {
+	
+	public function new( ?utc : String, ?tzo : String ) {
+		this.utc = utc;
 		this.tzo = tzo;
-		this.utc = utc;	
 	}
 	
 /*
@@ -57,8 +57,8 @@ class EntityTime {
 	public function toXml() : Xml {
 		var x = Xml.createElement( "time" );
 		x.set( "xmlns", XMLNS );
-		if( tzo != null ) x.addChild( util.XmlUtil.createElement( "tzo", tzo ) );
 		if( utc != null ) x.addChild( util.XmlUtil.createElement( "utc", utc ) );
+		if( tzo != null ) x.addChild( util.XmlUtil.createElement( "tzo", tzo ) );
 		return x;
 	}
 	

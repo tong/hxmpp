@@ -56,6 +56,7 @@ net.sasl.MD5Mechanism
 
 -js lib.js
 -xml doc/api.xml
+-D XMPP_DEBUG
 -D JABBER_DEBUG
 -D JABBER_SOCKETBRIDGE
 -cmd rm lib.js
