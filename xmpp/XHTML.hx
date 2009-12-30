@@ -34,7 +34,7 @@ class XHTML {
 	public function toXml() : Xml {
 		var x = Xml.createElement( "html" );
 		x.set( "xmlns", XMLNS );
-		x.addChild( Xml.parse( "<body xmlns='"+W3NS+"'>"+body+"</body>" ) );
+		x.addChild( Xml.parse( '<body xmlns="'+W3NS+'">'+body+'</body>' ).firstElement() );
 		return x;
 	}
 	
@@ -43,20 +43,25 @@ class XHTML {
 	}
 
 	public static function parse( x : Xml ) : XHTML {
-		for( e in x.elementsNamed( "body" ) )
-			if( e.get( "xmlns" ) == W3NS )
+		for( e in x.elementsNamed( "body" ) ) {
+			if( e.get( "xmlns" ) == W3NS ) {
 				return new XHTML( parseBody( e ) );
+			}
+		}
 		return null;
 	}
 	
 	/**
-		Extract the HTML body from a message packet.
+		Extracts/Returns the HTML body from a message packet.
 	*/
 	public static function fromMessage( m : xmpp.Message ) : String {
-		for( p in m.properties )
-			if( p.nodeName == "html" && p.get( "xmlns" ) == XMLNS )
-				for( e in p.elementsNamed( "body" ) )
+		for( p in m.properties ) {
+			if( p.nodeName == "html" && p.get( "xmlns" ) == XMLNS ) {
+				for( e in p.elementsNamed( "body" ) ) {
 					return parseBody( e );
+				}
+			}
+		}
 		return null;
 	}	
 	
@@ -66,4 +71,11 @@ class XHTML {
 		return s.toString();
 	}
 	
+	/**
+		Attaches a HTML body to the properties of the given message packet.
+	*/
+	public static inline function attach( m : xmpp.Message, body : String ) : xmpp.Message {
+		m.properties.push( new XHTML( body ).toXml() );
+		return m;
+	}
 }
