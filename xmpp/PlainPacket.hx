@@ -21,19 +21,19 @@ package xmpp;
 	Plain/Custom XMPP packet.
 */
 class PlainPacket extends Packet {
-	
+		
 	/**
 		Plain XML content of the packet.
 	*/
 	public var src : Xml;
 
-	public function new( x : Xml ) {
+	public function new( src : Xml ) {
 		super();
 		this._type = xmpp.PacketType.custom;
-		this.src = x;
+		this.src = src;
 	}
 	
-	override public function toXml(): Xml {
+	public override function toXml(): Xml {
 		return src;
 	}
 	

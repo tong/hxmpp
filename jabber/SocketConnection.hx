@@ -68,8 +68,7 @@ class SocketConnection extends jabber.stream.Connection {
 						 ?secure : Bool = false ,
 						 ?timeout : Int = 10,
 						 ?maxBufSize : Int = 131072 ) {
-		if( port == null )
-			port = 5222;
+		if( port == null ) port = 5222;
 		super( host );
 		this.port = port;
 		#if (flash10||neko||php||cpp)
@@ -128,18 +127,18 @@ class SocketConnection extends jabber.stream.Connection {
 		connected = true;
 		__onConnect();
 		#else
-		#if flash10
-		socket.timeout = timeout*1000;
-		#end
+		#if flash10 socket.timeout = timeout*1000; #end
 		socket.connect( host, port );
 		#end
 	}
 	
 	public override function disconnect() {
 		if( !connected ) return;
-		#if (neko||php||cpp) reading = false; #end
-		connected = #if (neko||php||cpp) reading = #end false;
-		socket.close();
+		#if (neko||php||cpp)
+		reading = false;
+		#end
+		connected = false;
+		try socket.close() catch( e : Dynamic ) {};
 	}
 	
 	public override function read( ?yes : Bool = true ) : Bool {
@@ -170,7 +169,7 @@ class SocketConnection extends jabber.stream.Connection {
 	public override function write( t : String ) : Bool {
 		if( !connected || t == null || t.length == 0 )
 			return false;
-		#if flash9
+		#if flash
 		socket.writeUTFBytes( t ); 
 		socket.flush();
 		#elseif (neko||php||cpp)

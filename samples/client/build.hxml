@@ -36,15 +36,15 @@
 -D JABBER_DEBUG
 -debug
 
-#--next
-#-cp ../../
-#-cp ../../lib
-#-cpp client
-#-main ClientDemo
-#-D XMPP_DEBUG
-#-D JABBER_DEBUG
-#-D HXCPP_MULTI_THREADED
+--next
+-cp ../../
+-cp ../../lib
+-cpp client
+-main ClientDemo
+-D XMPP_DEBUG
+-D JABBER_DEBUG
+-D HXCPP_MULTI_THREADED
 #-debug
 
 ### MXMLC-SWC
--cmd mxmlc ClientDemo.as -default-size 800 600 -include-libraries ../../out//hxmpp.swc -output clientAS3.swf
+#-cmd mxmlc ClientDemo.as -default-size 800 600 -include-libraries ../../out//hxmpp.swc -output clientAS3.swf

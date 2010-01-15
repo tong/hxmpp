@@ -23,9 +23,9 @@ package jabber.file;
 class FileTransfer {
 	
 	//public dynamic function onReject( t : Transfer ) : Void;
-	public dynamic function onInit( t : FileTransfer ) : Void;
-	public dynamic function onComplete( t : FileTransfer ) : Void;
-	public dynamic function onFail( t : FileTransfer, e : jabber.XMPPError  ) : Void;
+	public dynamic function onInit( ft : FileTransfer ) : Void;
+	public dynamic function onComplete( ft : FileTransfer ) : Void;
+	public dynamic function onFail( ft : FileTransfer, e : jabber.XMPPError  ) : Void;
 	
 	public var stream(default,null) : jabber.Stream;
 	/** The namespace of the transfer method used */
@@ -46,7 +46,9 @@ class FileTransfer {
 	}
 	
 	public function init( input : haxe.io.Input ) {
+		#if JABBER_DEBUG
 		throw "Abstract method";
+		#end
 	}
 	
 }

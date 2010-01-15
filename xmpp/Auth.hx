@@ -24,7 +24,7 @@ import util.XmlUtil;
 */
 class Auth {
 	
-	public static inline var XMLNS = "jabber:iq:auth";
+	public static var XMLNS = "jabber:iq:auth";
 	
 	public var username : String;
 	public var password : String;

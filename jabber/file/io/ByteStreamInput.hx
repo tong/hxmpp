@@ -52,9 +52,8 @@ typedef Buffer = {
 /**
 	flash9,neko,cpp,php.
 	Socket bytestream input.
-	!Attention: PHP does not support threads, means, transfer blocks until ended!
+	!Attention: PHP does not support threads, which means the transfer will block until finished.
 */
-//TODO SockInput
 //TODO SOCKSInput
 class ByteStreamInput {
 	

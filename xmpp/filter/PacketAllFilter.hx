@@ -28,7 +28,7 @@ class PacketAllFilter {
 		this.yes = yes;
 	}
 	
-	public function accept( p : xmpp.Packet ) : Bool {
+	public inline function accept( p : xmpp.Packet ) : Bool {
 		return yes;
 	}
 	

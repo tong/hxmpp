@@ -1,0 +1,56 @@
+
+STABLE_XMPP = xmpp.Bind \
+xmpp.ChatState \
+xmpp.ChatStateExtension \
+xmpp.Compression \
+xmpp.DataForm \
+xmpp.DateTime \
+xmpp.Delayed \
+xmpp.Error \
+xmpp.ErrorCondition \
+xmpp.IQ \
+xmpp.MUC \
+xmpp.PlainPacket \
+xmpp.Presence \
+xmpp.PrivacyLists \
+xmpp.SASL \
+xmpp.XHTML \
+xmpp.dataform.Field xmpp.dataform.FieldOption xmpp.dataform.FieldType xmpp.dataform.Item xmpp.dataform.Reported \
+xmpp.disco.Identity xmpp.disco.Info xmpp.disco.Item xmpp.disco.Items 
+
+STABLE = jabber.JID \
+jabber.JIDUtil \
+jabber.LastActivity \
+jabber.LastActivityListener \
+jabber.MessageListener \
+jabber.Ping \
+jabber.Pong \
+jabber.PresenceListener \
+jabber.ServiceDiscovery \
+#jabber.SocketConnection \
+jabber.SoftwareVersion \
+jabber.XMPPDebug \
+jabber.XMPPError \
+
+STABLE_CLIENT = jabber.client.Stream \
+jabber.client.Account \
+jabber.client.Authentication \
+jabber.client.MUChat \
+jabber.client.NonSASLAuthentication \
+jabber.client.Roster \
+jabber.client.SASLAuthentication \
+jabber.client.VCard \
+jabber.Chat \
+jabber.ChatStateNotification \
+net.sasl.Handshake \
+net.sasl.AnonymousMechanism \
+net.sasl.PlainMechanism
+
+STABLE_CLIENT_JS = $(STABLE) $(STABLE_CLIENT) \
+jabber.BOSHConnection
+
+UNSTABLE = jabber.EntityCapabilities \
+jabber.PersonalEvent \
+jabber.PersonalEventListener \
+jabber.PubSub \
+

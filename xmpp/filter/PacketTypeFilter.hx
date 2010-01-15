@@ -17,7 +17,6 @@
 */
 package xmpp.filter;
 
-
 /**
 	Filters packets with matching xmpp.PacketType.
 */
@@ -29,7 +28,7 @@ class PacketTypeFilter {
 		this.type = type;
 	}
 	
-	public function accept( p : xmpp.Packet ) : Bool {
+	public inline function accept( p : xmpp.Packet ) : Bool {
 		return p._type == type;
 	}
 	

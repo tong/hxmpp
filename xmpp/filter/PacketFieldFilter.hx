@@ -18,11 +18,13 @@
 package xmpp.filter;
 
 /**
+	Filters XMPP packets where a packet object field matches a given value.
 */
 class PacketFieldFilter {
 	
 	public var name : String;
 	public var value : String;
+//	public var attributes : Array<String>;
 	
 	public function new( name : String, ?value : String ) {
 		this.name = name;
@@ -31,8 +33,11 @@ class PacketFieldFilter {
 	
 	public function accept( p : xmpp.Packet ) : Bool {
 		if( !Reflect.hasField( p, name ) ) return false;
+		/*
 		if( value == null ) return true;
 		return Reflect.field( p, name ) == value;
+		*/
+		return ( value == null ) ? true : ( Reflect.field( p, name ) == value );
 	}
 	
 }

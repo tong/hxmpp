@@ -22,7 +22,7 @@ package xmpp;
 */
 class XHTML {
 	
-	public static inline var XMLNS = xmpp.NS.PROTOCOL+"/xhtml-im";
+	public static inline var XMLNS = xmpp.Namespace.PROTOCOL+"/xhtml-im";
 	static inline var W3NS = "http://www.w3.org/1999/xhtml";
 	
 	public var body : String;
@@ -78,4 +78,11 @@ class XHTML {
 		m.properties.push( new XHTML( body ).toXml() );
 		return m;
 	}
+	
+	/*
+	public static inline function create( body : String ) :  {
+		return new XHTML( body ).toXml();
+	}
+	*/
+	
 }

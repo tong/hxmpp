@@ -33,8 +33,8 @@ enum SOCKS5State {
 }
 
 
+	//TODO SOCKS5 server
 /**
-	TODO SOCKS5 server
 	
 	neko,cpp.
 */

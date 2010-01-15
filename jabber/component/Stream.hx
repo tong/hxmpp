@@ -86,13 +86,34 @@ class Stream extends jabber.Stream {
 		cnx.read( true );
 	}
 	
+	//TODO!!!!!!!!!
 	override function processStreamInit( t : String, len : Int ) {
-		//TODO
 		var i = t.indexOf( ">" );
 		if( i == -1 )
 			return 0;
+		/*
+		try {
+			var x = Xml.parse( t ).firstChild();
+			for( e in x.elements() ) {
+				trace(e.nodeName);
+				if( e.nodeName == "stream:error" ) {
+					trace(e.firstChild().nodeName);
+					onClose( e.firstChild().nodeName );
+					return -1;
+				}
+			}
+		} catch( e : Dynamic ) {
+			trace("ERRORERRORERRORERROR "+e);
+		}
+		trace(t);
+		*/
+		//TODO
 		id = Xml.parse( t+"</stream:stream>" ).firstChild().get( "id" );
+		//..
 		status = jabber.StreamStatus.open;
+		#if XMPP_DEBUG
+		jabber.XMPPDebug.inc( t );
+		#end
 		onOpen();
 		collectors.add( new  jabber.stream.PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], readyHandler, false ) );
 		sendData( util.XmlUtil.createElement( "handshake", Xml.createPCData( crypt.SHA1.encode( id+secret ) ).toString() ).toString() );

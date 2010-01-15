@@ -58,9 +58,9 @@ class XMPPDebug {
 			return;
 		}
 		ExternalInterface.addCallback( "sendData", function(t:String){
-			if( stream != null )
-				return stream.sendData( t );
-			return null;
+			if( stream == null )
+				return null;
+			return stream.sendData( t );
 		} );
 		#end
 		#elseif js
@@ -72,6 +72,21 @@ class XMPPDebug {
 		#end
 	}
 	#end
+	
+	/*
+	public static function outPacket( p : xmpp.Packet ) {
+		var v = haxe.Serializer.run( p );
+		try {
+			#if flash
+			ExternalInterface.call( 'hxmpp.Console.printPacket("'+v+'",'+out+')' );
+			#elseif js
+			untyped hxmpp.Console.printPacket( v, out );
+			#end
+		} catch( e : Dynamic ) {
+			trace( "HXMPP.console debugging error: "+e, "warn" );
+		}	
+	}
+	*/
 	
 	public static function inc( t : String ) {
 		#if JABBER_CONSOLE
@@ -89,7 +104,7 @@ class XMPPDebug {
 	
 	#if JABBER_CONSOLE
 	static function printToXMPPConsole( t : String, out : Bool ) {
-	var v = haxe.Serializer.run( t );
+		var v = haxe.Serializer.run( t );
 		try {
 			#if flash
 			ExternalInterface.call( 'hxmpp.Console.print("'+v+'",'+out+')' );
@@ -149,8 +164,7 @@ class XMPPDebug {
 			untyped console[level]( dir+t );
 			#end
 		} else {
-			//TODO
-			haxe.Log.trace( t, { className : "", methodName : "", fileName : dir, lineNumber : 0, customParams : [] } );
+			//haxe.Log.trace( t, { className : "", methodName : "", fileName : dir, lineNumber : 0, customParams : [] } );
 		}
 	}
 	

@@ -18,8 +18,7 @@
 package jabber;
 
 /**
-	PubSub client implementation.<br/>
-	<a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a>
+	PubSub client implementation. <a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a>
 */
 class PubSub {
 	
@@ -162,9 +161,9 @@ class PubSub {
 		} );
 	}
 	
+	//TODO why subid required?
 	/**
 		Load all items from the given node.
-		TODO why subid required?
 	*/
 	public function loadItems( node : String, ?subid : String, ?maxItems : Int, ?ids : Array<String> ) {
 		var iq = new xmpp.IQ( null, null, service );
@@ -181,9 +180,9 @@ class PubSub {
 		} );
 	}
 	
+	//TODO ?? retractItems( node : String, ids : Array<String> )
 	/**
 		Publisher deletes an item once it has been published to a node that supports persistent items.
-		//TODO ?? retractItems( node : String, ids : Array<String> )
 	*/
 	public function retract( retract : xmpp.pubsub.Retract ) {
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, service );

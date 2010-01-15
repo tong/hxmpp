@@ -30,6 +30,7 @@ import flash.events.SecurityErrorEvent;
 	
 	// timeout timer (?), added but needed?
 	
+	// neko/cpp/php
 	// polling 
 	/// multiple streams over one connection
 	// secure!
@@ -337,7 +338,6 @@ class BOSHConnection extends jabber.stream.Connection {
 			t = x.get( "inactivity" );
 			if( t != null ) inactivity = Std.parseInt( t );
 		//	#if XMPP_DEBUG
-		//	trace("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
 		//	XMPPDebug.inc( t );
 		//	#end
 			__onConnect();

@@ -37,7 +37,7 @@ class MUCUtil {
 	/**
 		Returns Bool if the given string is a full valid muchat address (including occupant name).
 	*/
-	public static inline  function isValidFull( t : String ) : Bool {
+	public static inline function isValidFull( t : String ) : Bool {
 		return EREG_FULL.match( t );
 	}
 	

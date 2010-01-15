@@ -23,7 +23,7 @@ package xmpp.pep;
 */
 class UserActivity extends Event {
 	
-	public static var XMLNS = xmpp.NS.PROTOCOL+"/activity";
+	public static var XMLNS = xmpp.Namespace.PROTOCOL+"/activity";
 	
 	public var activity : Activity;
 	public var text : String; 

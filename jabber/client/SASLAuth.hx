@@ -31,7 +31,7 @@ import xmpp.filter.FilterGroup;
 	<a href="http://xmpp.org/rfcs/rfc3920.html#sasl">RFC3920-SASL</a><br/>
 	<a href="http://xmpp.org/rfcs/rfc3920.html#bind">RFC3920-BIND</a><br/>
 */
-class SASLAuthentication extends Authentication {
+class SASLAuth extends Authentication {
 
 	public dynamic function onNegotiated() : Void;
 	
@@ -163,7 +163,7 @@ class SASLAuthentication extends Authentication {
 			if( stream.server.features.exists( "session" ) ) {
 				// init session
 				var iq = new IQ( IQType.set );
-				iq.x = new xmpp.PlainPacket( Xml.parse( '<session xmlns="urn:ietf:params:xml:ns:xmpp-session"/>' ) );
+				iq.x = new xmpp.PlainPacket( Xml.parse( '<session xmlns="urn:ietf:params:xml:ns:xmpp-session"/>' ).firstElement() );
 				stream.sendIQ( iq, handleSession );
 			} else
 				onSuccess(); //?

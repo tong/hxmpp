@@ -17,6 +17,8 @@
 */
 package xmpp;
 
-class NS {
+// haxe -exclude this class
+
+class Namespace {
 	public static inline var PROTOCOL = "http://jabber.org/protocol";
 }

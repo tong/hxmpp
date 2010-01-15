@@ -31,7 +31,6 @@ class Stream extends jabber.Stream {
 	public static var defaultPort = PORT_STANDARD;
 	
 	public var jid(default,setJID) : JID;
-	// public var tls(default,null) : Bool;
 	
 	public function new( ?jid : JID, ?cnx : Connection, ?version : Bool = true ) {
 		if( jid == null )
@@ -39,7 +38,6 @@ class Stream extends jabber.Stream {
 		super( cnx );
 		this.jid = jid;
 		this.version = version;
-		//this.tls = tls;
 	}
 	
 	override function getJIDStr() : String {
@@ -54,12 +52,11 @@ class Stream extends jabber.Stream {
 	
 	override function processStreamInit( t : String, buflen : Int ) : Int {
 		if( http ) {
-			var sx = Xml.parse( t ).firstElement();
-			var sf = sx.firstElement();
 			#if XMPP_DEBUG
-			//jabber.XMPPDebug.inc( sf.toString() );
 			jabber.XMPPDebug.inc( t );
 			#end
+			var x = Xml.parse( t ).firstElement();
+			var sf = x.firstElement();
 			parseStreamFeatures( sf );
 			status = StreamStatus.open;
 			onOpen();
@@ -70,7 +67,7 @@ class Stream extends jabber.Stream {
 				return 0;
 			}
 			if( id == null ) { // parse open stream
-				var s = t.substr( 0, sei ) + " />";
+				var s = t.substr( 0, sei )+" />";
 				#if XMPP_DEBUG
 				jabber.XMPPDebug.inc( s );
 				#end
@@ -83,6 +80,7 @@ class Stream extends jabber.Stream {
 				}
 			}
 			if( id == null ) {
+				//TODO throw error
 				#if JABBER_DEBUG
 				trace( "Invalid XMPP stream, missing ID" );
 				#end
@@ -96,13 +94,13 @@ class Stream extends jabber.Stream {
 			}
 		}
 		var sfi = t.indexOf( "<stream:features>" );
-		var sf = t.substr( t.indexOf( "<stream:features>" ) );
+		var sf = t.substr( sfi );
 		if( sfi != -1 ) {
 			try {
-				var sfx = Xml.parse( sf ).firstElement();
-				parseStreamFeatures( sfx );
+				var x = Xml.parse( sf ).firstElement();
+				parseStreamFeatures( x );
 				#if XMPP_DEBUG
-				jabber.XMPPDebug.inc( sfx.toString() );
+				jabber.XMPPDebug.inc( x.toString() );
 				#end
 				status = StreamStatus.open;
 				onOpen();
@@ -133,8 +131,9 @@ class Stream extends jabber.Stream {
 	}
 	*/
 	
-	function parseStreamFeatures( x : Xml ) {
+	inline function parseStreamFeatures( x : Xml ) {
 		for( e in x.elements() )
 			server.features.set( e.nodeName, e );
 	}
+	
 }

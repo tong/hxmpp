@@ -1,7 +1,7 @@
 
 import jabber.SocketConnection;
 import jabber.ServiceDiscovery;
-import jabber.client.NonSASLAuthentication;
+import jabber.client.NonSASLAuth;
 import jabber.client.Stream;
 import jabber.client.Roster;
 import jabber.client.VCard;
@@ -46,7 +46,7 @@ class ClientDemo {
 			*/
 			var mechanisms = new Array<net.sasl.Mechanism>();
 			mechanisms.push( new net.sasl.PlainMechanism() );
-			var auth = new jabber.client.SASLAuthentication( stream, mechanisms );
+			var auth = new jabber.client.SASLAuth( stream, mechanisms );
 			auth.onSuccess = handleLogin;
 			auth.onFail = function(?e) {
 				trace( "Authentication failed", "warn" );

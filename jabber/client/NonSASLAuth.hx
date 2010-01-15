@@ -20,7 +20,7 @@ package jabber.client;
 /**
 	<a href="http://xmpp.org/extensions/xep-0078.html">XEP-0078: Multi-User Chat</a><br>
 */
-class NonSASLAuthentication extends Authentication {
+class NonSASLAuth extends Authentication {
 	
 	public var active(default,null) : Bool;
 	public var usePlainText(default,null) : Bool;
@@ -61,7 +61,6 @@ class NonSASLAuthentication extends Authentication {
 		case result :
 			var hasDigest = ( !usePlainText && iq.x.toXml().elementsNamed( "digest" ).next() != null );
 			var r = new xmpp.IQ( xmpp.IQType.set );
-			trace(stream.id+" /// "+password);
 			r.x = if( hasDigest ) new xmpp.Auth( username, null, crypt.SHA1.encode( stream.id+password ), resource );
 			else new xmpp.Auth( username, password, null, resource );
 			stream.sendIQ( r, handleResult );

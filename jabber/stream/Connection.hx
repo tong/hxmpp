@@ -33,7 +33,7 @@ class Connection {
 	public var __onData : haxe.io.Bytes->Int->Int->Int;
 	
 	/** Callback connection level errors */
-	public var __onError : String->Void;
+	public var __onError : String->Void; //TODO remove, use: __onDisconnect(?e)
 	
 	/** Server IP/hostname */
 	public var host(default,null) : String;
@@ -60,28 +60,35 @@ class Connection {
 		Try to connect the stream data connection.
 	*/
 	public function connect() {
+		#if JABBER_DEBUG
 		throw "Abstract method";
+		#end
 	}
 	
 	/**
 		Disconnects stream connection.
 	*/
 	public function disconnect() { //: Bool
+		#if JABBER_DEBUG
 		throw "Abstract method";
+		#end
 	}
 	
 	/**
 		Starts/Stops reading data input.
 	*/
 	public function read( ?yes : Bool = true ) : Bool {
-		return throw "Abstract method";
+		return false;
 	}
 	
 	/**
 		Send string.
 	*/
 	public function write( t : String ) : Bool {
+		#if JABBER_DEBUG
 		return throw "Abstract method";
+		#end
+		return false;
 	}
 	
 	//TODO

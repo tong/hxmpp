@@ -59,9 +59,9 @@ class BOB {
 	
 	/**
 		Parses cids ('algo+hash@bob.xmpp.org') from the given string.
-		//TODO return : Array<{algo:String,hash:String}>
 	*/
 	public static function parseCID( t : String ) : {algo:String,hash:String} {
+		//TODO return : Array<{algo:String,hash:String}>
 		var algo : String = null;
 		var hash : String = null;
 		~/cid:(.*?)\+(.*?)@bob.xmpp.org/.customReplace( t, function(r) {

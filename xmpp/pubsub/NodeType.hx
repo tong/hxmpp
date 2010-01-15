@@ -15,21 +15,9 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package xmpp.filter;
+package xmpp.pubsub;
 
-/**
-	Filters XMPP packets with matching 'to' attribute.
-*/
-class PacketToFilter {
-	
-	public var jid : String;
-	
-	public function new( jid : String ) {
-		this.jid = jid;
-	}
-	
-	public inline function accept( p : xmpp.Packet ) : Bool {
-		return p.to == jid;
-	}
-	
+enum NodeType {
+	leaf;
+	collection;
 }

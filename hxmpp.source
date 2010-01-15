@@ -1,0 +1,21 @@
+
+HXMPP_SRC = jabber/*.hx \
+jabber/client/*.hx \
+jabber/component/*.hx \
+jabber/file/*.hx jabber/file/io/*.hx \
+jabber/jingle/*.hx jabber/jingle/transport/*.hx \
+jabber/remoting/*.hx \
+jabber/stream/*.hx \
+xmpp/*.hx \
+xmpp/dataform/*.hx \
+xmpp/disco/*.hx \
+xmpp/file/*.hx \
+xmpp/filter/*.hx \
+xmpp/jingle/*.hx \
+xmpp/muc/*.hx \
+xmpp/pep/*.hx \
+xmpp/privacylist/*.hx \
+xmpp/pubsub/*.hx \
+xmpp/roster/*.hx \
+xmpp/disco/*.hx \
+xmpp/vcard/*.hx \

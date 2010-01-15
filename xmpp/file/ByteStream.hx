@@ -19,7 +19,7 @@ package xmpp.file;
 
 class ByteStream {
 	
-	public static inline var XMLNS = xmpp.NS.PROTOCOL+"/bytestreams";
+	public static inline var XMLNS = xmpp.Namespace.PROTOCOL+"/bytestreams";
 	
 	public var sid : String;
 	public var mode : String; //ByteStreamMode;

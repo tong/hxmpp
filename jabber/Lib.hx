@@ -29,7 +29,7 @@ class Lib {
 	
 	#if JABBER_SOCKETBRIDGE
 	
-	public static var defaultSocketBridgeID = "f9bridge";
+	public static var defaultSocketBridgeID = "socketbridge";
 	
 	static function initSocketBridge( ?id : String ) {
 		if( id == null ) id = defaultSocketBridgeID;

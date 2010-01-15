@@ -24,8 +24,6 @@ import xmpp.roster.Item;
 import xmpp.roster.AskType;
 import xmpp.roster.Subscription;
 
-/**
-*/
 enum RosterSubscriptionMode {
 	/** Accept all subscription and unsubscription requests. */
 	acceptAll( subscribe : Bool );
