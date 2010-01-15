@@ -20,9 +20,11 @@ package jabber.jingle.transport;
 #if flash
 
 import flash.events.NetStatusEvent;
+import flash.net.NetConnection;
+import flash.net.NetStream;
 
 /**
-	flash9
+	flash.
 	RTMP jingle transport base.
 */
 class RTMPTransport {
@@ -31,45 +33,69 @@ class RTMPTransport {
 	public var __onConnect : Void->Void;
 	public var __onDisconnect : Void->Void;
 	
+	public var connected(default,null) : Bool;
 	public var name(default,null) : String;
 	public var host(default,null) : String;
 	public var port(default,null) : Int;
 	public var id(default,null) : String;
-	public var ns(default,null) : flash.net.NetStream;
-	public var nc(default,null) : flash.net.NetConnection;
+	public var nc(default,null) : NetConnection;
+	public var ns(default,null) : NetStream;
+	public var url(getURL,null) : String;
 	
 	function new( name : String, host : String, port : Int, id : String ) {
 		this.name = name;
 		this.host = host;
 		this.port = port;
 		this.id = id;
+		connected = false;
 	}
 	
 	public function connect() {
-		nc = new flash.net.NetConnection();
+		//if( connected
+		nc = new NetConnection();
 		nc.addEventListener( NetStatusEvent.NET_STATUS, netStatusHandler );
-		nc.connect( "rtmp://"+host+":"+port );
+		try {
+			nc.connect( getURL() );
+		} catch( e : Dynamic ) {
+			__onFail();
+		}
+	}
+	
+	function getURL() : String {
+		return "rtmp://"+host+":"+port;
 	}
 	
 	public function close() {
-		ns.close();
-		nc.close();
+		if( ns != null ) ns.close();
+		if( nc != null ) nc.close();
 	}
 	
-	//TODO public function ping() {
+	/*
+	public function ping() {
+		//TODO
+	}
+	*/
+	
+	public function toString() : String {
+		return Type.getClassName( Type.getClass( this ) )+"("+name+","+host+","+port+","+id+")";
+	}
 	
 	function netStatusHandler( e : NetStatusEvent ) {
 		if( StringTools.startsWith( e.info.code, "NetStream.Buffer" ) )
 			return;
-		trace(e.info.code);
 		switch( e.info.code ) {
 		case "NetConnection.Connect.Failed" :
+			//cleanup();
+			connected = false;
 			__onFail();
 		case "NetConnection.Connect.Closed" :
+			//cleanup();
+			connected = false;
 			__onDisconnect();
 		case "NetConnection.Connect.Success" :
-			ns = new flash.net.NetStream( nc );
+			ns = new NetStream( nc );
 			ns.addEventListener( NetStatusEvent.NET_STATUS, netStatusHandler );
+			connected = true;
 			__onConnect();
 		}
 	}

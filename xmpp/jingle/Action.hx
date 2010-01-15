@@ -78,7 +78,9 @@ enum Action {
 	transport_info;
 	
 	transport_accept;
+	
 	transport_reject;
+	
 	transport_replace;
 	
 }

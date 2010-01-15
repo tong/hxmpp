@@ -15,36 +15,9 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package jabber.jingle.transport;
+package xmpp.jingle;
 
-#if flash
-
-/**
-	flash9.
-	Outgoing RTMP transport.
-*/
-class RTMPOutput extends RTMPTransport {
-	
-	public static var defaultRecord = "record.flv";
-	
-	public var __onPublish : Void->Void;
-	
-	/**
-		Start publishing to server.
-	*/
-	public function publish( ?record : String ) {
-		ns.publish( ( record == null ) ? defaultRecord : record, id );
-	}
-	
-	override function netStatusHandler( e : flash.events.NetStatusEvent ) {
-		if( e.info.code == "NetStream.Publish.Start" ) __onPublish();
-		else super.netStatusHandler( e );
-	}
-	
-	public static inline function ofCandidate( c : xmpp.jingle.TRTMPCandidate ) : RTMPOutput {
-		return new RTMPOutput( c.name, c.host, c.port, c.id );
-	}
-	
+enum Creator {
+	initiator;
+	responder;
 }
-
-#end // flash
