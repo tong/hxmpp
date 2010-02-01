@@ -23,10 +23,8 @@ import xmpp.IQType;
 import xmpp.filter.PacketNameFilter;
 import xmpp.filter.FilterGroup;
 
-// try another mechanism on fail (?)
-
 /**
-	Responsible for authenticating a client account using SASL,
+	Responsible for authenticating a client account using SASL,<br/>
 	binding the resource to the connection and establishing a session with the server.<br/>
 	<a href="http://xmpp.org/rfcs/rfc3920.html#sasl">RFC3920-SASL</a><br/>
 	<a href="http://xmpp.org/rfcs/rfc3920.html#bind">RFC3920-BIND</a><br/>
@@ -51,16 +49,17 @@ class SASLAuth extends Authentication {
 		if( x == null )
 			throw "Server does't support SASL";
 		if( mechanisms == null || Lambda.count( mechanisms ) == 0 )
-			throw "No SASL mechanisms given";
+			throw "Missing SASL mechanisms";
 		super( stream );
 		this.mechanisms = xmpp.SASL.parseMechanisms( x );
+		//if( mechanisms.length == 0 ) {
 		handshake = new net.sasl.Handshake();
 		for( m in mechanisms )
 			handshake.mechanisms.push( m );
 	}
 	
 	/**
-		Inits SASL authentication.
+		Inits SASL authentication.<br/>
 		Returns false if no compatible SASL mechanism was found.
 	*/
 	public override function authenticate( password : String, ?resource : String ) : Bool {
@@ -82,23 +81,13 @@ class SASLAuth extends Authentication {
 			}
 		}
 		if( handshake.mechanism == null ) {
-			#if JABBER_DEBUG
-			trace( "No matching SASL mechanism found.", "warn" );
-			#end
+			#if JABBER_DEBUG trace( "No matching SASL mechanism found.", "warn" ); #end
 			return false;
 		}
-		// collect failures
-		var f = new FilterGroup();
-		f.add( new PacketNameFilter( ~/failure/ ) ); //?
-		f.add( new PacketNameFilter( ~/not-authorized/ ) );
-		f.add( new PacketNameFilter( ~/aborted/ ) );
-		f.add( new PacketNameFilter( ~/incorrect-encoding/ ) );
-		f.add( new PacketNameFilter( ~/invalid-authzid/ ) );
-		f.add( new PacketNameFilter( ~/invalid-mechanism/ ) );
-		f.add( new PacketNameFilter( ~/mechanism-too-weak/ ) );
-		f.add( new PacketNameFilter( ~/temporary-auth-failure/ ) );
-		c_fail = new PacketCollector( [cast f], handleSASLFailed );
+		// collect failure packets
+		c_fail = new PacketCollector( [cast new PacketNameFilter( xmpp.SASL.EREG_FAILURE )], handleSASLFailed );
 		stream.addCollector( c_fail );
+		
 		// collect success response
 		c_success = new PacketCollector( [cast new PacketNameFilter( ~/success/ )], handleSASLSuccess );
 		stream.addCollector( c_success );
@@ -107,7 +96,8 @@ class SASLAuth extends Authentication {
 		stream.addCollector( c_challenge );
 		// init auth
 		var t = handshake.mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password );
-		if( t != null ) t = util.Base64.encode( t );
+		//TODO?wtf
+		if( t != null ) t = util.Base64.encode( t ); 
 		return stream.sendData( xmpp.SASL.createAuthXml( handshake.mechanism.id, t ).toString() ) != null;
 	}
 	
@@ -119,7 +109,9 @@ class SASLAuth extends Authentication {
 	function handleSASLChallenge( p : xmpp.Packet ) {
 		// create/send challenge response
 		var c = p.toXml().firstChild().nodeValue;
+		//var bc = new haxe.BaseCode(haxe.io.Bytes.ofString(util.Base64.CHARS));
 		var r = util.Base64.encode( handshake.getChallengeResponse( c ) );
+		//var r = bc.encodeString(handshake.getChallengeResponse( c ));
 		stream.sendData( xmpp.SASL.createResponseXml( r ).toString() );
 	}
 	

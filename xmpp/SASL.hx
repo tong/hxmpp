@@ -18,17 +18,19 @@
 package xmpp;
 
 /**
-	Static methods for creation of XMPP packets for SASL authentication.
+	Static methods for creation/manipulation of SASL XMPP packets.
 */
 class SASL {
 	
-	public static inline var XMLNS = "urn:ietf:params:xml:ns:xmpp-sasl";
+	public static var XMLNS = "urn:ietf:params:xml:ns:xmpp-sasl";
+	
+	public static var EREG_FAILURE = ~/(failure)(not-authorized)(aborted)(incorrect-encoding)(invalid-authzid)(invalid-mechanism)(mechanism-too-weak)(temporary-auth-failure)/;
 	
 	/**
 	*/
 	public static function createAuthXml( mechansim : String, ?text : String ) : Xml {
-		if( mechansim == null ) return null;
-		//var a = ( text == null ) ? Xml.createElement( "auth" ) : util.XmlUtil.createElement( "auth", text );
+		if( mechansim == null )
+			return null;
 		var a = util.XmlUtil.createElement( "auth", text );
 		a.set( "xmlns", XMLNS );
 		a.set( "mechanism", mechansim );
@@ -38,7 +40,8 @@ class SASL {
 	/**
 	*/
 	public static function createResponseXml( t : String ) : Xml {
-		if( t == null ) return null;
+		if( t == null )
+			return null;
 		var r = util.XmlUtil.createElement( "response", t );
 		r.set( "xmlns", XMLNS );
 		return r;
@@ -50,7 +53,8 @@ class SASL {
 	public static function parseMechanisms( x : Xml ) : Array<String> {
 		var m = new Array<String>();
 		for( e in x.elements() ) {
-			if( e.nodeName != "mechanism" ) continue;
+			if( e.nodeName != "mechanism" )
+				continue;
 			m.push( e.firstChild().nodeValue );
 		}
 		return m;
