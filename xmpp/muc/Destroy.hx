@@ -17,6 +17,8 @@
 */
 package xmpp.muc;
 
+import xmpp.XMLUtil;
+
 class Destroy {
 	
 	public var password : String;
@@ -32,8 +34,8 @@ class Destroy {
 	public function toXml() : Xml {
 		var x = Xml.createElement( "destroy" );
 		if( jid != null ) x.set( "jid", jid );
-		if( password != null ) x.addChild( util.XmlUtil.createElement( "password", password ) );
-		if( reason != null ) x.addChild( util.XmlUtil.createElement( "reason", reason ) );
+		if( password != null ) x.addChild( XMLUtil.createElement( "password", password ) );
+		if( reason != null ) x.addChild( XMLUtil.createElement( "reason", reason ) );
 		return x;
 	}
 	

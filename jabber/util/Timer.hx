@@ -1,4 +1,4 @@
-package util;
+package jabber.util;
 
 #if !(neko||cpp)
 typedef Timer = haxe.Timer;
@@ -14,6 +14,7 @@ import cpp.Sys;
 
 /**
 	Patched version of haxe.Timer supporting neko too.
+	!! This approach is NOT safe, but seems to work so far.
 */
 class Timer {
 	
@@ -102,7 +103,7 @@ class Timer {
 
 	/**
 		Returns a timestamp, in seconds
-	**/
+	*/
 	public static inline function stamp() : Float {
 		#if flash
 		return flash.Lib.getTimer() / 1000;

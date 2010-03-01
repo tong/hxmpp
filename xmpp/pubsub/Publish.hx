@@ -37,6 +37,10 @@ class Publish extends List<Item> {
 		return x;
 	}
 	
+	public override function toString() : String {
+		return toXml().toString();
+	}
+	
 	public static function parse( x : Xml ) : Publish {
 		var p = new Publish( x.get( "node" ) );
 		for( e in x.elementsNamed( "item" ) )

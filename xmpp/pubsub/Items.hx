@@ -28,7 +28,6 @@ class Items extends List<Item> {
 		this.node = node;
 		this.subid = subid;
 		this.maxItems = maxItems;
-		
 	}
 	
 	public function toXml() : Xml {
@@ -39,6 +38,10 @@ class Items extends List<Item> {
 		for( i in iterator() )
 			x.addChild( i.toXml() );
 		return x;
+	}
+	
+	public override function toString() : String {
+		return toXml().toString();
 	}
 	
 	public static function parse( x : Xml ) : Items {

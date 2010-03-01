@@ -23,7 +23,7 @@ package jabber.client;
 */
 class Account {
 	
-	public dynamic function onRegistrationFields( fields : Array<String> ) : Void;
+	public dynamic function onFields( fields : Array<String> ) : Void;
 	public dynamic function onRegister( node : String ) : Void;
 	public dynamic function onRemove() : Void;
 	public dynamic function onPasswordChange( pass : String ) : Void;
@@ -40,7 +40,7 @@ class Account {
 	public function requestRegistrationFields( jid : String ) {
 		var iq = new xmpp.IQ( null, null, jid );
 		iq.x = new xmpp.Register();
-		var _this = this;
+		var me = this;
 		stream.sendIQ( iq, function(r:xmpp.IQ ) {
 			switch( r.type ) {
 			case result :
@@ -54,12 +54,12 @@ class Account {
 								fields.push( c.nodeName );
 							}
 						}
-						_this.onRegistrationFields( fields );
+						me.onFields( fields );
 						return;
 					}
 				}
 			case error :
-				_this.onError( new jabber.XMPPError( _this, r ) );
+				me.onError( new jabber.XMPPError( me, r ) );
 			default : //#
 			}
 		} );

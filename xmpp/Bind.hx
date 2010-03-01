@@ -17,8 +17,6 @@
 */
 package xmpp;
 
-import util.XmlUtil;
-
 /**
 	IQ extension used to bind a resource.
 */
@@ -37,8 +35,8 @@ class Bind {
 	public function toXml() : Xml {
 		var x = Xml.createElement( "bind" );
 		x.set( "xmlns", XMLNS );
-		if( resource != null ) x.addChild( XmlUtil.createElement( "resource", resource ) );
-		if( jid != null ) x.addChild( XmlUtil.createElement( "jid", jid ) );
+		if( resource != null ) x.addChild( XMLUtil.createElement( "resource", resource ) );
+		if( jid != null ) x.addChild( XMLUtil.createElement( "jid", jid ) );
 		return x;
 	}
 	

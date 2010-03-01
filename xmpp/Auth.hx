@@ -17,8 +17,6 @@
 */
 package xmpp;
 
-import util.XmlUtil;
-
 /**
 	IQ extension used for inband account authentication.
 */
@@ -40,10 +38,10 @@ class Auth {
 	
 	public function toXml() : Xml {
 		var x = xmpp.IQ.createQueryXml( XMLNS );
-		if( username != null ) x.addChild( XmlUtil.createElement( "username", username ) );
-		if( password != null ) x.addChild( XmlUtil.createElement( "password", password ) );
-		if( digest != null )   x.addChild( XmlUtil.createElement( "digest", digest ) );
-		if( resource != null ) x.addChild( XmlUtil.createElement( "resource", resource ) );
+		if( username != null ) x.addChild( XMLUtil.createElement( "username", username ) );
+		if( password != null ) x.addChild( XMLUtil.createElement( "password", password ) );
+		if( digest != null )   x.addChild( XMLUtil.createElement( "digest", digest ) );
+		if( resource != null ) x.addChild( XMLUtil.createElement( "resource", resource ) );
 		return x;
 	}
 	

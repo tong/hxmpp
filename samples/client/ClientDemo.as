@@ -50,7 +50,7 @@ package {
 			var stream : Stream = new Stream( jid, cnx );
 			stream.onOpen = function():void {
 				info( "XMPP stream opened" );
-           	 	var auth : NonSASLAuthentication = new NonSASLAuthentication( stream );
+           	 	var auth : NonSASLAuth = new NonSASLAuth( stream );
            	 	auth.onSuccess = onLoginSuccess;
            	 	auth.authenticate( "test", "hxmpp" );
 			};

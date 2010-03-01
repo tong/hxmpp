@@ -29,7 +29,7 @@ import neko.net.Host;
 import neko.net.Socket;
 #elseif php
 import php.net.Host;
-import net.php.Socket;
+import jabber.util.php.Socket;
 #elseif cpp
 import cpp.net.Host;
 import cpp.net.Socket;
@@ -43,65 +43,61 @@ import cpp.net.Socket;
 */
 class SocketConnection extends jabber.stream.Connection {
 	
-	#if (neko||php||cpp)
-	public static var defaultBufSize = (1<<8); // 128
-	#end
+	public static var defaultBufSize = 65536; //(1<<8);//128
 	
 	public var port(default,null) : Int;
 	public var socket(default,null) : Socket;
-	public var secure(default,null) : Bool; //TODO move to jabber.socket.Connection
 	public var timeout(default,null) : Int;
 	public var maxBufSize(default,null) : Int;
+	//public var secure(default,null) : Bool; //TODO move to jabber.socket.Connection
 	
-	#if (neko||php||cpp)
+	#if flash
+	var buf : ByteArray;
+	#elseif (neko||php||cpp)
 	var reading : Bool;
 	var buf : haxe.io.Bytes;
 	var bufbytes : Int;
 	#elseif (JABBER_SOCKETBRIDGE)
 	var buf : String;
-	#elseif flash
-	var buf : ByteArray;
+	#end
+	
+	//temp TODO
+	#if php
+	public var secure : Bool;
 	#end
 	
 	public function new( host : String,
-						 ?port : Int,
-						 ?secure : Bool = false ,
-						 ?timeout : Int = 10,
-						 ?maxBufSize : Int = 131072 ) {
-		if( port == null ) port = 5222;
+						 ?port : Int = 5222,
+						 ?socket : Socket,
+						 ?maxBufSize : Int,
+						 ?timeout : Int = 10 ) {
 		super( host );
 		this.port = port;
-		#if (flash10||neko||php||cpp)
+		this.socket = ( socket == null ) ? new Socket() : socket;
+		this.maxBufSize = ( maxBufSize == null ) ? defaultBufSize : maxBufSize;
 		this.timeout = timeout;
-		#end
-		this.secure = secure;
-		this.maxBufSize = maxBufSize;
 		
-		socket = new Socket();
-		
-		#if flash9
+		#if flash
 		buf = new ByteArray();
-		socket.addEventListener( Event.CONNECT, sockConnectHandler );
-		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
-		socket.addEventListener( IOErrorEvent.IO_ERROR, sockErrorHandler );
-		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, sockErrorHandler );
+		this.socket.addEventListener( Event.CONNECT, sockConnectHandler );
+		this.socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
+		this.socket.addEventListener( IOErrorEvent.IO_ERROR, sockErrorHandler );
+		this.socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, sockErrorHandler );
 	
-		#elseif (neko||cpp)
-		socket = new Socket();
+		#elseif (neko||cpp||php)
 		buf = haxe.io.Bytes.alloc( defaultBufSize );
 		bufbytes = 0;
 		reading = false;
 		
-		#elseif php
-		buf = haxe.io.Bytes.alloc( maxBufSize ); //TODO ! WTF !!!
-		bufbytes = 0;
-		reading = false;
+		#if php
+		secure = false;
+		#end
 		
 		#elseif JABBER_SOCKETBRIDGE
 		buf = "";
-		socket.onConnect = sockConnectHandler;
-		socket.onDisconnect = sockDisconnectHandler;
-		socket.onError = sockErrorHandler;
+		this.socket.onConnect = sockConnectHandler;
+		this.socket.onDisconnect = sockDisconnectHandler;
+		this.socket.onError = sockErrorHandler;
 		#end
 	}
 	
@@ -119,7 +115,7 @@ class SocketConnection extends jabber.stream.Connection {
 		#if (neko||cpp)
 		socket.connect( new Host( host ), port );
 		#end
-		#if php
+		#if php //TODO (re)move to socket level.
 		if( secure ) socket.connectTLS( new Host( host ), port )
 		else socket.connect( new Host( host ), port );
 		#end
@@ -194,27 +190,32 @@ class SocketConnection extends jabber.stream.Connection {
 	#if (flash)
 
 	function sockConnectHandler( e : Event ) {
+		//trace(e);
 		connected = true;
 		__onConnect();
 	}
 
 	function sockDisconnectHandler( e : Event ) {
+		//trace(e);
 		connected = false;
 		__onDisconnect();
 	}
 	
 	function sockErrorHandler( e ) {
+		//trace(e);
 		connected = false;
-		__onError( e );
+		__onError( e.type );
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
-		socket.readBytes( buf, buf.length, e.bytesLoaded);
+	//	trace(e);
+		socket.readBytes( buf, buf.length, e.bytesLoaded );
 		var b = haxe.io.Bytes.ofData( buf );
 		if( b.length > maxBufSize )
 			throw "Max buffer size reached ("+maxBufSize+")";
 		if( __onData(  b, 0, b.length ) > 0 )
 			buf = new flash.utils.ByteArray();
+		//socket.flush();
 	}
 	
 	#elseif (neko||php||cpp)

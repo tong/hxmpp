@@ -46,7 +46,7 @@ class UserActivity extends Event {
 		}
 		x.addChild( a );
 		if( text != null )
-			x.addChild( util.XmlUtil.createElement( "text", text ) );
+			x.addChild( XMLUtil.createElement( "text", text ) );
 		return x;
 	}
 	

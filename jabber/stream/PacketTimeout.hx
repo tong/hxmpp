@@ -17,13 +17,13 @@
 */
 package jabber.stream;
 
-import util.Timer;
+import jabber.util.Timer;
 
 
 /**
 */
 //TODO inline the event dispatcher code !
-class PacketTimeout extends event.Dispatcher<PacketCollector> {
+class PacketTimeout extends jabber.util.Dispatcher<PacketCollector> {
 	
 	/** Default packet timeout ms */
 	public static var defaultTimeout = 5000;

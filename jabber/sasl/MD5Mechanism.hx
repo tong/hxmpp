@@ -1,4 +1,7 @@
-package net.sasl;
+package jabber.sasl;
+
+import jabber.util.Base64;
+import jabber.util.MD5;
 
 /**
 	<a href="ftp://ietf.org//rfc/rfc2831.txt">Using Digest Authentication as a SASL Mechanism</a><br>
@@ -32,7 +35,7 @@ class MD5Mechanism {
 	}
 	
 	public function createChallengeResponse( challenge : String ) : String {
-		var c = util.Base64.decode( challenge );
+		var c = Base64.decode( challenge );
 		var s = c.split( "," );
 		var elements = new Hash<String>();
 		for( e in s ) {
@@ -69,11 +72,11 @@ class MD5Mechanism {
 	}
 	
 	inline function h( t : String)  {
-		return crypt.MD5.encode( t, true );
+		return MD5.encode( t, true );
 	}
 	
 	inline function hh( t : String ) : String {
-		return crypt.MD5.encode( t );
+		return MD5.encode( t );
 	}
 	
 	inline function quote( t : String ) : String {

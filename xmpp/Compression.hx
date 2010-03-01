@@ -29,7 +29,7 @@ class Compression {
 	public static function createPacket( methods : Array<String> ) : Xml {
 		var x = Xml.createElement( "compress" );
 		x.set( "xmlns", XMLNS );
-		for( m in methods ) x.addChild( util.XmlUtil.createElement( "method", m ) );
+		for( m in methods ) x.addChild( XMLUtil.createElement( "method", m ) );
 		return x;
 	}
 	

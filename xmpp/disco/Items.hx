@@ -23,7 +23,7 @@ class Items extends List<xmpp.disco.Item> {
 	
 	public var node : String;
 	
-	public function new( ?node : String ) {
+	public function new( node : String = null ) {
 		super();
 		this.node = node;
 	}
@@ -41,7 +41,9 @@ class Items extends List<xmpp.disco.Item> {
 	}
 	
 	public static function parse( x : Xml ) : Items {
-		var i = new Items( x.get( "node" ) );
+		var i = new Items( x.get("node") );
+		//var n = x.get("node");
+		//if( n != null ) i.node = n;
 		for( f in x.elementsNamed( "item" ) )
 			i.add( xmpp.disco.Item.parse( f ) );
 		return i;

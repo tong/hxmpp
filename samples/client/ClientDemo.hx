@@ -38,14 +38,15 @@ class ClientDemo {
 		stream.onOpen = function() {
 			trace( "XMPP stream to "+stream.jid.domain+" opened" );
 			/*
-			var auth = new NonSASLAuthentication( stream );
+			var auth = new NonSASLAuth( stream );
 			auth.onSuccess = handleLogin;
 			auth.onFail = function(?e) {
 				trace( "Login failed "+e.name );
 			};
 			*/
 			var mechanisms = new Array<net.sasl.Mechanism>();
-			mechanisms.push( new net.sasl.PlainMechanism() );
+			//mechanisms.push( new net.sasl.PlainMechanism() );
+			mechanisms.push( new net.sasl.MD5Mechanism() );
 			var auth = new jabber.client.SASLAuth( stream, mechanisms );
 			auth.onSuccess = handleLogin;
 			auth.onFail = function(?e) {
@@ -65,8 +66,8 @@ class ClientDemo {
 		disco = new ServiceDiscovery( stream );
 		disco.onInfo = handleDiscoInfo;
 		disco.onItems = handleDiscoItems;
-		disco.discoverItems( stream.jid.domain );
-		disco.discoverInfo( stream.jid.domain );
+		disco.items( stream.jid.domain );
+		disco.info( stream.jid.domain );
 		
 		// load roster
 		roster = new jabber.client.Roster( stream );

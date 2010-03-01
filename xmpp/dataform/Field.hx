@@ -17,7 +17,7 @@
 */
 package xmpp.dataform;
 
-import util.XmlUtil;
+import xmpp.XMLUtil;
 
 class Field {
 	
@@ -41,9 +41,9 @@ class Field {
 		if( label != null ) x.set( "label", label );
 		if( type != null ) x.set( "type", StringTools.replace( Type.enumConstructor( type ), "_", "-" ) );
 		if( variable != null ) x.set( "var", variable );
-		if( required ) x.addChild( XmlUtil.createElement( "required" ) );
-		if( desc != null ) x.addChild( XmlUtil.createElement( "desc", desc ) );
-		for( value in values ) x.addChild( XmlUtil.createElement( "value", value ) );
+		if( required ) x.addChild( XMLUtil.createElement( "required" ) );
+		if( desc != null ) x.addChild( XMLUtil.createElement( "desc", desc ) );
+		for( value in values ) x.addChild( XMLUtil.createElement( "value", value ) );
 		for( option in options ) x.addChild( option.toXml() );
 		return x;
 	}

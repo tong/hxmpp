@@ -86,7 +86,7 @@ class IB {
 	/**
 	*/
 	public static function createDataElement( sid : String, seq : Int, d : String ) : Xml {
-		var x = util.XmlUtil.createElement( "data", d );
+		var x = XMLUtil.createElement( "data", d );
 		x.set( "xmlns", XMLNS );
 		x.set( "sid", sid );
 		x.set( "seq", Std.string( seq ) );

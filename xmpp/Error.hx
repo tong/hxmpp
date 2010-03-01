@@ -51,7 +51,7 @@ class Error {
 		}
 		if( conditions != null ) {
 			for( c in conditions )
-				x.addChild( util.XmlUtil.createElement( c.name, c.xmlns ) );
+				x.addChild( XMLUtil.createElement( c.name, c.xmlns ) );
 		}
 		return x;
 	}

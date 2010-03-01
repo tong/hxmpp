@@ -17,6 +17,8 @@
 */
 package xmpp.muc;
 
+import xmpp.XMLUtil;
+
 /**
 */
 class Item {
@@ -48,7 +50,7 @@ class Item {
 			x.addChild( e );
 		}
 		if( reason != null ) {
-			x.addChild( util.XmlUtil.createElement( "reason", reason ) );
+			x.addChild( XMLUtil.createElement( "reason", reason ) );
 		}
 		if( continue_ != null ) {
 			var e = Xml.createElement( "continue" );

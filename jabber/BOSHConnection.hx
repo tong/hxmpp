@@ -17,7 +17,7 @@
 */
 package jabber;
 
-import util.Timer;
+import jabber.util.Timer;
 #if flash
 import flash.events.Event;
 import flash.events.HTTPStatusEvent;
@@ -29,7 +29,6 @@ import flash.events.SecurityErrorEvent;
 	//TODO
 	
 	// timeout timer (?), added but needed?
-	
 	// neko/cpp/php
 	// polling 
 	/// multiple streams over one connection
@@ -168,7 +167,7 @@ class BOSHConnection extends jabber.stream.Connection {
 		var r = createRequest();
 		r.set( "pause", Std.string( secs ) );
 		sendRequests( r );
-		pauseTimer = new util.Timer( secs*1000 );
+		pauseTimer = new Timer( secs*1000 );
 		pauseTimer.run = handlePauseTimeout;
 		return true;
 	}
@@ -241,7 +240,6 @@ class BOSHConnection extends jabber.stream.Connection {
 	}
 	
 	function handleTimeout() {
-		//trace("TIMEOUT TIMEOUT TIMEOUT TIMEOUT ");
 		timeoutTimer.stop();
 		cleanup();
 		__onError( "BOSH timeout" );
@@ -254,7 +252,6 @@ class BOSHConnection extends jabber.stream.Connection {
 	*/
 	
 	function handleHTTPError( e : String ) {
-		trace("handleHTTPError "+e);
 		cleanup();
 		__onError( e );
 	}

@@ -25,7 +25,7 @@ import haxe.remoting.AsyncConnection;
 */
 class Connection implements AsyncConnection, implements Dynamic<AsyncConnection> {
 	
-	/** JID of the entity requested */
+	/** JID of current active entity */
 	public var target : String;
 	public var stream(default,null) : jabber.Stream;
 	

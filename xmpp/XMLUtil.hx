@@ -1,6 +1,6 @@
-package util;
+package xmpp;
 
-class XmlUtil {
+class XMLUtil {
 	
 	/**
 		Default XML file header.
@@ -8,11 +8,12 @@ class XmlUtil {
 	public static var XML_HEADER = '<?xml version="1.0" encoding="UTF-8"?>';
 	
 	/**
-		Creates a XML object from the given arguments: <name>data</name>
+		Creates a XML object from the given arguments.
 	*/
-	public static function createElement( name : String, ?data : String ) : Xml {
-		var x = Xml.createElement( name );
-		if( data != null ) x.addChild( Xml.createPCData( data ) );
+	//public static function createXmlElement( n : String, ?d : String ) : Xml {
+	public static function createElement( n : String, ?d : String ) : Xml {
+		var x = Xml.createElement( n );
+		if( d != null ) x.addChild( Xml.createPCData( d ) );
 		return x;
 	}
 	

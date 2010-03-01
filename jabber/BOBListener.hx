@@ -17,6 +17,8 @@
 */
 package jabber;
 
+import jabber.util.Base64;
+
 /**
 	Provides requesting entity with 'Bits Of Binary'.<br>
 	<a href="http://xmpp.org/extensions/xep-0231.html">XEP-0231: Bits of Binary</a>
@@ -46,7 +48,7 @@ class BOBListener {
 		} else {
 			var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
 			// encode here?
-			bob.data =  new haxe.BaseCode( haxe.io.Bytes.ofString( util.Base64.CHARS ) ).encodeString( bob.data );
+			bob.data =  new haxe.BaseCode( haxe.io.Bytes.ofString( Base64.CHARS ) ).encodeString( bob.data );
 			r.x = bob;
 			stream.sendPacket( r );
 		}

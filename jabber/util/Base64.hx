@@ -1,6 +1,4 @@
-package util;
-
-//TODO websafe mode
+package jabber.util;
 
 /**
 	Base64 utility.
@@ -28,15 +26,20 @@ class Base64 {
 	
 	//static var inst : Base64;
 	
-	public static var CHARS(default,null) : String; // = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-	//#if !js
+	public static var CHARS(default,null) : String;
 	public static var bc(default,null) : haxe.BaseCode;
-	//#end
 	
 	/**
 	*/
 	public static function fillNullbits( s : String ) : String {
-		while( s.length%3 != 0 ) s += "=";
+		/*
+		var n = (s.length)%3;
+		if( n == 0 ) n -= 1;
+		for( i in 0...n ) s += "=";
+		*/
+		var n = (s.length)%3;
+		n = ( n == 0 ) ? ((s.length-1)%3) : ((s.length)%3+1);
+		for( i in 0...n ) s += "=";
 		return s;
 	}
 	
@@ -50,26 +53,12 @@ class Base64 {
 	/**
 	*/
 	public static function encode( t : String ) : String {
-		/*
-		#if js
-		return fillNullbits( encodeByteArray( crypt.Tool.stringToByteArray( t ) ) );
-		#else
-		return fillNullbits( bc.encodeString( t ) );
-		#end
-		*/
 		return fillNullbits( bc.encodeString( t ) );
 	}
 	
 	/**
 	*/
 	public static function decode( t : String ) : String {
-		/*
-		#if js
-		return crypt.Tool.byteArrayToString( decodeStringToByteArray( removeNullbits( t ) ) );
-		#else
-		return bc.decodeString( removeNullbits( t ) );
-		#end
-		*/
 		return bc.decodeString( removeNullbits( t ) );
 	}
 	
@@ -131,6 +120,7 @@ class Base64 {
 	#end // js
 	*/
 	
+	//TODO
 	/**
 		Creates a random string of given length.
 	*/

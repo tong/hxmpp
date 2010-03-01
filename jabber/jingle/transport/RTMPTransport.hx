@@ -18,10 +18,11 @@
 package jabber.jingle.transport;
 
 #if flash
-
 import flash.events.NetStatusEvent;
 import flash.net.NetConnection;
 import flash.net.NetStream;
+
+//rtmpt://red5.jivesoftware.org:9090/jingle
 
 /**
 	flash.
@@ -51,7 +52,6 @@ class RTMPTransport {
 	}
 	
 	public function connect() {
-		//if( connected
 		nc = new NetConnection();
 		nc.addEventListener( NetStatusEvent.NET_STATUS, netStatusHandler );
 		try {

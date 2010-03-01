@@ -17,8 +17,6 @@
 */
 package xmpp;
 
-import util.XmlUtil;
-
 /**
 	XMPP message packet.<br/>
 	Default type of message packets is 'normal' (if you set it to null),
@@ -44,9 +42,9 @@ class Message extends xmpp.Packet {
     public override function toXml() : Xml {
     	var x = super.addAttributes( Xml.createElement( "message" ) );
 		if( type != null ) x.set( "type", Type.enumConstructor( type ) );
-		if( subject != null ) x.addChild( XmlUtil.createElement( "subject", subject ) );
-		if( body != null ) x.addChild( XmlUtil.createElement( "body", body ) );
-		if( thread != null ) x.addChild( XmlUtil.createElement( "thread", thread ) );
+		if( subject != null ) x.addChild( XMLUtil.createElement( "subject", subject ) );
+		if( body != null ) x.addChild( XMLUtil.createElement( "body", body ) );
+		if( thread != null ) x.addChild( XMLUtil.createElement( "thread", thread ) );
 		for( p in properties ) x.addChild( p );
 		return x;
     }

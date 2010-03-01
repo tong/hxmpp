@@ -29,7 +29,9 @@ class ServiceDiscoveryListener {
 	public var stream(default,null) : Stream;
 	public var identities : Array<xmpp.disco.Identity>;
 	
+	/** Custom info request handler */
 	public var onInfoQuery : xmpp.IQ->Void;
+	/** Custom items request handler */
 	public var onItemQuery : xmpp.IQ->Void;
 	//public var onInfoQuery(default,setInfoQueryHandler) : xmpp.IQ->Void;
 	//public var onItemQuery(default,setItemQueryHandler) : xmpp.IQ->Void;
@@ -57,7 +59,7 @@ class ServiceDiscoveryListener {
 	*/
 	
 	function handleInfoQuery( iq : xmpp.IQ ) { // return identities and stream features
-		if( onInfoQuery != null ) {
+		if( onInfoQuery != null ) { // redirect info query
 			onInfoQuery( iq );
 			return;
 		}
@@ -67,10 +69,16 @@ class ServiceDiscoveryListener {
 	}
 	
 	function handleItemsQuery( iq : xmpp.IQ ) {
-		if( onItemQuery != null ) {
+		if( onItemQuery != null ) { // redirect items query
 			onItemQuery( iq );
 			return;
 		}
+		/* ??? just get the items from the custom relay (?)
+		var items = new Array<Item>();
+		if( onItemQuery != null ) {
+			items = onItemQuery( iq );
+		}
+		*/
 		var r : xmpp.IQ;
 		// TODO (HACK)
 		if( Reflect.hasField( stream, "items" ) ) { // component stream .. return local stream items

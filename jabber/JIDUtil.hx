@@ -37,7 +37,7 @@ class JIDUtil {
 		Returns true if the given JID is valid formed.
 	*/
 	public static function isValid( t : String ) : Bool {
-		if( t.length < MIN_LENGTH || t.length > MAX_LENGTH )
+		if( t == null || t.length < MIN_LENGTH || t.length > MAX_LENGTH )
 			return false;
 		if( !EREG.match( t ) )
 			return false;
@@ -114,7 +114,12 @@ class JIDUtil {
 	    </p>
 	    
     */
+	//#if neko
+	//static var __escape = neko.Lib.load( "hxmpp", "jid_escapeNode", 1 );
+	//#end
 	public static function escapeNode( n : String ) : String {
+		//TODO performance comparison
+		/*
 		var b = new StringBuf();
 		for( i in 0...n.length ) {
 			var c = n.charAt( i );
@@ -129,14 +134,26 @@ class JIDUtil {
 				case '@' 	: b.add( "\\40" );
 				case '\\\\'	: b.add( "\\5c" );
 				//TODO
-				/*
-				case " " : b.add( "\\20" );
-				default : b.add( c );
-				*/
+				//case " " : b.add( "\\20" );
+				//default : b.add( c );
 				default : if( c == " " ) b.add( "\\20" ) else b.add( c );
 			}
 		}
 		return b.toString();
+		*/
+		//s.split("&").join("&amp;")
+		//TODO n = s.split( "\\" ).join( "\\5c" );
+		n = StringTools.replace( n, "\\", "\\5c" );
+		n = StringTools.replace( n, " ", "\\20" );
+		n = StringTools.replace( n, "\"", "\\22" );
+		n = StringTools.replace( n, "&", "\\26" );
+		n = StringTools.replace( n, "'", "\\27" );
+		n = StringTools.replace( n, "/", "\\2f" );
+		n = StringTools.replace( n, ":", "\\3a" );
+		n = StringTools.replace( n, "<", "\\3c" );
+		n = StringTools.replace( n, ">", "\\3e" );
+		n = StringTools.replace( n, "@", "\\40" );
+		return n;
 	}
 
     /**
@@ -152,6 +169,8 @@ class JIDUtil {
      	</p>
     */
 	public static function unescapeNode( n : String ) : String {
+		//TODO performance comparison
+		/*
 		var l = n.length;
 		var b = new StringBuf();
 		var i = 0;
@@ -191,6 +210,18 @@ class JIDUtil {
 			}	
 		}
 		return b.toString();
+		*/
+		n = StringTools.replace( n, "\\20", " " );
+		n = StringTools.replace( n, "\\22", "\"" );
+		n = StringTools.replace( n, "\\26", "&" );
+		n = StringTools.replace( n, "\\27", "'" );
+		n = StringTools.replace( n, "\\2f", "/");
+		n = StringTools.replace( n, "\\3a", ":" );
+		n = StringTools.replace( n, "\\3c", "<");
+		n = StringTools.replace( n, "\\3e", ">" );
+		n = StringTools.replace( n, "\\40", "@" );
+		n = StringTools.replace( n, "\\5c", "\\" );
+		return n;
 	}
 	
 }

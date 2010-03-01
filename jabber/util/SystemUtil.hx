@@ -1,4 +1,4 @@
-package util;
+package jabber.util;
 
 class SystemUtil {
 	
@@ -7,11 +7,10 @@ class SystemUtil {
 	*/
 	public static #if !js inline #end function systemName() : String {
 		#if !js
-		return
-		#if neko neko.Sys.systemName();
-		#elseif php php.Sys.systemName();
-		#elseif flash9 flash.system.Capabilities.os;
-		#end
+		return	#if neko neko.Sys.systemName();
+				#elseif php php.Sys.systemName();
+				#elseif flash9 flash.system.Capabilities.os;
+				#end
 		#else
 		var s = js.Lib.window.navigator.appVersion;
 		var os = "Unknown";

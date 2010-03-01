@@ -1,3 +1,20 @@
+/*
+ *	This file is part of HXMPP.
+ *	Copyright (c)2009 http://www.disktree.net
+ *	
+ *	HXMPP is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  HXMPP is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *	See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
+*/
 package jabber.jingle;
 
 import jabber.jingle.transport.RTMPInput;
@@ -21,11 +38,14 @@ class RTMPResponder extends Session {
 		super( stream );
 	}
 	
+	/**
+		Inject a jingle->session-init packet to handle.
+	*/
 	public function handleRequest( iq : IQ ) : Bool {
 		var j = xmpp.Jingle.parse( iq.x.toXml() );
 		if( j.action != xmpp.jingle.Action.session_initiate )
 			return false;
-		var content = j.content[0]; //TODO
+		var content = j.content[0];
 		candidates = new Array();
 		for( sh in content.transport.elements )
 			candidates.push( xmpp.jingle.Candidate.parse( sh ) );
@@ -42,10 +62,10 @@ class RTMPResponder extends Session {
 	public function accept( yes : Bool = true ) {
 		if( yes ) {
 			// collect jingle session packets
-			stream.collect( [cast new xmpp.filter.PacketFromFilter( entity ),
-						 	 cast new xmpp.filter.IQFilter( xmpp.Jingle.XMLNS, "jingle", xmpp.IQType.set ),
-						 	 cast new xmpp.filter.JingleFilter( xmpp.jingle.RTMP.XMLNS, sid )],
-							 handleSessionPacket, true );
+			sessionCollector = stream.collect( [cast new xmpp.filter.PacketFromFilter( entity ),
+						 	 					cast new xmpp.filter.IQFilter( xmpp.Jingle.XMLNS, "jingle", xmpp.IQType.set ),
+						 	 					cast new xmpp.filter.JingleFilter( xmpp.jingle.RTMP.XMLNS, sid )],
+							 					handleSessionPacket, true );
 			// Provisionally accept the session request
 			stream.sendData( IQ.createResult( request ).toString() );
 			transportIndex = 0;
@@ -61,6 +81,7 @@ class RTMPResponder extends Session {
 	}
 	
 	function handleSessionPacket( iq : IQ ) {
+		trace("handleSessionPacket");
 		var j = xmpp.Jingle.parse( iq.x.toXml() );
 		//if( j.sid != sid ) return;
 		switch( j.action ) {
@@ -81,7 +102,7 @@ class RTMPResponder extends Session {
 	}
 	
 	function handleTransportConnect() {
-	//	trace("TRANSPORT ..  connect "+transport );
+		//trace("TRANSPORT ..  connect "+transport );
 		transport.__onDisconnect = handleTransportDisconnect;
 		// send candidate accept
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, initiator );
@@ -115,14 +136,16 @@ class RTMPResponder extends Session {
 	}
 	
 	function handleSessionAccept( iq : IQ ) {
-		transport.play();
+	//	trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		onInit();
+	//	trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		transport.play();
 	}
 	
 	override function cleanup() {
 		if( transport != null && transport.connected ) {
 			transport.close();
-			transport = null;
+			//transport = null;
 		}
 		super.cleanup();
 	}

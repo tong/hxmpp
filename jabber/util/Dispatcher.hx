@@ -1,4 +1,4 @@
-package event;
+package jabber.util;
 
 private enum EventException {
 	StopPropagation;

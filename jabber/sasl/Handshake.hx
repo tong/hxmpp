@@ -1,4 +1,4 @@
-package net.sasl;
+package jabber.sasl;
 
 /**
 	SASL handshake.<br/>
@@ -7,10 +7,10 @@ package net.sasl;
 class Handshake {
 	
 	/** Registered mechanisms. */
-	public var mechanisms : Array<net.sasl.Mechanism>;
+	public var mechanisms : Array<Mechanism>;
 	
 	/** Mechanism in use. */
-	public var mechanism : net.sasl.Mechanism;
+	public var mechanism : Mechanism;
 	
 	public function new() {
 		mechanisms = new Array();

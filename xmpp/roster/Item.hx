@@ -17,6 +17,8 @@
 */
 package xmpp.roster;
 
+import xmpp.XMLUtil;
+
 class Item {
 	
 	public var jid(default,null) : String;
@@ -41,7 +43,7 @@ class Item {
 		if( subscription != null ) x.set( "subscription", Type.enumConstructor( subscription ) );
 		if( askType != null ) x.set( "ask", Type.enumConstructor( askType ) );
 		for( group in groups )
-			x.addChild( util.XmlUtil.createElement( "group", group ) );
+			x.addChild( XMLUtil.createElement( "group", group ) );
 		return x;
 	}
 	

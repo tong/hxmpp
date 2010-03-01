@@ -1,8 +1,4 @@
-package crypt;
-
-#if flash10
-private typedef Array<Int> = flash.Vector<Int>;
-#end
+package jabber.util;
 
 #if neko
 import neko.Lib;
@@ -41,7 +37,7 @@ class SHA1 {
 	
 	function __encode__( s : String ) : String {
 		var x = str2blks( s );
-		var w = new #if flash10 flash.Vector<Int>( 80 ); #else Array<Int>(); #end
+		var w = new Array<Int>();
 		var a =  1732584193;
 	 	var b = -271733879;
 	  	var c = -1732584194;
@@ -93,7 +89,7 @@ class SHA1 {
 	inline function str2blks( s : String ) : Array<Int> {
 		var nb = ( ( s.length + 8 ) >> 6 ) + 1;
 		var l = nb*16;
-		var bb = new #if flash10 flash.Vector<Int>( l ); #else Array<Int>(); #end
+		var bb = new Array<Int>();
 		var i = 0;
 		while( i < l ) {
 			bb[i] = 0;

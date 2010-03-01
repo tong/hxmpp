@@ -17,7 +17,7 @@
 */
 package jabber;
 
-import util.Timer;
+import jabber.util.Timer;
 
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0199.html">XEP 199 - XMPP Ping</a><br/>
@@ -27,7 +27,7 @@ import util.Timer;
 */
 class Ping {
 	
-	public static var defaultInterval = 60000;
+	public static var defaultInterval = 60;
 	
 	public dynamic function onResponse( jid : String ) : Void;
 	public dynamic function onTimeout( jid : String ) : Void;
@@ -35,7 +35,7 @@ class Ping {
 	
 	public var stream(default,null) : Stream;
 	/** Ping interval ms */
-	public var interval : Int;
+	public var interval : Int; //TODO interval(default,setInterval)
 	/** The pinged target entity */
 	public var target : String; //public var target : Array<String>; //hm??
 	/** Indicates if the ping interval is running */
@@ -92,7 +92,8 @@ class Ping {
 			}
 			me.onTimeout( to );
 		};
-		stream.sendIQ( iq, handlePong, false, new jabber.stream.PacketTimeout( [timeoutHandler], interval ) );
+		stream.sendIQ( iq, handlePong, false,
+					   new jabber.stream.PacketTimeout( [timeoutHandler], interval*1000 ) );
 		#end
 	}
 	
@@ -109,7 +110,7 @@ class Ping {
 		case result :
 			onResponse( iq.from );
 			if( active ) {
-				timer = new Timer( interval );
+				timer = new Timer( interval*1000 );
 				timer.run = handleTimer;
 			}
 		case error :

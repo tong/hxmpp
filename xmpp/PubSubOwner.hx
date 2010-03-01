@@ -21,7 +21,7 @@ class PubSubOwner {
 	
 	public static var XMLNS = PubSub.XMLNS+"#owner";
 	
-	/** Set to "" to add a empty delete element */
+	/** Set to "" (empty string) to add a empty delete element */
 	public var delete : String;
 	public var purge : String;
 	public var configure : { form : xmpp.DataForm, node : String };
@@ -29,8 +29,7 @@ class PubSubOwner {
 	public var affiliations : xmpp.pubsub.Affiliations;
 	public var _default : { form : xmpp.DataForm, empty : Bool };
 	
-	public function new() {
-	}
+	public function new() {}
 	
 	public function toXml() {
 		var x = Xml.createElement( "pubsub" );

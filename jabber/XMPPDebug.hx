@@ -29,6 +29,12 @@ import cpp.Lib;
 import flash.external.ExternalInterface;
 #end
 
+#if JABBER_CONSOLE
+typedef TStream = {
+	var jidstr : String;
+}
+#end
+
 /**
 	<p>
 	Utility for debugging XMPP transfer.<br/>
@@ -43,7 +49,7 @@ import flash.external.ExternalInterface;
 */
 class XMPPDebug {
 	
-	#if (flash&&JABBER_CONSOLE) //HACK TODO
+	#if (JABBER_CONSOLE&&flash) //HACK TODO
 	public static var stream : Stream;
 	#end
 	
@@ -73,20 +79,18 @@ class XMPPDebug {
 	}
 	#end
 	
+	//////////////////////////////////
+	
 	/*
-	public static function outPacket( p : xmpp.Packet ) {
-		var v = haxe.Serializer.run( p );
-		try {
-			#if flash
-			ExternalInterface.call( 'hxmpp.Console.printPacket("'+v+'",'+out+')' );
-			#elseif js
-			untyped hxmpp.Console.printPacket( v, out );
-			#end
-		} catch( e : Dynamic ) {
-			trace( "HXMPP.console debugging error: "+e, "warn" );
-		}	
+	public static function cprint( stream : TStream, packet : xmpp.Packet, out : Bool = true ) {
+		//var t = haxe.Serializer.run( { stream : stream , packet : packet, out : out } );
+		//trace("ä################### #### "+t );
+		//var s = new haxe.Serializer();
+		//s.serialize( stream );
 	}
 	*/
+	
+	//////////////////////////////////////
 	
 	public static function inc( t : String ) {
 		#if JABBER_CONSOLE

@@ -28,12 +28,15 @@ jabber.XMPPDebug
 jabber.XMPPError
 jabber.client.Account
 jabber.client.MUChat
-jabber.client.NonSASLAuthentication
+jabber.client.NonSASLAuth
 jabber.client.Roster
-jabber.client.SASLAuthentication
+jabber.client.SASLAuth
 jabber.client.Stream
 jabber.client.VCard
 jabber.component.Stream
+jabber.sasl.AnonymousMechanism
+jabber.sasl.PlainMechanism
+jabber.sasl.MD5Mechanism
 xmpp.Bind
 xmpp.ChatState
 xmpp.ChatStateExtension
@@ -50,9 +53,6 @@ xmpp.Presence
 xmpp.PrivacyLists
 xmpp.SASL
 xmpp.XHTML
-net.sasl.AnonymousMechanism
-net.sasl.PlainMechanism
-net.sasl.MD5Mechanism
 
 -js lib.js
 -xml doc/api.xml

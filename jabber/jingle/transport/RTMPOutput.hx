@@ -29,10 +29,15 @@ class RTMPOutput extends RTMPTransport {
 	
 	public var __onPublish : Void->Void;
 	
+	public function new( name : String, host : String, port : Int, id : String ) {
+		super( name, host, port, id );
+	}
+	
 	/**
 		Start publishing to server.
 	*/
 	public function publish( ?record : String ) {
+		//trace("PUBLISH: "+id );
 		ns.publish( ( record == null ) ? defaultRecord : record, id );
 	}
 	

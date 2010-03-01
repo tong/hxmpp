@@ -34,7 +34,7 @@ enum Accept {
 */
 class Host {
 
-	/** Current/Last calling client JID */
+	/** Current/Last processed client (JID) */
 	public var client(default,null) : String;
 	public var ctx : Context;
 	public var stream(default,null) : jabber.Stream;

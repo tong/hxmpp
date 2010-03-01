@@ -17,7 +17,6 @@
 */
 package xmpp;
 
-import util.XmlUtil;
 import xmpp.vcard.Address;
 import xmpp.vcard.EMail;
 import xmpp.vcard.Label;
@@ -84,137 +83,137 @@ class VCard {
 	public function toXml() : Xml {
 		var x = Xml.createElement( NODENAME );
 		x.set( "xmlns", XMLNS );
-		if( fn != null ) x.addChild( XmlUtil.createElement( "FN", fn ) );
+		if( fn != null ) x.addChild( XMLUtil.createElement( "FN", fn ) );
 		if( n != null ) {
 			var _n = Xml.createElement( "N" );
-			if( n.family != null ) _n.addChild( XmlUtil.createElement( "FAMILY", n.family ) );
-			if( n.given != null ) _n.addChild( XmlUtil.createElement( "GIVEN", n.given ) );
-			if( n.middle != null ) _n.addChild( XmlUtil.createElement( "MIDDLE", n.middle ) );
-			if( n.prefix != null ) _n.addChild( XmlUtil.createElement( "PREFIX", n.prefix ) );
-			if( n.suffix != null ) _n.addChild( XmlUtil.createElement( "SUFFIX", n.suffix ) );
+			if( n.family != null ) _n.addChild( XMLUtil.createElement( "FAMILY", n.family ) );
+			if( n.given != null ) _n.addChild( XMLUtil.createElement( "GIVEN", n.given ) );
+			if( n.middle != null ) _n.addChild( XMLUtil.createElement( "MIDDLE", n.middle ) );
+			if( n.prefix != null ) _n.addChild( XMLUtil.createElement( "PREFIX", n.prefix ) );
+			if( n.suffix != null ) _n.addChild( XMLUtil.createElement( "SUFFIX", n.suffix ) );
 			x.addChild( _n );
 		}
-		if( nickname != null ) x.addChild( XmlUtil.createElement( "NN", nickname ) );
+		if( nickname != null ) x.addChild( XMLUtil.createElement( "NN", nickname ) );
 		if( photo != null ) {
 			var p = Xml.createElement( "PHOTO" );
-			p.addChild( XmlUtil.createElement( "TYPE", photo.type ) );
-			p.addChild( XmlUtil.createElement( "BINVAL", photo.binval ) );
+			p.addChild( XMLUtil.createElement( "TYPE", photo.type ) );
+			p.addChild( XMLUtil.createElement( "BINVAL", photo.binval ) );
 			x.addChild( p );
 		}
-		if( birthday != null ) x.addChild( XmlUtil.createElement( "BDAY", birthday ) );
+		if( birthday != null ) x.addChild( XMLUtil.createElement( "BDAY", birthday ) );
 		for( address in addresses ) {
 			var a = Xml.createElement( "ADR" );
-			if( address.home != null )   a.addChild( XmlUtil.createElement( "HOME", address.home ) );
-			if( address.work != null )   a.addChild( XmlUtil.createElement( "WORK", address.work ) );
-			if( address.postal != null ) a.addChild( XmlUtil.createElement( "POSTAL", address.postal ) );
-			if( address.parcel != null ) a.addChild( XmlUtil.createElement( "PARCEL", address.parcel ) );
-			if( address.pref != null )   a.addChild( XmlUtil.createElement( "PREF", address.pref ) );
-			if( address.pobox != null )  a.addChild( XmlUtil.createElement( "POBOX", address.pobox ) );
-			if( address.extadd != null ) a.addChild( XmlUtil.createElement( "EXTADD", address.extadd ) );
-			if( address.street != null ) a.addChild( XmlUtil.createElement( "STREET", address.street ) );
-			if( address.locality!=null ) a.addChild( XmlUtil.createElement( "LOCALITY", address.locality ) );
-			if( address.region != null ) a.addChild( XmlUtil.createElement( "REGION", address.region ) );
-			if( address.pcode != null )  a.addChild( XmlUtil.createElement( "PCODE", address.pcode ) );
-			if( address.ctry != null )   a.addChild( XmlUtil.createElement( "CTRY", address.ctry ) );
+			if( address.home != null )   a.addChild( XMLUtil.createElement( "HOME", address.home ) );
+			if( address.work != null )   a.addChild( XMLUtil.createElement( "WORK", address.work ) );
+			if( address.postal != null ) a.addChild( XMLUtil.createElement( "POSTAL", address.postal ) );
+			if( address.parcel != null ) a.addChild( XMLUtil.createElement( "PARCEL", address.parcel ) );
+			if( address.pref != null )   a.addChild( XMLUtil.createElement( "PREF", address.pref ) );
+			if( address.pobox != null )  a.addChild( XMLUtil.createElement( "POBOX", address.pobox ) );
+			if( address.extadd != null ) a.addChild( XMLUtil.createElement( "EXTADD", address.extadd ) );
+			if( address.street != null ) a.addChild( XMLUtil.createElement( "STREET", address.street ) );
+			if( address.locality!=null ) a.addChild( XMLUtil.createElement( "LOCALITY", address.locality ) );
+			if( address.region != null ) a.addChild( XMLUtil.createElement( "REGION", address.region ) );
+			if( address.pcode != null )  a.addChild( XMLUtil.createElement( "PCODE", address.pcode ) );
+			if( address.ctry != null )   a.addChild( XMLUtil.createElement( "CTRY", address.ctry ) );
 			x.addChild( a );
 		}
 		if( label != null ) {
 			var l = Xml.createElement( "LABEL" );
-			if( label.home != null ) l.addChild( XmlUtil.createElement( "HOME", label.home ) );
-			if( label.work != null ) l.addChild( XmlUtil.createElement( "HOME", label.work ) );
-			if( label.postal != null ) l.addChild( XmlUtil.createElement( "HOME", label.postal ) );
-			if( label.parcel != null ) l.addChild( XmlUtil.createElement( "HOME", label.parcel ) );
-			if( label.pref != null ) l.addChild( XmlUtil.createElement( "HOME", label.pref ) );
-			if( label.line != null ) l.addChild( XmlUtil.createElement( "HOME", label.line ) );
+			if( label.home != null ) l.addChild( XMLUtil.createElement( "HOME", label.home ) );
+			if( label.work != null ) l.addChild( XMLUtil.createElement( "HOME", label.work ) );
+			if( label.postal != null ) l.addChild( XMLUtil.createElement( "HOME", label.postal ) );
+			if( label.parcel != null ) l.addChild( XMLUtil.createElement( "HOME", label.parcel ) );
+			if( label.pref != null ) l.addChild( XMLUtil.createElement( "HOME", label.pref ) );
+			if( label.line != null ) l.addChild( XMLUtil.createElement( "HOME", label.line ) );
 			x.addChild( l );
 		}
-		if( line != null ) x.addChild( XmlUtil.createElement( "LINE", line ) );
+		if( line != null ) x.addChild( XMLUtil.createElement( "LINE", line ) );
 		for( tel in tels ) {
 			var t = Xml.createElement( "TEL" );
-			if( tel.number != null ) t.addChild( XmlUtil.createElement( "NUMBER", tel.number ) );
-			if( tel.home != null )   t.addChild( XmlUtil.createElement( "HOME", tel.home ) );
-			if( tel.work != null )   t.addChild( XmlUtil.createElement( "WORK", tel.work ) );
-			if( tel.voice != null )  t.addChild( XmlUtil.createElement( "VOICE", tel.voice ) );
-			if( tel.fax != null )    t.addChild( XmlUtil.createElement( "FAX", tel.fax ) );
-			if( tel.pager != null )  t.addChild( XmlUtil.createElement( "PAGER", tel.pager ) );
-			if( tel.msg != null )    t.addChild( XmlUtil.createElement( "MSG", tel.msg ) );
-			if( tel.cell != null )   t.addChild( XmlUtil.createElement( "CELL", tel.cell ) );
-			if( tel.video != null )  t.addChild( XmlUtil.createElement( "VIDEO", tel.video ) );
-			if( tel.bbs != null )    t.addChild( XmlUtil.createElement( "BBS", tel.bbs ) );
-			if( tel.modem != null )  t.addChild( XmlUtil.createElement( "MODEM", tel.modem ) );
-			if( tel.isdn != null )   t.addChild( XmlUtil.createElement( "ISDN", tel.isdn ) );
-			if( tel.pcs != null )    t.addChild( XmlUtil.createElement( "PCS", tel.pcs ) );
-			if( tel.pref != null )   t.addChild( XmlUtil.createElement( "PREF", tel.pref ) );
+			if( tel.number != null ) t.addChild( XMLUtil.createElement( "NUMBER", tel.number ) );
+			if( tel.home != null )   t.addChild( XMLUtil.createElement( "HOME", tel.home ) );
+			if( tel.work != null )   t.addChild( XMLUtil.createElement( "WORK", tel.work ) );
+			if( tel.voice != null )  t.addChild( XMLUtil.createElement( "VOICE", tel.voice ) );
+			if( tel.fax != null )    t.addChild( XMLUtil.createElement( "FAX", tel.fax ) );
+			if( tel.pager != null )  t.addChild( XMLUtil.createElement( "PAGER", tel.pager ) );
+			if( tel.msg != null )    t.addChild( XMLUtil.createElement( "MSG", tel.msg ) );
+			if( tel.cell != null )   t.addChild( XMLUtil.createElement( "CELL", tel.cell ) );
+			if( tel.video != null )  t.addChild( XMLUtil.createElement( "VIDEO", tel.video ) );
+			if( tel.bbs != null )    t.addChild( XMLUtil.createElement( "BBS", tel.bbs ) );
+			if( tel.modem != null )  t.addChild( XMLUtil.createElement( "MODEM", tel.modem ) );
+			if( tel.isdn != null )   t.addChild( XMLUtil.createElement( "ISDN", tel.isdn ) );
+			if( tel.pcs != null )    t.addChild( XMLUtil.createElement( "PCS", tel.pcs ) );
+			if( tel.pref != null )   t.addChild( XMLUtil.createElement( "PREF", tel.pref ) );
 			x.addChild( t );
 		}
 		if( email != null ) {
 			var e = Xml.createElement( "EMAIL" );
-			if( email.home != null ) 	 e.addChild( XmlUtil.createElement( "HOME", email.home ) );
-			if( email.work != null )     e.addChild( XmlUtil.createElement( "WORK", email.work ) );
-			if( email.internet != null ) e.addChild( XmlUtil.createElement( "INTERNET", email.internet ) );
-			if( email.pref != null )     e.addChild( XmlUtil.createElement( "PREF", email.pref ) );
-			if( email.x400 != null ) 	 e.addChild( XmlUtil.createElement( "X400", email.x400 ) );
-			if( email.userid != null )   e.addChild( XmlUtil.createElement( "USERID", email.userid ) );
+			if( email.home != null ) 	 e.addChild( XMLUtil.createElement( "HOME", email.home ) );
+			if( email.work != null )     e.addChild( XMLUtil.createElement( "WORK", email.work ) );
+			if( email.internet != null ) e.addChild( XMLUtil.createElement( "INTERNET", email.internet ) );
+			if( email.pref != null )     e.addChild( XMLUtil.createElement( "PREF", email.pref ) );
+			if( email.x400 != null ) 	 e.addChild( XMLUtil.createElement( "X400", email.x400 ) );
+			if( email.userid != null )   e.addChild( XMLUtil.createElement( "USERID", email.userid ) );
 			x.addChild( e );
 		}
-		if( jid != null ) x.addChild( XmlUtil.createElement( "JABBERID", jid ) );
-		if( mailer != null ) x.addChild( XmlUtil.createElement( "MAILER", mailer ) );
-		if( tz != null ) x.addChild( XmlUtil.createElement( "TZ", tz ) );
+		if( jid != null ) x.addChild( XMLUtil.createElement( "JABBERID", jid ) );
+		if( mailer != null ) x.addChild( XMLUtil.createElement( "MAILER", mailer ) );
+		if( tz != null ) x.addChild( XMLUtil.createElement( "TZ", tz ) );
 		if( geo != null ) {
 			var g  = Xml.createElement( "GEO" );
-			g.addChild( XmlUtil.createElement( "LAT", Std.string( geo.lat ) ) );
-			g.addChild( XmlUtil.createElement( "LON", Std.string( geo.lon ) ) );
+			g.addChild( XMLUtil.createElement( "LAT", Std.string( geo.lat ) ) );
+			g.addChild( XMLUtil.createElement( "LON", Std.string( geo.lon ) ) );
 			x.addChild( g );
 		}
-		if( title != null ) x.addChild( XmlUtil.createElement( "TITLE", title ) );
-		if( role != null ) x.addChild( XmlUtil.createElement( "ROLE", role ) );
+		if( title != null ) x.addChild( XMLUtil.createElement( "TITLE", title ) );
+		if( role != null ) x.addChild( XMLUtil.createElement( "ROLE", role ) );
 		if( logo != null ) {
 			var l = Xml.createElement( "LOGO" );
-			l.addChild( XmlUtil.createElement( "TYPE", logo.type ) );
-			l.addChild( XmlUtil.createElement( "BINVAL", logo.binval ) );
+			l.addChild( XMLUtil.createElement( "TYPE", logo.type ) );
+			l.addChild( XMLUtil.createElement( "BINVAL", logo.binval ) );
 			x.addChild( l );
 		}
 		if( org != null ) {
 			var o = Xml.createElement( "ORG" );
-			if( org.orgname != null ) o.addChild( XmlUtil.createElement( "NAME", org.orgname ) );
-			if( org.orgunit != null ) o.addChild( XmlUtil.createElement( "UNIT", org.orgunit ) );
+			if( org.orgname != null ) o.addChild( XMLUtil.createElement( "NAME", org.orgname ) );
+			if( org.orgunit != null ) o.addChild( XMLUtil.createElement( "UNIT", org.orgunit ) );
 			x.addChild( o );
 		}
-		if( note != null ) x.addChild( XmlUtil.createElement( "NOTE", note ) );
-		if( prodid != null ) x.addChild( XmlUtil.createElement( "PRODID", prodid ) );
-		if( url != null ) x.addChild( XmlUtil.createElement( "URL", url ) );
-		if( desc != null ) x.addChild( XmlUtil.createElement( "DESC", desc ) );
+		if( note != null ) x.addChild( XMLUtil.createElement( "NOTE", note ) );
+		if( prodid != null ) x.addChild( XMLUtil.createElement( "PRODID", prodid ) );
+		if( url != null ) x.addChild( XMLUtil.createElement( "URL", url ) );
+		if( desc != null ) x.addChild( XMLUtil.createElement( "DESC", desc ) );
 		return x;
 		/*
 		var x = Xml.createElement( NODENAME );
 		x.set( "xmlns", XMLNS );
-		if( fn != null ) x.addChild( XmlUtil.createElement( "FN", fn ) );
+		if( fn != null ) x.addChild( XMLUtil.createElement( "FN", fn ) );
 		if( n != null ) x.addChild( createTypedefXml( "N", n ) );
-		if( nickname != null ) x.addChild( XmlUtil.createElement( "NICKNAME", nickname ) );
+		if( nickname != null ) x.addChild( XMLUtil.createElement( "NICKNAME", nickname ) );
 		if( photo != null )  x.addChild( createTypedefXml( "PHOTO", photo ) );
-		if( birthday != null ) x.addChild( XmlUtil.createElement( "BDAY", birthday ) );
+		if( birthday != null ) x.addChild( XMLUtil.createElement( "BDAY", birthday ) );
 		for( address in addresses )
 			x.addChild( createTypedefXml( "ADR", address ) );
 		if( label != null )  x.addChild( createTypedefXml( "LABEL", label ) );
-		if( line != null ) x.addChild( XmlUtil.createElement( "LINE", line ) );
+		if( line != null ) x.addChild( XMLUtil.createElement( "LINE", line ) );
 		if( tels != null ) {
 			for( tel in tels ) {
 				x.addChild( createTypedefXml( "TEL", tel ) );
 			}
 		}
 		if( email != null ) x.addChild( createTypedefXml( "EMAIL", email ) );
-		if( jid != null ) x.addChild( XmlUtil.createElement( "JABBERID", jid ) );
-		if( mailer != null ) x.addChild( XmlUtil.createElement( "MAILER", mailer ) );
-		if( tz != null ) x.addChild( XmlUtil.createElement( "TZ", tz ) );
+		if( jid != null ) x.addChild( XMLUtil.createElement( "JABBERID", jid ) );
+		if( mailer != null ) x.addChild( XMLUtil.createElement( "MAILER", mailer ) );
+		if( tz != null ) x.addChild( XMLUtil.createElement( "TZ", tz ) );
 		if( geo != null ) x.addChild( createTypedefXml( "GEO", geo ) );
-		if( title != null ) x.addChild( XmlUtil.createElement( "TITLE", title ) );
-		if( role != null ) x.addChild( XmlUtil.createElement( "ROLE", role ) );
+		if( title != null ) x.addChild( XMLUtil.createElement( "TITLE", title ) );
+		if( role != null ) x.addChild( XMLUtil.createElement( "ROLE", role ) );
 		if( logo != null ) x.addChild( createTypedefXml( "LOGO", logo ) );
 		if( org != null ) x.addChild( createTypedefXml( "ORG", org ) );
-		if( note != null ) x.addChild( XmlUtil.createElement( "NOTE", note ) );
-		if( prodid != null ) x.addChild( XmlUtil.createElement( "PRODID", prodid ) );
-		if( url != null ) x.addChild( XmlUtil.createElement( "URL", url ) );
-		if( desc != null ) x.addChild( XmlUtil.createElement( "DESC", desc ) );
+		if( note != null ) x.addChild( XMLUtil.createElement( "NOTE", note ) );
+		if( prodid != null ) x.addChild( XMLUtil.createElement( "PRODID", prodid ) );
+		if( url != null ) x.addChild( XMLUtil.createElement( "URL", url ) );
+		if( desc != null ) x.addChild( XMLUtil.createElement( "DESC", desc ) );
 		return x;
 		*/
 	}
@@ -226,7 +225,7 @@ class VCard {
 	/*
 	function addFieldXml( n : String, x : Xml ) {
 		var v = Reflect.field( this, n );
-		if( v != null ) x.addChild( XmlUtil.createElement( n.toUpperCase(), v ) );
+		if( v != null ) x.addChild( XMLUtil.createElement( n.toUpperCase(), v ) );
 	}
 	*/
 	
@@ -236,7 +235,7 @@ class VCard {
 		for( f in Reflect.fields( e ) ) {
 			var v = Reflect.field( e, f );
 			if( v != null ) {
-				x.addChild( XmlUtil.createElement( f.toUpperCase(), v ) );
+				x.addChild( XMLUtil.createElement( f.toUpperCase(), v ) );
 			}
 		}
 		return x;	

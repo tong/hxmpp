@@ -1,4 +1,4 @@
-package net.sasl;
+package jabber.sasl;
 
 class AnonymousMechanism {
 	

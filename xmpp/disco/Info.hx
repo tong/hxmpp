@@ -29,8 +29,8 @@ class Info {
 	public var node : String;
 	
 	public function new( ?identities : Array<Identity>, ?features : Array<String>, ?node : String ) {
-		this.identities = ( identities == null ) ? new Array() : identities;
-		this.features = ( features == null ) ? new Array() : features;
+		this.identities = identities == null ? new Array() : identities;
+		this.features = features == null ? new Array() : features;
 		this.node = node;
 	}
 

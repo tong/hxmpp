@@ -1,32 +1,33 @@
-package crypt;
+package jabber.util;
 
 /**
-	Creates a MD5 of a String.
-	Modified version from the haXe std lib to provide raw encoding out of box.
+	Creates a MD5 of a String.<br/>
+	Modified version from the haXe std lib to provide raw encoding.
 **/
 class MD5 {
 
 	public static function encode( s : String, raw : Bool = false ) : String {
 		#if (neko||cpp)
-		return if( raw ) untyped new String(make_md5(s.__s));
-		else untyped new String(base_encode(make_md5(s.__s),"0123456789abcdef".__s));
+		var t = make_md5( untyped s.__s );
+		return untyped new String( raw ? t : base_encode( t, "0123456789abcdef".__s ) );
 		#elseif php
 		return untyped __call__( "md5", s, raw );
 		#else
-		return if( raw ) inst.doEncodeRaw(s) else inst.doEncode(s);
+		return raw ? inst.doEncodeRaw(s) : inst.doEncode(s);
 		#end
 	}
 
-	#if neko
+	#if (neko||cpp)
 	static var base_encode = neko.Lib.load("std","base_encode",2);
 	static var make_md5 = neko.Lib.load("std","make_md5",1);
+
 	#elseif !php
 
 	static var inst = new MD5();
 
 	function new() {}
 	
-	function rhex( num ){
+	function rhex( num : Int ){
 		var str = "";
 		var hex_chr = "0123456789abcdef";
 		for( j in 0...4 ){
@@ -36,35 +37,34 @@ class MD5 {
 		return str;
 	}
 	
-	function bitOR(a, b){
+	function bitOR( a : Int, b : Int ) : Int {
 		var lsb = (a & 0x1) | (b & 0x1);
 		var msb31 = (a >>> 1) | (b >>> 1);
 		return (msb31 << 1) | lsb;
 	}
 
-	function bitXOR(a, b){
+	function bitXOR( a : Int, b : Int ) : Int {
 		var lsb = (a & 0x1) ^ (b & 0x1);
 		var msb31 = (a >>> 1) ^ (b >>> 1);
 		return (msb31 << 1) | lsb;
 	}
 
-	function bitAND(a, b){
+	function bitAND( a : Int, b : Int ) : Int {
 		var lsb = (a & 0x1) & (b & 0x1);
 		var msb31 = (a >>> 1) & (b >>> 1);
 		return (msb31 << 1) | lsb;
 	}
 
-	function addme(x, y) {
+	function addme( x : Int, y : Int ) : Int {
 		var lsw = (x & 0xFFFF)+(y & 0xFFFF);
 		var msw = (x >> 16)+(y >> 16)+(lsw >> 16);
 		return (msw << 16) | (lsw & 0xFFFF);
 	}
 
-	inline function str2blks( str : String ){
+	inline function str2blks( str : String ) : Array<Int> {
 		var nblk = ((str.length + 8) >> 6) + 1;
-		var blks = new Array();
+		var blks = new Array<Int>();
 		for( i in 0...(nblk * 16) ) blks[i] = 0;
-
 		var i = 0;
 		while( i < str.length ) {
 			blks[i >> 2] |= str.charCodeAt(i) << (((str.length * 8 + i) % 4) * 8);
@@ -80,27 +80,27 @@ class MD5 {
 		return blks;
 	}
 
-	function rol(num, cnt){
+	function rol( num : Int, cnt : Int ) : Int {
 		return (num << cnt) | (num >>> (32 - cnt));
 	}
 
-	function cmn(q, a, b, x, s, t){
-		return addme(rol((addme(addme(a, q), addme(x, t))), s), b);
+	function cmn( q : Int, a : Int, b : Int, x : Int, s : Int, t : Int ) : Int {
+		return addme( rol( ( addme( addme(a, q), addme(x, t) ) ), s ), b );
 	}
 
-	function ff(a, b, c, d, x, s, t){
-		return cmn(bitOR(bitAND(b, c), bitAND((~b), d)), a, b, x, s, t);
+	function ff( a : Int, b : Int, c : Int, d : Int, x : Int, s : Int, t : Int ) : Int {
+		return cmn( bitOR(bitAND(b, c), bitAND((~b), d)), a, b, x, s, t );
 	}
 
-	function gg(a, b, c, d, x, s, t){
-		return cmn(bitOR(bitAND(b, d), bitAND(c, (~d))), a, b, x, s, t);
+	function gg( a : Int, b : Int, c : Int, d : Int, x : Int, s : Int, t : Int ) : Int {
+		return cmn( bitOR(bitAND(b, d), bitAND(c, (~d))), a, b, x, s, t );
 	}
 
-	function hh(a, b, c, d, x, s, t){
+	function hh( a : Int, b : Int, c : Int, d : Int, x : Int, s : Int, t : Int ) : Int {
 		return cmn(bitXOR(bitXOR(b, c), d), a, b, x, s, t);
 	}
 
-	function ii(a, b, c, d, x, s, t){
+	function ii( a : Int, b : Int, c : Int, d : Int, x : Int, s : Int, t : Int ) : Int {
 		return cmn(bitXOR(c, bitOR(b, (~d))), a, b, x, s, t);
 	}
 	
@@ -134,7 +134,7 @@ class MD5 {
 		return bin2str( __encode( x ) );
 	}
 	
-	inline function doEncode( t:String ) : String {
+	inline function doEncode( t : String ) : String {
 		var t = __encode( str2blks(t) );
 		return rhex(t[0])+rhex(t[1])+rhex(t[2])+rhex(t[3]);
 	}
@@ -148,11 +148,12 @@ class MD5 {
 		
 		var i = 0;
 		while( i < x.length ) {
+			
 		    var olda : Int = a;
 		    var oldb : Int = b;
 		    var oldc : Int = c;
 		    var oldd : Int = d;
-		
+		    
 		    a = ff(a, b, c, d, x[i+ 0], 7 , -680876936);
 		    d = ff(d, a, b, c, x[i+ 1], 12, -389564586);
 		    c = ff(c, d, a, b, x[i+ 2], 17,  606105819);
@@ -221,12 +222,12 @@ class MD5 {
 		    c = ii(c, d, a, b, x[i+ 2], 15,  718787259);
 		    b = ii(b, c, d, a, x[i+ 9], 21, -343485551);
 		
-		    a = addme(a, olda);
-		    b = addme(b, oldb);
-		    c = addme(c, oldc);
-		    d = addme(d, oldd);
+		    a = addme( a, olda );
+		    b = addme( b, oldb );
+		    c = addme( c, oldc );
+		    d = addme( d, oldd );
 		    
-		    i+=16;
+		    i += 16;
 		}
 		return [a,b,c,d];
 	}

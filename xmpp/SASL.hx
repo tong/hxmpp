@@ -31,7 +31,7 @@ class SASL {
 	public static function createAuthXml( mechansim : String, ?text : String ) : Xml {
 		if( mechansim == null )
 			return null;
-		var a = util.XmlUtil.createElement( "auth", text );
+		var a = XMLUtil.createElement( "auth", text );
 		a.set( "xmlns", XMLNS );
 		a.set( "mechanism", mechansim );
 		return a;
@@ -42,7 +42,7 @@ class SASL {
 	public static function createResponseXml( t : String ) : Xml {
 		if( t == null )
 			return null;
-		var r = util.XmlUtil.createElement( "response", t );
+		var r = XMLUtil.createElement( "response", t );
 		r.set( "xmlns", XMLNS );
 		return r;
 	}

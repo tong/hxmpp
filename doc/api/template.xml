@@ -2,10 +2,10 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<meta name="keywords" content="haxe,xmpp,jabber,documentation,api,open source,library,lgpl,flash,flashplayer,neko,realtime,framework,pubsub,muchat,roster,jingle,sasl,pep"/>
-<meta name="description" content="Open source LGPL licensed haXe library for creating XMPP/jabber based clients and components"/>
+<meta name="keywords" content="xmpp,jabber,haxe,documentation,api,open source,library,lgpl,neko,realtime,framework,pubsub,muchat,roster,jingle,rtmp,sasl,pep,flash,flashplayer,swf,actionscript,actionscript3,as,as3"/>
+<meta name="description" content="Open source haXe library for creating XMPP/jabber based clients and components"/>
 <meta name="author" content="disktree"/>
-<title>HXMPP-API</title>
+<title>HXMPP.api</title>
 <link rel="icon" href="favicon.png" type="image/x-icon"/>
 <script type="text/javascript">
 function toggle(id) {
@@ -17,110 +17,53 @@ function toggle(id) {
 </script>
 <style type="text/css">
 body {
-	text-align: left;
-	color : #000000;
-	background-color : #ffffff;
-	font-family: serif;
-	font-size: 12px;
+	margin 0px;
+	padding : 0px;
+	font-size : 9pt;
+	font-family : Helvetica;
 }
-
-.document {
-	width : 800px;
-	text-align : justify;
-	/*position : relative;
-	margin : 0px auto 0px auto;*/
-}
-
-.title {
-	font-size: 48;
-	font-weight: normal;
-	text-align: left;
-}
-
-ul.entry {
-	list-style-type: circle;
-	font-weight : bold;
-	margin-left : 0px;
-}
-
 .package_content {
 	display : none;
 }
-
-a {
-	/*font-weight : bold;*/
-	text-decoration : none;
-	color: #000089;
-}
-
-a:hover {
-	color: #000000;
-	text-decoration: underline;
-}
-
-a.package {
-}
-
-img {
-	border: 0px none;
-}
-
-.index {
-	margin-left : 0px;
-	color : #999;
-}
-
 .kwd {
-	margin-left: 0px;
-	color : #000089;
+	color : blue;
 }
-
-.classname {
-	font-size: 26pt;
-	font-weight: bold;
-	margin-top: 14px;
-	margin-left: 0px;
-	margin-bottom: 0px;
-	letter-spacing : -3px;
-}
-
 .classdoc {
-	/*border : 1px solid #dddddd;*/
-	font-size: 13px;
-	margin-left: 10px;
-	margin-top : 20px;
-	margin-bottom : 20px;
-	padding : 5px;
+	color : black;
+	margin : 0px;
 }
-
-.importmod, .extends, .implements, .typedef, .platforms {
-	margin-left: 0px;
+.classname {
+	margin-top: 6px;
 	font-weight : bold;
-	font-size: 12pt;
-	letter-spacing : -1px;
+}
+.importmod, .extends, .implements, .typedef, .platforms {
 	color : #999;
 }
-
-dd {
-	font-size: 10pt;
-	margin-left: 20px;
-	margin-bottom: 20px;
-	color : #000000;
+.type {
+	color : red;
+	text-decoration: none;
 }
-
+dd {
+	color : #333;
+	margin-left : 12px;
+	margin-top : -3px;
+	line-height : 100%;
+}
 dt {
-	margin-left: 20px;
-	margin-bottom: 0px;
-	text-align: left;
-	font-size: 9pt;
-	font-family: Courier New, monospace;
+	margin-top : 4px;
+	font-family : Courier New, monospace;
+	padding : 3px 2px 3px 4px;
+	line-height: 92%;
+}
+dt:hover {
+	background-color : #eee;
 }
 </style>
 </head>
 <body>
 <div class="document">
-<div class="title"><a href="http://haxe.org">haXe</a> <a href="http://hxmpp.disktree.net">HXMPP API</a></div>
-<data/>
+	<div class="title"><a href="http://haxe.org">haXe</a> <a href="http://hxmpp.disktree.net">HXMPP API</a></div>
+	<data/>
 </div>
 </body>
 </html>

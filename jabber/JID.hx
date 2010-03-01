@@ -38,6 +38,7 @@ class JID {
 	public var node : String;
     //public var domain(default,null) : String;
     public var domain : String;
+    //public var domainFull(getFullDomain,setFullDomain) : String;
     public var resource : String;
     /** JID without resource */
 	public var bare(getBare,null) : String;

@@ -22,7 +22,7 @@ package xmpp;
 */
 class IQ extends Packet {
 	
-	/** */
+	/** Either: get/set/result/error */
 	public var type : IQType;
 	/** The exclusiv child of the IQ packet. */
 	public var x : PacketElement;
@@ -33,13 +33,19 @@ class IQ extends Packet {
 		this.type = ( type != null ) ? type : xmpp.IQType.get;
 	}
 	
+	/*
+	function setIQType( t : IQType ) : IQType {
+		return type = ( t == null ) ? get : t;
+	}
+	*/
+	
 	public override function toXml(): Xml {
+		var p = super.addAttributes( Xml.createElement( "iq" ) );
 		if( type == null ) type = IQType.get;
-		var _x = super.addAttributes( Xml.createElement( "iq" ) );
-		_x.set( "type", Type.enumConstructor( type ) );
-		_x.set( "id", id );
-		if( x != null ) _x.addChild( x.toXml() );
-		return _x;
+		p.set( "type", Type.enumConstructor( type ) );
+		p.set( "id", id );
+		if( x != null ) p.addChild( x.toXml() );
+		return p;
 	}
 	
 	public static function parse( x : Xml ) : IQ {

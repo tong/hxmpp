@@ -1,9 +1,9 @@
-package net.php;
+package jabber.util.php;
 
 import php.net.Host;
 
 /**
-	Extended version of php.net.Socket to be able to specify 'tls' as transport.
+	Extended version of php.net.Socket to be able to specify 'tls' as transport for secure connections.
 */
 class Socket extends php.net.Socket {
 

@@ -10,28 +10,31 @@ Visit [04][05] for further information.
 
 XEPS SUPPORTED
 --------------
-# * 0004 DataForms
+
+** 0004 DataForms
 * 0012 LastActivity
-## * 0016 PrivacyLists
+*** 0016 PrivacyLists
 * 0030 ServiceDiscovery
-## * 0045 MUChat
+** 0045 MUChat
 * 0049 Private XML Storage
 * 0054 VCardTemp
-##* 0060 PubSub
+*** 0060 PubSub
 * 0071 XHTML-IM
 * 0077 In-Band Registration
 * 0082 XMPP Date and Time Profiles
 * 0085 ChatStateNotification
-#* 0091 DelayedDelivery [deprectaed ]
 * 0092 SoftwareVersion
 * 0106 JID Escaping
 * 0114 Jabber Component Protocol
 * 0115 Entity Capabilities
-#* 0163 PersonalEvent 
-#* 0191 Simple Communications Blocking
+** 0124 BOSH
+** 0163 PersonalEvent 
+** 0191 Simple Communications Blocking
 * 0199 Ping 
-# * 0202 EntityTime
+** 0202 EntityTime
 * 0203 DelayedDelivery
+** 0206 BOSH
+*** 0232 Bits of Binary
 
 
 BUILD+INSTALLATION
@@ -69,14 +72,10 @@ see: hxmpp/samples/*, hxmpp/test/jabber/*
 USING THE BOSH CONNECTION
 -------------------------
 To use BOSH for connecting you have to proxy you requests.
-.....
-
 # Activate mod_proxy apache module
 sudo ln -s /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled/
-
 # Add following line to proxy.load to activate the proxy-http module
 LoadModule proxy_http_module /usr/lib/apache2/modules/mod_proxy_http.so
-
 # Add the proxy directive to the host settings in your http.conf
 # This will proxy requests: htp://127.0.0.1/jabber -> http://127.0.0.1:7070/http-bind/
 <VirtualHost *:80>
@@ -86,12 +85,10 @@ LoadModule proxy_http_module /usr/lib/apache2/modules/mod_proxy_http.so
 	ProxyPassReverse /jabber http://127.0.0.1:7070/http-bind/
 	...
 </VirtualHost>
-
 # Restart apache
 sudo /etc/init.d/apache2 restart
-
-Now you can pass in the path to the constructor of the jabber.BOSHConection class:
-var cnx = new BOSHConnection( "domain.net", "localhost/jabber/" );
+#Now you can pass in the path to the constructor of the jabber.BOSHConection class:
+var cnx = new BOSHConnection( "domain.net", "localhost/http/" );
 
 
 AUTHOR
@@ -104,6 +101,7 @@ DOWNLOAD
 git://83.64.208.21/hxmpp.git
 http://disktree.spektral.at/git/
 http://code.google.com/p/hxmpp
+
 
 LINKS
 -----

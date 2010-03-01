@@ -17,8 +17,6 @@
 */
 package xmpp;
 
-import util.XmlUtil;
-
 //TODO  dataform, oob
 
 /**
@@ -90,7 +88,7 @@ class Register {
 	
 	function createElement( x : Xml, id : String ) {
 		return if( Reflect.hasField( this, id ) )
-			x.addChild( XmlUtil.createElement( id, Reflect.field( this, id ) ) );
+			x.addChild( XMLUtil.createElement( id, Reflect.field( this, id ) ) );
 		else
 			null;
 	}

@@ -17,7 +17,6 @@
 */
 package xmpp;
 
-import util.XmlUtil;
 import xmpp.dataform.FormType;
 
 /**
@@ -45,8 +44,8 @@ class DataForm {
 		var x = Xml.createElement( "x" );
 		x.set( "xmlns", XMLNS );
 		if( type != null ) x.set( "type", Type.enumConstructor( type ) );
-		if( title != null ) x.addChild( XmlUtil.createElement( "title", title ) );
-		if( instructions != null ) x.addChild( XmlUtil.createElement( "instructions", instructions ) );
+		if( title != null ) x.addChild( XMLUtil.createElement( "title", title ) );
+		if( instructions != null ) x.addChild( XMLUtil.createElement( "instructions", instructions ) );
 		for( f in fields ) x.addChild( f.toXml() );
 		if( reported != null ) x.addChild( reported.toXml() );
 		for( i in items ) x.addChild( i.toXml() ); 

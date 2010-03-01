@@ -33,7 +33,9 @@ private class Socket extends flash.net.Socket {
 	}
 }
 
-class SocketBridge extends flash.display.Sprite { // why? extend?
+/**
+*/
+class SocketBridge extends flash.display.Sprite { // why?extend?
 	
 	static var defaultBridgeContext = "jabber.SocketBridgeConnection";
 	

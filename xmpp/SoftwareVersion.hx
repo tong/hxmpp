@@ -17,11 +17,12 @@
 */
 package xmpp;
 
-import util.XmlUtil;
-
+/**
+	<a href="http://www.xmpp.org/extensions/xep-0092.html">XEP 0092 - Software Version</a>
+*/
 class SoftwareVersion {
 	
-	public static inline var XMLNS = "jabber:iq:version";
+	public static var XMLNS = "jabber:iq:version";
 	
 	public var name : String;
 	public var version : String;
@@ -35,9 +36,9 @@ class SoftwareVersion {
 	
 	public function toXml() : Xml {
 		var x = IQ.createQueryXml( XMLNS );
-		if( name != null ) x.addChild( XmlUtil.createElement( "name", name ) );
-		if( version != null ) x.addChild( XmlUtil.createElement( "version", version ) );
-		if( os != null ) x.addChild( XmlUtil.createElement( "os", os ) );
+		if( name != null ) x.addChild( XMLUtil.createElement( "name", name ) );
+		if( version != null ) x.addChild( XMLUtil.createElement( "version", version ) );
+		if( os != null ) x.addChild( XMLUtil.createElement( "os", os ) );
 		return x;
 	}
 	

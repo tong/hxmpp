@@ -19,9 +19,13 @@ package jabber.component;
 
 import jabber.stream.Connection;
 import jabber.ServiceDiscoveryListener;
+import jabber.util.SHA1;
+import xmpp.XMLUtil;
+
+//private class StreamFeatures extends jabber.stream.Features
 
 /**
-	Base for Component-2-Server XMPP streams.<br/>
+	Component-2-Server XMPP streams.<br/>
 	<a href="http://www.xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>
 */
 class Stream extends jabber.Stream {
@@ -29,24 +33,16 @@ class Stream extends jabber.Stream {
 	public static inline var PORT_STANDARD = 5275;
 	public static var defaultPort = PORT_STANDARD;
 	
-	/** Dispatched on authentication success */
 	public dynamic function onConnect() : Void;
 	
-	/** Server components host */
 	public var host(default,null) : String;
-	/** This components subdomain */
 	public var subdomain(default,null) : String;
-	/** */
 	public var serviceName(getServiceName,null) : String;
-	/** Shared secret used to identify legacy components*/
+	/** Shared secret string used to identify legacy components*/
 	public var secret(default,null) : String;
-	/**  */
 	public var connected(default,null) : Bool;
-	/** */
-	public var items(getItems,null) : xmpp.disco.Items; //TODO move into jabber.Stream? ( allowed by clients ? )
-	/** */
+	public var items(getItems,null) : xmpp.disco.Items; //TODO move into jabber.Stream? 
 	public var discoListener(default,null) : ServiceDiscoveryListener;
-	
 	
 	public function new( host : String, subdomain : String, secret : String, cnx : Connection,
 						 ?identities : Array<xmpp.disco.Identity> ) {
@@ -86,7 +82,7 @@ class Stream extends jabber.Stream {
 		cnx.read( true );
 	}
 	
-	//TODO!!!!!!!!!
+	//TODO this is mess!!!!!!!!!
 	override function processStreamInit( t : String, len : Int ) {
 		var i = t.indexOf( ">" );
 		if( i == -1 )
@@ -116,7 +112,7 @@ class Stream extends jabber.Stream {
 		#end
 		onOpen();
 		collectors.add( new  jabber.stream.PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], readyHandler, false ) );
-		sendData( util.XmlUtil.createElement( "handshake", Xml.createPCData( crypt.SHA1.encode( id+secret ) ).toString() ).toString() );
+		sendData( XMLUtil.createElement( "handshake", Xml.createPCData( SHA1.encode( id+secret ) ).toString() ).toString() );
 		return len;
 	}
 	

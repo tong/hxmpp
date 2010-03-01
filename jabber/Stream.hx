@@ -21,9 +21,9 @@ import jabber.stream.Connection;
 import jabber.stream.TPacketInterceptor;
 import jabber.stream.PacketCollector;
 import jabber.stream.PacketTimeout;
+import jabber.util.Base64;
+import xmpp.XMLUtil;
 import xmpp.filter.PacketIDFilter;
-import util.XmlUtil;
-import util.Base64;
 
 /* 
 private typedef TDataFilter = {
@@ -52,6 +52,9 @@ private class StreamFeatures {
 		l.add( f );
 		return true;
 	}
+	public function remove( f : String ) : Bool {
+		return l.remove( f );
+	}
 }
 
 /**
@@ -59,25 +62,19 @@ private class StreamFeatures {
 */
 class Stream {
 	
-	/*
-	#if XMPP_DEBUG
-	//public static function onXMPP( s : Stream, p : xmpp.Packet, out : Bool ) : Void;
-	public static function onXMPP(default,null) : EventDispatcher<XMPPTransfer>;
-	public static function debugXMPP( t : String ) {
-	}
-	#end
-	*/
-	
 	public static var packetIDLength = 5;
 	
 	public dynamic function onOpen() : Void;
+	//public dynamic function onClose( ?e : Dynamic ) : Void;
 	public dynamic function onClose( ?e : Dynamic ) : Void;
 	
-	public var status : StreamStatus;
-	public var cnx(default,setConnection) : Connection;
 	public var jidstr(getJIDStr,null) : String;
+	//public var _jid(getJIDStr,null) : String;
+	public var status : StreamStatus;
+	//public var status(default,null) : StreamStatus; // add: public function changeStatus( modifier : IStreamStatusModifier )
+	public var cnx(default,setConnection) : Connection;
 	public var features(default,null) : StreamFeatures;
-	public var server(default,null) : Server;
+	public var server(default,null) : Server; //TODO move to jabber.Stream
 	public var id(default,null) : String;
 	public var lang(default,null) : String;
 	public var version : Bool; //Indicates if the version number of the XMPP stream ("1.0") should get added to the stream opening XML element.
@@ -90,6 +87,7 @@ class Stream {
 	var interceptors : List<TPacketInterceptor>; // public var packetInterceptors : Array<TPacketCollector>; 
 	var numPacketsSent : Int;
 	//var numPacketsRecieved : Int;
+	//var stats : jabber.stream.Stats;
 	
 	function new( ?cnx : Connection ) {
 //		if( cnx == null )
@@ -106,7 +104,6 @@ class Stream {
 		//dataInterceptors = new List();
 		if( cnx != null )
 			setConnection( cnx );
-			
 		 // TODO HACK
 		#if (flash&&JABBER_CONSOLE)
 		XMPPDebug.stream = this;
@@ -163,6 +160,14 @@ class Stream {
 		Close the XMPP stream.
 	*/
 	public function close( ?disconnect = false ) {
+		if( status == StreamStatus.closed )
+			return;
+		if( !http ) sendData( xmpp.Stream.CLOSE );
+		status = StreamStatus.closed;
+		if( disconnect ) cnx.disconnect();
+		closeHandler();
+		/*
+		//TODO
 		if( status == StreamStatus.open ) {
 			if( !http ) sendData( xmpp.Stream.CLOSE );
 			status = StreamStatus.closed;
@@ -170,6 +175,7 @@ class Stream {
 		if( disconnect )
 			cnx.disconnect();
 		closeHandler();
+		*/
 	}
 	
 	/**
@@ -180,6 +186,13 @@ class Stream {
 			return null;
 		if( intercept )
 			interceptPacket( untyped p );
+			/*
+		#if XMPP_DEBUG
+		#if JABBER_CONSOLE
+		jabber.util.XMPPDebugConsole.print( jidstr, cast p );
+		#end
+		#end
+		*/
 		return ( sendData( untyped p.toString() ) != null ) ? p : null;
 	}
 	
@@ -221,8 +234,7 @@ class Stream {
 							?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool )
 	: { iq : xmpp.IQ, collector : PacketCollector }
 	{
-		if( iq.id == null )
-			iq.id = nextID();
+		if( iq.id == null ) iq.id = nextID();
 		//iq.from = jidstr;
 		var c : PacketCollector = null;
 		if( handler != null ) {
@@ -339,7 +351,7 @@ class Stream {
 		case closed :
 			return -1;//buflen?
 		case pending :
-			return processStreamInit( XmlUtil.removeXmlHeader( t ), buflen );
+			return processStreamInit( XMLUtil.removeXmlHeader( t ), buflen );
 		case open :
 			// filter data here ?
 			var x : Xml = null;

@@ -36,28 +36,32 @@ class Session {
 	public var initiator(default,null) : String;
 	public var name(default,null) : String;
 	public var sid(default,null) : String;
+	public var active(default,null) : Bool;
 	
 	var sessionCollector : PacketCollector;
 	
 	function new( stream : jabber.Stream ) {
 		this.stream = stream;
+		active = false;
 	}
 	
 	/**
 	*/
 	public function terminate( ?reason : xmpp.jingle.Reason, ?content : Xml ) {
+		//if( !active ) 
 		if( reason == null ) reason = xmpp.jingle.Reason.success;
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, entity );
 		var j = new xmpp.Jingle( xmpp.jingle.Action.session_terminate, initiator, sid );
 		j.reason = { type : reason, content : content };
 		iq.x = j;
 		var me = this;
-		trace(iq);
 		stream.sendIQ( iq, function(r) {
 			switch( r.type ) {
 			case error :
 				// me.onFail();
 			case result :
+				trace("TERMINATE RESULT");
+				me.active = false;
 				me.onEnd( reason );
 			default :
 			}
@@ -69,6 +73,7 @@ class Session {
 		Send a informational message.
 	*/
 	public function sendInfo( ?payload : Xml ) {
+		//if( !active ) 
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, entity );
 		var j = new xmpp.Jingle( xmpp.jingle.Action.session_info, initiator, sid );
 		if( payload != null ) {
@@ -98,6 +103,7 @@ class Session {
 	
 	function handleTerminate( iq : IQ ) {
 		stream.sendPacket( xmpp.IQ.createResult( iq ) );
+		active = false;
 		//TODO
 		//var _r : String = null;
 		//try _r = iq.x.toXml().firstElement().nodeName catch( e : Dynamic ) {}
@@ -107,6 +113,7 @@ class Session {
 	function cleanup() {
 		stream.removeCollector( sessionCollector );
 		sessionCollector = null;
+		active = false;
 	}
 	
 }

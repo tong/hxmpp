@@ -17,13 +17,11 @@
 */
 package xmpp;
 
-import util.XmlUtil;
-
 /**
 	<a href="http://xmpp.org/rfcs/rfc3921.html">RFC-3921 - Instant Messaging and Presence</a></br>
 	<a href="http://www.xmpp.org/rfcs/rfc3921.html#presence">Exchanging Presence Information</a>
 */
-class Presence extends Packet {
+class Presence extends xmpp.Packet {
 	
 	public var type : PresenceType;
    	public var show : PresenceShow;
@@ -46,10 +44,9 @@ class Presence extends Packet {
 	public override function toXml() : Xml {
 		var x = super.addAttributes( Xml.createElement( "presence" ) );
 		if( type != null ) x.set( "type", Type.enumConstructor( type ) );
-		if( show != null ) x.addChild( XmlUtil.createElement( "show", Type.enumConstructor( show ) ) );
-		//if( status != null && status != "" ) x.addChild( XmlUtil.createElement( "status", status ) );
-		if( status != null ) x.addChild( XmlUtil.createElement( "status", status ) );
-		if( priority != null ) x.addChild( XmlUtil.createElement( "priority", Std.string( priority ) ) );
+		if( show != null ) x.addChild( XMLUtil.createElement( "show", Type.enumConstructor( show ) ) );
+		if( status != null ) x.addChild( XMLUtil.createElement( "status", status ) );
+		if( priority != null ) x.addChild( XMLUtil.createElement( "priority", Std.string( priority ) ) );
 		return x;
 	}
 	

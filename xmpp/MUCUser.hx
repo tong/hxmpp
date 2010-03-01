@@ -35,9 +35,7 @@ class MUCUser {
 	public var password : String;
 	public var status : Status;
 	
-	
 	public function new() {}
-	
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "x" );
@@ -45,14 +43,15 @@ class MUCUser {
 		if( invite != null ) x.addChild( invite.toXml() );
 		if( decline != null ) x.addChild( decline.toXml() );
 		if( item != null ) x.addChild( item.toXml() );
-		if( password != null ) x.addChild( util.XmlUtil.createElement( "password", password ) );
+		if( password != null ) x.addChild( XMLUtil.createElement( "password", password ) );
 		if( status != null ) x.addChild( status.toXml() );
 		if( destroy != null ) x.addChild( destroy.toXml() );
 		return x;
 	}
 	
-	public inline function toString() : String { return toXml().toString(); }
-	
+	public inline function toString() : String {
+		return toXml().toString();
+	}
 	
 	public static function parse( x : Xml ) : xmpp.MUCUser {
 		var p = new MUCUser();

@@ -26,7 +26,7 @@ class Packet {
 	public var to : String;
 	public var from : String;
 	public var id : String;	
-	public var lang : String;
+	public var lang : String; //TODO langs : Array<String>
 	public var properties : Array<Xml>; // <PacketElement> hmm? 
 	public var errors : Array<xmpp.Error>;
 	
@@ -43,13 +43,13 @@ class Packet {
 		Creates/Returns the XML representation of this XMPP packet.
 	*/
 	public function toXml() : Xml {
-		return throw "Abstract";
+		return throw "Abstract method";
 	}
 	
 	/**
 		Creates/Returns the string representation of this XMPP packet.
 	*/
-	public inline function toString() : String {
+	public function toString() : String {
 		return toXml().toString();
 	}
 
@@ -127,7 +127,7 @@ class Packet {
 		trace( Reflect.field( o, name ) );
 		var v = Reflect.field( o, name );
 		if( v == null ) return null;
-		return util.XmlUtil.createElement( name, v );
+		return XMLUtil.createElement( name, v );
 	}
 */
 	/*

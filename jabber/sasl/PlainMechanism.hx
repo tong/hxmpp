@@ -1,4 +1,4 @@
-package net.sasl;
+package jabber.sasl;
 
 /**
 	The PLAIN mechanism should not be used without adequate data security protection

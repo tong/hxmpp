@@ -1,3 +1,20 @@
+/*
+ *	This file is part of HXMPP.
+ *	Copyright (c)2009 http://www.disktree.net
+ *	
+ *	HXMPP is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  HXMPP is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *	See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
+*/
 package jabber.jingle;
 
 import jabber.JIDUtil;
@@ -5,8 +22,6 @@ import jabber.jingle.transport.RTMPOutput;
 import xmpp.IQ;
 import xmpp.IQType;
 import xmpp.jingle.TRTMPCandidate;
-
-//TODO timeout timers
 
 /**
 	<a href="http://xmpp.org/extensions/inbox/jingle-rtmp.html">XEP-XXXX: jingle RTMP.</a><br/>
@@ -20,8 +35,10 @@ class RTMPCall extends Session {
 	public var transports(default,null) : Array<RTMPOutput>; //TODO! TRTMPCandidate (?) 
 	/** Used RTMP transport */
 	public var transport(default,null) : RTMPOutput;
-	/** Record filename*/
+	/** Record filename */
 	public var record(default,null) : String;
+	/** */
+	//public var active : Bool;
 	
 	var currentTransports : Array<RTMPOutput>;
 	var currentTransportIndex : Int;
@@ -31,6 +48,7 @@ class RTMPCall extends Session {
 	public function new( stream : jabber.Stream, entity : String,
 						 ?record : String ) {
 		super( stream );
+	//	this.initiator = stream.jid.bare;
 		this.entity = entity;
 		this.record = record;
 		transports = new Array();
@@ -65,6 +83,11 @@ class RTMPCall extends Session {
 		cleanup();
 	}
 	
+	public function kill() {
+		//if(
+		cleanup();
+	}
+	
 	function handleSessionInitResponse( iq : IQ  ) {
 		switch( iq.type ) {
 		case result :
@@ -78,7 +101,6 @@ class RTMPCall extends Session {
 	function handleSessionPacket( iq : IQ ) {
 		var j = xmpp.Jingle.parse( iq.x.toXml() );
 		//TODO check own state
-		//..
 	//	if( j.sid != sid ) return;
 		switch( j.action ) {
 		case session_accept :
@@ -87,8 +109,7 @@ class RTMPCall extends Session {
 				trace("Invalid request, session already active");
 				return;
 			}
-			//trace( "Jingle session accepted ..." );
-			var content = j.content[0]; //TODO
+			var content = j.content[0]; //(TODO)
 			var candidates = new Array<xmpp.jingle.TRTMPCandidate>();
 			for( h in content.transport.elements )
 				candidates.push( xmpp.jingle.Candidate.parse( h ) );
@@ -128,21 +149,23 @@ class RTMPCall extends Session {
 		transport.__onPublish = handleTransportPublish;
 		onConnect();
 		//if( !manualPublish )
-	//		transport.publish( record );
+		transport.publish();
 	}
 	
 	function handleTransportPublish() {
 		stream.sendPacket( IQ.createResult( sessionAcceptIQ ) ); // send accept response 
-		onInit();
+		onInit(); //onPublish();
 	}
 	
 	function handleTransportFail() {
 		trace("handleTransportFail");
+		//TODO
+		//onFail();
 	}
 	
 	override function cleanup() {
-		if( transport != null && transport.connected ) {
-			transport.close();
+		if( transport != null ) {
+			if( transport.connected ) transport.close();
 			transport = null;
 		}
 		super.cleanup();

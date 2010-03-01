@@ -39,7 +39,7 @@ class StreamError {
 		c.set( "xmlns", XMLNS );
 		x.addChild( c );
 		if( text != null ) {
-			var t = util.XmlUtil.createElement( "text", text );
+			var t = XMLUtil.createElement( "text", text );
 			t.set( "xmlns", XMLNS );
 			if( lang != null ) t.set( "lang", lang );
 			x.addChild( t );

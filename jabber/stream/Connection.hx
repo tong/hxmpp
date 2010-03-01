@@ -24,31 +24,17 @@ class Connection {
 	
 	/** Callback for connecting event */
 	public var __onConnect : Void->Void;
-	
 	/** Callback for disconnecting event */
 	public var __onDisconnect : Void->Void;
-	
 	/** Callback data recieved event */
 	//public var onData : String->Void;
 	public var __onData : haxe.io.Bytes->Int->Int->Int;
-	
 	/** Callback connection level errors */
-	public var __onError : String->Void; //TODO remove, use: __onDisconnect(?e)
+	public var __onError : String->Void; // TODO replace : __onDisconnect(?e)
 	
-	/** Server IP/hostname */
 	public var host(default,null) : String;
-	
-	/** Server port to connect to */
 	//public var port(default,null) : Int;
-	
-	/** Indicates whether is currently connected. */
 	public var connected(default,null) : Bool;
-	
-	/** Raw data filters for outgoing data. */
-	//public var interceptors : Array<DataInterceptor>;
-	
-	/** Raw data filters for incoming data. */
-	//public var filters : Array<DataFilter>;
 	
 	function new( host : String ) {
 		this.host = host;
@@ -77,6 +63,9 @@ class Connection {
 	/**
 		Starts/Stops reading data input.
 	*/
+	//TODO!!!!!!!!!!!!
+	//public function read() : String {
+	//public function readBytes( buf : haxe.io.Bytes ) : Void {
 	public function read( ?yes : Bool = true ) : Bool {
 		return false;
 	}

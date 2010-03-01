@@ -17,6 +17,9 @@
 */
 package xmpp;
 
+import jabber.util.Base64;
+import jabber.util.SHA1;
+
 /**
 	<a href="http://xmpp.org/extensions/xep-0115.html">XEP-0085: Entity Capabilities</a><br/>
 */
@@ -111,7 +114,7 @@ class Caps {
 				}
 			}
 		}
-		return util.Base64.encode( crypt.SHA1.encode( b.toString() ) );
+		return Base64.encode( SHA1.encode( b.toString() ) );
 	}
 	
 	static function sortIdentities( a : xmpp.disco.Identity, b : xmpp.disco.Identity ) : Int {

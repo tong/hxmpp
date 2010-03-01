@@ -28,10 +28,10 @@ class MessageFilter {
 		this.type = type;
 	}
 	
-	public function accept( p : xmpp.Packet ) {
+	public function accept( p : xmpp.Packet ) : Bool {
 		if( p._type != xmpp.PacketType.message )
 			return false;
-		return ( type == null ) ? true : ( type == untyped p.type ); //cast( p, xmpp.Message ).type;
+		return ( type == null ) ? true : ( type == untyped p.type );
 	}
 	
 }

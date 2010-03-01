@@ -17,8 +17,6 @@
 */
 package xmpp;
 
-import util.XmlUtil;
-
 class Stream {
 	
 	public static inline var XMLNS_STREAM 	  = "http://etherx.jabber.org/streams";
@@ -48,7 +46,7 @@ class Stream {
 			b.add( '"' );
 		}
 		b.add( '>' );
-		return ( xmlHeader ) ? XmlUtil.XML_HEADER+b.toString() : b.toString();
+		return ( xmlHeader ) ? XMLUtil.XML_HEADER+b.toString() : b.toString();
 	}
 	
 	/*

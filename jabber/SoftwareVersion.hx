@@ -17,6 +17,8 @@
 */
 package jabber;
 
+import jabber.util.SystemUtil;
+
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0092.html">XEP 0092 - Software Version</a>
 */
@@ -37,7 +39,7 @@ class SoftwareVersion {
 		this.stream = stream;
 		this.name = name;
 		this.version = version;
-		this.os = ( os != null ) ? os : util.SystemUtil.systemName();
+		this.os = ( os != null ) ? os : SystemUtil.systemName();
 		stream.addCollector( new jabber.stream.PacketCollector( [ cast new xmpp.filter.IQFilter( xmpp.SoftwareVersion.XMLNS, null, xmpp.IQType.get ) ], handleQuery, true ) );
 	}
 	
@@ -58,7 +60,8 @@ class SoftwareVersion {
 	}
 	
 	function handleQuery( iq : xmpp.IQ ) {
-		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, stream.jidstr );
+		//var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, stream.jidstr );
+		var r = xmpp.IQ.createResult( iq );
 		r.x = new xmpp.SoftwareVersion( name, version, os );
 		stream.sendData( r.toString() );
 	}

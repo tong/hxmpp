@@ -58,7 +58,7 @@ class MUCUtil {
 	/**
 		Returns the occupant name of the muc jid.
 	*/
-	public static function getOccupant( t : String ) : String {
+	public static function getNick( t : String ) : String {
 		var i = t.indexOf( "/" );
 		return ( i == -1 ) ? null : t.substr( i+1 );
 	}

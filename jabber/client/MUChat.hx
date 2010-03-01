@@ -17,8 +17,9 @@
 */
 package jabber.client;
 
+//OLD
+
 import jabber.PresenceManager;
-import jabber.stream.PacketCollector;
 import jabber.stream.PacketCollector;
 import xmpp.Message;
 import xmpp.MessageType;
