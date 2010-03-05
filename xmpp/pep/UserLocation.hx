@@ -99,7 +99,7 @@ class UserLocation extends Event {
 	
 	function addElement( f : String, x : Xml ) {
 		var d = Std.string( Reflect.field( this, f ) );
-		if( d != null ) x.addChild( XMLUtil.createElement( f, d ) );
+		if( d != null ) x.addChild( xmpp.XMLUtil.createElement( f, d ) );
 	}
 	
 	public static function parse( x : Xml ) : UserLocation  {

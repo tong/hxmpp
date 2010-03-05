@@ -46,7 +46,7 @@ class UserActivity extends Event {
 		}
 		x.addChild( a );
 		if( text != null )
-			x.addChild( XMLUtil.createElement( "text", text ) );
+			x.addChild( xmpp.XMLUtil.createElement( "text", text ) );
 		return x;
 	}
 	

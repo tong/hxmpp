@@ -68,7 +68,7 @@ class UserTune extends Event {
 	}
 	
 	function resolveElement( f : String ) : Xml {
-		return XMLUtil.createElement( f, Std.string( Reflect.field( this, f ) ) );
+		return xmpp.XMLUtil.createElement( f, Std.string( Reflect.field( this, f ) ) );
 	}
 	
 	public static function parse( x : Xml ) : UserTune  {

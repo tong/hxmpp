@@ -46,7 +46,7 @@ class UserMood extends Event {
 		}
 		x.addChild( m );
 		if( text != null )
-			x.addChild( XMLUtil.createElement( "text", text ) );
+			x.addChild( xmpp.XMLUtil.createElement( "text", text ) );
 		return x;
 	}
 	

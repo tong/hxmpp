@@ -57,8 +57,8 @@ class EntityTime {
 	public function toXml() : Xml {
 		var x = Xml.createElement( "time" );
 		x.set( "xmlns", XMLNS );
-		if( utc != null ) x.addChild( util.XMLUtil.createElement( "utc", utc ) );
-		if( tzo != null ) x.addChild( util.XMLUtil.createElement( "tzo", tzo ) );
+		if( utc != null ) x.addChild( XMLUtil.createElement( "utc", utc ) );
+		if( tzo != null ) x.addChild( XMLUtil.createElement( "tzo", tzo ) );
 		return x;
 	}
 	
