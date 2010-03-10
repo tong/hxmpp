@@ -228,7 +228,8 @@ class PubSub {
 		}
 		var me = this;
 		sendIQ( iq, function(r:xmpp.IQ) {
-			me.onPublish( node, item );
+			var i = xmpp.pubsub.Item.parse( r.x.toXml() );
+			me.onPublish( node, i );
 		} );
 	}
 	
