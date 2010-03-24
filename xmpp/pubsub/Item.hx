@@ -21,7 +21,7 @@ class Item {
 	
 	public var id : String;
 	public var payload : Xml; // TODO String ?
-	/** The node attribute is allowed (required!) in pubsub-event namespace only! */
+	/* The node attribute is allowed (required!) in pubsub-event namespace only! */
 	//public var node : String;
 	
 	public function new( ?id : String, ?payload : Xml/*, ?node : String*/ ) {
@@ -43,9 +43,9 @@ class Item {
 	}
 	
 	public static function parse( x : Xml ) : Item {
-		var pl = x.firstElement();
-		if( pl == null ) pl = x.firstChild();
-		return new Item( x.get( "id" ), pl/*, x.get( "node" )*/ );
+		var e = x.firstElement();
+		if( e == null ) e = x.firstChild();
+		return new Item( x.get( "id" ), e/*, x.get( "node" )*/ );
 	}
 	
 }

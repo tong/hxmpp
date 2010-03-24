@@ -45,7 +45,7 @@ class SASLAuth extends Authentication {
 	var c_fail : PacketCollector;
 	var c_success : PacketCollector;
 	
-	public function new( stream : Stream, mechanisms : Iterable<jabber.sasl.Mechanism> ) {
+	public function new( stream : Stream, mechanisms : Iterable<jabber.sasl.TMechanism> ) {
 		var x = stream.server.features.get( "mechanisms" );
 		if( x == null )
 			throw "Server does't support SASL";
@@ -65,10 +65,10 @@ class SASLAuth extends Authentication {
 	*/
 	public override function authenticate( password : String, ?resource : String ) : Bool {
 		this.resource = resource;
-		// update stream jid resource
+		// update stream's JID resource
 		if( stream.jid != null && resource != null )
 			stream.jid.resource = resource;
-		// locate mechanism to use
+		// locate SASL mechanism to use
 		if( handshake.mechanism == null ) {
 			for( amechs in mechanisms ) {
 				for( m in handshake.mechanisms ) {
@@ -85,6 +85,11 @@ class SASLAuth extends Authentication {
 			#if JABBER_DEBUG trace( "No matching SASL mechanism found.", "warn" ); #end
 			return false;
 		}
+		/*
+		if( password == null && handshake.mechanism.id != "ANONYMOUS" ) {
+			throw "No password given";
+		}
+		*/
 		c_fail = stream.collect( [cast new PacketNameFilter( xmpp.SASL.EREG_FAILURE )], handleSASLFailed );
 		c_success = stream.collect( [cast new PacketNameFilter( ~/success/ )], handleSASLSuccess );
 		c_challenge = stream.collect( [cast new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
@@ -92,7 +97,7 @@ class SASLAuth extends Authentication {
 		var t = handshake.mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password );
 		//TODO?wtf
 		if( t != null ) t = Base64.encode( t ); 
-		return stream.sendData( xmpp.SASL.createAuthXml( handshake.mechanism.id, t ).toString() ) != null;
+		return stream.sendData( xmpp.SASL.createAuthXML( handshake.mechanism.id, t ).toString() ) != null;
 	}
 	
 	function handleSASLFailed( p : xmpp.Packet ) {
@@ -103,7 +108,7 @@ class SASLAuth extends Authentication {
 	function handleSASLChallenge( p : xmpp.Packet ) {
 		var c = p.toXml().firstChild().nodeValue;
 		var r = Base64.encode( handshake.getChallengeResponse( c ) );
-		stream.sendData( xmpp.SASL.createResponseXml( r ).toString() );
+		stream.sendData( xmpp.SASL.createResponseXML( r ).toString() );
 	}
 	
 	function handleSASLSuccess( p : xmpp.Packet ) {

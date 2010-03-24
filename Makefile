@@ -5,6 +5,8 @@ PROJECT:=hxmpp
 VERSION:=0.4
 #DATE:=$(shell date +"%Y-%m-%d")
 
+#JSCOMPRESSOR = closure
+
 include hxmpp.source
 include hxmpp.stable
 
@@ -12,19 +14,18 @@ LIB_JS = lib/hxmpp.js
 LIB_SWC = lib/hxmpp.swc
 FLAGS = -cp lib -exclude hxmpp.exclude
 
-all:
-	(cd util; make)
+all : libs
 
 
-$(LIB_JS) : $(HXMPP_SRC)
-	haxe -js out/hxmpp.js $(FLAGS) $(STABLE_CLIENT_JS) --no-traces
-	haxe -js out/hxmpp-debug.js $(FLAGS) $(STABLE_CLIENT_JS) \
+$(LIB_JS) : $(HXMPP_SRC)  hxmpp.stable
+	haxe -js $@ $(FLAGS) $(STABLE_CLIENT_JS) --no-traces
+	haxe -js lib/hxmpp-debug.js $(FLAGS) $(STABLE_CLIENT_JS) \
 		-D JABBER_DEBUG -D XMPP_DEBUG -D JABBER_CONSOLE \
 		-debug
 
-$(LIB_SWC) : $(HXMPP_SRC)
+$(LIB_SWC) : $(HXMPP_SRC)  hxmpp.stable
 	haxe -swf9 $@ $(FLAGS) $(STABLE_CLIENT) --no-traces
-	haxe -swf9 out/hxmpp-debug.swc $(FLAGS) $(STABLE_CLIENT) \
+	haxe -swf9 lib/hxmpp-debug.swc $(FLAGS) $(STABLE_CLIENT) \
 		-D JABBER_DEBUG -D JABBER_CONSOLE -D XMPP_DEBUG \
 		-debug --flash-strict
 

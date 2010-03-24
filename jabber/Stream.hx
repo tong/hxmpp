@@ -21,22 +21,15 @@ import jabber.stream.Connection;
 import jabber.stream.TPacketInterceptor;
 import jabber.stream.PacketCollector;
 import jabber.stream.PacketTimeout;
+import jabber.stream.TDataInterceptor;
+import jabber.stream.TDataFilter;
 import jabber.util.Base64;
 import xmpp.XMLUtil;
 import xmpp.filter.PacketIDFilter;
 
-/* 
-private typedef TDataFilter = {
-	function filterData( t : haxe.io.Bytes ) : haxe.io.Bytes;
-}
-private typedef TDataInterceptor = {
-	function interceptData( t : haxe.io.Bytes ) : haxe.io.Bytes;
-}
-*/
-
 private typedef Server = {
 	var features : Hash<Xml>;
-	///var tls : { has : Bool, required : Bool };
+	//var tls : { has : Bool, required : Bool };
 }
 
 private class StreamFeatures {
@@ -62,56 +55,54 @@ private class StreamFeatures {
 */
 class Stream {
 	
-	public static var packetIDLength = 5;
+	public static var defaultPacketIDLength = 5;
 	
+	/** */
 	public dynamic function onOpen() : Void;
-	//public dynamic function onClose( ?e : Dynamic ) : Void;
+	/** */
 	public dynamic function onClose( ?e : Dynamic ) : Void;
 	
-	public var jidstr(getJIDStr,null) : String;
-	//public var _jid(getJIDStr,null) : String;
 	public var status : StreamStatus;
-	//public var status(default,null) : StreamStatus; // add: public function changeStatus( modifier : IStreamStatusModifier )
+	public var jidstr(getJIDStr,null) : String;
 	public var cnx(default,setConnection) : Connection;
 	public var features(default,null) : StreamFeatures;
-	public var server(default,null) : Server; //TODO move to jabber.Stream
+	public var server(default,null) : Server;
 	public var id(default,null) : String;
 	public var lang(default,null) : String;
-	public var version : Bool; //Indicates if the version number of the XMPP stream ("1.0") should get added to the stream opening XML element.
-	//public var dataFilters : List<TDataFilter>;
-	//public var dataInterceptors : List<TDataInterceptor>;
+	public var version : Bool;
+	public var dataFilters(default,null) : List<TDataFilter>;
+	public var dataInterceptors(default,null) : List<TDataInterceptor>;
+	
 	/** Indicates if this streams connection is a http connection */
 	public var http(default,null) : Bool; //TODO move to: jabber.stream.Connection
 	
-	var collectors : List<PacketCollector>; // public var packetCollectors : Array<TPacketCollector>; 
-	var interceptors : List<TPacketInterceptor>; // public var packetInterceptors : Array<TPacketCollector>; 
+	var collectors : List<PacketCollector>;
+	var interceptors : List<TPacketInterceptor>;
 	var numPacketsSent : Int;
 	//var numPacketsRecieved : Int;
 	//var stats : jabber.stream.Stats;
 	
+	#if JABBER_DEBUG public #end
 	function new( ?cnx : Connection ) {
-//		if( cnx == null )
-//			throw "Stream connection is null";
 		status = StreamStatus.closed;
 		server = { features : new Hash() };
 		features = new StreamFeatures();
 		version = true;
 		collectors = new List();
 		interceptors = new List();
-		http = false;
 		numPacketsSent = 0;
-		//dataFilters = new List();
-		//dataInterceptors = new List();
-		if( cnx != null )
-			setConnection( cnx );
-		 // TODO HACK
+		http = false;
+		dataFilters = new List();
+		dataInterceptors = new List();
+		if( cnx != null ) setConnection( cnx );
+		// TODO HACK
 		#if (flash&&JABBER_CONSOLE)
 		XMPPDebug.stream = this;
 		#end
 	}
 	
 	function getJIDStr() : String {
-		return null;
+		return throw "abstract";
 	}
 	
 	function setConnection( c : Connection ) : Connection {
@@ -129,8 +120,11 @@ class Stream {
 			cnx.__onData = processData;
 			cnx.__onError = errorHandler;
 		}
-		//HACK
-		http = ( Type.getClassName( Type.getClass( cnx ) ) == "jabber.BOSHConnection" );
+		//TODO HACK
+		try http = ( untyped cnx.http == true ) catch( e : Dynamic ) {
+			http = false;
+		}
+	//	http = ( Type.getClassName( Type.getClass( cnx ) ) == "jabber.BOSHConnection" );
 		return cnx;
 	}
 	
@@ -139,9 +133,9 @@ class Stream {
 	*/
 	public function nextID() : String {
 		#if JABBER_DEBUG
-		return Base64.random( packetIDLength )+"_"+numPacketsSent;
+		return Base64.random( defaultPacketIDLength )+"_"+numPacketsSent;
 		#else
-		return Base64.random( packetIDLength );
+		return Base64.random( defaultPacketIDLength );
 		#end
 	}
 	
@@ -164,35 +158,18 @@ class Stream {
 			return;
 		if( !http ) sendData( xmpp.Stream.CLOSE );
 		status = StreamStatus.closed;
-		if( disconnect ) cnx.disconnect();
+		if( http ) cnx.disconnect();
+		else if( disconnect ) cnx.disconnect();
 		closeHandler();
-		/*
-		//TODO
-		if( status == StreamStatus.open ) {
-			if( !http ) sendData( xmpp.Stream.CLOSE );
-			status = StreamStatus.closed;
-		}
-		if( disconnect )
-			cnx.disconnect();
-		closeHandler();
-		*/
 	}
 	
 	/**
 		Intercept/Send/Return the given XMPP packet.
 	*/
 	public function sendPacket<T>( p : T, intercept : Bool = true ) : T {
-		if( !cnx.connected /*|| status != StreamStatus.open*/ )
+		if( !cnx.connected )
 			return null;
-		if( intercept )
-			interceptPacket( untyped p );
-			/*
-		#if XMPP_DEBUG
-		#if JABBER_CONSOLE
-		jabber.util.XMPPDebugConsole.print( jidstr, cast p );
-		#end
-		#end
-		*/
+		if( intercept ) interceptPacket( untyped p );
 		return ( sendData( untyped p.toString() ) != null ) ? p : null;
 	}
 	
@@ -202,7 +179,7 @@ class Stream {
 	public function sendData( t : String ) : String {
 		if( !cnx.connected )
 			return null;
-		//TODO
+		//TODO !!
 		//for( i in dataInterceptors )
 			//t = i.interceptData( t );
 		if( !cnx.write( t ) )
@@ -335,9 +312,6 @@ class Stream {
 		var t : String = buf.readString( bufpos, buflen );
 		/*//TODO
 		if( xmpp.Stream.REGEXP_CLOSE.match( t ) ) {
-			close( true );
-			return -1;
-		}
 		*/
 		//TODO
 		if( StringTools.startsWith( t, '</stream:stream' ) ) {
@@ -432,21 +406,19 @@ class Stream {
 		return collected;
 	}
 	
-	/*
-	function parseStreamFeatures( x : Xml ) {
-		for( e in x.elements() ) {
-			server.features.set( e.nodeName, e );
-		}
-	}
-	*/
-	
 	function processStreamInit( t : String, buflen : Int ) : Int {
-		return throw "Abstract method";
+		return throw "Abstract";
 	}
 	
 	function closeHandler() {
 		id = null;
 		numPacketsSent = 0;
+		/*
+			collectors = new List();
+			interceptors = new List();
+			server = { features : new Hash() };
+			features = new StreamFeatures();
+			*/
 		onClose();
 	}
 	
@@ -458,7 +430,7 @@ class Stream {
 	}
 
 	function disconnectHandler() {
-		//? closeHandler();
+		//?closeHandler();
 	}
 	
 }

@@ -38,7 +38,6 @@ class Connection {
 	
 	function new( host : String ) {
 		this.host = host;
-		//this.port = port;
 		connected = false;
 	}
 	

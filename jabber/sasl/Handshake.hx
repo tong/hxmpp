@@ -1,5 +1,7 @@
 package jabber.sasl;
 
+// TODO remove
+
 /**
 	SASL handshake.<br/>
 	<a href="http://tools.ietf.org/html/rfc4422">RFC 4422</a><br>
@@ -7,10 +9,10 @@ package jabber.sasl;
 class Handshake {
 	
 	/** Registered mechanisms. */
-	public var mechanisms : Array<Mechanism>;
+	public var mechanisms : Array<TMechanism>;
 	
-	/** Mechanism in use. */
-	public var mechanism : Mechanism;
+	/** SASL mechanism used */
+	public var mechanism : TMechanism;
 	
 	public function new() {
 		mechanisms = new Array();

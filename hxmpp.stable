@@ -27,7 +27,6 @@ jabber.Ping \
 jabber.Pong \
 jabber.PresenceListener \
 jabber.ServiceDiscovery \
-#jabber.SocketConnection \
 jabber.SoftwareVersion \
 jabber.XMPPDebug \
 jabber.XMPPError \
@@ -35,16 +34,16 @@ jabber.XMPPError \
 STABLE_CLIENT = jabber.client.Stream \
 jabber.client.Account \
 jabber.client.Authentication \
-#jabber.client.MUChat \
 jabber.client.NonSASLAuth \
 jabber.client.Roster \
 jabber.client.SASLAuth \
 jabber.client.VCard \
 jabber.Chat \
 jabber.ChatStateNotification \
-net.sasl.Handshake \
-net.sasl.AnonymousMechanism \
-net.sasl.PlainMechanism
+jabber.sasl.Handshake \
+jabber.sasl.AnonymousMechanism \
+jabber.sasl.PlainMechanism \
+jabber.sasl.MD5Mechanism
 
 STABLE_CLIENT_JS = $(STABLE) $(STABLE_CLIENT) \
 jabber.BOSHConnection

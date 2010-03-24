@@ -56,6 +56,8 @@ class BOSHConnection extends jabber.stream.Connection {
 	public static var XMLNS(default,null) : String;
 	public static var XMLNS_XMPP(default,null) : String;
 	
+	public var http(default,null) : Bool; // TODO _http
+	
 	/** BOSH path */
 	public var path(default,null) : String;
 	/** Maximum number of requests the connection manager is allowed to keep waiting at any one time during the session. */
@@ -88,6 +90,7 @@ class BOSHConnection extends jabber.stream.Connection {
 						 wait : Int = 30,
 						 secure : Bool = false,
 						 maxConcurrentRequests : Int = 2 ) {
+		http = true;
 		super( host );
 		this.path = path;
 		this.hold = hold;

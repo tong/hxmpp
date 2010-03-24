@@ -65,7 +65,7 @@ class Error {
 		return x;
 	}
 	
-	public inline function toString() : String {
+	public function toString() : String {
 		return toXml().toString();
 	}
 	
@@ -84,4 +84,13 @@ class Error {
 		return e;
 	}
 	
+	/**
+-		Parses the error from a given packet.
+-	public static function fromPacket( p : xmpp.Packet ) : xmpp.Error {
+-		for( e in p.toXml().elementsNamed( "error" ) )
+-			return Error.parse( e );
+-		return null;
+-	}
+-	*/
+
 }

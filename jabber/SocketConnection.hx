@@ -35,11 +35,14 @@ import cpp.net.Host;
 import cpp.net.Socket;
 #end
 
-/**
+/*
 	TODO
 	- php!
 	- flash/js maxBufSize
 	- split outgoing (big) packets ?
+*/
+
+/**
 */
 class SocketConnection extends jabber.stream.Connection {
 	
@@ -123,18 +126,22 @@ class SocketConnection extends jabber.stream.Connection {
 		connected = true;
 		__onConnect();
 		#else
-		#if flash10 socket.timeout = timeout*1000; #end
+		#if flash10
+		socket.timeout = timeout*1000;
+		#end
 		socket.connect( host, port );
 		#end
 	}
 	
 	public override function disconnect() {
-		if( !connected ) return;
+		if( !connected )
+			return;
+		//try socket.close() catch( e : Dynamic ) {};
+		socket.close();
 		#if (neko||php||cpp)
 		reading = false;
 		#end
 		connected = false;
-		try socket.close() catch( e : Dynamic ) {};
 	}
 	
 	public override function read( ?yes : Bool = true ) : Bool {
@@ -201,7 +208,7 @@ class SocketConnection extends jabber.stream.Connection {
 		__onDisconnect();
 	}
 	
-	function sockErrorHandler( e ) {
+	function sockErrorHandler( e : Event ) {
 		//trace(e);
 		connected = false;
 		__onError( e.type );

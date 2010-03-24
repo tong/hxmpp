@@ -15,27 +15,8 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package xmpp;
+package jabber.stream;
 
-/**
-	haXe/XMPP remoting extension parsing utilities.
-*/
-class HXR {
-
-	public static var XMLNS = "http://haxe.org/hxr";
-	
-	/**
-	*/
-	public static inline function create( ?d : String ) : Xml {
-		var x = xmpp.IQ.createQueryXml( XMLNS );
-		if( d != null ) x.addChild( Xml.createPCData( d ) );
-		return x;
-	}
-	
-	/**
-	*/
-	public static inline function getData( x : Xml ) : String {
-		return x.firstChild().nodeValue;
-	}
-	
+typedef TDataInterceptor = {
+	function interceptData( t : haxe.io.Bytes ) : haxe.io.Bytes;
 }

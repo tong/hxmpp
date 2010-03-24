@@ -228,7 +228,14 @@ class PubSub {
 		}
 		var me = this;
 		sendIQ( iq, function(r:xmpp.IQ) {
-			var i = xmpp.pubsub.Item.parse( r.x.toXml() );
+			//TODO
+			var i : xmpp.pubsub.Item = null;
+		//	try {
+			i = xmpp.PubSub.parse( r.x.toXml() ).publish.first();
+		//	} catch( e : Dynamic ) {
+		//		me.onError( new jabber.XMPPError( me ) );
+		//		return;	
+		//	}
 			me.onPublish( node, i );
 		} );
 	}

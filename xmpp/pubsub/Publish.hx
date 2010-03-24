@@ -44,7 +44,7 @@ class Publish extends List<Item> {
 	public static function parse( x : Xml ) : Publish {
 		var p = new Publish( x.get( "node" ) );
 		for( e in x.elementsNamed( "item" ) )
-			p.add( Item.parse( e ) );
+			p.add( xmpp.pubsub.Item.parse( e ) );
 		return p;
 	}
 	

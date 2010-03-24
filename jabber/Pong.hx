@@ -24,7 +24,7 @@ package jabber;
 class Pong {
 	
 	/**
-		Informational event that a ping has been recieved and responded to.
+		Just an informational event that a ping has been recieved and responded to.
 	*/
 	public dynamic function onPong( entity : String ) : Void;
 
@@ -34,7 +34,7 @@ class Pong {
 		if( !stream.features.add( xmpp.Ping.XMLNS ) )
 			throw "Ping listener already added";
 		this.stream = stream;
-		stream.addCollector( new jabber.stream.PacketCollector( [ cast new xmpp.filter.IQFilter( xmpp.Ping.XMLNS, null, xmpp.IQType.get ) ], handlePing, true ) );
+		stream.collect( [ cast new xmpp.filter.IQFilter( xmpp.Ping.XMLNS, null, xmpp.IQType.get ) ], handlePing, true );
 	}
 	
 	function handlePing( iq : xmpp.IQ ) {

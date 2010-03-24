@@ -21,16 +21,51 @@ import xmpp.MessageType;
 import xmpp.filter.MessageFilter;
 import xmpp.filter.PacketFieldFilter;
 
+// TODO fix: jabber.Chat got removed !
+
+class ChatStateNotification {
+	
+	public var state(default,setState) : xmpp.ChatState;
+	
+	public var stream(default,null) : Stream;
+	
+	public function new( stream : jabber.Stream ) {
+		this.stream = stream;
+	}
+	
+	function setState( s : xmpp.ChatState ) : xmpp.ChatState {
+		//..
+		return state = s;
+	}
+	
+		/*
+	public function interceptMessage( m : xmpp.Message ) : xmpp.Message {
+		if( chat == null ) {
+			chat.stream.removeInterceptor( this );
+			return p;
+		}
+		if( state == null || !f_message.accept( p ) || !f_to.accept( p ) ) return p;
+		xmpp.ChatStateExtension.set( untyped p, state );
+		return p;
+		
+		xmpp.ChatStateExtension.set( untyped m, state );
+		
+	}
+		*/
+	
+}
+
+
 /**
 	Extension for communicating the status of a user in a chat session.<br>
 	<a href="http://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications.</a><br/>
-*/
+
 class ChatStateNotification {
 	
 	/**
 		The current state of this chat.<br>
 		If not null, messages sent to the peer jid of this chat will be intercepted with the state notification.
-	*/
+	
 	public var state : xmpp.ChatState;
 	public var chat(default,setChat) : Chat;
 	
@@ -59,7 +94,7 @@ class ChatStateNotification {
 	
 	/**
 		Internal.
-	*/
+	
 	public function interceptPacket( p : xmpp.Packet ) : xmpp.Packet {
 		if( chat == null ) {
 			chat.stream.removeInterceptor( this );
@@ -72,7 +107,7 @@ class ChatStateNotification {
 	
 	/**
 		Force to send the current chat state in a standalone notification message.
-	*/
+	
 	public function send( state : xmpp.ChatState ) : xmpp.Message {
 		//TODO ? if( state == null ) state = xmpp.ChateState.active;
 		if( chat == null )
@@ -82,3 +117,4 @@ class ChatStateNotification {
 	}
 
 }
+*/

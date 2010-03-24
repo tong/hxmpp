@@ -26,7 +26,9 @@ class Subscription {
 	// TODO subscribe_options : Array<>; // xmpp.PubSub only !
 	
 	public function new( jid : String,
-						 ?node : String, ?subid : String, ?subscription : SubscriptionState ) {
+						 ?node : String,
+						 ?subid : String,
+						 ?subscription : SubscriptionState ) {
 		this.jid = jid;
 		this.node = node;
 		this.subid = subid;

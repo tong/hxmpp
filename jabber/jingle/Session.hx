@@ -61,7 +61,8 @@ class Session {
 				// me.onFail();
 			case result :
 				trace("TERMINATE RESULT");
-				me.active = false;
+				//cleanup();
+				//me.active = false;
 				me.onEnd( reason );
 			default :
 			}

@@ -23,28 +23,27 @@ package xmpp;
 class SASL {
 	
 	public static var XMLNS = "urn:ietf:params:xml:ns:xmpp-sasl";
-	
 	public static var EREG_FAILURE = ~/(failure)(not-authorized)(aborted)(incorrect-encoding)(invalid-authzid)(invalid-mechanism)(mechanism-too-weak)(temporary-auth-failure)/;
 	
 	/**
 	*/
-	public static function createAuthXml( mechansim : String, ?text : String ) : Xml {
+	public static function createAuthXML( mechansim : String, ?text : String ) : Xml {
 		if( mechansim == null )
 			return null;
-		var a = XMLUtil.createElement( "auth", text );
-		a.set( "xmlns", XMLNS );
-		a.set( "mechanism", mechansim );
-		return a;
+		var x = XMLUtil.createElement( "auth", text );
+		x.set( "xmlns", XMLNS );
+		x.set( "mechanism", mechansim );
+		return x;
 	}
 	
 	/**
 	*/
-	public static function createResponseXml( t : String ) : Xml {
+	public static function createResponseXML( t : String ) : Xml {
 		if( t == null )
 			return null;
-		var r = XMLUtil.createElement( "response", t );
-		r.set( "xmlns", XMLNS );
-		return r;
+		var x = XMLUtil.createElement( "response", t );
+		x.set( "xmlns", XMLNS );
+		return x;
 	}
 	
 	/**

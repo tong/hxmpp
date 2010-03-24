@@ -108,15 +108,17 @@ class XMPPDebug {
 	
 	#if JABBER_CONSOLE
 	static function printToXMPPConsole( t : String, out : Bool ) {
-		var v = haxe.Serializer.run( t );
+//		var v = haxe.Serializer.run( t );
 		try {
 			#if flash
-			ExternalInterface.call( 'hxmpp.Console.print("'+v+'",'+out+')' );
+			//ExternalInterface.call( 'XMPPConsole.print("'+v+'",'+out+')' );
+			ExternalInterface.call( 'XMPPConsole.print("'+t+'",'+out+')' );
 			#elseif js
-			untyped hxmpp.Console.print( v, out );
+			//untyped XMPPConsole.print( v, out );
+			untyped XMPPConsole.print( t, out );
 			#end
 		} catch( e : Dynamic ) {
-			trace( "HXMPP.console debugging error: "+e, "warn" );
+			trace( "HXMPP.console error: "+e, "warn" );
 		}
 	}
 	#end

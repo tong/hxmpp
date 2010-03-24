@@ -28,13 +28,13 @@ class Authentication {
 	public var resource(default,null) : String;
 	public var stream(default,null) : Stream;
 	
-	function new( stream : Stream ) {
-		this.stream = stream;
+	function new( s : Stream ) {
+		this.stream = s;
 	}
 	
 	public function authenticate( password : String, ?resource : String ) : Bool {
 		#if JABBER_DEBUG
-		return throw "Abstract error";
+		return throw "abstract";
 		#else
 		return false;
 		#end

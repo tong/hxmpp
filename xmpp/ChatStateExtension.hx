@@ -28,21 +28,28 @@ class ChatStateExtension {
 		Adds (or changes if already has) the chat state property of the givent message packet.
 	*/
 	public static function set( m : xmpp.Message, state : ChatState ) : xmpp.Message {
+		clearChatStateProperties( m );
+		m.properties.push( createXML( state ) );
+		return m;
+	}
+	
+	/**
+	*/
+	public static function clearChatStateProperties( m : xmpp.Message ) : xmpp.Message  {
 		for( p in m.properties ) {
 			switch( p.nodeName ) {
 			case "active","composing","paused","inactive","gone" :
 				m.properties.remove( p );
 			}
 		}
-		m.properties.push( createXml( state ) );
 		return m;
 	}
 	
 	/**
 		Creates a chat state extension xml.
 	*/
-	public static function createXml( state : ChatState ) : Xml {
-		var x = Xml.createElement( Type.enumConstructor( state ) );
+	public static function createXML( s : ChatState ) : Xml {
+		var x = Xml.createElement( Type.enumConstructor( s ) );
 		x.set( "xmlns", XMLNS );
 		return x;
 	}
@@ -61,7 +68,8 @@ class ChatStateExtension {
 		for( e in m.properties ) {
 			var s = e.nodeName;
 			switch( s ) {
-			case "active","composing","paused","inactive","gone" : return s;
+			case "active","composing","paused","inactive","gone" :
+				return s;
 			}
 		}
 		return null;

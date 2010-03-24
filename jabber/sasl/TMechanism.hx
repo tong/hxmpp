@@ -1,6 +1,6 @@
 package jabber.sasl;
 
-typedef Mechanism = {
+typedef TMechanism = {
 	
 	/**
 	*/

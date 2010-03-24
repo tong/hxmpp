@@ -54,7 +54,7 @@ class RTMPTransport {
 	public function connect() {
 		nc = new NetConnection();
 		nc.addEventListener( NetStatusEvent.NET_STATUS, netStatusHandler );
-		try {
+		try { //TODO move into using class
 			nc.connect( getURL() );
 		} catch( e : Dynamic ) {
 			__onFail();

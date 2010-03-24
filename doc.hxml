@@ -1,6 +1,5 @@
 
 ### HXMPP DOC
--cp lib/
 -cp doc/
 jabber.BlockList
 jabber.BOB

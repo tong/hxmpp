@@ -25,7 +25,7 @@ import xmpp.XMLUtil;
 //private class StreamFeatures extends jabber.stream.Features
 
 /**
-	Component-2-Server XMPP streams.<br/>
+	Component-2-Server XMPP stream.<br/>
 	<a href="http://www.xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>
 */
 class Stream extends jabber.Stream {
@@ -33,6 +33,7 @@ class Stream extends jabber.Stream {
 	public static inline var PORT_STANDARD = 5275;
 	public static var defaultPort = PORT_STANDARD;
 	
+	/** Called if stream got authenticated and is ready to use */
 	public dynamic function onConnect() : Void;
 	
 	public var host(default,null) : String;
@@ -82,30 +83,16 @@ class Stream extends jabber.Stream {
 		cnx.read( true );
 	}
 	
-	//TODO this is mess!!!!!!!!!
+	//TODO what a mess!
 	override function processStreamInit( t : String, len : Int ) {
 		var i = t.indexOf( ">" );
 		if( i == -1 )
-			return 0;
-		/*
+			return 0; //-1
 		try {
-			var x = Xml.parse( t ).firstChild();
-			for( e in x.elements() ) {
-				trace(e.nodeName);
-				if( e.nodeName == "stream:error" ) {
-					trace(e.firstChild().nodeName);
-					onClose( e.firstChild().nodeName );
-					return -1;
-				}
-			}
+			id = Xml.parse( t+"</stream:stream>" ).firstChild().get( "id" );
 		} catch( e : Dynamic ) {
-			trace("ERRORERRORERRORERROR "+e);
+			return -1;
 		}
-		trace(t);
-		*/
-		//TODO
-		id = Xml.parse( t+"</stream:stream>" ).firstChild().get( "id" );
-		//..
 		status = jabber.StreamStatus.open;
 		#if XMPP_DEBUG
 		jabber.XMPPDebug.inc( t );

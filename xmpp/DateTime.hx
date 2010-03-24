@@ -34,7 +34,7 @@ class DateTime {
 	*/								
 	public static var ereg_date(default,null) : EReg;
 	
-	/**
+	/*
 		Deprecated!
 		Implementd just for backwards compatibility.
 		20091012T21:39:16

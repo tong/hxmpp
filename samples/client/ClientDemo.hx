@@ -44,9 +44,9 @@ class ClientDemo {
 				trace( "Login failed "+e.name );
 			};
 			*/
-			var mechanisms = new Array<net.sasl.Mechanism>();
+			var mechanisms = new Array<jabber.sasl.Mechanism>();
 			//mechanisms.push( new net.sasl.PlainMechanism() );
-			mechanisms.push( new net.sasl.MD5Mechanism() );
+			mechanisms.push( new jabber.sasl.MD5Mechanism() );
 			var auth = new jabber.client.SASLAuth( stream, mechanisms );
 			auth.onSuccess = handleLogin;
 			auth.onFail = function(?e) {

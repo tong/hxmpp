@@ -75,13 +75,15 @@ class RTMPResponder extends Session {
 		}
 	}
 	
+	/*
 	public override function terminate( ?reason : xmpp.jingle.Reason, ?content : Xml ) {
+		trace("terminateterminateterminate");
 		super.terminate( reason, content );
 		cleanup();
 	}
+	*/
 	
 	function handleSessionPacket( iq : IQ ) {
-		trace("handleSessionPacket");
 		var j = xmpp.Jingle.parse( iq.x.toXml() );
 		//if( j.sid != sid ) return;
 		switch( j.action ) {

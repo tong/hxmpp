@@ -31,7 +31,7 @@ class PersonalEvent {
 	
 	public function new( stream : jabber.Stream ) {
 		this.stream = stream;
-		//TODO add to stream features
+		//TODO! add to stream features
 	}
 	
 	/**
@@ -41,7 +41,8 @@ class PersonalEvent {
 		sendIQ( e, e.toXml(), onPublish );
 	}
 	
-	//TODO ?? hmm public function disable( c : Class<xmpp.pep.Event> ) {
+	// hmm public function disable( c : Class<xmpp.pep.Event> ) {
+	
 	/**
 		Disable publishing.
 	*/
@@ -51,15 +52,17 @@ class PersonalEvent {
 	
 	function sendIQ( e : xmpp.pep.Event, x : Xml, h : xmpp.pep.Event->Void ) {
 		var p = new xmpp.pubsub.Publish( e.getNode(), [new xmpp.pubsub.Item( null, x )] );
-		var xt = new xmpp.PubSub();
-		xt.publish = p;
+		var x = new xmpp.PubSub();
+		x.publish = p;
 		var iq = new xmpp.IQ( xmpp.IQType.set, null );
-		iq.x = xt;
+		iq.x = x;
 		var me = this;
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			switch( r.type ) {
-			case result : h( e );
-			case error : me.onError( new jabber.XMPPError( me, r ) );
+			case result :
+				h( e );
+			case error :
+				me.onError( new jabber.XMPPError( me, r ) );
 			default : //#
 			}
 		} );
