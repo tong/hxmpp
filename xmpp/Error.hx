@@ -17,6 +17,11 @@
 */
 package xmpp;
 
+typedef TErrorCondition = {
+	var name : String;
+	var xmlns : String;
+}
+
 /**
 	XMPP error extension.
 */
@@ -27,12 +32,14 @@ class Error {
 	public var type : ErrorType;
 	public var code : Null<Int>;
 	public var name : String;
-	public var conditions : Array<{name:String,xmlns:String}>;
 	public var text : String;
-	/** Custom (non XMPP) field to */
-	//public var from : String;
+	public var conditions : Array<TErrorCondition>;
 	
-	public function new( ?type : xmpp.ErrorType, ?code : Null<Int>, ?name : String, ?text : String ) {
+	public function new( ?type : xmpp.ErrorType,
+						 ?code : Null<Int>,
+						 ?name : String,
+						 ?text : String,
+						 ?conditions : Array<TErrorCondition> ) {
 		this.type = type;
 		this.code = code;
 		this.name = name;
@@ -42,12 +49,14 @@ class Error {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "error" );
-		if( type != null ) x.set( "type", Type.enumConstructor( type ) );
 		if( code != null ) x.set( "code", Std.string( code ) );
-		if( name != null ) {
-			var n = Xml.createElement( name );
-			n.set( "xmlns", XMLNS );
-			x.addChild( n );
+		if( type != null ) x.set( "type", Type.enumConstructor( type ) );
+		if( name != null ) { //TODO
+			var e = Xml.createElement( name );
+			//e.set( "xml:lang", "en" );
+			e.set( "xmlns", XMLNS );
+			if( text != null ) e.addChild( Xml.createPCData( text ) );
+			x.addChild( e );
 		}
 		if( conditions != null ) {
 			for( c in conditions )
@@ -56,31 +65,22 @@ class Error {
 		return x;
 	}
 	
-	public function toString() : String {
+	public inline function toString() : String {
 		return toXml().toString();
 	}
 	
-	/**
-		Parses the error from a given packet.
-	*/
-	public static function fromPacket( p : xmpp.Packet ) : xmpp.Error {
-		for( e in p.toXml().elementsNamed( "error" ) )
-			return Error.parse( e );
-		return null;
-	}
-	
-	/**
-		Parses the error from given XML.
-	*/
 	public static function parse( x : Xml ) : xmpp.Error {
-//		if( x.nodeName != "error" ) throw "This is not an error extension";
-		var e = new Error( Std.parseInt( x.get( "code" ) ) );
-		var et = x.get( "type" );
-		if( et != null ) e.type = Type.createEnum( ErrorType, x.get( "type" ) );
-		//TODO!!!!!!!!!!!!!! parse Conditions
-		var _n = x.elements().next();
-		if( _n != null )
-			e.name = _n.nodeName;
+		var e = new Error();
+		var v = x.get( "code" );
+		if( v != null ) e.code = Std.parseInt( v ); 
+		v = x.get( "type" );
+		if( v != null ) e.type = Type.createEnum( ErrorType, v );
+		// TODO  parse Conditions
+		for( el in x.elements() ) {
+			e.name = el.nodeName;
+			try e.text = el.firstChild().nodeValue catch(e:Dynamic){}
+			break;
+		}
 		return e;
 	}
 	
