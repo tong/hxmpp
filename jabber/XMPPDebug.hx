@@ -79,27 +79,14 @@ class XMPPDebug {
 	}
 	#end
 	
-	//////////////////////////////////
-	
-	/*
-	public static function cprint( stream : TStream, packet : xmpp.Packet, out : Bool = true ) {
-		//var t = haxe.Serializer.run( { stream : stream , packet : packet, out : out } );
-		//trace("ä################### #### "+t );
-		//var s = new haxe.Serializer();
-		//s.serialize( stream );
-	}
-	*/
-	
-	//////////////////////////////////////
-	
-	public static function inc( t : String ) {
+	public static inline function inc( t : String ) {
 		#if JABBER_CONSOLE
 		printToXMPPConsole( t, false );
 		#end
 		_inc(t);
 	}
 
-	public static function out( t : String ) {
+	public static inline function out( t : String ) {
 		#if JABBER_CONSOLE
 		printToXMPPConsole( t, true );
 		#end
@@ -148,7 +135,7 @@ class XMPPDebug {
 	}
 	*/
 	
-	public static function print( t : String, out : Bool, level : String = "log" ) {
+	public static inline function print( t : String, out : Bool, level : String = "log" ) {
 		#if (flash||js)
 		_print( t, out, level );
 		#elseif (cpp||neko||php)
