@@ -26,7 +26,7 @@ XEPS SUPPORTED
 * 0092 SoftwareVersion
 * 0106 JID Escaping
 * 0114 Jabber Component Protocol
-* 0115 Entity Capabilities
+** 0115 Entity Capabilities
 ** 0124 BOSH
 ** 0163 PersonalEvent 
 ** 0191 Simple Communications Blocking

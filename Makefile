@@ -3,9 +3,6 @@ SYSTEM = Linux
 
 PROJECT:=hxmpp
 VERSION:=0.4
-#DATE:=$(shell date +"%Y-%m-%d")
-
-#JSCOMPRESSOR = closure
 
 include hxmpp.source
 include hxmpp.stable
