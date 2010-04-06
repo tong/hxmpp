@@ -27,14 +27,16 @@ import jabber.stream.Connection;
 class Stream extends jabber.Stream {
 	
 	public static inline var PORT_STANDARD = 5222;
-	public static inline var PORT_SECURE_STANDARD = 5223;
+	public static inline var PORT_STANDARD_SECURE = 5223;
 	public static var defaultPort = PORT_STANDARD;
 	
 	public var jid(default,setJID) : JID;
 	
-	public function new( ?jid : JID, ?cnx : Connection, ?version : Bool = true ) {
-		if( jid == null )
-			jid = new JID(null);
+	public function new( ?jid : JID,
+						 ?cnx : Connection,
+						 ?version : Bool = true ) {
+		//__isClient = true;
+		if( jid == null ) jid = new JID(null);
 		super( cnx );
 		this.jid = jid;
 		this.version = version;
@@ -46,9 +48,25 @@ class Stream extends jabber.Stream {
 	
 	function setJID( j : JID ) : JID {
 		if( status != StreamStatus.closed )
-			throw "Cannot change JID on active stream";
+			throw "Cannot change JID on open stream";
 		return jid = j;
 	}
+		
+	override function connectHandler() {
+		status = StreamStatus.pending;
+		if( !http ) { // TODO avoid HACK
+			sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_CLIENT, jid.domain, version, lang ) );
+			cnx.read( true ); // start reading input
+		} else {
+			if( cnx.connected ) cnx.connect(); // restart BOSH
+		}
+	}
+		
+	/*
+	override function disconnectHandler() {
+		id = null;
+	}
+	*/
 	
 	override function processStreamInit( t : String, buflen : Int ) : Int {
 		if( http ) {
@@ -110,30 +128,10 @@ class Stream extends jabber.Stream {
 			}
 		}
 		return buflen;
-		//return throw "Never reached";
 	}
-	
-	override function connectHandler() {
-		status = StreamStatus.pending;
-		// TODO avoid HACK
-		if( !http ) {
-			sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_CLIENT, jid.domain, version, lang ) );
-			cnx.read( true ); // start reading input
-		} else {
-			if( cnx.connected )
-				cnx.connect(); // restart bosh
-		}
-	}
-	
-	/*
-	override function disconnectHandler() {
-		id = null;
-	}
-	*/
 	
 	inline function parseStreamFeatures( x : Xml ) {
-		for( e in x.elements() )
-			server.features.set( e.nodeName, e );
+		for( e in x.elements() ) server.features.set( e.nodeName, e );
 	}
 	
 }

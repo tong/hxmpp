@@ -42,9 +42,9 @@ class ServiceDiscovery {
 	/**
 		Query entity for information.
 	*/
-	public function info( jid : String ) {
+	public function info( jid : String, ?node : String ) {
 		var r = new IQ( xmpp.IQType.get, null, jid );
-		r.x = new xmpp.disco.Info();
+		r.x = new xmpp.disco.Info( null, null, node );
 		stream.sendIQ( r, handleInfo, false );
 	}
 	

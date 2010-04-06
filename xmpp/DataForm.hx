@@ -20,12 +20,12 @@ package xmpp;
 import xmpp.dataform.FormType;
 
 /**
-	DataForm packet extension (for iq and message packets).
+	DataForm packet extension (for IQ and message packets).
 	<a href="http://xmpp.org/extensions/xep-0004.html">XEP-0004: Data Forms</a><br/>
 */
 class DataForm {
 	
-	public static inline var XMLNS = "jabber:x:data";
+	public static var XMLNS = "jabber:x:data";
 	
 	public var type : FormType;
 	public var title : String;
@@ -34,7 +34,7 @@ class DataForm {
 	public var reported : xmpp.dataform.Reported;
 	public var items : Array<xmpp.dataform.Item>;
 	
-	public function new( ?type : FormType ) {
+	public function new( type : FormType ) {
 		this.type = type;
 		fields = new Array();
 		items = new Array();
@@ -52,11 +52,12 @@ class DataForm {
 		return x;
 	}
 	
+	/*
 	public inline function toString() : String { return toXml().toString(); }
+	*/
 	
 	public static function parse( x : Xml ) : DataForm {
-		var f = new DataForm();
-		f.type = Type.createEnum( xmpp.dataform.FormType, x.get( "type" ) );
+		var f = new DataForm( Type.createEnum( xmpp.dataform.FormType, x.get( "type" ) ) );
 		for( e in x.elements() ) {
 			switch( e.nodeName ) {
 			case "title" : f.title = e.firstChild().nodeValue;

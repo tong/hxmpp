@@ -5,7 +5,6 @@ jabber.BlockList
 jabber.BOB
 jabber.BOBListener
 jabber.BOSHConnection
-jabber.Chat
 jabber.ChatStateNotification
 jabber.EntityCapabilities
 jabber.JID

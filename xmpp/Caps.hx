@@ -25,21 +25,24 @@ import jabber.util.SHA1;
 */
 class Caps {
 	
-	public static inline var XMLNS = xmpp.Namespace.PROTOCOL+"/caps";
+	public static var XMLNS = xmpp.Namespace.PROTOCOL+"/caps";
 	
 	/**
 		The hashing algorithm used to generate the verification string, fe: sha-1.
 	*/
 	public var hash : String;
+	
 	/**
 		A URI that uniquely identifies a software application, typically a URL at the website
 		of the project or company that produces the software
 	*/
 	public var node : String;
+	
 	/**
 		A string that is used to verify the identity and supported features of the entity
 	*/
 	public var ver : String;
+	
 	/**
 		A set of nametokens specifying additional feature bundles.
 		This attribute is deprecated!
@@ -72,9 +75,9 @@ class Caps {
 	/**
 	*/
 	public static function fromPresence( p : xmpp.Presence ) : xmpp.Caps {
-		for( prop in p.properties )
-			if( prop.nodeName == "c" && prop.get( "xmlns" ) == XMLNS )
-				return parse( prop );
+		for( p in p.properties )
+			if( p.nodeName == "c" && p.get( "xmlns" ) == XMLNS )
+				return parse( p );
 		return null;
 	}
 	
@@ -134,7 +137,7 @@ class Caps {
 		return if( a.variable == b.variable ) 0 else if( a.variable > b.variable ) 1 else -1; 
 	}
 	
-	static inline function sort( a : String, b : String ) : Int {
+	static function sort( a : String, b : String ) : Int {
 		return ( a == b ) ? 0 : ( a > b ) ? 1 : -1;
 	}
 	

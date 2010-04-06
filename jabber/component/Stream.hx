@@ -47,6 +47,7 @@ class Stream extends jabber.Stream {
 	
 	public function new( host : String, subdomain : String, secret : String, cnx : Connection,
 						 ?identities : Array<xmpp.disco.Identity> ) {
+		//__isClient = false;
 		if( subdomain == null || subdomain == "" )
 			throw "Invalid stream subdomain";
 		if( secret == null )

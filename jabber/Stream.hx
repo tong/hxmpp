@@ -57,10 +57,13 @@ class Stream {
 	
 	public static var defaultPacketIDLength = 5;
 	
-	/** */
 	public dynamic function onOpen() : Void;
-	/** */
 	public dynamic function onClose( ?e : Dynamic ) : Void;
+	
+	//public var __isClient(default,null) : Bool;
+	
+	/** Indicates if this streams connection is a http connection */
+	public var http(default,null) : Bool; //TODO move to: jabber.stream.Connection
 	
 	public var status : StreamStatus;
 	public var jidstr(getJIDStr,null) : String;
@@ -73,14 +76,9 @@ class Stream {
 	public var dataFilters(default,null) : List<TDataFilter>;
 	public var dataInterceptors(default,null) : List<TDataInterceptor>;
 	
-	/** Indicates if this streams connection is a http connection */
-	public var http(default,null) : Bool; //TODO move to: jabber.stream.Connection
-	
 	var collectors : List<PacketCollector>;
 	var interceptors : List<TPacketInterceptor>;
 	var numPacketsSent : Int;
-	//var numPacketsRecieved : Int;
-	//var stats : jabber.stream.Stats;
 	
 	#if JABBER_DEBUG public #end
 	function new( ?cnx : Connection ) {
@@ -186,7 +184,7 @@ class Stream {
 			return null;
 		numPacketsSent++;
 		#if XMPP_DEBUG
-		XMPPDebug.out( t );//XMPPDebug.outPacket( t );
+		XMPPDebug.out( t );
 		#end
 		return t;
 	}

@@ -37,11 +37,13 @@ class Item {
 		return x;
 	}
 	
+	/*
 	public inline function toString() : String {
 		return toXml().toString();
 	}
+	*/
 	
-	public static inline function parse( x : Xml ) : xmpp.disco.Item {
+	public static inline function parse( x : Xml ) : Item {
 		return new Item( x.get( "jid" ), x.get( "name" ), x.get( "node" ) );
 	}
 	

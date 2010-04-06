@@ -243,12 +243,7 @@ class PubSub {
 		sendIQ( iq, function(r:IQ) {
 			//TODO
 			var i : xmpp.pubsub.Item = null;
-		//	try {
 			i = xmpp.PubSub.parse( r.x.toXml() ).publish.first();
-		//	} catch( e : Dynamic ) {
-		//		me.onError( new jabber.XMPPError( me ) );
-		//		return;	
-		//	}
 			h( node, i );
 		} );
 		return iq;
@@ -256,6 +251,7 @@ class PubSub {
 	
 	function sendIQ( iq : IQ, h : IQ->Void ) : IQ {
 		iq.to = service;
+		iq.from = stream.jidstr;
 		var me = this;
 		return stream.sendIQ( iq, function(r:IQ) {
 			switch( r.type ) {

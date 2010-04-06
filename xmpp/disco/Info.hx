@@ -18,15 +18,15 @@
 package xmpp.disco;
 
 /**
-	ServiceDiscovery info.
 */
 class Info {
 	
-	public static inline var XMLNS = xmpp.Namespace.PROTOCOL+'/disco#info';
+	public static var XMLNS = xmpp.Namespace.PROTOCOL+'/disco#info';
 	
 	public var identities : Array<Identity>; 
 	public var features : Array<String>;
 	public var node : String;
+	public var x : Xml; //TODO
 	
 	public function new( ?identities : Array<Identity>, ?features : Array<String>, ?node : String ) {
 		this.identities = identities == null ? new Array() : identities;
@@ -62,10 +62,11 @@ class Info {
 		var i = new Info( null, null, x.get( "node" ) );
 		for( f in x.elements() ) {
 			switch( f.nodeName ) {
-				case "feature"  : i.features.push( f.get( "var" ) );
-				case "identity" : i.identities.push( { category : f.get( "category" ),
-													   name : f.get( "name" ),
-													   type : f.get( "type" ) } );
+			case "feature"  : i.features.push( f.get( "var" ) );
+			case "identity" : i.identities.push( { category : f.get( "category" ),
+												   name : f.get( "name" ),
+												   type : f.get( "type" ) } );
+			case "x" : i.x = f;
 			}
 		}
 		return i;

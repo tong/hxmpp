@@ -18,7 +18,6 @@
 package xmpp.pubsub;
 
 /**
-	Subscriptions to a pubsub node.
 */
 enum SubscriptionState {
 	

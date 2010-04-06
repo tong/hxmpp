@@ -52,6 +52,8 @@ class BOSHConnection extends jabber.stream.Connection {
 		XMLNS_XMPP = "urn:xmpp:xbosh";
 	}
 	
+	static inline var INTERVAL = 0;
+	
 	public static inline var BOSH_VERSION = "1.6";
 	public static var XMLNS(default,null) : String;
 	public static var XMLNS_XMPP(default,null) : String;
@@ -114,7 +116,7 @@ class BOSHConnection extends jabber.stream.Connection {
 			requestCount = 0;
 			requestQueue = new Array();
 			responseQueue = new Array();
-			responseTimer = new Timer( 1 );
+			responseTimer = new Timer( INTERVAL );
 			var b = Xml.createElement( "body" );
 			b.set( 'xml:lang', 'en' );
 			b.set( 'xmlns', XMLNS );
@@ -198,7 +200,7 @@ class BOSHConnection extends jabber.stream.Connection {
 	
 	function sendRequests( ?t : Xml, poll : Bool = false ) : Bool {
 		if( requestCount >= maxConcurrentRequests ) {
-			#if JABBER_DEBUG trace( "max concurrent request limit reached ("+requestCount+","+maxConcurrentRequests+")", "info" ); #end
+			//#if JABBER_DEBUG trace( "max concurrent request limit reached ("+requestCount+","+maxConcurrentRequests+")", "info" ); #end
 			//requestQueue.push(t);
 			return false;
 		}
@@ -255,6 +257,7 @@ class BOSHConnection extends jabber.stream.Connection {
 	*/
 	
 	function handleHTTPError( e : String ) {
+		//trace("handleHTTPError"+e);
 		cleanup();
 		__onError( e );
 	}

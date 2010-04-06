@@ -40,9 +40,9 @@ class PersonalEventListener {
 	public function new( stream : Stream ) {
 		this.stream = stream;
 		listeners = new List();
-		stream.addCollector( new jabber.stream.PacketCollector( [ cast new xmpp.filter.MessageFilter( xmpp.MessageType.normal ),
-																  cast new xmpp.filter.PacketPropertyFilter( xmpp.PubSubEvent.XMLNS, "event" ) ],
-																  handlePersonalEvent, true ) );
+		stream.collect( [ cast new xmpp.filter.MessageFilter( xmpp.MessageType.normal ), //TODO hm ?
+						  cast new xmpp.filter.PacketPropertyFilter( xmpp.PubSubEvent.XMLNS, "event" ) ],
+						handlePersonalEvent, true );
 	}
 	
 	/**
@@ -50,7 +50,8 @@ class PersonalEventListener {
 	*/
 	public function add( t : Class<xmpp.pep.Event>, handler : xmpp.Message->Xml->Void ) : Bool {
 		var l = getListener( t );
-		if( l != null ) return false;
+		if( l != null )
+			return false;
 		else {
 			listeners.add( { xmlns : untyped t.XMLNS, handler : handler, type : t } );
 			return true;
@@ -86,8 +87,8 @@ class PersonalEventListener {
 		return listeners.iterator();
 	}
 	
-	
 	function handlePersonalEvent( m : xmpp.Message ) {
+		trace("handlePersonalEventhandlePersonalEvent");
 		// var event = xmpp.pep.Event.fromMessage();
 		//onEventMessage( m );
 		var event : xmpp.PubSubEvent = null;

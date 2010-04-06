@@ -70,11 +70,11 @@ class Packet {
 		Parses given XML into a XMPP packet object.
 	*/
 	public static function parse( x : Xml ) : xmpp.Packet {
-		return switch( x.nodeName ) {
-			case "iq" 		: cast IQ.parse( x );
-			case "message"  : cast xmpp.Message.parse( x );
-			case "presence" : cast Presence.parse( x );
-			default : cast new PlainPacket( x );
+		switch( x.nodeName ) {
+		case "iq" 		: return cast IQ.parse( x );
+		case "message"  : return cast Message.parse( x );
+		case "presence" : return cast Presence.parse( x );
+		default : return cast new PlainPacket( x );
 		}
 	}
 	

@@ -39,7 +39,6 @@ import cpp.net.Socket;
 	TODO
 	- php!
 	- flash/js maxBufSize
-	- split outgoing (big) packets ?
 */
 
 /**
@@ -49,26 +48,27 @@ class SocketConnection extends jabber.stream.Connection {
 	public static var defaultBufSize = 65536; //(1<<8);//128
 	
 	public var port(default,null) : Int;
-	public var socket(default,null) : Socket;
 	public var timeout(default,null) : Int;
 	public var maxBufSize(default,null) : Int;
-	//public var secure(default,null) : Bool; //TODO move to jabber.socket.Connection
+	public var socket(default,null) : Socket; // TODO __socket
+	
+	#if php //TODO
+	public var secure : Bool;
+	#end
 	
 	#if flash
 	var buf : ByteArray;
 	#elseif (neko||php||cpp)
+	//public var __loop : Bool;
 	var reading : Bool;
 	var buf : haxe.io.Bytes;
 	var bufbytes : Int;
-	#elseif (JABBER_SOCKETBRIDGE)
+	#elseif JABBER_SOCKETBRIDGE
 	var buf : String;
 	#end
 	
-	//temp TODO
-	#if php
-	public var secure : Bool;
-	#end
-	
+	/**
+	*/
 	public function new( host : String,
 						 ?port : Int = 5222,
 						 ?socket : Socket,
@@ -88,6 +88,7 @@ class SocketConnection extends jabber.stream.Connection {
 		this.socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, sockErrorHandler );
 	
 		#elseif (neko||cpp||php)
+		//__loop = true;
 		buf = haxe.io.Bytes.alloc( defaultBufSize );
 		bufbytes = 0;
 		reading = false;
@@ -136,7 +137,6 @@ class SocketConnection extends jabber.stream.Connection {
 	public override function disconnect() {
 		if( !connected )
 			return;
-		//try socket.close() catch( e : Dynamic ) {};
 		socket.close();
 		#if (neko||php||cpp)
 		reading = false;
@@ -146,7 +146,7 @@ class SocketConnection extends jabber.stream.Connection {
 	
 	public override function read( ?yes : Bool = true ) : Bool {
 		if( yes ) {
-			#if flash9
+			#if flash
 			socket.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
 			#elseif (neko||php||cpp)
 			reading = true;
@@ -154,11 +154,21 @@ class SocketConnection extends jabber.stream.Connection {
 				readData();
 				processData();
 			}
+			/*
+			if( __loop ) {
+			} else {
+				//reading = true;
+				while( bufbytes > 0 ) {
+					readData();
+					processData();
+				}
+			}
+			*/
 			#elseif JABBER_SOCKETBRIDGE
 			socket.onData = sockDataHandler;
 			#end
 		} else {
-			#if flash9
+			#if flash
 			socket.removeEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
 			#elseif (neko||php||cpp)
 			reading = false;

@@ -20,8 +20,8 @@ package xmpp.pubsub;
 class Item {
 	
 	public var id : String;
-	public var payload : Xml; // TODO String ?
-	/* The node attribute is allowed (required!) in pubsub-event namespace only! */
+	public var payload : Xml;
+	/* The node attribute is allowed (required!) in pubsub-event namespace only!? */
 	//public var node : String;
 	
 	public function new( ?id : String, ?payload : Xml/*, ?node : String*/ ) {
@@ -38,9 +38,11 @@ class Item {
 		return x;
 	}
 	
+	/*
 	public inline function toString() : String {
 		return toXml().toString();
 	}
+	*/
 	
 	public static function parse( x : Xml ) : Item {
 		var e = x.firstElement();

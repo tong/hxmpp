@@ -51,10 +51,6 @@ class Event {
 		return throw "Abstract error";
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	
 	/*
 	public static function emptyXml() : Xml {
 		return null;

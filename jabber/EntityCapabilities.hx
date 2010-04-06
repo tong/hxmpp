@@ -17,59 +17,62 @@
 */
 package jabber;
 
-import jabber.stream.PacketCollector;
-
 /**
 	<a href="http://xmpp.org/extensions/xep-0115.html">XEP-0085: Entity Capabilities</a><br/>
-	Extension for broadcasting and dynamically discovering client, device, or generic entity capabilities.<br>
+	Extension for broadcasting and dynamically discovering client, device, or generic entity capabilities.<br/>
 */
 class EntityCapabilities {
 	
-	public dynamic function onCaps( jid : String, caps : xmpp.Caps ) : Void;
+	//public dynamic function onCaps( jid : String, caps : xmpp.Caps ) : Void;
+	/** Fired if a new (so far unknown) entity capability info got discovered */
 	public dynamic function onInfo( jid : String, info : xmpp.disco.Info, ?ver : String ) : Void;
 	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
-	/** Collected entity capabilities ( verfification strings are the keys ) */
-	public var caps(default,null) : Hash<xmpp.disco.Info>; //TODO extended info ( dataform )
+	public var stream(default,null) : Stream;
+	public var cached(default,null) : Hash<xmpp.disco.Info>;
+	
 	public var node : String;
 	public var ext : String;
-	public var stream(default,null) : Stream;
+	public var identities : Array<xmpp.disco.Identity>;
+	public var dataform : xmpp.DataForm;//TODO
 	
-	public function new( stream : Stream, node : String, ?ext : String ) {
+	public var ver(default,null) : String;
+	
+	public function new( stream : Stream, node : String, identities : Array<xmpp.disco.Identity>,
+						 ?ext : String ) {
 		this.stream = stream;
 		this.node = node;
+		this.identities = identities;
 		this.ext = ext;
-		caps = new Hash();	
-		stream.addCollector( new PacketCollector( [cast new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence ),
-												   cast new xmpp.filter.PacketPropertyFilter( xmpp.Caps.XMLNS, "c" )],
-												  handlePresence, true ) );
+		cached = new Hash();
+		stream.collect( [cast new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence ),
+						 cast new xmpp.filter.PacketPropertyFilter( xmpp.Caps.XMLNS, "c" )],
+						handlePresence, true );
+		stream.addInterceptor( this );
 	}
 	
-	/**
-		Publishes own capabilities.
-	*/
-	public function publish( identities : Iterable<xmpp.disco.Identity>, features : Iterable<String>,
-							 ?dataform : xmpp.DataForm ) {
-		var p = new xmpp.Presence();
-		var c = new xmpp.Caps( "sha-1", node, xmpp.Caps.createVerfificationString( identities, features, dataform ), ext );
-		p.properties.push( c.toXml() );
-		stream.sendData( p.toString() );			 
+	public function interceptPacket( p : xmpp.Packet ) : xmpp.Packet {
+		if( Std.is( p, xmpp.Presence ) ) {
+			//TODO don't create on every intercept.. overkill
+			ver = xmpp.Caps.createVerfificationString( identities, stream.features, dataform );
+			// TODO set own cap in cache
+			//cached.set( ver, new xmpp.disco.Info( identities, Lambda.array( stream.features ) ) );
+			var c = new xmpp.Caps( "sha-1", node, ver, ext );
+			p.properties.push( c.toXml() );
+		}
+		return p;
 	}
 	
 	function handlePresence( p : xmpp.Presence ) {
-		for( prop in p.properties ) {
-			if( prop.nodeName == "c" ) {
-				var _caps = xmpp.Caps.parse( prop );
-				onCaps( p.from, _caps );
-				if( _caps.hash != "sha-1" ) {
-					requestDiscoInfo( p.from );
-					return;
-				}
-				if( !caps.exists( _caps.ver ) ) {
-					caps.set( _caps.ver, null );
-					// discover infos
-					requestDiscoInfo( p.from, _caps.node+"#"+_caps.ver );
-				}
+		var c = xmpp.Caps.fromPresence( p );
+		if( c.hash != "sha-1" ) {
+			requestDiscoInfo( p.from );
+		} else {
+			if( cached.exists( c.ver ) ) {
+				onInfo( p.from, cached.get( c.ver ), c.ver );
+			} else {
+				cached.set( c.ver, null );
+				requestDiscoInfo( p.from, c.node+"#"+c.ver );
 			}
 		}
 	}
@@ -77,24 +80,24 @@ class EntityCapabilities {
 	function handleInfoResponse( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 		case result :
-			var info = xmpp.disco.Info.parse( iq.x.toXml() );
+			var i = xmpp.disco.Info.parse( iq.x.toXml() );
 			var ver : String = null;
-			if( info.node != null ) {
-				var ver_index = info.node.indexOf("#");
-				if( ver_index != -1 ) {
-					ver = info.node.substr( ver_index+1 );
-					caps.set( ver, info ); // cache capabilities
+			if( i.node != null ) {
+				var idx = i.node.indexOf( "#" );
+				if( idx != -1 ) {
+					ver = i.node.substr( idx+1 );
+					cached.set( ver, i ); // cache recieved caps
 				}
 			}
-			onInfo( iq.from, info, ver );
+			onInfo( iq.from, i, ver );
 		case error :
 			onError( new jabber.XMPPError( this, iq ) );
-		default : //#
+		default :
 		}
 	}
 	
-	function requestDiscoInfo( from : String, ?node : String ) {
-		var iq = new xmpp.IQ( xmpp.IQType.get, null,from );
+	function requestDiscoInfo( jid : String, ?node : String ) {
+		var iq = new xmpp.IQ( xmpp.IQType.get, null, jid );
 		iq.x = new xmpp.disco.Info( null, null, node );
 		stream.sendIQ( iq, handleInfoResponse );
 	}

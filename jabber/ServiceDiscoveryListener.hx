@@ -39,12 +39,12 @@ class ServiceDiscoveryListener {
 	//var cinfo : PacketCollector;
 	//var citems : PacketCollector;
 	
-	public function new( stream : Stream,  ?identities : Array<xmpp.disco.Identity> ) {
+	public function new( stream : Stream, ?identities : Array<xmpp.disco.Identity> ) {
 		if( !stream.features.add( xmpp.disco.Info.XMLNS ) ||
 			!stream.features.add( xmpp.disco.Items.XMLNS ) )
 			throw "ServiceDiscovery listeners already added";
 		this.stream = stream;
-		this.identities = identities;
+		this.identities = ( identities == null ) ? new Array() : identities;
 		stream.collect( [cast new IQFilter( xmpp.disco.Info.XMLNS, null, xmpp.IQType.get )], handleInfoQuery, true );
 		stream.collect( [cast new IQFilter( xmpp.disco.Items.XMLNS, null, xmpp.IQType.get )], handleItemsQuery, true );
 	}
@@ -63,6 +63,7 @@ class ServiceDiscoveryListener {
 			onInfoQuery( iq );
 			return;
 		}
+		//var info = onInfoQuery( iq );
 		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, stream.jidstr );
 		r.x = new xmpp.disco.Info( identities, Lambda.array( stream.features ) );
 		stream.sendData( r.toString() );
@@ -73,12 +74,6 @@ class ServiceDiscoveryListener {
 			onItemQuery( iq );
 			return;
 		}
-		/* ??? just get the items from the custom relay (?)
-		var items = new Array<Item>();
-		if( onItemQuery != null ) {
-			items = onItemQuery( iq );
-		}
-		*/
 		var r : xmpp.IQ;
 		// TODO (HACK)
 		if( Reflect.hasField( stream, "items" ) ) { // component stream .. return local stream items

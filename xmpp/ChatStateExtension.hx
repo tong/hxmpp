@@ -46,7 +46,7 @@ class ChatStateExtension {
 	}
 	
 	/**
-		Creates a chat state extension xml.
+		Creates chat state extension XML.
 	*/
 	public static function createXML( s : ChatState ) : Xml {
 		var x = Xml.createElement( Type.enumConstructor( s ) );
@@ -55,7 +55,7 @@ class ChatStateExtension {
 	}
 	
 	/**
-		Extracts the chat state of the given message.<br/>
+		Extracts the chat state of the given message.
 	*/
 	public static function get( m : xmpp.Message ) : xmpp.ChatState {
 		var s = getString( m );
@@ -63,6 +63,7 @@ class ChatStateExtension {
 	}
 	
 	/**
+		Extracts the chat state of the given message as string.
 	*/
 	public static function getString( m : xmpp.Message ) : String {
 		for( e in m.properties ) {

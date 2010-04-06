@@ -74,10 +74,6 @@ class PubSub {
 		return x;
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	
 	public static function parse( x : Xml ) : xmpp.PubSub {
 		var p = new xmpp.PubSub();
 		for( e in x.elements() ) {
@@ -109,5 +105,10 @@ class PubSub {
 		}
 		return p;
 	}
+	
+	/*
+	public static function fromPacket( p : xmpp.Packet ) : Caps {
+	}
+	*/
 	
 }
