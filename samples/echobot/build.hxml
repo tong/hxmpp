@@ -1,0 +1,21 @@
+
+-neko echobot.n
+-main EchoRoboter
+-cp ../../
+-D JABBER_DEBUG
+-D XMPP_DEBUG
+
+--next
+-swf9 echobot.swf
+-main EchoRoboter
+-cp ../../
+-D JABBER_DEBUG
+-D XMPP_DEBUG
+
+--next
+-js echobot.js
+-main EchoRoboter
+-cp ../../
+-D JABBER_DEBUG
+-D XMPP_DEBUG
+-D JABBER_SOCKETBRIDGE
