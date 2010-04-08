@@ -32,7 +32,7 @@ class JIDUtil {
 	#else
 	public static var EREG = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{3}?(\/[A-Z0-9._%-])?/i;
 	#end
-
+	
 	/**
 		Returns true if the given JID is valid formed.
 	*/
