@@ -1,0 +1,13 @@
+
+jabber.JID
+jabber.JIDUtil
+jabber.LastActivity
+jabber.LastActivityListener
+jabber.MessageListener
+jabber.Ping
+jabber.Pong
+jabber.PresenceListener
+jabber.ServiceDiscovery
+jabber.SoftwareVersion
+jabber.XMPPDebug
+jabber.XMPPError

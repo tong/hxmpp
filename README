@@ -1,11 +1,51 @@
 
 HXMPP - README
 ==============
-HXMPP is a haXe[03] library for creating jabber clients and components based on the XMPP protocol.
+HXMPP is a haXe library for creating XMPP based clients and services.
+
 The library exists in two namespaces:
 * xmpp: creation and manipulation of XMPP data.
 * jabber: creation and handling of XMPP data streams between jabber entities.
-Visit [04][05] for further information.
+
+
+
+USAGE
+-----
+Run the hxml files in the base directory to build the included tests, samples, utilities and documentation.
+This is not required to use the library!
+See: hxmpp/samples/* for how to use.
+
+
+
+COMPILER FLAGS
+--------------
+* XMPP_DEBUG	Print XMPP transfer
+* JABBER_DEBUG	Print verbose debug information
+* JABBER_SOCKETBRIDGE	Use a socket bridge as stream connection (see: jabber.tool.SocketBridge)
+
+
+
+USING THE BOSH CONNECTION
+-------------------------
+To use BOSH for connecting you have to proxy you requests.
+# Activate mod_proxy apache module
+sudo ln -s /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled/
+# Add following line to proxy.load to activate the proxy-http module
+LoadModule proxy_http_module /usr/lib/apache2/modules/mod_proxy_http.so
+# Add the proxy directive to the host settings in your http.conf
+# This will proxy requests: htp://127.0.0.1/jabber -> http://127.0.0.1:7070/http-bind/
+<VirtualHost *:80>
+	...
+	ProxyRequests Off
+	ProxyPass /jabber http://127.0.0.1:7070/http-bind/
+	ProxyPassReverse /jabber http://127.0.0.1:7070/http-bind/
+	...
+</VirtualHost>
+# Restart apache
+sudo /etc/init.d/apache2 restart
+#Now you can pass in the path to the constructor of the jabber.BOSHConection class:
+var cnx = new BOSHConnection( "domain.net", "localhost/http/" );
+
 
 
 XEPS SUPPORTED
@@ -37,70 +77,18 @@ XEPS SUPPORTED
 *** 0232 Bits of Binary
 
 
-BUILD+INSTALLATION
-------------------
-Run the hxmpp/*.hxml files to build the included tests, samples, utilities and documentation.
-
-# Compiler flags:
-* XMPP_DEBUG	Print XMPP transfer
-* JABBER_DEBUG   Print debug information
-* JABBER_SOCKETBRIDGE   Use a socket bridge as stream connection (see: jabber.tool.SocketBridge)
-
-# NEKO
-Copy hxmpp/ndll/$SYSTEM/*ndll files to your neko installation.
-* sha1.ndll is required for SHA1 encoding.
-
-# PHP
-...
-
-# FLASH
-...
-
-# JS
-...
-
-# AS3
-Run hxmpp/lib.hxml to build a SWC or ActionScript3 source code.
-See hxmpp/samples/JabberClientDemo.as.
-
-
-USAGE
------
-see: hxmpp/samples/*, hxmpp/test/jabber/*
-
-
-USING THE BOSH CONNECTION
--------------------------
-To use BOSH for connecting you have to proxy you requests.
-# Activate mod_proxy apache module
-sudo ln -s /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled/
-# Add following line to proxy.load to activate the proxy-http module
-LoadModule proxy_http_module /usr/lib/apache2/modules/mod_proxy_http.so
-# Add the proxy directive to the host settings in your http.conf
-# This will proxy requests: htp://127.0.0.1/jabber -> http://127.0.0.1:7070/http-bind/
-<VirtualHost *:80>
-	...
-	ProxyRequests Off
-	ProxyPass /jabber http://127.0.0.1:7070/http-bind/
-	ProxyPassReverse /jabber http://127.0.0.1:7070/http-bind/
-	...
-</VirtualHost>
-# Restart apache
-sudo /etc/init.d/apache2 restart
-#Now you can pass in the path to the constructor of the jabber.BOSHConection class:
-var cnx = new BOSHConnection( "domain.net", "localhost/http/" );
-
 
 AUTHOR
 ------
 xmpp://tong@jabber.spektral.at
 
 
+
 DOWNLOAD
 --------
 git://83.64.208.21/hxmpp.git
 http://disktree.spektral.at/git/
-http://code.google.com/p/hxmpp
+
 
 
 LINKS
@@ -111,5 +99,3 @@ LINKS
 [04] http://jabber.org
 [05] http://xmpp.org
 [06] http://code.google.com/p/hxmpp
-
-http://hxmpp.disktree.net

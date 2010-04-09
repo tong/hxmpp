@@ -1,0 +1,8 @@
+
+-js lib/hxmpp.js
+inc.hxml
+jabber.BOSHConnection
+
+--next
+-swf9 lib/hxmpp.swc
+inc.hxml
