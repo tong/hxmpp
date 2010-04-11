@@ -19,3 +19,11 @@
 -D JABBER_DEBUG
 -D XMPP_DEBUG
 -D JABBER_SOCKETBRIDGE
+
+--next
+-php .
+--php-front echobot.php
+-main EchoRoboter
+-cp ../../
+-D JABBER_DEBUG
+-D XMPP_DEBUG
