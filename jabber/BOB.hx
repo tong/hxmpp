@@ -30,6 +30,7 @@ class BOB {
 	
 	public function new( stream : jabber.Stream ) {
 		this.stream = stream;
+		//TODO add to stream features
 	}
 	
 	/**

@@ -8,7 +8,7 @@ class EchoRoboter {
 	static var IP = "127.0.0.1";
 	static var JID = "hxmpp@"+HOST;
 	static var PASS = "test";
-	
+        
 	static var stream : jabber.client.Stream;
 	
 	static function main() {
@@ -27,6 +27,8 @@ class EchoRoboter {
 	}
 		
 	static function handleMessage( m : xmpp.Message ) {
+		if( xmpp.Delayed.fromPacket( m ) != null )
+			return; // avoid processing delayed messages
 		trace( "Recieved message from "+m.from );
 		stream.sendPacket( new xmpp.Message( m.from, "Hello" ) );
 	}

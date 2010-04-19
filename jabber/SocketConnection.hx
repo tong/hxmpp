@@ -71,7 +71,7 @@ class SocketConnection extends jabber.stream.Connection {
 	*/
 	public function new( host : String,
 						 ?port : Int = 5222,
-						 ?socket : Socket,
+						 ?socket : Socket, //TODO remove (secure: Bool = false )
 						 ?maxBufSize : Int,
 						 ?timeout : Int = 10 ) {
 		super( host );
@@ -246,12 +246,12 @@ class SocketConnection extends jabber.stream.Connection {
 					throw "Max buffer size reached ("+maxBufSize+")";
 				nsize = maxBufSize;
 			}
+			
 			var buf2 = haxe.io.Bytes.alloc( nsize );
 			buf2.blit( 0, buf, 0, buflen );
 			buflen = nsize;
 			buf = buf2;
 		}
-			
 		var nbytes = 0;
 	//	try { 
 			//trace(buf.length+"//"+buflen+"//"+bufbytes);

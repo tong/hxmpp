@@ -12,8 +12,8 @@ The library exists in two namespaces:
 USAGE
 -----
 Run the hxml files in the base directory to build the included tests, samples, utilities and documentation.
-This is not required to use the library!
-See: hxmpp/samples/* for how to use.
+This is NOT required to use the library!
+See: hxmpp/samples/* for usage.
 
 
 
