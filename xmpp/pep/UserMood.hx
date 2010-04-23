@@ -23,7 +23,7 @@ package xmpp.pep;
 */
 class UserMood extends Event {
 	
-	public static var XMLNS = xmpp.Namespace.PROTOCOL+"/mood";
+	public static var XMLNS = xmpp.Packet.PROTOCOL+"/mood";
 	
 	public var type : Mood;
 	public var text : String; 

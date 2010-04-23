@@ -18,5 +18,5 @@
 package xmpp;
 
 class MUC {
-	public static var XMLNS = xmpp.Namespace.PROTOCOL+'/muc';
+	public static var XMLNS = xmpp.Packet.PROTOCOL+'/muc';
 }

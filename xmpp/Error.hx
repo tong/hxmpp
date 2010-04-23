@@ -17,13 +17,13 @@
 */
 package xmpp;
 
-typedef TErrorCondition = {
-	var name : String;
-	var xmlns : String;
-}
-
 /**
-	XMPP error extension.
+	<a href="http://xmpp.org/rfcs/rfc3920.html#stanzas-error">XMPP stanza errors</a>
+	
+	* MUST contain a child element corresponding to one of the defined stanza error conditions specified below; this element MUST be qualified by the 'urn:ietf:params:xml:ns:xmpp-stanzas' namespace.
+    * MAY contain a <text/> child containing XML character data that describes the error in more detail; this element MUST be qualified by the 'urn:ietf:params:xml:ns:xmpp-stanzas' namespace and SHOULD possess an 'xml:lang' attribute.
+    * MAY contain a child element for an application-specific error condition; this element MUST be qualified by an application-defined namespace, and its structure is defined by that namespace.
+	
 */
 class Error {
 	
@@ -31,42 +31,30 @@ class Error {
 	
 	public var type : ErrorType;
 	public var code : Null<Int>;
-	public var name : String;
 	public var text : String;
-	public var conditions : Array<TErrorCondition>;
+	public var conditions : Array<Xml>;
 	
 	public function new( ?type : xmpp.ErrorType,
 						 ?code : Null<Int>,
-						 ?name : String,
 						 ?text : String,
-						 ?conditions : Array<TErrorCondition> ) {
+						 ?conditions : Array<Xml> ) {
 		this.type = type;
 		this.code = code;
-		this.name = name;
 		this.text = text;
-		conditions = new Array();
+		this.conditions = ( conditions == null ) ? new Array() : conditions;
 	}
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "error" );
 		if( code != null ) x.set( "code", Std.string( code ) );
 		if( type != null ) x.set( "type", Type.enumConstructor( type ) );
-		if( name != null ) { //TODO
-			var e = Xml.createElement( name );
-			//e.set( "xml:lang", "en" );
+		if( text != null ) {
+			var e = XMLUtil.createElement( "text", text );
 			e.set( "xmlns", XMLNS );
-			if( text != null ) e.addChild( Xml.createPCData( text ) );
 			x.addChild( e );
 		}
-		if( conditions != null ) {
-			for( c in conditions )
-				x.addChild( XMLUtil.createElement( c.name, c.xmlns ) );
-		}
+		for( c in conditions ) x.addChild( c );
 		return x;
-	}
-	
-	public function toString() : String {
-		return toXml().toString();
 	}
 	
 	public static function parse( x : Xml ) : xmpp.Error {
@@ -75,16 +63,20 @@ class Error {
 		if( v != null ) e.code = Std.parseInt( v ); 
 		v = x.get( "type" );
 		if( v != null ) e.type = Type.createEnum( ErrorType, v );
-		// TODO  parse Conditions
 		for( el in x.elements() ) {
-			e.name = el.nodeName;
-			try e.text = el.firstChild().nodeValue catch(e:Dynamic){}
-			break;
+			switch( el.nodeName ) {
+			case "text" :
+				//try e.text = el.firstChild().nodeValue catch(e:Dynamic){}
+				//if( el.get( "xmlns" ) != XMLNS )
+				e.text = el.firstChild().nodeValue;
+			default :
+				e.conditions.push( el );
+			}
 		}
 		return e;
 	}
 	
-	/**
+	/*
 -		Parses the error from a given packet.
 -	public static function fromPacket( p : xmpp.Packet ) : xmpp.Error {
 -		for( e in p.toXml().elementsNamed( "error" ) )

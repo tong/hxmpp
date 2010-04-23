@@ -23,7 +23,7 @@ package xmpp.pep;
 */
 class UserLocation extends Event {
 
-	public static var XMLNS = xmpp.Namespace.PROTOCOL+"/geoloc";
+	public static var XMLNS = xmpp.Packet.PROTOCOL+"/geoloc";
 	
 	/** Horizontal GPS error in meters; this element obsoletes the <error/> element */
 	public var accuracy : Int;

@@ -19,7 +19,7 @@ package xmpp.file;
 
 class IB {
 	
-	public static inline var XMLNS = xmpp.Namespace.PROTOCOL+"/ibb";
+	public static var XMLNS = xmpp.Packet.PROTOCOL+"/ibb";
 	
 	public var type : IBType;
 	public var sid : String;

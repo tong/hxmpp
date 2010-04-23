@@ -25,7 +25,7 @@ import jabber.util.SHA1;
 */
 class Caps {
 	
-	public static var XMLNS = xmpp.Namespace.PROTOCOL+"/caps";
+	public static var XMLNS = xmpp.Packet.PROTOCOL+"/caps";
 	
 	/**
 		The hashing algorithm used to generate the verification string, fe: sha-1.

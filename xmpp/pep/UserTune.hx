@@ -23,7 +23,7 @@ package xmpp.pep;
 */
 class UserTune extends Event {
 
-	public static var XMLNS = xmpp.Namespace.PROTOCOL+"/tune";
+	public static var XMLNS = xmpp.Packet.PROTOCOL+"/tune";
 	
 	/** The artist or performer of the song or piece */
 	public var artist : String;

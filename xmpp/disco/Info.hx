@@ -21,7 +21,7 @@ package xmpp.disco;
 */
 class Info {
 	
-	public static var XMLNS = xmpp.Namespace.PROTOCOL+'/disco#info';
+	public static var XMLNS = xmpp.Packet.PROTOCOL+'/disco#info';
 	
 	public var identities : Array<Identity>; 
 	public var features : Array<String>;

@@ -22,7 +22,7 @@ package xmpp;
 */
 class Compression {
 	
-	public static var XMLNS = xmpp.Namespace.PROTOCOL+'/compress';
+	public static var XMLNS = xmpp.Packet.PROTOCOL+'/compress';
 	
 	/**
 	*/

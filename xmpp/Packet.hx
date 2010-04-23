@@ -22,6 +22,9 @@ package xmpp;
 */
 class Packet {
 	
+	//public static var XMLNS = "urn:ietf:params:xml:ns:xmpp-stanzas";
+	public static var PROTOCOL = "http://jabber.org/protocol";
+	
 	public var _type(default,null) : PacketType;
 	public var to : String;
 	public var from : String;
