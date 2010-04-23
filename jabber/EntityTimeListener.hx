@@ -31,12 +31,12 @@ class EntityTimeListener {
 			throw "EntityTime listener already added";
 		this.stream = stream;
 		time = new xmpp.EntityTime( tzo );
-		stream.addCollector( new jabber.stream.PacketCollector( [ cast new xmpp.filter.IQFilter(xmpp.EntityTime.XMLNS,"time",xmpp.IQType.get)], handleRequest, true ) );
+		stream.collect( [ cast new xmpp.filter.IQFilter(xmpp.EntityTime.XMLNS,"time",xmpp.IQType.get)], handleRequest, true );
 	}
 	
 	function handleRequest( iq : xmpp.IQ ) {
 		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
-		time.utc = xmpp.DateTime.current();
+		time.utc = xmpp.DateTime.now();
 		r.x = time;
 		stream.sendPacket( r );	
 	}
