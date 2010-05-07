@@ -1,8 +1,13 @@
 
+# Flash SWC
+-swf-version 10
+-swf lib/hxmpp.swc
+inc.hxml
+inc.client.hxml
+
+# Javascript
+--next
 -js lib/hxmpp.js
 inc.hxml
-jabber.BOSHConnection
-
---next
--swf9 lib/hxmpp.swc
-inc.hxml
+inc.client.hxml
+-D JABBER_SOCKETBRIDGE
