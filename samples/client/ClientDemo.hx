@@ -1,11 +1,13 @@
 
-import jabber.SocketConnection;
 import jabber.ServiceDiscovery;
 import jabber.client.NonSASLAuth;
 import jabber.client.Stream;
 import jabber.client.Roster;
 import jabber.client.VCard;
-
+#if JABBER_SOCKETBRIDGE
+import jabber.SocketConnection;
+#end
+		
 /**
 	Basic jabber client.
 */
@@ -26,27 +28,20 @@ class ClientDemo {
 		var jid = new jabber.JID( ClientDemo.jid );
 #if js
 	#if JABBER_SOCKETBRIDGE
-		var cnx = new SocketConnection( ip, Stream.defaultPort );
+		var cnx = new jabber.SocketConnection( ip, Stream.defaultPort );
 	#else
-		var cnx = new jabber.BOSHConnection( jid.domain, ip+"/http" );
+		var cnx = new jabber.BOSHConnection( jid.domain, ip+"/jabber" );
 	#end
 #else
-		var cnx = new SocketConnection( ip, 5222 );
+		var cnx = new jabber.SocketConnection( ip, Stream.defaultPort );
 #end
 		stream = new Stream( jid, cnx );
 		stream.onClose = function(?e) { trace( "Stream to: "+stream.jid.domain+" closed." ); } ;
 		stream.onOpen = function() {
 			trace( "XMPP stream to "+stream.jid.domain+" opened" );
-			/*
-			var auth = new NonSASLAuth( stream );
-			auth.onSuccess = handleLogin;
-			auth.onFail = function(?e) {
-				trace( "Login failed "+e.name );
-			};
-			*/
 			var mechanisms = new Array<jabber.sasl.TMechanism>();
-			//mechanisms.push( new net.sasl.PlainMechanism() );
 			mechanisms.push( new jabber.sasl.MD5Mechanism() );
+			//mechanisms.push( new net.sasl.PlainMechanism() );
 			var auth = new jabber.client.SASLAuth( stream, mechanisms );
 			auth.onSuccess = handleLogin;
 			auth.onFail = function(?e) {
@@ -62,7 +57,7 @@ class ClientDemo {
 
 		trace( "Logged in as "+ stream.jid.node+" at "+stream.jid.domain );
 		
-		// load server disco infos
+		// load server infos
 		disco = new ServiceDiscovery( stream );
 		disco.onInfo = handleDiscoInfo;
 		disco.onItems = handleDiscoItems;
@@ -109,12 +104,13 @@ class ClientDemo {
 	}
 	
 	static function main() {
+		if( haxe.Firebug.detect() ) haxe.Firebug.redirectTraces();
 		#if flash
 		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
 		#end
 		#if JABBER_SOCKETBRIDGE
-		jabber.SocketBridgeConnection.initDelayed( "f9bridge", init );
+		jabber.SocketBridgeConnection.initDelayed( "socketbridge", init );
 		#else
 		init();
 		#end
