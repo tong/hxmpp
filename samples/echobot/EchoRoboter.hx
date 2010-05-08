@@ -20,7 +20,7 @@ class EchoRoboter {
 		#end
 		var jid = new jabber.JID( JID );
 		stream = new jabber.client.Stream( jid, cnx );
-		stream.onError = function(?e) {
+		stream.onClose = function(?e) {
 			if( e == null ) trace( "XMPP stream with "+stream.host+" closed." );
 			else trace( "An XMPP stream error occured: "+e );
 		}
