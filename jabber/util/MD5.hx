@@ -1,5 +1,11 @@
 package jabber.util;
 
+#if neko
+import neko.Lib;
+#elseif cpp
+import cpp.Lib;
+#end
+
 /**
 	Creates a MD5 of a String.<br/>
 	Modified version from the haXe std lib to provide raw encoding.
@@ -18,8 +24,8 @@ class MD5 {
 	}
 
 	#if (neko||cpp)
-	static var base_encode = neko.Lib.load("std","base_encode",2);
-	static var make_md5 = neko.Lib.load("std","make_md5",1);
+	static var base_encode = Lib.load( "std", "base_encode", 2 );
+	static var make_md5 = Lib.load( "std", "make_md5", 1 );
 
 	#elseif !php
 
