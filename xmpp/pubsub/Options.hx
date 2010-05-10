@@ -24,7 +24,7 @@ class Options {
 	public var subid : String;
 	public var form : xmpp.DataForm;
 	
-	public function new( jid : String, ?node : String, ?subid : String, ?form : xmpp.DataForm ) {
+	public function new( ?jid : String, ?node : String, ?subid : String, ?form : xmpp.DataForm ) {
 		this.jid = jid;
 		this.node = node;
 		this.subid = subid;
@@ -41,9 +41,8 @@ class Options {
 	}
 	
 	public static function parse( x : Xml ) : Options {
-		//var f = if( x.elementsNamed( "x" ) != null ) xmpp.DataForm.parse( ) else null;
 		var f : xmpp.DataForm = null;
-		for( e in x.elementsNamed("x") ) {
+		for( e in x.elementsNamed( "x" ) ) {
 			f = xmpp.DataForm.parse( e );
 			break;
 		}

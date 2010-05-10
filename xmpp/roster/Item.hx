@@ -54,7 +54,8 @@ class Item {
 	public static function parse( x : Xml ) : xmpp.roster.Item {
 		var i = new Item( x.get( "jid" ) );
 		i.subscription = Type.createEnum( Subscription, x.get( "subscription" ) );
-		i.name = x.get( "name" );
+		i.name = x.get("name");//XMLUtil.getAttr( x, "name" );
+		//XMLUtil.reflectAttribute( i, "name", x );
 		if( x.exists( "ask" ) ) i.askType = Type.createEnum( AskType, x.get( "ask" ) );
 		for( g in x.elementsNamed( "group" ) )
 			i.groups.add( g.firstChild().nodeValue );

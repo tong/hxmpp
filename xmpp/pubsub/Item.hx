@@ -38,12 +38,6 @@ class Item {
 		return x;
 	}
 	
-	/*
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	*/
-	
 	public static function parse( x : Xml ) : Item {
 		var e = x.firstElement();
 		if( e == null ) e = x.firstChild();

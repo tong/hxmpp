@@ -70,7 +70,10 @@ class PubSub {
 		} else if( affiliations != null ) {
 			affiliations.toXml();
 		}
-		if( c != null ) x.addChild( c );
+		if( options != null )
+			x.addChild( options.toXml() );
+		if( c != null )
+			x.addChild( c );
 		return x;
 	}
 	

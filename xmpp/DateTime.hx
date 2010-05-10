@@ -34,47 +34,35 @@ class DateTime {
 	*/								
 	public static var ereg_date(default,null) : EReg;
 	
-	/*
-		Deprecated!
-		Implementd just for backwards compatibility.
-		20091012T21:39:16
-	*/
-	//public static var ereg_date_old(default,null)  : EReg;
-	
 	/**
 		UTC time expression.
 		hh:mm:ss[.sss][TZD]
 	*/
 	public static var ereg_time(default,null) : EReg;
 	
-	/**
-	*/
 	public static inline function isValidDate( t : String ) : Bool {
 		return ereg_date.match( t );
 	}
 	
-	/**
-	*/
 	public static inline function isValidTime( t : String ) : Bool {
 		return ereg_time.match( t );
 	}
 	
-	/**
-	*/
 	public static inline function now( ?offset : Int ) : String {
 		return fromDate( Date.now(), offset );// utc( Date.now().toString(), offset );
 	}
 	
-	/**
-	*/
 	public static inline function fromDate( d : Date, ?offset : Int ) : String {
 		return utc( d.toString(), offset );
 	}
 	
-	/**
-	*/
 	public static inline function fromTime( t : Float, ?offset : Int ) {
 		return utc( Date.fromTime( t ).toString(), offset );
+	}
+	
+	public static function toDate( utc : String ) : Date {
+		var p = getParts( utc );
+		return new Date( p[0], p[1], p[2], p[3], p[4], p[5] );
 	}
 	
 	/**   
@@ -121,12 +109,19 @@ class DateTime {
 		#end
 	}
 	
-	/*
-	public static function getParts( utc : String ) : Array<String> {
-		trace(utc );
-		//return { year : "2012" };
-		return [];
+	public static function getParts( utc : String ) : Array<Int> {
+		var r = ereg_date;
+		if( !r.match( utc ) )
+			return null;
+		var t = r.matched( 4 );
+		t = t.substr( 1, t.length-2 );
+		var time = t.split( ":" );
+		return [ Std.parseInt( r.matched(1) ),
+				 Std.parseInt( r.matched(2) ),
+				 Std.parseInt( r.matched(3) ),
+				 Std.parseInt( time[0] ),
+				 Std.parseInt( time[1] ),
+				 Std.parseInt( time[2] ) ];
 	}
-	*/
 	
 }
