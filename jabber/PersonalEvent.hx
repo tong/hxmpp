@@ -28,6 +28,7 @@ class PersonalEvent {
 	public dynamic function onError( e : XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
+	//var service : String;
 	
 	public function new( stream : jabber.Stream ) {
 		this.stream = stream;

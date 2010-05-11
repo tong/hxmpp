@@ -18,22 +18,26 @@
 package jabber.stream;
 
 /**
-	Abstract base for XMPP stream connections.
+	Abstract base class for stream connections.
 */
 class Connection {
 	
-	/** Callback for connecting event */
+	/** Succesfully connected callback */
 	public var __onConnect : Void->Void;
-	/** Callback for disconnecting event */
-	public var __onDisconnect : Void->Void;
-	/** Callback data recieved event */
-	//public var onData : String->Void;
-	public var __onData : haxe.io.Bytes->Int->Int->Int;
-	/** Callback connection level errors */
-	public var __onError : String->Void; // TODO replace : __onDisconnect(?e)
 	
-	public var host(default,null) : String;
-	//public var port(default,null) : Int;
+	/** Disconnected callback */
+	public var __onDisconnect : Void->Void;
+	
+	/** Data recieved callback */
+	public var __onData : haxe.io.Bytes->Int->Int->Int;
+	
+	/** Error callback */
+	public var __onError : String->Void; // replace public var __onDisconnect(?e)
+	
+	/** Hostname or IP address of the jabber server. */
+	public var host(default,setHost) : String;
+	
+	/** Indicates if connected and ready to read and write. */
 	public var connected(default,null) : Bool;
 	
 	function new( host : String ) {
@@ -41,48 +45,40 @@ class Connection {
 		connected = false;
 	}
 	
-	/**
-		Try to connect the stream data connection.
-	*/
-	public function connect() {
-		#if JABBER_DEBUG
-		throw "Abstract method";
-		#end
+	function setHost( t : String ) : String {
+		if( connected )
+			throw "Cannot change host on active connection";
+		return host = t;
 	}
 	
 	/**
-		Disconnects stream connection.
 	*/
-	public function disconnect() { //: Bool
-		#if JABBER_DEBUG
+	public function connect() {
 		throw "Abstract method";
-		#end
+	}
+	
+	/**
+	*/
+	public function disconnect() {
+		throw "Abstract method";
 	}
 	
 	/**
 		Starts/Stops reading data input.
 	*/
-	//TODO!!!!!!!!!!!!
-	//public function read() : String {
-	//public function readBytes( buf : haxe.io.Bytes ) : Void {
+	//TODO!
 	public function read( ?yes : Bool = true ) : Bool {
-		return false;
+		return throw "Abstract method";
 	}
 	
 	/**
 		Send string.
 	*/
 	public function write( t : String ) : Bool {
-		#if JABBER_DEBUG
 		return throw "Abstract method";
-		#end
-		return false;
 	}
 	
-	//TODO
-	/**
-		Send raw bytes.
-	*/
+	//TODO Send raw bytes.
 	/*
 	public function writeBytes( t : haxe.io.Bytes ) : haxe.io.Bytes {
 		return throw new error.AbstractError();

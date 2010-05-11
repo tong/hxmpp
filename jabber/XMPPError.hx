@@ -17,9 +17,10 @@
 */
 package jabber;
 
+//TODO!!!!!! remove
 class XMPPError extends xmpp.Error {
 	
-	public var dispatcher(default,null) : Dynamic;
+	public var dispatcher(default,null) : Dynamic; //TODO remove
 	public var from(default,null) : String;
 	
 	public function new( dispatcher : Dynamic, p : xmpp.Packet ) {

@@ -14,7 +14,7 @@
 
 --next
 -js echobot.js
--main EchoRoboter
+EchoRoboter
 -cp ../../
 -D JABBER_DEBUG
 -D XMPP_DEBUG
@@ -28,10 +28,10 @@
 -D JABBER_DEBUG
 -D XMPP_DEBUG
 
---next
--cpp echobot
--main EchoRoboter
--cp ../../
--D JABBER_DEBUG
--D XMPP_DEBUG
--D HXCPP_MULTI_THREADED
+#--next
+#-cpp echobot
+#-main EchoRoboter
+#-cp ../../
+#-D JABBER_DEBUG
+#-D XMPP_DEBUG
+#-D HXCPP_MULTI_THREADED

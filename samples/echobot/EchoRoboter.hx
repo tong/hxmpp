@@ -4,25 +4,28 @@
 */
 class EchoRoboter {
 	
-	static var HOST = "disktree";
+	static var HOST = "jabberservername.com";
 	static var IP = "127.0.0.1";
-	static var JID = "hxmpp@"+HOST;
-	static var PASS = "mypassword";
-        
+	static var JID = "username@"+HOST;
+	static var PASSWORD = "mypassword";
+    static var RESOURCE = "HXMPPEchoRoboter";
+       
 	static var stream : jabber.client.Stream;
 	
 	static function main() {
 		trace( "XMPP echo roboter" );
 		#if js
-		var cnx = new jabber.BOSHConnection( "disktree", "jabber" );
+		var cnx = new jabber.BOSHConnection( HOST, IP+"/jabber" );
 		#else
 		var cnx = new jabber.SocketConnection( IP, 5222 );
 		#end
 		var jid = new jabber.JID( JID );
 		stream = new jabber.client.Stream( jid, cnx );
 		stream.onClose = function(?e) {
-			if( e == null ) trace( "XMPP stream with "+stream.host+" closed." );
-			else trace( "An XMPP stream error occured: "+e );
+			if( e == null )
+				trace( "XMPP stream with "+stream.host+" closed." );
+			else
+				trace( "An XMPP stream error occured: "+e );
 		}
 		stream.onOpen = function() {
 			var auth = new jabber.client.SASLAuth( stream, [cast new jabber.sasl.MD5Mechanism()] );
@@ -30,7 +33,7 @@ class EchoRoboter {
 				new jabber.MessageListener( stream, handleMessage );
 				stream.sendPresence();
 			}
-			auth.authenticate( PASS, "HXMPP" );
+			auth.authenticate( PASSWORD, RESOURCE );
 		}
 		stream.open();
 	}
@@ -42,4 +45,5 @@ class EchoRoboter {
 		trace( "Recieved message from "+jid.bare+" at resource:"+jid.resource );
 		stream.sendPacket( new xmpp.Message( m.from, "Hello darling aka "+jid.node ) );
 	}
+	
 }

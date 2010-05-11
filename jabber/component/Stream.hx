@@ -22,8 +22,6 @@ import jabber.ServiceDiscoveryListener;
 import jabber.util.SHA1;
 import xmpp.XMLUtil;
 
-//private class StreamFeatures extends jabber.stream.Features
-
 /**
 	Component-2-Server XMPP stream.<br/>
 	<a href="http://www.xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>
@@ -36,7 +34,7 @@ class Stream extends jabber.Stream {
 	/** Called if stream got authenticated and is ready to use */
 	public dynamic function onConnect() : Void;
 	
-	public var host(default,null) : String;
+	//public var host(default,null) : String;
 	public var subdomain(default,null) : String;
 	public var serviceName(getServiceName,null) : String;
 	/** Shared secret string used to identify legacy components*/
@@ -47,7 +45,6 @@ class Stream extends jabber.Stream {
 	
 	public function new( host : String, subdomain : String, secret : String, cnx : Connection,
 						 ?identities : Array<xmpp.disco.Identity> ) {
-		//__isClient = false;
 		if( subdomain == null || subdomain == "" )
 			throw "Invalid stream subdomain";
 		if( secret == null )
@@ -60,6 +57,12 @@ class Stream extends jabber.Stream {
 		connected = false;
 		discoListener = new ServiceDiscoveryListener( this, identities );
 	}
+	
+	/*
+	override function getHost() : String {
+		return ( cnx != null ) ? cnx.host : null;
+	}
+	*/
 	
 	override function getJIDStr() : String {
 		return getServiceName();
@@ -75,7 +78,7 @@ class Stream extends jabber.Stream {
 		return items;
 	}
 	
-	override function connectHandler() {
+	override function handleConnect() {
 		var t = sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_COMPONENT, subdomain ) );
 		#if XMPP_DEBUG
 		//jabber.XMPPDebug.out( t );

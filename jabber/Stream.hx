@@ -65,9 +65,10 @@ class Stream {
 	/** Indicates if this streams connection is a http connection */
 	public var http(default,null) : Bool; //TODO move to: jabber.stream.Connection
 	
-	public var status : StreamStatus;
-	public var jidstr(getJIDStr,null) : String;
 	public var cnx(default,setConnection) : Connection;
+	public var status : StreamStatus;
+	public var host(getHost,null) : String;
+	public var jidstr(getJIDStr,null) : String;
 	public var features(default,null) : StreamFeatures;
 	public var server(default,null) : Server;
 	public var id(default,null) : String;
@@ -99,6 +100,10 @@ class Stream {
 		#end
 	}
 	
+	function getHost() : String {
+		return ( cnx != null ) ? cnx.host : null;
+	}
+	
 	function getJIDStr() : String {
 		return throw "abstract";
 	}
@@ -113,10 +118,10 @@ class Stream {
 			if( cnx != null && cnx.connected )
 				cnx.disconnect();
 			cnx = c;
-			cnx.__onConnect = connectHandler;
-			cnx.__onDisconnect = disconnectHandler;
-			cnx.__onData = processData;
-			cnx.__onError = errorHandler;
+			cnx.__onConnect = handleConnect;
+			cnx.__onDisconnect = handleDisconnect;
+			cnx.__onData = handleData;
+			cnx.__onError = handleConnectionError;
 		}
 		//TODO HACK
 		try http = ( untyped cnx.http == true ) catch( e : Dynamic ) {
@@ -144,7 +149,7 @@ class Stream {
 	public function open() : Bool {
 		if( cnx == null )
 			throw "No stream connection set";
-		cnx.connected ? connectHandler() : cnx.connect();
+		cnx.connected ? handleConnect() : cnx.connect();
 		return true;
 	}
 	
@@ -158,7 +163,7 @@ class Stream {
 		status = StreamStatus.closed;
 		if( http ) cnx.disconnect();
 		else if( disconnect ) cnx.disconnect();
-		closeHandler();
+		handleDisconnect();
 	}
 	
 	/**
@@ -303,7 +308,7 @@ class Stream {
 	*/
 	//TODO remove pos/length value 
 	//public function processData( buf : haxe.io.Bytes ) : Bool {
-	public function processData( buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) : Int {
+	public function handleData( buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) : Int {
 		if( status == StreamStatus.closed )
 			return -1;
 		//TODO .. data filters
@@ -408,6 +413,7 @@ class Stream {
 		return throw "Abstract";
 	}
 	
+	/*
 	function closeHandler() {
 		id = null;
 		numPacketsSent = 0;
@@ -416,19 +422,19 @@ class Stream {
 			interceptors = new List();
 			server = { features : new Hash() };
 			features = new StreamFeatures();
-			*/
 		onClose();
 	}
+			*/
 	
-	function connectHandler() {
-	}
-	
-	function errorHandler( m : Dynamic ) {
-		onClose( m );
+	function handleConnect() {
 	}
 
-	function disconnectHandler() {
+	function handleDisconnect() {
 		//?closeHandler();
+	}
+	
+	function handleConnectionError( e : String ) {
+		onClose( e );
 	}
 	
 }

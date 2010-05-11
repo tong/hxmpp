@@ -52,7 +52,7 @@ class Stream extends jabber.Stream {
 		return jid = j;
 	}
 		
-	override function connectHandler() {
+	override function handleConnect() {
 		status = StreamStatus.pending;
 		if( !http ) { // TODO avoid HACK
 			sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_CLIENT, jid.domain, version, lang ) );
@@ -130,8 +130,9 @@ class Stream extends jabber.Stream {
 		return buflen;
 	}
 	
-	inline function parseStreamFeatures( x : Xml ) {
-		for( e in x.elements() ) server.features.set( e.nodeName, e );
+	function parseStreamFeatures( x : Xml ) {
+		for( e in x.elements() )
+			server.features.set( e.nodeName, e );
 	}
 	
 }

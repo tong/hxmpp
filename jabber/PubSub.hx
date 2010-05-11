@@ -101,7 +101,8 @@ class PubSub {
 	public function subscribe( node : String, ?jid : String ) : IQ {
 		var iq = new IQ( IQType.set );
 		var x = new xmpp.PubSub();
-		x.subscribe = { node : node, jid : ( jid == null ) ? stream.jidstr : jid };
+		x.subscribe = { node : node,
+						jid : ( jid == null ) ? stream.jidstr : jid };
 		iq.x = x;
 		var h = onSubscribe;
 		sendIQ( iq, function(r:IQ) {

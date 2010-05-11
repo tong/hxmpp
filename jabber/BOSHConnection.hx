@@ -17,7 +17,6 @@
 */
 package jabber;
 
-import jabber.util.Timer;
 #if flash
 import flash.events.Event;
 import flash.events.HTTPStatusEvent;
@@ -25,6 +24,7 @@ import flash.events.IOErrorEvent;
 import flash.events.ProgressEvent;
 import flash.events.SecurityErrorEvent;
 #end
+import jabber.util.Timer;
 	
 	//TODO
 	
@@ -47,16 +47,11 @@ import flash.events.SecurityErrorEvent;
 */
 class BOSHConnection extends jabber.stream.Connection {
 	
-	static function __init__() {
-		XMLNS = "http://jabber.org/protocol/httpbind";
-		XMLNS_XMPP = "urn:xmpp:xbosh";
-	}
-	
 	static inline var INTERVAL = 0;
 	
-	public static inline var BOSH_VERSION = "1.6";
-	public static var XMLNS(default,null) : String;
-	public static var XMLNS_XMPP(default,null) : String;
+	static inline var BOSH_VERSION = "1.6";
+	static var XMLNS = "http://jabber.org/protocol/httpbind";
+	static var XMLNS_XMPP = "urn:xmpp:xbosh";
 	
 	public var http(default,null) : Bool; // TODO _http
 	
@@ -267,7 +262,10 @@ class BOSHConnection extends jabber.stream.Connection {
 		try {
 			x = Xml.parse( t ).firstElement();
 		} catch( e : Dynamic ) {
-			#if JABBER_DEBUG trace( "Invalid XML" ); #end
+			#if JABBER_DEBUG
+			trace( "Invalid XML:" );
+			trace( t );
+			#end
 			return;
 		}
 		if( x.get( "xmlns" ) != XMLNS ) {
