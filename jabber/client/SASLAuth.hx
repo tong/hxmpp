@@ -117,12 +117,14 @@ class SASLAuth extends Authentication {
 		stream.onOpen = handleStreamOpen;
 		onNegotiated();
 		//stream.version = false;
+//stream.cnx.reset();
 		stream.open(); // re-open XMPP stream
 		//return p.toString().length;
 	}
 	
 	function handleStreamOpen() {
 		stream.onOpen = onStreamOpenHandler;
+		//stream.cnx.reset();
 		//onStreamOpenHandler = null;
 		if( stream.server.features.exists( "bind" ) ) { // bind the resource
 			var iq = new IQ( IQType.set );

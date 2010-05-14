@@ -13,10 +13,16 @@ import jabber.SocketConnection;
 */
 class ClientDemo {
 	
-	static inline var RESOURCE = #if neko "NEKO" #elseif flash "FLASH" #elseif js "JS" #elseif php "PHP" #elseif cpp "CPP" #end;
+	static inline var RESOURCE = #if neko "NEKO"
+								 #elseif flash "FLASH"
+								 #elseif js "JS"
+								 #elseif php "PHP"
+								 #elseif cpp "CPP"
+								 #elseif nodejs "NODEJS"
+								 #end;
 	
-	static var jid = "hxmpp@disktree";
-	static var password = "test";
+	static var jid = "user@disktree";
+	static var password = "mypassword";
 	static var ip = "127.0.0.1";
 	
 	static var stream : Stream;
@@ -25,23 +31,22 @@ class ClientDemo {
 	static var vcard : VCard;
 	
 	static function init() {
+		
 		var jid = new jabber.JID( ClientDemo.jid );
-#if js
-	#if JABBER_SOCKETBRIDGE
-		var cnx = new jabber.SocketConnection( ip, Stream.defaultPort );
-	#else
+		
+		#if ( js && !nodejs && !JABBER_SOCKETBRIDGE )
 		var cnx = new jabber.BOSHConnection( jid.domain, ip+"/jabber" );
-	#end
-#else
+		#else
 		var cnx = new jabber.SocketConnection( ip, Stream.defaultPort );
-#end
+		#end
+
 		stream = new Stream( jid, cnx );
 		stream.onClose = function(?e) { trace( "Stream to: "+stream.jid.domain+" closed." ); } ;
 		stream.onOpen = function() {
 			trace( "XMPP stream to "+stream.jid.domain+" opened" );
 			var mechanisms = new Array<jabber.sasl.TMechanism>();
 			mechanisms.push( new jabber.sasl.MD5Mechanism() );
-			//mechanisms.push( new net.sasl.PlainMechanism() );
+			mechanisms.push( new jabber.sasl.PlainMechanism() );
 			var auth = new jabber.client.SASLAuth( stream, mechanisms );
 			auth.onSuccess = handleLogin;
 			auth.onFail = function(?e) {
@@ -104,8 +109,8 @@ class ClientDemo {
 	}
 	
 	static function main() {
-		if( haxe.Firebug.detect() ) haxe.Firebug.redirectTraces();
 		#if flash
+		if( haxe.Firebug.detect() ) haxe.Firebug.redirectTraces();
 		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
 		#end

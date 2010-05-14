@@ -85,4 +85,9 @@ class Connection {
 	}
 	*/
 	
+	/**
+	public function reset() {
+	}
+	*/
+	
 }

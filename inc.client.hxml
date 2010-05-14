@@ -7,7 +7,6 @@ jabber.client.Roster
 jabber.client.SASLAuth
 jabber.client.VCard
 jabber.ChatStateNotification
-jabber.sasl.Handshake
 jabber.sasl.AnonymousMechanism
 jabber.sasl.PlainMechanism
 jabber.sasl.MD5Mechanism

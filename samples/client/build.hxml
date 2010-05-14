@@ -14,10 +14,21 @@
 ClientDemo
 -D XMPP_DEBUG
 -D JABBER_DEBUG
-#-D JABBER_SOCKETBRIDGE
+-D JABBER_SOCKETBRIDGE
 -debug
 
 --next
+-D nodejs
+-cp ../../
+-cp ../../lib
+-js client.node.js
+-main ClientDemo
+-D XMPP_DEBUG
+-D JABBER_DEBUG
+-debug
+
+--next
+-cp ../../../hxssl
 -cp ../../
 -cp ../../lib
 -neko client.n

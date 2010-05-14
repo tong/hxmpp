@@ -4,21 +4,23 @@
 */
 class EchoRoboter {
 	
-	static var HOST = "jabberservername.com";
+	static var HOST = "example.com";
 	static var IP = "127.0.0.1";
-	static var JID = "username@"+HOST;
-	static var PASSWORD = "mypassword";
+	static var JID = "user@"+HOST;
+	static var PASSWORD = "password";
     static var RESOURCE = "HXMPPEchoRoboter";
        
 	static var stream : jabber.client.Stream;
 	
 	static function main() {
-		trace( "XMPP echo roboter" );
-		#if js
+		
+		
+		#if ( js && !nodejs && !JABBER_SOCKETBRIDGE )
 		var cnx = new jabber.BOSHConnection( HOST, IP+"/jabber" );
 		#else
 		var cnx = new jabber.SocketConnection( IP, 5222 );
 		#end
+		
 		var jid = new jabber.JID( JID );
 		stream = new jabber.client.Stream( jid, cnx );
 		stream.onClose = function(?e) {

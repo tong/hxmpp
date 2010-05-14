@@ -46,7 +46,7 @@ class Stream {
 			b.add( '"' );
 		}
 		b.add( '>' );
-		return ( xmlHeader ) ? XMLUtil.XML_HEADER+b.toString() : b.toString();
+		return ( xmlHeader ) ? XMLUtil.HEADER+b.toString() : b.toString();
 	}
 	
 	/*

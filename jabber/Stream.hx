@@ -62,7 +62,7 @@ class Stream {
 	
 	//public var __isClient(default,null) : Bool;
 	
-	/** Indicates if this streams connection is a http connection */
+	/** Indicates if this streams data connection is a HTTP (BOSH) connection */
 	public var http(default,null) : Bool; //TODO move to: jabber.stream.Connection
 	
 	public var cnx(default,setConnection) : Connection;
@@ -80,6 +80,7 @@ class Stream {
 	var collectors : List<PacketCollector>;
 	var interceptors : List<TPacketInterceptor>;
 	var numPacketsSent : Int;
+	//var disoListener : ServiceDiscoveryListener;
 	
 	#if JABBER_DEBUG public #end
 	function new( ?cnx : Connection ) {
@@ -93,7 +94,8 @@ class Stream {
 		http = false;
 		dataFilters = new List();
 		dataInterceptors = new List();
-		if( cnx != null ) setConnection( cnx );
+		if( cnx != null )
+			setConnection( cnx );
 		// TODO HACK
 		#if (flash&&JABBER_CONSOLE)
 		XMPPDebug.stream = this;
@@ -105,7 +107,7 @@ class Stream {
 	}
 	
 	function getJIDStr() : String {
-		return throw "abstract";
+		return throw "Abstract getter";
 	}
 	
 	function setConnection( c : Connection ) : Connection {
@@ -145,21 +147,21 @@ class Stream {
 	/**
 		Request to open the XMPP stream.
 	*/
-	// public function open( ?jid : String ) : Bool {
-	public function open() : Bool {
+	public function open() {
 		if( cnx == null )
 			throw "No stream connection set";
 		cnx.connected ? handleConnect() : cnx.connect();
-		return true;
 	}
 	
 	/**
 		Close the XMPP stream.
+		Passed argument indicates if the connection to the server should also get closed.
 	*/
 	public function close( ?disconnect = false ) {
 		if( status == StreamStatus.closed )
 			return;
-		if( !http ) sendData( xmpp.Stream.CLOSE );
+		if( !http )
+			sendData( xmpp.Stream.CLOSE );
 		status = StreamStatus.closed;
 		if( http ) cnx.disconnect();
 		else if( disconnect ) cnx.disconnect();
@@ -172,7 +174,8 @@ class Stream {
 	public function sendPacket<T>( p : T, intercept : Bool = true ) : T {
 		if( !cnx.connected )
 			return null;
-		if( intercept ) interceptPacket( untyped p );
+		if( intercept )
+			interceptPacket( untyped p );
 		return ( sendData( untyped p.toString() ) != null ) ? p : null;
 	}
 	
@@ -193,19 +196,6 @@ class Stream {
 		#end
 		return t;
 	}
-	
-	/*
-		TODO Send raw bytes data.
-	*/
-	/*
-	public function send( t : haxe.io.Bytes ) : haxe.io.Bytes {
-		if( !cnx.connected )
-			return null;
-		//for( i in dataInterceptors )
-			//t = i.interceptData( t );
-		var sent = cnx.write( t );
-	}
-	*/
 	
 	/**
 		Send an IQ packet and forward the collected response to the given handler function.
@@ -245,24 +235,17 @@ class Stream {
 		
 	}
 	
-	/*
-	public function sendCollect<T>( p : T, handler : T->Void ) : {
-		if( p.id == null ) p.id = nextID();
-		collect( [cast new PacketIDFilter( p.id )], handler, false );
-		sendPacket( p );
-	}
-	*/ 
-	
 	/**
 		Runs the XMPP packet interceptor on the given packet.
 	*/
 	public function interceptPacket( p : xmpp.Packet ) : xmpp.Packet {
-		for( i in interceptors ) i.interceptPacket( p );
+		for( i in interceptors )
+			i.interceptPacket( p );
 		return p;
 	}
 	
 	/**
-		Creates, adds and returns a packet collector.
+		Creates, adds and returns a XMPP packet collector.
 	*/
 	public function collect( filters : Iterable<xmpp.PacketFilter>, handler : Dynamic->Void, permanent : Bool = false ) : PacketCollector {
 		var c = new PacketCollector( filters, handler, permanent );
@@ -270,7 +253,7 @@ class Stream {
 	}
 	
 	/**
-		Adds a packet collector to this stream and starts the timeout if not null.<br/>
+		Adds a XMPP packet collector to this stream and starts the timeout if not null.<br/>
 	*/
 	public function addCollector( c : PacketCollector ) : Bool {
 		if( Lambda.has( collectors, c ) )
@@ -328,15 +311,20 @@ class Stream {
 		case closed :
 			return -1;//buflen?
 		case pending :
-			return processStreamInit( XMLUtil.removeXmlHeader( t ), buflen );
+			//return processStreamInit( XMLUtil.removeXmlHeader( t ), buflen );
+			return processStreamInit( t, buflen );
 		case open :
+			//t = XMLUtil.removeXmlHeader( t );
+			//if( StringTools.startsWith( t, '<stream:stream' ) ) {
+			//	return buflen;
+			//}
 			// filter data here ?
 			var x : Xml = null;
 			try {
 				x = Xml.parse( t );
 			} catch( e : Dynamic ) {
 				#if JABBER_DEBUG
-				trace( "Packet incomplete, wating for more data ..", "info" );
+				//trace( "Packet incomplete, wating for more data ..", "info" );
 				#end
 				return 0; // wait for more data
 			}
@@ -410,21 +398,8 @@ class Stream {
 	}
 	
 	function processStreamInit( t : String, buflen : Int ) : Int {
-		return throw "Abstract";
+		return throw "Abstract method";
 	}
-	
-	/*
-	function closeHandler() {
-		id = null;
-		numPacketsSent = 0;
-		/*
-			collectors = new List();
-			interceptors = new List();
-			server = { features : new Hash() };
-			features = new StreamFeatures();
-		onClose();
-	}
-			*/
 	
 	function handleConnect() {
 	}
@@ -436,5 +411,17 @@ class Stream {
 	function handleConnectionError( e : String ) {
 		onClose( e );
 	}
+	
+	/*
+	function cleanup() {
+		id = null;
+		numPacketsSent = 0;
+		collectors = new List();
+		interceptors = new List();
+		sever = { features : new Hash() };
+		features = new StreamFeatures();
+		onClose();
+	}
+	*/
 	
 }

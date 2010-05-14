@@ -69,6 +69,8 @@ class XMPPDebug {
 			return stream.sendData( t );
 		} );
 		#end
+		#elseif air
+		useConsole = false;
 		#elseif js
 		try {
 			useConsole = untyped console != null && console.error != null;
@@ -148,8 +150,37 @@ class XMPPDebug {
 	/** Indicates if the transfer should get printed to the browsers debug console */
 	public static var useConsole : Bool;
 	
+	public static var fgInc = 34;
+	public static var bgInc = 42;
+	public static var fgOut = 34;
+	public static var bgOut = 43;
+	public static var defaultColor = 37;
+	public static var defaultBackgroundcolor = 44;
+	
+	static function __print( t : String, color : Int, backgroundColor : Int ) {
+		var b = new StringBuf();
+		b.add( "\033[" );
+		b.add( color );
+		if( backgroundColor != -1 ) {
+			b.add( ";" );
+			b.add( backgroundColor );
+		}
+		b.add( "m" );
+		b.add( t );
+		b.add( "\033[" );
+		b.add( defaultColor );
+		b.add( ";" );
+		b.add( defaultBackgroundcolor );
+		b.add( "m\n" );
+		haxe.Log.trace( b.toString(), null );
+		
+	}
+	
 	public static function _print( t : String, out : Bool = true, level : String = "log" ) {
 		var dir = "XMPP-"+((out)?"O ":"I ");
+		#if nodejs
+		__print( t, (out)?fgOut:fgInc, (out)?bgOut:bgInc );
+		#else
 		if( useConsole ) {
 			#if flash
 			ExternalInterface.call( "console."+level, dir+t );
@@ -157,8 +188,9 @@ class XMPPDebug {
 			untyped console[level]( dir+t );
 			#end
 		} else {
-			//haxe.Log.trace( t, { className : "", methodName : "", fileName : dir, lineNumber : 0, customParams : [] } );
+			haxe.Log.trace( t, { className : "", methodName : "", fileName : dir, lineNumber : 0, customParams : [] } );
 		}
+		#end
 	}
 	
 	#elseif (cpp||neko||php)

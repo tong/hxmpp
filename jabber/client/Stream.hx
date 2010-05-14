@@ -29,6 +29,7 @@ class Stream extends jabber.Stream {
 	public static inline var PORT_STANDARD = 5222;
 	public static inline var PORT_STANDARD_SECURE = 5223;
 	public static var defaultPort = PORT_STANDARD;
+	//public static var defaultPortSecure = PORT_STANDARD_SECURE;
 	
 	public var jid(default,setJID) : JID;
 	
@@ -69,6 +70,7 @@ class Stream extends jabber.Stream {
 	*/
 	
 	override function processStreamInit( t : String, buflen : Int ) : Int {
+		var _t = t;
 		if( http ) {
 			#if XMPP_DEBUG
 			jabber.XMPPDebug.inc( t );
@@ -80,19 +82,17 @@ class Stream extends jabber.Stream {
 			onOpen();
 			return buflen;	
 		} else {
+			t = xmpp.XMLUtil.removeXmlHeader( t );
 			var sei = t.indexOf( ">" );
-			if( sei == -1 ) {
+			if( sei == -1 )
 				return 0;
-			}
 			if( id == null ) { // parse open stream
 				var s = t.substr( 0, sei )+" />";
-				#if XMPP_DEBUG
-				jabber.XMPPDebug.inc( s );
-				#end
 				var sx = Xml.parse( s ).firstElement();
 				id = sx.get( "id" );
 				if( !version ) {
 					status = StreamStatus.open;
+//cnx.reset();
 					onOpen();
 					return buflen;
 				}
@@ -114,20 +114,22 @@ class Stream extends jabber.Stream {
 		var sfi = t.indexOf( "<stream:features>" );
 		var sf = t.substr( sfi );
 		if( sfi != -1 ) {
+			var x : Xml;
 			try {
-				var x = Xml.parse( sf ).firstElement();
-				parseStreamFeatures( x );
-				#if XMPP_DEBUG
-				jabber.XMPPDebug.inc( x.toString() );
-				#end
-				status = StreamStatus.open;
-				onOpen();
-				return buflen;
+				x = Xml.parse( sf ).firstElement();
 			} catch( e : Dynamic ) {
 				return 0;
 			}
+			parseStreamFeatures( x );
+			#if XMPP_DEBUG
+			jabber.XMPPDebug.inc( _t );
+			#end
+			status = StreamStatus.open;
+//cnx.reset();	
+			onOpen();
+			return buflen;
 		}
-		return buflen;
+		return 0; // read more
 	}
 	
 	function parseStreamFeatures( x : Xml ) {

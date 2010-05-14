@@ -21,12 +21,29 @@ EchoRoboter
 -D JABBER_SOCKETBRIDGE
 
 --next
+-js echobot.node.js
+-main EchoRoboter
+-cp ../../
+-D nodejs
+-D JABBER_DEBUG
+-D XMPP_DEBUG
+
+--next
 -php .
 --php-front echobot.php
 -main EchoRoboter
 -cp ../../
 -D JABBER_DEBUG
 -D XMPP_DEBUG
+
+--next
+-D nodejs
+-js echobot.node.js
+-main EchoRoboter
+-cp ../../
+-D JABBER_DEBUG
+-D XMPP_DEBUG
+
 
 #--next
 #-cpp echobot

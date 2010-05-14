@@ -1,11 +1,23 @@
 
+
 # Flash SWC
+
 -swf-version 10
 -swf lib/hxmpp.swc
 inc.hxml
 inc.client.hxml
 
+--next
+-swf-version 10
+-swf lib/hxmpp-debug.swc
+inc.hxml
+inc.client.hxml
+-D XMPP_DEBUG
+-D JABBER_DEBUG
+
+
 # Javascript
+
 --next
 -js lib/hxmpp.js
 inc.hxml

@@ -80,29 +80,26 @@ class Stream extends jabber.Stream {
 	
 	override function handleConnect() {
 		var t = sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_COMPONENT, subdomain ) );
-		#if XMPP_DEBUG
-		//jabber.XMPPDebug.out( t );
-		#end
 		status = jabber.StreamStatus.pending;
 		cnx.read( true );
 	}
 	
-	//TODO what a mess!
 	override function processStreamInit( t : String, len : Int ) {
-		var i = t.indexOf( ">" );
-		if( i == -1 )
-			return 0; //-1
+		if( t.charAt( 0 ) != "<" || t.charAt( t.length-1 ) != ">" )
+			return 0;
+		t = XMLUtil.removeXmlHeader( t );
 		try {
 			id = Xml.parse( t+"</stream:stream>" ).firstChild().get( "id" );
 		} catch( e : Dynamic ) {
-			return -1;
+			trace(e);
+			return 0;//-1;
 		}
 		status = jabber.StreamStatus.open;
 		#if XMPP_DEBUG
 		jabber.XMPPDebug.inc( t );
 		#end
 		onOpen();
-		collectors.add( new  jabber.stream.PacketCollector( [ cast new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], readyHandler, false ) );
+		collect( [ cast new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], readyHandler, false );
 		sendData( XMLUtil.createElement( "handshake", Xml.createPCData( SHA1.encode( id+secret ) ).toString() ).toString() );
 		return len;
 	}

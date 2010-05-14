@@ -5,10 +5,7 @@ package {
 	Example usage of HXMPP lib from AS3 (mxmlc).
 	
 	# Compile with HXMPP-SWC
-	mxmlc JabberClientDemo.as -default-size 800 600 -include-libraries ../bin/hxmpp.swc -output ../bin/test.swf
-	
-	# Compile with HXMPP-AS3
-	mxmlc JabberClientDemo.as -default-size 800 600 -sp ../bin/as3/ -output ../bin/test.swf
+	mxmlc ClientDemo.as -default-size 800 600 -include-libraries ../../lib/hxmpp-debug.swc -output client_as3.swf
 	
 	*/
 
@@ -20,9 +17,10 @@ package {
 	import jabber.SocketConnection;
 	import jabber.ServiceDiscovery;
 	import jabber.client.Stream;
-	import jabber.client.NonSASLAuthentication;
+	import jabber.client.SASLAuth;
 	import jabber.client.Roster;
 	import jabber.client.VCard;
+	import jabber.sasl.MD5Mechanism;
 	
 	/**
 		Basic XMPP client exmaple.
@@ -39,18 +37,19 @@ package {
 			stage.align = flash.display.StageAlign.TOP_LEFT;
 			
 			tf = new TextField();
-			tf.y = 300;
+			tf.x = 10;
+			tf.y = 100;
 			tf.width = tf.height = 800;
 			addChild( tf );
 			
 			info( "initializing HXMPP lib ..." );
 			
-			var jid : JID = new JID( "test@disktree" );
-			var cnx : SocketConnection = new SocketConnection( "127.0.0.1", Stream.defaultPort ); 
+			var jid : JID = new JID( "username@example.com" );
+			var cnx : SocketConnection = new SocketConnection( "127.0.0.1", 5222 ); 
 			var stream : Stream = new Stream( jid, cnx );
 			stream.onOpen = function():void {
 				info( "XMPP stream opened" );
-           	 	var auth : NonSASLAuth = new NonSASLAuth( stream );
+           	 	var auth : SASLAuth = new SASLAuth( stream, [new MD5Mechanism()] );
            	 	auth.onSuccess = onLoginSuccess;
            	 	auth.authenticate( "test", "hxmpp" );
 			};
@@ -67,10 +66,10 @@ package {
 		private function onLoginSuccess( s : Stream ) : void {
 			info( "Login success" );
 			var roster : Roster = new Roster( s );
-			roster.onLoad = function(r:Roster) : void {
-				info( "Roster loaded("+r.items.length+" items):" );
-				for( var i : int = 0; i < r.items.length; i++ ) {
-					info( r.items[i].jid.toString() );
+			roster.onLoad = function() : void {
+				info( "Roster loaded("+roster.items.length+" items):" );
+				for( var i : int = 0; i < roster.items.length; i++ ) {
+					info( roster.items[i].jid.toString() );
 				}
 			};
 			roster.load();

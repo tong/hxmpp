@@ -17,6 +17,16 @@
 -debug
 
 --next
+-D nodejs
+-cp ../../
+-cp ../../lib
+-js component.node.js
+-main ComponentDemo
+-D XMPP_DEBUG
+-D JABBER_DEBUG
+-debug
+
+--next
 -cp ../../
 -cp ../../lib
 -php .

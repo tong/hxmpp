@@ -17,15 +17,18 @@
 */
 package jabber;
 
+#if (neko||cpp||php)
+
 #if neko
 import neko.ssl.Socket;
 #elseif php
+import php.net.Host;
 import jabber.util.php.Socket;
 #end
 
 /**
-	Experimental SSL socket connection for neko/php.
-	Source files from the 'hxssl' project are required.
+	Experimental SSL socket connection for neko (php).
+	Source files and NDLL from the 'hxssl' project are required.
 */
 class SecureSocketConnection extends jabber.stream.Connection {
 	
@@ -41,12 +44,13 @@ class SecureSocketConnection extends jabber.stream.Connection {
 	var reading : Bool;
 	var buf : haxe.io.Bytes;
 	var bufbytes : Int;
-	
+
 	public function new( host : String, port : Int = 5223,
 						 ?bufSize : Int,
 						 ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
 		super( host );
+		this.host = host;
 		this.port = port;
 		this.bufSize = ( bufSize == null ) ? defaultBufSize : bufSize;
 		this.maxBufSize = ( maxBufSize == null ) ? defaultMaxBufSize : maxBufSize;
@@ -123,3 +127,5 @@ class SecureSocketConnection extends jabber.stream.Connection {
 	}
 	
 }
+
+#end // (neko||cpp||php||nodejs)

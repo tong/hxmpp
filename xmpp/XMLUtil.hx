@@ -5,7 +5,7 @@ class XMLUtil {
 	/**
 		Default XML (file) header.
 	*/
-	public static var XML_HEADER = '<?xml version="1.0" encoding="UTF-8"?>';
+	public static var HEADER = '<?xml version="1.0" encoding="UTF-8"?>';
 	
 	/**
 	*/
@@ -41,14 +41,23 @@ class XMLUtil {
 	}
 	*/
 	
+	//<?xml version="1.0" encoding="UTF-8"?>
+	//static var eheader = ~/^(\<\?xml) (version=["']1.0["']) (encoding=["']UTF-8["'])\?\>/; 
+	static var eheader = ~/^(\<\?xml) (.)+\?\>/; 
 	
 	/**
 		Remove the XML-header.
 	*/
 	public static function removeXmlHeader( s : String ) : String {
+		if( eheader.match( s ) ) {
+			return s.substr( s.indexOf( "><" ) + 1, s.length );
+		}
+		return s;
+		/*
 		return if( s.substr( 0, 6 ) == "<?xml " )
 			s.substr( s.indexOf( "><" ) + 1, s.length );
 		else s;
+		*/
 	}
 	
 }
