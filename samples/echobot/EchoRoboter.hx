@@ -4,10 +4,10 @@
 */
 class EchoRoboter {
 	
-	static var HOST = "example.com";
-	static var IP = "127.0.0.1";
-	static var JID = "user@"+HOST;
-	static var PASSWORD = "password";
+	static var HOST = "disktree";
+	static var IP = "192.168.0.110";
+	static var JID = "hxmpp@"+HOST;
+	static var PASSWORD = "test";
     static var RESOURCE = "HXMPPEchoRoboter";
        
 	static var stream : jabber.client.Stream;

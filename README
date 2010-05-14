@@ -48,6 +48,16 @@ var cnx = new BOSHConnection( "domain.net", "localhost/http/" );
 
 
 
+USING NODE.JS
+-------------
+HXMPP has experimental support for node.js through hxNode.
+Refer to the documentation of these projects.
+http://nodejs.org
+http://github.com/blackdog66/hxNode
+Tip: The hxml files for the example projects already include node.js target setups but commented out.
+
+
+
 XEPS SUPPORTED
 --------------
 

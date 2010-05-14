@@ -17,15 +17,15 @@ ClientDemo
 -D JABBER_SOCKETBRIDGE
 -debug
 
---next
--D nodejs
--cp ../../
--cp ../../lib
--js client.node.js
--main ClientDemo
--D XMPP_DEBUG
--D JABBER_DEBUG
--debug
+#--next
+#-D nodejs
+#-cp ../../
+#-cp ../../lib
+#-js client.node.js
+#-main ClientDemo
+#-D XMPP_DEBUG
+#-D JABBER_DEBUG
+#-debug
 
 --next
 -cp ../../../hxssl

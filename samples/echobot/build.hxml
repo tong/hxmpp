@@ -20,13 +20,13 @@ EchoRoboter
 -D XMPP_DEBUG
 -D JABBER_SOCKETBRIDGE
 
---next
--js echobot.node.js
--main EchoRoboter
--cp ../../
--D nodejs
--D JABBER_DEBUG
--D XMPP_DEBUG
+#--next
+#-js echobot.node.js
+#-main EchoRoboter
+#-cp ../../
+#-D nodejs
+#-D JABBER_DEBUG
+#-D XMPP_DEBUG
 
 --next
 -php .
