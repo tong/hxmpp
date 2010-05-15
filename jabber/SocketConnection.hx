@@ -38,12 +38,18 @@ import js.Node;
 private typedef Socket = Stream;
 #elseif air
 import air.Socket;
+import air.Event;
+import air.IOErrorEvent;
+import air.SecurityErrorEvent;
+import air.ProgressEvent;
+import air.ByteArray;
 #end
 
 // TODO
 // timeout passing to socketbridge
 // js targets buf max size check
-// js targets StringBuf
+// js targets StringBuf performance test
+// -1 return aborting/cleanup
 
 class SocketConnection extends jabber.stream.Connection {
 	
@@ -56,14 +62,16 @@ class SocketConnection extends jabber.stream.Connection {
 	public var timeout(default,null) : Int;
 	
 	var socket : Socket;
-	#if flash
+	#if (flash||air)
 	var buf : ByteArray;
 	#elseif (neko||php||cpp)
 	var reading : Bool;
 	var buf : haxe.io.Bytes;
 	var bufbytes : Int;
 	#elseif (nodejs||JABBER_SOCKETBRIDGE)
-	var buf : String; // TODO StringBuf;
+	var buf : String;
+	//var buf : StringBuf;
+	//var bufbytes : Int;
 	#end
 	
 	public function new( host : String, ?port : Int = 5222,
@@ -84,7 +92,6 @@ class SocketConnection extends jabber.stream.Connection {
 	function setTimeout( t : Int ) : Int {
 		return timeout = ( t <= 0 ) ? 1 : t;
 	}
-
 	function setMaxBufSize( t : Int ) : Int {
 		return timeout = ( t <= 0 ) ? 1 : t;
 	}
@@ -101,7 +108,7 @@ class SocketConnection extends jabber.stream.Connection {
 		#if flash10
 		socket.timeout = timeout*1000;
 		#end
-		#if flash
+		#if (flash||air)
 		buf = new ByteArray();
 		socket.addEventListener( Event.CONNECT, sockConnectHandler );
 		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
@@ -119,6 +126,8 @@ class SocketConnection extends jabber.stream.Connection {
 		
 		#elseif nodejs
 		buf = "";
+		//buf = new StringBuf();
+		//bufbytes = 0;
 		socket.addListener( "connect", sockConnectHandler );
 		socket.addListener( "end", sockDisconnectHandler );
 		socket.addListener( "error", sockErrorHandler );
@@ -155,7 +164,7 @@ class SocketConnection extends jabber.stream.Connection {
 	
 	public override function read( ?yes : Bool = true ) : Bool {
 		if( yes ) {
-			#if flash
+			#if (flash||air)
 			socket.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
 			#elseif (neko||php||cpp)
 			reading = true;
@@ -166,7 +175,7 @@ class SocketConnection extends jabber.stream.Connection {
 			socket.onData = sockDataHandler;
 			#end
 		} else {
-			#if flash
+			#if (flash||air)
 			socket.removeEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
 			#elseif (neko||php||cpp)
 			reading = false;
@@ -183,7 +192,7 @@ class SocketConnection extends jabber.stream.Connection {
 	public override function write( t : String ) : Bool {
 		if( !connected || t == null || t.length == 0 )
 			return false;
-		#if flash
+		#if (flash||air)
 		socket.writeUTFBytes( t ); 
 		socket.flush();
 		#elseif (neko||php||cpp)
@@ -210,7 +219,7 @@ class SocketConnection extends jabber.stream.Connection {
 	}
 	*/
 	
-	#if (flash)
+	#if (flash||air)
 
 	function sockConnectHandler( e : Event ) {
 		connected = true;
@@ -228,12 +237,19 @@ class SocketConnection extends jabber.stream.Connection {
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
-		socket.readBytes( buf, buf.length, e.bytesLoaded );
-		var b = haxe.io.Bytes.ofData( buf );
+		try {
+			socket.readBytes( buf, buf.length, e.bytesLoaded );
+		} catch( e : Dynamic ) {
+			#if JABBER_DEBUG
+			//trace(e);
+			#end
+			return;
+		}
+		var b = haxe.io.Bytes.ofData( untyped buf );
 		if( b.length > maxBufSize )
 			throw "Max buffer size reached ("+maxBufSize+")";
 		if( __onData(  b, 0, b.length ) > 0 )
-			buf = new flash.utils.ByteArray();
+			buf = new ByteArray();
 		//socket.flush();
 	}
 	
@@ -275,6 +291,7 @@ class SocketConnection extends jabber.stream.Connection {
 	#if nodejs
 	
 	function sockDrainHandler() {
+		trace("NODEJS:socket drain");
 	}
 	
 	#end
@@ -295,16 +312,33 @@ class SocketConnection extends jabber.stream.Connection {
 	}
 	
 	function sockDataHandler( t : String ) {
-		var i = buf+t;
-		if( i.length > maxBufSize ) {
+		/*
+		var len = t.length;
+		var s = buf.toString()+t;
+		if( s.length > maxBufSize ) {
 			#if JABBER_DEBUG
 			trace( "Max socket buffer size reached ("+maxBufSize+")" );
 			#end
 			throw "Max socket buffer size reached ("+maxBufSize+")";
 		}
-		var r = __onData( haxe.io.Bytes.ofString( i ), 0, i.length );
-		buf = ( r == 0 ) ? i : ""; 
-		//buf = ( __onData( haxe.io.Bytes.ofString( i ), 0, i.length ) == 0 ) ? i : "";
+		var r = __onData( haxe.io.Bytes.ofString( s ), 0, bufbytes+len );
+		if( r == 0 ) {
+			buf.add( t );
+			bufbytes += len;
+		} else {
+			buf = new StringBuf();
+			bufbytes = 0;
+		}
+		*/
+		var s = buf+t;
+		if( s.length > maxBufSize ) {
+			#if JABBER_DEBUG
+			trace( "Max socket buffer size reached ("+maxBufSize+")" );
+			#end
+			throw "Max socket buffer size reached ("+maxBufSize+")";
+		}
+		var r = __onData( haxe.io.Bytes.ofString( s ), 0, s.length );
+		buf = ( r == 0 ) ? s : ""; 
 	}
 	
 	#end
