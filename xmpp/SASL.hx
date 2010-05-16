@@ -23,7 +23,7 @@ package xmpp;
 class SASL {
 	
 	public static var XMLNS = "urn:ietf:params:xml:ns:xmpp-sasl";
-	public static var EREG_FAILURE = ~/(failure)(not-authorized)(aborted)(incorrect-encoding)(invalid-authzid)(invalid-mechanism)(mechanism-too-weak)(temporary-auth-failure)/;
+	public static var EREG_FAILURE = ~/(^failure$)|(^not-authorized$)|(^aborted$)|(^incorrect-encoding$)|(^invalid-authzid$)|(^invalid-mechanism$)|(^mechanism-too-weak$)|(^temporary-auth-failure$)/;
 	
 	/**
 	*/
