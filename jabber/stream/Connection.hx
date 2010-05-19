@@ -30,6 +30,7 @@ class Connection {
 	
 	/** Data recieved callback */
 	public var __onData : haxe.io.Bytes->Int->Int->Int;
+	//public var __onData : haxe.io.Bytes->Int->Int;
 	
 	/** Error callback */
 	public var __onError : String->Void; // replace public var __onDisconnect(?e)
@@ -40,8 +41,12 @@ class Connection {
 	/** Indicates if connected and ready to read and write. */
 	public var connected(default,null) : Bool;
 	
-	function new( host : String ) {
+	/** Indicates if this streams data connection is a HTTP (BOSH) connection (default is false) */
+	public var http(default,null) : Bool;
+	
+	function new( host : String, http : Bool = false ) {
 		this.host = host;
+		this.http = http;
 		connected = false;
 	}
 	

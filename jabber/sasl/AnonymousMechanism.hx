@@ -17,6 +17,9 @@
 */
 package jabber.sasl;
 
+/**
+	<a href="http://xmpp.org/extensions/xep-0175.html">XEP-0175: Best Practices for Use of SASL ANONYMOUS</a><br/>
+*/
 class AnonymousMechanism {
 	
 	static function __init__() {

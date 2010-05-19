@@ -18,6 +18,7 @@
 package jabber.client;
 
 import jabber.JID;
+import jabber.Stream;
 import jabber.StreamStatus;
 import jabber.stream.Connection;
 
@@ -29,14 +30,13 @@ class Stream extends jabber.Stream {
 	public static inline var PORT_STANDARD = 5222;
 	public static inline var PORT_STANDARD_SECURE = 5223;
 	public static var defaultPort = PORT_STANDARD;
-	//public static var defaultPortSecure = PORT_STANDARD_SECURE;
+	public static var defaultPortSecure = PORT_STANDARD_SECURE;
 	
 	public var jid(default,setJID) : JID;
 	
 	public function new( ?jid : JID,
 						 ?cnx : Connection,
 						 ?version : Bool = true ) {
-		//__isClient = true;
 		if( jid == null ) jid = new JID(null);
 		super( cnx );
 		this.jid = jid;
@@ -55,32 +55,34 @@ class Stream extends jabber.Stream {
 		
 	override function handleConnect() {
 		status = StreamStatus.pending;
-		if( !http ) { // TODO avoid HACK
+		if( !cnx.http ) {
 			sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_CLIENT, jid.domain, version, lang ) );
 			cnx.read( true ); // start reading input
 		} else {
-			if( cnx.connected ) cnx.connect(); // restart BOSH
+			if( cnx.connected ) {
+				//server.features = new Hash(); // clear the server features offered (?)
+				cnx.connect(); // restart BOSH
+			}
 		}
 	}
-		
-	/*
-	override function disconnectHandler() {
-		id = null;
-	}
-	*/
 	
 	override function processStreamInit( t : String, buflen : Int ) : Int {
 		var _t = t;
-		if( http ) {
+		if( cnx.http ) {
 			#if XMPP_DEBUG
 			jabber.XMPPDebug.inc( t );
 			#end
-			var x = Xml.parse( t ).firstElement();
-			var sf = x.firstElement();
-			parseStreamFeatures( sf );
+			var x : Xml = null;
+			try {
+				x = Xml.parse( t ).firstElement();
+			} catch( e : Dynamic ) {
+				trace(e); //TODO
+				return -1;
+			}
+			parseServerStreamFeatures( ( x.nodeName == "body" ) ? x.firstElement() : x );
 			status = StreamStatus.open;
 			onOpen();
-			return buflen;	
+			return buflen;
 		} else {
 			t = xmpp.XMLUtil.removeXmlHeader( t );
 			var sei = t.indexOf( ">" );
@@ -98,11 +100,12 @@ class Stream extends jabber.Stream {
 				}
 			}
 			if( id == null ) {
-				//TODO throw error
 				#if JABBER_DEBUG
 				trace( "Invalid XMPP stream, missing ID" );
 				#end
 				close( true );
+				//TODO ?
+				//onClose( "Invalid stream id" );
 				return -1;
 			}
 			if( !version ) {
@@ -120,7 +123,7 @@ class Stream extends jabber.Stream {
 			} catch( e : Dynamic ) {
 				return 0;
 			}
-			parseStreamFeatures( x );
+			parseServerStreamFeatures( x );
 			#if XMPP_DEBUG
 			jabber.XMPPDebug.inc( _t );
 			#end
@@ -132,9 +135,10 @@ class Stream extends jabber.Stream {
 		return 0; // read more
 	}
 	
-	function parseStreamFeatures( x : Xml ) {
-		for( e in x.elements() )
+	function parseServerStreamFeatures( x : Xml ) {
+		for( e in x.elements() ) {
 			server.features.set( e.nodeName, e );
+		}
 	}
 	
 }

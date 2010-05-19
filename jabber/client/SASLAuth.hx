@@ -85,17 +85,11 @@ class SASLAuth extends Authentication {
 			#if JABBER_DEBUG trace( "No matching SASL mechanism found.", "warn" ); #end
 			return false;
 		}
-		/*
-		if( password == null && handshake.mechanism.id != "ANONYMOUS" ) {
-			throw "No password given";
-		}
-		*/
 		c_fail = stream.collect( [cast new PacketNameFilter( xmpp.SASL.EREG_FAILURE )], handleSASLFailed );
 		c_success = stream.collect( [cast new PacketNameFilter( ~/success/ )], handleSASLSuccess );
 		c_challenge = stream.collect( [cast new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
 		// init auth
 		var t = mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password );
-		//TODO?wtf
 		if( t != null ) t = Base64.encode( t ); 
 		return stream.sendData( xmpp.SASL.createAuthXML( mechanism.id, t ).toString() ) != null;
 	}
@@ -125,7 +119,6 @@ class SASLAuth extends Authentication {
 	function handleStreamOpen() {
 		stream.onOpen = onStreamOpenHandler;
 		//stream.cnx.reset();
-		//onStreamOpenHandler = null;
 		if( stream.server.features.exists( "bind" ) ) { // bind the resource
 			var iq = new IQ( IQType.set );
 			iq.x = new xmpp.Bind( ( mechanism.id == "ANONYMOUS" ) ? null : resource );
@@ -136,27 +129,20 @@ class SASLAuth extends Authentication {
 	}
 	
 	function handleBind( iq : IQ ) {
+		//trace("SASL bind");
 		switch( iq.type ) {
 		case IQType.result :
-			/*
-			// TODO required ?
-			var b = xmpp.Bind.parse( iq.x.toXml() );
-			if( jabber.util.JIDUtil.parseResource( b.jid ) != resource ) {
-				throw "Unexpected resource bound ?";
-			}
-			*/
 			//onBind();
 			var b = xmpp.Bind.parse( iq.x.toXml() );
 			var jid = new jabber.JID( b.jid );
 			stream.jid.node = jid.node;
 			stream.jid.resource = jid.resource;
-			if( stream.server.features.exists( "session" ) ) {
-				// init session
+			if( stream.server.features.exists( "session" ) ) { // init session
 				var iq = new IQ( IQType.set );
 				iq.x = new xmpp.PlainPacket( Xml.parse( '<session xmlns="urn:ietf:params:xml:ns:xmpp-session"/>' ).firstElement() );
 				stream.sendIQ( iq, handleSession );
 			} else
-				onSuccess(); //?
+				onSuccess();
 		case IQType.error :
 			onFail( new jabber.XMPPError( this, iq ) );
 		}
@@ -165,7 +151,9 @@ class SASLAuth extends Authentication {
 	function handleSession( iq : IQ ) {
 		switch( iq.type ) {
 		case result :
-			////onSession();
+			//TODO update jid (may have changed resource)
+			//trace("#############################################################");
+			//stream.jid = new jabber.JID( iq.to );
 			onSuccess();
 		case error :
 			onFail( new jabber.XMPPError( this, iq ) );

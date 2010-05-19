@@ -53,8 +53,6 @@ class BOSHConnection extends jabber.stream.Connection {
 	static var XMLNS = "http://jabber.org/protocol/httpbind";
 	static var XMLNS_XMPP = "urn:xmpp:xbosh";
 	
-	public var http(default,null) : Bool; // TODO _http
-	
 	/** BOSH path */
 	public var path(default,null) : String;
 	/** Maximum number of requests the connection manager is allowed to keep waiting at any one time during the session. */
@@ -82,22 +80,25 @@ class BOSHConnection extends jabber.stream.Connection {
 	var timeoutTimer : Timer;
 	var timeoutOffset : Int;
 	
+	/**
+		A new connection to a HTTP gateway of a jabber server.
+		The default wait time for HTTP responses is 30 seconds.
+	*/
 	public function new( host : String, path : String,
 						 hold : Int = 1,
 						 wait : Int = 30,
 						 secure : Bool = false,
-						 maxConcurrentRequests : Int = 2 ) {
-		http = true;
-		super( host );
+						 maxConcurrentRequests : Int = 2,
+						 timeoutOffset = 25 ) {
+		super( host, true );
 		this.path = path;
 		this.hold = hold;
 		this.wait = wait;
 		this.secure = secure;
 		this.maxConcurrentRequests = maxConcurrentRequests;
-		initialized = false;
-		pauseEnabled = false;
+		this.timeoutOffset = timeoutOffset;
+		initialized = pauseEnabled = false;
 		pollingEnabled = true;
-		timeoutOffset = 25;//TODO
 	}
 	
 	/**
@@ -345,6 +346,7 @@ class BOSHConnection extends jabber.stream.Connection {
 			connected = true;
 			var b = haxe.io.Bytes.ofString( x.toString() );
 			__onData( b, 0, b.length );
+			//__onData( b, 0 );
 		}
 	}
 	
@@ -359,6 +361,7 @@ class BOSHConnection extends jabber.stream.Connection {
 		var x = responseQueue.shift();
 		var b = haxe.io.Bytes.ofString( x.toString() );
 		__onData( b, 0, b.length );
+		//__onData( b, 0 );
 		resetResponseProcessor();
 	}
 	
