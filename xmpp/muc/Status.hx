@@ -35,7 +35,7 @@ class Status {
 		return x;
 	}
 	
-	public static function parse( x ) : Status {
+	public static inline function parse( x ) : Status {
 		return new Status( Std.parseInt( x.get( "code" ) ) );
 	}
 	

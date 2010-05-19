@@ -41,15 +41,12 @@ class Content {
 		x.set( "name", name );
 		//TODO
 		//if( disposition != null )
-		//if( description != null )
+		if( description != null ) x.addChild( description.toXml() );
+		
 		//if( senders != null )
 		if( transport != null ) x.addChild( transport.toXml() );
 		for( e in any ) x.addChild( e );
 		return x;
-	}
-	
-	public inline function toString() : String {
-		return toXml().toString();
 	}
 	
 	public static function parse( x : Xml ) : Content {

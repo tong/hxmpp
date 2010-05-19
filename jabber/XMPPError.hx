@@ -34,7 +34,7 @@ class XMPPError extends xmpp.Error {
 	}
 	
 	#if JABBER_DEBUG
-	public function toString() : String {
+	public override function toString() : String {
 		return "XMPPError( "+from+", "+code+", "+text+" )";
 	}
 	#end

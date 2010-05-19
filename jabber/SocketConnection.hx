@@ -249,6 +249,7 @@ class SocketConnection extends jabber.stream.Connection {
 		if( b.length > maxBufSize )
 			throw "Max buffer size reached ("+maxBufSize+")";
 		if( __onData(  b, 0, b.length ) > 0 )
+		//if( __onData(  b, 0, b. ) > 0 )
 			buf = new ByteArray();
 		//socket.flush();
 	}
@@ -275,6 +276,7 @@ class SocketConnection extends jabber.stream.Connection {
 		var pos = 0;
 		while( bufbytes > 0 ) {
 			var nbytes = __onData( buf, pos, bufbytes );
+			//var nbytes = __onData( buf );
 			if( nbytes == 0 ) {
 				return;
 			}

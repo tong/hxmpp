@@ -41,10 +41,6 @@ class Transport {
 		return x;
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	
 	public static function parse( x : Xml ) : Transport {
 		var t = new Transport( x.get( "xmlns" ) );
 		for( e in x.elements() ) t.elements.push( e );

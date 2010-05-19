@@ -18,14 +18,14 @@
 package xmpp.filter;
 
 /**
-	Filters (just) custom XMPP packets with given nodename EReg.
+	Filters (just) custom XMPP packets with given nodename expression.
 */
 class PacketNameFilter {
 	
-	public var reg : EReg;
+	public var expr : EReg;
 	
-	public function new( reg : EReg ) {
-		this.reg = reg;
+	public function new( expr : EReg ) {
+		this.expr = expr;
 	}
 	
 	public function accept( p : xmpp.Packet ) : Bool {
@@ -33,7 +33,7 @@ class PacketNameFilter {
 		if( p._type != xmpp.PacketType.custom ) 
 			return false;
 		*/
-		return reg.match( p.toXml().nodeName );
+		return expr.match( p.toXml().nodeName );
 	}
 	
 }

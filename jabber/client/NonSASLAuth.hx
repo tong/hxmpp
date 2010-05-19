@@ -21,6 +21,7 @@ import jabber.util.SHA1;
 
 /**
 	<a href="http://xmpp.org/extensions/xep-0078.html">XEP-0078: Multi-User Chat</a><br>
+	Outdated, use SASLAuth instead.
 */
 class NonSASLAuth extends Authentication {
 	
@@ -33,7 +34,7 @@ class NonSASLAuth extends Authentication {
 						 /*?onSuccess : Void->Void, ?onFail : jabber.XMPPError->Void,*/
 					 	 ?usePlainText : Bool = false ) {
 		#if JABBER_DEBUG
-		if( stream.http )
+		if( stream.cnx.http )
 			throw "NonSASL authentication is not supported on HTTP/BOSH connections";
 		#end
 		super( stream );

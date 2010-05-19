@@ -17,8 +17,6 @@
 */
 package xmpp.disco;
 
-/**
-*/
 class Info {
 	
 	public static var XMLNS = xmpp.Packet.PROTOCOL+'/disco#info';
@@ -26,7 +24,7 @@ class Info {
 	public var identities : Array<Identity>; 
 	public var features : Array<String>;
 	public var node : String;
-	public var x : Xml; //TODO
+	public var x : Xml; //TODO check for requirement (not in specs)
 	
 	public function new( ?identities : Array<Identity>, ?features : Array<String>, ?node : String ) {
 		this.identities = identities == null ? new Array() : identities;
@@ -38,24 +36,20 @@ class Info {
 		var x = xmpp.IQ.createQueryXml( XMLNS );
 		if( node != null ) x.set( "node", node );
 		for( i in identities ) {
-			var identity = Xml.createElement( 'identity' );
-			if( i.category != null ) identity.set( "category", i.category );
-			if( i.name != null ) identity.set( "name", i.name );
-			if( i.type != null ) identity.set( "type", i.type );
-			x.addChild( identity );
+			var ix = Xml.createElement( 'identity' );
+			if( i.category != null ) ix.set( "category", i.category );
+			if( i.name != null ) ix.set( "name", i.name );
+			if( i.type != null ) ix.set( "type", i.type );
+			x.addChild( ix );
 		}
 		if( features.length > 0 ) {
 			for( f in features ) {
-				var feature = Xml.createElement( 'feature' );
-				feature.set( "var", f );
-				x.addChild( feature );
+				var fx = Xml.createElement( 'feature' );
+				fx.set( "var", f );
+				x.addChild( fx );
 			}
 		}
 		return x;
-	}
-	
-	public inline function toString() : String {
-		return toXml().toString();
 	}
 	
 	public static function parse( x : Xml ) : Info {

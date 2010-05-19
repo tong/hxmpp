@@ -17,7 +17,7 @@
 */
 package jabber;
 
-//TODO remove?
+//TODO remove
 
 /**
 	Presence handling wrapper.

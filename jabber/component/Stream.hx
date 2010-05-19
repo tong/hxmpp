@@ -34,7 +34,7 @@ class Stream extends jabber.Stream {
 	/** Called if stream got authenticated and is ready to use */
 	public dynamic function onConnect() : Void;
 	
-	//public var host(default,null) : String;
+	public var host(default,null) : String;
 	public var subdomain(default,null) : String;
 	public var serviceName(getServiceName,null) : String;
 	/** Shared secret string used to identify legacy components*/

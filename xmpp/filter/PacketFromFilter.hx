@@ -17,8 +17,6 @@
 */
 package xmpp.filter;
 
-//(TODO )extends packetField filter 
-
 /**
 	Filters XMPP packets with matching 'from' attribute.
 */
@@ -30,7 +28,7 @@ class PacketFromFilter {
 		this.jid = jid;
 	}
 	
-	public inline function accept( p : xmpp.Packet ) : Bool {
+	public function accept( p : xmpp.Packet ) : Bool {
 		return p.from == jid;
 	}
 	

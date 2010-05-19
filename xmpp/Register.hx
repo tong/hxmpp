@@ -24,7 +24,7 @@ package xmpp;
 */
 class Register {
 	
-	public static inline var XMLNS = "jabber:iq:register";
+	public static var XMLNS = "jabber:iq:register";
 	
 	public var username : String;
 	public var password : String;
@@ -80,10 +80,6 @@ class Register {
 			createElement( x, "key" );
 		}
 		return x;
-	}
-	
-	public inline function toString() : String {
-		return toXml().toString();
 	}
 	
 	function createElement( x : Xml, id : String ) {

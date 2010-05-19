@@ -75,11 +75,6 @@ class VCard {
 		tels = new Array();
 	}
 	
-	/*
-	public function injectData( src : Xml ) {
-	}
-	*/
-	
 	public function toXml() : Xml {
 		var x = Xml.createElement( NODENAME );
 		x.set( "xmlns", XMLNS );
@@ -184,42 +179,6 @@ class VCard {
 		if( url != null ) x.addChild( XMLUtil.createElement( "URL", url ) );
 		if( desc != null ) x.addChild( XMLUtil.createElement( "DESC", desc ) );
 		return x;
-		/*
-		var x = Xml.createElement( NODENAME );
-		x.set( "xmlns", XMLNS );
-		if( fn != null ) x.addChild( XMLUtil.createElement( "FN", fn ) );
-		if( n != null ) x.addChild( createTypedefXml( "N", n ) );
-		if( nickname != null ) x.addChild( XMLUtil.createElement( "NICKNAME", nickname ) );
-		if( photo != null )  x.addChild( createTypedefXml( "PHOTO", photo ) );
-		if( birthday != null ) x.addChild( XMLUtil.createElement( "BDAY", birthday ) );
-		for( address in addresses )
-			x.addChild( createTypedefXml( "ADR", address ) );
-		if( label != null )  x.addChild( createTypedefXml( "LABEL", label ) );
-		if( line != null ) x.addChild( XMLUtil.createElement( "LINE", line ) );
-		if( tels != null ) {
-			for( tel in tels ) {
-				x.addChild( createTypedefXml( "TEL", tel ) );
-			}
-		}
-		if( email != null ) x.addChild( createTypedefXml( "EMAIL", email ) );
-		if( jid != null ) x.addChild( XMLUtil.createElement( "JABBERID", jid ) );
-		if( mailer != null ) x.addChild( XMLUtil.createElement( "MAILER", mailer ) );
-		if( tz != null ) x.addChild( XMLUtil.createElement( "TZ", tz ) );
-		if( geo != null ) x.addChild( createTypedefXml( "GEO", geo ) );
-		if( title != null ) x.addChild( XMLUtil.createElement( "TITLE", title ) );
-		if( role != null ) x.addChild( XMLUtil.createElement( "ROLE", role ) );
-		if( logo != null ) x.addChild( createTypedefXml( "LOGO", logo ) );
-		if( org != null ) x.addChild( createTypedefXml( "ORG", org ) );
-		if( note != null ) x.addChild( XMLUtil.createElement( "NOTE", note ) );
-		if( prodid != null ) x.addChild( XMLUtil.createElement( "PRODID", prodid ) );
-		if( url != null ) x.addChild( XMLUtil.createElement( "URL", url ) );
-		if( desc != null ) x.addChild( XMLUtil.createElement( "DESC", desc ) );
-		return x;
-		*/
-	}
-	
-	public inline function toString() : String {
-		return toXml().toString();
 	}
 	
 	/*
@@ -245,7 +204,6 @@ class VCard {
 	public static function parse( x : Xml ) : xmpp.VCard  {
 		var vc = new xmpp.VCard();
 		for( node in x.elements() ) {
-			
 			switch( node.nodeName ) {
 				case "FN" : vc.fn = node.firstChild().nodeValue;
 				case "N" :

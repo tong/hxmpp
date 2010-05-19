@@ -29,7 +29,7 @@ class Packet {
 	public var to : String;
 	public var from : String;
 	public var id : String;	
-	public var lang : String; //TODO langs : Array<String>
+	public var lang : String;
 	public var properties : Array<Xml>; // <PacketElement> hmm? 
 	public var errors : Array<xmpp.Error>;
 	

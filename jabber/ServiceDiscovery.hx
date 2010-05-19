@@ -57,6 +57,24 @@ class ServiceDiscovery {
 		stream.sendIQ( r, handleItems, false );
 	}
 	
+	//////////////////
+	
+	/*
+	public function _items( jid : String, ?node : String, handler : xmpp.disco.Items->Void, error : String->Void ) {
+		var iq = new IQ( xmpp.IQType.get, null, jid );
+		iq.x = new xmpp.disco.Items( node );
+		stream.sendIQ( iq, function(r:xmpp.IQ){
+			switch( r.type ) {
+			case result : handler( xmpp.disco.Items.parse( iq.x.toXml() ) );
+			case error : error( "AA ERROR TODO" );
+			default :
+			}
+		} );
+	}
+	*/
+	
+	//////////////////
+	
 	function handleInfo( iq : IQ ) {
 		switch( iq.type ) {
 		case result :

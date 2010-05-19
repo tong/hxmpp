@@ -27,12 +27,16 @@ import xmpp.filter.IQFilter;
 class ServiceDiscoveryListener {
 	
 	public var stream(default,null) : Stream;
+	
+	/** */
 	public var identities : Array<xmpp.disco.Identity>;
 	
-	/** Custom info request handler */
+	/** Custom info request handler relay */
 	public var onInfoQuery : xmpp.IQ->Void;
-	/** Custom items request handler */
+	
+	/** Custom items request handler relay */
 	public var onItemQuery : xmpp.IQ->Void;
+	
 	//public var onInfoQuery(default,setInfoQueryHandler) : xmpp.IQ->Void;
 	//public var onItemQuery(default,setItemQueryHandler) : xmpp.IQ->Void;
 	
@@ -59,6 +63,7 @@ class ServiceDiscoveryListener {
 	*/
 	
 	function handleInfoQuery( iq : xmpp.IQ ) { // return identities and stream features
+		//TODO
 		if( onInfoQuery != null ) { // redirect info query
 			onInfoQuery( iq );
 			return;
@@ -70,6 +75,8 @@ class ServiceDiscoveryListener {
 	}
 	
 	function handleItemsQuery( iq : xmpp.IQ ) {
+		//TODO
+		trace("#######################################handleItemsQuery");
 		if( onItemQuery != null ) { // redirect items query
 			onItemQuery( iq );
 			return;

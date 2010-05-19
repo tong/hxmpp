@@ -32,7 +32,7 @@ private typedef Server = {
 	//var tls : { has : Bool, required : Bool };
 }
 
-private class StreamFeatures {
+class StreamFeatures {
 	var l : List<String>;
 	public function new() {
 		l = new List();
@@ -48,6 +48,14 @@ private class StreamFeatures {
 	public function remove( f : String ) : Bool {
 		return l.remove( f );
 	}
+	public function clear( f : String ) {
+		l = new List();
+	}
+	#if JABBER_DEBUG
+	public function toString() : String {
+		return l.toString();
+	}
+	#end
 }
 
 /**
@@ -62,12 +70,9 @@ class Stream {
 	
 	//public var __isClient(default,null) : Bool;
 	
-	/** Indicates if this streams data connection is a HTTP (BOSH) connection */
-	public var http(default,null) : Bool; //TODO move to: jabber.stream.Connection
-	
 	public var cnx(default,setConnection) : Connection;
 	public var status : StreamStatus;
-	public var host(getHost,null) : String;
+	//public var host(getHost,null) : String;
 	public var jidstr(getJIDStr,null) : String;
 	public var features(default,null) : StreamFeatures;
 	public var server(default,null) : Server;
@@ -91,7 +96,6 @@ class Stream {
 		collectors = new List();
 		interceptors = new List();
 		numPacketsSent = 0;
-		http = false;
 		dataFilters = new List();
 		dataInterceptors = new List();
 		if( cnx != null )
@@ -102,9 +106,11 @@ class Stream {
 		#end
 	}
 	
+	/*
 	function getHost() : String {
 		return ( cnx != null ) ? cnx.host : null;
 	}
+	*/
 	
 	function getJIDStr() : String {
 		return throw "Abstract getter";
@@ -125,11 +131,6 @@ class Stream {
 			cnx.__onData = handleData;
 			cnx.__onError = handleConnectionError;
 		}
-		//TODO HACK
-		try http = ( untyped cnx.http == true ) catch( e : Dynamic ) {
-			http = false;
-		}
-	//	http = ( Type.getClassName( Type.getClass( cnx ) ) == "jabber.BOSHConnection" );
 		return cnx;
 	}
 	
@@ -160,10 +161,9 @@ class Stream {
 	public function close( ?disconnect = false ) {
 		if( status == StreamStatus.closed )
 			return;
-		if( !http )
-			sendData( xmpp.Stream.CLOSE );
+		if( !cnx.http ) sendData( xmpp.Stream.CLOSE );
 		status = StreamStatus.closed;
-		if( http ) cnx.disconnect();
+		if( cnx.http ) cnx.disconnect();
 		else if( disconnect ) cnx.disconnect();
 		handleDisconnect();
 	}
@@ -289,16 +289,11 @@ class Stream {
 	
 	/**
 	*/
-	//TODO remove pos/length value 
-	//public function processData( buf : haxe.io.Bytes ) : Bool {
 	public function handleData( buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) : Int {
 		if( status == StreamStatus.closed )
 			return -1;
 		//TODO .. data filters
 		var t : String = buf.readString( bufpos, buflen );
-		/*//TODO
-		if( xmpp.Stream.REGEXP_CLOSE.match( t ) ) {
-		*/
 		//TODO
 		if( StringTools.startsWith( t, '</stream:stream' ) ) {
 			close( true );
@@ -309,9 +304,9 @@ class Stream {
 		}
 		switch( status ) {
 		case closed :
+			// TODO cleanup
 			return -1;//buflen?
 		case pending :
-			//return processStreamInit( XMLUtil.removeXmlHeader( t ), buflen );
 			return processStreamInit( t, buflen );
 		case open :
 			//t = XMLUtil.removeXmlHeader( t );
@@ -323,9 +318,9 @@ class Stream {
 			try {
 				x = Xml.parse( t );
 			} catch( e : Dynamic ) {
-				#if JABBER_DEBUG
+				//#if JABBER_DEBUG
 				//trace( "Packet incomplete, wating for more data ..", "info" );
-				#end
+				//#end
 				return 0; // wait for more data
 			}
 			handleXml( x );
@@ -335,7 +330,7 @@ class Stream {
 	}
 	
 	/**
-		Inject incoming XML data to handle.<br/>
+		Inject incoming XML data.<br/>
 		Returns array of handled XMPP packets.
 	*/
 	public function handleXml( x : Xml ) : Array<xmpp.Packet> {
@@ -364,12 +359,6 @@ class Stream {
 		#end
 		var collected = false;
 		for( c in collectors ) {
-			/*
-			if( c.handlers.length == 0 ) {
-				collectors.remove( c );
-				continue;
-			}
-			*/
 			if( c.accept( p ) ) {
 				collected = true;
 				c.deliver( p );
@@ -383,7 +372,7 @@ class Stream {
 		}
 		if( !collected ) {
 			#if JABBER_DEBUG
-			trace( "incoming '"+Type.enumConstructor( p._type )+"' packet not handled ( "+p.from+" -> "+p.to+" )", "warn" );
+//			trace( "incoming '"+Type.enumConstructor( p._type )+"' packet not handled ( "+p.from+" -> "+p.to+" )", "warn" );
 			#end
 			if( p._type == xmpp.PacketType.iq ) { // send 'feature not implemented' response
 				var q : xmpp.IQ = cast p;

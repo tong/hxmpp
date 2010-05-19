@@ -57,6 +57,10 @@ class Error {
 		return x;
 	}
 	
+	public function toString() : String {
+		return "XMPPError("+type+","+code+")";
+	}
+	
 	public static function parse( x : Xml ) : xmpp.Error {
 		var e = new Error();
 		var v = x.get( "code" );

@@ -41,10 +41,7 @@ typedef TStream = {
 	Set the haXe compiler flag: -D XMPP_DEBUG to activate it.
 	</p>
 	<p>
-	XMPP transfer display gets relayed to the default debug console on browser targets (if available),
-	highlighted on terminal targets.
-	</p>
-	<p>
+	Displayed XMPP transfer gets relayed to the default debug console on browser targets (if available) and color highlighted on terminal targets.
 	</p>
 */
 class XMPPDebug {
@@ -54,6 +51,7 @@ class XMPPDebug {
 	#end
 	
 	#if (flash||js)
+	
 	static function __init__() {
 		#if flash
 		useConsole = ( ExternalInterface.available &&
@@ -69,17 +67,20 @@ class XMPPDebug {
 			return stream.sendData( t );
 		} );
 		#end
-		#elseif air
-		useConsole = false;
 		#elseif js
+		#if air
+		useConsole = false;
+		#else
 		try {
 			useConsole = untyped console != null && console.error != null;
 		} catch( e : Dynamic ) {
 			useConsole = false;
 		}
 		#end
+		#end
 	}
-	#end
+	
+	#end // (flash||js)
 	
 	public static inline function inc( t : String ) {
 		#if JABBER_CONSOLE

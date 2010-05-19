@@ -34,7 +34,8 @@ class PubSub {
 	public dynamic function onUnsubscribe( node : String ) : Void;
 	public dynamic function onSubscriptions( a : xmpp.pubsub.Subscriptions ) : Void;
 	public dynamic function onPublish( node : String, item : xmpp.pubsub.Item ) : Void;
-	public dynamic function onItems( node : String, items : xmpp.pubsub.Items ) : Void;
+	//public dynamic function onItems( node : String, items : xmpp.pubsub.Items ) : Void;
+	public dynamic function onItems( items : xmpp.pubsub.Items ) : Void;
 	public dynamic function onAffiliations( a : xmpp.pubsub.Affiliations ) : Void;
 	public dynamic function onRetract( r : xmpp.pubsub.Retract ) : Void;
 	public dynamic function onPurge( node : String ) : Void;
@@ -187,7 +188,8 @@ class PubSub {
 		var h = onItems;
 		sendIQ( iq, function(r:IQ) {
 			var items = xmpp.pubsub.Items.parse( r.x.toXml() );
-			h( node, items );
+			//h( node, items );
+			h( items );
 		} );
 		return iq;
 	}
