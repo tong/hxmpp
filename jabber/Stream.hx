@@ -235,6 +235,13 @@ class Stream {
 		
 	}
 	
+	public function sendPresenceTo( jid : String ) : xmpp.Presence {
+		var p = new xmpp.Presence();
+		p.to = jid;
+		var s : xmpp.Presence = sendPacket(p);
+		return s;
+	}
+	
 	/**
 		Runs the XMPP packet interceptor on the given packet.
 	*/
@@ -296,11 +303,17 @@ class Stream {
 		var t : String = buf.readString( bufpos, buflen );
 		//TODO
 		if( StringTools.startsWith( t, '</stream:stream' ) ) {
+			#if XMPP_DEBUG
+			XMPPDebug.inc( t );
+			#end
 			close( true );
-			return -1;
+			return 0;
 		} else if( StringTools.startsWith( t, '</stream:error' ) ) {
+			#if XMPP_DEBUG
+			XMPPDebug.inc( t );
+			#end
 			close( true );
-			return -1;
+			return 0;
 		}
 		switch( status ) {
 		case closed :
