@@ -25,19 +25,24 @@ import xmpp.roster.AskType;
 import xmpp.roster.Subscription;
 
 enum RosterSubscriptionMode {
-	/** Accept all subscription and unsubscription requests. */
+	/**
+		Accept all subscription and unsubscription requests.
+	*/
 	acceptAll( subscribe : Bool );
-	/** Rejects all subscription requests. */
+	/**
+		Rejects all subscription requests.
+	*/
 	rejectAll;
-	/** Ask user how to proceed. */
+	/**
+		Ask user how to proceed.
+	*/
 	manual;
 }
 
 /**
-	Jabber client roster.
+	Client roster aka serverside saved contact list.
 */
 class Roster {
-//TODO class Roster<RosterItem:xmpp.roster.Item>
 
 	public static var defaultSubscriptionMode = RosterSubscriptionMode.manual;
 	

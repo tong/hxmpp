@@ -48,6 +48,13 @@ var cnx = new BOSHConnection( "domain.net", "localhost/http/" );
 
 
 
+SSL/TLS CONNECTIONS
+-------------------
+Right now secure connections using SSL (at port 5223) are just supported by php and neko.
+For neko you have to use the OpenSSL encryption layer from git://83.64.208.21/hxssl.git
+
+
+
 USING NODE.JS
 -------------
 HXMPP has experimental support for node.js through hxNode.

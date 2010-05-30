@@ -158,7 +158,9 @@ class SocketConnection extends jabber.stream.Connection {
 			socket.close();
 			#end
 		} catch( e : Dynamic ) {
+			trace(e);
 			__onError( "Error closing socket" );
+			return;
 		}
 	}
 	

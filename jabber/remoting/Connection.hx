@@ -77,7 +77,7 @@ class Connection implements AsyncConnection, implements Dynamic<AsyncConnection>
 				if( ok && onResult != null )
 					onResult( ret );
 			case error :
-				var err = xmpp.Error.fromPacket( r );
+				var err = xmpp.Error.parse( r.x.toXml() );
 				error( err );
 			default :
 				#if JABBER DEBUG

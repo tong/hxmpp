@@ -33,12 +33,6 @@ class IQ extends Packet {
 		this.type = ( type != null ) ? type : xmpp.IQType.get;
 	}
 	
-	/*
-	function setIQType( t : IQType ) : IQType {
-		return type = ( t == null ) ? get : t;
-	}
-	*/
-	
 	public override function toXml(): Xml {
 		var p = super.addAttributes( Xml.createElement( "iq" ) );
 		if( type == null ) type = IQType.get;
@@ -54,8 +48,10 @@ class IQ extends Packet {
 		Packet.parseAttributes( iq, x );
 		for( c in x.elements() ) {
 			switch( c.nodeName ) {
-			case "error" :  iq.errors.push( xmpp.Error.parse( c ) );
-			default : iq.properties.push( c );
+			case "error" :
+				iq.errors.push( xmpp.Error.parse( c ) );
+			default :
+				iq.properties.push( c );
 			}
 		}
 		if( iq.properties.length > 0 ) {
@@ -66,9 +62,9 @@ class IQ extends Packet {
 	}
 	
 	/**
-		Creates a '<query xmlns="namspace"/>' xml tag.
+		Creates a '<query xmlns="namspace"/>' XML tag.
 	*/
-    public static inline function createQueryXml( ns : String ) : Xml {
+    public static function createQueryXml( ns : String ) : Xml {
 		var x = Xml.createElement( "query" );
 		x.set( "xmlns", ns );
 		return x;
@@ -84,7 +80,7 @@ class IQ extends Packet {
 	/**
 		Creates a error type IQ from the given request.
 	*/
-	public static inline function createErrorResult( iq : IQ, ?errors : Array<Error> ) : IQ {
+	public static function createError( iq : IQ, ?errors : Array<xmpp.Error> ) : IQ {
 		var r = new IQ( IQType.error, iq.id, iq.from );
 		if( errors != null ) r.errors = errors;
 		return r;

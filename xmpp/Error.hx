@@ -57,9 +57,11 @@ class Error {
 		return x;
 	}
 	
+	#if JABBER_DEBUG
 	public function toString() : String {
-		return "XMPPError("+type+","+code+")";
+		return "XMPPError("+type+","+code+","+text+")";
 	}
+	#end
 	
 	public static function parse( x : Xml ) : xmpp.Error {
 		var e = new Error();

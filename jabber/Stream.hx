@@ -201,7 +201,7 @@ class Stream {
 		Send an IQ packet and forward the collected response to the given handler function.
 	*/
 	public function sendIQ( iq : xmpp.IQ, ?handler : xmpp.IQ->Void,
-							?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool )
+							?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool ) //TODO remove block argument
 	: { iq : xmpp.IQ, collector : PacketCollector }
 	{
 		if( iq.id == null ) iq.id = nextID();

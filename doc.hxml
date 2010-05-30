@@ -31,6 +31,8 @@ jabber.client.SASLAuth
 jabber.client.Stream
 jabber.client.VCard
 jabber.component.Stream
+jabber.remoting.Connection
+jabber.remoting.Host
 jabber.sasl.AnonymousMechanism
 jabber.sasl.PlainMechanism
 jabber.sasl.MD5Mechanism

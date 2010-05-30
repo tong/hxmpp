@@ -23,7 +23,7 @@ class Subscription {
 	public var node : String;
 	public var subid : String;
 	public var subscription : SubscriptionState;
-	// TODO subscribe_options : Array<>; // xmpp.PubSub only !
+	//subscribe_options : Array<>; // xmpp.PubSub only !
 	
 	public function new( jid : String,
 						 ?node : String,
@@ -41,7 +41,7 @@ class Subscription {
 		if( node != null ) x.set( "node", node );
 		if( subid != null ) x.set( "subid", subid );
 		if( subscription != null ) x.set( "subscription", Type.enumConstructor( subscription ) );
-		// TODO subscribe_options
+		// subscribe_options...
 		return x;
 	}
 	
@@ -50,7 +50,7 @@ class Subscription {
 		if( x.exists( "node" ) ) s.node = x.get( "node" );
 		if( x.exists( "subid" ) ) s.subid = x.get( "subid" );
 		if( x.exists( "subscription" ) ) s.subscription =  Type.createEnum( SubscriptionState, x.get( "subscription" ) );
-		// TODO subscribe_options
+		// subscribe_options...
 		return s;
 	}
 	

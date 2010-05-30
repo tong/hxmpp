@@ -49,14 +49,14 @@ class DateTime {
 	}
 	
 	public static inline function now( ?offset : Int ) : String {
-		return fromDate( Date.now(), offset );// utc( Date.now().toString(), offset );
+		return fromDate( Date.now(), offset );
 	}
 	
 	public static inline function fromDate( d : Date, ?offset : Int ) : String {
 		return utc( d.toString(), offset );
 	}
 	
-	public static inline function fromTime( t : Float, ?offset : Int ) {
+	public static inline function fromTime( t : Float, ?offset : Int ) : String {
 		return utc( Date.fromTime( t ).toString(), offset );
 	}
 	

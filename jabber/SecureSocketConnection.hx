@@ -66,6 +66,7 @@ class SecureSocketConnection extends jabber.stream.Connection {
 		#if neko
 		socket.connect( Socket.resolve( host ), port );
 		#elseif php
+		trace("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"+host+"//"+port);
 		socket.connectTLS( new php.net.Host( host ), port );
 		#end
 		connected = true;
