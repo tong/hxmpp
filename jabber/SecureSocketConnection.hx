@@ -17,7 +17,67 @@
 */
 package jabber;
 
-#if (neko||cpp||php)
+#if flash
+
+import tls.controller.SecureSocket;
+import tls.event.SecureSocketEvent;
+import tls.valueobject.SecurityOptionsVO;
+
+/**
+	Experimental TLS socket connection.
+*/
+class SecureSocketConnection extends jabber.stream.Connection {
+	
+	public var port(default,null) : Int;
+	
+	var socket : SecureSocket;
+	
+	public function new( host : String, port : Int = 5223 ) {
+		super( host );
+		this.port = port;
+	}
+	
+	public override function connect() {
+		socket = new SecureSocket();
+		socket.addEventListener( SecureSocketEvent.ON_CONNECT, sockConnectHandler );
+		socket.addEventListener( SecureSocketEvent.ON_SECURE_CHANNEL_ESTABLISHED, secureChannelEstablished );
+		socket.addEventListener( SecureSocketEvent.ON_ERROR, sockErrorHandler );
+		socket.addEventListener( SecureSocketEvent.ON_CLOSE, sockDisconnectHandler );
+		socket.connect( host, port );
+	}
+	
+	public override function write( t : String ) : Bool {
+		socket.sendString( t );
+		return true;
+	}
+	
+	function sockConnectHandler( e : SecureSocketEvent ) {
+		socket.startSecureSupport( SecurityOptionsVO.getDefaultOptions( SecurityOptionsVO.SECURITY_TYPE_TLS ) );
+	}
+	
+	function sockDisconnectHandler( e : SecureSocketEvent ) {
+		trace(e);
+	}
+	
+	function secureChannelEstablished( e : SecureSocketEvent ) {
+		socket.addEventListener( SecureSocketEvent.ON_PROCESSED_DATA, socketDataHandler );
+		connected = true;
+		__onConnect();
+	}
+	
+	function sockErrorHandler( e : SecureSocketEvent ) {
+		trace(e);
+	}
+	
+	function socketDataHandler( e : SecureSocketEvent ) {
+		if( e.rawData != null ) {
+			var b = haxe.io.Bytes.ofData( e.rawData );
+			__onData( b, 0, b.length  );
+		}
+	}
+}
+
+#elseif (neko||cpp||php)
 
 #if neko
 import neko.ssl.Socket;
@@ -29,6 +89,7 @@ import jabber.util.php.Socket;
 /**
 	Experimental SSL socket connection for neko (php).
 	Source files and NDLL from the 'hxssl' project are required.
+	See: http://disktree.spektral.at/git/?a=summary&p=hxssl
 */
 class SecureSocketConnection extends jabber.stream.Connection {
 	
