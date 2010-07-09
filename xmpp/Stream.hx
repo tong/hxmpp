@@ -17,41 +17,41 @@
 */
 package xmpp;
 
+/**
+	Static stuff for creation/manipulation of XMPP stream opening/closing tags.
+*/
 class Stream {
 	
-	public static inline var XMLNS_STREAM 	  = "http://etherx.jabber.org/streams";
-	public static inline var XMLNS_CLIENT 	  = "jabber:client";
-	public static inline var XMLNS_SERVER 	  = "jabber:client";
-	public static inline var XMLNS_COMPONENT = "jabber:component:accept";
-	public static inline var CLOSE = "</stream:stream>";
-	public static inline var ERROR = "</stream:error>";
-	public static inline var REGEXP_CLOSE = new EReg( CLOSE, "" );
-	public static inline var REGEXP_ERROR = new EReg( ERROR, "" );
+	public static var STREAM = "http://etherx.jabber.org/streams";
+	public static var CLIENT = "jabber:client";
+	public static var SERVER = "jabber:client";
+	public static var COMPONENT = "jabber:component:accept";
+	
+	//public static inline var CLOSE = "</stream:stream>";
+	//public static inline var ERROR = "</stream:error>";
+	//public static inline var REGEXP_CLOSE = new EReg( CLOSE, "" );
+	//public static inline var REGEXP_ERROR = new EReg( ERROR, "" );
 	
 	/**
+		Creates the opening XML tag of a XMPP stream.
 	*/
-	public static function createOpenStream( xmlns : String, to : String,
-											 ?version : Bool, ?lang : String, ?xmlHeader : Bool = true ) : String {
+	public static function createOpenXml( ns : String, to : String,
+										  ?version : Bool, ?lang : String, ?xmlHeader : Bool = true ) : String {
 		var b = new StringBuf();
 		b.add( '<stream:stream xmlns="' );
-		b.add( xmlns );
-		b.add( '" xmlns:stream="'+XMLNS_STREAM+'" to="' );
+		b.add( ns );
+		b.add( '" xmlns:stream="'+STREAM+'" to="' );
 		b.add( to );
-		b.add( '" xmlns:xml="http://www.w3.org/XML/1998/namespace" ' );
+		b.add( '" xmlns:xml="http://www.w3.org/XML/1998/namespace"' );
 		if( version )
-			b.add( 'version="1.0" ' );
+			b.add( ' version="1.0"' );
 		if( lang != null ) {
-			b.add( 'xml:lang="' );
+			b.add( ' xml:lang="' );
 			b.add( lang );
 			b.add( '"' );
 		}
 		b.add( '>' );
 		return ( xmlHeader ) ? XMLUtil.HEADER+b.toString() : b.toString();
 	}
-	
-	/*
-	public static function parseStreamFeatures( x : Xml ) {
-	}
-	*/
 	
 }

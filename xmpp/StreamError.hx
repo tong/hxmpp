@@ -17,20 +17,29 @@
 */
 package xmpp;
 
+typedef ApplicationStreamError = {
+	var condition : String;
+	var xmlns : String;
+}
+
 class StreamError {
 	
 	public static var XMLNS = "urn:ietf:params:xml:ns:xmpp-streams";
 	
+	/** One of the defined error conditions */
 	public var condition : String;
 	/** Describes the error in more detail */
 	public var text : String;
 	/** Language of the text content XML character data  */
 	public var lang : String;
-	/** Application-specific error condition */
-	public var app : { condition : String, ns : String };
+	/** Optional application-specific error condition */
+	public var app : ApplicationStreamError;
 	
-	public function new( ?condition : String ) {
+	public function new( condition : String, ?text : String, ?lang : String, ?app : ApplicationStreamError ) {
 		this.condition = condition;
+		this.text = text;
+		this.lang = lang;
+		this.app = app;
 	}
 	
 	public function toXml() : Xml {
@@ -41,28 +50,34 @@ class StreamError {
 		if( text != null ) {
 			var t = XMLUtil.createElement( "text", text );
 			t.set( "xmlns", XMLNS );
-			if( lang != null ) t.set( "lang", lang );
+			if( lang != null ) t.set( "xml:lang", lang );
 			x.addChild( t );
 		}
-		if( app != null && app.condition != null && app.ns != null ) {
+		if( app != null && app.condition != null && app.xmlns != null ) {
 			var a = Xml.createElement( app.condition );
-			a.set( "xmlns", app.ns );
+			a.set( "xmlns", app.xmlns );
 			x.addChild( a );	
 		}
 		return x;
 	}
 	
 	public static function parse( x : Xml ) : StreamError {
-		var p = new StreamError();
+		var p = new StreamError( null );
 		for( e in x.elements() ) {
 			var ns = e.get( "xmlns" );
-			if( ns == null ) continue;
+			if( ns == null )
+				continue;
 			switch( e.nodeName ) {
 			case "text" :
-				if( ns == XMLNS ) p.text = e.firstChild().nodeValue;
+				if( ns == XMLNS ) {
+					p.text = e.firstChild().nodeValue;
+					p.lang = e.get( "xml:lang" );
+				}
 			default :
-				if( ns == XMLNS ) p.condition = e.nodeName;
-				else p.app = { condition : e.nodeName, ns : ns };
+				if( ns == XMLNS )
+					p.condition = e.nodeName;
+				else
+					p.app = { condition : e.nodeName, xmlns : ns };
 			}
 		}
 		if( p.condition == null )
