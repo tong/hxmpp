@@ -1,9 +1,0 @@
-
-### SWF socketbridge
--cp util/
--cp lib/
--swf-version 9
--swf-header 0:0:60:eeeeee
--swf9 lib/socketbridge.swf
--main FlashSocketBridge
---no-traces
