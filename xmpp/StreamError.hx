@@ -17,72 +17,29 @@
 */
 package xmpp;
 
-typedef ApplicationStreamError = {
-	var condition : String;
-	var xmlns : String;
-}
+import xmpp.ErrorPacket;
 
-class StreamError {
+/**
+*/
+class StreamError extends ErrorPacket {
 	
 	public static var XMLNS = "urn:ietf:params:xml:ns:xmpp-streams";
 	
-	/** One of the defined error conditions */
-	public var condition : String;
-	/** Describes the error in more detail */
-	public var text : String;
-	/** Language of the text content XML character data  */
-	public var lang : String;
-	/** Optional application-specific error condition */
-	public var app : ApplicationStreamError;
-	
-	public function new( condition : String, ?text : String, ?lang : String, ?app : ApplicationStreamError ) {
-		this.condition = condition;
-		this.text = text;
-		this.lang = lang;
-		this.app = app;
+	public function new( condition : String,
+				  		 ?text : String, ?lang : String, ?app : ApplicationErrorCondition) {
+		super( condition, text, lang, app );
 	}
 	
 	public function toXml() : Xml {
-		var x = Xml.createElement( "stream:error" );
-		var c = Xml.createElement( condition );
-		c.set( "xmlns", XMLNS );
-		x.addChild( c );
-		if( text != null ) {
-			var t = XMLUtil.createElement( "text", text );
-			t.set( "xmlns", XMLNS );
-			if( lang != null ) t.set( "xml:lang", lang );
-			x.addChild( t );
-		}
-		if( app != null && app.condition != null && app.xmlns != null ) {
-			var a = Xml.createElement( app.condition );
-			a.set( "xmlns", app.xmlns );
-			x.addChild( a );	
-		}
-		return x;
+		return _toXml( "stream:error", XMLNS );
 	}
 	
 	public static function parse( x : Xml ) : StreamError {
 		var p = new StreamError( null );
-		for( e in x.elements() ) {
-			var ns = e.get( "xmlns" );
-			if( ns == null )
-				continue;
-			switch( e.nodeName ) {
-			case "text" :
-				if( ns == XMLNS ) {
-					p.text = e.firstChild().nodeValue;
-					p.lang = e.get( "xml:lang" );
-				}
-			default :
-				if( ns == XMLNS )
-					p.condition = e.nodeName;
-				else
-					p.app = { condition : e.nodeName, xmlns : ns };
-			}
-		}
+		ErrorPacket.parseInto( p, x, XMLNS );
 		if( p.condition == null )
 			return null;
 		return p;
 	}
-
+	
 }
