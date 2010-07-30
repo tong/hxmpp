@@ -27,18 +27,18 @@ class SASL {
 	
 	/**
 	*/
-	public static function createAuthXML( mechansim : String, ?text : String ) : Xml {
-		if( mechansim == null )
+	public static function createAuth( mech : String, ?text : String ) : Xml {
+		if( mech == null )
 			return null;
-		var x = XMLUtil.createElement( "auth", text );
+		var x = ( text != null ) ? XMLUtil.createElement( "auth", text ) : Xml.createElement( "auth" );
 		x.set( "xmlns", XMLNS );
-		x.set( "mechanism", mechansim );
+		x.set( "mechanism", mech );
 		return x;
 	}
 	
 	/**
 	*/
-	public static function createResponseXML( t : String ) : Xml {
+	public static function createResponse( t : String ) : Xml {
 		if( t == null )
 			return null;
 		var x = XMLUtil.createElement( "response", t );
@@ -47,7 +47,7 @@ class SASL {
 	}
 	
 	/**
-		Parses list of SASL mechanisms from a stream:features packet.
+		Parses list of SASL mechanisms.
 	*/
 	public static function parseMechanisms( x : Xml ) : Array<String> {
 		var m = new Array<String>();
@@ -56,6 +56,8 @@ class SASL {
 				continue;
 			m.push( e.firstChild().nodeValue );
 		}
+	//	for( e in x.elementsNamed( "mechanism" ) )
+	//		m.push( e.firstChild().nodeValue );
 		return m;
 	}
 	

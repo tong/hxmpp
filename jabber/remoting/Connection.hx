@@ -21,7 +21,9 @@ import haxe.remoting.AsyncConnection;
 
 /**
 	haXe remoting connection to a XMPP entity.<br/>
-	User Service Discovery to determine if an entity supports haXe-remoting.<br/>
+	User ServiceDiscovery to determine if an entity supports haXe-remoting.
+	
+	<a href="http://haxe.org/doc/remoting">haXe-remoting</a>
 */
 class Connection implements AsyncConnection, implements Dynamic<AsyncConnection> {
 	

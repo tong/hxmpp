@@ -23,6 +23,7 @@ class XMLUtil {
 	}
 	*/
 	
+	//TODO also <?xml version="1.0"?>
 	static var eheader = ~/^(\<\?xml) (.)+\?\>/; 
 	//static var eheader = ~/^(\<\?xml) (version=["']1.0["']) (encoding=["']UTF-8["'])\?\>/; 
 	

@@ -27,10 +27,12 @@ import jabber.util.Base64;
 import xmpp.XMLUtil;
 import xmpp.filter.PacketIDFilter;
 
+
 private typedef Server = {
 	var features : Hash<Xml>;
 	//var tls : { has : Bool, required : Bool };
 }
+
 
 class StreamFeatures {
 	var l : List<String>;
@@ -58,22 +60,21 @@ class StreamFeatures {
 	#end
 }
 
+
 /**
 	Abstract base for XMPP streams.
 */
 class Stream {
 	
-	public static var defaultPacketIDLength = 5;
+	public static var defaultPacketIdLength = 5;
 	
 	public dynamic function onOpen() : Void;
 	public dynamic function onClose( ?e : Dynamic ) : Void;
 	
-	//public var __isClient(default,null) : Bool;
-	
-	public var cnx(default,setConnection) : Connection;
 	public var status : StreamStatus;
-	//public var host(getHost,null) : String;
-	public var jidstr(getJIDStr,null) : String;
+	public var cnx(default,setConnection) : Connection;
+	//TODO public var host(default,null) : String;
+	public var jidstr(getJIDStr,null) : String;  // TODO replace by JID
 	public var features(default,null) : StreamFeatures;
 	public var server(default,null) : Server;
 	public var id(default,null) : String;
@@ -85,7 +86,6 @@ class Stream {
 	var collectors : List<PacketCollector>;
 	var interceptors : List<TPacketInterceptor>;
 	var numPacketsSent : Int;
-	//var disoListener : ServiceDiscoveryListener;
 	
 	#if JABBER_DEBUG public #end
 	function new( ?cnx : Connection ) {
@@ -100,7 +100,8 @@ class Stream {
 		dataInterceptors = new List();
 		if( cnx != null )
 			setConnection( cnx );
-		// TODO HACK
+			
+		// TODO remove HACK
 		#if (flash&&JABBER_CONSOLE)
 		XMPPDebug.stream = this;
 		#end
@@ -126,6 +127,7 @@ class Stream {
 			if( cnx != null && cnx.connected )
 				cnx.disconnect();
 			cnx = c;
+			//cnxs.stream = this;
 			cnx.__onConnect = handleConnect;
 			cnx.__onDisconnect = handleDisconnect;
 			cnx.__onData = handleData;
@@ -135,15 +137,31 @@ class Stream {
 	}
 	
 	/**
-		Get the next unique id for a XMPP packet of this stream.
+		Get the next unique id for a XMPP packet.
 	*/
 	public function nextID() : String {
 		#if JABBER_DEBUG
-		return Base64.random( defaultPacketIDLength )+"_"+numPacketsSent;
+		return Base64.random( defaultPacketIdLength )+"_"+numPacketsSent;
 		#else
-		return Base64.random( defaultPacketIDLength );
+		return Base64.random( defaultPacketIdLength );
 		#end
 	}
+	
+	//TODO
+	/*
+	public function open( ?host : String ) {
+		if( cnx == null )
+			throw "No stream connection set";
+		//TODO add try Reflect SocketConnection fallback
+		//.
+		this.host = ( host != null ) this.host : cnx.host;
+		if( this.host == null )
+			throw "No server hostname given";
+		//if( cnxs.host == null )
+		//cnxs.stream = this;
+		cnx.connected ? handleConnect() : cnx.connect();
+	}
+	*/
 	
 	/**
 		Request to open the XMPP stream.
@@ -161,7 +179,7 @@ class Stream {
 	public function close( ?disconnect = false ) {
 		if( status == StreamStatus.closed )
 			return;
-		if( !cnx.http ) sendData( xmpp.Stream.CLOSE );
+		if( !cnx.http ) sendData( "</stream:stream>" );
 		status = StreamStatus.closed;
 		if( cnx.http ) cnx.disconnect();
 		else if( disconnect ) cnx.disconnect();
@@ -391,7 +409,7 @@ class Stream {
 				var q : xmpp.IQ = cast p;
 				if( q.type != xmpp.IQType.error ) {
 					var r = new xmpp.IQ( xmpp.IQType.error, p.id, p.from, p.to );
-					r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, 501, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );
+					r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );
 					sendData( r.toString() );
 				}
 			}
@@ -407,7 +425,7 @@ class Stream {
 	}
 
 	function handleDisconnect() {
-		//?closeHandler();
+		onClose();
 	}
 	
 	function handleConnectionError( e : String ) {

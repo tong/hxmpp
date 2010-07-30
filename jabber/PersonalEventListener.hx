@@ -42,7 +42,7 @@ class PersonalEventListener {
 		listeners = new List();
 		stream.collect( [ cast new xmpp.filter.MessageFilter( xmpp.MessageType.normal ), //TODO hm ?
 						  cast new xmpp.filter.PacketPropertyFilter( xmpp.PubSubEvent.XMLNS, "event" ) ],
-						handlePersonalEvent, true );
+						  handlePersonalEvent, true );
 	}
 	
 	/**
@@ -50,9 +50,9 @@ class PersonalEventListener {
 	*/
 	public function add( t : Class<xmpp.pep.Event>, handler : xmpp.Message->Xml->Void ) : Bool {
 		var l = getListener( t );
-		if( l != null )
+		if( l != null ) {
 			return false;
-		else {
+		} else {
 			listeners.add( { xmlns : untyped t.XMLNS, handler : handler, type : t } );
 			return true;
 		}
@@ -79,7 +79,8 @@ class PersonalEventListener {
 	*/
 	public function getListener( type : Class<xmpp.pep.Event> ) : Listener {
 		for( l in listeners )
-			if( l.type == type ) return l;
+			if( l.type == type )
+				return l;
 		return null;
 	}
 	

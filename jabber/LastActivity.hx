@@ -22,8 +22,8 @@ package jabber;
 */
 class LastActivity {
 	
-	public dynamic function onLoad( entity : String, secs : Int ) {}
-	public dynamic function onError( e : XMPPError ) {}
+	public dynamic function onLoad( entity : String, secs : Int ) : Void;
+	public dynamic function onError( e : XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
 	
@@ -48,7 +48,7 @@ class LastActivity {
 			onLoad( iq.from, xmpp.LastActivity.parseSeconds( iq.x.toXml() ) );
 		case error :
 			onError( new XMPPError( this, iq ) );
-		default : //#
+		default : ///
 		}
 	}
 	

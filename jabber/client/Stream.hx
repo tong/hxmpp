@@ -56,7 +56,7 @@ class Stream extends jabber.Stream {
 	override function handleConnect() {
 		status = StreamStatus.pending;
 		if( !cnx.http ) {
-			sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_CLIENT, jid.domain, version, lang ) );
+			sendData( xmpp.Stream.createOpenXml( xmpp.Stream.CLIENT, jid.domain, version, lang ) );
 			cnx.read( true ); // start reading input
 		} else {
 			if( cnx.connected ) {

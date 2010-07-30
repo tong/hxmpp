@@ -21,7 +21,7 @@ import jabber.util.SHA1;
 
 /**
 	<a href="http://xmpp.org/extensions/xep-0078.html">XEP-0078: Multi-User Chat</a><br>
-	Outdated, use SASLAuth instead.
+	Obsolete, superseded in favor of SASL authentication!
 */
 class NonSASLAuth extends Authentication {
 	

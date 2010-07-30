@@ -30,7 +30,7 @@ class Packet {
 	public var from : String;
 	public var id : String;	
 	public var lang : String;
-	public var properties : Array<Xml>; // <PacketElement> hmm? 
+	public var properties : Array<Xml>; // <PacketElement>
 	public var errors : Array<xmpp.Error>;
 	
 	function new( ?to : String, ?from : String, ?id : String, ?lang : String ) {
@@ -88,7 +88,8 @@ class Packet {
 		p.to = x.get( "to" );
 		p.from = x.get( "from" );
 		p.id = x.get( "id" );
-		p.lang = x.get( "xml:lang" );
+//		p.lang = x.get( "xml:lang" );
+//		trace("##"+x);
 		return p;
 	}
 	

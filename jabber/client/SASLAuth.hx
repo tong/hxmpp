@@ -91,7 +91,7 @@ class SASLAuth extends Authentication {
 		// init auth
 		var t = mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password );
 		if( t != null ) t = Base64.encode( t ); 
-		return stream.sendData( xmpp.SASL.createAuthXML( mechanism.id, t ).toString() ) != null;
+		return stream.sendData( xmpp.SASL.createAuth( mechanism.id, t ).toString() ) != null;
 	}
 	
 	function handleSASLFailed( p : xmpp.Packet ) {
@@ -102,7 +102,7 @@ class SASLAuth extends Authentication {
 	function handleSASLChallenge( p : xmpp.Packet ) {
 		var c = p.toXml().firstChild().nodeValue;
 		var r = Base64.encode( mechanism.createChallengeResponse( c ) );
-		stream.sendData( xmpp.SASL.createResponseXML( r ).toString() );
+		stream.sendData( xmpp.SASL.createResponse( r ).toString() );
 	}
 	
 	function handleSASLSuccess( p : xmpp.Packet ) {

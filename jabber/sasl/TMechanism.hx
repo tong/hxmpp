@@ -17,6 +17,7 @@
 */
 package jabber.sasl;
 
+//TODO rename Mechanism
 typedef TMechanism = {
 	
 	/**

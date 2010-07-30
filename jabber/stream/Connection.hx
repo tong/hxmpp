@@ -35,14 +35,14 @@ class Connection {
 	/** Error callback */
 	public var __onError : String->Void; // replace public var __onDisconnect(?e)
 	
-	/** Hostname or IP address of the jabber server. */
+	/** Hostname or IP address of the XMPP server. */
 	public var host(default,setHost) : String;
 	
 	/** Indicates if connected and ready to read and write. */
 	public var connected(default,null) : Bool;
 	
 	/** Indicates if this streams data connection is a HTTP (BOSH) connection (default is false) */
-	public var http(default,null) : Bool;
+	public var http(default,null) : Bool; //TODO remove ()
 	
 	function new( host : String, http : Bool = false ) {
 		this.host = host;
@@ -90,7 +90,7 @@ class Connection {
 	}
 	*/
 	
-	/**
+	/*
 	public function reset() {
 	}
 	*/

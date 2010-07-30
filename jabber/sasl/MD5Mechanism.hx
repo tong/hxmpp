@@ -49,6 +49,7 @@ class MD5Mechanism {
 		this.host = host;
 		this.pass = pass;
 		return null;
+		
 	}
 	
 	public function createChallengeResponse( challenge : String ) : String {
@@ -88,19 +89,19 @@ class MD5Mechanism {
 		return b.toString();
 	}
 	
-	inline function h( t : String)  {
+	static inline function h( t : String)  {
 		return MD5.encode( t, true );
 	}
 	
-	inline function hh( t : String ) : String {
+	static inline function hh( t : String ) : String {
 		return MD5.encode( t );
 	}
 	
-	inline function quote( t : String ) : String {
+	static inline function quote( t : String ) : String {
 		return '"'+t+'"';
 	}
 	
-	inline function unquote( t : String ) : String {
+	static inline function unquote( t : String ) : String {
 		return t.substr( 1, t.length-2 );
 	}
 	

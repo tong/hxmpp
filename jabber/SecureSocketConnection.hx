@@ -33,9 +33,6 @@ import jabber.util.php.Socket;
 */
 class SecureSocketConnection extends jabber.stream.Connection {
 	
-	public static var defaultBufSize = #if php 65536 #else 128 #end; //TODO php buf
-	public static var defaultMaxBufSize = 131072;
-	
 	public var port(default,null) : Int;
 	public var bufSize(default,null) : Int;
 	public var maxBufSize(default,null) : Int;
@@ -51,10 +48,9 @@ class SecureSocketConnection extends jabber.stream.Connection {
 						 ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
 		super( host );
-		this.host = host;
 		this.port = port;
-		this.bufSize = ( bufSize == null ) ? defaultBufSize : bufSize;
-		this.maxBufSize = ( maxBufSize == null ) ? defaultMaxBufSize : maxBufSize;
+		this.bufSize = ( bufSize == null ) ? SocketConnection.defaultBufSize : bufSize;
+		this.maxBufSize = ( maxBufSize == null ) ? SocketConnection.defaultMaxBufSize : maxBufSize;
 		this.timeout = timeout;	
 		reading = false;
 	}
@@ -123,7 +119,7 @@ class SecureSocketConnection extends jabber.stream.Connection {
 			bufbytes -= nbytes;
 		}
 		if( reading && pos > 0 )
-			buf = haxe.io.Bytes.alloc( defaultBufSize );
+			buf = haxe.io.Bytes.alloc( SocketConnection.defaultBufSize );
 	}
 	
 }
@@ -161,11 +157,11 @@ import tls.valueobject.SecurityOptionsVO;
 #end
 
 /**
-	TLS socket connection.
+	TLS socket connection (flash/air).
 */
 class SecureSocketConnection extends jabber.stream.Connection {
 			
-	#if air
+	#if air //?
 	public static var defaultBufSize = 128;
 	public static var defaultMaxBufSize = 131072;
 	#end

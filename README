@@ -1,8 +1,7 @@
 
-HXMPP - README
-==============
+HXMPP
+=====
 HXMPP is a haXe library for creating XMPP based clients and services.
-
 The library exists in two namespaces:
 * xmpp: creation and manipulation of XMPP data.
 * jabber: creation and handling of XMPP data streams between jabber entities.
@@ -11,9 +10,7 @@ The library exists in two namespaces:
 
 USAGE
 -----
-Run the hxml files in the base directory to build the included tests, samples, utilities and documentation.
-This is NOT required to use the library!
-See: hxmpp/samples/* for usage.
+http://github.com/tong/hxmpp.examples
 
 
 
@@ -25,49 +22,60 @@ COMPILER FLAGS
 
 
 
+SSL/TLS
+-------
+For neko use the OpenSSL encryption layer from: git://83.64.208.21/hxssl.git
+For flash: git://83.64.208.21/hxtls.git
+
+
+
 USING THE BOSH CONNECTION
 -------------------------
-To use BOSH for connecting you have to proxy you requests.
+BOSH essentially provides a "drop-in" alternative to a long-lived, bidirectional TCP connection using a request-response mechansim over HTTP.
+To use it you have to connect your client to the BOSH adress of your jabber server.
+Your webserver doesn’t know about your jabber server .. you have to setup a proxy to forward requests: 
+
 # Activate mod_proxy apache module
 sudo ln -s /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled/
 # Add following line to proxy.load to activate the proxy-http module
 LoadModule proxy_http_module /usr/lib/apache2/modules/mod_proxy_http.so
 # Add the proxy directive to the host settings in your http.conf
-# This will proxy requests: htp://127.0.0.1/jabber -> http://127.0.0.1:7070/http-bind/
+# This will proxy requests: htp://127.0.0.1/xmpp -> http://127.0.0.1:7070/http-bind/
 <VirtualHost *:80>
 	...
 	ProxyRequests Off
-	ProxyPass /jabber http://127.0.0.1:7070/http-bind/
-	ProxyPassReverse /jabber http://127.0.0.1:7070/http-bind/
+	ProxyPass /xmpp http://127.0.0.1:7070/http-bind/
+	ProxyPassReverse /xmpp http://127.0.0.1:7070/http-bind/
 	...
 </VirtualHost>
+
 # Restart apache
 sudo /etc/init.d/apache2 restart
-#Now you can pass in the path to the constructor of the jabber.BOSHConection class:
-var cnx = new BOSHConnection( "domain.net", "localhost/http/" );
+
+# Now you can pass in the path to the constructor of the jabber.BOSHConection class:
+var cnx = new BOSHConnection( "domain.net", "localhost/xmpp/" );
 
 
 
-SSL/TLS CONNECTIONS
--------------------
-Right now secure connections using SSL (at port 5223) are just supported by php and neko.
-For neko you have to use the OpenSSL encryption layer from git://83.64.208.21/hxssl.git
-
-
-
-USING NODE.JS
--------------
-HXMPP has experimental support for node.js through hxNode.
+NODE.JS
+-------
+HXMPP has experimental support for node.js using hxNode.
 Refer to the documentation of these projects.
 http://nodejs.org
-http://github.com/blackdog66/hxNode
-Tip: The hxml files for the example projects already include node.js target setups but commented out.
+http://github.com/blackdog66/bdog-stdhx
+
+
+
+AIR2
+----
+HXMPP supports native, secure and unsecure adobe air2 socket connections.
+Add 'air' as compiler flag.
+Get the required external classes from: http://disktree.spektral.at/git/?a=summary&p=hxair
 
 
 
 XEPS SUPPORTED
 --------------
-
 * 0004 DataForms
 * 0012 LastActivity
 *** 0016 PrivacyLists
@@ -93,26 +101,11 @@ XEPS SUPPORTED
 * 0206 BOSH
 *** 0232 Bits of Binary
 
+** XEP-xxxx: Linked Process Protocol
+** XEP-xxxx: Jingle RTMP Transport
 
 
-AUTHOR
-------
+
+CREDITS
+-------
 xmpp://tong@jabber.spektral.at
-
-
-
-DOWNLOAD
---------
-git://83.64.208.21/hxmpp.git
-http://disktree.spektral.at/git/
-
-
-
-LINKS
------
-[01] http://hxmpp.disktree.net
-[02] http://disktree.net
-[03] http://haxe.org
-[04] http://jabber.org
-[05] http://xmpp.org
-[06] http://code.google.com/p/hxmpp

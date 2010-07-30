@@ -124,19 +124,19 @@ class JIDUtil {
 		for( i in 0...n.length ) {
 			var c = n.charAt( i );
 			switch( c ) {
-				case '"' 	: b.add( "\\22" );
-				case '&' 	: b.add( "\\26" );
-				case '\\' 	: b.add( "\\27" );
-				case '/' 	: b.add( "\\2f" ); // TODO:check xep!
-				case ':' 	: b.add( "\\3a" );
-				case '<' 	: b.add( "\\3c" );
-				case '>' 	: b.add( "\\3e" );
-				case '@' 	: b.add( "\\40" );
-				case '\\\\'	: b.add( "\\5c" );
-				//TODO
-				//case " " : b.add( "\\20" );
-				//default : b.add( c );
-				default : if( c == " " ) b.add( "\\20" ) else b.add( c );
+			case '"' 	: b.add( "\\22" );
+			case '&' 	: b.add( "\\26" );
+			case '\\' 	: b.add( "\\27" );
+			case '/' 	: b.add( "\\2f" ); // TODO:check xep!
+			case ':' 	: b.add( "\\3a" );
+			case '<' 	: b.add( "\\3c" );
+			case '>' 	: b.add( "\\3e" );
+			case '@' 	: b.add( "\\40" );
+			case '\\\\'	: b.add( "\\5c" );
+			//TODO
+			//case " " : b.add( "\\20" );
+			//default : b.add( c );
+			default : if( c == " " ) b.add( "\\20" ) else b.add( c );
 			}
 		}
 		return b.toString();

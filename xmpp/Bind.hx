@@ -18,11 +18,12 @@
 package xmpp;
 
 /**
-	IQ extension used to bind a resource.
+	IQ extension used to bind a resource to a stream.
+	http://xmpp.org/rfcs/rfc3920.html#bind
 */
 class Bind {
 	
-	public static inline var XMLNS = "urn:ietf:params:xml:ns:xmpp-bind";
+	public static var XMLNS = "urn:ietf:params:xml:ns:xmpp-bind";
 	
 	public var resource : String;
 	public var jid : String;
@@ -40,16 +41,13 @@ class Bind {
 		return x;
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	
 	public static function parse( x : Xml ) : xmpp.Bind {
 		var b = new Bind();
 		for( e in x.elements() ) {
+			var v = e.firstChild().nodeValue;
 			switch( e.nodeName ) {
-			case "resource" : b.resource = e.firstChild().nodeValue;
-			case "jid" : b.jid = e.firstChild().nodeValue;
+			case "resource" : b.resource = v;
+			case "jid" : b.jid = v;
 			}
 		}
 		return b;

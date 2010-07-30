@@ -28,13 +28,13 @@ class XMPPError extends xmpp.Error {
 		if( e == null )
 			throw "Packet has no errors";
 		//super( e.type, e.code, e.name, e.text );
-		super( e.type, e.code, e.text );
+		super( e.type, e.condition, e.code, e.text );
 		this.dispatcher = dispatcher;
 		this.from = p.from;
 	}
 	
 	#if JABBER_DEBUG
-	public override function toString() : String {
+	public function toString() : String {
 		return "XMPPError( "+from+", "+code+", "+text+" )";
 	}
 	#end
