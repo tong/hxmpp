@@ -38,12 +38,6 @@ class Roster extends List<xmpp.roster.Item> {
 		return x;
 	}
 	
-	/*
-	public override function toString() : String {
-		return toXml().toString();
-	}
-	*/
-	
 	public static function parse( x : Xml ) : xmpp.Roster {
 		var r = new xmpp.Roster();
 		for( e in x.elementsNamed( "item" ) )

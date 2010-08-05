@@ -47,10 +47,6 @@ class PrivacyLists {
 		return q;
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	
 	public function iterator() : Iterator<PrivacyList> {
 		return list.iterator();
 	}

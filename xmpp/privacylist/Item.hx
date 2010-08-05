@@ -40,10 +40,6 @@ class Item {
 		return x;
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	
 	public static function parse( x : Xml ) : xmpp.privacylist.Item {
 		var _order = x.get( "order" );
 		var order = ( _order == null ) ? -1 : Std.parseInt( _order );

@@ -61,12 +61,6 @@ class PubSubEvent {
 		return null;
 	}
 	
-	/*
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	*/
-	
 	public static function parse( x : Xml ) : xmpp.PubSubEvent {
 		var p = new PubSubEvent();
 		for( e in x.elements() ) {

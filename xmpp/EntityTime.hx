@@ -62,10 +62,6 @@ class EntityTime {
 		return x;
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	
 	public static function parse( x : Xml ) : xmpp.EntityTime {
 		var t = new EntityTime();
 		for( c in x.elements() ) {

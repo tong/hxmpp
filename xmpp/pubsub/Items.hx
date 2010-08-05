@@ -40,12 +40,6 @@ class Items extends List<Item> {
 		return x;
 	}
 	
-	/*
-	public override function toString() : String {
-		return toXml().toString();
-	}
-	*/
-	
 	public static function parse( x : Xml ) : Items {
 		var maxItems = x.get( "maxItems" );
 		var i = new Items( x.get( "node" ), x.get( "subid" ), if( maxItems != null ) Std.parseInt( maxItems ) );

@@ -42,15 +42,16 @@ class SoftwareVersion {
 		return x;
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	
 	public static function parse( x : Xml ) : xmpp.SoftwareVersion {
-		var f = new haxe.xml.Fast( x );
-		return new xmpp.SoftwareVersion( f.node.name.innerData,
-										 f.node.version.innerData,
-										 ( f.hasNode.os ) ? f.node.os.innerData : null );
+		var s = new SoftwareVersion();
+		for( e in x.elements() ) {
+			switch( e.nodeName ) {
+			case "name" : s.name = e.firstChild().nodeValue;
+			case "version" : s.version = e.firstChild().nodeValue;
+			case "os" : s.os = e.firstChild().nodeValue;
+			}
+		}
+		return s;
 	}
 	
 }

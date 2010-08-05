@@ -36,12 +36,6 @@ class Items extends List<xmpp.disco.Item> {
 		return x;
 	}
 	
-	/*
-	public override function toString() : String {
-		return toXml().toString();
-	}
-	*/
-	
 	public static function parse( x : Xml ) : Items {
 		var i = new Items( x.get("node") );
 		//var n = x.get("node");

@@ -63,10 +63,6 @@ class Delayed {
 		return x;
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	
 	/**
 		Parses/Returns the packet delay from the properties of the given XMPP packet.
 	*/

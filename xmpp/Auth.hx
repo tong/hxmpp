@@ -45,12 +45,6 @@ class Auth {
 		return x;
 	}
 	
-	/*
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	*/
-	
 	public static function parse( x : Xml ) : xmpp.Auth {
 		var a = new xmpp.Auth();
 		//xmpp.Packet.reflectPacketNodes( x, a );

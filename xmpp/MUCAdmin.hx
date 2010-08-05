@@ -34,10 +34,6 @@ class MUCAdmin {
 		return x;
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	
 	public static function parse( x : Xml ) : xmpp.MUCAdmin {
 		var p = new MUCAdmin();
 		for( e in x.elements() ) {

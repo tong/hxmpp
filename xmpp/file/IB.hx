@@ -45,10 +45,6 @@ class IB {
 		return x;
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	
 	public static function parse( x : Xml ) : IB {
 		var _type = Type.createEnum( IBType, x.nodeName );
 		var ib = new IB( _type, x.get( "sid" ), Std.parseInt( x.get( "block-size" ) ) );

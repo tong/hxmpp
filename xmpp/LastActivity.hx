@@ -38,10 +38,6 @@ class LastActivity {
 		return q;
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	
 	public static inline function parse( x : Xml ) : LastActivity {
 		return new LastActivity( parseSeconds( x ) );
 	}

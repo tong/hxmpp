@@ -57,10 +57,6 @@ class Jingle {
 		return x;
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	
 	public static function parse( x : Xml ) : xmpp.Jingle {
 		var j = new xmpp.Jingle( Type.createEnum( xmpp.jingle.Action,
 								 StringTools.replace( x.get( "action" ), "-", "_" ) ),

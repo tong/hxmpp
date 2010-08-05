@@ -34,10 +34,6 @@ class PrivacyList {
 		return x;	
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	
 	public static function parse( x : Xml ) : xmpp.PrivacyList {
 		var p = new xmpp.PrivacyList( x.get( "name" ) );
 		for( e in x.elementsNamed( "item" ) )

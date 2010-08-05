@@ -39,8 +39,4 @@ class MUCOwner {
 		return x;
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	
 }

@@ -52,10 +52,6 @@ class DataForm {
 		return x;
 	}
 	
-	/*
-	public inline function toString() : String { return toXml().toString(); }
-	*/
-	
 	public static function parse( x : Xml ) : DataForm {
 		var f = new DataForm( Type.createEnum( xmpp.dataform.FormType, x.get( "type" ) ) );
 		for( e in x.elements() ) {

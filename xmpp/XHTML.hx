@@ -38,10 +38,6 @@ class XHTML {
 		return x;
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-
 	public static function parse( x : Xml ) : XHTML {
 		for( e in x.elementsNamed( "body" ) ) {
 			if( e.get( "xmlns" ) == W3NS ) {

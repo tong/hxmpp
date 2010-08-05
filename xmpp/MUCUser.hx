@@ -49,10 +49,6 @@ class MUCUser {
 		return x;
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	
 	public static function parse( x : Xml ) : xmpp.MUCUser {
 		var p = new MUCUser();
 		for( e in x.elements() ) {

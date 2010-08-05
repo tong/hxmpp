@@ -70,10 +70,6 @@ class PubSubOwner {
 		return x;
 	}
 	
-	public inline function toString() : String {
-		return toXml().toString();
-	}
-	
 	public static function parse( x : Xml ) : PubSubOwner {
 		var p = new PubSubOwner();
 		for( e in x.elements() ) {

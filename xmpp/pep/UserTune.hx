@@ -72,6 +72,7 @@ class UserTune extends Event {
 	}
 	
 	public static function parse( x : Xml ) : UserTune  {
+		//TODO remove dependency of haxe.xml.Fast
 		var f = new haxe.xml.Fast( x );
 		return new UserTune( f.node.artist.innerData,
 							 Std.parseInt( f.node.length.innerData ),

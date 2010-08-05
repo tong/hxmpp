@@ -103,6 +103,7 @@ class UserLocation extends Event {
 	}
 	
 	public static function parse( x : Xml ) : UserLocation  {
+		//TODO remove dependency of haxe.xml.Fast
 		var f = new haxe.xml.Fast( x );
 		var l = new UserLocation();
 		if( f.hasNode.accuracy ) 	l.accuracy = Std.parseInt( f.node.accuracy.innerData );
