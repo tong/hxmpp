@@ -27,10 +27,10 @@ import jabber.util.MD5;
 class MD5Mechanism {
 	
 	static function __init__() {
-		ID = "DIGEST-MD5";
+		NAME = "DIGEST-MD5";
 	}
 	
-	public static var ID(default,null) : String;
+	public static var NAME(default,null) : String;
 	
 	public var id(default,null) : String;
 	public var serverType : String;
@@ -38,21 +38,24 @@ class MD5Mechanism {
 	var username : String;
 	var host : String;
 	var pass : String;
+	var resource : String;
 	
 	public function new( serverType : String = "xmpp" ) {
-		this.id = ID;
+		this.id = NAME;
 		this.serverType = serverType;
 	}
 	
-	public function createAuthenticationText( username : String, host : String, pass : String ) : String {
+	public function createAuthenticationText( username : String, host : String, pass : String, resource : String ) : String {
 		this.username = username;
 		this.host = host;
 		this.pass = pass;
+		this.resource = resource;
 		return null;
 		
 	}
 	
 	public function createChallengeResponse( challenge : String ) : String {
+		
 		var c = Base64.decode( challenge );
 		var s = c.split( "," );
 		var elements = new Hash<String>();
@@ -60,17 +63,22 @@ class MD5Mechanism {
 			var s = e.split( "=" );
 			elements.set( s[0], s[1] );
 		}
+		
 		if( Lambda.count( elements ) == 1 && elements.exists( "rspauth" ) ) {
 			return ''; // negotiation complete
 		}
+	
 		var realm = if( elements.exists( "realm" ) ) unquote( elements.get( "realm" ) ) else "";
 		var nonce = unquote( elements.get( "nonce" ) );
 		var digest_uri = serverType+"/"+host;
 		//if( host != null ) digest_uri += "/"+host;
 		var cnonce = hh( Date.now().toString() );
+		
 		// compute response
-		var a1 = h( username+":"+realm+":"+pass )+":"+nonce+":"+cnonce;
+		var authzid = username+"@"+realm+"/"+resource;
+		var a1 = h( username+":"+realm+":"+pass )+":"+nonce+":"+cnonce+":"+authzid;
 		var a2 = "AUTHENTICATE:"+digest_uri;
+		
 		// create response string
 		var b = new StringBuf();
 		b.add( "username=" );
@@ -86,6 +94,8 @@ class MD5Mechanism {
 		b.add( ",response=" );
 		b.add( hh( hh( a1 )+":"+nonce+":00000001:"+cnonce+":"+"auth"+":"+hh( a2 ) ) );
 		b.add( ",charset=utf-8" );
+		b.add( ",authzid=" );
+		b.add( quote(authzid) );
 		return b.toString();
 	}
 	
