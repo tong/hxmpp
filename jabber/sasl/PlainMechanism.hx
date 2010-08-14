@@ -39,9 +39,6 @@ class PlainMechanism {
 	
 	public function createAuthenticationText( username : String, host : String, password : String ) : String {
 		var b = new StringBuf();
-		b.add( username );
-		b.add( "@" );
-		b.add( host );
 		b.add( String.fromCharCode( 0 ) );
 		b.add( username );
 		b.add( String.fromCharCode( 0 ) );
