@@ -1,6 +1,8 @@
-
-HXMPP
-=====
+  _   _   _   _   _  
+ / \ / \ / \ / \ / \ 
+( H | X | M | P | P )
+ \_/ \_/ \_/ \_/ \_/ 
+=====================
 HXMPP is a haXe library for creating XMPP based clients and services.
 The library exists in two namespaces:
 * xmpp: creation and manipulation of XMPP data.
@@ -59,9 +61,7 @@ var cnx = new BOSHConnection( "domain.net", "localhost/xmpp/" );
 
 NODE.JS
 -------
-HXMPP has experimental support for node.js using hxNode.
-Refer to the documentation of these projects.
-http://nodejs.org
+HXMPP has experimental support for node.js.
 http://github.com/blackdog66/bdog-stdhx
 
 

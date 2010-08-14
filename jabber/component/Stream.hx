@@ -34,8 +34,11 @@ class Stream extends jabber.Stream {
 	/** Called if stream got authenticated and is ready to use */
 	public dynamic function onConnect() : Void;
 	
+	/** XMPP server hostname */
 	public var host(default,null) : String;
+	/** The subdomain of the server component */
 	public var subdomain(default,null) : String;
+	/** Full name/address of the server component */
 	public var serviceName(getServiceName,null) : String;
 	/** Shared secret string used to identify legacy components*/
 	public var secret(default,null) : String;
@@ -43,34 +46,34 @@ class Stream extends jabber.Stream {
 	public var items(getItems,null) : xmpp.disco.Items; //TODO move into jabber.Stream? 
 	public var discoListener(default,null) : ServiceDiscoveryListener;
 	
-	public function new( host : String, subdomain : String, secret : String, cnx : Connection,
-						 ?identities : Array<xmpp.disco.Identity> ) {
+	public function new( cnx : Connection ) {
+		super( cnx );
+		connected = false;
+	}
+	
+	/**
+	*/
+	public override function open( host : String, subdomain : String, secret : String, ?identities : Array<xmpp.disco.Identity> ) {
+		if( cnx == null )
+			throw "No stream connection set";
 		if( subdomain == null || subdomain == "" )
 			throw "Invalid stream subdomain";
 		if( secret == null )
 			throw "Invalid stream secret (null)";
-		super( cnx );
 		this.host = host;
 		this.subdomain = subdomain;
 		this.secret = secret;
 		items = new xmpp.disco.Items();
-		connected = false;
 		discoListener = new ServiceDiscoveryListener( this, identities );
+		cnx.connected ? handleConnect() : cnx.connect();
 	}
-	
-	/*
-	override function getHost() : String {
-		return ( cnx != null ) ? cnx.host : null;
-	}
-	*/
 	
 	override function getJIDStr() : String {
 		return getServiceName();
 	}
 	
 	function getServiceName() : String {
-		if( subdomain == null || host == null )
-			return null;
+		if( subdomain == null || host == null ) return null;
 		return subdomain+"."+host;
 	}
 	
@@ -79,7 +82,7 @@ class Stream extends jabber.Stream {
 	}
 	
 	override function handleConnect() {
-		var t = sendData( xmpp.Stream.createOpenStream( xmpp.Stream.XMLNS_COMPONENT, subdomain ) );
+		var t = sendData( xmpp.Stream.createOpenXml( xmpp.Stream.COMPONENT, subdomain ) );
 		status = jabber.StreamStatus.pending;
 		cnx.read( true );
 	}
@@ -88,9 +91,7 @@ class Stream extends jabber.Stream {
 		if( t.charAt( 0 ) != "<" || t.charAt( t.length-1 ) != ">" )
 			return 0;
 		t = XMLUtil.removeXmlHeader( t );
-		try {
-			id = Xml.parse( t+"</stream:stream>" ).firstChild().get( "id" );
-		} catch( e : Dynamic ) {
+		try id = Xml.parse( t+"</stream:stream>" ).firstChild().get( "id" ) catch( e : Dynamic ) {
 			trace(e);
 			return 0;//-1;
 		}

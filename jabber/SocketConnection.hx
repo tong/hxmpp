@@ -47,7 +47,8 @@ class SocketConnection extends jabber.stream.Connection {
 	var buf : haxe.io.Bytes;
 	var bufbytes : Int;
 	
-	public function new( host : String, port : Int = 5222,
+	public function new( host : String,
+						 ?port : Int = #if JABBER_COMPONENT 5275 #else 5222 #end,
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
 		super( host );			 	
@@ -165,7 +166,8 @@ class SocketConnection extends jabber.stream.Connection {
 	var socket : Socket;
 	var buf : ByteArray;
 	
-	public function new( host : String, port : Int = 5223,
+	public function new( host : String,
+						 ?port : Int = #if JABBER_COMPONENT 5275 #else 5222 #end,
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
 		super( host );
@@ -270,7 +272,8 @@ class SocketConnection extends jabber.stream.Connection {
 	var socket : Socket;
 	var buf : String;
 	
-	public function new( host : String, ?port : Int = 5222,
+	public function new( host : String,
+						 ?port : Int = #if JABBER_COMPONENT 5275 #else 5222 #end,
 						 ?bufSize : Int,
 						 ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
@@ -324,7 +327,7 @@ class SocketConnection extends jabber.stream.Connection {
 	}
 	
 	function sockDrainHandler() {
-		trace("NODEJS:socket drain");
+		//trace("NODEJS:socket drain");
 	}
 	
 	function sockConnectHandler() {
@@ -373,7 +376,8 @@ class SocketConnection extends jabber.stream.Connection {
 	var socket : Socket;
 	var buf : String;
 	
-	public function new( host : String, port : Int = 5223,
+	public function new( host : String,
+						 ?port : Int = #if JABBER_COMPONENT 5275 #else 5222 #end,
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
 		super( host );

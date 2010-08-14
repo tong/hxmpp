@@ -43,7 +43,12 @@ class IQFilter {
 			if( iq.x == null )
 				return false;
 			x = iq.x.toXml();
+			
+			#if flash //haXe 2.06 fuckup
+			if( xmlns != x.get( "_xmlns_" ) )
+			#else
 			if( xmlns != x.get( "xmlns" ) )
+			#end
 				return false;
 		}
 		if( nodeName != null ) {

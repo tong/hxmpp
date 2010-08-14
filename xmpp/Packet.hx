@@ -97,6 +97,7 @@ class Packet {
 	/**
 		Reflects the elements of the XML into the packet.
 	*/
+	/*
 	public static function reflectPacketNodes<T>( x : Xml, p : T ) : T {
 		for( e in x.elements() ) {
 			var v : String = null;
@@ -107,6 +108,7 @@ class Packet {
 			};
 			if( v != null ) {
 				try {
+					
 					Reflect.setField( p, e.nodeName, v );
 				} catch( e : Dynamic ) {
 					#if JABBER_DEBUG
@@ -117,6 +119,7 @@ class Packet {
 		}
 		return p;
 	}
+	*/
 	
 	/*TODO replace util.XMLUtil
 	public static function createXmlElement( n : String, ?d : String ) : Xml {

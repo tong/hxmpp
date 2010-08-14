@@ -76,7 +76,6 @@ class ServiceDiscoveryListener {
 	
 	function handleItemsQuery( iq : xmpp.IQ ) {
 		//TODO
-		trace("#######################################handleItemsQuery");
 		if( onItemQuery != null ) { // redirect items query
 			onItemQuery( iq );
 			return;
@@ -89,7 +88,8 @@ class ServiceDiscoveryListener {
 		} else { // client streams do not have items .. return a feature-not-implemented error
 			//???
 			r = new xmpp.IQ( xmpp.IQType.error, iq.id, iq.from );
-			r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, -1, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );
+			//r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, -1, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );
+			r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );
 		}
 		r.from = stream.jidstr;
 		stream.sendPacket( r );

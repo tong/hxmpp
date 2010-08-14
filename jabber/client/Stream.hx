@@ -23,7 +23,7 @@ import jabber.StreamStatus;
 import jabber.stream.Connection;
 
 /**
-	Client XMPP stream base.<br/>
+	Client XMPP stream base.
 */
 class Stream extends jabber.Stream {
 	
@@ -32,27 +32,12 @@ class Stream extends jabber.Stream {
 	public static var defaultPort = PORT_STANDARD;
 	public static var defaultPortSecure = PORT_STANDARD_SECURE;
 	
-	public var jid(default,setJID) : JID;
-	
-	public function new( ?jid : JID,
-						 ?cnx : Connection,
-						 ?version : Bool = true ) {
-		if( jid == null ) jid = new JID(null);
+	public function new( cnx : Connection, ?version : Bool = true ) {
 		super( cnx );
 		this.jid = jid;
 		this.version = version;
 	}
 	
-	override function getJIDStr() : String {
-		return jid.toString();
-	}
-	
-	function setJID( j : JID ) : JID {
-		if( status != StreamStatus.closed )
-			throw "Cannot change JID on open stream";
-		return jid = j;
-	}
-		
 	override function handleConnect() {
 		status = StreamStatus.pending;
 		if( !cnx.http ) {
@@ -117,10 +102,13 @@ class Stream extends jabber.Stream {
 		var sfi = t.indexOf( "<stream:features>" );
 		var sf = t.substr( sfi );
 		if( sfi != -1 ) {
+			
+#if flash // haxe 2.06 xml namespace fuckup
+sf = StringTools.replace( sf, "stream:features", "stream_features" );
+#end
+
 			var x : Xml;
-			try {
-				x = Xml.parse( sf ).firstElement();
-			} catch( e : Dynamic ) {
+			try x = Xml.parse( sf ).firstElement() catch( e : Dynamic ) {
 				return 0;
 			}
 			parseServerStreamFeatures( x );

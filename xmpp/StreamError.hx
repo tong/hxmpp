@@ -31,8 +31,24 @@ class StreamError extends ErrorPacket {
 	}
 	
 	public function toXml() : Xml {
+		#if flash
+		return _toXml( "stream_error", XMLNS );
+		#else
 		return _toXml( "stream:error", XMLNS );
+		#end
 	}
+	
+	/*
+	public function toString() : String {
+		#if flash
+		var s = toXml().toString();
+		s = StringTools.replace( s, "_", ":" );
+		return s;
+		#else
+		return toXml().toString();
+		#end
+	}
+	*/
 	
 	public static function parse( x : Xml ) : StreamError {
 		var p = new StreamError( null );

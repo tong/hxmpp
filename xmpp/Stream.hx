@@ -25,7 +25,9 @@ class Stream {
 	public static var STREAM = "http://etherx.jabber.org/streams";
 	public static var CLIENT = "jabber:client";
 	public static var SERVER = "jabber:client";
+	#if JABBER_COMPONENT
 	public static var COMPONENT = "jabber:component:accept";
+	#end
 	
 	//public static inline var CLOSE = "</stream:stream>";
 	//public static inline var ERROR = "</stream:error>";
