@@ -58,8 +58,7 @@ class Delayed {
 		x.set( "xmlns", XMLNS );
 		x.set( "from", from );
 		x.set( "stamp", stamp );
-		if( description != null )
-			x.set( "description", description );
+		if( description != null ) x.set( "description", description );
 		return x;
 	}
 	
@@ -68,24 +67,18 @@ class Delayed {
 	*/
 	public static function fromPacket( p : xmpp.Packet ) : xmpp.PacketDelay {
 		for( e in p.properties ) {
-			var nodeName = e.nodeName;
-			var xmlns = e.get( "xmlns" );
-			if( nodeName == "delay" ) {
-				var desc : String = null;
-				try {
-					desc = e.firstChild().nodeValue;
-				} catch( e : Dynamic ) {}
-				return { from : e.get( "from" ), stamp : e.get( "stamp" ), description : desc };
-			} else {
-				if( nodeName == "x" && xmlns == "jabber:x:delay" ) {
-					var desc : String = null;
-					try { desc = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
-					return { from : e.get( "from" ), stamp : e.get( "stamp" ), description : desc };
-				}
-				continue;
-			}
+			var ns = e.get( "xmlns" );
+			if( ( e.nodeName == "delay" && ns == XMLNS ) ||
+				( e.nodeName == "x" && ns == "jabber:x:delay" ) )
+				return parseDelay( e );
 		}
 		return null;
+	}
+	
+	static function parseDelay( e : Xml ) : xmpp.PacketDelay {
+		return { from : e.get( "from" ),
+				 stamp : e.get( "stamp" ),
+				 description : ( e.firstChild() != null ) ? e.firstChild().nodeValue : null };
 	}
 	
 }
