@@ -26,18 +26,18 @@ package jabber.sasl;
 class PlainMechanism {
 	
 	static function __init__() {
-		ID = "PLAIN";
+		NAME = "PLAIN";
 	}
 	
-	public static var ID(default,null) : String;
+	public static var NAME(default,null) : String;
 	
 	public var id(default,null) : String;
 	
 	public function new() { 
-		id = ID;
+		id = NAME;
 	}
 	
-	public function createAuthenticationText( username : String, host : String, password : String ) : String {
+	public function createAuthenticationText( username : String, host : String, password : String, resource : String ) : String {
 		var b = new StringBuf();
 		b.add( String.fromCharCode( 0 ) );
 		b.add( username );

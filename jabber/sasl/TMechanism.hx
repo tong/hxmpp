@@ -26,7 +26,7 @@ typedef TMechanism = {
 	
 	/**
 	*/
-	function createAuthenticationText( username : String, host : String, password : String ) : String;
+	function createAuthenticationText( username : String, host : String, password : String, resource : String ) : String;
 	
 	/**
 	*/

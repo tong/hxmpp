@@ -23,10 +23,10 @@ package jabber.sasl;
 class AnonymousMechanism {
 	
 	static function __init__() {
-		ID = "ANONYMOUS";
+		NAME = "ANONYMOUS";
 	}
 	
-	public static var ID(default,null) : String;
+	public static var NAME(default,null) : String;
 	
 	public var id(default,null) : String;
 	
@@ -37,11 +37,11 @@ class AnonymousMechanism {
 	public var challengeResponse : String;
 	
 	public function new( challengeResponse = "any" ) {
-		id = ID;
+		id = NAME;
 		this.challengeResponse = challengeResponse;
 	}
 	
-	public function createAuthenticationText( user : String, host : String, pw : String ) : String {
+	public function createAuthenticationText( user : String, host : String, pw : String, resource : String ) : String {
 		return null; // Nothing to send in the <auth> body.
 	}
 	

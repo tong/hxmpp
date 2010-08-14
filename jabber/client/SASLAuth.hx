@@ -89,7 +89,7 @@ class SASLAuth extends Authentication {
 		c_success = stream.collect( [cast new PacketNameFilter( ~/success/ )], handleSASLSuccess );
 		c_challenge = stream.collect( [cast new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
 		// init auth
-		var t = mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password );
+		var t = mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password, stream.jid.resource );
 		if( t != null ) t = Base64.encode( t ); 
 		return stream.sendData( xmpp.SASL.createAuth( mechanism.id, t ).toString() ) != null;
 	}
@@ -112,7 +112,7 @@ class SASLAuth extends Authentication {
 		onNegotiated();
 		//stream.version = false;
 //stream.cnx.reset();
-		stream.open(); // re-open XMPP stream
+		stream.open( null ); // re-open XMPP stream
 		//return p.toString().length;
 	}
 	
