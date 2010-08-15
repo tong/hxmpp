@@ -15,12 +15,8 @@ class SHA1 {
 	static var make_sha1 = Lib.load( "sha1","make_sha1", 1 );
 	#end
 
-	#if nodejs
-	static var hash = Node.crypto().createHash( "sha1" );
-	#else
 	#if (flash||js||neko||cpp)
 	static inline var hex_chr = "0123456789abcdef";
-	#end
 	#end
 	
 	/**
@@ -32,14 +28,14 @@ class SHA1 {
 		#elseif php
 		return untyped __call__( "sha1", t );
 		#elseif nodejs
-		hash.update( t );
-		return hash.digest( Node.HEX );
+		var h = Node.crypto().createHash( "sha1" );
+		h.update( t );
+		return h.digest( Node.HEX );
 		#else
 		return new SHA1().__encode__( t );
 		#end
 	}
 	
-	#if !nodejs
 	#if (flash||js)
 	
 	function new() {}
@@ -148,5 +144,4 @@ class SHA1 {
 	}
 
 	#end // (flash||js)
-	#end // !nodejs
 }
