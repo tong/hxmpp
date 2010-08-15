@@ -21,9 +21,9 @@ import jabber.jingle.transport.RTMPInput;
 import xmpp.IQ;
 
 /**
-	Incoming jingle-RTMP session handler.
+	Incoming jingle/RTMP session responder.
 */
-class RTMPResponder extends Session {
+class RTMPResponder extends Session, implements SessionResponder {
 	
 	//public dynamic function onDeny() : Void;
 	
