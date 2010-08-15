@@ -4,6 +4,8 @@ package jabber.util;
 import neko.Lib;
 #elseif cpp
 import cpp.Lib;
+#elseif nodejs
+import js.Node;
 #end
 
 /**
@@ -11,13 +13,17 @@ import cpp.Lib;
 	Modified version from the haXe std lib to provide raw encoding.
 **/
 class MD5 {
-
+	
 	public static function encode( s : String, raw : Bool = false ) : String {
 		#if (neko||cpp)
 		var t = make_md5( untyped s.__s );
 		return untyped new String( raw ? t : base_encode( t, "0123456789abcdef".__s ) );
 		#elseif php
 		return untyped __call__( "md5", s, raw );
+		#elseif nodejs
+		var h = Node.crypto().createHash( "md5" );
+		h.update( s );
+		return h.digest( raw ? Node.BINARY : Node.HEX );
 		#else
 		return raw ? inst.doEncodeRaw(s) : inst.doEncode(s);
 		#end
@@ -26,7 +32,7 @@ class MD5 {
 	#if (neko||cpp)
 	static var base_encode = Lib.load( "std", "base_encode", 2 );
 	static var make_md5 = Lib.load( "std", "make_md5", 1 );
-
+	
 	#elseif !php
 
 	static var inst = new MD5();
