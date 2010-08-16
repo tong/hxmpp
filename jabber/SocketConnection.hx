@@ -492,26 +492,35 @@ class Socket {
 	
 }
 
-
 /**
 */
 class SocketBridgeConnection {
 	
+	static function __init__() {
+		initialized = false;
+	}
+	
 	public static var defaultDelay = 300;
 	public static var bridgeId(default,null) : String;
+	public static var initialized(default,null) : Bool;
 	
 	static var sockets : IntHash<Socket>;
-	static var initialized = false;
 	
 	public static function init( id : String ) {
-		if( initialized )
-			throw "Socketbridge already initialized";
+		if( initialized ) {
+			trace( "Socketbridge already initialized" );
+			return;
+		}
 		bridgeId = id;
 		sockets = new IntHash();
 		initialized = true;
 	}
 	
 	public static function initDelayed( id : String, cb : Void->Void, ?delay : Int ) {
+		if( initialized ) {
+			trace( "Socketbridge already initialized" );
+			return;
+		}
 		if( delay == null || delay <= 0 ) delay = defaultDelay;
 		init( id );
 		haxe.Timer.delay( cb, delay );

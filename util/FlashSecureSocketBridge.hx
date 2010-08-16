@@ -1,6 +1,6 @@
 /*
  *	This file is part of HXMPP.
- *	Copyright (c)2009 http://www.disktree.net
+ *	Copyright (c)2009-2010 http://www.disktree.net
  *	
  *	HXMPP is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -15,17 +15,14 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package jabber.tool;
+package;
 
-#if flash
-
-import flash.events.Event;
-import flash.events.IOErrorEvent;
-import flash.events.SecurityErrorEvent;
-import flash.events.ProgressEvent;
 import flash.external.ExternalInterface;
+import tls.controller.SecureSocket;
+import tls.event.SecureSocketEvent;
+import tls.valueobject.SecurityOptionsVO;
 
-private class Socket extends flash.net.Socket {
+private class Socket extends SecureSocket {
 	public var id(default,null) : UInt;
 	public function new( id : UInt ) {
 		super();
@@ -34,22 +31,19 @@ private class Socket extends flash.net.Socket {
 }
 
 /**
+	Secure flash socketbridge.
 */
-class SocketBridge extends flash.display.Sprite { // why?extend?
-	
-	static var defaultBridgeContext = "jabber.SocketBridgeConnection";
+class FlashSecureSocketBridge {
 	
 	var ctx : String;
 	var sockets : IntHash<Socket>;
 	
 	function new( ?ctx : String ) {
-		super();
-		this.ctx = ( ctx != null ) ? ctx : defaultBridgeContext;
+		this.ctx = ( ctx != null ) ? ctx : "jabber.SocketBridgeConnection";
 		init();
 	}
 	
 	function init() {
-		sockets = new IntHash();
 		if( ExternalInterface.available ) {
 			ExternalInterface.addCallback( "createSocket", createSocket );
 			ExternalInterface.addCallback( "destroySocket", destroySocket );
@@ -61,16 +55,17 @@ class SocketBridge extends flash.display.Sprite { // why?extend?
 		} else {
 			throw "Unable to initialize external connection on socket bridge";
 		}
+		sockets = new IntHash();
 	}
 	
-	function createSocket() : Int {
+	function createSocket( ?secure : Bool = true ) : Int {
 		var id = Lambda.count( sockets );
 		var s = new Socket( id );
-		s.addEventListener( Event.CONNECT, sockConnectHandler );
-		s.addEventListener( Event.CLOSE, sockDisconnectHandler );
-		s.addEventListener( IOErrorEvent.IO_ERROR, sockErrorHandler );
-		s.addEventListener( SecurityErrorEvent.SECURITY_ERROR, sockErrorHandler );
-		s.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
+		s.addEventListener( SecureSocketEvent.ON_CONNECT, sockConnectHandler );
+		s.addEventListener( SecureSocketEvent.ON_SECURE_CHANNEL_ESTABLISHED, sockSecuredHandler );
+		s.addEventListener( SecureSocketEvent.ON_CLOSE, sockDisconnectHandler );
+		s.addEventListener( SecureSocketEvent.ON_ERROR, sockErrorHandler );
+		s.addEventListener( SecureSocketEvent.ON_PROCESSED_DATA, sockDataHandler );
 		sockets.set( id, s );
 		return id;
 	}
@@ -79,14 +74,15 @@ class SocketBridge extends flash.display.Sprite { // why?extend?
 		if( !sockets.exists( id ) )
 			return false;
 		var s = sockets.get( id );
-		if( s.connected ) s.close();
+		//if( s.connected ) s.close();
+		try { s.close(); } catch( e : Dynamic ) {}
 		sockets.remove( s.id );
 		s = null;
 		return true;
 	}
 	
-	function connect( id : Int, host : String, port : Int, ?timeout : Int = -1 ) : Bool {
-		#if flash10 if( timeout > 0 ) s.timeout = timeout; #end
+	function connect( id : Int, host : String, port : Int,
+					  ?timeout : Int = -1 ) : Bool {
 		if( !sockets.exists( id ) )
 			return false;
 		var s = sockets.get( id );
@@ -102,45 +98,43 @@ class SocketBridge extends flash.display.Sprite { // why?extend?
 		return true;
 	}
 	
-	/*
-	function destroy( id : Int ) : Bool {
-		trace("SOCKETBRIDGE destroy: "+id );
-		if( !sockets.exists( id ) )
-			return false;
-		var s = sockets.get( id );
-		//s.close();
-		if( s.connected ) s.close();
-		sockets.remove( id );
-		s = null;
-		return true;
-	}
-	*/
-	
 	function send( id : Int, data : String ) : Bool {
 		if( !sockets.exists( id ) )
 			return false;
 		var s = sockets.get( id );
-		s.writeUTFBytes( data ); 
-		s.flush();
+		s.sendString( data ); 
+		//s.flush();
 		return true;
 	}
 	
-	function sockConnectHandler( e : Event ) {
-		ExternalInterface.call( ctx+".handleConnect", e.target.id );
+	
+	function sockConnectHandler( e : SecureSocketEvent ) {
+		e.target.startSecureSupport( SecurityOptionsVO.getDefaultOptions( SecurityOptionsVO.SECURITY_TYPE_TLS ) );
 	}
 
-	function sockDisconnectHandler( e : Event ) {
+	function sockSecuredHandler( e : SecureSocketEvent ) {
+		ExternalInterface.call( ctx+".handleConnect", e.target.id );
+	}
+	
+	function sockDisconnectHandler( e : SecureSocketEvent ) {
 		ExternalInterface.call( ctx+".handleDisconnect", e.target.id );
 	}
 	
-	function sockErrorHandler( e ) {
+	function sockErrorHandler( e : SecureSocketEvent ) {
 		ExternalInterface.call( ctx+".handleError", e.target.id, e.type );
 	}
 	
-	function sockDataHandler( e : ProgressEvent ) {
-		ExternalInterface.call( ctx+".handleData", e.target.id, e.target.readUTFBytes( e.bytesLoaded ) );
+	function sockDataHandler( e : SecureSocketEvent ) {
+		ExternalInterface.call( ctx+".handleData", e.target.id, e.rawData.toString() );
+	}
+	
+	static function main() {
+		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
+		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
+		var cm = new flash.ui.ContextMenu();
+		cm.hideBuiltInItems();
+		flash.Lib.current.contextMenu = cm;
+		new FlashSecureSocketBridge( flash.Lib.current.loaderInfo.parameters.ctx );
 	}
 	
 }
-
-#end // flash
