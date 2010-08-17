@@ -1,7 +1,7 @@
 
 
 ### Socketbridge
--cp ../
+-cp ../../
 -swf-version 9
 -swf-header 0:0:60:eeeeee
 -swf socketbridge.swf
@@ -11,8 +11,8 @@
 
 ### TLS Socketbridge
 --next
--cp ../
--cp ../../hxtls/hxclasses
+-cp ../../
+-cp ../../../hxtls/hxclasses
 -swf-lib ../../hxtls/tls.swf
 -swf-version 9
 -swf-header 0:0:60:eeeeee
