@@ -1,0 +1,6 @@
+
+-neko newXMPPaccount.n
+-main NewXMPPAccount
+-cp ../
+#-D JABBER_DEBUG
+#-D XMPP_DEBUG
