@@ -17,7 +17,77 @@
 */
 package jabber;
 
-#if (neko||php||cpp)
+#if nodejs
+
+import js.Node;
+private typedef Socket = Stream;
+
+// TODO buffer ?
+class SecureSocketConnection extends jabber.stream.Connection {
+	
+	public var port(default,null) : Int;
+	
+	var socket : Socket;
+	
+	public function new( host : String, port : Int = 5223 ) {
+		super( host );
+		this.port = port;
+	}
+	
+	public override function connect() {
+		socket = Node.net.createConnection( port, host );
+		socket.setEncoding( Node.UTF8 );
+		socket.addListener( "connect", sockConnectHandler );
+		socket.addListener( "end", sockDisconnectHandler );
+		socket.addListener( "error", sockErrorHandler );
+	}
+	
+	public override function disconnect() {
+		if( !connected )
+			return;
+		socket.end();
+	}
+	
+	public override function read( ?yes : Bool = true ) : Bool {
+		if( yes ) {
+			socket.addListener( "data", sockDataHandler );
+		} else {
+			socket.removeListener( "data", sockDataHandler );
+		}
+		return true;
+	}
+	
+	public override function write( t : String ) : Bool {
+		if( !connected || t == null || t.length == 0 )
+			return false;
+		socket.write( t );
+		return true;
+	}
+	
+	function sockConnectHandler() {
+		socket.setSecure();
+		connected = true;
+		__onConnect();
+	}
+	
+	function sockDisconnectHandler() {
+		connected = false;
+		__onDisconnect();
+	}
+	
+	function sockErrorHandler( e : String ) {
+		connected = false;
+		__onError( e );
+	}
+	
+	function sockDataHandler( t : String ) {
+		var b = haxe.io.Bytes.ofString( t );
+		__onData( b, 0, b.length );
+	}
+}
+
+
+#elseif (neko||php||cpp)
 
 #if neko
 import neko.ssl.Socket;
@@ -43,7 +113,8 @@ class SecureSocketConnection extends jabber.stream.Connection {
 	var buf : haxe.io.Bytes;
 	var bufbytes : Int;
 
-	public function new( host : String, port : Int = 5223,
+	public function new( host : String,
+						 port : Int = 5223,
 						 ?bufSize : Int,
 						 ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
@@ -125,7 +196,7 @@ class SecureSocketConnection extends jabber.stream.Connection {
 }
 
 
-#else
+#elseif (!nodejs)
 
 
 #if flash
@@ -177,10 +248,9 @@ class SecureSocketConnection extends jabber.stream.Connection {
 	var buf : ByteArray;
 	#end
 	
-	public function new( host : String, port : Int = 5223
-						 #if air,
-						 ?bufSize : Int,
-						 ?maxBufSize : Int
+	public function new( host : String,
+						 port : Int = 5223
+						 #if air, ?bufSize : Int, ?maxBufSize : Int
 						 #end ) {
 		super( host );
 		this.port = port;
