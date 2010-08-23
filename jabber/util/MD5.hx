@@ -15,7 +15,7 @@ import js.Node;
 class MD5 {
 	
 	public static function encode( s : String, raw : Bool = false ) : String {
-		#if (neko||cpp)
+		#if (neko)//||cpp)
 		var t = make_md5( untyped s.__s );
 		return untyped new String( raw ? t : base_encode( t, "0123456789abcdef".__s ) );
 		#elseif php
@@ -29,7 +29,7 @@ class MD5 {
 		#end
 	}
 
-	#if (neko||cpp)
+	#if (neko)//||cpp)
 	static var base_encode = Lib.load( "std", "base_encode", 2 );
 	static var make_md5 = Lib.load( "std", "make_md5", 1 );
 	
