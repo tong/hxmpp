@@ -1,4 +1,10 @@
 
+#jabber.component.Stream
+#-D JABBER_COMPONENT
+#-xml doc/api_component.xml
+#-D xmldoc
+
+#--next
 -cp doc/
 jabber.BlockList
 jabber.BOB
@@ -30,7 +36,7 @@ jabber.client.Roster
 jabber.client.SASLAuth
 jabber.client.Stream
 jabber.client.VCard
-jabber.component.Stream
+#jabber.component.Stream
 jabber.remoting.Connection
 jabber.remoting.Host
 jabber.sasl.AnonymousMechanism
@@ -58,6 +64,7 @@ xmpp.XHTML
 -D XMPP_DEBUG
 -D JABBER_DEBUG
 -D JABBER_SOCKETBRIDGE
+#-D JABBER_COMPONENT
 -cmd rm lib.js
 -cmd cd doc/api/
 -cmd haxedoc ../api.xml -f jabber -f jabber.tool -f xmpp -f net -f crypt -f util -f error

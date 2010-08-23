@@ -259,6 +259,7 @@ class SocketConnection extends jabber.stream.Connection {
 import js.Node;
 private typedef Socket = Stream;
 
+// TODO remove buffer stuff ??
 class SocketConnection extends jabber.stream.Connection {
 	
 	public static var defaultBufSize = 128;
@@ -282,9 +283,6 @@ class SocketConnection extends jabber.stream.Connection {
 		this.bufSize = ( bufSize == null ) ? defaultBufSize : bufSize;
 		this.maxBufSize = ( maxBufSize == null ) ? defaultMaxBufSize : maxBufSize;
 		this.timeout = timeout;
-		#if (neko||php||cpp)
-		reading = false;
-		#end
 	}
 	
 	public override function connect() {

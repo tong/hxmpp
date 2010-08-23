@@ -12,8 +12,6 @@ import cpp.net.Socket;
 import flash.net.Socket;
 #end
 
-// (TODO not js platforms)
-
 /**
 	http://www.w3.org/TR/2009/WD-websockets-20091222/
 */

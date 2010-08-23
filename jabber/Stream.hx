@@ -54,7 +54,7 @@ class StreamFeatures {
 		l = new List();
 	}
 	#if JABBER_DEBUG
-	public function toString() : String {
+	public inline function toString() : String {
 		return l.toString();
 	}
 	#end
@@ -73,8 +73,10 @@ class Stream {
 	
 	public var status : StreamStatus;
 	public var cnx(default,setConnection) : Connection;
-	//TODO public var host(default,null) : String;
 	public var jidstr(getJIDStr,null) : String;  // TODO replace by JID
+	#if !JABBER_COMPONENT
+	public var jid(default,setJID) : JID;
+	#end
 	public var features(default,null) : StreamFeatures;
 	public var server(default,null) : Server;
 	public var id(default,null) : String;
@@ -87,8 +89,7 @@ class Stream {
 	var interceptors : List<TPacketInterceptor>;
 	var numPacketsSent : Int;
 	
-	#if JABBER_DEBUG public #end
-	function new( ?cnx : Connection ) {
+	function new( cnx : Connection ) {
 		status = StreamStatus.closed;
 		server = { features : new Hash() };
 		features = new StreamFeatures();
@@ -100,21 +101,26 @@ class Stream {
 		dataInterceptors = new List();
 		if( cnx != null )
 			setConnection( cnx );
-			
 		// TODO remove HACK
 		#if (flash&&JABBER_CONSOLE)
 		XMPPDebug.stream = this;
 		#end
 	}
 	
-	/*
-	function getHost() : String {
-		return ( cnx != null ) ? cnx.host : null;
+	#if !JABBER_COMPONENT
+	function setJID( j : JID ) : JID {
+		if( status != StreamStatus.closed )
+			throw "Cannot change JID on open stream";
+		return jid = j;
 	}
-	*/
+	#end
 	
 	function getJIDStr() : String {
-		return throw "Abstract getter";
+		#if JABBER_COMPONENT
+		return throw "Abstract method";
+		#else
+		return jid.toString();
+		#end
 	}
 	
 	function setConnection( c : Connection ) : Connection {
@@ -122,7 +128,13 @@ class Stream {
 		case open, pending :
 			close( true );
 			setConnection( c );
-			open(); // re-open stream
+			 // re-open XMPP stream
+			#if JABBER_COMPONENT
+			//TODO
+			trace("TODO");
+			#else
+			open( jid );
+			#end
 		case closed :
 			if( cnx != null && cnx.connected )
 				cnx.disconnect();
@@ -147,34 +159,26 @@ class Stream {
 		#end
 	}
 	
-	//TODO
-	/*
-	public function open( ?host : String ) {
-		if( cnx == null )
-			throw "No stream connection set";
-		//TODO add try Reflect SocketConnection fallback
-		//.
-		this.host = ( host != null ) this.host : cnx.host;
-		if( this.host == null )
-			throw "No server hostname given";
-		//if( cnxs.host == null )
-		//cnxs.stream = this;
-		cnx.connected ? handleConnect() : cnx.connect();
+	#if JABBER_COMPONENT
+	public function open( host : String, subdomain : String, secret : String, ?identities : Array<xmpp.disco.Identity> ) {
+		throw "Abstract method";
 	}
-	*/
-	
+	#else
 	/**
-		Request to open the XMPP stream.
+		Open the XMPP stream.
 	*/
-	public function open() {
+	public function open( jid : JID ) {
+		if( jid != null ) this.jid = jid
+		else if( this.jid == null ) this.jid = new JID( null );
 		if( cnx == null )
 			throw "No stream connection set";
 		cnx.connected ? handleConnect() : cnx.connect();
 	}
+	#end
 	
 	/**
 		Close the XMPP stream.
-		Passed argument indicates if the connection to the server should also get closed.
+		Passed argument indicates if the (TCP) connection to the server should also get closed.
 	*/
 	public function close( ?disconnect = false ) {
 		if( status == StreamStatus.closed )
@@ -206,6 +210,9 @@ class Stream {
 		//TODO !!
 		//for( i in dataInterceptors )
 			//t = i.interceptData( t );
+#if flash // haXe 2.06 fukup		
+		t = StringTools.replace( t, "_xmlns_=", "xmlns=" );
+#end
 		if( !cnx.write( t ) )
 			return null;
 		numPacketsSent++;
@@ -264,8 +271,7 @@ class Stream {
 		Runs the XMPP packet interceptor on the given packet.
 	*/
 	public function interceptPacket( p : xmpp.Packet ) : xmpp.Packet {
-		for( i in interceptors )
-			i.interceptPacket( p );
+		for( i in interceptors ) i.interceptPacket( p );
 		return p;
 	}
 	
@@ -278,11 +284,10 @@ class Stream {
 	}
 	
 	/**
-		Adds a XMPP packet collector to this stream and starts the timeout if not null.<br/>
+		Adds a XMPP packet collector to this stream and starts the timeout if not null.
 	*/
 	public function addCollector( c : PacketCollector ) : Bool {
-		if( Lambda.has( collectors, c ) )
-			return false;
+		if( Lambda.has( collectors, c ) ) return false;
 		collectors.add( c );
 		if( c.timeout != null ) c.timeout.start();
 		return true;
@@ -291,8 +296,7 @@ class Stream {
 	/**
 	*/
 	public function removeCollector( c : PacketCollector ) : Bool {
-		if( !collectors.remove( c ) )
-			return false;
+		if( !collectors.remove( c ) ) return false;
 		if( c.timeout != null ) c.timeout.stop();
 		return true;
 	}
@@ -300,8 +304,7 @@ class Stream {
 	/**
 	*/
 	public function addInterceptor( i : TPacketInterceptor ) : Bool {
-		if( Lambda.has( interceptors, i ) )
-			return false;
+		if( Lambda.has( interceptors, i ) ) return false;
 		interceptors.add( i );
 		return true;
 	}
@@ -315,10 +318,13 @@ class Stream {
 	/**
 	*/
 	public function handleData( buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) : Int {
-		if( status == StreamStatus.closed )
-			return -1;
+		if( status == StreamStatus.closed ) return -1;
 		//TODO .. data filters
 		var t : String = buf.readString( bufpos, buflen );
+		
+#if flash // haXe 2.06 fuckup
+		t = StringTools.replace( t, "xmlns=", "_xmlns_=" );
+#end
 		//TODO
 		if( StringTools.startsWith( t, '</stream:stream' ) ) {
 			#if XMPP_DEBUG
@@ -340,10 +346,6 @@ class Stream {
 		case pending :
 			return processStreamInit( t, buflen );
 		case open :
-			//t = XMLUtil.removeXmlHeader( t );
-			//if( StringTools.startsWith( t, '<stream:stream' ) ) {
-			//	return buflen;
-			//}
 			// filter data here ?
 			var x : Xml = null;
 			try {
@@ -403,7 +405,7 @@ class Stream {
 		}
 		if( !collected ) {
 			#if JABBER_DEBUG
-//			trace( "incoming '"+Type.enumConstructor( p._type )+"' packet not handled ( "+p.from+" -> "+p.to+" )", "warn" );
+			//trace( "Incoming '"+Type.enumConstructor( p._type )+"' packet not handled ( "+p.from+" -> "+p.to+" )", "warn" );
 			#end
 			if( p._type == xmpp.PacketType.iq ) { // send 'feature not implemented' response
 				var q : xmpp.IQ = cast p;
@@ -422,6 +424,7 @@ class Stream {
 	}
 	
 	function handleConnect() {
+		trace("handleConnecthandleConnecthandleConnect");
 	}
 
 	function handleDisconnect() {

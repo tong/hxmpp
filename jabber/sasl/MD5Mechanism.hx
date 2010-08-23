@@ -75,8 +75,9 @@ class MD5Mechanism {
 		var cnonce = hh( Date.now().toString() );
 		
 		// compute response
-		var authzid = username+"@"+realm+"/"+resource;
-		var a1 = h( username+":"+realm+":"+pass )+":"+nonce+":"+cnonce+":"+authzid;
+	//	var authzid = username+"@"+realm+"/"+resource;
+		var a1 = h( username+":"+realm+":"+pass )+":"+nonce+":"+cnonce;
+	//	a1 += ":"+authzid;
 		var a2 = "AUTHENTICATE:"+digest_uri;
 		
 		// create response string
@@ -94,8 +95,8 @@ class MD5Mechanism {
 		b.add( ",response=" );
 		b.add( hh( hh( a1 )+":"+nonce+":00000001:"+cnonce+":"+"auth"+":"+hh( a2 ) ) );
 		b.add( ",charset=utf-8" );
-		b.add( ",authzid=" );
-		b.add( quote(authzid) );
+	//	b.add( ",authzid=" );
+	//	b.add( quote(authzid) );
 		return b.toString();
 	}
 	

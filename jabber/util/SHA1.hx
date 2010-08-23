@@ -23,6 +23,7 @@ class SHA1 {
 		Takes a string and returns the hex representation of its SHA-1.
 	*/
 	public static function encode( t : String ) : String {
+		#if xmldoc return null; #end
 		#if (neko||cpp)
 		return new String( base_encode( make_sha1( untyped t.__s ), untyped hex_chr.__s ) );
 		#elseif php

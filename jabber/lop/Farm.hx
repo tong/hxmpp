@@ -78,8 +78,8 @@ class Farm {
 		case "spawn_vm" :
 			var spawn = SpawnVM.parse( iq.x.toXml() );
 			if( !species.exists( spawn.species ) ) {
-				var err = new xmpp.Error( xmpp.ErrorType.cancel, 503, "'"+spawn.species+"' is a unsupported virtual machine" );
-				err.conditions.push( Xml.parse( '<species_not_supported xmlns="http://linkedprocess.org/2009/06/Farm#"/>' ) );
+				var err = new xmpp.Error( xmpp.ErrorType.cancel, "'"+spawn.species+"' is a unsupported virtual machine", 503 );
+//TODO				err.conditions.push( Xml.parse( '<species_not_supported xmlns="http://linkedprocess.org/2009/06/Farm#"/>' ) );
 				var r = xmpp.IQ.createError( iq, [err] );
 				spawn.species = null; // XMPP error (?), TODO report to XEP author
 				r.properties.push( spawn.toXml() );
@@ -102,7 +102,9 @@ class Farm {
 			try {
 				result = onJob( job );
 			} catch( e : Dynamic ) {
-				var err = new xmpp.Error( xmpp.ErrorType.modify, 400, e, [Xml.parse('<evaluation_error xmlns="http://linkedprocess.org/2009/06/Farm#"/>')]);
+//				var err = new xmpp.Error( xmpp.ErrorType.modify, 400, e, [Xml.parse('<evaluation_error xmlns="http://linkedprocess.org/2009/06/Farm#"/>')]);
+				var err = new xmpp.Error( xmpp.ErrorType.modify, e, 400 );
+				err.app = { condition : "evaluation_error", xmlns : "http://linkedprocess.org/2009/06/Farm#" };
 				var r = xmpp.IQ.createError( iq, [err] );
 				job.code = null;
 				r.x = job;

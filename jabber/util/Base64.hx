@@ -37,7 +37,6 @@ class Base64 {
 		n = ( n == 0 ) ? ((s.length-1)%3) : ((s.length)%3+1);
 		for( i in 0...n ) s += "=";
 		return s;
-		
 	}
 	
 	public static function removeNullbits( s : String ) : String {
@@ -45,9 +44,10 @@ class Base64 {
 		return s;
 	}
 	
-	#end
+	#end // !nodejs
 	
-	public static function encode( t : String ) : String {
+	public static #if nodejs inline #end
+	function encode( t : String ) : String {
 		#if nodejs
 		return Node.newBuffer(t).toString( Node.BASE64 );
 		#else
@@ -55,7 +55,8 @@ class Base64 {
 		#end
 	}
 	
-	public static function decode( t : String ) : String {
+	public static #if nodejs inline #end
+	function decode( t : String ) : String {
 		#if nodejs
 		return Node.newBuffer( t, Node.BASE64 ).toString( Node.ASCII );
 		#else

@@ -28,6 +28,16 @@ SSL/TLS
 -------
 For neko use the OpenSSL encryption layer from: git://83.64.208.21/hxssl.git
 For flash: git://83.64.208.21/hxtls.git
+For javascript you have to build/use the secure flash socketbridge
+
+
+NDLL
+----
+The hxmpp.ndll included in the project is only required if you use one of the following extensions on neko:
+* jabber.BOB
+* jabber.EntityCapabilities
+* jabber.client.NonSASLAuth
+* jabber.component.Stream
 
 
 
@@ -106,6 +116,14 @@ XEPS SUPPORTED
 
 
 
-CREDITS
+HACKERS
 -------
+This project accepts and *encourages* contributions.
+
+
+
+AUTHOR
+------
 xmpp://tong@jabber.spektral.at
+
+

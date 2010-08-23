@@ -37,7 +37,12 @@ class IQ extends Packet {
 		var p = super.addAttributes( Xml.createElement( "iq" ) );
 		if( type == null ) type = IQType.get;
 		p.set( "type", Type.enumConstructor( type ) );
+		//TODO check if this is allowd on client side too
+		#if SERVER
+		if( id != null ) p.set( "id", id );
+		#else
 		p.set( "id", id );
+		#end
 		if( x != null ) p.addChild( x.toXml() );
 		return p;
 	}

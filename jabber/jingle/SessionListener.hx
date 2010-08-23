@@ -13,9 +13,9 @@ class SessionListener<T:SessionResponder> {
 	var c : PacketCollector;
 	
 	function new( stream : jabber.Stream, handler : T->Void ) {
+		stream.features.add( getXMLNS() );
 		this.stream = stream;
 		this.handler = handler;
-		stream.features.add( getXMLNS() );
 	}
 	
 	function setHandler( h : T->Void ) : T->Void {
@@ -23,9 +23,10 @@ class SessionListener<T:SessionResponder> {
 			stream.removeCollector( c );
 			c = null;
 		}
-		if( h != null )
+		if( h != null ) {
 			c = stream.collect( [cast new xmpp.filter.IQFilter( xmpp.Jingle.XMLNS, "jingle", xmpp.IQType.set ),
 								 cast new xmpp.filter.JingleFilter( getXMLNS() ) ], handleRequest, true );
+		}
 		return handler = h;
 	}
 	

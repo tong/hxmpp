@@ -78,6 +78,8 @@ class VCard {
 	public function toXml() : Xml {
 		var x = Xml.createElement( NODENAME );
 		x.set( "xmlns", XMLNS );
+	//	x.set( "version", VERSION );
+	//	x.set( "prodid", PRODID );
 		if( fn != null ) x.addChild( XMLUtil.createElement( "FN", fn ) );
 		if( n != null ) {
 			var _n = Xml.createElement( "N" );
@@ -175,7 +177,7 @@ class VCard {
 			x.addChild( o );
 		}
 		if( note != null ) x.addChild( XMLUtil.createElement( "NOTE", note ) );
-		if( prodid != null ) x.addChild( XMLUtil.createElement( "PRODID", prodid ) );
+	//	if( prodid != null ) x.addChild( XMLUtil.createElement( "PRODID", prodid ) );
 		if( url != null ) x.addChild( XMLUtil.createElement( "URL", url ) );
 		if( desc != null ) x.addChild( XMLUtil.createElement( "DESC", desc ) );
 		return x;
