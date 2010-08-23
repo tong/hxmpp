@@ -17,17 +17,19 @@
 */
 package jabber;
 
-//TODO!!!!!! remove
+/**
+	Used to dispatch and track XMPP protocol errors.
+*/
 class XMPPError extends xmpp.Error {
 	
-	public var dispatcher(default,null) : Dynamic; //TODO remove
+	public var dispatcher(default,null) : Dynamic;
 	public var from(default,null) : String;
 	
 	public function new( dispatcher : Dynamic, p : xmpp.Packet ) {
 		var e = p.errors[0];
-		if( e == null )
-			throw "Packet has no errors";
-		//super( e.type, e.code, e.name, e.text );
+		#if JABBER_DEBUG
+		if( e == null ) trace( "XMPP packet has no errors" );
+		#end
 		super( e.type, e.condition, e.code, e.text );
 		this.dispatcher = dispatcher;
 		this.from = p.from;
@@ -35,7 +37,9 @@ class XMPPError extends xmpp.Error {
 	
 	#if JABBER_DEBUG
 	public function toString() : String {
-		return "XMPPError( "+from+", "+code+", "+text+" )";
+		var t = "XMPPError[ "+from+", "+condition+", "+code;
+		if( text != null ) t += ", "+text;
+		return t += " ]";
 	}
 	#end
 	
