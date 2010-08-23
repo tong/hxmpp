@@ -21,7 +21,7 @@ COMPILER FLAGS
 * XMPP_DEBUG	Print XMPP transfer
 * JABBER_DEBUG	Print verbose debug information
 * JABBER_SOCKETBRIDGE	Use a flash socket bridge as stream connection for the javascript target
-
+* JABBER_COMPONENT	Required to build server-components
 
 
 SSL/TLS
