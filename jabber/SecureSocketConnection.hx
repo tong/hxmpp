@@ -40,6 +40,7 @@ class SecureSocketConnection extends jabber.stream.Connection {
 		socket.addListener( "connect", sockConnectHandler );
 		socket.addListener( "end", sockDisconnectHandler );
 		socket.addListener( "error", sockErrorHandler );
+		socket.addListener( "data", sockDataHandler );
 	}
 	
 	public override function disconnect() {
@@ -49,8 +50,10 @@ class SecureSocketConnection extends jabber.stream.Connection {
 	}
 	
 	public override function read( ?yes : Bool = true ) : Bool {
+		//TODO
 		if( yes ) {
-			socket.addListener( "data", sockDataHandler );
+			//reading = true;
+			//socket.addListener( "data", sockDataHandler );
 		} else {
 			socket.removeListener( "data", sockDataHandler );
 		}
