@@ -1,6 +1,6 @@
 /*
  *	This file is part of HXMPP.
- *	Copyright (c)2009 http://www.disktree.net
+ *	Copyright (c)2009-2010 http://www.disktree.net
  *	
  *	HXMPP is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -63,8 +63,6 @@ class BOSHConnection extends jabber.stream.Connection {
 	public var sid(default,null) : String;
 	/** */
 	public var maxConcurrentRequests(default,null) : Int;
-	/** */
-	public var secure(default,null) : Bool;
 	
 	var initialized : Bool;
 	var rid : Int;
@@ -90,7 +88,7 @@ class BOSHConnection extends jabber.stream.Connection {
 						 secure : Bool = false,
 						 maxConcurrentRequests : Int = 2,
 						 timeoutOffset = 25 ) {
-		super( host, true );
+		super( host, false, true );
 		this.path = path;
 		this.hold = hold;
 		this.wait = wait;
@@ -114,8 +112,8 @@ class BOSHConnection extends jabber.stream.Connection {
 			responseQueue = new Array();
 			responseTimer = new Timer( INTERVAL );
 			var b = Xml.createElement( "body" );
-			b.set( 'xml:lang', 'en' );
 			b.set( 'xmlns', XMLNS );
+			b.set( 'xml:lang', 'en' );
 			b.set( 'xmlns:xmpp', XMLNS_XMPP );
 			b.set( 'xmpp:version', '1.0' );
 			b.set( 'ver', BOSH_VERSION );
@@ -223,6 +221,14 @@ class BOSHConnection extends jabber.stream.Connection {
 		var r = new flash.net.URLRequest( getHTTPPath() );
 		r.method = flash.net.URLRequestMethod.POST;
 		r.contentType = "text/xml";
+		// haXe 2.06 HACK
+		/*
+		var s = t.toString();
+		s = StringTools.replace( s, "xml_lang", "xml:lang" );
+		s = StringTools.replace( s, "xmlns_xmpp", "xmlns:xmpp" );
+		s = StringTools.replace( s, "xmpp_version", "xmpp:version" );
+		*/
+		//
 		r.data = t.toString();
 		r.requestHeaders.push( new flash.net.URLRequestHeader( "Accept", "text/xml" ) );
 		var me = this;

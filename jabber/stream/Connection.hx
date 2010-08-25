@@ -24,61 +24,64 @@ class Connection {
 	
 	/** Succesfully connected callback */
 	public var __onConnect : Void->Void;
-	
 	/** Disconnected callback */
 	public var __onDisconnect : Void->Void;
-	
 	/** Data recieved callback */
 	public var __onData : haxe.io.Bytes->Int->Int->Int;
-	//public var __onData : haxe.io.Bytes->Int->Int;
-	
+	/** TLS negotiation complete callback */
+	public var __onSecured : Void->Void;
 	/** Error callback */
-	public var __onError : String->Void; // replace public var __onDisconnect(?e)
+	public var __onError : String->Void; //replace public var __onDisconnect(?e)
 	
 	/** Hostname or IP address of the XMPP server. */
 	public var host(default,setHost) : String;
-	
 	/** Indicates if connected and ready to read and write. */
 	public var connected(default,null) : Bool;
-	
+	/** Indicates if this is a secure connection */
+	public var secure(default,null) : Bool;
+	/** Indicates if TLS is negotiation is complete and data transfered is encrypted */
+	public var secured(default,null) : Bool;
 	/** Indicates if this streams data connection is a HTTP (BOSH) connection (default is false) */
-	public var http(default,null) : Bool; //TODO remove ()
+	public var http(default,null) : Bool;
 	
-	function new( host : String, http : Bool = false ) {
+	function new( host : String, secure : Bool, http : Bool ) {
 		this.host = host;
+		this.secure = secure;
 		this.http = http;
 		connected = false;
+		secured = false;
 	}
 	
 	function setHost( t : String ) : String {
-		if( connected )
-			throw "Cannot change host on active connection";
+		if( connected ) {
+			throw "Cannot change hostname on active connection";
+		}
 		return host = t;
 	}
 	
-	/**
-	*/
+	/** */
 	public function connect() {
 		throw "Abstract method";
 	}
 	
-	/**
-	*/
+	/** */
 	public function disconnect() {
 		throw "Abstract method";
 	}
 	
-	/**
-		Starts/Stops reading data input.
-	*/
-	//TODO!
+	/** */
+	public function setSecure() {
+		#if JABBER_DEBUG
+		trace( "Connection.setSecure not implemented", "warn" );
+		#end
+	}
+	
+	/** Starts/Stops reading data input, returns true if successfully started */
 	public function read( ?yes : Bool = true ) : Bool {
 		return throw "Abstract method";
 	}
 	
-	/**
-		Send string.
-	*/
+	/** Sends string, returns true on succeess */
 	public function write( t : String ) : Bool {
 		return throw "Abstract method";
 	}

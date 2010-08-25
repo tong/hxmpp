@@ -17,6 +17,9 @@
 */
 package jabber;
 
+// Legacy socket connection on port 5223
+// This should NOT get used
+
 #if nodejs
 
 import js.Node;
@@ -30,17 +33,17 @@ class SecureSocketConnection extends jabber.stream.Connection {
 	var socket : Socket;
 	
 	public function new( host : String, port : Int = 5223 ) {
-		super( host );
+		super( host, false, false );
 		this.port = port;
 	}
 	
 	public override function connect() {
 		socket = Node.net.createConnection( port, host );
 		socket.setEncoding( Node.UTF8 );
-		socket.addListener( "connect", sockConnectHandler );
-		socket.addListener( "end", sockDisconnectHandler );
-		socket.addListener( "error", sockErrorHandler );
-		socket.addListener( "data", sockDataHandler );
+		socket.addListener( Node.EVENT_STREAM_CONNECT, sockConnectHandler );
+		socket.addListener( Node.EVENT_STREAM_END, sockDisconnectHandler );
+		socket.addListener( Node.EVENT_STREAM_ERROR, sockErrorHandler );
+		socket.addListener( Node.EVENT_STREAM_DATA, sockDataHandler );
 	}
 	
 	public override function disconnect() {
@@ -121,7 +124,7 @@ class SecureSocketConnection extends jabber.stream.Connection {
 						 ?bufSize : Int,
 						 ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
-		super( host );
+		super( host, false, false );
 		this.port = port;
 		this.bufSize = ( bufSize == null ) ? SocketConnection.defaultBufSize : bufSize;
 		this.maxBufSize = ( maxBufSize == null ) ? SocketConnection.defaultMaxBufSize : maxBufSize;

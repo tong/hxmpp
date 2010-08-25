@@ -62,7 +62,7 @@ class PacketCollector {
 	}
 	
 	/**
-		Returns Bool if the XMPP packet passes through all filters.
+		Returns Bool if the given XMPP packet passes through all filters.
 	*/
 	public function accept( p : xmpp.Packet ) : Bool {
 		for( f in filters ) {

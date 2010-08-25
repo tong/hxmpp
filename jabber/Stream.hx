@@ -1,6 +1,6 @@
 /*
  *	This file is part of HXMPP.
- *	Copyright (c)2009 http://www.disktree.net
+ *	Copyright (c)2009-2010 http://www.disktree.net
  *	
  *	HXMPP is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -27,39 +27,25 @@ import jabber.util.Base64;
 import xmpp.XMLUtil;
 import xmpp.filter.PacketIDFilter;
 
-
 private typedef Server = {
 	var features : Hash<Xml>;
-	//var tls : { has : Bool, required : Bool };
 }
 
-
-class StreamFeatures {
+private class StreamFeatures {
 	var l : List<String>;
-	public function new() {
-		l = new List();
-	}
-	public inline function iterator() {
-		return l.iterator();
-	}
+	public function new() { l = new List(); }
+	public inline function iterator() { return l.iterator(); }
 	public function add( f : String ) : Bool {
 		if( Lambda.has( l, f ) ) return false;
 		l.add( f );
 		return true;
 	}
-	public function remove( f : String ) : Bool {
-		return l.remove( f );
-	}
-	public function clear( f : String ) {
-		l = new List();
-	}
+	public function remove( f : String ) : Bool { return l.remove( f ); }
+	public function clear( f : String ) { l = new List(); }
 	#if JABBER_DEBUG
-	public inline function toString() : String {
-		return l.toString();
-	}
+	public inline function toString() : String { return l.toString(); }
 	#end
 }
-
 
 /**
 	Abstract base for XMPP streams.
@@ -85,6 +71,7 @@ class Stream {
 	public var dataFilters(default,null) : List<TDataFilter>;
 	public var dataInterceptors(default,null) : List<TDataInterceptor>;
 	
+	var idCollectors : List<PacketCollector>;
 	var collectors : List<PacketCollector>;
 	var interceptors : List<TPacketInterceptor>;
 	var numPacketsSent : Int;
@@ -94,13 +81,13 @@ class Stream {
 		server = { features : new Hash() };
 		features = new StreamFeatures();
 		version = true;
+		idCollectors = new List();
 		collectors = new List();
 		interceptors = new List();
 		numPacketsSent = 0;
 		dataFilters = new List();
 		dataInterceptors = new List();
-		if( cnx != null )
-			setConnection( cnx );
+		if( cnx != null ) setConnection( cnx );
 		// TODO remove HACK
 		#if (flash&&JABBER_CONSOLE)
 		XMPPDebug.stream = this;
@@ -125,12 +112,11 @@ class Stream {
 	
 	function setConnection( c : Connection ) : Connection {
 		switch( status ) {
-		case open, pending :
+		case open, pending, starttls :
 			close( true );
 			setConnection( c );
 			 // re-open XMPP stream
 			#if JABBER_COMPONENT
-			//TODO
 			trace("TODO");
 			#else
 			open( jid );
@@ -139,7 +125,6 @@ class Stream {
 			if( cnx != null && cnx.connected )
 				cnx.disconnect();
 			cnx = c;
-			//cnxs.stream = this;
 			cnx.__onConnect = handleConnect;
 			cnx.__onDisconnect = handleDisconnect;
 			cnx.__onData = handleData;
@@ -161,7 +146,9 @@ class Stream {
 	
 	#if JABBER_COMPONENT
 	public function open( host : String, subdomain : String, secret : String, ?identities : Array<xmpp.disco.Identity> ) {
+		#if JABBER_DEBUG
 		throw "Abstract method";
+		#end
 	}
 	#else
 	/**
@@ -226,15 +213,16 @@ class Stream {
 		Send an IQ packet and forward the collected response to the given handler function.
 	*/
 	public function sendIQ( iq : xmpp.IQ, ?handler : xmpp.IQ->Void,
-							?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool ) //TODO remove block argument
+							?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool ) //TODO permanent+remove block argument
 	: { iq : xmpp.IQ, collector : PacketCollector }
 	{
 		if( iq.id == null ) iq.id = nextID();
 		//iq.from = jidstr;
 		var c : PacketCollector = null;
 		if( handler != null ) {
-			c = new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block );
-			addCollector( c );
+			//c = new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block );
+			//addIDCollector( c );
+			c = addIDCollector( iq.id, handler );
 		}
 		var s : xmpp.IQ = sendPacket( iq );
 		if( s == null && handler != null ) {
@@ -284,6 +272,16 @@ class Stream {
 	}
 	
 	/**
+		Adds an packet collector which filters XMPP packets by ids.
+		These collectors get processed before any other collectors.
+	*/
+	public function addIDCollector( id : String, handler : Dynamic->Void ) : PacketCollector {
+		var c = new PacketCollector( [cast new PacketIDFilter(id)], handler );
+		idCollectors.add( c );
+		return c;
+	}
+	
+	/**
 		Adds a XMPP packet collector to this stream and starts the timeout if not null.
 	*/
 	public function addCollector( c : PacketCollector ) : Bool {
@@ -296,7 +294,10 @@ class Stream {
 	/**
 	*/
 	public function removeCollector( c : PacketCollector ) : Bool {
-		if( !collectors.remove( c ) ) return false;
+		if( !collectors.remove( c ) ) {
+			if( !idCollectors.remove( c ) )
+				return false;
+		}
 		if( c.timeout != null ) c.timeout.stop();
 		return true;
 	}
@@ -345,6 +346,23 @@ class Stream {
 			return -1;//buflen?
 		case pending :
 			return processStreamInit( t, buflen );
+		case starttls :
+			var x : Xml = null;
+			try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
+				#if JABBER_DEBUG
+				trace( "StartTLS failed" );
+				#end
+				cnx.disconnect();
+				return 0;
+			}
+			if( x.nodeName != "proceed" || x.get( "xmlns" ) != "urn:ietf:params:xml:ns:xmpp-tls" ) {
+				cnx.disconnect();
+				return 0;
+			}
+			var me = this;
+			cnx.__onSecured = function() { me.open( null ); }
+			cnx.setSecure();
+			
 		case open :
 			// filter data here ?
 			var x : Xml = null;
@@ -352,7 +370,7 @@ class Stream {
 				x = Xml.parse( t );
 			} catch( e : Dynamic ) {
 				//#if JABBER_DEBUG
-				//trace( "Packet incomplete, wating for more data ..", "info" );
+				//trace( "Packet incomplete, waiting for more data ..", "info" );
 				//#end
 				return 0; // wait for more data
 			}
@@ -390,6 +408,14 @@ class Stream {
 		#if XMPP_DEBUG
 		XMPPDebug.inc( p.toString() );
 		#end
+		for( c in idCollectors ) {
+			if( c.accept( p ) ) {
+				c.deliver( p );
+				idCollectors.remove( c );
+				c = null;
+				return true;
+			}
+		}
 		var collected = false;
 		for( c in collectors ) {
 			if( c.accept( p ) ) {

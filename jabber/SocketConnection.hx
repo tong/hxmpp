@@ -51,7 +51,7 @@ class SocketConnection extends jabber.stream.Connection {
 						 ?port : Int = #if JABBER_COMPONENT 5275 #else 5222 #end,
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
-		super( host );			 	
+		super( host, false, false );			 	
 		this.port = port;
 		this.bufSize = ( bufSize == null ) ? defaultBufSize : bufSize;
 		this.maxBufSize = ( maxBufSize == null ) ? defaultMaxBufSize : maxBufSize;
@@ -170,7 +170,7 @@ class SocketConnection extends jabber.stream.Connection {
 						 ?port : Int = #if JABBER_COMPONENT 5275 #else 5222 #end,
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
-		super( host );
+		super( host, false, false );
 		this.port = port;
 		this.bufSize = ( bufSize == null ) ? defaultBufSize : bufSize;
 		this.maxBufSize = ( maxBufSize == null ) ? defaultMaxBufSize : maxBufSize;
@@ -278,7 +278,7 @@ class SocketConnection extends jabber.stream.Connection {
 						 ?bufSize : Int,
 						 ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
-		super( host );
+		super( host, false, false );
 		this.port = port;
 		this.bufSize = ( bufSize == null ) ? defaultBufSize : bufSize;
 		this.maxBufSize = ( maxBufSize == null ) ? defaultMaxBufSize : maxBufSize;

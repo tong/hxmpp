@@ -30,6 +30,11 @@ enum StreamStatus {
 	pending; //pending( ?info : String );
 	
 	/**
+		TLS negotiation in progress.
+	*/
+	starttls;
+	
+	/**
 		XMPP stream is open and ready to exchange data.
 	*/
 	open; //open( ?info : String );

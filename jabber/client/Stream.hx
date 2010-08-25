@@ -1,6 +1,6 @@
 /*
  *	This file is part of HXMPP.
- *	Copyright (c)2009 http://www.disktree.net
+ *	Copyright (c)2009-2010 http://www.disktree.net
  *	
  *	HXMPP is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -79,7 +79,7 @@ class Stream extends jabber.Stream {
 				id = sx.get( "id" );
 				if( !version ) {
 					status = StreamStatus.open;
-//cnx.reset();
+					//cnx.reset();
 					onOpen();
 					return buflen;
 				}
@@ -102,11 +102,9 @@ class Stream extends jabber.Stream {
 		var sfi = t.indexOf( "<stream:features>" );
 		var sf = t.substr( sfi );
 		if( sfi != -1 ) {
-			
 #if flash // haxe 2.06 xml namespace fuckup
 sf = StringTools.replace( sf, "stream:features", "stream_features" );
 #end
-
 			var x : Xml;
 			try x = Xml.parse( sf ).firstElement() catch( e : Dynamic ) {
 				return 0;
@@ -115,9 +113,13 @@ sf = StringTools.replace( sf, "stream:features", "stream_features" );
 			#if XMPP_DEBUG
 			jabber.XMPPDebug.inc( _t );
 			#end
-			status = StreamStatus.open;
-//cnx.reset();	
-			onOpen();
+			if( cnx.secure && !cnx.secured && server.features.get( "starttls" ) != null ) {
+				status = StreamStatus.starttls;
+				sendData( '<starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls"/>' );
+			} else {
+				status = StreamStatus.open;
+				onOpen();
+			}
 			return buflen;
 		}
 		return 0; // read more
