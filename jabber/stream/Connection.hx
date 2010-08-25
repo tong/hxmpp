@@ -44,7 +44,7 @@ class Connection {
 	/** Indicates if this streams data connection is a HTTP (BOSH) connection (default is false) */
 	public var http(default,null) : Bool;
 	
-	function new( host : String, secure : Bool, http : Bool ) {
+	function new( host : String, secure : Bool, http : Bool = false ) {
 		this.host = host;
 		this.secure = secure;
 		this.http = http;
