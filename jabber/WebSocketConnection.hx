@@ -1,9 +1,28 @@
+/*
+ *	This file is part of HXMPP.
+ *	Copyright (c)2009 http://www.disktree.net
+ *	
+ *	HXMPP is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  HXMPP is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *	See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
+*/
 package jabber;
 
-#if js
+#if (js||flash)
 
 /**
-	http://www.w3.org/TR/2009/WD-websockets-20091222/
+	http://dev.w3.org/html5/websockets/
+	
+	For flash you need to add hxmpp/util/flash_websocket.js to your website
 */
 class WebSocketConnection extends jabber.stream.Connection {
 	
@@ -23,6 +42,10 @@ class WebSocketConnection extends jabber.stream.Connection {
 		socket.onopen = onConnect;
 		socket.onclose = onClose;
 		socket.onerror = onError;
+	}
+	
+	public override function disconnect() {
+		socket.close();
 	}
 	
 	public override function read( ?yes : Bool = true ) : Bool {
@@ -57,4 +80,4 @@ class WebSocketConnection extends jabber.stream.Connection {
 	
 }
 
-#end //js
+#end //js||flash
