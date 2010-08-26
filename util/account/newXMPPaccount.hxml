@@ -1,5 +1,0 @@
-
--neko newXMPPaccount.n
--main NewXMPPAccount
--cp ../../
--cmd nekotools boot newXMPPaccount.n

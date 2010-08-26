@@ -22,7 +22,7 @@ import neko.Lib;
 /**
 	Terminal tool to manually register a new XMPP client account.
 */
-class NewXMPPAccount {
+class XMPPAccountRegisterTool {
 	
 	static function getUserInput( ?message : String ) : String {
 		if( message != null ) Lib.print( message+"> " );
@@ -97,27 +97,14 @@ class NewXMPPAccount {
 		switch( r ) {
 		case "y","Y" :
 			Lib.println( "Registering ..." );
-			var cnx = new jabber.SocketConnection( server );
-			var stream = new jabber.client.Stream( cnx );
-			stream.onOpen = function() {
-				var acc = new jabber.client.Account( stream );
-				acc.onRegister = function( node : String ) {
-					Lib.println( "Account registration success ["+node+"@"+server+"]" );
-					stream.close( true );
-					neko.Sys.exit( 0 );
+			XMPPAccountRegisterUtil.run( function(err:String){
+				if( err != null ) {
+					Lib.println( "Failed to register account: "+err );
+					neko.Sys.exit( 1 );	
 				}
-				acc.onError = function( e ) {
-					Lib.println( e );
-					stream.close( true );
-					neko.Sys.exit( 0 );
-				}
-				acc.register( new xmpp.Register( node, pass, email, name ) );
-			}
-			stream.onClose = function(?e) {
-				if( e != null )
-					Lib.println( "XMPP stream error: "+e );
-			}
-			stream.open( null );
+				Lib.println( "Account successfully registered ["+node+"@"+server+"]" );
+				neko.Sys.exit( 0 );	
+			}, server, node, pass, email, name );
 		default :
 			Lib.println( "Aborted." );
 		}

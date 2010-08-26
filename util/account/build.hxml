@@ -1,0 +1,18 @@
+
+### Programmatic account register tool
+-neko xmpp_account_register.n
+-main XMPPAccountRegister
+-cp ../../
+#-D JABBER_DEBUG
+#-D XMPP_DEBUG
+#-cmd nekotools boot xmpp_account_register.n
+
+
+### Human input account register tool
+--next
+-neko xmpp_account_register_tool.n
+-main XMPPAccountRegisterTool
+-cp ../../
+#-D JABBER_DEBUG
+#-D XMPP_DEBUG
+#-cmd nekotools boot xmpp_account_register_tool.n
