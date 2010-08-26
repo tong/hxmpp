@@ -10,6 +10,13 @@ The library exists in two namespaces:
 
 
 
+SOURCE
+------
+http://github.com/tong/hxmpp
+git://github.com/tong/hxmpp.git
+
+
+
 USAGE
 -----
 http://github.com/tong/hxmpp.examples
@@ -22,18 +29,12 @@ COMPILER FLAGS
 * JABBER_DEBUG	Print verbose debug information
 * JABBER_SOCKETBRIDGE	Use a flash socket bridge as stream connection for the javascript target
 * JABBER_COMPONENT	Required to build server-components
-
-
-SSL/TLS
--------
-For neko use the OpenSSL encryption layer from: git://83.64.208.21/hxssl.git
-For flash: git://83.64.208.21/hxtls.git
-For javascript you have to build/use the secure flash socketbridge
+* air  Required to use native air2 sockets
 
 
 NDLL
 ----
-The hxmpp.ndll included in the project is only required if you use one of the following extensions on neko:
+The hxmpp.ndll included is only required if you use one of the following extensions:
 * jabber.BOB
 * jabber.EntityCapabilities
 * jabber.client.NonSASLAuth
@@ -41,8 +42,16 @@ The hxmpp.ndll included in the project is only required if you use one of the fo
 
 
 
-USING THE BOSH CONNECTION
--------------------------
+TLS
+---
+For neko use the OpenSSL encryption layer from: git://83.64.208.21/hxssl.git
+For flash: git://83.64.208.21/hxtls.git
+For javascript you have to build/use the secure flash socketbridge
+
+
+
+BOSH
+----
 BOSH essentially provides a "drop-in" alternative to a long-lived, bidirectional TCP connection using a request-response mechansim over HTTP.
 To use it you have to connect your client to the BOSH adress of your jabber server.
 Your webserver doesn’t know about your jabber server .. you have to setup a proxy to forward requests: 
@@ -65,13 +74,14 @@ LoadModule proxy_http_module /usr/lib/apache2/modules/mod_proxy_http.so
 sudo /etc/init.d/apache2 restart
 
 # Now you can pass in the path to the constructor of the jabber.BOSHConection class:
-var cnx = new BOSHConnection( "domain.net", "localhost/xmpp/" );
+var cnx = new BOSHConnection( "domain.net", "127.0.0.1/xmpp/" );
 
 
 
 NODE.JS
 -------
 HXMPP has experimental support for node.js.
+Use the type signatures from:
 http://github.com/blackdog66/bdog-stdhx
 
 
@@ -125,5 +135,4 @@ This project accepts and *encourages* contributions.
 AUTHOR
 ------
 xmpp://tong@jabber.spektral.at
-
 
