@@ -17,8 +17,6 @@
 */
 package jabber.client;
 
-//OLD
-
 import jabber.PresenceManager;
 import jabber.stream.PacketCollector;
 import xmpp.Message;
@@ -33,7 +31,7 @@ import xmpp.filter.PacketTypeFilter;
 /**
 */
 typedef MUCOccupant = {
-	//TODO ? var muc : MUC;
+	//TODO ? var muc : MUChat;
 	var nick : String;
 	var jid : String;
 	var presence : xmpp.Presence;
@@ -247,12 +245,7 @@ class MUChat {
 		if( x_user == null ) return;
 		switch( p.from ) {
 		case myjid :
-			switch( p.type ) {
-			case xmpp.PresenceType.unavailable : 
-				joined = false;
-				destroy();
-				//onLeave( this );
-			case null :
+			if( p.type == null ) {
 				if( !joined ) {
 					//TODO check for valid presence packet
 					if( x_user.item != null ) {
@@ -290,6 +283,14 @@ class MUChat {
 					presence.target = myjid;
 					onPresence( me );
 				}
+				return;
+			}
+			switch( p.type ) {
+			case xmpp.PresenceType.unavailable : 
+				joined = false;
+				destroy();
+				//onLeave( this );
+			//case null :
 			}
 		case jid :
 			trace( "??? process presence from MUC room ???" );
