@@ -44,9 +44,16 @@ The hxmpp.ndll included is only required if you use one of the following extensi
 
 TLS
 ---
-For neko use the OpenSSL encryption layer from: git://83.64.208.21/hxssl.git
-For flash: git://83.64.208.21/hxtls.git
-For javascript you have to build/use the secure flash socketbridge
+Currently only legacy TLS on port 5223 is supported.
+* neko:
+hxmpp/ndll/OS/tls.ndll has to be somewhere nekoVM can find it
+* flash:
+-cp ../../hxmpp/tls
+-swf-lib ../../hxmpp/util/tls/tls.swf
+* cpp:
+no support right now
+* js:
+Use the TLS flash-socketbridge
 
 
 
