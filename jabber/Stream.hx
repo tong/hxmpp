@@ -112,7 +112,7 @@ class Stream {
 	
 	function setConnection( c : Connection ) : Connection {
 		switch( status ) {
-		case open, pending, starttls :
+		case open, pending #if !JABBER_COMPONENT, starttls #end :
 			close( true );
 			setConnection( c );
 			 // re-open XMPP stream
@@ -341,11 +341,15 @@ class Stream {
 			return 0;
 		}
 		switch( status ) {
+		
 		case closed :
 			// TODO cleanup
 			return -1;//buflen?
+		
 		case pending :
 			return processStreamInit( t, buflen );
+		
+		#if !JABBER_COMPONENT
 		case starttls :
 			var x : Xml = null;
 			try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
@@ -355,13 +359,21 @@ class Stream {
 				cnx.disconnect();
 				return 0;
 			}
-			if( x.nodeName != "proceed" || x.get( "xmlns" ) != "urn:ietf:params:xml:ns:xmpp-tls" ) {
+			if( x.nodeName != "proceed"
+// haXe 2.06 fukup HACK
+				#if !flash || x.get( "xmlns" ) != "urn:ietf:params:xml:ns:xmpp-tls" #end ) {
 				cnx.disconnect();
 				return 0;
 			}
 			var me = this;
-			cnx.__onSecured = function() { me.open( null ); }
+			cnx.__onSecured = function(err:String) {
+				if( err != null ) {
+					me.onClose( "TLS failed ["+err+"]" );
+				}
+				me.open( null );
+			}
 			cnx.setSecure();
+		#end
 			
 		case open :
 			// filter data here ?
