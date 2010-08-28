@@ -3,19 +3,21 @@ package jabber.util;
 #if neko
 import neko.Lib;
 #elseif cpp
-import cpp.Lib;
+typedef SHA1 = haxe.SHA1;
 #elseif nodejs
 import js.Node;
 #end
 
+#if !cpp
+
 class SHA1 {
 	
-	#if (neko||cpp)
+	#if (neko)
 	static var base_encode = Lib.load( "std", "base_encode", 2 );
 	static var make_sha1 = Lib.load( "sha1","make_sha1", 1 );
 	#end
 
-	#if (flash||js||neko||cpp)
+	#if (flash||js||neko)
 	static inline var hex_chr = "0123456789abcdef";
 	#end
 	
@@ -24,7 +26,7 @@ class SHA1 {
 	*/
 	public static function encode( t : String ) : String {
 		#if xmldoc return null; #end
-		#if (neko||cpp)
+		#if (neko)
 		return new String( base_encode( make_sha1( untyped t.__s ), untyped hex_chr.__s ) );
 		#elseif php
 		return untyped __call__( "sha1", t );
@@ -146,3 +148,5 @@ class SHA1 {
 
 	#end // (flash||js)
 }
+
+#end //!cpp
