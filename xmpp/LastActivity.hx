@@ -18,13 +18,11 @@
 package xmpp;
 
 /**
-	Discover when a disconnected user last accessed its server.
-	
 	<a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a><br/>
 */
 class LastActivity {
 	
-	public static inline var XMLNS = "jabber:iq:last";
+	public static var XMLNS = "jabber:iq:last";
 	
 	public var seconds : Int;
 	
@@ -33,9 +31,9 @@ class LastActivity {
 	}
 	
 	public function toXml() : Xml {
-		var q = IQ.createQueryXml( XMLNS );
-		if( seconds > 0 ) q.set( "seconds", Std.string( seconds ) );
-		return q;
+		var x = IQ.createQueryXml( XMLNS );
+		if( seconds >= 0 ) x.set( "seconds", Std.string( seconds ) );
+		return x;
 	}
 	
 	public static inline function parse( x : Xml ) : LastActivity {
@@ -43,7 +41,7 @@ class LastActivity {
 	}
 	
 	/**
-		Parses/Returns just the time value of the given iq query xml.
+		Parses/Returns the time value of the given IQ query xml.
 	*/
 	public static inline function parseSeconds( x : Xml ) : Int {
 		return Std.parseInt( x.get( "seconds" ) );
