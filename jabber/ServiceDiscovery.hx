@@ -18,6 +18,9 @@
 package jabber;
 
 import xmpp.IQ;
+import xmpp.IQType;
+import xmpp.disco.Info;
+import xmpp.disco.Items;
 
 /**
 	Manages discovery of services from XMPP entities.<br>
@@ -29,9 +32,9 @@ import xmpp.IQ;
 */
 class ServiceDiscovery {
 	
-	public dynamic function onInfo( jid : String, data : xmpp.disco.Info ) : Void;
-	public dynamic function onItems( jid : String, data : xmpp.disco.Items ) : Void;
-	public dynamic function onError( e : jabber.XMPPError ) : Void;
+	public dynamic function onInfo( jid : String, info : Info ) : Void;
+	public dynamic function onItems( jid : String, items : Items ) : Void;
+	public dynamic function onError( e : XMPPError ) : Void;
 	
 	public var stream(default,null) : jabber.Stream;
 	
@@ -43,8 +46,8 @@ class ServiceDiscovery {
 		Query entity for information.
 	*/
 	public function info( jid : String, ?node : String ) {
-		var r = new IQ( xmpp.IQType.get, null, jid );
-		r.x = new xmpp.disco.Info( null, null, node );
+		var r = new IQ( IQType.get, null, jid );
+		r.x = new Info( null, null, node );
 		stream.sendIQ( r, handleInfo, false );
 	}
 	
@@ -52,36 +55,17 @@ class ServiceDiscovery {
 		Query entity for items.
 	*/
 	public function items( jid : String, ?node : String ) {
-		var r = new IQ( xmpp.IQType.get, null, jid );
-		r.x = new xmpp.disco.Items( node );
+		var r = new IQ( IQType.get, null, jid );
+		r.x = new Items( node );
 		stream.sendIQ( r, handleItems, false );
 	}
-	
-	//////////////////
-	
-	/*
-	public function _items( jid : String, ?node : String, handler : xmpp.disco.Items->Void, error : String->Void ) {
-		var iq = new IQ( xmpp.IQType.get, null, jid );
-		iq.x = new xmpp.disco.Items( node );
-		stream.sendIQ( iq, function(r:xmpp.IQ){
-			switch( r.type ) {
-			case result : handler( xmpp.disco.Items.parse( iq.x.toXml() ) );
-			case error : error( "AA ERROR TODO" );
-			default :
-			}
-		} );
-	}
-	*/
-	
-	//////////////////
 	
 	function handleInfo( iq : IQ ) {
 		switch( iq.type ) {
 		case result :
-			onInfo( ( iq.from == null ) ? null : iq.from,
-					 xmpp.disco.Info.parse( iq.x.toXml() ) );
+			onInfo( iq.from, Info.parse( iq.x.toXml() ) );
 		case error :
-			onError( new jabber.XMPPError( this, iq ) );
+			onError( new XMPPError( this, iq ) );
 		default :
 		}
 	}
@@ -89,10 +73,9 @@ class ServiceDiscovery {
 	function handleItems( iq : IQ ) {
 		switch( iq.type ) {
 		case result :
-			onItems( ( iq.from == null ) ? null : iq.from,
-					 xmpp.disco.Items.parse( iq.x.toXml() ) );
+			onItems( iq.from, Items.parse( iq.x.toXml() ) );
 		case error :
-			onError( new jabber.XMPPError( this, iq ) );
+			onError( new XMPPError( this, iq ) );
 		default:
 		}
 	}

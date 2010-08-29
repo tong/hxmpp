@@ -18,6 +18,7 @@
 package jabber;
 
 import jabber.stream.PacketCollector;
+import xmpp.IQ;
 import xmpp.filter.IQFilter;
 
 /**
@@ -27,94 +28,54 @@ import xmpp.filter.IQFilter;
 class ServiceDiscoveryListener {
 	
 	public var stream(default,null) : Stream;
-	
-	/** */
 	public var identities : Array<xmpp.disco.Identity>;
 	
 	/** Custom info request handler relay */
-	public var onInfoQuery : xmpp.IQ->Void;
-	
+	public var onInfoQuery : IQ->IQ;
+	#if JABBER_COMPONENT
 	/** Custom items request handler relay */
-	public var onItemQuery : xmpp.IQ->Void;
+	public var onItemQuery : IQ->IQ;
+	#end
 	
-	//public var onInfoQuery(default,setInfoQueryHandler) : xmpp.IQ->Void;
-	//public var onItemQuery(default,setItemQueryHandler) : xmpp.IQ->Void;
-	
-	//var cinfo : PacketCollector;
-	//var citems : PacketCollector;
-	
-	public function new( stream : Stream, ?identities : Array<xmpp.disco.Identity> ) {
-		if( !stream.features.add( xmpp.disco.Info.XMLNS ) ||
-			!stream.features.add( xmpp.disco.Items.XMLNS ) )
-			throw "ServiceDiscovery listeners already added";
+	public function new( stream : Stream, identities : Array<xmpp.disco.Identity> ) {
+		if( !stream.features.add( xmpp.disco.Info.XMLNS )
+			#if JABBER_COMPONENT || !stream.features.add( xmpp.disco.Items.XMLNS ) #end )
+			throw "ServiceDiscovery listener already added";
 		this.stream = stream;
 		this.identities = ( identities == null ) ? new Array() : identities;
 		stream.collect( [cast new IQFilter( xmpp.disco.Info.XMLNS, null, xmpp.IQType.get )], handleInfoQuery, true );
+		#if JABBER_COMPONENT
 		stream.collect( [cast new IQFilter( xmpp.disco.Items.XMLNS, null, xmpp.IQType.get )], handleItemsQuery, true );
+		#end
 	}
 	
-	/*
-	function setInfoQueryHandler( h : xmpp.Packet->Void ) : xmpp.IQ->Void {
-		if( h == null ) {
-			cinfo.handlers = [handleInfoQuery];
+	function handleInfoQuery( iq : IQ ) {
+		if( onInfoQuery != null ) { // redirect to custom handler
+			var r = onInfoQuery( iq );
+			if( r != null ) {
+				stream.sendPacket( r );
+				return;
+			}
 		}
-		return h;
-	}
-	*/
-	
-	function handleInfoQuery( iq : xmpp.IQ ) { // return identities and stream features
-		//TODO
-		if( onInfoQuery != null ) { // redirect info query
-			onInfoQuery( iq );
-			return;
-		}
-		//var info = onInfoQuery( iq );
-		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, stream.jidstr );
+		var r = new IQ( xmpp.IQType.result, iq.id, iq.from, stream.jidstr );
 		r.x = new xmpp.disco.Info( identities, Lambda.array( stream.features ) );
 		stream.sendData( r.toString() );
 	}
 	
-	function handleItemsQuery( iq : xmpp.IQ ) {
-		//TODO
-		if( onItemQuery != null ) { // redirect items query
-			onItemQuery( iq );
-			return;
-		}
-		var r : xmpp.IQ;
-		// TODO (HACK)
-		if( Reflect.hasField( stream, "items" ) ) { // component stream .. return local stream items
-			r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, Reflect.field( stream, "serviceName" ) );
-			r.x = Reflect.field( stream, "items" );
-		} else { // client streams do not have items .. return a feature-not-implemented error
-			//???
-			r = new xmpp.IQ( xmpp.IQType.error, iq.id, iq.from );
-			//r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, -1, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );
-			r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );
-		}
-		r.from = stream.jidstr;
-		stream.sendPacket( r );
-	}
-	
-	/*
-	#if JABBER_DEBUG
-	
-	public function toString() : String {
-		var b = new StringBuf();
-		//for( 
-		trace( Reflect.hasField( stream, "items" ));
-		if( Reflect.hasField( stream, "items" ) ) {
-			trace("###########");
-			var items : Iterable<Dynamic> = Reflect.field( stream, "items" );
-			trace( items );
-			for( i in items ) {
-				trace(">>>>> "+i);
-				b.add( i );
+	#if JABBER_COMPONENT
+	function handleItemsQuery( iq : IQ ) {
+		if( onItemQuery != null ) { // redirect to custom handler
+			var r = onItemQuery( iq );
+			if( r != null ) {
+				stream.sendPacket( r );
+				return;
 			}
 		}
-		return b.toString(); 
+		var s : jabber.component.Stream = cast stream;
+		var r = IQ.createResult( iq );
+		r.x = s.items;
+		s.sendPacket( r );
 	}
-	
 	#end
-	*/
 	
 }
