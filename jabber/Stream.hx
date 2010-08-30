@@ -371,14 +371,16 @@ class Stream {
 		case starttls :
 			var x : Xml = null;
 			try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
-				#if JABBER_DEBUG
-				trace( "StartTLS failed" );
+				#if XMPP_DEBUG
+				XMPPDebug.inc( t );
 				#end
+				#if JABBER_DEBUG trace( "StartTLS failed" ); #end
 				cnx.disconnect();
 				return 0;
 			}
+			#if XMPP_DEBUG XMPPDebug.inc( t ); #end
 			if( x.nodeName != "proceed"
-// haXe 2.06 fukup HACK
+				// haXe 2.06 flash fukup HACK
 				#if !flash || x.get( "xmlns" ) != "urn:ietf:params:xml:ns:xmpp-tls" #end ) {
 				cnx.disconnect();
 				return 0;

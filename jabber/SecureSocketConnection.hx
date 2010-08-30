@@ -19,121 +19,30 @@ package jabber;
 
 // Legacy socket connection on port 5223
 
-#if nodejs
-
-import js.Node;
-private typedef Socket = Stream;
-
-// TODO buffer ?
-class SecureSocketConnection extends jabber.stream.Connection {
-	
-	public var port(default,null) : Int;
-	
-	var socket : Socket;
-	
-	public function new( host : String, port : Int = 5223 ) {
-		super( host, false, false );
-		this.port = port;
-	}
-	
-	public override function connect() {
-		socket = Node.net.createConnection( port, host );
-		socket.setEncoding( Node.UTF8 );
-		socket.addListener( Node.EVENT_STREAM_CONNECT, sockConnectHandler );
-		socket.addListener( Node.EVENT_STREAM_END, sockDisconnectHandler );
-		socket.addListener( Node.EVENT_STREAM_ERROR, sockErrorHandler );
-		socket.addListener( Node.EVENT_STREAM_DATA, sockDataHandler );
-	}
-	
-	public override function disconnect() {
-		if( !connected )
-			return;
-		socket.end();
-	}
-	
-	public override function read( ?yes : Bool = true ) : Bool {
-		//TODO
-		if( yes ) {
-			//reading = true;
-			//socket.addListener( "data", sockDataHandler );
-		} else {
-			socket.removeListener( "data", sockDataHandler );
-		}
-		return true;
-	}
-	
-	public override function write( t : String ) : Bool {
-		if( !connected || t == null || t.length == 0 )
-			return false;
-		socket.write( t );
-		return true;
-	}
-	
-	function sockConnectHandler() {
-		socket.setSecure();
-		connected = true;
-		__onConnect();
-	}
-	
-	function sockDisconnectHandler() {
-		connected = false;
-		__onDisconnect();
-	}
-	
-	function sockErrorHandler( e : String ) {
-		connected = false;
-		__onError( e );
-	}
-	
-	function sockDataHandler( t : String ) {
-		var b = haxe.io.Bytes.ofString( t );
-		__onData( b, 0, b.length );
-	}
-}
-
-
-#elseif (neko||php||cpp)
+#if (neko||php||cpp)
 
 #if neko
 import neko.tls.Socket;
 #elseif php
 import php.net.Host;
 import jabber.util.php.Socket;
+#elseif cpp
+import cpp.net.Host;
+import cpp.net.Socket;
 #end
 
-/**
-	Experimental SSL socket connection for neko (php).
-	Source files and NDLL from the 'hxssl' project are required.
-	See: http://disktree.spektral.at/git/?a=summary&p=hxssl
-*/
-class SecureSocketConnection extends jabber.stream.Connection {
+// TODO extend jabber.SocketConnection
+class SecureSocketConnection extends jabber.stream.SocketConnection<Socket> {
 	
-	public var port(default,null) : Int;
-	public var bufSize(default,null) : Int;
-	public var maxBufSize(default,null) : Int;
-	public var timeout(default,null) : Int;
-	
-	var socket : Socket;
-	var reading : Bool;
-	var buf : haxe.io.Bytes;
-	var bufbytes : Int;
-
-	public function new( host : String,
-						 port : Int = 5223,
-						 ?bufSize : Int,
-						 ?maxBufSize : Int,
+	public function new( host : String, port : Int = 5223, secure : Bool = true,
+						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
-		super( host, false, false );
-		this.port = port;
-		this.bufSize = ( bufSize == null ) ? SocketConnection.defaultBufSize : bufSize;
-		this.maxBufSize = ( maxBufSize == null ) ? SocketConnection.defaultMaxBufSize : maxBufSize;
-		this.timeout = timeout;	
+		super( host, port, secure, bufSize, maxBufSize, timeout );
 		reading = false;
 	}
 	
 	public override function connect() {
 		socket = new Socket();
-		//TODO socket.setTimeout( timeout );
 		buf = haxe.io.Bytes.alloc( bufSize );
 		bufbytes = 0;
 		#if neko
@@ -141,6 +50,7 @@ class SecureSocketConnection extends jabber.stream.Connection {
 		#elseif php
 		socket.connectTLS( new php.net.Host( host ), port );
 		#end
+		secured = true;
 		connected = true;
 		__onConnect();
 	}
@@ -154,7 +64,7 @@ class SecureSocketConnection extends jabber.stream.Connection {
 		#end
 		connected = false;
 	}
-
+	
 	public override function read( ?yes : Bool = true ) : Bool {
 		reading = true;
 		while( reading )
@@ -163,10 +73,18 @@ class SecureSocketConnection extends jabber.stream.Connection {
 	}
 	
 	public override function write( t : String ) : Bool {
+		if( !connected || t == null || t.length == 0 )
+			return false;
 		socket.write( t );
 		socket.output.flush();
 		return true;
 	}
+	
+	/*
+	public override function setSecure() {
+		trace( "DO NOTHING");
+	}
+	*/
 	
 	function readData() {
 		var buflen = buf.length;
@@ -195,136 +113,65 @@ class SecureSocketConnection extends jabber.stream.Connection {
 			bufbytes -= nbytes;
 		}
 		if( reading && pos > 0 )
-			buf = haxe.io.Bytes.alloc( SocketConnection.defaultBufSize );
+			buf = haxe.io.Bytes.alloc( bufSize );
+		//buf.blit( 0, buf, pos, bufbytes );
 	}
-	
 }
 
-
-#elseif (!nodejs)
-
-
-#if flash
-import flash.utils.ByteArray;
-#end
+#elseif flash
 
 #if air
-
-#if flash
 import flash.net.SecureSocket;
 import flash.events.Event;
 import flash.events.IOErrorEvent;
 import flash.events.SecurityErrorEvent;
 import flash.events.ProgressEvent;
-#elseif js
-import air.ByteArray;
-import air.SecureSocket;
-import air.Event;
-import air.IOErrorEvent;
-import air.SecurityErrorEvent;
-import air.ProgressEvent;
-#end
+import flash.utils.ByteArray;
 
-#elseif flash
-import tls.controller.SecureSocket;
-import tls.event.SecureSocketEvent;
-import tls.valueobject.SecurityOptionsVO;
-
-#end
-
-/**
-	TLS socket connection (flash/air).
-*/
-class SecureSocketConnection extends jabber.stream.Connection {
-			
-	#if air //?
-	public static var defaultBufSize = 128;
-	public static var defaultMaxBufSize = 131072;
-	#end
+class SecureSocketConnection extends jabber.stream.SocketConnection<SecureSocket> {
 	
-	public var port(default,null) : Int;
-	#if air
-	public var maxBufSize(default,null) : Int;
-	public var bufSize(default,null) : Int;
-	#end
-	
-	var socket : SecureSocket;
-	#if air
 	var buf : ByteArray;
-	#end
 	
-	public function new( host : String,
-						 port : Int = 5223
-						 #if air, ?bufSize : Int, ?maxBufSize : Int
-						 #end ) {
-		super( host, true );
-		this.port = port;
-		#if air
-		this.bufSize = ( bufSize == null ) ? defaultBufSize : bufSize;
-		this.maxBufSize = ( maxBufSize == null ) ? defaultMaxBufSize : maxBufSize;
-		#end
+	public function new( host : String, port : Int = 5223,
+						 ?bufSize : Int, ?maxBufSize : Int,
+						 timeout : Int = 10 ) {
+		super( host, port, true, bufSize, maxBufSize, timeout );
 	}
 	
 	public override function connect() {
-		socket = new SecureSocket();
-		#if air
 		buf = new ByteArray();
 		socket.addEventListener( Event.CONNECT, sockConnectHandler );
 		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
 		socket.addEventListener( IOErrorEvent.IO_ERROR, sockErrorHandler );
 		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, sockErrorHandler );
-		#else
-		socket.addEventListener( SecureSocketEvent.ON_CONNECT, sockConnectHandler );
-		socket.addEventListener( SecureSocketEvent.ON_SECURE_CHANNEL_ESTABLISHED, secureChannelEstablished );
-		socket.addEventListener( SecureSocketEvent.ON_CLOSE, sockDisconnectHandler );
-		socket.addEventListener( SecureSocketEvent.ON_ERROR, sockErrorHandler );
-		#end
-		socket.connect( host, port );
 	}
 	
 	public override function read( ?yes : Bool = true ) : Bool {
 		if( yes ) {
-			#if air
 			socket.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
-			#else
-			socket.addEventListener( SecureSocketEvent.ON_PROCESSED_DATA, socketDataHandler );
-			#end
 		} else {
-			#if air
 			socket.removeEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
-			#else
-			socket.removeEventListener( SecureSocketEvent.ON_PROCESSED_DATA, socketDataHandler );
-			#end
 		}
 		return true;
 	}
 	
 	public override function write( t : String ) : Bool {
-		#if air
 		socket.writeUTFBytes( t ); 
 		socket.flush();
-		#else
-		socket.sendString( t );
-		#end
 		return true;
 	}
 	
-	#if air
-	
 	function sockConnectHandler( e : Event ) {
-		trace(e);
 		connected = true;
 		__onConnect();
 	}
 
 	function sockDisconnectHandler( e : Event ) {
-		trace(e);
 		connected = false;
 		__onDisconnect();
 	}
 	
 	function sockErrorHandler( e : Event ) {
-		trace(e);
 		connected = false;
 		__onError( e.type );
 	}
@@ -345,38 +192,121 @@ class SecureSocketConnection extends jabber.stream.Connection {
 			buf = new ByteArray();
 		//socket.flush();
 	}
-	
-	#else
+}
 
-	function sockConnectHandler( e : SecureSocketEvent ) {
+#elseif TLS
+
+import tls.event.SecureSocketEvent;
+import tls.valueobject.SecurityOptionsVO;
+
+class SecureSocketConnection extends jabber.SocketConnection {
+	
+	public function new( host : String, port : Int = 5223,
+						 ?bufSize : Int, ?maxBufSize : Int,
+						 timeout : Int = 10 ) {
+		super( host, port, true, bufSize, maxBufSize, timeout );
+	}
+	
+	override function sockConnectHandler( e : SecureSocketEvent ) {
 		socket.startSecureSupport( SecurityOptionsVO.getDefaultOptions( SecurityOptionsVO.SECURITY_TYPE_TLS ) );
 	}
 	
-	function sockDisconnectHandler( e : SecureSocketEvent ) {
+	override function secureChannelEstablished( e : SecureSocketEvent ) {
+		connected = true;
+		__onConnect();
+	}
+}
+#end //TLS
+
+#elseif js
+
+#if air
+import air.ByteArray;
+import air.SecureSocket;
+import air.Event;
+import air.IOErrorEvent;
+import air.SecurityErrorEvent;
+import air.ProgressEvent;
+
+class SecureSocketConnection extends jabber.stream.SocketConnection<SecureSocket> {
+	
+	var buf : ByteArray;
+	
+	public function new( host : String, port : Int = 5223,
+						 ?bufSize : Int, ?maxBufSize : Int,
+						 timeout : Int = 10 ) {
+		super( host, port, true, bufSize, maxBufSize, timeout );
+	}
+	
+	public override function connect() {
+		buf = new ByteArray();
+		socket.addEventListener( Event.CONNECT, sockConnectHandler );
+		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
+		socket.addEventListener( IOErrorEvent.IO_ERROR, sockErrorHandler );
+		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, sockErrorHandler );
+	}
+	
+	public override function read( ?yes : Bool = true ) : Bool {
+		if( yes ) {
+			socket.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
+		} else {
+			socket.removeEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
+		}
+		return true;
+	}
+	
+	public override function write( t : String ) : Bool {
+		socket.writeUTFBytes( t ); 
+		socket.flush();
+		return true;
+	}
+	
+	function sockConnectHandler( e : Event ) {
+		connected = true;
+		__onConnect();
+	}
+
+	function sockDisconnectHandler( e : Event ) {
 		connected = false;
 		__onDisconnect();
 	}
 	
-	function secureChannelEstablished( e : SecureSocketEvent ) {
-		//socket.addEventListener( SecureSocketEvent.ON_PROCESSED_DATA, socketDataHandler );
-		connected = true;
-		__onConnect();
+	function sockErrorHandler( e : Event ) {
+		connected = false;
+		__onError( e.type );
 	}
 	
-	function sockErrorHandler( e : SecureSocketEvent ) {
-		trace(e);
-		__onError( e.toString() );
-	}
-	
-	function socketDataHandler( e : SecureSocketEvent ) {
-		if( e.rawData != null ) {
-			var b = haxe.io.Bytes.ofData( e.rawData );
-			__onData( b, 0, b.length  );
+	function sockDataHandler( e : ProgressEvent ) {
+		try {
+			socket.readBytes( buf, buf.length, e.bytesLoaded );
+		} catch( e : Dynamic ) {
+			#if JABBER_DEBUG
+		//	trace(e);
+			#end
+			return;
 		}
+		var b = haxe.io.Bytes.ofData( untyped buf );
+		if( b.length > maxBufSize )
+			throw "Max buffer size reached ("+maxBufSize+")";
+		if( __onData(  b, 0, b.length ) > 0 )
+			buf = new ByteArray();
+		//socket.flush();
 	}
-	
-	#end // !air
-	
 }
 
-#end // !neko||php||cpp
+
+#elseif nodejs
+class SecureSocketConnection extends jabber.SocketConnection {
+	public function new( host : String, port : Int = 5222,
+						 ?bufSize : Int, ?maxBufSize : Int,
+						 timeout : Int = 10 ) {
+		super( host, port, true, bufSize, maxBufSize, timeout );
+	}
+	override function sockConnectHandler() {
+		socket.setSecure();
+		super.sockConnectHandler();
+	}
+}
+#end //js
+
+#end
