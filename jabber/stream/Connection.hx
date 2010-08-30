@@ -88,8 +88,9 @@ class Connection {
 	
 	//TODO Send raw bytes.
 	/*
-	public function writeBytes( t : haxe.io.Bytes ) : haxe.io.Bytes {
-		return throw new error.AbstractError();
+	public function writeBytes( t : haxe.io.Bytes ) : Bool {
+		return throw "Abstract method";
+		//return throw new error.AbstractError();
 	}
 	*/
 	

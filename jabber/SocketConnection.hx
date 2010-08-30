@@ -220,6 +220,17 @@ class SocketConnection extends jabber.stream.Connection {
 		return true;
 	}
 	
+	/*
+	public override function writeBytes( bytes : haxe.io.Bytes ) : Bool {
+		#if flash
+		var ba = bytes.getData();
+		socket.writeBytes( ba, 0, ba.length );
+		socket.flush();
+		#end
+		return true;
+	}
+	*/
+	
 	function sockConnectHandler( e : Event ) {
 		connected = true;
 		__onConnect();
@@ -244,7 +255,7 @@ class SocketConnection extends jabber.stream.Connection {
 			#end
 			return;
 		}
-		var b = haxe.io.Bytes.ofData( untyped buf );
+		var b = haxe.io.Bytes.ofData( buf );
 		if( b.length > maxBufSize )
 			throw "Max buffer size reached ("+maxBufSize+")";
 		if( __onData(  b, 0, b.length ) > 0 )
@@ -378,7 +389,7 @@ class SocketConnection extends jabber.stream.Connection {
 						 ?port : Int = #if JABBER_COMPONENT 5275 #else 5222 #end,
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
-		super( host );
+		super( host, false );
 		this.port = port;
 		this.bufSize = ( bufSize == null ) ? defaultBufSize : bufSize;
 		this.maxBufSize = ( maxBufSize == null ) ? defaultMaxBufSize : maxBufSize;

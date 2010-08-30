@@ -42,8 +42,8 @@ class Item {
 		if( name != null ) x.set( "name", name );
 		if( subscription != null ) x.set( "subscription", Type.enumConstructor( subscription ) );
 		if( askType != null ) x.set( "ask", Type.enumConstructor( askType ) );
-		for( group in groups )
-			x.addChild( XMLUtil.createElement( "group", group ) );
+		for( g in groups )
+			x.addChild( XMLUtil.createElement( "group", g ) );
 		return x;
 	}
 	

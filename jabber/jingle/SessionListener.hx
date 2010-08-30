@@ -34,8 +34,9 @@ class SessionListener<T:SessionResponder> {
 		if( handler == null )
 			return;
 		var r = createResponder();
-		if( r.handleRequest( iq ) )
+		if( r.handleRequest( iq ) ) {
 			handler( r );
+		}
 	}
 	
 	// override me

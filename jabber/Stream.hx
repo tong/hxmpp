@@ -71,7 +71,7 @@ class Stream {
 	public var dataFilters(default,null) : List<TDataFilter>;
 	public var dataInterceptors(default,null) : List<TDataInterceptor>;
 	
-	var idCollectors : List<PacketCollector>;
+//	var idCollectors : List<PacketCollector>;
 	var collectors : List<PacketCollector>;
 	var interceptors : List<TPacketInterceptor>;
 	var numPacketsSent : Int;
@@ -81,7 +81,7 @@ class Stream {
 		server = { features : new Hash() };
 		features = new StreamFeatures();
 		version = true;
-		idCollectors = new List();
+//		idCollectors = new List();
 		collectors = new List();
 		interceptors = new List();
 		numPacketsSent = 0;
@@ -196,10 +196,11 @@ class Stream {
 			return null;
 		//TODO !!
 		//for( i in dataInterceptors )
-			//t = i.interceptData( t );
+		//	t = i.interceptData( t );
 #if flash // haXe 2.06 fukup		
 		t = StringTools.replace( t, "_xmlns_=", "xmlns=" );
 #end
+	//	sendRawData( haxe.io.Bytes.ofString( t ) );
 		if( !cnx.write( t ) )
 			return null;
 		numPacketsSent++;
@@ -208,6 +209,16 @@ class Stream {
 		#end
 		return t;
 	}
+	
+	/*
+	public function sendRawData( bytes : haxe.io.Bytes ) : haxe.io.Bytes {
+		for( i in dataInterceptors )
+			bytes = i.interceptData( bytes );
+		if( !cnx.writeBytes( bytes ) )
+			return null;
+		return bytes;
+	}
+	*/
 	
 	/**
 		Send an IQ packet and forward the collected response to the given handler function.
@@ -220,9 +231,10 @@ class Stream {
 		//iq.from = jidstr;
 		var c : PacketCollector = null;
 		if( handler != null ) {
-			//c = new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block );
+			c = new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block );
+			addCollector( c );
 			//addIDCollector( c );
-			c = addIDCollector( iq.id, handler );
+			//c = addIDCollector( iq.id, handler );
 		}
 		var s : xmpp.IQ = sendPacket( iq );
 		if( s == null && handler != null ) {
@@ -275,11 +287,13 @@ class Stream {
 		Adds an packet collector which filters XMPP packets by ids.
 		These collectors get processed before any other collectors.
 	*/
+	/*
 	public function addIDCollector( id : String, handler : Dynamic->Void ) : PacketCollector {
 		var c = new PacketCollector( [cast new PacketIDFilter(id)], handler );
 		idCollectors.add( c );
 		return c;
 	}
+	*/
 	
 	/**
 		Adds a XMPP packet collector to this stream and starts the timeout if not null.
@@ -295,7 +309,7 @@ class Stream {
 	*/
 	public function removeCollector( c : PacketCollector ) : Bool {
 		if( !collectors.remove( c ) ) {
-			if( !idCollectors.remove( c ) )
+			//if( !idCollectors.remove( c ) )
 				return false;
 		}
 		if( c.timeout != null ) c.timeout.stop();
@@ -321,6 +335,10 @@ class Stream {
 	public function handleData( buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) : Int {
 		if( status == StreamStatus.closed ) return -1;
 		//TODO .. data filters
+	//	for( f in dataFilters ) {
+	//		buf = f.filterData( buf );
+	//	}
+		
 		var t : String = buf.readString( bufpos, buflen );
 		
 #if flash // haXe 2.06 fuckup
@@ -420,6 +438,7 @@ class Stream {
 		#if XMPP_DEBUG
 		XMPPDebug.inc( p.toString() );
 		#end
+		/*
 		for( c in idCollectors ) {
 			if( c.accept( p ) ) {
 				c.deliver( p );
@@ -428,6 +447,7 @@ class Stream {
 				return true;
 			}
 		}
+		*/
 		var collected = false;
 		for( c in collectors ) {
 			if( c.accept( p ) ) {
@@ -443,7 +463,7 @@ class Stream {
 		}
 		if( !collected ) {
 			#if JABBER_DEBUG
-			//trace( "Incoming '"+Type.enumConstructor( p._type )+"' packet not handled ( "+p.from+" -> "+p.to+" )", "warn" );
+			trace( "Incoming '"+Type.enumConstructor( p._type )+"' packet not handled ( "+p.from+" -> "+p.to+" )", "warn" );
 			#end
 			if( p._type == xmpp.PacketType.iq ) { // send 'feature not implemented' response
 				var q : xmpp.IQ = cast p;
