@@ -46,14 +46,14 @@ TLS
 ---
 Currently only legacy TLS on port 5223 is supported.
 * neko:
-hxmpp/ndll/OS/tls.ndll has to be somewhere nekoVM can find it
+	Link to hxssl project (git://83.64.208.21/hxssl.git)
 * flash:
--cp ../../hxmpp/tls
--swf-lib ../../hxmpp/util/tls/tls.swf
+	-cp ../../hxmpp/tls
+	-swf-lib ../../hxmpp/util/tls/tls.swf
 * cpp:
-no support right now
+	no support right now
 * js:
-Use the TLS flash-socketbridge
+	Use the TLS flash-socketbridge
 
 
 

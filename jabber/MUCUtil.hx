@@ -72,5 +72,5 @@ class MUCUtil {
 		return if( i2 == -1 ) [ t.substr( 0, i1 ), t.substr( i1+1 ) ];
 		else [ t.substr( 0, i1 ), t.substr( i1+1, i2-i1-1 ), t.substr( i2+1 ) ];
 	}
-	
+		
 }

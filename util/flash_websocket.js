@@ -1,5 +1,5 @@
 
-// WebSocket interface for flash
+// WebSocket glue for flash
 
 var swf;
 var ws;

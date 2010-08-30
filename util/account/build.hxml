@@ -7,6 +7,13 @@
 #-D XMPP_DEBUG
 #-cmd nekotools boot xmpp_account_register.n
 
+#--next
+#-cpp bin
+#--remap neko:cpp
+#-main XMPPAccountRegister
+#-cp ../../
+#-D HXCPP_MULTI_THREADED
+
 
 ### Human input account register tool
 --next
