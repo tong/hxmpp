@@ -20,7 +20,7 @@ package xmpp;
 /**
 	<a href="http://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a><br/>
 */
-class ChatStateExtension {
+class ChatStateNotification {
 	
 	public static var XMLNS = xmpp.Packet.PROTOCOL+"/chatstates";
 	
@@ -28,14 +28,15 @@ class ChatStateExtension {
 		Adds (or changes if already has) the chat state property of the givent message packet.
 	*/
 	public static function set( m : xmpp.Message, state : ChatState ) : xmpp.Message {
-		clearChatStateProperties( m );
+		clearChatStateProperty( m );
 		m.properties.push( createXML( state ) );
 		return m;
 	}
 	
 	/**
+		Remove the chat state property from the given message packet.
 	*/
-	public static function clearChatStateProperties( m : xmpp.Message ) : xmpp.Message  {
+	public static function clearChatStateProperty( m : xmpp.Message ) : xmpp.Message  {
 		for( p in m.properties ) {
 			switch( p.nodeName ) {
 			case "active","composing","paused","inactive","gone" :
