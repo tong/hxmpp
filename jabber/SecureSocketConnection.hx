@@ -18,7 +18,6 @@
 package jabber;
 
 // Legacy socket connection on port 5223
-// This should NOT get used
 
 #if nodejs
 
@@ -96,7 +95,7 @@ class SecureSocketConnection extends jabber.stream.Connection {
 #elseif (neko||php||cpp)
 
 #if neko
-import neko.ssl.Socket;
+import neko.tls.Socket;
 #elseif php
 import php.net.Host;
 import jabber.util.php.Socket;
@@ -258,7 +257,7 @@ class SecureSocketConnection extends jabber.stream.Connection {
 						 port : Int = 5223
 						 #if air, ?bufSize : Int, ?maxBufSize : Int
 						 #end ) {
-		super( host );
+		super( host, true );
 		this.port = port;
 		#if air
 		this.bufSize = ( bufSize == null ) ? defaultBufSize : bufSize;
@@ -299,6 +298,7 @@ class SecureSocketConnection extends jabber.stream.Connection {
 		}
 		return true;
 	}
+	
 	public override function write( t : String ) : Bool {
 		#if air
 		socket.writeUTFBytes( t ); 
@@ -365,6 +365,7 @@ class SecureSocketConnection extends jabber.stream.Connection {
 	
 	function sockErrorHandler( e : SecureSocketEvent ) {
 		trace(e);
+		__onError( e.toString() );
 	}
 	
 	function socketDataHandler( e : SecureSocketEvent ) {
