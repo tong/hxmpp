@@ -30,19 +30,13 @@ class PacketPropertyFilter {
 	}
 	
 	public function accept( p : xmpp.Packet ) : Bool {
-		for( p in p.properties ) {
-			if( ns != null && p.get( "xmlns" ) != ns ) {
+		for( prop in p.properties ) {
+			if( ns != null && prop.get( "xmlns" ) != ns )
 				continue;
-			}
-			if( name != null ) {
-				if( p.nodeName == name )
-					return true;
-			}
-			/*?
-			 else {
+			if( name == null )
 				return true;
-			}
-			*/
+			if( prop.nodeName == name )
+				return true;
 		}
 		return false;
 	}
