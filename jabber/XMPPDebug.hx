@@ -25,6 +25,8 @@ import neko.Lib;
 import php.Lib;
 #elseif cpp
 import cpp.Lib;
+#elseif nodejs
+import js.Lib;
 #elseif flash
 import flash.external.ExternalInterface;
 #end
@@ -41,7 +43,8 @@ typedef TStream = {
 	Set the haXe compiler flag: -D XMPP_DEBUG to activate it.
 	</p>
 	<p>
-	Displayed XMPP transfer gets relayed to the default debug console on browser targets (if available) and color highlighted on terminal targets.
+	Displayed XMPP transfer gets relayed to the default debug console on browser targets,
+	color highlighted on terminal targets.
 	</p>
 */
 class XMPPDebug {
@@ -67,7 +70,7 @@ class XMPPDebug {
 			return stream.sendData( t );
 		} );
 		#end
-		#elseif js
+		#elseif (js&&!nodejs)
 		#if air
 		useConsole = false;
 		#else
@@ -98,13 +101,10 @@ class XMPPDebug {
 	
 	#if JABBER_CONSOLE
 	static function printToXMPPConsole( t : String, out : Bool ) {
-//		var v = haxe.Serializer.run( t );
 		try {
 			#if flash
-			//ExternalInterface.call( 'XMPPConsole.print("'+v+'",'+out+')' );
 			ExternalInterface.call( 'XMPPConsole.print("'+t+'",'+out+')' );
 			#elseif js
-			//untyped XMPPConsole.print( v, out );
 			untyped XMPPConsole.print( t, out );
 			#end
 		} catch( e : Dynamic ) {
@@ -112,12 +112,6 @@ class XMPPDebug {
 		}
 	}
 	#end
-	
-	/*
-	public static inline function info( t : String ) {
-		handler.out( t );
-	}
-	*/
 	
 	/**
 		Default incoming XMPP debug relay.
@@ -133,55 +127,41 @@ class XMPPDebug {
 		print( t, true, "log" );
 	}
 	
-	/*
-	public static inline function error( t : String ) {
-	}
-	*/
-	
 	public static inline function print( t : String, out : Bool, level : String = "log" ) {
-		#if (flash||js)
+		#if (neko||cpp||php||nodejs)
+		_print( t, out ? color_out : color_inc );
+		#elseif (flash||js)
 		_print( t, out, level );
-		#elseif (cpp||neko||php)
-		_print( t, (out)?fgOut:fgInc, (out)?bgOut:bgInc );
 		#end
 	}
 	
-	#if (flash||js)
+	#if (neko||cpp||php||nodejs)
+
+	public static var color_out = 36;
+	public static var color_inc = 33;
+	
+	public static function _print( t : String, color : Int ) {
+		if( color == null ) {
+			Lib.print( t );
+			return;
+		}
+		var b = new StringBuf();
+		b.add( "\033[" );
+		b.add( color );
+		b.add( "m" );
+		b.add( t );
+		b.add( "\033[" );
+		b.add( "m\n" );
+		Lib.print( b.toString() );
+	}
+	
+	#elseif (flash||js)
 	
 	/** Indicates if the transfer should get printed to the browsers debug console */
 	public static var useConsole : Bool;
 	
-	public static var fgInc = 34;
-	public static var bgInc = 42;
-	public static var fgOut = 34;
-	public static var bgOut = 43;
-	public static var defaultColor = 37;
-	public static var defaultBackgroundcolor = 44;
-	
-	static function __print( t : String, color : Int, backgroundColor : Int ) {
-		var b = new StringBuf();
-		b.add( "\033[" );
-		b.add( color );
-		if( backgroundColor != -1 ) {
-			b.add( ";" );
-			b.add( backgroundColor );
-		}
-		b.add( "m" );
-		b.add( t );
-		b.add( "\033[" );
-		b.add( defaultColor );
-		b.add( ";" );
-		b.add( defaultBackgroundcolor );
-		b.add( "m\n" );
-		haxe.Log.trace( b.toString(), null );
-		
-	}
-	
 	public static function _print( t : String, out : Bool = true, level : String = "log" ) {
 		var dir = "XMPP-"+((out)?"O ":"I ");
-		#if nodejs
-		__print( t, (out)?fgOut:fgInc, (out)?bgOut:bgInc );
-		#else
 		if( useConsole ) {
 			#if flash
 			ExternalInterface.call( "console."+level, dir+t );
@@ -191,41 +171,9 @@ class XMPPDebug {
 		} else {
 			haxe.Log.trace( t, { className : "", methodName : "", fileName : dir, lineNumber : 0, customParams : [] } );
 		}
-		#end
 	}
 	
-	#elseif (cpp||neko||php)
-	
-	public static var fgInc = 34;
-	public static var bgInc = 42;
-	public static var fgOut = 34;
-	public static var bgOut = 43;
-	public static var defaultColor = 37;
-	public static var defaultBackgroundcolor = 44;
-	
-	public static function _print( t : String, color : Int, backgroundColor : Int ) {
-		if( color == null ) {
-			Lib.print( t );
-			return;
-		}
-		var b = new StringBuf();
-		b.add( "\033[" );
-		b.add( color );
-		if( backgroundColor != -1 ) {
-			b.add( ";" );
-			b.add( backgroundColor );
-		}
-		b.add( "m" );
-		b.add( t );
-		b.add( "\033[" );
-		b.add( defaultColor );
-		b.add( ";" );
-		b.add( defaultBackgroundcolor );
-		b.add( "m\n" );
-		Lib.print( b.toString() );
-	}
-	
-	#end // (cpp||neko||php)
+	#end // (flash!!js)
 	
 }
 
