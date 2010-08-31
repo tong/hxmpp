@@ -45,13 +45,25 @@ class Roster {
 
 	public static var defaultSubscriptionMode = manual;
 	
+	/** Roster got loaded */
 	public dynamic function onLoad() : Void;
+	/** Item got added to the roster */
 	public dynamic function onAdd( i : Item ) : Void;
+	/** Item got removed from your roster */
 	public dynamic function onRemove( i : Item ) : Void;
+	/** Item got updated */
 	public dynamic function onUpdate( i : Item ) : Void;
-	public dynamic function onSubscription( i : Item  ) : Void;
+	/** Subscribed to the presence of the contact */
 	public dynamic function onSubscribed( i : Item ) : Void;
+	/** Unsubscribed presence of the contact */
 	public dynamic function onUnsubscribed( i : Item ) : Void;
+	/** Incoming presence subscription request */
+	public dynamic function onAsk( i : Item  ) : Void;
+	/** Contact subscribed to your presence */
+	public dynamic function onSubscription( jid : String  ) : Void;
+	/** Contact unsubscribed from your presence */
+	public dynamic function onUnsubscription( i : Item ) : Void;
+	/** A roster manipulation error occured */
 	public dynamic function onError( e : XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
@@ -101,6 +113,9 @@ class Roster {
 		stream.sendIQ( iq );
 	}
 	
+	/**
+		Add entry to your roster
+	*/
 	public function addItem( jid : String, ?groups : Iterable<String> ) : Bool {
 		if( hasItem( jid ) )
 			return false;
@@ -108,6 +123,9 @@ class Roster {
 		return true;
 	}
 	
+	/**
+		Remove entry from your roster
+	*/
 	public function removeItem( jid : String ) : Bool {
 		var i = getItem( jid );
 		if( i == null )
@@ -128,6 +146,10 @@ class Roster {
 		return true;
 	}
 	
+	/**
+		Subscribe to the presence of the entity.
+		You will get presence updates from this entity (if confirmed).
+	*/
 	public function subscribe( jid : String ) : Bool {
 		var i = getItem( jid );
 		if( i == null ) {
@@ -137,29 +159,60 @@ class Roster {
 			stream.sendIQ( iq, function(r) {
 				switch( r.type ) {
 				case result :
-					me.sendSubscription( jid );
+					me.sendPresence( jid, PresenceType.subscribe );
 				case error :
 					me.onError( new XMPPError( me, r ) );
 				default : //
 				}
 			});
-			
 		} else {
-			if( i.subscription == Subscription.to )
-				return false; // already subscribed
-			sendSubscription( jid );
+			trace(i.askType);
+			if( i.askType != AskType.subscribe ) {
+				sendPresence( jid, PresenceType.subscribe );
+			}
 		}
 		return true;
 	}
 	
-	public function confirmSubscription( jid : String, allow : Bool = true ) {
-		var p = new Presence( ( allow ) ? PresenceType.subscribed : PresenceType.unsubscribed );
-		p.to = jid;
-		stream.sendData( p.toString() );
+	/**
+		Unsubscribe from entities presence.
+		The entity will no longer recieve presence updates.
+	*/
+	public function unsubscribe( jid : String, cancelSubscription : Bool = true ) : Bool {
+		var i = getItem( jid );
+		if( i == null )
+			return false;
+		if( i.askType != AskType.unsubscribe ) {
+			sendPresence( jid, PresenceType.unsubscribe );
+		}
+		if( cancelSubscription )
+			this.cancelSubscription( jid );
+		return true;
 	}
 	
-	function sendSubscription( jid : String ) {
-		var p = new xmpp.Presence( PresenceType.subscribe );
+	/**
+		Cancel the subscription from entity.
+		You will no longer recieve presence updates.
+	*/
+	public function cancelSubscription( jid : String ) : Bool {
+		sendPresence( jid, PresenceType.unsubscribe );
+		return true;
+	}
+	
+	/**
+		Allow the requesting entity to recieve presence updates from you.
+	*/
+	public function confirmSubscription( jid : String, allow : Bool = true,
+										 subscribe : Bool = false ) {
+		sendPresence( jid, ( allow ) ? PresenceType.subscribed : PresenceType.unsubscribed );
+		onSubscription( jid );
+		if( subscribe ) {
+			this.subscribe( jid );
+		}
+	}
+	
+	function sendPresence( jid : String, type : PresenceType ) {
+		var p = new xmpp.Presence( type );
 		p.to = jid;
 		stream.sendPacket( p );
 	}
@@ -236,24 +289,34 @@ class Roster {
 		var i = getItem( jid.bare );
 		if( p.type != null ) {
 			switch( p.type ) {
+			
 			case subscribe :
 				switch( subscriptionMode ) {
 				case acceptAll(s) :
-					confirmSubscription( p.from, true );
-					if( s ) this.subscribe( p.from );
+					confirmSubscription( p.from, true, s );
 				case rejectAll :
 					var r = new xmpp.Presence( xmpp.PresenceType.unsubscribed );
 					r.to = p.from;
 					stream.sendPacket( r );
 				case manual :
-					onSubscription( new Item( p.from ) );
+					onAsk( new Item( p.from ) );
+					//onSubscription( new Item( p.from ) );
 				}
+			
 			case subscribed :
 				onSubscribed( i );
-			case unsubscribed :
-				items.remove( i );
+				//onSubscription( new Item( p.from ) );
+			
+			case unsubscribe :
 				onUnsubscribed( i );
+			
+			case unsubscribed :
+				trace("TODO unsubscribed");
+				//items.remove( i );
+				//onUnsubscribed( i );
+			
 			default : //
+				trace("TODO ?????????????");
 			}
 		}
 	}
