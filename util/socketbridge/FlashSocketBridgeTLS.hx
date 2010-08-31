@@ -1,6 +1,6 @@
 /*
  *	This file is part of HXMPP.
- *	Copyright (c)2009-2010 http://www.disktree.net
+ *	Copyright (c)2010 http://www.disktree.net
  *	
  *	HXMPP is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -24,49 +24,49 @@ import tls.valueobject.SecurityOptionsVO;
 
 private class Socket extends SecureSocket {
 	public var id(default,null) : UInt;
-	public function new( id : UInt ) {
+	public var secure(default,null) : Bool;
+	public var legacy(default,null) : Bool;
+	public function new( id : UInt, secure : Bool, legacy : Bool ) {
 		super();
 		this.id = id;
+		this.secure = secure;
+		this.legacy = legacy;
 	}
 }
 
-/**
-	Secure flash socketbridge.
-*/
-class FlashSecureSocketBridge {
+class FlashSocketBridgeTLS {
 	
 	var ctx : String;
 	var sockets : IntHash<Socket>;
 	
 	function new( ?ctx : String ) {
-		this.ctx = ( ctx != null ) ? ctx : "jabber.SocketBridgeConnection";
+		this.ctx = ( ctx != null ) ? ctx : "jabber.SocketConnection";
 		init();
 	}
 	
 	function init() {
-		if( ExternalInterface.available ) {
-			ExternalInterface.addCallback( "createSocket", createSocket );
-			ExternalInterface.addCallback( "destroySocket", destroySocket );
-			ExternalInterface.addCallback( "connect", connect );
-			ExternalInterface.addCallback( "disconnect", disconnect );
-			//ExternalInterface.addCallback( "destroy", destroy );
-			//ExternalInterface.addCallback( "destroyAll", destroyAll );
-			ExternalInterface.addCallback( "send", send );
-		} else {
-			throw "Unable to initialize external connection on socket bridge";
-		}
+		if( !ExternalInterface.available )
+			throw "External interface not available";
 		sockets = new IntHash();
+		ExternalInterface.addCallback( "createSocket", createSocket );
+		ExternalInterface.addCallback( "destroySocket", destroySocket );
+		ExternalInterface.addCallback( "connect", connect );
+		ExternalInterface.addCallback( "disconnect", disconnect );
+		ExternalInterface.addCallback( "setSecure", setSecure );
+		ExternalInterface.addCallback( "send", send );
+		//ExternalInterface.addCallback( "destroy", destroy );
+		ExternalInterface.addCallback( "destroyAll", destroyAll );
 	}
 	
-	function createSocket( ?secure : Bool = true ) : Int {
+	function createSocket( secure : Bool = true, legacy : Bool = false ) : Int {
 		var id = Lambda.count( sockets );
-		var s = new Socket( id );
+		var s = new Socket( id, secure, legacy );
+		sockets.set( id, s );
 		s.addEventListener( SecureSocketEvent.ON_CONNECT, sockConnectHandler );
 		s.addEventListener( SecureSocketEvent.ON_SECURE_CHANNEL_ESTABLISHED, sockSecuredHandler );
 		s.addEventListener( SecureSocketEvent.ON_CLOSE, sockDisconnectHandler );
 		s.addEventListener( SecureSocketEvent.ON_ERROR, sockErrorHandler );
 		s.addEventListener( SecureSocketEvent.ON_PROCESSED_DATA, sockDataHandler );
-		sockets.set( id, s );
 		return id;
 	}
 	
@@ -74,11 +74,18 @@ class FlashSecureSocketBridge {
 		if( !sockets.exists( id ) )
 			return false;
 		var s = sockets.get( id );
-		//if( s.connected ) s.close();
-		try { s.close(); } catch( e : Dynamic ) {}
+		if( s.isConnected() ) s.close();
 		sockets.remove( s.id );
 		s = null;
 		return true;
+	}
+	
+	function destroyAll() {
+		for( s in sockets ) {
+			s.close();
+			s = null;
+		}
+		sockets = new IntHash();
 	}
 	
 	function connect( id : Int, host : String, port : Int,
@@ -86,6 +93,7 @@ class FlashSecureSocketBridge {
 		if( !sockets.exists( id ) )
 			return false;
 		var s = sockets.get( id );
+		#if flash10 if( timeout > 0 ) s.timeout = timeout; #end
 		s.connect( host, port );
 		return true;
 	}
@@ -103,17 +111,31 @@ class FlashSecureSocketBridge {
 			return false;
 		var s = sockets.get( id );
 		s.sendString( data ); 
-		//s.flush();
 		return true;
 	}
 	
+	function setSecure( id : Int ) {
+		if( !sockets.exists( id ) )
+			return false;
+		var s = sockets.get( id );
+		s.startSecureSupport( SecurityOptionsVO.getDefaultOptions( SecurityOptionsVO.SECURITY_TYPE_TLS ) );
+		return true;
+	}
 	
 	function sockConnectHandler( e : SecureSocketEvent ) {
-		e.target.startSecureSupport( SecurityOptionsVO.getDefaultOptions( SecurityOptionsVO.SECURITY_TYPE_TLS ) );
+		var s = e.target;
+		if( s.secure && s.legacy )
+			s.startSecureSupport( SecurityOptionsVO.getDefaultOptions( SecurityOptionsVO.SECURITY_TYPE_TLS ) );
+		else
+			ExternalInterface.call( ctx+".handleConnect", e.target.id );
 	}
 
 	function sockSecuredHandler( e : SecureSocketEvent ) {
-		ExternalInterface.call( ctx+".handleConnect", e.target.id );
+		var s = e.target;
+		if( s.secure && s.legacy )
+			ExternalInterface.call( ctx+".handleConnect", s.id );
+		else
+			ExternalInterface.call( ctx+".handleSecure", s.id );
 	}
 	
 	function sockDisconnectHandler( e : SecureSocketEvent ) {
@@ -134,7 +156,6 @@ class FlashSecureSocketBridge {
 		var cm = new flash.ui.ContextMenu();
 		cm.hideBuiltInItems();
 		flash.Lib.current.contextMenu = cm;
-		new FlashSecureSocketBridge( flash.Lib.current.loaderInfo.parameters.ctx );
+		new FlashSocketBridgeTLS( flash.Lib.current.loaderInfo.parameters.ctx );
 	}
-	
 }

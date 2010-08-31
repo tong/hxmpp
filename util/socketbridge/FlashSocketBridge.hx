@@ -1,6 +1,6 @@
 /*
  *	This file is part of HXMPP.
- *	Copyright (c)2009-2010 http://www.disktree.net
+ *	Copyright (c)2010 http://www.disktree.net
  *	
  *	HXMPP is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -17,11 +17,11 @@
 */
 package;
 
+import flash.external.ExternalInterface;
 import flash.events.Event;
 import flash.events.IOErrorEvent;
 import flash.events.SecurityErrorEvent;
 import flash.events.ProgressEvent;
-import flash.external.ExternalInterface;
 
 private class Socket extends flash.net.Socket {
 	public var id(default,null) : UInt;
@@ -31,43 +31,38 @@ private class Socket extends flash.net.Socket {
 	}
 }
 
-/**
-	Flash socketbridge.
-*/
 class FlashSocketBridge{
 	
 	var ctx : String;
 	var sockets : IntHash<Socket>;
 	
 	function new( ?ctx : String ) {
-		this.ctx = ( ctx != null ) ? ctx : "jabber.SocketBridgeConnection";
+		this.ctx = ( ctx != null ) ? ctx : "jabber.SocketConnection";
 		init();
 	}
 	
 	function init() {
-		if( ExternalInterface.available ) {
-			ExternalInterface.addCallback( "createSocket", createSocket );
-			ExternalInterface.addCallback( "destroySocket", destroySocket );
-			ExternalInterface.addCallback( "connect", connect );
-			ExternalInterface.addCallback( "disconnect", disconnect );
-			//ExternalInterface.addCallback( "destroy", destroy );
-			//ExternalInterface.addCallback( "destroyAll", destroyAll );
-			ExternalInterface.addCallback( "send", send );
-		} else {
-			throw "Unable to initialize external connection on socket bridge";
-		}
+		if( !ExternalInterface.available )
+			throw "External interface not available";
 		sockets = new IntHash();
+		ExternalInterface.addCallback( "createSocket", createSocket );
+		ExternalInterface.addCallback( "destroySocket", destroySocket );
+		ExternalInterface.addCallback( "connect", connect );
+		ExternalInterface.addCallback( "disconnect", disconnect );
+		ExternalInterface.addCallback( "send", send );
+		//ExternalInterface.addCallback( "destroy", destroy );
+		ExternalInterface.addCallback( "destroyAll", destroyAll );
 	}
 	
-	function createSocket() : Int {
+	function createSocket( _secure_false_ : Bool ) : Int {
 		var id = Lambda.count( sockets );
 		var s = new Socket( id );
+		sockets.set( id, s );
 		s.addEventListener( Event.CONNECT, sockConnectHandler );
 		s.addEventListener( Event.CLOSE, sockDisconnectHandler );
 		s.addEventListener( IOErrorEvent.IO_ERROR, sockErrorHandler );
 		s.addEventListener( SecurityErrorEvent.SECURITY_ERROR, sockErrorHandler );
 		s.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
-		sockets.set( id, s );
 		return id;
 	}
 	
@@ -81,11 +76,19 @@ class FlashSocketBridge{
 		return true;
 	}
 	
+	function destroyAll() {
+		for( s in sockets ) {
+			s.close();
+			s = null;
+		}
+		sockets = new IntHash();
+	}
+	
 	function connect( id : Int, host : String, port : Int, ?timeout : Int = -1 ) : Bool {
-		#if flash10 if( timeout > 0 ) s.timeout = timeout; #end
 		if( !sockets.exists( id ) )
 			return false;
 		var s = sockets.get( id );
+		#if flash10 if( timeout > 0 ) s.timeout = timeout; #end
 		s.connect( host, port );
 		return true;
 	}
@@ -97,20 +100,6 @@ class FlashSocketBridge{
 		s.close();
 		return true;
 	}
-	
-	/*
-	function destroy( id : Int ) : Bool {
-		trace("SOCKETBRIDGE destroy: "+id );
-		if( !sockets.exists( id ) )
-			return false;
-		var s = sockets.get( id );
-		//s.close();
-		if( s.connected ) s.close();
-		sockets.remove( id );
-		s = null;
-		return true;
-	}
-	*/
 	
 	function send( id : Int, data : String ) : Bool {
 		if( !sockets.exists( id ) )
@@ -129,7 +118,7 @@ class FlashSocketBridge{
 		ExternalInterface.call( ctx+".handleDisconnect", e.target.id );
 	}
 	
-	function sockErrorHandler( e ) {
+	function sockErrorHandler( e : Event ) {
 		ExternalInterface.call( ctx+".handleError", e.target.id, e.type );
 	}
 	
@@ -145,5 +134,4 @@ class FlashSocketBridge{
 		flash.Lib.current.contextMenu = cm;
 		new FlashSocketBridge( flash.Lib.current.loaderInfo.parameters.ctx );
 	}
-	
 }

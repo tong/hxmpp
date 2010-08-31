@@ -15,11 +15,6 @@ import cpp.net.Socket;
 
 class SocketConnection extends jabber.stream.SocketConnection<Socket> {
 	
-	public var reading(default,null) : Bool;
-	
-	var buf : haxe.io.Bytes;
-	var bufbytes : Int;
-	
 	public function new( host : String, port : Int = 5222, secure : Bool = #if (neko||cpp||air) false #else true #end,
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
@@ -301,7 +296,7 @@ class SocketConnection extends jabber.stream.SocketConnection<Stream> {
 	
 	public override function setSecure() {
 		socket.addListener( Node.EVENT_STREAM_SECURE, sockSecureHandler );
-		socket.setSecure();
+		socket.setSecure( null );
 	}
 	
 	public override function write( t : String ) : Bool {
@@ -349,23 +344,28 @@ class SocketConnection extends jabber.stream.SocketConnection<Stream> {
 #else // <-nodejs / js-socketbridge->
 
 #if JABBER_SOCKETBRIDGE
+
 class SocketConnection extends jabber.stream.SocketConnection<Socket> {
 	
 	var buf : String;
 	
 	public function new( host : String,
-						 ?port : Int = #if JABBER_COMPONENT 5275 #else 5222 #end,
+						 ?port : Int = 5222,
+						 secure = true,
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
 		super( host, port, secure, bufSize, maxBufSize, timeout );
+		if( !SocketConnection.initialized )
+			throw "Socketbridge not initialized";
 	}
 	
 	public override function connect() {
 		buf = "";
-		socket = new Socket();
+		socket = new Socket( secure );
 		socket.onConnect = sockConnectHandler;
 		socket.onDisconnect = sockDisconnectHandler;
 		socket.onError = sockErrorHandler;
+		socket.onSecured = sockSecuredHandler;
 		socket.connect( host, port );
 	}
 	
@@ -373,21 +373,14 @@ class SocketConnection extends jabber.stream.SocketConnection<Socket> {
 		if( !connected )
 			return;
 		connected = false;
-		try {
-			socket.close();
-		} catch( e : Dynamic ) {
-			trace(e);
+		try socket.close() catch( e : Dynamic ) {
 			__onError( "Error closing socket" );
 			return;
 		}
 	}
 	
 	public override function read( ?yes : Bool = true ) : Bool {
-		if( yes ) {
-			socket.onData = sockDataHandler;
-		} else {
-			socket.onData = null;
-		}
+		socket.onData = yes ? sockDataHandler : null;
 		return true;
 	}
 	
@@ -396,6 +389,10 @@ class SocketConnection extends jabber.stream.SocketConnection<Socket> {
 			return false;
 		socket.send( t );
 		return true;
+	}
+	
+	public override function setSecure() {
+		socket.setSecure();
 	}
 	
 	function sockConnectHandler() {
@@ -408,125 +405,66 @@ class SocketConnection extends jabber.stream.SocketConnection<Socket> {
 		__onDisconnect();
 	}
 	
+	function sockSecuredHandler() {
+		secured = true;
+		__onSecured( null );
+	}
+	
+	function sockDataHandler( t : String ) {
+		var s = buf+t;
+		if( s.length > maxBufSize )
+			throw "Max socket buffer size reached ("+maxBufSize+")";
+		if( __onData( haxe.io.Bytes.ofString( s ), 0, s.length ) == 0 ) s else "";
+	}
+	
 	function sockErrorHandler( e : String ) {
 		connected = false;
 		__onError( e );
 	}
 	
-	function sockDataHandler( t : String ) {
-		var s = buf+t;
-		if( s.length > maxBufSize ) {
-			#if JABBER_DEBUG
-			trace( "Max socket buffer size reached ("+maxBufSize+")" );
-			#end
-			throw "Max socket buffer size reached ("+maxBufSize+")";
-		}
-		var r = __onData( haxe.io.Bytes.ofString( s ), 0, s.length );
-		buf = ( r == 0 ) ? s : ""; 
-	}
-}
-
-class Socket {
-	
-	public dynamic function onConnect() : Void;
-	public dynamic function onDisconnect() : Void;
-	public dynamic function onData( d : String ) : Void;
-	public dynamic function onError( e : String ) : Void;
-	
-	public var id(default,null) : Int;
-	//var timeout : Int;
-	
-	public function new() {
-		var id : Int = SocketBridgeConnection.createSocket( this );
-		if( id < 0 )
-			throw "Error creating socket on socket bridge";
-		this.id = id;
-	}
-	
-	public function connect( host : String, port : Int ) {
-		untyped js.Lib.document.getElementById( SocketBridgeConnection.bridgeId ).connect( id, host, port );
-	}
-	
-	public function close() {
-		untyped js.Lib.document.getElementById( SocketBridgeConnection.bridgeId ).disconnect( id );
-	}
-	
-	/*
-	public function destroy() {
-		var _s = untyped js.Lib.document.getElementById( SocketBridgeConnection.bridgeId ).destroy( id );
-	}
-	*/
-	
-	public function send( d : String ) {
-		untyped js.Lib.document.getElementById( SocketBridgeConnection.bridgeId ).send( id, d );
-	}
-	
-}
-
-class SocketBridgeConnection {
-	
+	///// Connection to/from the socketbridge ->
+		
 	static function __init__() {
 		initialized = false;
 	}
 	
 	public static var defaultDelay = 300;
-	public static var bridgeId(default,null) : String;
+	public static var id(default,null) : String;
+	public static var swf(default,null) : Dynamic;
 	public static var initialized(default,null) : Bool;
 	
 	static var sockets : IntHash<Socket>;
 	
-	public static function init( id : String ) {
+	public static function init( id : String, cb : Void->Void, ?delay : Int ) {
 		if( initialized ) {
+			#if JABBER_DEBUG
 			trace( "Socketbridge already initialized" );
+			#end
 			return;
 		}
-		bridgeId = id;
+		if( delay == null || delay < 0 ) delay = defaultDelay;
+		SocketConnection.id = id;
+		swf = js.Lib.document.getElementById( id );
 		sockets = new IntHash();
 		initialized = true;
-	}
-	
-	public static function initDelayed( id : String, cb : Void->Void, ?delay : Int ) {
-		if( initialized ) {
-			trace( "Socketbridge already initialized" );
-			return;
-		}
-		if( delay == null || delay <= 0 ) delay = defaultDelay;
-		init( id );
 		haxe.Timer.delay( cb, delay );
 	}
 	
-	
-	public static function createSocket( s : Socket ) {
+	public static function createSocket( s : Socket, secure : Bool ) {
 		var id : Int = -1;
-		try {
-			id = untyped js.Lib.document.getElementById( bridgeId ).createSocket();
-		} catch( e : Dynamic ) {
+		try id = swf.createSocket( secure ) catch( e : Dynamic ) {
 			return -1;
 		}
 		sockets.set( id, s );
 		return id;
 	}
 	
-	/*
-	public static function destroySocket( id : Int ) {
-		var removed = untyped js.Lib.document.getElementById( bridgeId ).destroySocket( id );
-		if( removed ) {
-			var s =  sockets.get( id );
-			sockets.remove( id );
-			s = null;
-		}
-	}
-	
-	public function destroyAllSockets() {}
-	
-	*/
-	
 	static function handleConnect( id : Int ) {
 		var s = sockets.get( id );
 		s.onConnect();
 	}
 	
-	static function handleDisonnect( id : Int ) {
+	static function handleDisconnect( id : Int ) {
 		var s = sockets.get( id );
 		s.onDisconnect();
 	}
@@ -540,7 +478,46 @@ class SocketBridgeConnection {
 		var s = sockets.get( id );
 		s.onData( d );
 	}
+	
+	static function handleSecure( id : Int ) {
+		var s = sockets.get( id );
+		s.onSecured();
+	}
+}
+
+private class Socket {
+	
+	public dynamic function onConnect() : Void;
+	public dynamic function onDisconnect() : Void;
+	public dynamic function onData( d : String ) : Void;
+	public dynamic function onSecured() : Void;
+	public dynamic function onError( e : String ) : Void;
+	
+	public var id(default,null) : Int;
+	
+	public function new( secure : Bool ) {
+		id = SocketConnection.createSocket( this, secure );
+		if( id < 0 )
+			throw "Error creating socket on socket bridge";
+	}
+	
+	public function connect( host : String, port : Int ) {
+		SocketConnection.swf.connect( id, host, port );
+	}
+	
+	public function close() {
+		SocketConnection.swf.disconnect( id );
+	}
+	
+	public function send( t : String ) {
+		SocketConnection.swf.send( id, t );
+	}
+	
+	public function setSecure() {
+		SocketConnection.swf.setSecure( id );
+	}
 }
 #end //JABBER_SOCKETBRIDGE
 #end //js
+
 #end
