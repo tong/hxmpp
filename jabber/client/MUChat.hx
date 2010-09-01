@@ -43,10 +43,9 @@ typedef MUCOccupant = {
 //multiple logins/joins ? 
 
 /**
-	Multi-user chatroom from client perspective.
-	
 	<a href="http://www.xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a><br>
 	<a href="http://www.xmpp.org/extensions/xep-0249.html">XEP-0249: Direct MUC Invitations</a>
+	<p>Multiuser chatroom</p>
 */
 class MUChat {
 //class MUChat<Occupant:IMUCOccupant>

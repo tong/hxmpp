@@ -17,7 +17,6 @@
 */
 package jabber.jingle.transport;
 
-#if flash
 import flash.events.NetStatusEvent;
 import flash.net.NetConnection;
 import flash.net.NetStream;
@@ -101,5 +100,3 @@ class RTMPTransport {
 	}
 	
 }
-
-#end // flash

@@ -17,6 +17,8 @@
 */
 package jabber.file.io;
 
+import jabber.util.Base64;
+
 //TODO encode chunks itself
 
 /**
@@ -45,7 +47,7 @@ class IBOutput extends IO {
 		seq = 0;
 		blocks = new Array();
 		// create chunk blocks
-		var t = new haxe.BaseCode( haxe.io.Bytes.ofString( util.Base64.CHARS ) ).encodeBytes( bytes ).toString();
+		var t = new haxe.BaseCode( haxe.io.Bytes.ofString( Base64.CHARS ) ).encodeBytes( bytes ).toString();
 		var pos = 0;
 		while( true ) {
 			var len = if( pos > t.length-blockSize ) t.length-pos else blockSize;

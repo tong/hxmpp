@@ -32,9 +32,9 @@ class LastActivity {
 	}
 	
 	/**
-		Requests the given entity for their last activity.
-		Given a bare jid will be handled by the server on roster subscription basis.
-		Otherwise the request will be fowarded to the resource of the client entity.
+		Requests the given entity for their last activity.<br/>
+		Given a bare jid will be handled by the server on roster subscription basis.<br/>
+		Otherwise the request will be fowarded to the resource of the client entity.<br/>
 	*/
 	public function request( jid : String ) {
 		var iq = new xmpp.IQ( null, null, jid );

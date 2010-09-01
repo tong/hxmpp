@@ -63,7 +63,7 @@ class IBReciever extends FileReciever {
 	}
 	
 	function deny( e : xmpp.Error ) {
-		var r = xmpp.IQ.createErrorResult( request );
+		var r = xmpp.IQ.createError( request );
 		r.errors.push( e );
 		stream.sendPacket( r );
 	}

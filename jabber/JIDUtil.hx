@@ -18,8 +18,8 @@
 package jabber;
 
 /**
-	Static methods for JabberID manipulation/validation.<br/>
 	<a href="http://www.xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a><br/>
+	Static methods for JabberID manipulation/validation.
 */	
 class JIDUtil {
 	
@@ -27,6 +27,8 @@ class JIDUtil {
 	public static inline var MAX_LENGTH = 3071;
 	public static inline var MAX_PARTSIZE = 1023;
 	
+	// TODO JID parts
+	/** Regular expression matching a valid jid */
 	#if JABBER_DEBUG
 	public static var EREG = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+(\.[A-Z][A-Z][A-Z]?)?(\/[A-Z0-9._%-])?/i;
 	#else
@@ -103,16 +105,12 @@ class JIDUtil {
 	}
 	
 	/**
-		<p>
 	    Escapes the node portion of a JID according to "JID Escaping" (XEP-0106).<br/>
 	    Escaping replaces characters prohibited by node-prep with escape sequences.
-	    <p/>
-	    <p>
+	    <br/>
 	    Typically, escaping is performed only by a client that is processing information
 	    provided by a human user in unescaped form, or by a gateway to some external system
 	    (e.g., email or LDAP) that needs to generate a JID.
-	    </p>
-	    
     */
 	//#if neko
 	//static var __escape = neko.Lib.load( "hxmpp", "jid_escapeNode", 1 );
@@ -157,16 +155,13 @@ class JIDUtil {
 	}
 
     /**
-    	<p>
      	Un-escapes the node portion of a JID according to "JID Escaping" (XEP-0106 ).<br/>
      	Escaping replaces characters prohibited by node-prep with escape sequences.
-     	</p>
-     	<p>
+     	<br/>
      	Typically, unescaping is performed only by a client that wants to display JIDs
      	containing escaped characters to a human user, or by a gateway to some
      	external system (e.g., email or LDAP) that needs to generate identifiers
      	for foreign systems.
-     	</p>
     */
 	public static function unescapeNode( n : String ) : String {
 		//TODO performance comparison

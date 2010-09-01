@@ -17,6 +17,7 @@
 */
 package jabber.file.io;
 
+import jabber.util.Base64;
 import jabber.stream.PacketCollector;
 import xmpp.filter.IQFilter;
 
@@ -52,7 +53,7 @@ class IBInput extends IO {
 	
 	function getData() : haxe.io.Bytes {
 		//return haxe.io.Bytes.ofString( buf.toString() );
-		return new haxe.BaseCode( haxe.io.Bytes.ofString( util.Base64.CHARS ) ).decodeBytes( haxe.io.Bytes.ofString( buf.toString() ) );
+		return new haxe.BaseCode( haxe.io.Bytes.ofString( Base64.CHARS ) ).decodeBytes( haxe.io.Bytes.ofString( buf.toString() ) );
 	}
 	
 	function handleIBData( iq : xmpp.IQ ) {

@@ -6,12 +6,12 @@
 HXMPP is a haXe library for creating XMPP based clients and services.
 The library exists in two namespaces:
 * xmpp: creation and manipulation of XMPP data.
-* jabber: creation and handling of XMPP data streams between jabber entities.
+* jabber: creation and manipulation of XMPP data streams between jabber entities.
 
 
 
 SOURCE
-------
+-------
 http://github.com/tong/hxmpp
 git://github.com/tong/hxmpp.git
 
@@ -44,16 +44,19 @@ The hxmpp.ndll included is only required if you use one of the following extensi
 
 TLS
 ---
-Currently only legacy TLS on port 5223 is supported.
+NekoVM does NOT support startTLS.
+Use jabber.SecureSocketConnection for legacy TLS on port 5223 for secure connections.
+Rquired compiler setup:
 * neko:
-	Link to hxssl project (git://83.64.208.21/hxssl.git)
+	-cp ../../hxmpp/util/tls_neko
 * flash:
-	-cp ../../hxmpp/tls
-	-swf-lib ../../hxmpp/util/tls/tls.swf
+	-cp ../../hxmpp/util/tls_flash
+	-swf-lib ../../hxmpp/util/tls_flash/tls.swf
+	-D TLS
 * cpp:
 	no support right now
 * js:
-	Use the TLS flash-socketbridge
+	Use hxmpp/util/socketbridge/socketbridge_tls.swf
 
 
 

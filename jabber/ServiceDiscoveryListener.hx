@@ -22,8 +22,8 @@ import xmpp.IQ;
 import xmpp.filter.IQFilter;
 
 /**
+	<a href="http://www.xmpp.org/extensions/xep-0030.html">XEP 30 - ServiceDiscovery</a><br/>
 	Listens/Answers incoming service discovery requests.
-	<a href="http://www.xmpp.org/extensions/xep-0030.html">XEP 30 - ServiceDiscovery</a>
 */
 class ServiceDiscoveryListener {
 	

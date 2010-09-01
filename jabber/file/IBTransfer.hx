@@ -41,7 +41,7 @@ class IBTransfer extends FileTransfer {
 	*/
 	public override function init( input : haxe.io.Input ) {
 		this.input = input;
-		sid = util.Base64.random( 8 );
+		sid = jabber.util.Base64.random( 8 );
 		// send initial request
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, reciever, stream.jidstr );
 		iq.x = new xmpp.file.IB( xmpp.file.IBType.open, sid, blockSize );

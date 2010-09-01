@@ -25,10 +25,9 @@ import xmpp.lop.Submit;
 //TODO support all service discovery dataform fearures  http://xmpp.org/extensions/inbox/lop.html#sect-id2257047
 
 /**
+	<a href="http://xmpp.org/extensions/inbox/lop.html">Linked Process Protocol</a><br/>
+	<a href="http://linkedprocess.org">Linked Process Website</a><br/>
 	Manages the spawning of virtual machines.
-
-	<a href="http://xmpp.org/extensions/inbox/lop.html">Linked Process Protocol</a>
-	<a href="http://linkedprocess.org">Linked Process Website</a>
 */
 class Farm {
 	

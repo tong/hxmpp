@@ -38,14 +38,10 @@ typedef TStream = {
 #end
 
 /**
-	<p>
 	Utility for debugging XMPP transfer.<br/>
-	Set the haXe compiler flag: -D XMPP_DEBUG to activate it.
-	</p>
-	<p>
+	Set the haXe compiler flag: -D XMPP_DEBUG to activate it.<br/>
 	Displayed XMPP transfer gets relayed to the default debug console on browser targets,
 	color highlighted on terminal targets.
-	</p>
 */
 class XMPPDebug {
 	

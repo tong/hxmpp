@@ -37,13 +37,13 @@ import jabber.util.Timer;
 	// pause -> test
 	
 /**
+	<a href="http://xmpp.org/extensions/xep-0124.html">Bidirectional-streams Over Synchronous HTTP (BOSH)</a><br/>
+	<a href="http://xmpp.org/extensions/xep-0206.html">XMPP Over BOSH</a>
 	<p>
 	Emulates the semantics of a long-lived, bidirectional TCP connection
 	by efficiently using multiple synchronous HTTP request/response pairs
 	without requiring the use of frequent polling or chunked responses.
 	</p>
-	<a href="http://xmpp.org/extensions/xep-0124.html">Bidirectional-streams Over Synchronous HTTP (BOSH)</a><br/>
-	<a href="http://xmpp.org/extensions/xep-0206.html">XMPP Over BOSH</a><br/>
 */
 class BOSHConnection extends jabber.stream.Connection {
 	
@@ -79,8 +79,8 @@ class BOSHConnection extends jabber.stream.Connection {
 	var timeoutOffset : Int;
 	
 	/**
-		A new connection to a HTTP gateway of a jabber server.
-		The default wait time for HTTP responses is 30 seconds.
+		A new connection to a HTTP gateway of a jabber server.<br/>
+		The default wait time for responses is 30 seconds.
 	*/
 	public function new( host : String, path : String,
 						 hold : Int = 1,

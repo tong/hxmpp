@@ -18,6 +18,7 @@
 package jabber.jingle;
 
 import jabber.JIDUtil;
+import jabber.util.Base64;
 import jabber.jingle.transport.RTMPOutput;
 import xmpp.IQ;
 import xmpp.IQType;
@@ -57,7 +58,7 @@ class RTMPCall extends Session {
 	public function init() {
 		if( transports.length == 0 )
 			throw "No RTMP transports registered";
-		sid = util.Base64.random( 16 );
+		sid = Base64.random( 16 );
 		var iq = new xmpp.IQ( IQType.set, null, entity );
 		var j = new xmpp.Jingle( xmpp.jingle.Action.session_initiate, stream.jidstr, sid );
 		var content = new xmpp.jingle.Content( JIDUtil.parseBare( stream.jidstr ), "av" );

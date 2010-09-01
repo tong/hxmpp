@@ -23,7 +23,7 @@ import jabber.StreamStatus;
 import jabber.stream.Connection;
 
 /**
-	Client XMPP stream base.
+	Client XMPP stream.
 */
 class Stream extends jabber.Stream {
 	
