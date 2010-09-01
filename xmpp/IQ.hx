@@ -55,8 +55,7 @@ class IQ extends Packet {
 			}
 		}
 		if( iq.properties.length > 0 ) {
-			iq.x = new PlainPacket( iq.properties[0] );
-			//TODO iq.x = new PlainPacket( iq.properties.shift() );
+			iq.x = new PlainPacket( iq.properties.shift() );
 		}
 		return iq;
 	}
