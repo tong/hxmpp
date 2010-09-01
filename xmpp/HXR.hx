@@ -26,7 +26,7 @@ class HXR {
 	
 	/**
 	*/
-	public static inline function create( ?d : String ) : Xml {
+	public static function create( ?d : String ) : Xml {
 		var x = xmpp.IQ.createQueryXml( XMLNS );
 		if( d != null ) x.addChild( Xml.createPCData( d ) );
 		return x;

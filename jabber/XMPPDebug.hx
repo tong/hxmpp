@@ -173,7 +173,7 @@ class XMPPDebug {
 		}
 	}
 	
-	#end // (flash!!js)
+	#end // (flash||js)
 	
 }
 

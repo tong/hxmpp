@@ -90,7 +90,7 @@ class SASLAuth extends Authentication {
 		c_challenge = stream.collect( [cast new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
 		// init auth
 		var t = mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password, stream.jid.resource );
-		if( t != null ) t = Base64.encode( t ); 
+		if( t != null ) t = Base64.encode( t );
 		return stream.sendData( xmpp.SASL.createAuth( mechanism.id, t ).toString() ) != null;
 	}
 	

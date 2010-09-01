@@ -1,6 +1,6 @@
 /*
  *	This file is part of HXMPP.
- *	Copyright (c)2009-2010 http://www.disktree.net
+ *	Copyright (c)2010 http://www.disktree.net
  *	
  *	HXMPP is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -60,20 +60,20 @@ class Stream {
 	public var status : StreamStatus;
 	public var cnx(default,setConnection) : Connection;
 	public var jidstr(getJIDStr,null) : String;  // TODO replace by JID
-	#if !JABBER_COMPONENT
-	public var jid(default,setJID) : JID;
-	#end
 	public var features(default,null) : StreamFeatures;
 	public var server(default,null) : Server;
 	public var id(default,null) : String;
 	public var lang(default,null) : String;
 	public var version : Bool;
-	public var dataFilters(default,null) : List<TDataFilter>;
-	public var dataInterceptors(default,null) : List<TDataInterceptor>;
+	public var dataFilters(default,null) : Array<TDataFilter>;
+	public var dataInterceptors(default,null) : Array<TDataInterceptor>;
+	#if !JABBER_COMPONENT
+	public var jid(default,setJID) : JID;
+	#end
 	
-//	var idCollectors : List<PacketCollector>;
-	var collectors : List<PacketCollector>;
-	var interceptors : List<TPacketInterceptor>;
+	var collectors_id : Array<PacketCollector>;
+	var collectors : Array<PacketCollector>;
+	var interceptors : Array<TPacketInterceptor>;
 	var numPacketsSent : Int;
 	
 	function new( cnx : Connection ) {
@@ -81,12 +81,12 @@ class Stream {
 		server = { features : new Hash() };
 		features = new StreamFeatures();
 		version = true;
-//		idCollectors = new List();
-		collectors = new List();
-		interceptors = new List();
+		collectors_id = new Array();
+		collectors = new Array();
+		interceptors = new Array();
 		numPacketsSent = 0;
-		dataFilters = new List();
-		dataInterceptors = new List();
+		dataFilters = new Array();
+		dataInterceptors = new Array();
 		if( cnx != null ) setConnection( cnx );
 		// TODO remove HACK
 		#if (flash&&JABBER_CONSOLE)
@@ -178,7 +178,7 @@ class Stream {
 	}
 	
 	/**
-		Intercept/Send/Return the given XMPP packet.
+		Intercept/Send/Return XMPP packet.
 	*/
 	public function sendPacket<T>( p : T, intercept : Bool = true ) : T {
 		if( !cnx.connected )
@@ -231,10 +231,10 @@ class Stream {
 		//iq.from = jidstr;
 		var c : PacketCollector = null;
 		if( handler != null ) {
-			c = new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block );
-			addCollector( c );
+//			c = new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block );
+//			addCollector( c );
 			//addIDCollector( c );
-			//c = addIDCollector( iq.id, handler );
+			c = addIDCollector( iq.id, handler );
 		}
 		var s : xmpp.IQ = sendPacket( iq );
 		if( s == null && handler != null ) {
@@ -287,20 +287,18 @@ class Stream {
 		Adds an packet collector which filters XMPP packets by ids.
 		These collectors get processed before any other collectors.
 	*/
-	/*
 	public function addIDCollector( id : String, handler : Dynamic->Void ) : PacketCollector {
 		var c = new PacketCollector( [cast new PacketIDFilter(id)], handler );
-		idCollectors.add( c );
+		collectors_id.push( c );
 		return c;
 	}
-	*/
 	
 	/**
 		Adds a XMPP packet collector to this stream and starts the timeout if not null.
 	*/
 	public function addCollector( c : PacketCollector ) : Bool {
 		if( Lambda.has( collectors, c ) ) return false;
-		collectors.add( c );
+		collectors.push( c );
 		if( c.timeout != null ) c.timeout.start();
 		return true;
 	}
@@ -309,7 +307,7 @@ class Stream {
 	*/
 	public function removeCollector( c : PacketCollector ) : Bool {
 		if( !collectors.remove( c ) ) {
-			//if( !idCollectors.remove( c ) )
+			if( !collectors_id.remove( c ) )
 				return false;
 		}
 		if( c.timeout != null ) c.timeout.stop();
@@ -320,7 +318,7 @@ class Stream {
 	*/
 	public function addInterceptor( i : TPacketInterceptor ) : Bool {
 		if( Lambda.has( interceptors, i ) ) return false;
-		interceptors.add( i );
+		interceptors.push( i );
 		return true;
 	}
 	
@@ -338,9 +336,7 @@ class Stream {
 	//	for( f in dataFilters ) {
 	//		buf = f.filterData( buf );
 	//	}
-		
 		var t : String = buf.readString( bufpos, buflen );
-		
 #if flash // haXe 2.06 fuckup
 		t = StringTools.replace( t, "xmlns=", "_xmlns_=" );
 #end
@@ -378,7 +374,9 @@ class Stream {
 				cnx.disconnect();
 				return 0;
 			}
-			#if XMPP_DEBUG XMPPDebug.inc( t ); #end
+			#if XMPP_DEBUG
+			XMPPDebug.inc( t );
+			#end
 			if( x.nodeName != "proceed"
 				// haXe 2.06 flash fukup HACK
 				#if !flash || x.get( "xmlns" ) != "urn:ietf:params:xml:ns:xmpp-tls" #end ) {
@@ -401,9 +399,7 @@ class Stream {
 			try {
 				x = Xml.parse( t );
 			} catch( e : Dynamic ) {
-				//#if JABBER_DEBUG
-				//trace( "Packet incomplete, waiting for more data ..", "info" );
-				//#end
+				//#if JABBER_DEBUG trace( "Packet incomplete, waiting for more data ..", "info" ); #end
 				return 0; // wait for more data
 			}
 			handleXml( x );
@@ -440,27 +436,29 @@ class Stream {
 		#if XMPP_DEBUG
 		XMPPDebug.inc( p.toString() );
 		#end
-		/*
-		for( c in idCollectors ) {
+		var i = -1;
+		while( ++i < collectors_id.length ) {
+			var c = collectors_id[i];
 			if( c.accept( p ) ) {
 				c.deliver( p );
-				idCollectors.remove( c );
+				collectors_id.splice( i, 1 );
 				c = null;
 				return true;
 			}
 		}
-		*/
 		var collected = false;
-		for( c in collectors ) {
+		i = -1;
+		while( ++i < collectors.length ) {
+			var c = collectors[i];
 			if( c.accept( p ) ) {
 				collected = true;
 				c.deliver( p );
 				if( !c.permanent ) {
-					collectors.remove( c );
+					collectors.splice( i, 1 );
+					//c = null;
 				}
-				if( c.block ) {
+				if( c.block )
 					break;
-				}
 			}
 		}
 		if( !collected ) {

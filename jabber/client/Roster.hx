@@ -107,10 +107,22 @@ class Roster {
 		return ( getItem( jabber.JIDUtil.parseBare( jid ) ) != null );
 	}
 	
+	/*
 	public function load() {
 		var iq = new IQ();
 		iq.x = new xmpp.Roster();
 		stream.sendIQ( iq );
+	}
+	*/
+	public function load() {
+		var iq = new IQ();
+		iq.x = new xmpp.Roster();
+		var me = this;
+		stream.sendIQ( iq, function(r:IQ) {
+			me.available = true;
+			me.items = Lambda.array( xmpp.Roster.parse( r.x.toXml() ) );
+			me.onLoad();
+		});
 	}
 	
 	/**
@@ -166,7 +178,6 @@ class Roster {
 				}
 			});
 		} else {
-			trace(i.askType);
 			if( i.askType != AskType.subscribe ) {
 				sendPresence( jid, PresenceType.subscribe );
 			}
@@ -289,34 +300,24 @@ class Roster {
 		var i = getItem( jid.bare );
 		if( p.type != null ) {
 			switch( p.type ) {
-			
 			case subscribe :
 				switch( subscriptionMode ) {
 				case acceptAll(s) :
 					confirmSubscription( p.from, true, s );
 				case rejectAll :
-					var r = new xmpp.Presence( xmpp.PresenceType.unsubscribed );
-					r.to = p.from;
-					stream.sendPacket( r );
+					sendPresence( p.from, xmpp.PresenceType.unsubscribed );
 				case manual :
 					onAsk( new Item( p.from ) );
-					//onSubscription( new Item( p.from ) );
 				}
-			
 			case subscribed :
 				onSubscribed( i );
-				//onSubscription( new Item( p.from ) );
-			
 			case unsubscribe :
 				onUnsubscribed( i );
-			
 			case unsubscribed :
-				trace("TODO unsubscribed");
-				//items.remove( i );
-				//onUnsubscribed( i );
-			
+				items.remove( i );
+				onUnsubscribed( i );
 			default : //
-				trace("TODO ?????????????");
+				//trace("?????????????");
 			}
 		}
 	}

@@ -179,7 +179,7 @@ class SocketConnection extends jabber.stream.SocketConnection<SecureSocket> {
 	}
 }
 
-#else
+#else //!TLS->
 
 import flash.net.Socket;
 import flash.events.Event;

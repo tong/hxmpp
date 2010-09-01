@@ -21,7 +21,7 @@ import xmpp.PacketFilter;
 
 /**
 	Default XMPP packet collector implementation.<br/> 
-	Mind! Packet timeouts dont't work for PHP!
+	Mind! Packet timeouts don't work for PHP!
 */
 class PacketCollector {
 	
@@ -62,7 +62,7 @@ class PacketCollector {
 	}
 	
 	/**
-		Returns Bool if the given XMPP packet passes through all filters.
+		Returns true if the given XMPP packet passes through all filters.
 	*/
 	public function accept( p : xmpp.Packet ) : Bool {
 		for( f in filters ) {
