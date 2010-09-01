@@ -31,7 +31,11 @@ class SASL {
 		if( mech == null )
 			return null;
 		var x = ( text != null ) ? XMLUtil.createElement( "auth", text ) : Xml.createElement( "auth" );
+		#if flash // TODO haXe 2.06 fukup
+		x.set( "_xmlns_", XMLNS );
+		#else
 		x.set( "xmlns", XMLNS );
+		#end
 		x.set( "mechanism", mech );
 		return x;
 	}

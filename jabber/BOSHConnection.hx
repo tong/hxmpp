@@ -113,9 +113,15 @@ class BOSHConnection extends jabber.stream.Connection {
 			responseTimer = new Timer( INTERVAL );
 			var b = Xml.createElement( "body" );
 			b.set( 'xmlns', XMLNS );
+		#if flash //flash 2.06 fukup hack
+			b.set( 'xml_lang', 'en' );
+			b.set( 'xmlns_xmpp', XMLNS_XMPP );
+			b.set( 'xmpp_version', '1.0' );
+		#else
 			b.set( 'xml:lang', 'en' );
 			b.set( 'xmlns:xmpp', XMLNS_XMPP );
 			b.set( 'xmpp:version', '1.0' );
+		#end
 			b.set( 'ver', BOSH_VERSION );
 			b.set( 'hold', Std.string( hold ) );
 			b.set( 'rid', Std.string( rid ) );
@@ -173,10 +179,17 @@ class BOSHConnection extends jabber.stream.Connection {
 	
 	function restart() {
 		var r = createRequest();
+		#if flash
+		r.set( "xmpp_restart", "true" );
+		r.set( "xmlns_xmpp", XMLNS_XMPP );
+		r.set( '_xmlns_', XMLNS );
+		r.set( "xml_lang", "en" );
+		#else
 		r.set( "xmpp:restart", "true" );
 		r.set( "xmlns:xmpp", XMLNS_XMPP );
 		r.set( 'xmlns', XMLNS );
 		r.set( "xml:lang", "en" );
+		#end
 		r.set( "to", host );
 		#if XMPP_DEBUG
 		XMPPDebug.out( r.toString() );
@@ -222,14 +235,13 @@ class BOSHConnection extends jabber.stream.Connection {
 		r.method = flash.net.URLRequestMethod.POST;
 		r.contentType = "text/xml";
 		// haXe 2.06 HACK
-		/*
 		var s = t.toString();
+		s = StringTools.replace( s, "_xmlns_", "xml:lang" );
 		s = StringTools.replace( s, "xml_lang", "xml:lang" );
 		s = StringTools.replace( s, "xmlns_xmpp", "xmlns:xmpp" );
 		s = StringTools.replace( s, "xmpp_version", "xmpp:version" );
-		*/
-		//
-		r.data = t.toString();
+		s = StringTools.replace( s, "xmpp_restart", "xmpp:restart" );
+		r.data = s; //t.toString();
 		r.requestHeaders.push( new flash.net.URLRequestHeader( "Accept", "text/xml" ) );
 		var me = this;
 		var l = new flash.net.URLLoader();
@@ -265,6 +277,12 @@ class BOSHConnection extends jabber.stream.Connection {
 	}
 	
 	function handleHTTPData( t : String ) {
+		#if flash // TODO haXe 2.06 fukup hack
+		t = StringTools.replace( t, "xmlns=", "_xmlns_=" );
+		t = StringTools.replace( t, "xml:lang", "_xml_lang_" );
+		t = StringTools.replace( t, "xmlns:xmpp", "_xmlns:xmpp_" );
+		t = StringTools.replace( t, "xmpp:version", "_xmpp:version_" );
+		#end
 		var x : Xml = null;
 		try {
 			x = Xml.parse( t ).firstElement();
@@ -275,10 +293,14 @@ class BOSHConnection extends jabber.stream.Connection {
 			#end
 			return;
 		}
+		#if flash // TODO haXe 2.06 fukup hack
+		trace( x.get( "_xmlns_" ) );
+		#else
 		if( x.get( "xmlns" ) != XMLNS ) {
 			#if JABBER_DEBUG trace( "Invalid BOSH body" ); #end
 			return;
 		}
+		#end
 		requestCount--;
 		if( timeoutTimer != null ) {
 			timeoutTimer.stop();
