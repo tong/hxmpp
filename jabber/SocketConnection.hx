@@ -41,6 +41,17 @@ class SocketConnection extends jabber.stream.SocketConnection<Socket> {
 		__onConnect();
 	}
 	
+	public override function disconnect() {
+		if( !connected )
+			return;
+		reading = connected = false;
+		try socket.close() catch( e : Dynamic ) {
+			trace(e);
+			__onError( "Error closing socket" );
+			return;
+		}
+	}
+	
 	public override function read( ?yes : Bool = true ) : Bool {
 		if( yes ) {
 			reading = true;
@@ -89,7 +100,11 @@ class SocketConnection extends jabber.stream.SocketConnection<Socket> {
 			buf = buf2;
 		}
 		var nbytes = 0;
-		nbytes = socket.input.readBytes( buf, bufbytes, buflen-bufbytes );
+		try nbytes = socket.input.readBytes( buf, bufbytes, buflen-bufbytes ) catch( e : Dynamic ) {
+			reading = connected = false;
+			__onError( e );
+			return;
+		}
 		bufbytes += nbytes;
 		var pos = 0;
 		while( bufbytes > 0 ) {
@@ -129,6 +144,16 @@ class SocketConnection extends jabber.stream.SocketConnection<SecureSocket> {
 		socket.addEventListener( SecureSocketEvent.ON_CLOSE, sockDisconnectHandler );
 		socket.addEventListener( SecureSocketEvent.ON_ERROR, sockErrorHandler );
 		socket.connect( host, port );
+	}
+	
+	public override function disconnect() {
+		if( !connected )
+			return;
+		connected = false;
+		try socket.close() catch( e : Dynamic ) {
+			trace(e);
+			__onError( "Error closing socket" );
+		}
 	}
 	
 	public override function read( ?yes : Bool = true ) : Bool {
@@ -215,12 +240,9 @@ class SocketConnection extends jabber.stream.SocketConnection<Socket> {
 		if( !connected )
 			return;
 		connected = false;
-		try {
-			socket.close();
-		} catch( e : Dynamic ) {
+		try socket.close() catch( e : Dynamic ) {
 			trace(e);
 			__onError( "Error closing socket" );
-			return;
 		}
 	}
 	
@@ -292,6 +314,15 @@ class SocketConnection extends jabber.stream.SocketConnection<Stream> {
 		socket.addListener( Node.EVENT_STREAM_END, sockDisconnectHandler );
 		socket.addListener( Node.EVENT_STREAM_ERROR, sockErrorHandler );
 		socket.addListener( Node.EVENT_STREAM_DATA, sockDataHandler );
+	}
+	
+	public override function disconnect() {
+		if( !connected )
+			return;
+		try socket.end() catch( e : Dynamic ) {
+			trace(e);
+			__onError( "Error closing socket" );
+		}
 	}
 	
 	public override function setSecure() {
@@ -375,7 +406,6 @@ class SocketConnection extends jabber.stream.SocketConnection<Socket> {
 		connected = false;
 		try socket.close() catch( e : Dynamic ) {
 			__onError( "Error closing socket" );
-			return;
 		}
 	}
 	

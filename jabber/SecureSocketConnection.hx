@@ -58,11 +58,12 @@ class SecureSocketConnection extends jabber.stream.SocketConnection<Socket> {
 	public override function disconnect() {
 		if( !connected )
 			return;
-		socket.close();
-		#if (neko||php||cpp)
-		reading = false;
-		#end
-		connected = false;
+		reading = connected = false;
+		try socket.close() catch( e : Dynamic ) {
+			trace(e);
+			__onError( "Error closing socket" );
+			return;
+		}
 	}
 	
 	public override function read( ?yes : Bool = true ) : Bool {
@@ -144,6 +145,16 @@ class SecureSocketConnection extends jabber.stream.SocketConnection<SecureSocket
 		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
 		socket.addEventListener( IOErrorEvent.IO_ERROR, sockErrorHandler );
 		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, sockErrorHandler );
+	}
+	
+	public override function disconnect() {
+		if( !connected )
+			return;
+		connected = false;
+		try socket.close() catch( e : Dynamic ) {
+			trace(e);
+			__onError( "Error closing socket" );
+		}
 	}
 	
 	public override function read( ?yes : Bool = true ) : Bool {
@@ -244,6 +255,16 @@ class SecureSocketConnection extends jabber.stream.SocketConnection<SecureSocket
 		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
 		socket.addEventListener( IOErrorEvent.IO_ERROR, sockErrorHandler );
 		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, sockErrorHandler );
+	}
+	
+	public override function disconnect() {
+		if( !connected )
+			return;
+		connected = false;
+		try socket.close() catch( e : Dynamic ) {
+			trace(e);
+			__onError( "Error closing socket" );
+		}
 	}
 	
 	public override function read( ?yes : Bool = true ) : Bool {
