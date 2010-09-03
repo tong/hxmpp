@@ -19,24 +19,30 @@ package jabber.remoting;
 
 import haxe.remoting.AsyncConnection;
 
+//TODO data context (name) ??
+// needed ..? the jid is already a data context (?)
+
 /**
+	<a href="http://haxe.org/doc/remoting">haXe-remoting</a><br/>
 	haXe remoting connection to a XMPP entity.<br/>
 	User ServiceDiscovery to determine if an entity supports haXe-remoting.
-	
-	<a href="http://haxe.org/doc/remoting">haXe-remoting</a>
 */
 class Connection implements AsyncConnection, implements Dynamic<AsyncConnection> {
+	
+	//static var connections = new Hash<Connection>();
 	
 	/** JID of current active entity */
 	public var target : String;
 	public var stream(default,null) : jabber.Stream;
 	
+	//var __data : { name : String, ctx : Context, #if js flash : String #end };//TODO data context
 	var __error : Dynamic->Void;
 	var __path : Array<String>;
 	
 	function new( stream : jabber.Stream, target : String, path : Array<String>, error : Dynamic->Void ) {
 		this.stream = stream;
 		this.target = target;
+		//__data = data;
 		__path = path;
 		__error = error;
 	}
@@ -46,6 +52,12 @@ class Connection implements AsyncConnection, implements Dynamic<AsyncConnection>
 		c.__path.push( name );
 		return c;
 	}
+	
+	/*TODO
+	public function close() {
+		connections.remove( __data.name );
+	}
+	*/
 	
 	public function setErrorHandler( h : Dynamic->Void ) {
 		__error = h;

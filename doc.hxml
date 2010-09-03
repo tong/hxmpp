@@ -6,6 +6,7 @@
 
 #--next
 -cp doc/
+-cp util/
 jabber.BlockList
 jabber.BOB
 jabber.BOBListener
@@ -27,6 +28,7 @@ jabber.ServiceDiscovery
 jabber.ServiceDiscoveryListener
 jabber.SocketConnection
 jabber.SoftwareVersion
+jabber.WebSocketConnection
 jabber.XMPPDebug
 jabber.XMPPError
 jabber.client.Account

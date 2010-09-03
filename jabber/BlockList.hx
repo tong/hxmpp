@@ -18,7 +18,7 @@
 package jabber;
 
 /**
-	<a http://xmpp.org/extensions/xep-0191.html">XEP 191 - Simple Communications Blocking</a><br>
+	<a href="http://xmpp.org/extensions/xep-0191.html">XEP 191 - Simple Communications Blocking</a>
 */
 class BlockList {
 	

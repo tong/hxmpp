@@ -18,8 +18,8 @@
 package jabber;
 
 /**
+	<a href="http://www.xmpp.org/extensions/xep-0199.html">XEP 199 - XMPP Ping</a><br/>
 	Listens for incoming ping messages and automaticly responds with a pong.
-	<a href="http://www.xmpp.org/extensions/xep-0199.html">XEP 199 - XMPP Ping</a>
 */
 class Pong {
 	

@@ -21,8 +21,8 @@ import xmpp.IQ;
 import xmpp.IQType;
 
 /**
+	<a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a><br/>
 	PubSub client.
-	<a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a>
 */
 class PubSub {
 	

@@ -18,8 +18,8 @@
 package jabber;
 
 /**
+	<a href="http://www.xmpp.org/extensions/xep-0202.html">XEP 202 - EntityTime</a><br/>
 	Listens/Answers time requests.
-	<a href="http://www.xmpp.org/extensions/xep-0202.html">XEP 202 - EntityTime</a>
 */
 class EntityTimeListener {
 	

@@ -1,9 +1,5 @@
 package xmpp.filter;
 
-// TODO remove
-// .. own class just for the sid ?? .. no.not... use IQFilter and filter sids in jabber classes
-// better.. replace by PacketElementFilter ?
-
 /**
 	Filters jingle packets.
 */

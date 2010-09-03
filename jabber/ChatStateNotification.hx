@@ -23,8 +23,8 @@ import xmpp.filter.MessageFilter;
 import xmpp.filter.PacketPropertyFilter;
 
 /**
-	Extension for communicating the status of a user in a chat session.<br>
-	<a href="http://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a>
+	<a href="http://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a><br/>
+	Extension for communicating the status of a user in a chat session.
 */
 class ChatStateNotification {
 	

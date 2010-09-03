@@ -17,21 +17,21 @@
 */
 package xmpp.jingle;
 
-//TODO move into jabber.jingle.Session ?
-
 /**
 	Jingle transport candidate.
 */
 class Candidate<T> {
 	
 	public var attributes : T;
+	public var elementName : String;
 	
-	public function new( ?a : T ) {
-		attributes = a;
+	public function new( ?a : T, elementName : String = "candidate" ) {
+		this.attributes = a;
+		this.elementName = elementName;
 	}
 	
 	public function toXml() : Xml {
-		var x = Xml.createElement( "candidate" );
+		var x = Xml.createElement( elementName );
 		for( f in Reflect.fields( attributes ) )
 			x.set( f, Reflect.field( attributes, f ) );
 		return x;
@@ -44,10 +44,10 @@ class Candidate<T> {
 		return c;
 	}
 	
-	public static function parseCandidates<T>( x : Xml ) : Array<T> {
+	public static function parseCandidates<T>( x : Xml, elementName : String = "candidate" ) : Array<T> {
 		var c : Array<T> = new Array();
-		for( e in x.elementsNamed( "candidate" ) )
-			c.push( xmpp.jingle.Candidate.parse( e ) );
+		for( e in x.elementsNamed( elementName ) )
+			c.push( Candidate.parse( e ) );
 		return c;
 	}
 	

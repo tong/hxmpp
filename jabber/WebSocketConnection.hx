@@ -20,9 +20,8 @@ package jabber;
 #if (js||flash)
 
 /**
-	http://dev.w3.org/html5/websockets/
-	
-	For flash you need to add hxmpp/util/flash_websocket.js to your website
+	<a href="http://dev.w3.org/html5/websockets/">HTML5-WebSocket</a><br/>
+	For flash you need to add hxmpp/util/flash_websocket.js glue code to your website
 */
 class WebSocketConnection extends jabber.stream.Connection {
 	

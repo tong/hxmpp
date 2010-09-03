@@ -345,13 +345,13 @@ class Stream {
 			#if XMPP_DEBUG
 			XMPPDebug.inc( t );
 			#end
-			close( true );
+			close( cnx.connected );
 			return 0;
 		} else if( StringTools.startsWith( t, '</stream:error' ) ) {
 			#if XMPP_DEBUG
 			XMPPDebug.inc( t );
 			#end
-			close( true );
+			close( cnx.connected );
 			return 0;
 		}
 		switch( status ) {
