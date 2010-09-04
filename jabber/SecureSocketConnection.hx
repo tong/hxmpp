@@ -251,10 +251,12 @@ class SecureSocketConnection extends jabber.stream.SocketConnection<SecureSocket
 	
 	public override function connect() {
 		buf = new ByteArray();
+		socket = new SecureSocket();
 		socket.addEventListener( Event.CONNECT, sockConnectHandler );
 		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
 		socket.addEventListener( IOErrorEvent.IO_ERROR, sockErrorHandler );
 		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, sockErrorHandler );
+		socket.connect( host, port );
 	}
 	
 	public override function disconnect() {
@@ -298,9 +300,7 @@ class SecureSocketConnection extends jabber.stream.SocketConnection<SecureSocket
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
-		try {
-			socket.readBytes( buf, buf.length, e.bytesLoaded );
-		} catch( e : Dynamic ) {
+		try socket.readBytes( buf, buf.length, e.bytesLoaded ) catch( e : Dynamic ) {
 			#if JABBER_DEBUG
 		//	trace(e);
 			#end

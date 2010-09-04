@@ -292,7 +292,94 @@ class SocketConnection extends jabber.stream.SocketConnection<Socket> {
 
 #elseif js
 
-#if nodejs
+#if air
+import air.Socket;
+import air.ByteArray;
+import air.Event;
+import air.IOErrorEvent;
+import air.ProgressEvent;
+import air.SecurityErrorEvent;
+
+class SocketConnection extends jabber.stream.SocketConnection<air.Socket> {
+	
+	var buf : ByteArray;
+	
+	public function new( host : String, port : Int = 5222, secure : Bool = false,
+						 ?bufSize : Int, ?maxBufSize : Int,
+						 timeout : Int = 10 ) {
+		super( host, port, false, bufSize, maxBufSize, timeout );
+	}
+	
+	public override function connect() {
+		buf = new air.ByteArray();
+		socket = new Socket();
+		socket.addEventListener( Event.CONNECT, sockConnectHandler );
+		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
+		socket.addEventListener( IOErrorEvent.IO_ERROR, sockErrorHandler );
+		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, sockErrorHandler );
+		socket.connect( host, port );
+	}
+	
+	public override function disconnect() {
+		if( !connected )
+			return;
+		connected = false;
+		try socket.close() catch( e : Dynamic ) {
+			trace(e);
+			__onError( "Error closing socket" );
+			return;
+		}
+	}
+	
+	public override function read( ?yes : Bool = true ) : Bool {
+		if( yes ) {
+			socket.addEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
+		} else {
+			socket.removeEventListener( ProgressEvent.SOCKET_DATA, sockDataHandler );
+		}
+		return true;
+	}
+	
+	public override function write( t : String ) : Bool {
+		if( !connected || t == null || t.length == 0 )
+			return false;
+		socket.writeUTFBytes( t ); 
+		socket.flush();
+		return true;
+	}
+	
+	function sockConnectHandler( e : Event ) {
+		connected = true;
+		__onConnect();
+	}
+	
+	function sockDisconnectHandler( e : Event ) {
+		connected = false;
+		__onDisconnect();
+	}
+	
+	function sockErrorHandler( e : Event ) {
+		connected = false;
+		__onError( e.type );
+	}
+	
+	function sockDataHandler( e : ProgressEvent ) {
+		try socket.readBytes( buf, buf.length, e.bytesLoaded ) catch( e : Dynamic ) {
+			#if JABBER_DEBUG
+		//	trace(e);
+			#end
+			return;
+		}
+		var b = haxe.io.Bytes.ofData( untyped buf ); //TODO
+		if( b.length > maxBufSize )
+			throw "Max buffer size reached ("+maxBufSize+")";
+		if( __onData(  b, 0, b.length ) > 0 )
+			buf = new ByteArray();
+		//socket.flush();
+	}
+}
+
+#elseif nodejs
 
 import js.Node;
 
@@ -372,9 +459,7 @@ class SocketConnection extends jabber.stream.SocketConnection<Stream> {
 	}
 }
 
-#else // <-nodejs / js-socketbridge->
-
-#if JABBER_SOCKETBRIDGE
+#elseif JABBER_SOCKETBRIDGE // <-nodejs / js-socketbridge->
 
 class SocketConnection extends jabber.stream.SocketConnection<Socket> {
 	
@@ -547,7 +632,7 @@ private class Socket {
 		SocketConnection.swf.setSecure( id );
 	}
 }
-#end //JABBER_SOCKETBRIDGE
-#end //js
+//#end //JABBER_SOCKETBRIDGE
+#end
 
 #end
