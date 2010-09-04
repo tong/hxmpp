@@ -391,7 +391,8 @@ class Stream {
 				me.open( null );
 			}
 			cnx.setSecure();
-		#end
+			return buflen;
+		#end //!JABBER_COMPONENT
 			
 		case open :
 			// filter data here ?
