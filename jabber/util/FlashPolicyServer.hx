@@ -10,6 +10,18 @@ import neko.net.Socket;
 import cpp.vm.Thread;
 import cpp.net.Host;
 import cpp.net.Socket;
+#elseif (air&&flash)
+import flash.utils.ByteArray;
+import flash.events.ProgressEvent;
+import flash.events.ServerSocketConnectEvent;
+import flash.net.Socket;
+import flash.net.ServerSocket;
+#elseif (air&&js)
+import air.ByteArray;
+import air.ProgressEvent;
+import air.ServerSocketConnectEvent;
+import air.Socket;
+import air.ServerSocket;
 #end
 
 private typedef AllowedDomain = {
@@ -34,6 +46,8 @@ class FlashPolicyServer {
 	static var s : js.Server;
 	#elseif (neko||cpp)
 	static var s : Socket;
+	#elseif air
+	static var s : ServerSocket;
 	#end
 	
 	public static function start( host : String ) {
@@ -54,6 +68,11 @@ class FlashPolicyServer {
 		s.listen( 10 );
 		var t = Thread.create( runServer );
 		t.sendMessage( s );
+		#elseif air
+		s = new ServerSocket(); 
+		s.bind( PORT, host );
+		s.addEventListener( ServerSocketConnectEvent.CONNECT, onConnect );
+		s.listen();
 		#end
 	}
 	
@@ -80,6 +99,7 @@ class FlashPolicyServer {
 	}
 	
 	#if (neko||cpp)
+	
 	static function runServer() {
 		var s : Socket = Thread.readMessage( true );
 		while( true ) {
@@ -88,11 +108,41 @@ class FlashPolicyServer {
 			try d = c.input.read( 23 ).toString() catch( e : Dynamic ) {
 				return;
 			}
-			if( d.substr( 0, 22 ) == "<policy-file-request/>" )
+			if( d.substr( 0, 22 ) == "<policy-file-request/>" ) {
 				c.write( getXml() );
-			c.close();
+			}
+			try c.close() catch(e:Dynamic) {}
 		}
 	}
+	
+	#elseif air
+	
+	static function onConnect( e : ServerSocketConnectEvent ) {
+		var c = e.socket;
+		c.addEventListener( ProgressEvent.SOCKET_DATA, function( e : ProgressEvent ){
+			if( e.bytesLoaded != 23 ) {
+				try c.close() catch(e:Dynamic) {}
+				return;
+			}
+			var ba = new ByteArray();
+			try c.readBytes( ba, 0, e.bytesLoaded ) catch( e : Dynamic ) {
+				trace( e );
+				try c.close() catch(e:Dynamic) {}
+				return;
+			}
+			if( ba.readUTFBytes( 22 ) != "<policy-file-request/>" ) {
+				try c.close() catch(e:Dynamic) {}
+				return;
+			}
+			var t = getXml();
+			try {
+				c.writeUTFBytes( t );
+				c.flush();
+				c.close();
+			} catch( e : Dynamic ) {}
+		});
+	}
+	
 	#end
 	
 }
