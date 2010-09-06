@@ -17,17 +17,18 @@
 */
 package jabber.lop;
 
+import xmpp.dataform.FieldType;
 import xmpp.lop.Bindings;
 import xmpp.lop.Ping;
 import xmpp.lop.SpawnVM;
 import xmpp.lop.Submit;
 
-//TODO support all service discovery dataform fearures  http://xmpp.org/extensions/inbox/lop.html#sect-id2257047
-
 /**
 	<a href="http://xmpp.org/extensions/inbox/lop.html">Linked Process Protocol</a><br/>
 	<a href="http://linkedprocess.org">Linked Process Website</a><br/>
 	Manages the spawning of virtual machines.
+	
+	The disco 'identity' of a farm MUST be of category="client" and type="bot" (name is up to the implementation).<br/>
 */
 class Farm {
 	
@@ -40,34 +41,42 @@ class Farm {
 	public var stream(default,null) : jabber.Stream;
 	public var species(default,null) : Hash<jabber.JID->SpawnVM->String>;
 	public var password(default,null) : String;
-	//public var config(default,null) : FarmConfig;
-	/*
-	public var hasPassword : Bool;
-	public var ip : String;
-	public var timeToLive : Int;
-	public var jobTimeout : Int;
-	public var jobQueueCapacity : Int;
-	public var maxConcurrentVMs : Int;
-	public var startTime : Int;
-	public var readFile : List<String>;
-	public var writeFile : List<String>;
-	public var deleteFile : List<String>;
-	public var openConnection : Bool;
-	public var listenConnection : Bool;
-	public var acceptConnection : Bool;
-	public var performConnection : Bool;
-	*/
 	
-	//public function new( stream : jabber.Stream, ?config : FarmConfig ) {
-	public function new( stream : jabber.Stream, ?password : String ) {
-		if( !stream.features.add( xmpp.EntityTime.XMLNS ) )
-			throw "LOP farm listener already added";
+	// config
+	public var ip : String;
+	public var vm_species : String;
+	public var vm_time_to_live : Float;
+	public var job_timeout : Float;
+	public var job_queue_capacity : Int;
+	public var max_concurrent_vms : Int;
+	public var farm_start_time : String;
+	public var read_file : Array<String>;
+	public var write_file : Array<String>;
+	public var delete_file : Array<String>;
+	public var open_connection : Null<Bool>;
+	public var listen_for_connection : Null<Bool>;
+	public var accept_connection : Null<Bool>;
+	public var perform_multicast : Null<Bool>;
+	
+	public function new( stream : jabber.Stream,
+						 ?password : String,
+						 vm_species : String = "unknown",
+						 vm_time_to_live : Float = 1.0,
+						 job_timeout : Float = 1.0 ) {
 		this.stream = stream;
-		this.password = password; 
+		stream.features.add( xmpp.LOP.XMLNS );
+		this.password = password;
+		this.vm_species = vm_species;
+		this.vm_time_to_live = vm_time_to_live;
+		this.job_timeout = job_timeout;
+		this.farm_start_time = xmpp.DateTime.now();
+		this.read_file = new Array();
+		this.write_file = new Array();
+		this.delete_file = new Array();
+		//open_connection = listen_for_connection = accept_connection = perform_multicast = false;
 		species = new Hash();
 		stream.collect( [ cast new xmpp.filter.IQFilter( xmpp.LOP.XMLNS, null ) ], handleIQ, true );
 		
-		//TODO relay service discovery somehow (to return the dataform)
 	}
 	
 	/**
@@ -78,7 +87,7 @@ class Farm {
 			var spawn = SpawnVM.parse( iq.x.toXml() );
 			if( !species.exists( spawn.species ) ) {
 				var err = new xmpp.Error( xmpp.ErrorType.cancel, "'"+spawn.species+"' is a unsupported virtual machine", 503 );
-//TODO				err.conditions.push( Xml.parse( '<species_not_supported xmlns="http://linkedprocess.org/2009/06/Farm#"/>' ) );
+//TODO			err.conditions.push( Xml.parse( '<species_not_supported xmlns="http://linkedprocess.org/2009/06/Farm#"/>' ) );
 				var r = xmpp.IQ.createError( iq, [err] );
 				spawn.species = null; // XMPP error (?), TODO report to XEP author
 				r.properties.push( spawn.toXml() );
@@ -101,7 +110,6 @@ class Farm {
 			try {
 				result = onJob( job );
 			} catch( e : Dynamic ) {
-//				var err = new xmpp.Error( xmpp.ErrorType.modify, 400, e, [Xml.parse('<evaluation_error xmlns="http://linkedprocess.org/2009/06/Farm#"/>')]);
 				var err = new xmpp.Error( xmpp.ErrorType.modify, e, 400 );
 				err.app = { condition : "evaluation_error", xmlns : "http://linkedprocess.org/2009/06/Farm#" };
 				var r = xmpp.IQ.createError( iq, [err] );
@@ -160,6 +168,40 @@ class Farm {
 			r.x = iq.x;
 			stream.sendPacket( r );
 		}
+	}
+	
+	public function getDataForm() : xmpp.DataForm {
+		var f = new xmpp.DataForm( xmpp.dataform.FormType.result ); //?
+		f.fields.push( createFormField( "farm_password", Std.string( password != null ), FieldType.boolean ) );
+		if( ip != null ) f.fields.push( createFormField( "ip_address", ip, FieldType.list_single ) );
+		f.fields.push( createFormField( "vm_species", vm_species, FieldType.list_single ) );
+		f.fields.push( createFormField( "vm_time_to_live", Std.string( vm_time_to_live ), FieldType.list_single ) );
+		f.fields.push( createFormField( "job_timeout", Std.string( job_timeout ), FieldType.text_single ) );
+		if( job_queue_capacity != null ) f.fields.push( createFormField( "job_queue_capacity", Std.string( job_queue_capacity ), FieldType.text_single ) );
+		if( max_concurrent_vms != null ) f.fields.push( createFormField( "max_concurrent_vms", Std.string( max_concurrent_vms ),  FieldType.text_single ) );
+		if( farm_start_time != null ) f.fields.push( createFormField( "farm_start_time", farm_start_time, FieldType.text_single ) );
+		if( read_file != null && read_file.length > 0 ) f.fields.push( createFormFieldMulti( "read_file", read_file ) );
+		if( write_file != null && write_file.length > 0 ) f.fields.push( createFormFieldMulti( "write_file", write_file ) );
+		if( delete_file != null && delete_file.length > 0 ) f.fields.push( createFormFieldMulti( "delete_file", delete_file ) );
+		if( open_connection != null ) f.fields.push( createFormField( "open_connection", Std.string( open_connection ), FieldType.boolean ) );
+		if( listen_for_connection != null ) f.fields.push( createFormField( "listen_for_connection", Std.string( listen_for_connection ), FieldType.boolean ) );
+		if( accept_connection != null ) f.fields.push( createFormField( "accept_connection", Std.string( accept_connection ), FieldType.boolean ) );
+		if( perform_multicast != null ) f.fields.push( createFormField( "perform_multicast", Std.string( perform_multicast ), FieldType.boolean ) );
+		return f;
+	}
+	
+	static function createFormField( name : String, value : String, type : FieldType ) : xmpp.dataform.Field {
+		var f = new xmpp.dataform.Field( type );
+		f.variable = name;
+		f.values.push( value );
+		return f;
+	}
+	
+	static function createFormFieldMulti( name : String, values : Iterable<String> ) : xmpp.dataform.Field {
+		var f = new xmpp.dataform.Field( FieldType.list_multi );
+		f.variable = name;
+		for( v in values ) f.values.push( v );
+		return f;
 	}
 	
 }
