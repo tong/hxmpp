@@ -32,3 +32,7 @@ function init(id) {
 		window.setTimeout( "init", 10 );
 	}
 }
+
+function hasWebSocketSupport() {
+	return window.WebSocket != null; 
+}

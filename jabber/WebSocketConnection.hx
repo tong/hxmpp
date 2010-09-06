@@ -29,7 +29,7 @@ class WebSocketConnection extends jabber.stream.Connection {
 	public var port(default,null) : Int;
 	public var socket(default,null) : WebSocket;
 	
-	public function new( host : String, port : Int, secure : Bool = false ) {
+	public function new( host : String, port : Int = 5222, secure : Bool = false ) {
 		super( host, secure );
 		this.port = port;
 		this.secure = secure;
@@ -75,6 +75,14 @@ class WebSocketConnection extends jabber.stream.Connection {
 	function onData( m ) {
 		var d = m.data;
 		__onData( haxe.io.Bytes.ofString( d ), 0, d.length );
+	}
+	
+	public static function isSupported() : Bool {
+		#if js
+		return untyped js.Lib.window.WebSocket != null;
+		#elseif flash
+		return flash.external.ExternalInterface.call( "hasWebSocketSupport" );
+		#end
 	}
 	
 }
