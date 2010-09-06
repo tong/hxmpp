@@ -49,6 +49,8 @@ class Info {
 				x.addChild( fx );
 			}
 		}
+		if( this.x != null )
+			x.addChild( this.x );
 		return x;
 	}
 	
