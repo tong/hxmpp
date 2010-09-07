@@ -106,12 +106,12 @@ class SASLAuth extends Authentication {
 	}
 	
 	function handleSASLSuccess( p : xmpp.Packet ) {
-		removeSASLCollectors(); // remove the challenge collector
+		removeSASLCollectors(); // remove the collectors
 		onStreamOpenHandler = stream.onOpen; // relay the stream open event
 		stream.onOpen = handleStreamOpen;
 		onNegotiated();
 		//stream.version = false;
-//stream.cnx.reset();
+		//stream.cnx.reset();
 		stream.open( null ); // re-open XMPP stream
 		//return p.toString().length;
 	}
@@ -129,20 +129,21 @@ class SASLAuth extends Authentication {
 	}
 	
 	function handleBind( iq : IQ ) {
-		//trace("SASL bind");
 		switch( iq.type ) {
 		case IQType.result :
 			//onBind();
 			var b = xmpp.Bind.parse( iq.x.toXml() );
-			var jid = new jabber.JID( b.jid );
-			stream.jid.node = jid.node;
-			stream.jid.resource = jid.resource;
+			var p = jabber.JIDUtil.getParts( b.jid );
+			stream.jid.node = p[0];
+			stream.jid.domain = p[1];
+			stream.jid.resource = p[2];
 			if( stream.server.features.exists( "session" ) ) { // init session
 				var iq = new IQ( IQType.set );
 				iq.x = new xmpp.PlainPacket( Xml.parse( '<session xmlns="urn:ietf:params:xml:ns:xmpp-session"/>' ).firstElement() );
 				stream.sendIQ( iq, handleSession );
-			} else
+			} else {
 				onSuccess();
+			}
 		case IQType.error :
 			onFail( new jabber.XMPPError( this, iq ) );
 		}
@@ -151,9 +152,6 @@ class SASLAuth extends Authentication {
 	function handleSession( iq : IQ ) {
 		switch( iq.type ) {
 		case result :
-			//TODO update jid (may have changed resource)
-			//trace("#############################################################");
-			//stream.jid = new jabber.JID( iq.to );
 			onSuccess();
 		case error :
 			onFail( new jabber.XMPPError( this, iq ) );
@@ -169,5 +167,4 @@ class SASLAuth extends Authentication {
 		stream.removeCollector( c_success );
 		c_success = null;
 	}
-	
 }
