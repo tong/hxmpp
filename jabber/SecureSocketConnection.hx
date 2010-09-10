@@ -45,11 +45,16 @@ class SecureSocketConnection extends jabber.stream.SocketConnection<Socket> {
 		socket = new Socket();
 		buf = haxe.io.Bytes.alloc( bufSize );
 		bufbytes = 0;
-		#if neko
-		socket.connect( Socket.resolve( host ), port );
-		#elseif php
-		socket.connectTLS( new php.net.Host( host ), port );
-		#end
+		try {
+			#if neko
+			socket.connect( Socket.resolve( host ), port );
+			#elseif php
+			socket.connectTLS( new php.net.Host( host ), port );
+			#end
+		} catch( e : Dynamic ) {
+			__onError( e );
+			return;
+		}
 		secured = true;
 		connected = true;
 		__onConnect();

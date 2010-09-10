@@ -19,7 +19,7 @@ package jabber;
 
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0202.html">XEP 202 - EntityTime</a><br/>
-	Listens/Answers time requests.
+	Listens/Answers entity time requests.
 */
 class EntityTimeListener {
 	
@@ -35,7 +35,7 @@ class EntityTimeListener {
 	}
 	
 	function handleRequest( iq : xmpp.IQ ) {
-		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
+		var r = xmpp.IQ.createResult( iq );
 		time.utc = xmpp.DateTime.now();
 		r.x = time;
 		stream.sendPacket( r );	

@@ -331,15 +331,18 @@ class Stream {
 	/**
 	*/
 	public function handleData( buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) : Int {
-		if( status == StreamStatus.closed ) return -1;
-		//TODO .. data filters
+		if( status == StreamStatus.closed )
+			return -1;
+	//TODO .. data filters
 	//	for( f in dataFilters ) {
 	//		buf = f.filterData( buf );
 	//	}
+	
 		var t : String = buf.readString( bufpos, buflen );
 #if flash // haXe 2.06 fuckup
 		t = StringTools.replace( t, "xmlns=", "_xmlns_=" );
 #end
+
 		//TODO
 		if( StringTools.startsWith( t, '</stream:stream' ) ) {
 			#if XMPP_DEBUG
@@ -438,15 +441,17 @@ class Stream {
 		XMPPDebug.inc( p.toString() );
 		#end
 		var i = -1;
-		while( ++i < collectors_id.length ) {
-			var c = collectors_id[i];
-			if( c.accept( p ) ) {
-				c.deliver( p );
-				collectors_id.splice( i, 1 );
-				c = null;
-				return true;
+	//	if( collectors_id.length > 0 ) {
+			while( ++i < collectors_id.length ) {
+				var c = collectors_id[i];
+				if( c.accept( p ) ) {
+					c.deliver( p );
+					collectors_id.splice( i, 1 );
+					c = null;
+					return true;
+				}
 			}
-		}
+	//	}
 		var collected = false;
 		i = -1;
 		while( ++i < collectors.length ) {

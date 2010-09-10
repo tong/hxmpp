@@ -15,7 +15,9 @@ import cpp.net.Socket;
 
 class SocketConnection extends jabber.stream.SocketConnection<Socket> {
 	
-	public function new( host : String, port : Int = 5222, secure : Bool = #if (neko||cpp||air) false #else true #end,
+	public function new( host : String,
+						 port : Int = #if JABBER_COMPONENT 5275 #else 5222 #end,
+						 secure : Bool = #if (neko||cpp||air) false #else true #end,
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
 		super( host, port, secure, bufSize, maxBufSize, timeout );
@@ -36,7 +38,10 @@ class SocketConnection extends jabber.stream.SocketConnection<Socket> {
 		socket = new Socket();
 		buf = haxe.io.Bytes.alloc( bufSize );
 		bufbytes = 0;
-		socket.connect( new Host( host ), port );
+		try socket.connect( new Host( host ), port ) catch( e : Dynamic ) {
+			__onError( e );
+			return;
+		}
 		connected = true;
 		__onConnect();
 	}

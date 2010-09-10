@@ -27,6 +27,8 @@ import xmpp.filter.IQFilter;
 */
 class ServiceDiscoveryListener {
 	
+	public static var defaultIdentity = { type : "pc", name : "HXMPP", category : "client" };
+	
 	public var stream(default,null) : Stream;
 	public var identities : Array<xmpp.disco.Identity>;
 	
@@ -37,12 +39,12 @@ class ServiceDiscoveryListener {
 	public var onItemQuery : IQ->IQ;
 	#end
 	
-	public function new( stream : Stream, identities : Array<xmpp.disco.Identity> ) {
+	public function new( stream : Stream, ?identities : Array<xmpp.disco.Identity> ) {
 		if( !stream.features.add( xmpp.disco.Info.XMLNS )
 			#if JABBER_COMPONENT || !stream.features.add( xmpp.disco.Items.XMLNS ) #end )
 			throw "ServiceDiscovery listener already added";
 		this.stream = stream;
-		this.identities = ( identities == null ) ? new Array() : identities;
+		this.identities = ( identities == null ) ? [defaultIdentity] : identities;
 		stream.collect( [cast new IQFilter( xmpp.disco.Info.XMLNS, null, xmpp.IQType.get )], handleInfoQuery, true );
 		#if JABBER_COMPONENT
 		stream.collect( [cast new IQFilter( xmpp.disco.Items.XMLNS, null, xmpp.IQType.get )], handleItemsQuery, true );
@@ -50,6 +52,7 @@ class ServiceDiscoveryListener {
 	}
 	
 	function handleInfoQuery( iq : IQ ) {
+		// TODO just attach the extended info ()
 		if( onInfoQuery != null ) { // redirect to custom handler
 			var r = onInfoQuery( iq );
 			if( r != null ) {

@@ -65,7 +65,10 @@ class Packet {
 		if( id != null ) x.set( "id", id );
 		if( lang != null ) x.set( "xml:lang", lang );
 		for( p in properties ) x.addChild( p );
-		for( e in errors ) x.addChild( e.toXml() );
+		for( e in errors ) {
+			if( e == null ) continue; //HACK
+			x.addChild( e.toXml() );
+		}
         return x;
 	}
 	
