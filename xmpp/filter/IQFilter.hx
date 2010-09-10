@@ -33,11 +33,13 @@ class IQFilter {
 	}
 	
 	public function accept( p : xmpp.Packet ) : Bool {
-		if( p._type != xmpp.PacketType.iq )
+		if( !Type.enumEq( p._type, xmpp.PacketType.iq ) )
 			return false;
 		var iq : xmpp.IQ = untyped p; //cast( p, xmpp.IQ );
-		if( iqType != null && iqType != iq.type )
-			return false;
+		if( iqType != null ) {
+			if( !Type.enumEq( iqType, iq.type ) )
+				return false;
+		}
 		var x : Xml = null;
 		if( xmlns != null ) {
 			if( iq.x == null )
