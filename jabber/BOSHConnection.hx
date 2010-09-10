@@ -179,15 +179,15 @@ class BOSHConnection extends jabber.stream.Connection {
 	
 	function restart() {
 		var r = createRequest();
-		#if flash
+		#if flash // haXe 2.06 fuckup
+		r.set( '_xmlns_', XMLNS );
 		r.set( "xmpp_restart", "true" );
 		r.set( "xmlns_xmpp", XMLNS_XMPP );
-		r.set( '_xmlns_', XMLNS );
 		r.set( "xml_lang", "en" );
 		#else
+		r.set( 'xmlns', XMLNS );
 		r.set( "xmpp:restart", "true" );
 		r.set( "xmlns:xmpp", XMLNS_XMPP );
-		r.set( 'xmlns', XMLNS );
 		r.set( "xml:lang", "en" );
 		#end
 		r.set( "to", host );
@@ -223,6 +223,7 @@ class BOSHConnection extends jabber.stream.Connection {
 				 t = createRequest( tmp );
 			}
 		}
+		
 		#if js
 		var r = new haxe.Http( getHTTPPath() );
 		//r.onStatus = handleHTTPStatus;
@@ -230,13 +231,14 @@ class BOSHConnection extends jabber.stream.Connection {
 		r.onData = handleHTTPData;
 		r.setPostData( t.toString() );
 		r.request( true );
+	
 		#elseif flash
 		var r = new flash.net.URLRequest( getHTTPPath() );
 		r.method = flash.net.URLRequestMethod.POST;
 		r.contentType = "text/xml";
 		// haXe 2.06 HACK
 		var s = t.toString();
-		s = StringTools.replace( s, "_xmlns_", "xml:lang" );
+		s = StringTools.replace( s, "_xmlns_", "xmlns" );
 		s = StringTools.replace( s, "xml_lang", "xml:lang" );
 		s = StringTools.replace( s, "xmlns_xmpp", "xmlns:xmpp" );
 		s = StringTools.replace( s, "xmpp_version", "xmpp:version" );
@@ -250,6 +252,7 @@ class BOSHConnection extends jabber.stream.Connection {
 		//l.addEventListener( HTTPStatusEvent.HTTP_STATUS, function(e) me.handleHTTPStatus( e.status ) );
 		l.addEventListener( SecurityErrorEvent.SECURITY_ERROR, handleHTTPError );
 		l.load( r );
+		
 		#end
 		if( timeoutTimer != null )
 			timeoutTimer.stop();
@@ -294,7 +297,6 @@ class BOSHConnection extends jabber.stream.Connection {
 			return;
 		}
 		#if flash // TODO haXe 2.06 fukup hack
-		trace( x.get( "_xmlns_" ) );
 		#else
 		if( x.get( "xmlns" ) != XMLNS ) {
 			#if JABBER_DEBUG trace( "Invalid BOSH body" ); #end
@@ -409,8 +411,13 @@ class BOSHConnection extends jabber.stream.Connection {
 	
 	function createRequest( ?t : Iterable<String> ) : Xml {
 		var x = Xml.createElement( "body" );
+		#if flash //TODO haXe 2.06 fukup
+		x.set( "_xmlns_", XMLNS );
+		x.set( "xml_lang", "en" );
+		#else
 		x.set( "xmlns", XMLNS );
 		x.set( "xml:lang", "en" );
+		#end
 		x.set( "rid", Std.string( ++rid ) );
 		x.set( "sid", sid );
 		if( t != null ) {
