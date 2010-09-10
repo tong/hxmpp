@@ -1,0 +1,54 @@
+
+### Builds a flash10-SWC with common client functionality
+### Modify to your needs (debug flags)
+
+-cp util/
+-cp util/tls_flash
+-swf hxmpp.swc
+-swf-version 10
+-swf-lib util/tls_flash/tls.swf
+-D XMPP_DEBUG
+-D JABBER_DEBUG
+-D TLS
+
+jabber.BlockList
+jabber.BOSHConnection
+jabber.ChatStateNotification
+jabber.EntityCapabilities
+jabber.EntityTime
+jabber.EntityTimeListener
+jabber.JID
+jabber.JIDUtil
+jabber.LastActivity
+jabber.LastActivityListener
+jabber.MessageListener
+jabber.PersonalEvent
+jabber.PersonalEventListener
+jabber.Ping
+jabber.Pong
+jabber.PrivacyLists
+jabber.PrivateStorage
+jabber.SecureSocketConnection
+jabber.ServiceDiscovery
+jabber.ServiceDiscoveryListener
+jabber.SocketConnection
+jabber.SoftwareVersion
+jabber.WebSocketConnection
+jabber.XMPPDebug
+jabber.client.Account
+jabber.client.MUChat
+jabber.client.NonSASLAuth
+jabber.client.Roster
+jabber.client.SASLAuth
+jabber.client.Stream
+jabber.client.VCard
+jabber.jingle.RTMPCall
+jabber.jingle.RTMPListener
+jabber.jingle.RTMPResponder
+jabber.lop.Farm
+jabber.lop.Villein
+jabber.remoting.Connection
+jabber.remoting.Host
+jabber.sasl.AnonymousMechanism
+jabber.sasl.PlainMechanism
+jabber.sasl.MD5Mechanism
