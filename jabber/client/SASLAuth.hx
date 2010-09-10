@@ -130,8 +130,9 @@ class SASLAuth extends Authentication {
 	
 	function handleBind( iq : IQ ) {
 		switch( iq.type ) {
-		case IQType.result :
+		case result :
 			//onBind();
+			trace("handleBind");
 			var b = xmpp.Bind.parse( iq.x.toXml() );
 			var p = jabber.JIDUtil.getParts( b.jid );
 			stream.jid.node = p[0];
@@ -144,8 +145,9 @@ class SASLAuth extends Authentication {
 			} else {
 				onSuccess();
 			}
-		case IQType.error :
+		case error :
 			onFail( new jabber.XMPPError( this, iq ) );
+		default : //
 		}
 	}
 	
