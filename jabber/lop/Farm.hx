@@ -47,8 +47,8 @@ class Farm {
 	public var vm_species : String;
 	public var vm_time_to_live : Float;
 	public var job_timeout : Float;
-	public var job_queue_capacity : Int;
-	public var max_concurrent_vms : Int;
+	public var job_queue_capacity : Null<Int>;
+	public var max_concurrent_vms : Null<Int>;
 	public var farm_start_time : String;
 	public var read_file : Array<String>;
 	public var write_file : Array<String>;
