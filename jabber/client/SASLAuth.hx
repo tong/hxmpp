@@ -132,7 +132,6 @@ class SASLAuth extends Authentication {
 		switch( iq.type ) {
 		case result :
 			//onBind();
-			trace("handleBind");
 			var b = xmpp.Bind.parse( iq.x.toXml() );
 			var p = jabber.JIDUtil.getParts( b.jid );
 			stream.jid.node = p[0];

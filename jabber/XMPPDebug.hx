@@ -157,7 +157,8 @@ class XMPPDebug {
 	public static var useConsole : Bool;
 	
 	public static function _print( t : String, out : Bool = true, level : String = "log" ) {
-		var dir = "XMPP-"+((out)?"O ":"I ");
+		//var dir = "XMPP-"+((out)?"O ":"I ");
+		var dir = out ? "=>" : "<=";
 		if( useConsole ) {
 			#if flash
 			ExternalInterface.call( "console."+level, dir+t );
@@ -165,7 +166,8 @@ class XMPPDebug {
 			untyped console[level]( dir+t );
 			#end
 		} else {
-			haxe.Log.trace( t, { className : "", methodName : "", fileName : dir, lineNumber : 0, customParams : [] } );
+			//haxe.Log.trace( t, { className : "", methodName : "", fileName : dir, lineNumber : 0, customParams : [] } );
+			haxe.Log.trace( t, { className : "", methodName : "", fileName : "XMPP"+dir, lineNumber : t.length, customParams : [] } );
 		}
 	}
 	

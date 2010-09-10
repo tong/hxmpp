@@ -38,7 +38,7 @@ class Candidate<T> {
 	}
 	
 	public static function parse<T>( x : Xml ) : T {
-		var c : T = cast {};
+		var c : T = untyped {};
 		for( e in x.attributes() )
 			Reflect.setField( c, e, x.get( e ) );
 		return c;

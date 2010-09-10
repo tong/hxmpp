@@ -23,8 +23,8 @@ import jabber.util.SHA1;
 import xmpp.XMLUtil;
 
 /**
+	<a href="http://www.xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a><br/>
 	Component-2-Server XMPP stream.<br/>
-	<a href="http://www.xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>
 */
 class Stream extends jabber.Stream {
 	
@@ -82,16 +82,18 @@ class Stream extends jabber.Stream {
 	}
 	
 	override function handleConnect() {
-		var t = sendData( xmpp.Stream.createOpenXml( xmpp.Stream.COMPONENT, subdomain ) );
+		sendData( xmpp.Stream.createOpenXml( xmpp.Stream.COMPONENT, subdomain+"."+host ) );
 		status = jabber.StreamStatus.pending;
 		cnx.read( true );
 	}
 	
 	override function processStreamInit( t : String, len : Int ) {
+		//TODO fuuuuk
 		if( t.charAt( 0 ) != "<" || t.charAt( t.length-1 ) != ">" )
 			return 0;
 		t = XMLUtil.removeXmlHeader( t );
 		try id = Xml.parse( t+"</stream:stream>" ).firstChild().get( "id" ) catch( e : Dynamic ) {
+			trace( t+"</stream:stream>");
 			trace(e);
 			return 0;//-1;
 		}

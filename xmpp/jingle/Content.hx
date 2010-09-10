@@ -59,7 +59,7 @@ class Content {
 			case "transport" :
 				c.transport = Transport.parse( e );
 //			case "description" :
-//				c.description = Description.parse( e ); //fuuuuuuuuuuuuuuuuuuk jingle type have different descriptions
+//				c.description = Description.parse( e ); //arrg, jingle type have different descriptions
 			default :
 				c.any.push( e );
 			}

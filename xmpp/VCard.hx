@@ -155,18 +155,18 @@ class VCard {
 			switch( e.nodeName ) {
 			case "FN" : vc.fn = e.firstChild().nodeValue;
 			case "N" :
+				vc.n = cast {};
 				for( n in e.elements() ) {
-					var v : String = null;
-					try {
-						var fc = n.firstChild();
-						if( vc != null ) v = n.firstChild().nodeValue; } catch( e : Dynamic ) {}
-					if( v != null ) {
-						switch( n.nodeName ) {
-						case "FAMILY" : vc.n.family = v;
-						case "GIVEN"  : vc.n.given = v;
-						case "MIDDLE" : vc.n.middle = v;
-						case "PREFIX" : vc.n.prefix = v;
-						case "SUFFIX" : vc.n.suffix = v;
+					if( n.firstChild() != null ) {
+						var v = n.firstChild().nodeValue;
+						if( v != null ) {
+							switch( n.nodeName ) {
+							case "FAMILY" : vc.n.family = v;
+							case "GIVEN"  : vc.n.given = v;
+							case "MIDDLE" : vc.n.middle = v;
+							case "PREFIX" : vc.n.prefix = v;
+							case "SUFFIX" : vc.n.suffix = v;
+							}
 						}
 					}
 				}
