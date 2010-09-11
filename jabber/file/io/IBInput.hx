@@ -17,70 +17,86 @@
 */
 package jabber.file.io;
 
+import haxe.io.Bytes;
 import jabber.util.Base64;
 import jabber.stream.PacketCollector;
 import xmpp.filter.IQFilter;
+import xmpp.IQ;
+import xmpp.IQType;
 
-//TODO encode data onrecieve
+// TODO cached/uncahched mode
 
-//TODO class IBIput extends IBIO {
-class IBInput extends IO {
+class IBInput extends IBIO {
 	
-	public var data(getData,null) : haxe.io.Bytes;
+	public var __onComplete : Bytes->Void;
+	//public dynamic function __onData( bytes : Bytes ) : Void;
 	
-	var stream : jabber.Stream;
 	var initiator : String;
-	var seq : Int;
-	var buf : StringBuf;
-	var cdata : PacketCollector;
-	var sid : String;
+	var data : Bytes;
+	var collector : PacketCollector;
 	
-	public function new( stream : jabber.Stream, initiator : String, sid : String ) {
-		super();
-		this.stream = stream;
+	public function new( stream : jabber.Stream, initiator : String, sid : String, filesize : Int ) {
+		super( stream, sid );
 		this.initiator = initiator;
-		this.sid = sid;
+		data = Bytes.alloc( filesize );
+		bufpos = 0;
 		seq = 0;
-		buf = new StringBuf();
-		var ff : xmpp.PacketFilter = new xmpp.filter.PacketFromFilter( initiator );
-		// collect stream closing iqs
-		var cclose = new PacketCollector( [ ff, cast new IQFilter( xmpp.file.IB.XMLNS, Type.enumConstructor( xmpp.file.IBType.close ), xmpp.IQType.set ) ], handleIBClose, false );
-		stream.addCollector( cclose );
-		// collect data iqs
-		cdata = new PacketCollector( [ ff, cast new IQFilter( xmpp.file.IB.XMLNS, Type.enumConstructor( xmpp.file.IBType.data ), xmpp.IQType.set ) ], handleIBData, true );
-		stream.addCollector( cdata );
+		active = true;
+		var fromfilter : xmpp.PacketFilter = new xmpp.filter.PacketFromFilter( initiator );
+		stream.collect( [fromfilter,
+						 new IQFilter( xmpp.file.IB.XMLNS, "close", IQType.set )],
+						 handleClose );
+		collector = stream.collect( [fromfilter,
+						 			 cast new IQFilter( xmpp.file.IB.XMLNS, "data", IQType.set )],
+						 			 handleChunk, true );
 	}
 	
-	function getData() : haxe.io.Bytes {
-		//return haxe.io.Bytes.ofString( buf.toString() );
-		return new haxe.BaseCode( haxe.io.Bytes.ofString( Base64.CHARS ) ).decodeBytes( haxe.io.Bytes.ofString( buf.toString() ) );
+	function handleClose( iq : IQ ) {
+		trace("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
+		if( bufpos == data.length ) {
+			stream.sendPacket( IQ.createResult( iq ) );
+			if( active ) {
+				active = false;
+				__onComplete( data );
+			}
+		} else {
+			active = false;
+			__onFail( "ib failed" );
+		}
 	}
 	
-	function handleIBData( iq : xmpp.IQ ) {
-		var i = xmpp.file.IB.parseData( iq ); //?
-		if( seq != i.seq ) {
-			//__onFail( "In-band data packet loss ("+i.seq+")" );
-			__onFail();
+	function handleChunk( iq : IQ ) {
+		var ib = xmpp.file.IB.parse( iq.x.toXml() );
+		if( ib.sid != sid ) {
+			//TODO send error
+			
 			return;
 		}
-		if( i.sid != sid ) {
-			//__onFail( "Invalid SID" );
-			__onFail();
+		if( ib.seq != seq ) {
+			//..
 			return;
 		}
 		seq++;
-		buf.add( i.data );
-		//buf.add( util.Base64.decode( i.data ) );
-		stream.sendPacket( xmpp.IQ.createResult( iq ) );
-		//onProgress( this );
-	}
-	
-	function handleIBClose( iq : xmpp.IQ ) {
-		// read success?
-		stream.removeCollector( cdata );
-		stream.sendPacket( xmpp.IQ.createResult( iq ) );
-		//__onClose();
-		__onComplete();
+		var bytes : Bytes = null;
+		try {
+			bytes = haxe.io.Bytes.ofString( Base64.decode( ib.data ) );
+		} catch( e : Dynamic ) {
+			trace(e);
+			return;
+		}
+		trace( ib.data.length );
+		trace( bytes.length );
+		data.blit( bufpos, bytes, 0, bytes.length );
+		bufpos += bytes.length;
+		stream.sendPacket( IQ.createResult( iq ) );
+		trace(bufpos +" // "+ data.length);
+		if( bufpos == data.length ) {
+			trace("COMPLETECOMPLETECOMPLETECOMPLETECOMPLETECOMPLETECOMPLETECOMPLETECOMPLETECOMPLETECOMPLETE");
+			__onComplete( data );
+			//TODO close ib
+		} else {
+			
+		}
 	}
 	
 }

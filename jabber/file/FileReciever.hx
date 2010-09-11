@@ -17,43 +17,69 @@
 */
 package jabber.file;
 
+import haxe.io.Bytes;
+import xmpp.IQ;
+
 /**
 	Abstract, incoming file transfer handler.
 */
 class FileReciever {
 	
-	public dynamic function onComplete( r : FileReciever ) : Void;
-	public dynamic function onFail( r : FileReciever, e : jabber.XMPPError ) : Void;
-	//public var onComplete : FileReciever->Void;
-	//public var onFail : FileReciever->jabber.XMPPError->Void;
+	//public dynamic function onData( fr : FileReciever ) : Void;
+	public dynamic function onComplete( fr : FileReciever ) : Void;
+	public dynamic function onFail( fr : FileReciever, info : String ) : Void;
 	
 	public var stream(default,null) : jabber.Stream;
-	/** The namespace of this file transfer */
 	public var xmlns(default,null) : String;
 	public var initiator(default,null) : String;
-	/** Recieved data */
-	public var data(getData,null) : haxe.io.Bytes;
+	public var file(default,null) : xmpp.file.File;
+	public var data(default,null) : Bytes; // TODO cache/uncached mode
 	
-	var request : xmpp.IQ;
-	//var input : haxe.io.Input; //TODO move here
+	var request : IQ;
+	var sid : String;
 	
 	function new( stream : jabber.Stream, xmlns : String ) {
 		this.stream = stream;
 		this.xmlns = xmlns;
+		stream.features.add( xmlns );
 	}
 	
-	function getData() : haxe.io.Bytes {
-		return throw "Abstract error";
+	public function __init( file : xmpp.file.File, request : IQ, sid : String ) {
+		this.file = file;
+		this.request = request;
+		this.sid = sid;
+		initiator = request.from;
 	}
 	
-	public function handleRequest( iq : xmpp.IQ ) : Bool {
-		request = iq;
-		initiator = iq.from;
-		return true;
+	public function accept( yes : Bool ) {
+		// override me
 	}
 	
-	public function accept( yes : Bool = true ) {
-		throw "Abstract method";
+	function sendDeny() {
+		var r = IQ.createError( request );
+		r.errors.push( new xmpp.Error( xmpp.ErrorType.auth, xmpp.ErrorCondition.NOT_ACCEPTABLE ) );
+		stream.sendPacket( r );
+	}
+	
+	function sendAccept( xmlns : String, xname : String ) {
+		var r = IQ.createResult( request );
+		var si = new xmpp.file.SI();
+		var feature = Xml.createElement( "feature" );
+		feature.set( "xmlns", xmpp.FeatureNegotiation.XMLNS );
+		var form = new xmpp.DataForm( xmpp.dataform.FormType.submit );
+		var form_f = new xmpp.dataform.Field();
+		form_f.variable = "stream-method";
+		form_f.values.push( xmlns );
+		form.fields.push( form_f );
+		feature.addChild( form.toXml() );
+		si.any.push( feature );
+		r.x = si;
+		stream.sendPacket( r );
+		stream.collect( [cast new xmpp.filter.IQFilter( xmlns, xname, xmpp.IQType.set )], handleRequest );
+	}
+	
+	function handleRequest( iq : IQ ) {
+		// override me
 	}
 	
 }

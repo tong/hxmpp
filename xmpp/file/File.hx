@@ -15,34 +15,34 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package jabber.file;
+package xmpp.file;
 
-/**
-	A listener for incoming in-band file transfers.
-*/
-class IBListener {
+class File {
 	
-	/** Callback for incoming file transfer requests */
-	public var onRequest : IBReciever->Void;
-	public var stream(default,null) : jabber.Stream;
+	public var name : String;
+	public var size : Int;
+	public var date : String;
+	public var hash : String;
 	
-	public function new( stream : jabber.Stream ) {
-		this.stream = stream;
-		// collect requests
-		var f : xmpp.PacketFilter = new xmpp.filter.IQFilter( xmpp.file.IB.XMLNS, "open", xmpp.IQType.set );
-		stream.addCollector( new jabber.stream.PacketCollector( [f], handleRequest, true ) );
+	public function new( name : String, size : Int, ?date : String, ?hash : String ) {
+		this.name = name;
+		this.size = size;
+		this.date = date;
+		this.hash = hash;
+	}
+
+	public function toXml() : Xml {
+		var x = Xml.createElement( "file" );
+		x.set( "xmlns", SI.PROFILE );
+		x.set( "name", name );
+		x.set( "size", Std.string( size ) );
+		if( date != null ) x.set( "date", date );
+		if( hash != null ) x.set( "hash", hash );
+		return x;
 	}
 	
-	/*
-	public function dispose() {
-		//stream.removeCollector( c );
-	}
-	*/
-	
-	function handleRequest( iq : xmpp.IQ ) {
-		var r = new IBReciever( stream );
-		if( r.handleRequest( iq ) )
-			onRequest( r );
+	public static function parse( x : Xml ) : File {
+		return new File( x.get( "name" ), Std.parseInt( x.get( "size" ) ), x.get( "date" ), x.get( "hash" ) );
 	}
 	
 }

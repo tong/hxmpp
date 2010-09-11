@@ -23,32 +23,28 @@ package jabber.file;
 class FileTransfer {
 	
 	//public dynamic function onReject( t : Transfer ) : Void;
-	public dynamic function onInit( ft : FileTransfer ) : Void;
-	public dynamic function onComplete( ft : FileTransfer ) : Void;
-	public dynamic function onFail( ft : FileTransfer, e : jabber.XMPPError  ) : Void;
+	//public dynamic function onInit( ft : FileTransfer ) : Void;
+	public dynamic function onComplete() : Void;
+	public dynamic function onFail( info : String  ) : Void;
 	
 	public var stream(default,null) : jabber.Stream;
-	/** The namespace of the transfer method used */
 	public var xmlns(default,null) : String;
-	/** */
-	public var sid : String; //public var sid(default,null) : String;
-	/** JID of the transfer reciever */
 	public var reciever(default,null) : String;
-//	/** Data to be transfered */
-//	public var data(default,null) : haxe.io.Bytes;
+	public var bufsize(default,null) : Int;
 	
+	var fileSize : Int;
 	var input : haxe.io.Input;
+	var sid : String;
 	 
-	function new( stream : jabber.Stream, xmlns : String, reciever : String ) {
+	function new( stream : jabber.Stream, xmlns : String, reciever : String, bufsize : Int ) {
 		this.stream = stream;
 		this.xmlns = xmlns;
 		this.reciever = reciever;
+		this.bufsize = bufsize;
 	}
 	
-	public function init( input : haxe.io.Input ) {
-		#if JABBER_DEBUG
+	public function __init( input : haxe.io.Input, sid : String, fileSize : Int ) {
 		throw "Abstract method";
-		#end
 	}
 	
 }

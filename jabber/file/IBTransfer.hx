@@ -18,13 +18,59 @@
 package jabber.file;
 
 import jabber.file.io.IBOutput;
+import xmpp.IQ;
 
 /**
+	<a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a><br/>
 	Outgoing in-band file transfer negotiator.<br/>
-	Data is broken down into smaller chunks and transported in-band over XMPP.
+	Data is broken down into smaller chunks and transported in-band over XMPP.<br/>
+	Use only as a last resort. SOCKS5 Bytestreams will almost always be preferable.
 */
 class IBTransfer extends FileTransfer {
 	
+	public static var defaultBufSize = 1<<14; //16384
+	
+	var output : IBOutput;
+	
+	public function new( stream : jabber.Stream, reciever : String,
+						 ?bufsize : Int ) {
+		if( bufsize == null ) bufsize = defaultBufSize;
+		trace(bufsize);
+		super( stream, xmpp.file.IB.XMLNS, reciever, bufsize );
+	}
+	
+	public override function __init( input : haxe.io.Input, sid : String, fileSize : Int ) {
+		this.input = input;
+		this.sid = sid;
+		this.fileSize = fileSize;
+		var iq = new IQ( xmpp.IQType.set, null, reciever, stream.jidstr );
+		iq.x = new xmpp.file.IB( xmpp.file.IBType.open, sid, bufsize );
+		stream.sendIQ( iq, handleRequestResponse );
+	}
+	
+	function handleRequestResponse( iq : IQ ) {
+		switch( iq.type ) {
+		case result :
+			output = new IBOutput( stream, reciever, sid );
+			output.__onComplete = handleOutputComplete;
+			output.__onFail = handleOutputFail;
+			//onInit( this );
+			output.send( input, fileSize, bufsize );
+		case error :
+			onFail( iq.errors[0].condition );
+		default : //
+		}
+	}
+	
+	function handleOutputComplete() {
+		onComplete();
+	}
+	
+	function handleOutputFail( info : String ) {
+		onFail( info );
+	}
+	
+	/*
 	public static var defaultBlockSize = 1 << 12; // 4096
 	
 	public var blockSize(default,null) : Int;
@@ -36,9 +82,6 @@ class IBTransfer extends FileTransfer {
 		this.blockSize = ( blockSize != null ) ? blockSize : defaultBlockSize;
 	}
 	
-	/**
-		Starts outgoing file transfer.
-	*/
 	public override function init( input : haxe.io.Input ) {
 		this.input = input;
 		sid = jabber.util.Base64.random( 8 );
@@ -69,5 +112,6 @@ class IBTransfer extends FileTransfer {
 	function handleTransferFail() {
 		onFail( this, null );
 	}
+	*/
 	
 }

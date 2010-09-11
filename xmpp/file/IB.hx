@@ -65,8 +65,6 @@ class IB {
 		return ib;
 	}
 	
-	/**
-	*/
 	public static function parseData( p : xmpp.Packet ) : { sid : String , seq : Int, data : String } {
 		for( x in p.properties ) {
 			if( x.nodeName == "data" ) {
@@ -79,8 +77,6 @@ class IB {
 		return null;
 	}
 	
-	/**
-	*/
 	public static function createDataElement( sid : String, seq : Int, d : String ) : Xml {
 		var x = xmpp.XMLUtil.createElement( "data", d );
 		x.set( "xmlns", XMLNS );

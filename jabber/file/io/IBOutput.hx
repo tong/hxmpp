@@ -17,91 +17,89 @@
 */
 package jabber.file.io;
 
+import haxe.io.Bytes;
 import jabber.util.Base64;
-
-//TODO encode chunks itself
+import xmpp.IQ;
 
 /**
-	Generic in-band file transfer output.
+	<a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a><br/>
+	Outgoing inband data transfer.
 */
-class IBOutput extends IO {
+class IBOutput extends IBIO {
 	
-	var stream : jabber.Stream;
+	public var __onComplete : Void->Void;
+	
 	var reciever : String;
-	var blockSize : Int;
-	var sid : String;
-	var seq : Int;
-	var blocks : Array<String>;
-	var iq : xmpp.IQ;
+	var input : haxe.io.Input;
+	var filesize : Int;
+	var bufsize : Int;
+	var iq : IQ;
 	
-	public function new( stream : jabber.Stream, reciever : String, blockSize : Int, sid : String ) {
-		super();
-		this.stream = stream;
+	public function new( stream : jabber.Stream, reciever : String, sid : String ) {
+		super( stream, sid );
 		this.reciever = reciever;
-		this.blockSize = blockSize;
-		this.sid = sid;
 	}
 	
-	//TODO! public function send( input : haxe.io.Input ) {
-	public function send( bytes : haxe.io.Bytes ) {
-		seq = 0;
-		blocks = new Array();
-		// create chunk blocks
-		var t = new haxe.BaseCode( haxe.io.Bytes.ofString( Base64.CHARS ) ).encodeBytes( bytes ).toString();
-		var pos = 0;
-		while( true ) {
-			var len = if( pos > t.length-blockSize ) t.length-pos else blockSize;
-			var next = t.substr( pos, len );
-			blocks.push( next );
-			pos += len;
-			if( pos == t.length )
-				break;
-		}
-		//TODO encode chunks on send
-		/*
-		var pos = 0;
-		while( true ) {
-			var len = if( pos > bytes.length-blockSize ) bytes.length-pos else blockSize;
-			var next = bytes.sub( pos, len );//t.substr( pos, len );
-			blocks.push( next.toString() );
-			pos += len;
-			if( pos == bytes.length )
-				break;
-		}
-		*/
-		iq = new xmpp.IQ( xmpp.IQType.set, null, reciever );
+	public function send( input : haxe.io.Input, filesize : Int, bufsize : Int ) {
+		this.input = input;
+		this.filesize = filesize;
+		this.bufsize = bufsize;
+		stream.collect( [cast new xmpp.filter.PacketFromFilter( reciever ),
+						 cast new xmpp.filter.IQFilter( xmpp.file.IB.XMLNS, "close", xmpp.IQType.set )],
+						handleIBClose );
+		iq = new IQ( xmpp.IQType.set, null, reciever );
+		bufpos = 0;
 		sendNextPacket();
 	}
 	
-	function sendNextPacket() {
-		iq.id = stream.nextID()+"_ib"+seq;
-		iq.properties = [xmpp.file.IB.createDataElement( sid, seq, blocks[seq] )];
-		//TODO encode chunks on send
-		//iq.properties = [xmpp.file.IB.createDataElement( sid, seq, util.Base64.encode( blocks[seq] ) )];
-		stream.sendIQ( iq, handleChunkResponse );
-	}
-	
-	function handleChunkResponse( iq : xmpp.IQ ) {
-		switch( iq.type ) {
-		case result :
-			if( seq < blocks.length-1 ) {
-				seq++;
-				sendNextPacket();
-			} else { // complete, .. close bytestream
-				var iq = new xmpp.IQ( xmpp.IQType.set, null, reciever );
-				iq.x = new xmpp.file.IB( xmpp.file.IBType.close, sid );
-				var me = this;
-				stream.sendIQ( iq, function(r:xmpp.IQ) {
-					switch( r.type ) {
-					case result : me.__onComplete();
-					case error : me.__onFail();
-					default : //#
-					}
-				} );
-			}
-		case error : __onFail();
-		default : //
+	function handleIBClose( iq : IQ ) {
+		if( active && bufpos == filesize ) {
+			stream.sendPacket( IQ.createResult( iq ) );
+			active = false;
+			__onComplete();
+		} else {
+			//TODO send error
+			__onFail( "invalid ib transfer" );
 		}
 	}
 	
+	function sendNextPacket() {
+		iq.id = stream.nextID()+"_ib_"+seq;
+		var remain = filesize-bufpos;
+		var len = ( remain > bufsize ) ? bufsize : remain;
+		var buf = Bytes.alloc( len );
+		bufpos += input.readBytes( buf, 0, len );
+		iq.properties = [xmpp.file.IB.createDataElement( sid, seq, Base64.encode( buf.toString() ) )];
+		stream.sendIQ( iq, handleChunkResponse );
+	}
+	
+	function handleChunkResponse( iq : IQ ) {
+		switch( iq.type ) {
+		case result :
+			if( bufpos < filesize ) {
+				seq++;
+				sendNextPacket();
+			} else {
+				if( active ) {
+					active = false;
+					var iq = new IQ( xmpp.IQType.set, null, reciever );
+					iq.x = new xmpp.file.IB( xmpp.file.IBType.close, sid );
+					var me = this;
+					stream.sendIQ( iq, function(r:xmpp.IQ) {
+						switch( r.type ) {
+						case result :
+							me.__onComplete();
+						case error :
+							//TODO
+							///me.__onFail();
+						default : //
+						}
+					} );
+				}
+			}
+		case error :
+			__onFail( iq.errors[0].condition );
+		default :
+		}
+	}
 }
