@@ -1,5 +1,7 @@
 package jabber.util;
 
+import haxe.BaseCode;
+import haxe.io.Bytes;
 #if nodejs
 import js.Node;
 #end
@@ -16,7 +18,7 @@ class Base64 {
 		//'-_.'
 		CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 		#if !nodejs
-		bc = new haxe.BaseCode( haxe.io.Bytes.ofString( CHARS ) );
+		bc = new BaseCode( Bytes.ofString( CHARS ) );
 		#end
 	}
 	
@@ -24,15 +26,9 @@ class Base64 {
 	
 	#if !nodejs
 	
-	public static var bc(default,null) : haxe.BaseCode;
+	public static var bc(default,null) : BaseCode;
 	
 	public static function fillNullbits( s : String ) : String {
-		/*
-		var n = (s.length)%3;
-		if( n == 0 ) n -= 1;
-		for( i in 0...n ) s += "=";
-		return s;
-		*/
 		var n = (s.length)%3;
 		n = ( n == 0 ) ? ((s.length-1)%3) : ((s.length)%3+1);
 		for( i in 0...n ) s += "=";
@@ -46,8 +42,7 @@ class Base64 {
 	
 	#end // !nodejs
 	
-	public static #if nodejs inline #end
-	function encode( t : String ) : String {
+	public static function encode( t : String ) : String {
 		#if nodejs
 		return Node.newBuffer(t).toString( Node.BASE64 );
 		#else
@@ -55,13 +50,22 @@ class Base64 {
 		#end
 	}
 	
-	public static #if nodejs inline #end
-	function decode( t : String ) : String {
+	public static function decode( t : String ) : String {
 		#if nodejs
 		return Node.newBuffer( t, Node.BASE64 ).toString( Node.ASCII );
 		#else
 		return bc.decodeString( removeNullbits( t ) );
 		#end
+	}
+	
+	public static function encodeBytes( b : Bytes ) : String {
+		//TODO nodejs native
+		return fillNullbits( bc.encodeBytes( b ).toString() );
+	}
+	
+	public static function decodeBytes( t : String ) : Bytes {
+		//TODO nodejs native
+		return bc.decodeBytes( Bytes.ofString( removeNullbits( t ) ) );
 	}
 	
 	/**
@@ -73,4 +77,5 @@ class Base64 {
 		for( i in 0...len ) r += chars.substr( Math.floor( Math.random()*chars.length ), 1 );
 		return r;
 	}
+	
 }
