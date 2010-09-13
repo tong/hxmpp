@@ -200,9 +200,11 @@ class SocketConnection extends jabber.stream.SocketConnection<SecureSocket> {
 	}
 	
 	function socketDataHandler( e : SecureSocketEvent ) {
+		trace("DATA");
 		var b = haxe.io.Bytes.ofData( e.rawData );
-		if( b.length > maxBufSize )
+		if( b.length > maxBufSize ) {
 			throw "Max buffer size reached ("+maxBufSize+")";
+		}
 		__onData(  b, 0, b.length );
 		//if( __onData(  b, 0, b.length ) > 0 )
 		//	buf = new ByteArray();
@@ -402,10 +404,10 @@ class SocketConnection extends jabber.stream.SocketConnection<Stream> {
 		buf = "";
 		socket = Node.net.createConnection( port, host );
 		socket.setEncoding( Node.UTF8 );
-		socket.addListener( Node.EVENT_STREAM_CONNECT, sockConnectHandler );
-		socket.addListener( Node.EVENT_STREAM_END, sockDisconnectHandler );
-		socket.addListener( Node.EVENT_STREAM_ERROR, sockErrorHandler );
-		socket.addListener( Node.EVENT_STREAM_DATA, sockDataHandler );
+		socket.on( Node.EVENT_STREAM_CONNECT, sockConnectHandler );
+		socket.on( Node.EVENT_STREAM_END, sockDisconnectHandler );
+		socket.on( Node.EVENT_STREAM_ERROR, sockErrorHandler );
+		socket.on( Node.EVENT_STREAM_DATA, sockDataHandler );
 	}
 	
 	public override function disconnect() {
@@ -418,7 +420,8 @@ class SocketConnection extends jabber.stream.SocketConnection<Stream> {
 	}
 	
 	public override function setSecure() {
-		socket.addListener( Node.EVENT_STREAM_SECURE, sockSecureHandler );
+		//socket.addListener( Node.EVENT_STREAM_SECURE, sockSecureHandler );
+		socket.on( Node.EVENT_STREAM_SECURE, sockSecureHandler );
 		socket.setSecure( null );
 	}
 	
