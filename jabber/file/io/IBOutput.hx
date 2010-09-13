@@ -31,6 +31,7 @@ class IBOutput extends IBIO {
 	
 	var reciever : String;
 	var input : haxe.io.Input;
+	//var output : DataOutput;
 	var filesize : Int;
 	var bufsize : Int;
 	var iq : IQ;
@@ -58,8 +59,9 @@ class IBOutput extends IBIO {
 			active = false;
 			__onComplete();
 		} else {
-			//TODO send error
-			__onFail( "invalid ib transfer" );
+			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( xmpp.ErrorType.cancel,
+																	xmpp.ErrorCondition.BAD_REQUEST )] ) );
+			__onFail( "invalid IB transfer" );
 		}
 	}
 	
@@ -69,7 +71,7 @@ class IBOutput extends IBIO {
 		var len = ( remain > bufsize ) ? bufsize : remain;
 		var buf = Bytes.alloc( len );
 		bufpos += input.readBytes( buf, 0, len );
-		iq.properties = [xmpp.file.IB.createDataElement( sid, seq, Base64.encode( buf.toString() ) )];
+		iq.properties = [xmpp.file.IB.createDataElement( sid, seq, Base64.encodeBytes( buf ) )];
 		stream.sendIQ( iq, handleChunkResponse );
 	}
 	
@@ -102,4 +104,5 @@ class IBOutput extends IBIO {
 		default :
 		}
 	}
+	
 }

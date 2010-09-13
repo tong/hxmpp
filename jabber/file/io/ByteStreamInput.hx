@@ -26,6 +26,9 @@ import neko.vm.Thread;
 import cpp.net.Host;
 import cpp.net.Socket;
 import cpp.vm.Thread;
+#elseif php
+import php.net.Host;
+import php.net.Socket;
 #elseif flash
 import flash.events.Event;
 import flash.events.IOErrorEvent;
@@ -50,10 +53,14 @@ class ByteStreamInput extends ByteStreamIO {
 	
 	#if (neko||cpp)
 	var buf : Bytes;
+	
 	#elseif flash
+	var buf : ByteArray;
+	#end
+	
+	#if (flash||nodejs)
 	var digest : String;
 	var size : Int;
-	var buf : ByteArray;
 	#end
 	
 	public function new( host : String, port : Int ) {
@@ -75,10 +82,7 @@ class ByteStreamInput extends ByteStreamIO {
 		var o = socket.output;
 		var i = socket.input;
 		var error : String = null;
-		try {
-			//jabber.util.SOCKS5.processOut(i,o,digest);
-			jabber.util.SOCKS5Out.process(i,o,digest);
-		} catch( e : Dynamic ) {
+		try jabber.util.SOCKS5Out.process(i,o,digest) catch( e : Dynamic ) {
 			__onFail( e );
 			return;
 		}
@@ -104,6 +108,15 @@ class ByteStreamInput extends ByteStreamIO {
 		socket.addEventListener( IOErrorEvent.IO_ERROR, onSocketError );
 		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onSocketError );
 		socket.connect( host, port );
+		
+		#elseif nodejs
+		this.digest = digest;
+		this.size = size;
+		socket = Node.net.createConnection( port, host );
+		socket.addListener( Node.EVENT_STREAM_CONNECT, sockConnectHandler );
+		socket.addListener( Node.EVENT_STREAM_END, sockDisconnectHandler );
+		socket.addListener( Node.EVENT_STREAM_ERROR, sockErrorHandler );
+		//socket.addListener( Node.EVENT_STREAM_DATA, sockDataHandler );
 		
 		#end
 	}
@@ -193,6 +206,38 @@ class ByteStreamInput extends ByteStreamIO {
 		socket.removeEventListener( IOErrorEvent.IO_ERROR, onSocketError );
 		socket.removeEventListener( SecurityErrorEvent.SECURITY_ERROR, onSocketError );
 		socket.removeEventListener( ProgressEvent.SOCKET_DATA, onSocketData );
+	}
+	
+	#elseif nodejs
+	
+	function sockConnectHandler() {
+		#if JABBER_DEBUG trace( "Filetransfer socket connected ["+host+":"+port+"]" ); #end
+		//__onConnect();
+		var socks5 = new jabber.util.SOCKS5Out( socket, digest );
+		socks5.run( onSOCKS5Complete );
+	}
+	
+	function sockDisconnectHandler() {
+		//__onDisconnect();
+	}
+	
+	function sockErrorHandler() {
+		//__onFail();
+	}
+	
+	function sockDataHandler( t : Buffer ) {
+		trace("SOCKDATAHANDLER");
+		/*
+		if( buf.length == filesize ) {
+			data = Bytes.ofData( t );
+			__onComplete();
+		}
+		*/
+	}
+	
+	function onSOCKS5Complete() {
+		trace("SOCKS5COMPLETE");
+		__onConnect();
 	}
 	
 	#end

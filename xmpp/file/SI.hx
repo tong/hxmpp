@@ -20,7 +20,7 @@ package xmpp.file;
 class SI {
 	
 	public static var XMLNS = "http://jabber.org/protocol/si";
-	public static var PROFILE = XMLNS+"/profile/file-transfer";
+	public static var XMLNS_PROFILE = XMLNS+"/profile/file-transfer";
 	
 	public var id : String;
 	public var mime : String;

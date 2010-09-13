@@ -17,7 +17,8 @@ class ByteStreamTransfer extends FileTransfer {
 	
 	public var hosts(default,null) : Array<ByteStreamHost>;
 	
-	var output : ByteStreamOutput;
+	//var output : DataOutput;
+	var transport : ByteStreamOutput;
 	
 	public function new( stream : jabber.Stream, reciever : String,
 						 ?hosts : Array<ByteStreamHost>,
@@ -27,20 +28,18 @@ class ByteStreamTransfer extends FileTransfer {
 		this.hosts = ( hosts != null ) ? hosts : new Array();
 	}
 	
-	public override function __init( input : haxe.io.Input, sid : String, fileSize : Int ) {
+	public override function __init( input : haxe.io.Input, sid : String, filesize : Int ) {
 		if( hosts.length == 0 )
 			throw "No streamhosts specified";
-	//	if( __sid == null )
-	//		throw "SID not set";
 		this.input = input;
 		this.sid = sid;
-		this.fileSize = fileSize;
+		this.filesize = filesize;
 		for( h in hosts ) {
-			var host = new ByteStreamOutput( h.host, h.port );
-			host.__onConnect = handleOutputConnect;
-			host.__onFail = handleOutputFail;
-			host.__onComplete = handleOutputComplete;
-			host.init( SHA1.encode( sid+stream.jid.toString()+reciever ) );
+			var t = new ByteStreamOutput( h.host, h.port );
+			t.__onConnect = handleTransportConnect;
+			t.__onFail = handleTransportFail;
+			t.__onComplete = handleTransportComplete;
+			t.init( SHA1.encode( sid+stream.jid.toString()+reciever ) );
 		}
 		var iq = new IQ( IQType.set );
 		iq.to = reciever;
@@ -51,7 +50,7 @@ class ByteStreamTransfer extends FileTransfer {
 	function handleRequestResponse( iq : IQ ) {
 		switch( iq.type ) {
 		case result :
-			output.write( input, fileSize, bufsize );
+			transport.send( input, filesize, bufsize );
 		case error :
 			//TODO
 			trace("ERRRRRORR");
@@ -59,15 +58,15 @@ class ByteStreamTransfer extends FileTransfer {
 		}
 	}
 	
-	function handleOutputFail( info : String ) {
+	function handleTransportFail( info : String ) {
 		onFail( info );
 	}
 	
-	function handleOutputConnect( output : ByteStreamOutput ) {
-		this.output = output;
+	function handleTransportConnect( transport : ByteStreamOutput ) {
+		this.transport = transport;
 	}
 	
-	function handleOutputComplete() {
+	function handleTransportComplete() {
 		onComplete();
 	}
 	

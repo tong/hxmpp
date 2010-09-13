@@ -21,7 +21,7 @@ class SIListener {
 		this.stream = stream;
 		this.handler = handler;
 		methods = new Array();
-		stream.features.add( xmpp.file.SI.PROFILE );
+		stream.features.add( xmpp.file.SI.XMLNS_PROFILE );
 		stream.collect( [cast new xmpp.filter.IQFilter( xmpp.file.SI.XMLNS, "si", xmpp.IQType.set )],
 						 handleRequest, true );
 	}
@@ -46,9 +46,9 @@ class SIListener {
 					}
 				}
 			#if flash // haXe 2.06 fukup
-			} else if( e.nodeName == "file" && e.get( "_xmlns_" ) == xmpp.file.SI.PROFILE ) {
+			} else if( e.nodeName == "file" && e.get( "_xmlns_" ) == xmpp.file.SI.XMLNS_PROFILE ) {
 			#else
-			} else if( e.nodeName == "file" && e.get( "xmlns" ) == xmpp.file.SI.PROFILE ) {
+			} else if( e.nodeName == "file" && e.get( "xmlns" ) == xmpp.file.SI.XMLNS_PROFILE ) {
 			#end
 				file = xmpp.file.File.parse( e );
 			}
@@ -58,41 +58,21 @@ class SIListener {
 			onFail( "invalid file transfer request" );
 			return;
 		}
-		trace(_methods);
 		var acceptedMethods = new Array<FileReciever>();
 		for( m in methods ) {
 			for( _m in _methods ) {
-				if( _m == m.xmlns ) {
+				if( m.xmlns == _m )
 					acceptedMethods.push( m );
-				}
 			}
 		}
 		if( acceptedMethods.length == 0 ) {
 			onFail( "no matching file transfer method" );
 			return;
 		}
-		
-		/*
-		this.methods = acceptedMethods;
-		method = methods[0]; //methods[methodIndex]; //TODO
-		//handler( this );
-		trace("##########################>>>>>>>>>>>>>>>>>>>>>>>>>>");
-		method.init( file );
-		handler( method );
-		*/
-		// TODO new FileTransferNegotiator();
-		var method = methods[0];
-		method.__init( file, iq, si.id );
-		handler( method );
+		// new FileTransferNegotiator();
+		var m = acceptedMethods[0];
+		m.__init( file, iq, si.id );
+		handler( m );
 	}
 	
 }
-
-/*
-private class FileTransferNegotiator {
-	
-	public function new( methods : Array<FileTransfer> ) {
-	}
-}
-*/
-

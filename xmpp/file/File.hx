@@ -33,7 +33,7 @@ class File {
 
 	public function toXml() : Xml {
 		var x = Xml.createElement( "file" );
-		x.set( "xmlns", SI.PROFILE );
+		x.set( "xmlns", SI.XMLNS_PROFILE );
 		x.set( "name", name );
 		x.set( "size", Std.string( size ) );
 		if( date != null ) x.set( "date", date );

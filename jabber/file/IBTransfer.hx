@@ -17,6 +17,8 @@
 */
 package jabber.file;
 
+import haxe.io.Bytes;
+import jabber.util.Base64;
 import jabber.file.io.IBOutput;
 import xmpp.IQ;
 
@@ -28,21 +30,27 @@ import xmpp.IQ;
 */
 class IBTransfer extends FileTransfer {
 	
-	public static var defaultBufSize = 1<<14; //16384
+	//public static var defaultBufSize = 1<<12; //1<<14; //16384
+	public static var defaultBufSize = 512;
 	
-	var output : IBOutput;
+	var transport : IBOutput;
 	
 	public function new( stream : jabber.Stream, reciever : String,
 						 ?bufsize : Int ) {
 		if( bufsize == null ) bufsize = defaultBufSize;
-		trace(bufsize);
 		super( stream, xmpp.file.IB.XMLNS, reciever, bufsize );
 	}
 	
-	public override function __init( input : haxe.io.Input, sid : String, fileSize : Int ) {
+	public override function __init( input : haxe.io.Input, sid : String, filesize : Int ) {
 		this.input = input;
 		this.sid = sid;
-		this.fileSize = fileSize;
+		this.filesize = filesize;
+		var iq = new IQ( xmpp.IQType.set, null, reciever, stream.jidstr );
+		iq.x = new xmpp.file.IB( xmpp.file.IBType.open, sid, bufsize );
+		stream.sendIQ( iq, handleRequestResponse );
+	}
+	
+	function sendRequest() {
 		var iq = new IQ( xmpp.IQType.set, null, reciever, stream.jidstr );
 		iq.x = new xmpp.file.IB( xmpp.file.IBType.open, sid, bufsize );
 		stream.sendIQ( iq, handleRequestResponse );
@@ -51,11 +59,13 @@ class IBTransfer extends FileTransfer {
 	function handleRequestResponse( iq : IQ ) {
 		switch( iq.type ) {
 		case result :
-			output = new IBOutput( stream, reciever, sid );
-			output.__onComplete = handleOutputComplete;
-			output.__onFail = handleOutputFail;
+			transport = new IBOutput( stream, reciever, sid );
+			transport.__onComplete = handleOutputComplete;
+			transport.__onFail = handleOutputFail;
 			//onInit( this );
-			output.send( input, fileSize, bufsize );
+			transport.send( input, filesize, bufsize );
+			//output.send( input, filesize, bufsize );
+			
 		case error :
 			onFail( iq.errors[0].condition );
 		default : //
@@ -69,49 +79,5 @@ class IBTransfer extends FileTransfer {
 	function handleOutputFail( info : String ) {
 		onFail( info );
 	}
-	
-	/*
-	public static var defaultBlockSize = 1 << 12; // 4096
-	
-	public var blockSize(default,null) : Int;
-	
-	var output : IBOutput;
-	
-	public function new( stream : jabber.Stream, reciever : String, ?blockSize : Int ) {
-		super( stream, xmpp.file.IB.XMLNS, reciever );
-		this.blockSize = ( blockSize != null ) ? blockSize : defaultBlockSize;
-	}
-	
-	public override function init( input : haxe.io.Input ) {
-		this.input = input;
-		sid = jabber.util.Base64.random( 8 );
-		// send initial request
-		var iq = new xmpp.IQ( xmpp.IQType.set, null, reciever, stream.jidstr );
-		iq.x = new xmpp.file.IB( xmpp.file.IBType.open, sid, blockSize );
-		stream.sendIQ( iq, handleRequestResponse );
-	}
-	
-	function handleRequestResponse( iq : xmpp.IQ ) {
-		switch( iq.type ) {
-		case result :
-			output = new jabber.file.io.IBOutput( stream, reciever, blockSize, sid );
-			output.__onComplete = handleTransferComplete;
-			output.__onFail = handleTransferFail;
-			onInit( this );
-			output.send( input.readAll() );
-		case error :
-			onFail( this, new jabber.XMPPError( this, iq ) );
-		default : //
-		}
-	}
-	
-	function handleTransferComplete() {
-		onComplete( this );
-	}
-	
-	function handleTransferFail() {
-		onFail( this, null );
-	}
-	*/
 	
 }

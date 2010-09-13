@@ -52,7 +52,7 @@ class IBInput extends IBIO {
 	}
 	
 	function handleClose( iq : IQ ) {
-		trace("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
+		stream.removeCollector( collector );
 		if( bufpos == data.length ) {
 			stream.sendPacket( IQ.createResult( iq ) );
 			if( active ) {
@@ -61,42 +61,38 @@ class IBInput extends IBIO {
 			}
 		} else {
 			active = false;
-			__onFail( "ib failed" );
+			__onFail( "IB datatransfer failed" );
 		}
 	}
 	
 	function handleChunk( iq : IQ ) {
 		var ib = xmpp.file.IB.parse( iq.x.toXml() );
 		if( ib.sid != sid ) {
-			//TODO send error
-			
+			stream.removeCollector( collector );
+			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( xmpp.ErrorType.cancel,
+																	xmpp.ErrorCondition.BAD_REQUEST )] ) );
 			return;
 		}
 		if( ib.seq != seq ) {
-			//..
+			stream.removeCollector( collector );
+			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( xmpp.ErrorType.cancel,
+																	xmpp.ErrorCondition.UNEXPECTED_REQUEST )] ) );
 			return;
 		}
 		seq++;
-		var bytes : Bytes = null;
-		try {
-			bytes = haxe.io.Bytes.ofString( Base64.decode( ib.data ) );
-		} catch( e : Dynamic ) {
-			trace(e);
-			return;
-		}
-		trace( ib.data.length );
-		trace( bytes.length );
+		var bytes = Base64.decodeBytes( ib.data );
 		data.blit( bufpos, bytes, 0, bytes.length );
 		bufpos += bytes.length;
 		stream.sendPacket( IQ.createResult( iq ) );
-		trace(bufpos +" // "+ data.length);
 		if( bufpos == data.length ) {
-			trace("COMPLETECOMPLETECOMPLETECOMPLETECOMPLETECOMPLETECOMPLETECOMPLETECOMPLETECOMPLETECOMPLETE");
+			active = false;
 			__onComplete( data );
-			//TODO close ib
-		} else {
-			
 		}
+		/*
+		else if( bufpos > data.length) {
+			//ERROR
+		}
+		*/
 	}
 	
 }

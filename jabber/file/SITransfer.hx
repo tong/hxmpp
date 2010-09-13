@@ -17,6 +17,7 @@
 */
 package jabber.file;
 
+import haxe.io.Bytes;
 import jabber.util.Base64;
 import xmpp.IQ;
 import xmpp.IQType;
@@ -28,6 +29,10 @@ import neko.io.Path;
 import cpp.FileSystem;
 import cpp.io.File;
 import cpp.io.Path;
+#elseif php
+import php.FileSystem;
+import php.io.File;
+import php.io.Path;
 #elseif nodejs
 import js.Node;
 import js.FileSystem;
@@ -46,10 +51,11 @@ class SITransfer {
 	
 	public var stream(default,null) : jabber.Stream;
 	public var reciever(default,null) : String;
-	public var methods(default,null) : Array<FileTransfer>;
-	public var filePath(default,null) : String;
-	public var fileSize(default,null) : Int;
+	public var methods(default,null) : Array<FileTransfer>; // TODO make private, use method (with check)
+	public var filepath(default,null) : String;
+	public var filesize(default,null) : Int;
 	
+	//var output : DataOutput; //TODO
 	var input : haxe.io.Input;
 	var id : String;
 	var methodIndex : Int;
@@ -60,22 +66,43 @@ class SITransfer {
 		methods = new Array();
 	}
 	
-	public function init( filePath : String ) {
+	/*
+	public function addMethod( m : Class<FileTransfer>, ?args : Array<Dynamic> ) {
+		// resolve
+		// check if already added
+		// add
+	}
+	*/
+	
+	public function sendData( bytes : Bytes, name : String ) {
+		this.input = new haxe.io.BytesInput( bytes );
+		this.filesize = bytes.length;
+		sendRequest( name, bytes.length );
+	}
+	
+	#if (neko||cpp||php||nodejs)
+	
+	public function sendFile( filepath : String ) {
+		if( !FileSystem.exists( filepath ) )
+			throw "File not found ["+filepath+"]";
+		this.input = File.read( filepath, true );
+		this.filepath = filepath;
+		var fstat = FileSystem.stat( filepath );
+		var name = Path.withoutDirectory( filepath );
+		filesize = Std.int( fstat.size );
+		sendRequest( name, filesize );
+	}
+	
+	#end
+	
+	function sendRequest( name : String, size : Int ) {
 		if( methods.length == 0 )
 			throw "No file transfer methods registered";
-		if( !FileSystem.exists( filePath ) )
-			throw "File not found ["+filePath+"]";
-		
-		this.filePath = filePath;
-		var fstat = FileSystem.stat( filePath );
-		var fname = Path.withoutDirectory( filePath );
-		fileSize = Std.int( fstat.size );
 		id = Base64.random( 16 );
-		
 		var iq = new IQ( IQType.set );
 		iq.to = reciever;
-		var si = new xmpp.file.SI( id, "text/plain", xmpp.file.SI.PROFILE ); //TODO mime-type
-		si.any.push( new xmpp.file.File( fname, fileSize ).toXml() );
+		var si = new xmpp.file.SI( id, "text/plain", xmpp.file.SI.XMLNS_PROFILE ); //TODO mime-type
+		si.any.push( new xmpp.file.File( name, size ).toXml() );
 		var form = new xmpp.DataForm( xmpp.dataform.FormType.form );
 		var form_f = new xmpp.dataform.Field( xmpp.dataform.FieldType.list_single );
 		form_f.variable = "stream-method";
@@ -96,7 +123,11 @@ class SITransfer {
 			var si = xmpp.file.SI.parse( iq.x.toXml() );
 			var _methods = new Array<String>();
 			for( e in si.any ) {
+				#if flash
+				if( e.nodeName == "feature" && e.get( "_xmlns_" ) == xmpp.FeatureNegotiation.XMLNS ) {
+				#else
 				if( e.nodeName == "feature" && e.get( "xmlns" ) == xmpp.FeatureNegotiation.XMLNS ) {
+				#end
 					for( e in e.elementsNamed( "x" ) ) {
 						var form = xmpp.DataForm.parse( e );
 						switch( form.type ) {
@@ -126,7 +157,6 @@ class SITransfer {
 				return;
 			}
 			this.methods = acceptedMethods;
-			input = File.read( filePath, true );
 			methodIndex = 0;
 			startFileTransfer();
 			
@@ -142,8 +172,8 @@ class SITransfer {
 		var ft = methods[methodIndex];
 		ft.onComplete = handleFileTransferComplete;
 		ft.onFail = handleFileTransferFail;
-		//ft.__sid = id;
-		ft.__init( input, id, fileSize );
+		ft.__init( input, id, filesize );
+		//ft.__init( output, id, filesize );
 	}
 	
 	function handleFileTransferComplete() {

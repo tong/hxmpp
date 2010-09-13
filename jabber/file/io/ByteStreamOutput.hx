@@ -26,6 +26,9 @@ import neko.vm.Thread;
 import cpp.net.Host;
 import cpp.net.Socket;
 import cpp.vm.Thread;
+#elseif php
+import php.net.Host;
+import php.net.Socket;
 #elseif nodejs
 import js.Node;
 typedef Socket = Stream;
@@ -39,7 +42,7 @@ class ByteStreamOutput extends ByteStreamIO  {
 	public var __onConnect : ByteStreamOutput->Void;
 	public var __onComplete : Void->Void;
 	
-	#if (neko||cpp)
+	#if (neko||cpp||php)
 	var server : Socket;
 	var socket : Socket;
 	#elseif nodejs
@@ -61,9 +64,8 @@ class ByteStreamOutput extends ByteStreamIO  {
 		
 		#if (neko||cpp)
 		server = new Socket();
-		var h = new Host( host );
 		try {
-			server.bind( h, port );
+			server.bind( new Host( host ), port );
 		} catch( e : Dynamic ) {
 			__onFail( e );
 			return;
@@ -76,14 +78,33 @@ class ByteStreamOutput extends ByteStreamIO  {
 		t.sendMessage( port );
 		t.sendMessage( callbackConnect );
 		
-		#elseif nodejs
+		#elseif php
+		throw "Not implemented";
+		/*
+		server = new Socket();
+		server.bind( new Host( host ), port );
+		server.listen( 1 );
+		//while( true ) {
+			try {
+				socket = server.accept();
+			} catch( e : Dynamic ) {
+				trace( e );
+				__onFail( e );
+				return;
+			}
+			//break;
+		//}
+		trace("CONNECTED...");
+		*/
+		
+//		#elseif nodejs
 //		server = Node.net.createServer( onConnect );
 //		server.listen( port, host );
 		
 		#end
 	}
 	
-	public function write( input : haxe.io.Input, size : Int, bufsize : Int ) {
+	public function send( input : haxe.io.Input, size : Int, bufsize : Int ) {
 		
 		#if JABBER_DEBUG
 		trace( "Transfering file [size:"+size+",bufsize:"+bufsize+"]" );
@@ -117,6 +138,30 @@ class ByteStreamOutput extends ByteStreamIO  {
 		*/
 		#end
 	}
+	/*
+	public function send( output : DataOutput, size : Int, bufsize : Int ) {
+		
+		#if JABBER_DEBUG
+		trace( "Transfering file [size:"+size+",bufsize:"+bufsize+"]" );
+		#end
+		
+		#if (neko||cpp)
+		socket = Thread.readMessage( false );
+		if( socket == null ) {
+			__onFail( "Client socket not connected" );
+			return;
+		}
+		var t = Thread.create( t_send );
+		t.sendMessage( socket );
+	//	t.sendMessage( input );
+		t.sendMessage( output );
+		t.sendMessage( size );
+		t.sendMessage( bufsize );
+		t.sendMessage( callbackSent );
+		
+		#end
+	}
+	*/
 	
 	#if (neko||cpp)
 	
@@ -137,16 +182,21 @@ class ByteStreamOutput extends ByteStreamIO  {
 		var port : Int = Thread.readMessage( true );
 		var cb : String->Void = Thread.readMessage( true );
 		var c : Socket = null;
-		while( true ) {
-			c = server.accept();
-			main.sendMessage( c );
-			break;
-		}
+		c = server.accept();
+		main.sendMessage( c );
 		var err : String = null;
+		/* //TODO
 		try {
-			var _ip =  new Host(ip).ip;
-			if( !jabber.util.SOCKS5In.process( c.input, c.output, _ip, port, digest ) ) {
+			var r = c.input.read( 23 ).toString();
+			jabber.util.FlashPolicy.allow( r, c, ip, port );
+		} catch( e : Dynamic ) {
+			trace(e);
+		}
+		*/
+		try {
+			if( !jabber.util.SOCKS5In.process( c.input, c.output, digest, ip, port ) ) {
 				cb( "SOCKS5 failed" );
+				return;
 			}
 			c.output.flush();
 		} catch( e : Dynamic ) {
@@ -158,6 +208,7 @@ class ByteStreamOutput extends ByteStreamIO  {
 	function t_send() {
 		var socket : Socket = Thread.readMessage( true );
 		var input : haxe.io.Input = Thread.readMessage( true );
+		//var output : DataOutput = Thread.readMessage( true );
 		var size : Int = Thread.readMessage( true );
 		var bufsize : Int = Thread.readMessage( true );
 		var cb : String->Void = Thread.readMessage( true );
@@ -166,7 +217,7 @@ class ByteStreamOutput extends ByteStreamIO  {
 		while( pos != size ) {
 			var remain = size-pos;
 			var len = ( remain > bufsize ) ? bufsize : remain;
-			var buf =  Bytes.alloc( len );
+			var buf = Bytes.alloc( len );
 			try {
 				pos += input.readBytes( buf, 0, len );
 				socket.output.write( buf );

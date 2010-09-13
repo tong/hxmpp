@@ -17,13 +17,15 @@
 */
 package jabber.file;
 
+import haxe.io.Bytes;
+
 /**
 	Abstract, outgoing file transfer negotiator.
 */
 class FileTransfer {
 	
 	//public dynamic function onReject( t : Transfer ) : Void;
-	//public dynamic function onInit( ft : FileTransfer ) : Void;
+	//public dynamic function onInit( ft : FileTransfer ) : Void; //TODO
 	public dynamic function onComplete() : Void;
 	public dynamic function onFail( info : String  ) : Void;
 	
@@ -31,8 +33,8 @@ class FileTransfer {
 	public var xmlns(default,null) : String;
 	public var reciever(default,null) : String;
 	public var bufsize(default,null) : Int;
+	public var filesize(default,null) : Int;
 	
-	var fileSize : Int;
 	var input : haxe.io.Input;
 	var sid : String;
 	 
@@ -43,8 +45,18 @@ class FileTransfer {
 		this.bufsize = bufsize;
 	}
 	
+	/*
+	public function __sendData( bytes : Bytes, sid : String ) {
+		throw "Abstract method: __sendData";
+	}
+	*/
+	
 	public function __init( input : haxe.io.Input, sid : String, fileSize : Int ) {
 		throw "Abstract method";
 	}
-	
+	/*
+	public function __init( output : DataOutput, sid : String, fileSize : Int ) {
+		throw "Abstract method";
+	}
+	*/
 }
