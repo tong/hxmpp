@@ -158,7 +158,86 @@ class SOCKS5Out {
 		socket.removeEventListener( IOErrorEvent.IO_ERROR, onError );
 		socket.removeEventListener( SecurityErrorEvent.SECURITY_ERROR, onError );
 	}
+}
+
+
+#elseif nodejs
+
+import js.Node;
+import haxe.io.Bytes;
+
+private enum State {
+	WaitResponse;
+	WaitAuth;
+}
+
+class SOCKS5Out {
 	
+	var cb : String->Void;
+	var socket : Stream;
+	var state : State;
+	var digest : String;
+	
+	public function new( s : Stream, digest : String ) {
+		this.socket = s;
+		this.digest = digest;
+		state = WaitResponse;
+	}
+	
+	public function run( cb : String->Void ) {
+		this.cb = cb;
+		socket.on( Node.EVENT_STREAM_END, onError );
+		socket.on( Node.EVENT_STREAM_ERROR, onError );
+		socket.on( Node.EVENT_STREAM_DATA, onData );
+		socket.write( "\x05\x01"+String.fromCharCode(0) );
+	}
+	
+	function onData( buf : Buffer ) {
+		//trace("onData ["+state+"] "+buf.length);
+		switch( state ) {
+		case WaitResponse :
+			
+			trace(buf[0]);
+			trace(buf[1]);
+			
+			var b = new haxe.io.BytesBuffer();
+			b.addByte( 0x05 );
+			b.addByte( 0x01 );
+			b.addByte( 0x00 );
+			b.addByte( 0x03 );
+			b.addByte( digest.length );
+			b.add( Bytes.ofString( digest ) );
+			b.addByte( 0x00 );
+			b.addByte( 0x00 );
+			socket.write( b.getBytes().getData() );
+			state = WaitAuth;
+			
+		case WaitAuth :
+			var i = new haxe.io.BytesInput( Bytes.ofData( buf ) );
+			trace( i.readByte() );
+			trace( i.readByte() );
+			trace( i.readByte() );
+			trace( i.readByte() );
+			var len = i.readByte();
+			trace( len );
+			trace( i.readString( len ) ); // hash/ip
+			trace( i.readInt16() );
+			
+			removeSocketListeners();
+			cb( null );
+		}
+	}
+	
+	function onError() {
+		removeSocketListeners();
+		cb( "SOCKS5 failed" );
+	}
+	
+	function removeSocketListeners() {
+		socket.removeAllListeners( Node.EVENT_STREAM_DATA );
+		socket.removeAllListeners( Node.EVENT_STREAM_END );
+		socket.removeAllListeners( Node.EVENT_STREAM_ERROR );
+	}
 }
 
 #end

@@ -138,30 +138,6 @@ class ByteStreamOutput extends ByteStreamIO  {
 		*/
 		#end
 	}
-	/*
-	public function send( output : DataOutput, size : Int, bufsize : Int ) {
-		
-		#if JABBER_DEBUG
-		trace( "Transfering file [size:"+size+",bufsize:"+bufsize+"]" );
-		#end
-		
-		#if (neko||cpp)
-		socket = Thread.readMessage( false );
-		if( socket == null ) {
-			__onFail( "Client socket not connected" );
-			return;
-		}
-		var t = Thread.create( t_send );
-		t.sendMessage( socket );
-	//	t.sendMessage( input );
-		t.sendMessage( output );
-		t.sendMessage( size );
-		t.sendMessage( bufsize );
-		t.sendMessage( callbackSent );
-		
-		#end
-	}
-	*/
 	
 	#if (neko||cpp)
 	
@@ -208,7 +184,6 @@ class ByteStreamOutput extends ByteStreamIO  {
 	function t_send() {
 		var socket : Socket = Thread.readMessage( true );
 		var input : haxe.io.Input = Thread.readMessage( true );
-		//var output : DataOutput = Thread.readMessage( true );
 		var size : Int = Thread.readMessage( true );
 		var bufsize : Int = Thread.readMessage( true );
 		var cb : String->Void = Thread.readMessage( true );
@@ -229,60 +204,6 @@ class ByteStreamOutput extends ByteStreamIO  {
 		}
 		cb( err );
 	}
-	
-	/*
-	#elseif nodejs
-	
-	var stream : Stream;
-	
-	function onConnect( s : Stream ) {
-		stream = s;
-	//	stream.setEncoding( Node.BINARY );
-		stream.addListener( Node.EVENT_STREAM_DATA, onData );
-		stream.addListener( Node.EVENT_STREAM_CLOSE, function(){trace("DISCONNECTED");} );
-		stream.addListener( Node.EVENT_STREAM_ERROR, function(){trace("ERROR");} );
-	}
-	
-	function onData( buf : Buffer ) {
-		//trace("SOCKS5 "+socksState );
-		switch( socksState ) {
-			
-		case WaitInit :
-			//stream.write( "\x05\x01" );
-			//trace( buf[1] );
-			
-			stream.write( "\x05"+String.fromCharCode(0) );
-			//stream.write( "\x05"+String.fromCharCode(0) );
-			socksState = WaitResponse;
-			
-		case WaitResponse :	
-			
-			var t = buf.toString( Node.UTF8 );
-			var _digest = t.substr( 5, t.length-7 );
-			if( _digest != digest ) {
-				__onFail( "SOCKS5 digest error" );
-				return;
-			}
-			
-			stream.write( "\x05" );
-			stream.write( String.fromCharCode(0) );
-			stream.write( String.fromCharCode(0) );
-			stream.write( "\x01" );
-			
-			stream.write( "\x127" );
-			stream.write( String.fromCharCode(0) );
-			stream.write( String.fromCharCode(0) );
-			stream.write( "\x01" );
-			
-			
-			var b = Node.newBuffer( 1, Node.BINARY );
-			b.write( Std.string( port ) );
-			stream.write( b );
-			
-			__onConnect( this );
-		}
-	}
-	*/
 	
 	#end
 	

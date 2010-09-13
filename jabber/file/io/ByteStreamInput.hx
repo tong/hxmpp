@@ -56,6 +56,11 @@ class ByteStreamInput extends ByteStreamIO {
 	
 	#elseif flash
 	var buf : ByteArray;
+	
+	#elseif nodejs
+	var buf : Buffer;
+	var bufpos : Int;
+	
 	#end
 	
 	#if (flash||nodejs)
@@ -113,11 +118,9 @@ class ByteStreamInput extends ByteStreamIO {
 		this.digest = digest;
 		this.size = size;
 		socket = Node.net.createConnection( port, host );
-		socket.addListener( Node.EVENT_STREAM_CONNECT, sockConnectHandler );
-		socket.addListener( Node.EVENT_STREAM_END, sockDisconnectHandler );
-		socket.addListener( Node.EVENT_STREAM_ERROR, sockErrorHandler );
-		//socket.addListener( Node.EVENT_STREAM_DATA, sockDataHandler );
-		
+		socket.on( Node.EVENT_STREAM_CONNECT, sockConnectHandler );
+		socket.on( Node.EVENT_STREAM_END, sockDisconnectHandler );
+		socket.on( Node.EVENT_STREAM_ERROR, sockErrorHandler );
 		#end
 	}
 	
@@ -167,12 +170,12 @@ class ByteStreamInput extends ByteStreamIO {
 	}
 	
 	function onSOCKS5Complete( err : String ) {
-		trace("onSOCKS5Complete");
 		if( err != null ) {
+			trace( "SOCKS5 negotiation failed: "+err );
 			removeSocketListeners();
 			__onFail( err );
 		} else {
-			trace("iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
+			trace( "SOCKS5 negotiation complete" );
 			buf = new ByteArray();
 			socket.addEventListener( ProgressEvent.SOCKET_DATA, onSocketData );
 			__onConnect();
@@ -212,32 +215,48 @@ class ByteStreamInput extends ByteStreamIO {
 	
 	function sockConnectHandler() {
 		#if JABBER_DEBUG trace( "Filetransfer socket connected ["+host+":"+port+"]" ); #end
-		//__onConnect();
 		var socks5 = new jabber.util.SOCKS5Out( socket, digest );
 		socks5.run( onSOCKS5Complete );
 	}
 	
 	function sockDisconnectHandler() {
+		trace("sockDisconnectHandler");
 		//__onDisconnect();
 	}
 	
 	function sockErrorHandler() {
-		//__onFail();
+		__onFail( "bytestream inut failed" );
 	}
 	
 	function sockDataHandler( t : Buffer ) {
-		trace("SOCKDATAHANDLER");
-		/*
-		if( buf.length == filesize ) {
-			data = Bytes.ofData( t );
-			__onComplete();
+		//t.copy( buf, bufpos, 0, t.length );
+		//bufpos += t.length;
+		buf.write( t.toString( Node.BINARY ), Node.BINARY, bufpos );
+		bufpos += t.length;
+		if( bufpos == size ) {
+			// TODO close sockets
+			__onComplete( Bytes.ofData( buf ) );
 		}
-		*/
 	}
 	
-	function onSOCKS5Complete() {
-		trace("SOCKS5COMPLETE");
-		__onConnect();
+	function onSOCKS5Complete( err ) {
+		removeSocketListeners();
+		if( err != null ) {
+			__onFail( err );
+		} else {
+			trace("SOCKS5 negotiation complete "+err);
+			buf = Node.newBuffer( size );
+			bufpos = 0;
+			socket.on( Node.EVENT_STREAM_DATA, sockDataHandler );
+			__onConnect();
+		}
+	}
+	
+	function removeSocketListeners() {
+		socket.removeAllListeners( Node.EVENT_STREAM_CONNECT );
+		socket.removeAllListeners( Node.EVENT_STREAM_DATA );
+		socket.removeAllListeners( Node.EVENT_STREAM_END );
+		socket.removeAllListeners( Node.EVENT_STREAM_ERROR );
 	}
 	
 	#end
