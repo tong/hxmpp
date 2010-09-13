@@ -44,10 +44,10 @@ class ByteStreamOutput extends ByteStreamIO  {
 	
 	#if (neko||cpp||php)
 	var server : Socket;
-	var socket : Socket;
 	#elseif nodejs
 	var server : Server;
 	#end
+	var socket : Socket;
 	var digest : String;
 	
 	public function new( host : String, port : Int ) {
@@ -97,9 +97,9 @@ class ByteStreamOutput extends ByteStreamIO  {
 		trace("CONNECTED...");
 		*/
 		
-//		#elseif nodejs
-//		server = Node.net.createServer( onConnect );
-//		server.listen( port, host );
+		#elseif nodejs
+		server = Node.net.createServer( onConnect );
+		server.listen( port, host );
 		
 		#end
 	}
@@ -123,19 +123,22 @@ class ByteStreamOutput extends ByteStreamIO  {
 		t.sendMessage( bufsize );
 		t.sendMessage( callbackSent );
 		
-		/*
 		#elseif nodejs
-		try {
-			var b = haxe.io.Bytes.alloc( untyped input.size );
-			input.readBytes( b, 0, b.length );
-			stream.write( b.getData() );
-			stream.end();
-		} catch( e : Dynamic ) {
-			trace(e);
-			return;
+		var pos = 0;
+		while( pos != size ) {
+			var remain = size-pos;
+			var len = ( remain > bufsize ) ? bufsize : remain;
+			var buf = Bytes.alloc( len );
+			try {
+				pos += input.readBytes( buf, 0, len );
+				socket.write( buf.getData() );
+			} catch( e : Dynamic ) {
+				__onFail( e );
+				return;
+			}
 		}
 		__onComplete();
-		*/
+		
 		#end
 	}
 	
@@ -203,6 +206,22 @@ class ByteStreamOutput extends ByteStreamIO  {
 			}
 		}
 		cb( err );
+	}
+	
+	#elseif nodejs
+	
+	function onConnect( s : Stream ) {
+		socket = s;
+		var socks5 = new jabber.util.SOCKS5In( socket, digest );
+		socks5.run( host, port, onSOCKS5Complete );
+	}
+	
+	function onSOCKS5Complete( err : String ) {
+		if( err != null ) {
+			__onFail( "SOCKS5 failed: "+err );
+		} else {
+			__onConnect( this );
+		}
 	}
 	
 	#end

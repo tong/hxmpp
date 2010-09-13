@@ -70,4 +70,98 @@ class SOCKS5In {
 	}
 }
 
+#elseif nodejs
+
+import js.Node;
+import haxe.io.Bytes;
+import haxe.io.BytesBuffer;
+
+private enum State {
+	WaitInit;
+	WaitAuth;
+}
+
+class SOCKS5In {
+	
+	var socket : Stream;
+	var digest : String;
+	var cb : String->Void;
+	var ip : String;
+	var port : Int;
+	var state : State;
+	
+	public function new( s : Stream, digest : String ) {
+		this.socket = s;
+		this.digest = digest;
+		state = WaitInit;
+	}
+	
+	public function run( ip : String, port : Int, cb : String->Void ) {
+		this.ip = ip;
+		this.port = port;
+		this.cb = cb;
+		socket.on( Node.EVENT_STREAM_END, onError );
+		socket.on( Node.EVENT_STREAM_ERROR, onError );
+		socket.on( Node.EVENT_STREAM_DATA, onData );
+	}
+	
+	function onData( buf : Buffer ) {
+		trace("onData ["+state+"] "+buf.length);
+		
+		switch( state ) {
+		case WaitInit :
+			//..check...
+			var b = new haxe.io.BytesBuffer();
+			b.addByte( 0x05 );
+			b.addByte( 0x00 );
+			socket.write( b.getBytes().getData() );
+			state = WaitAuth;
+			
+		case WaitAuth :
+			trace("<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+			
+			var i = new haxe.io.BytesInput( Bytes.ofData( buf ) );
+			trace( i.readByte() );
+			trace( i.readByte() );
+			trace( i.readByte() );
+			trace( i.readByte() );
+			var len = i.readByte();
+			trace( len );
+			var _digest = i.readString( len );
+			trace( _digest );
+			if( _digest != digest ) {
+				trace( "Digest dos not match" );
+				cb( "Digest dos not match" );
+			}
+			trace( i.readInt16() );
+			
+			var o = new haxe.io.BytesBuffer();
+			
+			o.addByte( 5 );
+			o.addByte( 0 );
+			o.addByte( 0 );
+			o.addByte( 3 );
+		
+			o.addByte( ip.length );
+			o.add( Bytes.ofString(ip) );
+			//o.addByte( port );
+			o.addByte( 0 );
+			o.addByte( 0 );
+			
+			socket.write( o.getBytes().getData() );
+			
+			socket.removeAllListeners( Node.EVENT_STREAM_DATA );
+			socket.removeAllListeners( Node.EVENT_STREAM_END );
+			socket.removeAllListeners( Node.EVENT_STREAM_ERROR );
+			
+			cb( null );
+		}
+	}
+	
+	function onError() {
+		trace("ERROR");	
+	}
+	
+}
+
 #end

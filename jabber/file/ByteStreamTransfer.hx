@@ -52,8 +52,8 @@ class ByteStreamTransfer extends FileTransfer {
 		case result :
 			transport.send( input, filesize, bufsize );
 		case error :
-			//TODO
-			trace("ERRRRRORR");
+			//TODO cleanup
+			onFail( xmpp.Error.parse( iq.errors[0].toXml() ).condition );
 		default :
 		}
 	}
