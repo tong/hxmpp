@@ -17,13 +17,14 @@ class Base64 {
 		//'+/='
 		//'-_.'
 		CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-		#if !nodejs
+		#if (neko||cpp||js||swf)
 		bc = new BaseCode( Bytes.ofString( CHARS ) );
 		#end
 	}
 	
 	public static var CHARS(default,null) : String;
 	
+	#if (neko||cpp||js||swf)
 	#if !nodejs
 	
 	public static var bc(default,null) : BaseCode;
@@ -40,10 +41,13 @@ class Base64 {
 		return s;
 	}
 	
+	#end // neko||cpp||js||swf
 	#end // !nodejs
 	
 	public static function encode( t : String ) : String {
-		#if nodejs
+		#if php
+		return untyped __call__( "base64_encode", t );
+		#elseif nodejs
 		return Node.newBuffer(t).toString( Node.BASE64 );
 		#else
 		return fillNullbits( bc.encodeString( t ) );
@@ -51,7 +55,9 @@ class Base64 {
 	}
 	
 	public static function decode( t : String ) : String {
-		#if nodejs
+		#if php
+		return untyped __call__( "base64_decode", t );
+		#elseif nodejs
 		return Node.newBuffer( t, Node.BASE64 ).toString( Node.ASCII );
 		#else
 		return bc.decodeString( removeNullbits( t ) );
@@ -59,13 +65,21 @@ class Base64 {
 	}
 	
 	public static function encodeBytes( b : Bytes ) : String {
+		#if php
+		return untyped __call__( "base64_encode", b.getData() );
 		//TODO nodejs native
+		#else
 		return fillNullbits( bc.encodeBytes( b ).toString() );
+		#end
 	}
 	
 	public static function decodeBytes( t : String ) : Bytes {
+		#if php
+		return haxe.io.Bytes.ofString( untyped __call__( "base64_decode", t ) );
 		//TODO nodejs native
+		#else
 		return bc.decodeBytes( Bytes.ofString( removeNullbits( t ) ) );
+		#end
 	}
 	
 	/**
