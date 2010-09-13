@@ -17,14 +17,16 @@ class Base64 {
 		//'+/='
 		//'-_.'
 		CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-		#if (neko||cpp||js||swf)
+		#if (neko||cpp||js||flash)
+		#if !nodejs
 		bc = new BaseCode( Bytes.ofString( CHARS ) );
+		#end
 		#end
 	}
 	
 	public static var CHARS(default,null) : String;
 	
-	#if (neko||cpp||js||swf)
+	#if (neko||cpp||js||flash)
 	#if !nodejs
 	
 	public static var bc(default,null) : BaseCode;
@@ -67,7 +69,8 @@ class Base64 {
 	public static function encodeBytes( b : Bytes ) : String {
 		#if php
 		return untyped __call__( "base64_encode", b.getData() );
-		//TODO nodejs native
+		#elseif nodejs
+		return b.getData().toString( Node.BASE64 );
 		#else
 		return fillNullbits( bc.encodeBytes( b ).toString() );
 		#end
@@ -75,8 +78,9 @@ class Base64 {
 	
 	public static function decodeBytes( t : String ) : Bytes {
 		#if php
-		return haxe.io.Bytes.ofString( untyped __call__( "base64_decode", t ) );
-		//TODO nodejs native
+		return Bytes.ofString( untyped __call__( "base64_decode", t ) );
+		#elseif nodejs
+		return Bytes.ofData( Node.newBuffer( t, Node.BASE64 ) );
 		#else
 		return bc.decodeBytes( Bytes.ofString( removeNullbits( t ) ) );
 		#end
