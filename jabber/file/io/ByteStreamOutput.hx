@@ -18,6 +18,7 @@
 package jabber.file.io;
 
 import haxe.io.Bytes;
+import jabber.util.SOCKS5In;
 #if neko
 import neko.net.Host;
 import neko.net.Socket;
@@ -133,7 +134,10 @@ class ByteStreamOutput extends ByteStreamIO  {
 			try {
 				pos += input.readBytes( buf, 0, len );
 				socket.write( buf.getData() );
+				__onProgress( pos );
 			} catch( e : Dynamic ) {
+				socket.end();
+				server.close();
 				__onFail( e );
 				return;
 			}
@@ -143,16 +147,28 @@ class ByteStreamOutput extends ByteStreamIO  {
 		#end
 	}
 	
+	public function close() {
+		trace("TODO force close bytestream transport");
+	}
+	
 	#if (neko||cpp)
 	
 	function callbackConnect( err : String ) {
-		( err == null ) ? __onConnect( this ) : __onFail( err );
+		if( err == null ) __onConnect( this );
+		else {
+			closeSockets();
+			__onFail( err );
+		}
 	}
 	
 	function callbackSent( err : String ) {
+		closeSockets();
+		( err == null ) ? __onComplete() : __onFail( err );
+	}
+	
+	function closeSockets() {
 		try socket.close() catch( e : Dynamic ) { #if JABBER_DEBUG trace(e); #end }
 		try server.close() catch( e : Dynamic ) { #if JABBER_DEBUG trace(e); #end }
-		( err == null ) ? __onComplete() : __onFail( err );
 	}
 	
 	function t_wait() {
@@ -164,7 +180,6 @@ class ByteStreamOutput extends ByteStreamIO  {
 		var c : Socket = null;
 		c = server.accept();
 		main.sendMessage( c );
-		var err : String = null;
 		/* //TODO
 		try {
 			var r = c.input.read( 23 ).toString();
@@ -173,16 +188,11 @@ class ByteStreamOutput extends ByteStreamIO  {
 			trace(e);
 		}
 		*/
-		try {
-			if( !jabber.util.SOCKS5In.process( c.input, c.output, digest, ip, port ) ) {
-				cb( "SOCKS5 failed" );
-				return;
-			}
-			c.output.flush();
-		} catch( e : Dynamic ) {
-			err = e;
+		try new SOCKS5In().run( c, digest ) catch( e : Dynamic ) {
+			cb( e );
+			return;
 		}
-		cb( err );
+		cb( null );
 	}
 	
 	function t_send() {
@@ -215,12 +225,13 @@ class ByteStreamOutput extends ByteStreamIO  {
 	
 	function onConnect( s : Stream ) {
 		socket = s;
-		var socks5 = new jabber.util.SOCKS5In( socket, digest );
-		socks5.run( host, port, onSOCKS5Complete );
+		new SOCKS5In().run( socket, digest, onSOCKS5Complete );
 	}
 	
 	function onSOCKS5Complete( err : String ) {
 		if( err != null ) {
+			socket.end();
+			server.close();
 			__onFail( "SOCKS5 failed: "+err );
 		} else {
 			__onConnect( this );

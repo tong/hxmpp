@@ -18,6 +18,7 @@
 package jabber.file.io;
 
 import haxe.io.Bytes;
+import jabber.util.SOCKS5Out;
 #if neko
 import neko.net.Host;
 import neko.net.Socket;
@@ -80,11 +81,10 @@ class ByteStreamInput extends ByteStreamIO {
 		
 		#if (neko||cpp)
 		socket = new Socket();
-		try socket.connect( new Host( host ), port ) catch( e : Dynamic ) {
-			__onFail( e );
-			return;
-		}
-		try jabber.util.SOCKS5Out.process( socket.input, socket.output, digest ) catch( e : Dynamic ) {
+		try {
+			socket.connect( new Host( host ), port );
+			new SOCKS5Out().run( socket, digest );
+		} catch( e : Dynamic ) {
 			__onFail( e );
 			return;
 		}
@@ -157,8 +157,7 @@ class ByteStreamInput extends ByteStreamIO {
 	
 	function onSocketConnect( e : Event ) {
 		#if JABBER_DEBUG trace( "Filetransfer socket connected ["+host+":"+port+"]", "info" ); #end
-		var socks5 = new jabber.util.SOCKS5Out( socket, digest );
-		socks5.run( onSOCKS5Complete );
+		new SOCKS5Out().run( socket, digest, onSOCKS5Complete );
 	}
 	
 	function onSOCKS5Complete( err : String ) {
@@ -205,8 +204,7 @@ class ByteStreamInput extends ByteStreamIO {
 	
 	function sockConnectHandler() {
 		#if JABBER_DEBUG trace( "Filetransfer socket connected ["+host+":"+port+"]" ); #end
-		var socks5 = new jabber.util.SOCKS5Out( socket, digest );
-		socks5.run( onSOCKS5Complete );
+		new SOCKS5Out().run( socket, digest, onSOCKS5Complete );
 	}
 	
 	function sockDisconnectHandler() {

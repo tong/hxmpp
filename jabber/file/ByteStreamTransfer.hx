@@ -30,10 +30,11 @@ import xmpp.file.ByteStreamHost;
 */
 class ByteStreamTransfer extends FileTransfer {
 	
-	public static var defaultBufSize = 1 << 12; // 4096
+	public static var defaultBufSize = 1<<12; // 4096
 	
 	public var hosts(default,null) : Array<ByteStreamHost>;
 	
+	var transports : Array<ByteStreamOutput>;
 	var transport : ByteStreamOutput;
 	
 	public function new( stream : jabber.Stream, reciever : String,
@@ -50,13 +51,16 @@ class ByteStreamTransfer extends FileTransfer {
 		this.input = input;
 		this.sid = sid;
 		this.filesize = filesize;
+		var digest = SHA1.encode( sid+stream.jid.toString()+reciever );
+		transports = new Array();
 		for( h in hosts ) {
 			var t = new ByteStreamOutput( h.host, h.port );
 			t.__onConnect = handleTransportConnect;
 			t.__onProgress = onProgress;
 			t.__onComplete = onComplete;
 			t.__onFail = handleTransportFail;
-			t.init( SHA1.encode( sid+stream.jid.toString()+reciever ) );
+			t.init( digest );
+			transports.push( t );
 		}
 		var iq = new IQ( IQType.set );
 		iq.to = reciever;
@@ -75,20 +79,10 @@ class ByteStreamTransfer extends FileTransfer {
 		}
 	}
 	
-	
 	function handleTransportConnect( transport : ByteStreamOutput ) {
 		this.transport = transport;
+		for( t in transports ) { if( t != transport ) t.close(); }
 	}
-	
-	/*
-	function handleTransportProgress( bytes : Int ) {
-		onProgress( bytes );
-	}
-	
-	function handleTransportComplete() {
-		onComplete();
-	}
-	*/
 	
 	function handleTransportFail( info : String ) {
 		onFail( info );

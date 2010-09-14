@@ -62,10 +62,9 @@ class IBTransfer extends FileTransfer {
 			transport = new IBOutput( stream, reciever, sid );
 			transport.__onProgress = onProgress;
 			transport.__onComplete = onComplete;
-			transport.__onFail = handleOutputFail;
+			transport.__onFail = handleTransportFail;
 			//onInit( this );
 			transport.send( input, filesize, bufsize );
-			//output.send( input, filesize, bufsize );
 			
 		case error :
 			onFail( iq.errors[0].condition );
@@ -73,13 +72,7 @@ class IBTransfer extends FileTransfer {
 		}
 	}
 	
-	/*
-	function handleOutputComplete() {
-		onComplete();
-	}
-	*/
-	
-	function handleOutputFail( info : String ) {
+	function handleTransportFail( info : String ) {
 		onFail( info );
 	}
 	
