@@ -17,52 +17,49 @@
 */
 package jabber.util;
 
-#if (neko||cpp)
 import haxe.io.Bytes;
+
+#if (neko||cpp||php)
 import haxe.io.BytesBuffer;
-import haxe.io.Input;
-import haxe.io.Output;
+#if neko
+import neko.net.Socket;
+#elseif cpp
+import cpp.net.Socket;
+#elseif php
+import php.net.Socket;
+#end
 
 /**
 	<a href="http://www.faqs.org/rfcs/rfc1928.html">RFC 1928</a>
+	SOCKS5 negotiation for outgoing socket connections (incoming filetransfers).<br/>
 	This is not a complete implementation of the SOCKS5 protocol,<br/>
 	just a subset fulfilling requirements in context of XMPP (datatransfers).
 */
 class SOCKS5Out {
 	
-	// TODO bufferd!
+	public function new() {}
 	
-	/**
-		SOCKS5 negotiation for outgoing socket connections
-	*/
-	public static function process( i : Input, o : Output, digest : String ) {
+	public function run( socket : Socket, digest : String ) {
 		
-		o.writeByte( 0x05 );
-		o.writeByte( 0x01 ); // num auth methods
-		o.writeByte( 0x00 ); // no auth
-		o.flush();
+		var i = socket.input;
 		
-		trace( i.readByte() ); // 5
-		trace( i.readByte() ); // 0
+		var b = new BytesBuffer();
+		b.addByte( 0x05 );
+		b.addByte( 0x01 );
+		b.addByte( 0x00 );
+		socket.output.write( b.getBytes() );
 		
-		o.writeByte( 0x05 );
-		o.writeByte( 0x01 );
-		o.writeByte( 0x00 );
-		o.writeByte( 0x03 );
-		o.writeByte( digest.length );
-		o.writeString( digest );
-		o.writeByte( 0x00 ); // TODO port
-		o.writeByte( 0x00 ); // TODO port
-		o.flush();
+		i.readByte(); // 0x05
+		i.readByte(); // 0x00
 		
-		trace( i.readByte() ); // 5
-		trace( i.readByte() ); // 0
-		trace( i.readByte() ); // 0
-		trace( i.readByte() ); // 3
-		var len = i.readByte();
-		trace(len); // hash/ip length
-		trace( i.readString( len ) ); // hash/ip
-		trace( i.readInt16() ); // 0
+		socket.output.write( SOCKS5.createOutgoingMessage( 1, digest ) );
+		
+		i.readByte(); // 0x05
+		i.readByte(); // 0x00
+		i.readByte(); // 0x00
+		i.readByte(); // 0x03
+		i.readString( i.readByte() ); // digest
+		i.readInt16();
 	}
 }
 
@@ -79,30 +76,23 @@ import flash.utils.ByteArray;
 private enum State {
 	WaitResponse;
 	WaitAuth;
-	//WaitDigest( len : Int );
 }
 
-/**
-	<a href="http://www.faqs.org/rfcs/rfc1928.html">RFC 1928</a>
-*/
 class SOCKS5Out {
 	
-	var cb : String->Void;
 	var socket : Socket;
 	var digest : String;
+	var cb : String->Void;
 	var state : State;
 	var i : flash.utils.IDataInput;
-	var o : flash.utils.IDataOutput;
 	
-	public function new( socket : Socket, digest : String ) {
+	public function new() {}
+	
+	public function run( socket : Socket, digest : String, cb : String->Void ) {
 		this.socket = socket;
 		this.digest = digest;
-		i = socket;
-		o = socket;
-	}
-	
-	public function run( cb : String->Void ) {
 		this.cb = cb;
+		i = socket;
 		state = WaitResponse;
 		socket.addEventListener( ProgressEvent.SOCKET_DATA, onData );
 		socket.addEventListener( Event.CLOSE, onError );
@@ -112,37 +102,25 @@ class SOCKS5Out {
 		b.writeByte( 0x05 );
 		b.writeByte( 0x01 );
 		b.writeByte( 0x00 );
-		o.writeBytes( b );
+		socket.writeBytes( b );
 		socket.flush();
 	}
 	
 	function onData( e : ProgressEvent ) {
 		switch( state ) {
 		case WaitResponse :
-			trace( i.readByte() );
-			trace( i.readByte() );
-			var b = new ByteArray();
-			b.writeByte( 0x05 );
-			b.writeByte( 0x01 );
-			b.writeByte( 0x00 );
-			b.writeByte( 0x03 );
-			b.writeByte( digest.length );
-			b.writeUTFBytes( digest );
-			b.writeByte( 0x00 );
-			b.writeByte( 0x00 );
-			o.writeBytes( b );
+			i.readByte();
+			i.readByte();
+			socket.writeBytes( SOCKS5.createOutgoingMessage( 1, digest ).getData() );
 			socket.flush();
 			state = WaitAuth;
 		case WaitAuth :
-			trace( i.readByte() );
-			trace( i.readByte() );
-			trace( i.readByte() );
-			trace( i.readByte() );
-			var l = i.readByte();
-			trace(l);
-			trace( i.readUTFBytes(l) );
-			trace( i.readShort() ); // port
-			socket.removeEventListener( ProgressEvent.SOCKET_DATA, onData );
+			i.readByte(); // 0x05
+			i.readByte(); // 0x00
+			i.readByte(); // 0x00
+			i.readByte(); // 0x03
+			i.readUTFBytes( i.readByte() ); // digest
+			i.readShort();
 			removeSocketListeners();
 			cb( null );
 		}
@@ -154,6 +132,7 @@ class SOCKS5Out {
 	}
 	
 	function removeSocketListeners() {
+		socket.removeEventListener( ProgressEvent.SOCKET_DATA, onData );
 		socket.removeEventListener( Event.CLOSE, onError );
 		socket.removeEventListener( IOErrorEvent.IO_ERROR, onError );
 		socket.removeEventListener( SecurityErrorEvent.SECURITY_ERROR, onError );
@@ -164,7 +143,6 @@ class SOCKS5Out {
 #elseif nodejs
 
 import js.Node;
-import haxe.io.Bytes;
 
 private enum State {
 	WaitResponse;
@@ -173,19 +151,18 @@ private enum State {
 
 class SOCKS5Out {
 	
-	var cb : String->Void;
 	var socket : Stream;
-	var state : State;
 	var digest : String;
+	var cb : String->Void;
+	var state : State;
 	
-	public function new( s : Stream, digest : String ) {
-		this.socket = s;
+	public function new() {}
+	
+	public function run( socket : Stream, digest : String, cb : String->Void ) {
+		this.socket = socket;
 		this.digest = digest;
-		state = WaitResponse;
-	}
-	
-	public function run( cb : String->Void ) {
 		this.cb = cb;
+		state = WaitResponse;
 		socket.on( Node.EVENT_STREAM_END, onError );
 		socket.on( Node.EVENT_STREAM_ERROR, onError );
 		socket.on( Node.EVENT_STREAM_DATA, onData );
@@ -193,36 +170,18 @@ class SOCKS5Out {
 	}
 	
 	function onData( buf : Buffer ) {
-		//trace("onData ["+state+"] "+buf.length);
 		switch( state ) {
 		case WaitResponse :
-			
-			trace(buf[0]);
-			trace(buf[1]);
-			
-			var b = new haxe.io.BytesBuffer();
-			b.addByte( 0x05 );
-			b.addByte( 0x01 );
-			b.addByte( 0x00 );
-			b.addByte( 0x03 );
-			b.addByte( digest.length );
-			b.add( Bytes.ofString( digest ) );
-			b.addByte( 0x00 );
-			b.addByte( 0x00 );
-			socket.write( b.getBytes().getData() );
+			socket.write( SOCKS5.createOutgoingMessage( 1, digest ).getData() );
 			state = WaitAuth;
-			
 		case WaitAuth :
 			var i = new haxe.io.BytesInput( Bytes.ofData( buf ) );
-			trace( i.readByte() );
-			trace( i.readByte() );
-			trace( i.readByte() );
-			trace( i.readByte() );
-			var len = i.readByte();
-			trace( len );
-			trace( i.readString( len ) ); // hash/ip
-			trace( i.readInt16() );
-			
+			i.readByte();
+			i.readByte();
+			i.readByte();
+			i.readByte();
+			i.readString( i.readByte() ); // digest
+			i.readInt16();
 			removeSocketListeners();
 			cb( null );
 		}

@@ -17,68 +17,67 @@
 */
 package jabber.util;
 
-#if (neko||cpp)
 import haxe.io.Bytes;
-import haxe.io.Input;
-import haxe.io.Output;
+import haxe.io.BytesBuffer;
+
+#if (neko||cpp||php)
+
+#if neko
+import neko.net.Socket;
+#elseif cpp
+import cpp.net.Socket;
+#elseif php
+import php.net.Socket;
+#end
 
 /**
 	<a href="http://www.faqs.org/rfcs/rfc1928.html">RFC 1928</a>
+	SOCKS5 negotiation for incoming socket connections (outgoing datatransfers).<br/>
 	This is not a complete implementation of the SOCKS5 protocol,<br/>
 	just a subset fulfilling requirements in context of XMPP (datatransfers).
 */
 class SOCKS5In {
 	
+	public function new() {}
+	
 	/**
-		SOCKS5 negotiation for incoming socket connections.
-		Returns true on negotiation success.
+		SOCKS5 negotiation for incoming socket connections (outgoing datatransfers).
 	*/
-	public static function process( i : Input, o : Output, digest : String, ip : String, port : Int ) : Bool {
-
-		trace( i.readByte() ); // 5 version
-		var n = i.readByte(); // num auth methods
-		trace( n );
-		for( _ in 0...n ) trace( i.readByte() );
+	public function run( socket : Socket, digest : String ) {
 		
-		o.writeByte( 5 );
-		o.writeByte( 0 );
+		var i = socket.input;
+		var o = socket.output;
 		
-		trace( i.readByte() );
-		trace( i.readByte() );
-		trace( i.readByte() );
-		trace( i.readByte() );
-		var len = i.readByte();
-		trace( len );
-		var _digest = i.readString( len );
-		trace( _digest );
-		if( _digest != digest ) {
-			trace( "Digest dos not match" );
-			return false;
-		}
-		trace( i.readInt16() );
+		i.readByte(); // 0x05
+		for( _ in 0...i.readByte() )
+			i.readByte();
 		
-		o.writeByte( 5 );
-		o.writeByte( 0 );
-		o.writeByte( 0 );
-		o.writeByte( 3 );
+		var b = new BytesBuffer();
+		b.addByte( 0x05 );
+		b.addByte( 0x00 );
+		o.write( b.getBytes() );
 		
-		o.writeByte( ip.length );
-		o.writeString( ip );
-		o.writeInt16( port );
+		i.readByte();
+		i.readByte();
+		i.readByte();
+		i.readByte();
+		if( i.readString( i.readByte() ) != digest )
+			throw "SOCKS5 digest dos not match";
+		i.readInt16();
 		
-		return true;
+		o.write( SOCKS5.createOutgoingMessage( 0, digest ) );
+		o.flush();
 	}
 }
+
 
 #elseif nodejs
 
 import js.Node;
-import haxe.io.Bytes;
-import haxe.io.BytesBuffer;
 
 private enum State {
 	WaitInit;
-	WaitAuth;
+	WaitResponse;
 }
 
 class SOCKS5In {
@@ -86,82 +85,58 @@ class SOCKS5In {
 	var socket : Stream;
 	var digest : String;
 	var cb : String->Void;
-	var ip : String;
-	var port : Int;
 	var state : State;
 	
-	public function new( s : Stream, digest : String ) {
-		this.socket = s;
-		this.digest = digest;
-		state = WaitInit;
-	}
+	public function new() {}
 	
-	public function run( ip : String, port : Int, cb : String->Void ) {
-		this.ip = ip;
-		this.port = port;
+	public function run( socket : Stream, digest : String, cb : String->Void ) {
+		this.socket = socket;
+		this.digest = digest;
 		this.cb = cb;
+		state = WaitInit;
 		socket.on( Node.EVENT_STREAM_END, onError );
 		socket.on( Node.EVENT_STREAM_ERROR, onError );
 		socket.on( Node.EVENT_STREAM_DATA, onData );
 	}
 	
 	function onData( buf : Buffer ) {
-		trace("onData ["+state+"] "+buf.length);
-		
 		switch( state ) {
 		case WaitInit :
-			//..check...
 			var b = new haxe.io.BytesBuffer();
 			b.addByte( 0x05 );
 			b.addByte( 0x00 );
 			socket.write( b.getBytes().getData() );
-			state = WaitAuth;
+			state = WaitResponse;
 			
-		case WaitAuth :
-			trace("<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-			
+		case WaitResponse :
 			var i = new haxe.io.BytesInput( Bytes.ofData( buf ) );
-			trace( i.readByte() );
-			trace( i.readByte() );
-			trace( i.readByte() );
-			trace( i.readByte() );
-			var len = i.readByte();
-			trace( len );
-			var _digest = i.readString( len );
-			trace( _digest );
-			if( _digest != digest ) {
-				trace( "Digest dos not match" );
-				cb( "Digest dos not match" );
+			i.readByte();
+			i.readByte();
+			i.readByte();
+			i.readByte();
+			if( i.readString( i.readByte() ) != digest ) {
+				cb( "SOCKS5 digest does not match" );
+				return;
 			}
-			trace( i.readInt16() );
+			i.readInt16();
 			
-			var o = new haxe.io.BytesBuffer();
+			socket.write( SOCKS5.createOutgoingMessage( 0, digest ).getData() );
 			
-			o.addByte( 5 );
-			o.addByte( 0 );
-			o.addByte( 0 );
-			o.addByte( 3 );
-		
-			o.addByte( ip.length );
-			o.add( Bytes.ofString(ip) );
-			//o.addByte( port );
-			o.addByte( 0 );
-			o.addByte( 0 );
-			
-			socket.write( o.getBytes().getData() );
-			
-			socket.removeAllListeners( Node.EVENT_STREAM_DATA );
-			socket.removeAllListeners( Node.EVENT_STREAM_END );
-			socket.removeAllListeners( Node.EVENT_STREAM_ERROR );
-			
+			removeSocketListeners();
 			cb( null );
 		}
 	}
 	
 	function onError() {
-		trace("ERROR");	
+		removeSocketListeners();
+		cb( "SOCKS5 negotiation socket error" );
 	}
 	
+	function removeSocketListeners() {
+		socket.removeAllListeners( Node.EVENT_STREAM_DATA );
+		socket.removeAllListeners( Node.EVENT_STREAM_END );
+		socket.removeAllListeners( Node.EVENT_STREAM_ERROR );
+	}
 }
 
 #end
