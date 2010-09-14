@@ -24,8 +24,8 @@ import haxe.io.Bytes;
 */
 class FileTransfer {
 	
-	//public dynamic function onReject( t : Transfer ) : Void;
 	//public dynamic function onInit( ft : FileTransfer ) : Void; //TODO
+	public dynamic function onProgress( bytes : Int ) : Void;
 	public dynamic function onComplete() : Void;
 	public dynamic function onFail( info : String  ) : Void;
 	
@@ -51,7 +51,7 @@ class FileTransfer {
 	}
 	*/
 	
-	public function __init( input : haxe.io.Input, sid : String, fileSize : Int ) {
+	public function init( input : haxe.io.Input, sid : String, fileSize : Int ) {
 		throw "Abstract method";
 	}
 	/*

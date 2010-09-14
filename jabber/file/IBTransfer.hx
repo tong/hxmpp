@@ -30,8 +30,8 @@ import xmpp.IQ;
 */
 class IBTransfer extends FileTransfer {
 	
-	//public static var defaultBufSize = 1<<12; //1<<14; //16384
-	public static var defaultBufSize = 512;
+	public static var defaultBufSize = 1<<12; //1<<14; //16384
+	//public static var defaultBufSize = 512;
 	
 	var transport : IBOutput;
 	
@@ -41,7 +41,7 @@ class IBTransfer extends FileTransfer {
 		super( stream, xmpp.file.IB.XMLNS, reciever, bufsize );
 	}
 	
-	public override function __init( input : haxe.io.Input, sid : String, filesize : Int ) {
+	public override function init( input : haxe.io.Input, sid : String, filesize : Int ) {
 		this.input = input;
 		this.sid = sid;
 		this.filesize = filesize;
@@ -60,7 +60,8 @@ class IBTransfer extends FileTransfer {
 		switch( iq.type ) {
 		case result :
 			transport = new IBOutput( stream, reciever, sid );
-			transport.__onComplete = handleOutputComplete;
+			transport.__onProgress = onProgress;
+			transport.__onComplete = onComplete;
 			transport.__onFail = handleOutputFail;
 			//onInit( this );
 			transport.send( input, filesize, bufsize );
@@ -72,9 +73,11 @@ class IBTransfer extends FileTransfer {
 		}
 	}
 	
+	/*
 	function handleOutputComplete() {
 		onComplete();
 	}
+	*/
 	
 	function handleOutputFail( info : String ) {
 		onFail( info );

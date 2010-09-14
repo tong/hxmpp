@@ -40,13 +40,9 @@ class IBReciever extends FileReciever {
 	override function handleRequest( iq : IQ ) {
 		input = new IBInput( stream, iq.from, sid, file.size );
 		//input.__onData = handleData;
-		input.__onComplete = handleByteStreamComplete;
+		//TODO.. error..
+		input.__onComplete = handleTransferComplete;
 		stream.sendPacket( IQ.createResult( iq ) );
 	}
 	
-	function handleByteStreamComplete( bytes : Bytes ) {
-		this.data = bytes;
-		onComplete( this );
-	}
-
 }

@@ -20,6 +20,7 @@ package jabber.file.io;
 class ByteStreamIO {
 	
 	public var __onFail : String->Void;
+	public var __onProgress : Int->Void;
 	
 	var host : String;
 	var port : Int;

@@ -84,22 +84,16 @@ class ByteStreamInput extends ByteStreamIO {
 			__onFail( e );
 			return;
 		}
-		var o = socket.output;
-		var i = socket.input;
-		var error : String = null;
-		try jabber.util.SOCKS5Out.process(i,o,digest) catch( e : Dynamic ) {
+		try jabber.util.SOCKS5Out.process( socket.input, socket.output, digest ) catch( e : Dynamic ) {
 			__onFail( e );
-			return;
-		}
-		if( error != null ) {
-			trace( "ERROR: "+error );
 			return;
 		}
 		var t = Thread.create( read );
 		t.sendMessage( Thread.current() );
-		t.sendMessage( i );
+		t.sendMessage( socket.input );
 		t.sendMessage( size );
 		t.sendMessage( bufsize );
+		t.sendMessage( __onProgress );
 		t.sendMessage( completeCallback );
 		Thread.readMessage( true );
 		__onConnect();
@@ -133,9 +127,7 @@ class ByteStreamInput extends ByteStreamIO {
 		}
 		__onComplete( bytes );
 		try socket.close() catch( e : Dynamic ) {
-			#if JABBER_DEBUG
-			trace(e);
-			#end
+			#if JABBER_DEBUG trace(e); #end
 		}
 	}
 	
@@ -144,6 +136,7 @@ class ByteStreamInput extends ByteStreamIO {
 		var input : haxe.io.Input = Thread.readMessage( true );
 		var size : Int = Thread.readMessage( true );
 		var bufsize : Int = Thread.readMessage( true );
+		var onProgress : Int->Void = Thread.readMessage( true );
 		var cb : Bytes->Void = Thread.readMessage( true );
 		main.sendMessage( true );
 		var bytes = Bytes.alloc( size );
@@ -151,12 +144,11 @@ class ByteStreamInput extends ByteStreamIO {
 		while( pos < size ) {
 			var remain = size-pos;
 			var len = ( remain > bufsize ) ? bufsize : remain;
-			try {
-				pos += input.readBytes( bytes, pos, len );
-			} catch( e : Dynamic ) {
+			try pos += input.readBytes( bytes, pos, len ) catch( e : Dynamic ) {
 				cb( null );
 				return;
 			}
+			onProgress( pos );
 		}
 		cb( bytes );
 	}
@@ -183,7 +175,6 @@ class ByteStreamInput extends ByteStreamIO {
 	}
 	
 	function onSocketDisconnect( e : Event ) {
-		trace(e);
 		removeSocketListeners();
 		__onFail( e.type );
 	}
@@ -194,9 +185,8 @@ class ByteStreamInput extends ByteStreamIO {
 	}
 	
 	function onSocketData( e : ProgressEvent ) {
-		trace(e);
 		socket.readBytes( buf, buf.length, e.bytesLoaded );
-		//socket.readBytes( buf, 0, e.bytesLoaded );
+		__onProgress( buf.length );
 		if( buf.length == size ) {
 			removeSocketListeners();
 			__onComplete( Bytes.ofData( buf ) );
@@ -228,18 +218,17 @@ class ByteStreamInput extends ByteStreamIO {
 		__onFail( "bytestream inut failed" );
 	}
 	
-	function sockDataHandler( t : Buffer ) {
-		//t.copy( buf, bufpos, 0, t.length );
-		//bufpos += t.length;
-		buf.write( t.toString( Node.BINARY ), Node.BINARY, bufpos );
-		bufpos += t.length;
+	function sockDataHandler( b : Buffer ) {
+		buf.write( b.toString( Node.BINARY ), Node.BINARY, bufpos );
+		bufpos += b.length;
+		__onProgress( bufpos );
 		if( bufpos == size ) {
 			// TODO close sockets
 			__onComplete( Bytes.ofData( buf ) );
 		}
 	}
 	
-	function onSOCKS5Complete( err ) {
+	function onSOCKS5Complete( err : String ) {
 		removeSocketListeners();
 		if( err != null ) {
 			__onFail( err );

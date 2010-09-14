@@ -46,16 +46,16 @@ import js.io.Path;
 */
 class SITransfer {
 	
-	public dynamic function onFail( info : String ) : Void;
+	public dynamic function onProgress( bytes : Int ) : Void;
 	public dynamic function onComplete() : Void;
+	public dynamic function onFail( info : String ) : Void;
 	
 	public var stream(default,null) : jabber.Stream;
 	public var reciever(default,null) : String;
-	public var methods(default,null) : Array<FileTransfer>; // TODO make private, use method (with check)
+	public var methods(default,null) : Array<FileTransfer>;
 	public var filepath(default,null) : String;
 	public var filesize(default,null) : Int;
 	
-	//var output : DataOutput; //TODO
 	var input : haxe.io.Input;
 	var id : String;
 	var methodIndex : Int;
@@ -66,13 +66,7 @@ class SITransfer {
 		methods = new Array();
 	}
 	
-	/*
-	public function addMethod( m : Class<FileTransfer>, ?args : Array<Dynamic> ) {
-		// resolve
-		// check if already added
-		// add
-	}
-	*/
+	// TODO description, hash, date, (range)
 	
 	public function sendData( bytes : Bytes, name : String ) {
 		this.input = new haxe.io.BytesInput( bytes );
@@ -88,9 +82,8 @@ class SITransfer {
 		this.input = File.read( filepath, true );
 		this.filepath = filepath;
 		var fstat = FileSystem.stat( filepath );
-		var name = Path.withoutDirectory( filepath );
 		filesize = Std.int( fstat.size );
-		sendRequest( name, filesize );
+		sendRequest( Path.withoutDirectory( filepath ), filesize );
 	}
 	
 	#end
@@ -102,7 +95,9 @@ class SITransfer {
 		var iq = new IQ( IQType.set );
 		iq.to = reciever;
 		var si = new xmpp.file.SI( id, "text/plain", xmpp.file.SI.XMLNS_PROFILE ); //TODO mime-type
-		si.any.push( new xmpp.file.File( name, size ).toXml() );
+		var file = new xmpp.file.File( name, size );
+		
+		si.any.push( file.toXml() );
 		var form = new xmpp.DataForm( xmpp.dataform.FormType.form );
 		var form_f = new xmpp.dataform.Field( xmpp.dataform.FieldType.list_single );
 		form_f.variable = "stream-method";
@@ -158,22 +153,25 @@ class SITransfer {
 			}
 			this.methods = acceptedMethods;
 			methodIndex = 0;
-			startFileTransfer();
+			initFileTransfer();
 			
 		case error :
-			//TODO
-			onFail( "denied" );
+			onFail( xmpp.Error.parse( iq.errors[0].toXml() ).condition );
 			
 		default : //
 		}
 	}
 	
-	function startFileTransfer() {
+	function initFileTransfer() {
 		var ft = methods[methodIndex];
+		ft.onProgress = handleFileTransferProgress;
 		ft.onComplete = handleFileTransferComplete;
 		ft.onFail = handleFileTransferFail;
-		ft.__init( input, id, filesize );
-		//ft.__init( output, id, filesize );
+		ft.init( input, id, filesize );
+	}
+	
+	function handleFileTransferProgress( bytes : Int ) {
+		if( onProgress != null ) onProgress( bytes );
 	}
 	
 	function handleFileTransferComplete() {

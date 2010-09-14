@@ -71,6 +71,7 @@ class IBOutput extends IBIO {
 		var len = ( remain > bufsize ) ? bufsize : remain;
 		var buf = Bytes.alloc( len );
 		bufpos += input.readBytes( buf, 0, len );
+		__onProgress( bufpos );
 		iq.properties = [xmpp.file.IB.createDataElement( sid, seq, Base64.encodeBytes( buf ) )];
 		stream.sendIQ( iq, handleChunkResponse );
 	}

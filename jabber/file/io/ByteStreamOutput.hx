@@ -121,6 +121,7 @@ class ByteStreamOutput extends ByteStreamIO  {
 		t.sendMessage( input );
 		t.sendMessage( size );
 		t.sendMessage( bufsize );
+		t.sendMessage( __onProgress );
 		t.sendMessage( callbackSent );
 		
 		#elseif nodejs
@@ -189,6 +190,7 @@ class ByteStreamOutput extends ByteStreamIO  {
 		var input : haxe.io.Input = Thread.readMessage( true );
 		var size : Int = Thread.readMessage( true );
 		var bufsize : Int = Thread.readMessage( true );
+		var onProgress : Int->Void = Thread.readMessage( true );
 		var cb : String->Void = Thread.readMessage( true );
 		var pos = 0;
 		var err : String = null;
@@ -199,6 +201,7 @@ class ByteStreamOutput extends ByteStreamIO  {
 			try {
 				pos += input.readBytes( buf, 0, len );
 				socket.output.write( buf );
+				onProgress( pos ); // TODO thread callback
 			} catch( e : Dynamic ) {
 				trace(e);
 				err = e;

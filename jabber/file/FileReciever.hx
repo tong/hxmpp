@@ -26,8 +26,9 @@ import xmpp.IQ;
 class FileReciever {
 	
 	//public dynamic function onData( fr : FileReciever ) : Void;
-	public dynamic function onComplete( fr : FileReciever ) : Void;
-	public dynamic function onFail( fr : FileReciever, info : String ) : Void;
+	public dynamic function onProgress( bytes : Int ) : Void;
+	public dynamic function onComplete() : Void;
+	public dynamic function onFail( info : String ) : Void;
 	
 	public var stream(default,null) : jabber.Stream;
 	public var xmlns(default,null) : String;
@@ -44,7 +45,7 @@ class FileReciever {
 		stream.features.add( xmlns );
 	}
 	
-	public function __init( file : xmpp.file.File, request : IQ, sid : String ) {
+	public function init( file : xmpp.file.File, request : IQ, sid : String ) {
 		this.file = file;
 		this.request = request;
 		this.sid = sid;
@@ -80,6 +81,15 @@ class FileReciever {
 	
 	function handleRequest( iq : IQ ) {
 		// override me
+	}
+	
+	function handleTransferProgress( bytes : Int ) {
+		if( onProgress != null ) onProgress( bytes );
+	}
+	
+	function handleTransferComplete( bytes : Bytes ) {
+		this.data = bytes;
+		onComplete();
 	}
 	
 }

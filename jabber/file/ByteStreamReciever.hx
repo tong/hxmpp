@@ -1,3 +1,20 @@
+/*
+ *	This file is part of HXMPP.
+ *	Copyright (c)2009 http://www.disktree.net
+ *	
+ *	HXMPP is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  HXMPP is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *	See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
+*/
 package jabber.file;
 
 import haxe.io.Bytes;
@@ -37,13 +54,14 @@ class ByteStreamReciever extends FileReciever {
 	function connect() {
 		host = bytestream.streamhosts[bytestreamIndex];
 		input = new ByteStreamInput( host.host, host.port );
-		input.__onConnect = handleByteStreamConnect;
-		input.__onFail = handleByteStreamConnectFail;
-		input.__onComplete = handleByteStreamComplete;
+		input.__onConnect = handleTransferConnect;
+		input.__onProgress = handleTransferProgress;
+		input.__onComplete = handleTransferComplete;
+		input.__onFail = handleTransferConnectFail;
 		input.connect( digest, file.size );
 	}
 	
-	function handleByteStreamConnect() {
+	function handleTransferConnect() {
 		#if JABBER_DEBUG
 		trace( "Bytestream connected ["+host.host+":"+host.port+"]" );
 		#end
@@ -54,8 +72,7 @@ class ByteStreamReciever extends FileReciever {
 		stream.sendPacket( r );
 	}
 	
-	function handleByteStreamConnectFail( info : String ) {
-		//trace( "Bytestream error: "+info );
+	function handleTransferConnectFail( info : String ) {
 		bytestreamIndex++;
 		if( bytestreamIndex < bytestream.streamhosts.length ) {
 			connect();
@@ -63,11 +80,6 @@ class ByteStreamReciever extends FileReciever {
 			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( xmpp.ErrorType.cancel,
 																    xmpp.ErrorCondition.ITEM_NOT_FOUND)] ) );
 		}
-	}
-	
-	function handleByteStreamComplete( bytes : Bytes ) {
-		this.data = bytes;
-		onComplete( this );
 	}
 	
 }
