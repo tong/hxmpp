@@ -27,9 +27,9 @@ import neko.vm.Thread;
 import cpp.net.Host;
 import cpp.net.Socket;
 import cpp.vm.Thread;
-#elseif php
-import php.net.Host;
-import php.net.Socket;
+//#elseif php
+//import php.net.Host;
+//import php.net.Socket;
 #elseif flash
 import flash.events.Event;
 import flash.events.IOErrorEvent;
@@ -48,25 +48,24 @@ private typedef Socket = Stream;
 class ByteStreamInput extends ByteStreamIO {
 	
 	public var __onConnect : Void->Void;
-	public var __onComplete : Bytes->Void;
+	public var __onProgress : Bytes->Void;
+	public var __onComplete : Void->Void;
 	
 	var socket : Socket;
 	
 	#if (neko||cpp)
 	var buf : Bytes;
-	
 	#elseif flash
 	var buf : ByteArray;
-	
 	#elseif nodejs
 	var buf : Buffer;
-	var bufpos : Int;
-	
+//	var bufpos : Int;
 	#end
 	
 	#if (flash||nodejs)
 	var digest : String;
 	var size : Int;
+	var bufpos : Int;
 	#end
 	
 	public function new( host : String, port : Int ) {
@@ -76,7 +75,7 @@ class ByteStreamInput extends ByteStreamIO {
 	public function connect( digest : String, size : Int, bufsize : Int = 4096 ) {
 		
 		#if JABBER_DEBUG
-		trace( "Connecting to filetransfer streamhost ["+host+","+port+"]" );
+		trace( "Connecting to filetransfer streamhost ["+host+":"+port+"]" );
 		#end
 		
 		#if (neko||cpp)
@@ -98,6 +97,39 @@ class ByteStreamInput extends ByteStreamIO {
 		Thread.readMessage( true );
 		__onConnect();
 		
+		/*
+		#elseif php
+		throw "PHP not supported";
+		socket = new Socket();
+		try {
+			socket.connect( new Host( host ), port );
+			new SOCKS5Out().run( socket, digest );
+		} catch( e : Dynamic ) {
+			trace(e);
+			__onFail( e );
+			return;
+		}
+		var pos = 0;
+		while( pos < size ) {
+			var remain = size-pos;
+			var len = ( remain > bufsize ) ? bufsize : remain;
+			//var bytes = Bytes.alloc( len );
+			var bytes : Bytes = null;
+			try {
+				bytes = socket.input.read( len );
+				pos += len;
+				//pos += input.readBytes( bytes, 0, len );
+				//pos += len;
+			} catch( e : Dynamic ) {
+				//cb( null );
+				trace(e);
+				__onFail( e );
+				return;
+			}
+			__onProgress( bytes );
+		}
+		*/
+		
 		#elseif flash
 		this.digest = digest;
 		this.size = size;
@@ -118,16 +150,14 @@ class ByteStreamInput extends ByteStreamIO {
 		#end
 	}
 	
+	
 	#if (neko||cpp)
 	
-	function completeCallback( bytes : Bytes ) {
-		if( bytes == null ) {
-			__onFail( "input error" );
-			return;
-		}
-		__onComplete( bytes );
-		try socket.close() catch( e : Dynamic ) {
-			#if JABBER_DEBUG trace(e); #end
+	function completeCallback( err : String ) {
+		if( err == null ) {
+			__onComplete();
+		} else {
+			__onFail( err );
 		}
 	}
 	
@@ -136,11 +166,13 @@ class ByteStreamInput extends ByteStreamIO {
 		var input : haxe.io.Input = Thread.readMessage( true );
 		var size : Int = Thread.readMessage( true );
 		var bufsize : Int = Thread.readMessage( true );
-		var onProgress : Int->Void = Thread.readMessage( true );
-		var cb : Bytes->Void = Thread.readMessage( true );
+		var onProgress : Bytes->Void = Thread.readMessage( true );
+		var cb : String->Void = Thread.readMessage( true );
+		//var cb : Bytes->Void = Thread.readMessage( true );
 		main.sendMessage( true );
-		var bytes = Bytes.alloc( size );
 		var pos = 0;
+		/*
+		var bytes = Bytes.alloc( size );
 		while( pos < size ) {
 			var remain = size-pos;
 			var len = ( remain > bufsize ) ? bufsize : remain;
@@ -148,10 +180,33 @@ class ByteStreamInput extends ByteStreamIO {
 				cb( null );
 				return;
 			}
-			onProgress( pos );
+			//onProgress( bytes );
 		}
 		cb( bytes );
+		*/
+		while( pos < size ) {
+			var remain = size-pos;
+			var len = ( remain > bufsize ) ? bufsize : remain;
+			//var bytes = Bytes.alloc( len );
+			var bytes : Bytes = null;
+			try {
+				bytes = input.read( len );
+				pos += len;
+				//pos += input.readBytes( bytes, 0, len );
+				//pos += len;
+			} catch( e : Dynamic ) {
+				cb( null );
+				return;
+			}
+			onProgress( bytes );
+		}
+		cb( null);
 	}
+	
+	
+	#elseif php
+	
+	
 	
 	#elseif flash
 	
@@ -168,6 +223,7 @@ class ByteStreamInput extends ByteStreamIO {
 		} else {
 			trace( "SOCKS5 negotiation complete" );
 			buf = new ByteArray();
+			//bufpos = 0;
 			socket.addEventListener( ProgressEvent.SOCKET_DATA, onSocketData );
 			__onConnect();
 		}
@@ -184,11 +240,13 @@ class ByteStreamInput extends ByteStreamIO {
 	}
 	
 	function onSocketData( e : ProgressEvent ) {
-		socket.readBytes( buf, buf.length, e.bytesLoaded );
-		__onProgress( buf.length );
-		if( buf.length == size ) {
+		var b = new ByteArray();
+		socket.readBytes( b, 0, e.bytesLoaded );
+		bufpos += b.length;
+		__onProgress( Bytes.ofData( b ) );
+		if( bufpos == size ) {
 			removeSocketListeners();
-			__onComplete( Bytes.ofData( buf ) );
+			__onComplete();
 		}
 	}
 	
@@ -200,23 +258,31 @@ class ByteStreamInput extends ByteStreamIO {
 		socket.removeEventListener( ProgressEvent.SOCKET_DATA, onSocketData );
 	}
 	
+	
 	#elseif nodejs
 	
 	function sockConnectHandler() {
 		#if JABBER_DEBUG trace( "Filetransfer socket connected ["+host+":"+port+"]" ); #end
 		new SOCKS5Out().run( socket, digest, onSOCKS5Complete );
 	}
-	
+
 	function sockDisconnectHandler() {
 		trace("sockDisconnectHandler");
 		//__onDisconnect();
 	}
-	
+
 	function sockErrorHandler() {
 		__onFail( "bytestream inut failed" );
 	}
-	
+
 	function sockDataHandler( b : Buffer ) {
+		__onProgress( Bytes.ofData(b) );
+		if( ( bufpos += b.length ) == size ) {
+			removeSocketListeners();
+			socket.end();
+			__onComplete();
+		}
+		/*
 		buf.write( b.toString( Node.BINARY ), Node.BINARY, bufpos );
 		bufpos += b.length;
 		__onProgress( bufpos );
@@ -224,21 +290,22 @@ class ByteStreamInput extends ByteStreamIO {
 			// TODO close sockets
 			__onComplete( Bytes.ofData( buf ) );
 		}
+		*/
 	}
-	
+
 	function onSOCKS5Complete( err : String ) {
 		removeSocketListeners();
 		if( err != null ) {
+			//TODO cleanup
 			__onFail( err );
 		} else {
 			trace("SOCKS5 negotiation complete "+err);
-			buf = Node.newBuffer( size );
 			bufpos = 0;
 			socket.on( Node.EVENT_STREAM_DATA, sockDataHandler );
 			__onConnect();
 		}
 	}
-	
+
 	function removeSocketListeners() {
 		socket.removeAllListeners( Node.EVENT_STREAM_CONNECT );
 		socket.removeAllListeners( Node.EVENT_STREAM_DATA );

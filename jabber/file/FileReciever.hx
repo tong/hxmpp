@@ -25,8 +25,7 @@ import xmpp.IQ;
 */
 class FileReciever {
 	
-	//public dynamic function onData( fr : FileReciever ) : Void;
-	public dynamic function onProgress( bytes : Int ) : Void;
+	public dynamic function onProgress( bytes : Bytes ) : Void;
 	public dynamic function onComplete() : Void;
 	public dynamic function onFail( info : String ) : Void;
 	
@@ -52,6 +51,11 @@ class FileReciever {
 		initiator = request.from;
 	}
 	
+	/**
+		Accept/deny the data transfer.<br/>
+		If the cached parameter is true recieved data will get cached internally.
+		Otherwise its up to the application to handle recieved data
+	*/
 	public function accept( yes : Bool ) {
 		// override me
 	}
@@ -83,12 +87,12 @@ class FileReciever {
 		// override me
 	}
 	
-	function handleTransferProgress( bytes : Int ) {
-		if( onProgress != null ) onProgress( bytes );
+	function handleTransferProgress( bytes : Bytes ) {
+		onProgress( bytes );
 	}
 	
-	function handleTransferComplete( bytes : Bytes ) {
-		this.data = bytes;
+	function handleTransferComplete() {
+		//this.data = bytes;
 		onComplete();
 	}
 	

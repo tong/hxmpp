@@ -24,21 +24,19 @@ import xmpp.filter.IQFilter;
 import xmpp.IQ;
 import xmpp.IQType;
 
-// TODO cached/uncahched mode
-
 class IBInput extends IBIO {
 	
-	public var __onComplete : Bytes->Void;
-	//public dynamic function __onData( bytes : Bytes ) : Void;
+	public var __onProgress : Bytes->Void;
+	public var __onComplete : Void->Void;
 	
 	var initiator : String;
-	var data : Bytes;
+	var size : Int;
 	var collector : PacketCollector;
 	
 	public function new( stream : jabber.Stream, initiator : String, sid : String, filesize : Int ) {
 		super( stream, sid );
 		this.initiator = initiator;
-		data = Bytes.alloc( filesize );
+		this.size = filesize;
 		bufpos = 0;
 		seq = 0;
 		active = true;
@@ -53,15 +51,16 @@ class IBInput extends IBIO {
 	
 	function handleClose( iq : IQ ) {
 		stream.removeCollector( collector );
-		if( bufpos == data.length ) {
+		if( bufpos == size ) {
 			stream.sendPacket( IQ.createResult( iq ) );
 			if( active ) {
 				active = false;
-				__onComplete( data );
+				__onComplete();
 			}
 		} else {
 			active = false;
 			__onFail( "IB datatransfer failed" );
+			//..
 		}
 	}
 	
@@ -81,18 +80,14 @@ class IBInput extends IBIO {
 		}
 		seq++;
 		var bytes = Base64.decodeBytes( ib.data );
-		data.blit( bufpos, bytes, 0, bytes.length );
 		bufpos += bytes.length;
 		stream.sendPacket( IQ.createResult( iq ) );
-		if( bufpos == data.length ) {
+		if( bufpos == size ) {
 			active = false;
-			__onComplete( data );
+			__onComplete();
+		} else {
+			__onProgress( bytes );
 		}
-		/*
-		else if( bufpos > data.length) {
-			//ERROR
-		}
-		*/
 	}
 	
 }

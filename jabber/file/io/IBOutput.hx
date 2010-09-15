@@ -28,10 +28,10 @@ import xmpp.IQ;
 class IBOutput extends IBIO {
 	
 	public var __onComplete : Void->Void;
+	public var __onProgress : Int->Void;
 	
 	var reciever : String;
 	var input : haxe.io.Input;
-	//var output : DataOutput;
 	var filesize : Int;
 	var bufsize : Int;
 	var iq : IQ;

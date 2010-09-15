@@ -66,6 +66,7 @@ class SITransfer {
 	public var methods(default,null) : Array<FileTransfer>;
 	public var filepath(default,null) : String;
 	public var filesize(default,null) : Int;
+	public var method(default,null) : FileTransfer;
 	
 	var input : haxe.io.Input;
 	var id : String;
@@ -195,11 +196,11 @@ class SITransfer {
 	}
 	
 	function initFileTransfer() {
-		var ft = methods[methodIndex];
-		ft.onProgress = handleFileTransferProgress;
-		ft.onComplete = handleFileTransferComplete;
-		ft.onFail = handleFileTransferFail;
-		ft.init( input, id, filesize );
+		method = methods[methodIndex];
+		method.onProgress = handleFileTransferProgress;
+		method.onComplete = handleFileTransferComplete;
+		method.onFail = handleFileTransferFail;
+		method.init( input, id, filesize );
 	}
 	
 	function handleFileTransferProgress( bytes : Int ) {

@@ -23,7 +23,6 @@ package jabber.file.io;
 class IBIO {
 	
 	public var __onFail : String->Void;
-	public var __onProgress : Int->Void;
 	
 	var stream : jabber.Stream;
 	var sid : String;

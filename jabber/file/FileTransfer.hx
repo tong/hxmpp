@@ -25,6 +25,7 @@ import haxe.io.Bytes;
 class FileTransfer {
 	
 	//public dynamic function onInit( ft : FileTransfer ) : Void; //TODO
+	//public dynamic function onProgress( bytes : Int ) : Void;
 	public dynamic function onProgress( bytes : Int ) : Void;
 	public dynamic function onComplete() : Void;
 	public dynamic function onFail( info : String  ) : Void;

@@ -62,7 +62,7 @@ class SOCKS5In {
 		i.readByte();
 		i.readByte();
 		if( i.readString( i.readByte() ) != digest )
-			throw "SOCKS5 digest dos not match";
+			throw "SOCKS5 digest does not match";
 		i.readInt16();
 		
 		o.write( SOCKS5.createOutgoingMessage( 0, digest ) );

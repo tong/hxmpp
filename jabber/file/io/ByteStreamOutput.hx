@@ -51,6 +51,7 @@ import air.ByteArray;
 class ByteStreamOutput extends ByteStreamIO  {
 	
 	public var __onConnect : ByteStreamOutput->Void;
+	public var __onProgress : Int->Void;
 	public var __onComplete : Void->Void;
 	
 	var socket : Socket;
@@ -162,6 +163,8 @@ class ByteStreamOutput extends ByteStreamIO  {
 				return;
 			}
 		}
+		socket.end();
+		server.close();
 		__onComplete();
 		
 		#elseif air
@@ -175,14 +178,12 @@ class ByteStreamOutput extends ByteStreamIO  {
 				socket.writeBytes( buf.getData() );
 				socket.flush();
 			} catch( e : Dynamic ) {
-				try {
-					if( socket.connected ) socket.close();
-					server.close();
-				} catch( e : Dynamic ) { #if JABBER_DEBUG trace(e); #end }
+				closeSockets();
 				__onFail( e );
 				return;
 			}
 		}
+		closeSockets();
 		__onComplete();
 		
 		#end
@@ -244,22 +245,25 @@ class ByteStreamOutput extends ByteStreamIO  {
 		var onProgress : Int->Void = Thread.readMessage( true );
 		var cb : String->Void = Thread.readMessage( true );
 		var pos = 0;
-		var err : String = null;
-		while( pos != size ) {
+		//var err : String = null;
+		while( pos < size ) {
 			var remain = size-pos;
 			var len = ( remain > bufsize ) ? bufsize : remain;
 			var buf = Bytes.alloc( len );
 			try {
 				pos += input.readBytes( buf, 0, len );
 				socket.output.write( buf );
-				onProgress( pos ); // TODO thread callback
+				socket.output.flush();
+				onProgress( pos );
 			} catch( e : Dynamic ) {
 				trace(e);
-				err = e;
-				break;
+				cb( e );
+				return;
+				//err = e;
+				//break;
 			}
 		}
-		cb( err );
+		cb( null );
 	}
 	
 	
@@ -290,19 +294,19 @@ class ByteStreamOutput extends ByteStreamIO  {
 	
 	function onSOCKS5Complete( err : String ) {
 		if( err != null ) {
-			if( socket.connected ) socket.close();
-			server.close();
+			closeSockets();
 			__onFail( "SOCKS5 failed: "+err );
 		} else {
 			__onConnect( this );
 		}
-		trace("onSOCKS5Complete "+err );
 	}
 	
-	/*TODO
 	function closeSockets() {
+		try {
+			if( socket != null && socket.connected ) socket.close();
+			if( server != null ) server.close();
+		} catch( e : Dynamic ) { #if JABBER_DEBUG trace(e); #end }
 	}
-	*/
 	
 	#end
 	
