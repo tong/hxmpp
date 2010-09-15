@@ -139,4 +139,93 @@ class SOCKS5In {
 	}
 }
 
+#elseif air
+
+#if flash
+import flash.net.Socket;
+import flash.events.Event;
+import flash.events.IOErrorEvent;
+import flash.events.ProgressEvent;
+import flash.events.SecurityErrorEvent;
+import flash.utils.ByteArray;
+import flash.utils.IDataInput;
+#elseif js
+import air.Socket;
+import air.Event;
+import air.IOErrorEvent;
+import air.ProgressEvent;
+import air.SecurityErrorEvent;
+import air.ByteArray;
+import air.IDataInput;
+#end
+
+private enum State {
+	WaitInit;
+	WaitResponse;
+}
+
+class SOCKS5In {
+	
+	var socket : Socket;
+	var digest : String;
+	var cb : String->Void;
+	var state : State;
+	var i : IDataInput;
+	
+	public function new() {}
+	
+	public function run( socket : Socket, digest : String, cb : String->Void ) {
+		this.socket = socket;
+		this.digest = digest;
+		this.cb = cb;
+		i = socket;
+		state = WaitInit;
+		socket.addEventListener( ProgressEvent.SOCKET_DATA, onData );
+		socket.addEventListener( Event.CLOSE, onError );
+		socket.addEventListener( IOErrorEvent.IO_ERROR, onError );
+		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onError );
+	}
+	
+	function onData( e : ProgressEvent ) {
+		trace("SOCKS5 "+state);
+		switch( state ) {
+		case WaitInit :
+			i.readByte(); // 0x05
+			for( _ in 0...i.readByte() ) i.readByte();
+			var b = new ByteArray();
+			b.writeByte( 0x05 );
+			b.writeByte( 0x00 );
+			socket.writeBytes( b );
+			socket.flush();
+			state = WaitResponse;
+		case WaitResponse :
+			i.readByte();
+			i.readByte();
+			i.readByte();
+			i.readByte();
+			if( i.readUTFBytes( i.readByte() ) != digest ) {
+				cb( "SOCKS5 digest does not match" );
+				return;
+			}
+			i.readShort();
+			socket.writeBytes( SOCKS5.createOutgoingMessage( 0, digest ).getData() );
+			removeSocketListeners();
+			cb( null );
+		}
+	}
+	
+	function onError( e : Event ) {
+		removeSocketListeners();
+		cb( "SOCKS5 error "+e );
+	}
+	
+	function removeSocketListeners() {
+		socket.removeEventListener( ProgressEvent.SOCKET_DATA, onData );
+		socket.removeEventListener( Event.CLOSE, onError );
+		socket.removeEventListener( IOErrorEvent.IO_ERROR, onError );
+		socket.removeEventListener( SecurityErrorEvent.SECURITY_ERROR, onError );
+	}
+	
+}
+
 #end

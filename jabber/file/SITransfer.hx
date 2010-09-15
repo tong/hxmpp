@@ -38,6 +38,16 @@ import js.Node;
 import js.FileSystem;
 import js.io.File;
 import js.io.Path;
+#elseif (air&&flash)
+import flash.filesystem.File;
+import flash.filesystem.FileMode;
+import flash.filesystem.FileStream;
+import flash.utils.ByteArray;
+#elseif (air&&js)
+import air.File;
+import air.FileMode;
+import air.FileStream;
+import air.ByteArray;
 #end
 
 /**
@@ -48,7 +58,8 @@ class SITransfer {
 	
 	public dynamic function onProgress( bytes : Int ) : Void;
 	public dynamic function onComplete() : Void;
-	public dynamic function onFail( info : String ) : Void;
+	//public dynamic function onFail( info : String ) : Void;
+	public dynamic function onFail( error : String, ?info : String ) : Void;
 	
 	public var stream(default,null) : jabber.Stream;
 	public var reciever(default,null) : String;
@@ -74,16 +85,35 @@ class SITransfer {
 		sendRequest( name, bytes.length );
 	}
 	
-	#if (neko||cpp||php||nodejs)
+	#if (neko||cpp||php||air||nodejs)
 	
 	public function sendFile( filepath : String ) {
+		
+		#if air
+		var file = File.applicationDirectory.resolvePath( filepath ); //TODO 
+		if( !file.exists )
+			throw "File not found ["+filepath+"]";
+		this.filepath = filepath;
+		filesize = file.size;
+		var fname = file.name;
+		var fs = new FileStream();
+		fs.open( file, FileMode.READ );
+		var ba = new ByteArray();
+		fs.readBytes( ba ); 
+		this.input = new haxe.io.BytesInput( Bytes.ofData( ba ) );
+		
+		#else
 		if( !FileSystem.exists( filepath ) )
 			throw "File not found ["+filepath+"]";
-		this.input = File.read( filepath, true );
 		this.filepath = filepath;
+		this.input = File.read( filepath, true );
 		var fstat = FileSystem.stat( filepath );
 		filesize = Std.int( fstat.size );
-		sendRequest( Path.withoutDirectory( filepath ), filesize );
+		var fname = Path.withoutDirectory( filepath );
+		
+		#end
+		
+		sendRequest( fname, filesize );
 	}
 	
 	#end
@@ -156,7 +186,9 @@ class SITransfer {
 			initFileTransfer();
 			
 		case error :
-			onFail( xmpp.Error.parse( iq.errors[0].toXml() ).condition );
+			//TODO hm?
+			var e = iq.errors[0];
+			onFail( e.condition, e.text );
 			
 		default : //
 		}

@@ -33,6 +33,16 @@ import php.net.Socket;
 #elseif nodejs
 import js.Node;
 typedef Socket = Stream;
+#elseif (air&&flash)
+import flash.events.ServerSocketConnectEvent;
+import flash.net.Socket;
+import flash.net.ServerSocket;
+import flash.utils.ByteArray;
+#elseif (air&&js)
+import air.ServerSocketConnectEvent;
+import air.Socket;
+import air.ServerSocket;
+import air.ByteArray;
 #end
 
 /**
@@ -43,13 +53,15 @@ class ByteStreamOutput extends ByteStreamIO  {
 	public var __onConnect : ByteStreamOutput->Void;
 	public var __onComplete : Void->Void;
 	
+	var socket : Socket;
+	var digest : String;
 	#if (neko||cpp||php)
 	var server : Socket;
 	#elseif nodejs
 	var server : Server;
+	#elseif air
+	var server : ServerSocket;
 	#end
-	var socket : Socket;
-	var digest : String;
 	
 	public function new( host : String, port : Int ) {
 		super( host, port );
@@ -102,6 +114,14 @@ class ByteStreamOutput extends ByteStreamIO  {
 		server = Node.net.createServer( onConnect );
 		server.listen( port, host );
 		
+		#elseif air
+		server = new flash.net.ServerSocket();
+		server = new ServerSocket();
+		server.bind( port, host );
+		server.addEventListener( ServerSocketConnectEvent.CONNECT, onConnect );
+		//TODO...listeners
+		server.listen( 1 );
+		
 		#end
 	}
 	
@@ -144,11 +164,32 @@ class ByteStreamOutput extends ByteStreamIO  {
 		}
 		__onComplete();
 		
+		#elseif air
+		var pos = 0;
+		while( pos != size ) {
+			var remain = size-pos;
+			var len = ( remain > bufsize ) ? bufsize : remain;
+			var buf = Bytes.alloc( len );
+			try {
+				pos += input.readBytes( buf, 0, len );
+				socket.writeBytes( buf.getData() );
+				socket.flush();
+			} catch( e : Dynamic ) {
+				try {
+					if( socket.connected ) socket.close();
+					server.close();
+				} catch( e : Dynamic ) { #if JABBER_DEBUG trace(e); #end }
+				__onFail( e );
+				return;
+			}
+		}
+		__onComplete();
+		
 		#end
 	}
 	
 	public function close() {
-		trace("TODO force close bytestream transport");
+		trace("TODO force close unused bytestream transports");
 	}
 	
 	#if (neko||cpp)
@@ -221,6 +262,7 @@ class ByteStreamOutput extends ByteStreamIO  {
 		cb( err );
 	}
 	
+	
 	#elseif nodejs
 	
 	function onConnect( s : Stream ) {
@@ -237,6 +279,30 @@ class ByteStreamOutput extends ByteStreamIO  {
 			__onConnect( this );
 		}
 	}
+	
+	
+	#elseif air
+	
+	function onConnect( e : ServerSocketConnectEvent ) {
+		socket = e.socket;
+		new SOCKS5In().run( socket, digest, onSOCKS5Complete );
+	}
+	
+	function onSOCKS5Complete( err : String ) {
+		if( err != null ) {
+			if( socket.connected ) socket.close();
+			server.close();
+			__onFail( "SOCKS5 failed: "+err );
+		} else {
+			__onConnect( this );
+		}
+		trace("onSOCKS5Complete "+err );
+	}
+	
+	/*TODO
+	function closeSockets() {
+	}
+	*/
 	
 	#end
 	
