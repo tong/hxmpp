@@ -51,13 +51,21 @@ class ErrorPacket {
 		x.addChild( c );
 		if( text != null ) {
 			var t = XMLUtil.createElement( "text", text );
+			#if flash //TODO haxe2.06 fukup
+			t.set( "_xmlns_", ns );
+			#else
 			t.set( "xmlns", ns );
+			#end
 			if( lang != null ) t.set( "lang", lang );
 			x.addChild( t );
 		}
 		if( app != null && app.condition != null && app.xmlns != null ) {
 			var a = Xml.createElement( app.condition );
+			#if flash //TODO haxe2.06 fukup
+			a.set( "_xmlns_", app.xmlns );
+			#else
 			a.set( "xmlns", app.xmlns );
+			#end
 			x.addChild( a );
 		}
 		return x;
@@ -65,14 +73,19 @@ class ErrorPacket {
 	
 	static function parseInto( p : ErrorPacket, x : Xml, xmlns : String ) {
 		for( e in x.elements() ) {
+			
+			#if flash //TODO haxe2.06 fukup
+			var ns = e.get( "_xmlns_" );
+			#else
 			var ns = e.get( "xmlns" );
+			#end
 			if( ns == null )
 				continue;
 			switch( e.nodeName ) {
 			case "text" :
 				if( ns == xmlns ) {
 					p.text = e.firstChild().nodeValue;
-					p.lang = e.get( "xml:lang" );
+					#if !flash p.lang = e.get( "xml:lang" ); #end //TODO
 				}
 			default :
 				if( ns == xmlns )
