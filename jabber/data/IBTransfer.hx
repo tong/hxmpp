@@ -15,11 +15,11 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package jabber.file;
+package jabber.data;
 
 import haxe.io.Bytes;
 import jabber.util.Base64;
-import jabber.file.io.IBOutput;
+import jabber.data.io.IBOutput;
 import xmpp.IQ;
 
 /**
@@ -28,7 +28,7 @@ import xmpp.IQ;
 	Data is broken down into smaller chunks and transported in-band over XMPP.<br/>
 	Use only as a last resort. SOCKS5 Bytestreams will almost always be preferable.
 */
-class IBTransfer extends FileTransfer {
+class IBTransfer extends DataTransfer {
 	
 	public static var defaultBufSize = 1<<12; //1<<14; //16384
 	//public static var defaultBufSize = 512;

@@ -15,11 +15,11 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package jabber.file;
+package jabber.data;
 
 import jabber.util.Base64;
 import jabber.util.SHA1;
-import jabber.file.io.ByteStreamOutput;
+import jabber.data.io.ByteStreamOutput;
 import xmpp.IQ;
 import xmpp.IQType;
 import xmpp.file.ByteStreamHost;
@@ -28,7 +28,7 @@ import xmpp.file.ByteStreamHost;
 	<a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a><br/>
 	Outgoing bytestream file transfer.
 */
-class ByteStreamTransfer extends FileTransfer {
+class ByteStreamTransfer extends DataTransfer {
 	
 	public static var defaultBufSize = 1<<12; // 4096
 	

@@ -15,15 +15,15 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package jabber.file;
+package jabber.data;
 
 import haxe.io.Bytes;
 import xmpp.IQ;
 
 /**
-	Abstract, incoming file transfer handler.
+	Abstract, incoming data transfer handler.
 */
-class FileReciever {
+class DataReciever {
 	
 	public dynamic function onProgress( bytes : Bytes ) : Void;
 	public dynamic function onComplete() : Void;

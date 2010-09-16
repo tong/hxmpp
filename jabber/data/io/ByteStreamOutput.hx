@@ -15,7 +15,7 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package jabber.file.io;
+package jabber.data.io;
 
 import haxe.io.Bytes;
 import jabber.util.SOCKS5In;
@@ -27,9 +27,6 @@ import neko.vm.Thread;
 import cpp.net.Host;
 import cpp.net.Socket;
 import cpp.vm.Thread;
-#elseif php
-import php.net.Host;
-import php.net.Socket;
 #elseif nodejs
 import js.Node;
 typedef Socket = Stream;

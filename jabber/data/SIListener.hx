@@ -15,7 +15,7 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package jabber.file;
+package jabber.data;
 
 import haxe.io.Bytes;
 import xmpp.IQ;
@@ -28,13 +28,13 @@ class SIListener {
 	public dynamic function onFail( info : String ) : Void;
 	
 	public var stream(default,null) : jabber.Stream;
-	public var methods(default,null) : Array<FileReciever>;
-	public var handler : FileReciever->Void;
+	public var methods(default,null) : Array<DataReciever>;
+	public var handler : DataReciever->Void;
 	
 	//var file : xmpp.file.File;
 	//var methodIndex : Int;
 	
-	public function new( stream : jabber.Stream, handler : FileReciever->Void ) {
+	public function new( stream : jabber.Stream, handler : DataReciever->Void ) {
 		this.stream = stream;
 		this.handler = handler;
 		methods = new Array();
@@ -75,7 +75,7 @@ class SIListener {
 			onFail( "invalid file transfer request" );
 			return;
 		}
-		var acceptedMethods = new Array<FileReciever>();
+		var acceptedMethods = new Array<DataReciever>();
 		for( m in methods ) {
 			for( _m in _methods ) {
 				if( m.xmlns == _m )

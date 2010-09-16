@@ -15,7 +15,7 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package jabber.file;
+package jabber.data;
 
 import haxe.io.Bytes;
 import jabber.util.Base64;
@@ -63,10 +63,10 @@ class SITransfer {
 	
 	public var stream(default,null) : jabber.Stream;
 	public var reciever(default,null) : String;
-	public var methods(default,null) : Array<FileTransfer>;
+	public var methods(default,null) : Array<DataTransfer>;
 	public var filepath(default,null) : String;
 	public var filesize(default,null) : Int;
-	public var method(default,null) : FileTransfer;
+	public var method(default,null) : DataTransfer;
 	
 	var input : haxe.io.Input;
 	var id : String;
@@ -169,7 +169,7 @@ class SITransfer {
 					}
 				}
 			}
-			var acceptedMethods = new Array<FileTransfer>();
+			var acceptedMethods = new Array<DataTransfer>();
 			for( m in methods ) {
 				for( _m in _methods ) {
 					if( _m == m.xmlns ) {

@@ -15,14 +15,14 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package jabber.file;
+package jabber.data;
 
 import haxe.io.Bytes;
 
 /**
-	Abstract, outgoing file transfer negotiator.
+	Abstract, outgoing data transfer negotiator.
 */
-class FileTransfer {
+class DataTransfer {
 	
 	//public dynamic function onInit( ft : FileTransfer ) : Void; //TODO
 	//public dynamic function onProgress( bytes : Int ) : Void;

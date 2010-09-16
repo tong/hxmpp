@@ -15,10 +15,10 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package jabber.file;
+package jabber.data;
 
 import haxe.io.Bytes;
-import jabber.file.io.ByteStreamInput;
+import jabber.data.io.ByteStreamInput;
 import jabber.util.SHA1;
 import xmpp.IQ;
 
@@ -26,7 +26,7 @@ import xmpp.IQ;
 	<a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams.</a><br/>
 	Incoming bytestream file transfer.
 */
-class ByteStreamReciever extends FileReciever {
+class ByteStreamReciever extends DataReciever {
 	
 	var bytestream : xmpp.file.ByteStream;
 	var bytestreamIndex : Int;

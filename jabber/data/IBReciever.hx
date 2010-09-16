@@ -15,17 +15,17 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package jabber.file;
+package jabber.data;
 
 import haxe.io.Bytes;
-import jabber.file.io.IBInput;
+import jabber.data.io.IBInput;
 import xmpp.IQ;
 
 /**
 	<a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a><br/>
 	Incoming inband file transfer handler.
 */
-class IBReciever extends FileReciever {
+class IBReciever extends DataReciever {
 	
 	var input : IBInput;
 	
