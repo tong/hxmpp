@@ -5,9 +5,10 @@ CC = gcc
 CFLAGS = -shared -O2 -Wall
 NDLL = ../ndll/$(SYS)/hxmpp.ndll
 INC = -I/usr/local/include -I/usr/lib/neko/include
-OBJS = sha1.o #util.o
+SRCS = sha1.c
+OBJS = $(SRCS:.c=.o)
 
-$(NDLL) : $(OBJS)
+$(NDLL) : $(SRCS) $(OBJS) Makefile
 	$(CC) $(CFLAGS) -o $@ $(INC) $(OBJS)
 
 clean :
