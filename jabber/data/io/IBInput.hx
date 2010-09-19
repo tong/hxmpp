@@ -59,7 +59,7 @@ class IBInput extends IBIO {
 			}
 		} else {
 			active = false;
-			__onFail( "IB datatransfer failed" );
+			__onFail( "ib datatransfer failed" );
 			//..
 		}
 	}
@@ -82,11 +82,10 @@ class IBInput extends IBIO {
 		var bytes = Base64.decodeBytes( ib.data );
 		bufpos += bytes.length;
 		stream.sendPacket( IQ.createResult( iq ) );
+		__onProgress( bytes );
 		if( bufpos == size ) {
 			active = false;
 			__onComplete();
-		} else {
-			__onProgress( bytes );
 		}
 	}
 	

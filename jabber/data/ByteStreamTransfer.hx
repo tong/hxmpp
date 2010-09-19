@@ -45,12 +45,11 @@ class ByteStreamTransfer extends DataTransfer {
 		this.hosts = ( hosts != null ) ? hosts : new Array();
 	}
 	
-	public override function init( input : haxe.io.Input, sid : String, filesize : Int ) {
+	//public override function init( input : haxe.io.Input, sid : String, filesize : Int ) {
+	public override function init( input : haxe.io.Input, sid : String, file : xmpp.file.File ) {
 		if( hosts.length == 0 )
 			throw "No streamhosts specified";
-		this.input = input;
-		this.sid = sid;
-		this.filesize = filesize;
+		super.init( input, sid, file );
 		var digest = SHA1.encode( sid+stream.jid.toString()+reciever );
 		transports = new Array();
 		for( h in hosts ) {
@@ -71,7 +70,8 @@ class ByteStreamTransfer extends DataTransfer {
 	function handleRequestResponse( iq : IQ ) {
 		switch( iq.type ) {
 		case result :
-			transport.send( input, filesize, bufsize );
+			//onInit();
+			transport.send( input, file.size, bufsize );
 		case error :
 			var e = iq.errors[0];
 			onFail( e.condition );
@@ -86,8 +86,11 @@ class ByteStreamTransfer extends DataTransfer {
 		for( t in transports ) { if( t != transport ) t.close(); }
 	}
 	
+	/*
 	function handleTransportFail( info : String ) {
 		onFail( info );
+		//TODO
 	}
+	*/
 	
 }

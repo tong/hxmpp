@@ -17,18 +17,28 @@
 */
 package xmpp.file;
 
+private typedef Range = {
+	var offset : Null<Int>;
+	var length : Null<Int>;
+}
+
 class File {
 	
 	public var name : String;
 	public var size : Int;
 	public var date : String;
 	public var hash : String;
+	public var desc : String;
+	public var range : Range;
 	
-	public function new( name : String, size : Int, ?date : String, ?hash : String ) {
+	public function new( name : String, size : Int,
+						 ?date : String, ?hash : String, ?desc : String, ?range : Range ) {
 		this.name = name;
 		this.size = size;
 		this.date = date;
 		this.hash = hash;
+		this.desc = desc;
+		this.range = range;
 	}
 
 	public function toXml() : Xml {
@@ -38,11 +48,29 @@ class File {
 		x.set( "size", Std.string( size ) );
 		if( date != null ) x.set( "date", date );
 		if( hash != null ) x.set( "hash", hash );
+		if( desc != null ) x.addChild( xmpp.XMLUtil.createElement( "desc", desc ) );
+		if( range != null ) {
+			var r = Xml.createElement( "range" );
+			if( range.offset != null ) r.set( "offset", Std.string( range.offset ) );
+			if( range.length != null ) r.set( "length", Std.string( range.length ) );
+			x.addChild( r );
+		}
 		return x;
 	}
 	
 	public static function parse( x : Xml ) : File {
-		return new File( x.get( "name" ), Std.parseInt( x.get( "size" ) ), x.get( "date" ), x.get( "hash" ) );
+		var desc : String = null;
+		var range : Range = null;
+		for( e in x.elements() ) {
+			switch( e.nodeName ) {
+			case "desc" : desc = e.firstChild().nodeValue;
+			case "range" :
+				range = { offset : null, length : null };
+				if( e.exists( "offset" ) ) range.offset = Std.parseInt( e.get( "offset" ) );
+				if( e.exists( "length" ) ) range.length = Std.parseInt( e.get( "length" ) );
+			}
+		}
+		return new File( x.get( "name" ), Std.parseInt( x.get( "size" ) ), x.get( "date" ), x.get( "hash" ), desc, range );
 	}
 	
 }

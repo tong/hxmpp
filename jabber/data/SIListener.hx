@@ -21,7 +21,8 @@ import haxe.io.Bytes;
 import xmpp.IQ;
 
 /**
-	Listens for incoming file transfer requests.
+	<a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a><br/>
+	Listens/Negotiates incoming data transfer requests.
 */
 class SIListener {
 	

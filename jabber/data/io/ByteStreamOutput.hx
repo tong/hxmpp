@@ -190,6 +190,7 @@ class ByteStreamOutput extends ByteStreamIO  {
 		trace("TODO force close unused bytestream transports");
 	}
 	
+	
 	#if (neko||cpp)
 	
 	function callbackConnect( err : String ) {
@@ -206,8 +207,8 @@ class ByteStreamOutput extends ByteStreamIO  {
 	}
 	
 	function closeSockets() {
-		try socket.close() catch( e : Dynamic ) { #if JABBER_DEBUG trace(e); #end }
-		try server.close() catch( e : Dynamic ) { #if JABBER_DEBUG trace(e); #end }
+		if( socket != null ) try socket.close() catch( e : Dynamic ) { #if JABBER_DEBUG trace(e); #end }
+		if( server != null ) try server.close() catch( e : Dynamic ) { #if JABBER_DEBUG trace(e); #end }
 	}
 	
 	function t_wait() {
@@ -219,7 +220,23 @@ class ByteStreamOutput extends ByteStreamIO  {
 		var c : Socket = null;
 		c = server.accept();
 		main.sendMessage( c );
-		/* //TODO
+		
+		// /TODO websocket handshake
+		/*
+		try {
+			var i = c.input.readByte(); // must be 0x05 for SOCKS5
+			trace( i );
+			if( i == 71 ) {
+				if( jabber.util.WebSocketHandshake.run( c ) ) {
+					trace("OKOK websocket handshaked");
+				}
+			}
+		} catch( e : Dynamic ) {
+			trace( e );
+		}
+		*/
+		
+		/* //TODO flashpolicy
 		try {
 			var r = c.input.read( 23 ).toString();
 			jabber.util.FlashPolicy.allow( r, c, ip, port );
@@ -268,8 +285,20 @@ class ByteStreamOutput extends ByteStreamIO  {
 	
 	function onConnect( s : Stream ) {
 		socket = s;
+		//socket.on( Node.EVENT_STREAM_DATA, onData );
 		new SOCKS5In().run( socket, digest, onSOCKS5Complete );
 	}
+	
+	/*
+	function onData( buf : Buffer ) {
+		switch( buf[0] ) {
+		case 71 :
+			jabber.util.WebSocketHandshake.run( socket, buf );
+		case 5 :
+			new SOCKS5In().run( socket, digest, onSOCKS5Complete );
+		}
+	}
+	*/
 	
 	function onSOCKS5Complete( err : String ) {
 		if( err != null ) {

@@ -37,6 +37,9 @@ import flash.events.SecurityErrorEvent;
 import flash.events.ProgressEvent;
 import flash.net.Socket;
 import flash.utils.ByteArray;
+#elseif (js&&!nodejs)
+import WebSocket;
+private typedef Socket = WebSocket;
 #elseif nodejs
 import js.Node;
 private typedef Socket = Stream;
@@ -140,6 +143,16 @@ class ByteStreamInput extends ByteStreamIO {
 		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onSocketError );
 		socket.connect( host, port );
 		
+		#elseif js
+		if( untyped js.Lib.window.WebSocket == null ) {
+			__onFail( "No websocket support" );
+			return;
+		}
+		socket = new Socket( "ws"+"://"+host+":"+port );
+		socket.onopen = onConnect;
+		socket.onclose = onClose;
+		socket.onerror = onError;
+		
 		#elseif nodejs
 		this.digest = digest;
 		this.size = size;
@@ -205,7 +218,22 @@ class ByteStreamInput extends ByteStreamIO {
 	
 	
 	#elseif php
+	//#
 	
+	
+	#elseif (js&&!nodejs)
+	
+	function onConnect() {
+		trace("onConnectonConnectonConnectonConnect");
+	}
+	
+	function onClose() {
+		trace("onClose");
+	}
+	
+	function onError() {
+		trace("onError");
+	}
 	
 	
 	#elseif flash
