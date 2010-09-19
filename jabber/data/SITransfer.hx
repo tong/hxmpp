@@ -50,6 +50,8 @@ import air.FileStream;
 import air.ByteArray;
 #end
 
+// TODO (range)
+
 /**
 	<a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a><br/>
 	Outgoing file transfer negotiator.
@@ -58,14 +60,13 @@ class SITransfer {
 	
 	public dynamic function onProgress( bytes : Int ) : Void;
 	public dynamic function onComplete() : Void;
-	//public dynamic function onFail( info : String ) : Void;
 	public dynamic function onFail( error : String, ?info : String ) : Void;
 	
 	public var stream(default,null) : jabber.Stream;
 	public var reciever(default,null) : String;
 	public var methods(default,null) : Array<DataTransfer>;
 	public var filepath(default,null) : String;
-	public var filesize(default,null) : Int;
+	public var file(default,null) : xmpp.file.File;
 	public var method(default,null) : DataTransfer;
 	
 	var input : haxe.io.Input;
@@ -78,27 +79,29 @@ class SITransfer {
 		methods = new Array();
 	}
 	
-	// TODO description, hash, date, (range)
-	
-	public function sendData( bytes : Bytes, name : String ) {
+	/**
+	*/
+	public function sendData( bytes : Bytes, name : String, ?desc : String, ?date : String ) {
 		this.input = new haxe.io.BytesInput( bytes );
-		this.filesize = bytes.length;
-		sendRequest( name, bytes.length );
+		sendRequest( name, bytes.length, date, jabber.util.MD5.encode( bytes.toString() ), desc );
 	}
 	
-	#if (neko||cpp||php||air||nodejs)
+	#if (neko||cpp||air||nodejs)
 	
-	public function sendFile( filepath : String ) {
+	/**
+	*/
+	public function sendFile( filepath : String, ?desc : String, ?hash : String ) {
 		
 		#if air
-		var file = File.applicationDirectory.resolvePath( filepath ); //TODO 
-		if( !file.exists )
+		var f = File.applicationDirectory.resolvePath( filepath ); //TODO 
+		if( !f.exists )
 			throw "File not found ["+filepath+"]";
 		this.filepath = filepath;
-		filesize = file.size;
-		var fname = file.name;
+		var fname = f.name;
+		var fsize = f.size;
+		var fdate = f.modificationDate.toString();
 		var fs = new FileStream();
-		fs.open( file, FileMode.READ );
+		fs.open( f, FileMode.READ );
 		var ba = new ByteArray();
 		fs.readBytes( ba ); 
 		this.input = new haxe.io.BytesInput( Bytes.ofData( ba ) );
@@ -107,27 +110,29 @@ class SITransfer {
 		if( !FileSystem.exists( filepath ) )
 			throw "File not found ["+filepath+"]";
 		this.filepath = filepath;
-		this.input = File.read( filepath, true );
 		var fstat = FileSystem.stat( filepath );
-		filesize = Std.int( fstat.size );
 		var fname = Path.withoutDirectory( filepath );
+		var fsize = Std.int( fstat.size );
+		var fdate = fstat.mtime.toString();
+		this.input = File.read( filepath, true );
 		
 		#end
 		
-		sendRequest( fname, filesize );
+		sendRequest( fname, fsize, fdate, hash, desc );
 	}
 	
 	#end
 	
-	function sendRequest( name : String, size : Int ) {
+	function sendRequest( name : String, size : Int, ?date : String, ?hash : String, ?desc : String ) {
+		
 		if( methods.length == 0 )
 			throw "No file transfer methods registered";
 		id = Base64.random( 16 );
+		this.file = new xmpp.file.File( name, size, date, hash, desc );
+		
 		var iq = new IQ( IQType.set );
 		iq.to = reciever;
 		var si = new xmpp.file.SI( id, "text/plain", xmpp.file.SI.XMLNS_PROFILE ); //TODO mime-type
-		var file = new xmpp.file.File( name, size );
-		
 		si.any.push( file.toXml() );
 		var form = new xmpp.DataForm( xmpp.dataform.FormType.form );
 		var form_f = new xmpp.dataform.Field( xmpp.dataform.FieldType.list_single );
@@ -197,18 +202,10 @@ class SITransfer {
 	
 	function initFileTransfer() {
 		method = methods[methodIndex];
-		method.onProgress = handleFileTransferProgress;
-		method.onComplete = handleFileTransferComplete;
+		method.onProgress = onProgress;
+		method.onComplete = onComplete;
 		method.onFail = handleFileTransferFail;
-		method.init( input, id, filesize );
-	}
-	
-	function handleFileTransferProgress( bytes : Int ) {
-		if( onProgress != null ) onProgress( bytes );
-	}
-	
-	function handleFileTransferComplete() {
-		onComplete();
+		method.init( input, id, file );
 	}
 	
 	function handleFileTransferFail( info ) {

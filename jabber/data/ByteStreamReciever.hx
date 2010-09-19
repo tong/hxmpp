@@ -59,8 +59,8 @@ class ByteStreamReciever extends DataReciever {
 		host = bytestream.streamhosts[bytestreamIndex];
 		input = new ByteStreamInput( host.host, host.port );
 		input.__onConnect = handleTransferConnect;
-		input.__onProgress = handleTransferProgress;
-		input.__onComplete = handleTransferComplete;
+		input.__onProgress = onProgress;
+		input.__onComplete = onComplete;
 		input.__onFail = handleTransferFail;
 		//input.__onConnectFail = handleTransferConnectFail; //TODO?
 		input.connect( digest, file.size );

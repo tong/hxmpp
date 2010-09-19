@@ -45,7 +45,6 @@ class ByteStreamTransfer extends DataTransfer {
 		this.hosts = ( hosts != null ) ? hosts : new Array();
 	}
 	
-	//public override function init( input : haxe.io.Input, sid : String, filesize : Int ) {
 	public override function init( input : haxe.io.Input, sid : String, file : xmpp.file.File ) {
 		if( hosts.length == 0 )
 			throw "No streamhosts specified";

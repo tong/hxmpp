@@ -34,24 +34,17 @@ class IBReciever extends DataReciever {
 	}
 	
 	public override function accept( yes : Bool ) {
-		if( yes ) {
-			sendAccept( xmlns, "open" );
-		} else {
-			sendDeny();
-		}
+		if( yes ) sendAccept( xmlns, "open" );
+		else sendDeny();
 	}
 	
 	override function handleRequest( iq : IQ ) {
 		input = new IBInput( stream, iq.from, sid, file.size );
-		input.__onFail = handleTransferFail;
+		input.__onFail = onFail;
 		//input.__onConnect = handleTransferConnect; //TODO
 		input.__onProgress = onProgress;
 		input.__onComplete = onComplete;
 		stream.sendPacket( IQ.createResult( iq ) );
-	}
-	
-	function handleTransferFail( info : String ) {
-		//TODO
 	}
 	
 }

@@ -33,7 +33,6 @@ class DataReciever {
 	public var xmlns(default,null) : String;
 	public var initiator(default,null) : String;
 	public var file(default,null) : xmpp.file.File;
-	public var data(default,null) : Bytes; // TODO cache/uncached mode
 	
 	var request : IQ;
 	var sid : String;
@@ -52,9 +51,7 @@ class DataReciever {
 	}
 	
 	/**
-		Accept/deny the data transfer.<br/>
-		If the cached parameter is true recieved data will get cached internally.
-		Otherwise its up to the application to handle recieved data
+		Accept/deny the data transfer
 	*/
 	public function accept( yes : Bool ) {
 		// override me
@@ -87,6 +84,7 @@ class DataReciever {
 		// override me
 	}
 	
+	/*
 	function handleTransferProgress( bytes : Bytes ) {
 		onProgress( bytes );
 	}
@@ -95,5 +93,6 @@ class DataReciever {
 		//this.data = bytes;
 		onComplete();
 	}
+	*/
 	
 }

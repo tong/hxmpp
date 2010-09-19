@@ -17,15 +17,12 @@
 */
 package jabber.data;
 
-import haxe.io.Bytes;
-
 /**
-	Abstract, outgoing data transfer negotiator.
+	Abstract, outgoing data transfer.
 */
 class DataTransfer {
 	
 	//public dynamic function onInit( ft : FileTransfer ) : Void; //TODO
-	//public dynamic function onProgress( bytes : Int ) : Void;
 	public dynamic function onProgress( bytes : Int ) : Void;
 	public dynamic function onComplete() : Void;
 	public dynamic function onFail( info : String  ) : Void;
@@ -34,7 +31,7 @@ class DataTransfer {
 	public var xmlns(default,null) : String;
 	public var reciever(default,null) : String;
 	public var bufsize(default,null) : Int;
-	public var filesize(default,null) : Int;
+	public var file(default,null) : xmpp.file.File;
 	
 	var input : haxe.io.Input;
 	var sid : String;
@@ -46,18 +43,15 @@ class DataTransfer {
 		this.bufsize = bufsize;
 	}
 	
-	/*
-	public function __sendData( bytes : Bytes, sid : String ) {
-		throw "Abstract method: __sendData";
+	public function init( input : haxe.io.Input, sid : String, file : xmpp.file.File ) {
+		this.input = input;
+		this.sid = sid;
+		this.file = file;
+		// override me
 	}
-	*/
 	
-	public function init( input : haxe.io.Input, sid : String, fileSize : Int ) {
-		throw "Abstract method";
+	function handleTransportFail( info : String ) {
+		onFail( info );
 	}
-	/*
-	public function __init( output : DataOutput, sid : String, fileSize : Int ) {
-		throw "Abstract method";
-	}
-	*/
+	
 }
