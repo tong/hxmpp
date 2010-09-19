@@ -21,10 +21,11 @@ class ByteStreamHost {
 	
 	public var jid : String;
 	public var host : String;
-	public var zeroconf : String;
 	public var port : Null<Int>;
+	public var zeroconf : String;
 	
-	public function new( jid : String , ?host : String, ?port : Null<Int>, ?zeroconf : String ) {
+	public function new( jid : String , host : String,
+						 ?port : Null<Int>, ?zeroconf : String ) {
 		this.jid = jid;
 		this.host = host;
 		this.port = port;
@@ -34,17 +35,16 @@ class ByteStreamHost {
 	public function toXml() : Xml {
 		var x = Xml.createElement( "streamhost" );
 		x.set( "jid", jid );
-		if( host != null ) x.set( "host", host );
+		x.set( "host", host );
 		if( port != null ) x.set( "port", Std.string( port ) );
 		if( zeroconf != null ) x.set( "zeroconf", zeroconf );
 		return x;
 	}
 	
 	public static function parse( x : Xml ) : ByteStreamHost {
-		var port = x.get( "port" );
 		return new ByteStreamHost( x.get( "jid" ),
 								   x.get( "host" ),
-								   ( port != null ) ? Std.parseInt( port ) : null,
+								   ( x.exists( "port" ) ) ? Std.parseInt( x.get( "port" ) ) : null,
 								   x.get( "zeroconf" ) );
 	}
 	

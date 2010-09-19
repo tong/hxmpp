@@ -22,51 +22,47 @@ class ByteStream {
 	public static var XMLNS = xmpp.Packet.PROTOCOL+"/bytestreams";
 	
 	public var sid : String;
-	public var mode : String; //ByteStreamMode;
+	public var mode : ByteStreamMode;
 	public var streamhosts : Array<ByteStreamHost>;
 	public var streamhost_used : String;
 	public var activate : String;
 	
-	public function new( ?sid : String, ?mode : String = "tcp", ?streamhosts : Array<ByteStreamHost> ) {
+	public function new( sid : String,
+						 ?streamhosts : Array<ByteStreamHost>, ?mode : ByteStreamMode ) {
 		this.sid = sid;
-		this.mode = mode;
 		this.streamhosts = ( streamhosts != null ) ? streamhosts : new Array();
+		this.mode = mode;
 	}
 	
 	public function toXml() : Xml {
 		var x = xmpp.IQ.createQueryXml( XMLNS );
-		if( sid != null ) x.set( "sid", sid );
-		if( mode != null ) x.set( "mode", mode );
-		for( sh in streamhosts )
-			x.addChild( sh.toXml() );
+		x.set( "sid", sid );
+		for( h in streamhosts ) x.addChild( h.toXml() );
 		if( streamhost_used != null ) {
 			var e = Xml.createElement( "streamhost-used" );
 			e.set( "jid", streamhost_used );
 			x.addChild( e );
 		}
-		if( activate != null ) {
-			var e = Xml.createElement( "activate" );
-			e.set( "jid", activate );
-			x.addChild( e );
-		}
-//		x.addChild( Xml.parse('<fast xmlns="http://affinix.com/jabber/stream"/>') );
+		if( mode != null ) x.set( "mode", Type.enumConstructor( mode ) );
+		if( activate != null ) x.addChild( xmpp.XMLUtil.createElement( "activate", activate ) );
 		return x;
 	}
 	
 	public static function parse( x : Xml ) : ByteStream {
-		var b = new ByteStream();
-		b.sid = x.get( "sid" );
+		var b = new ByteStream( x.get( "sid" ) );
+		if( x.exists( "mode" ) ) b.mode = Type.createEnum( ByteStreamMode, x.get( "mode" ) );
 		for( e in x.elements() ) {
 			switch( e.nodeName ) {
-			case "streamhost" :
-				b.streamhosts.push( ByteStreamHost.parse( e ) );
 			case "streamhost-used" :
 				b.streamhost_used = e.get( "jid" );
 				break;
+			case "activate" :
+				b.activate = e.firstChild().nodeValue;
+				break;
+			case "streamhost" :
+				b.streamhosts.push( ByteStreamHost.parse( e ) );
 			}
 		}
-		// TODO.....
-		//..........
 		return b;
 	}
 	

@@ -45,10 +45,9 @@ class SI {
 	}
 	
 	public static function parse( x : Xml ) : SI {
-		var si = new SI( x.get( "id" ), x.get( "mime-type" ), x.get( "profile" ) );
-		for( e in x.elements() )
-			si.any.push( e );
-		return si;
+		var s = new SI( x.get( "id" ), x.get( "mime-type" ), x.get( "profile" ) );
+		for( e in x.elements() ) s.any.push( e );
+		return s;
 	}
 	
 }
