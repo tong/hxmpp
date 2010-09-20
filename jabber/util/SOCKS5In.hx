@@ -48,7 +48,8 @@ class SOCKS5In {
 		var i = socket.input;
 		var o = socket.output;
 		
-		i.readByte(); // 0x05
+		if( i.readByte() != 0x05 ) // 0x05
+			throw "invalid SOCKS5";
 		for( _ in 0...i.readByte() )
 			i.readByte();
 		

@@ -53,5 +53,5 @@ class DataTransfer {
 	function handleTransportFail( info : String ) {
 		onFail( info );
 	}
-	
+
 }

@@ -62,7 +62,7 @@ class ByteStreamTransfer extends DataTransfer {
 		}
 		var iq = new IQ( IQType.set );
 		iq.to = reciever;
-		iq.x = new xmpp.file.ByteStream( sid, null, hosts );
+		iq.x = new xmpp.file.ByteStream( sid, hosts );
 		stream.sendIQ( iq, handleRequestResponse );
 	}
 	

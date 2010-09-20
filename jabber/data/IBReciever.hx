@@ -33,13 +33,19 @@ class IBReciever extends DataReciever {
 		super( stream, xmpp.file.IB.XMLNS );
 	}
 	
-	public override function accept( yes : Bool ) {
-		if( yes ) sendAccept( xmlns, "open" );
-		else sendDeny();
+	public override function accept( yes : Bool, ?range : xmpp.file.Range ) {
+		super._accept( yes, "open", range );
 	}
 	
 	override function handleRequest( iq : IQ ) {
-		input = new IBInput( stream, iq.from, sid, file.size );
+		
+		var size = file.size;
+		if( range != null ) {
+			if( range.length != null ) size = range.length;
+			else if( range.offset != null ) size -= range.offset;
+		}
+		
+		input = new IBInput( stream, iq.from, sid, size );
 		input.__onFail = onFail;
 		//input.__onConnect = handleTransferConnect; //TODO
 		input.__onProgress = onProgress;

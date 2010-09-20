@@ -39,12 +39,8 @@ class ByteStreamReciever extends DataReciever {
 		super( stream, xmpp.file.ByteStream.XMLNS );
 	}
 	
-	public override function accept( yes : Bool) {
-		if( yes ) {
-			sendAccept( xmlns, "query" );
-		} else {
-			sendDeny();
-		}
+	public override function accept( yes : Bool, ?range : xmpp.file.Range ) {
+		super._accept( yes, "query", range );
 	}
 	
 	override function handleRequest( iq : IQ ) {
@@ -63,7 +59,12 @@ class ByteStreamReciever extends DataReciever {
 		input.__onComplete = onComplete;
 		input.__onFail = handleTransferFail;
 		//input.__onConnectFail = handleTransferConnectFail; //TODO?
-		input.connect( digest, file.size );
+		var size = file.size;
+		if( range != null ) {
+			if( range.length != null ) size = range.length;
+			else if( range.offset != null ) size -= range.offset;
+		}
+		input.connect( digest, size );
 	}
 	
 	function handleTransferConnect() {
@@ -71,7 +72,7 @@ class ByteStreamReciever extends DataReciever {
 		trace( "Bytestream connected ["+host.host+":"+host.port+"]" );
 		#end
 		var r = IQ.createResult( iq );
-		var bs = new xmpp.file.ByteStream();
+		var bs = new xmpp.file.ByteStream( sid );
 		bs.streamhost_used = host.jid;
 		r.x = bs;
 		stream.sendPacket( r );

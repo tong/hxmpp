@@ -50,8 +50,6 @@ import air.FileStream;
 import air.ByteArray;
 #end
 
-// TODO (range)
-
 /**
 	<a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a><br/>
 	Outgoing file transfer negotiator.
@@ -81,7 +79,7 @@ class SITransfer {
 	
 	/**
 	*/
-	public function sendData( bytes : Bytes, name : String, ?desc : String, ?date : String ) {
+	public function sendData( bytes : Bytes, name : String, ?desc : String, ?date : String, ?range : Bool ) {
 		this.input = new haxe.io.BytesInput( bytes );
 		sendRequest( name, bytes.length, date, jabber.util.MD5.encode( bytes.toString() ), desc );
 	}
@@ -90,7 +88,7 @@ class SITransfer {
 	
 	/**
 	*/
-	public function sendFile( filepath : String, ?desc : String, ?hash : String ) {
+	public function sendFile( filepath : String, ?desc : String, ?hash : String, ?range : Bool ) {
 		
 		#if air
 		var f = File.applicationDirectory.resolvePath( filepath ); //TODO 
@@ -118,17 +116,19 @@ class SITransfer {
 		
 		#end
 		
-		sendRequest( fname, fsize, fdate, hash, desc );
+		sendRequest( fname, fsize, fdate, hash, desc, range );
 	}
 	
 	#end
 	
-	function sendRequest( name : String, size : Int, ?date : String, ?hash : String, ?desc : String ) {
+	function sendRequest( name : String, size : Int,
+						  ?date : String, ?hash : String, ?desc : String, ?range : Bool = false ) {
 		
 		if( methods.length == 0 )
 			throw "No file transfer methods registered";
 		id = Base64.random( 16 );
-		this.file = new xmpp.file.File( name, size, date, hash, desc );
+		file = new xmpp.file.File( name, size, date, hash, desc );
+		if( range ) file.range = { offset : null, length : null };
 		
 		var iq = new IQ( IQType.set );
 		iq.to = reciever;
@@ -171,6 +171,16 @@ class SITransfer {
 							}
 						default :
 						}
+					}
+				} else if( e.nodeName == "file" ) {
+					var f = xmpp.file.File.parse( e );
+					file.range = f.range;
+					if( file.range != null ) {
+						if( file.range.offset != null ) {
+							input.read( file.range.offset );
+							file.size -= file.range.offset;
+						}
+						if( file.range.length != null ) file.size = file.range.length;
 					}
 				}
 			}

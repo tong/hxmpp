@@ -32,7 +32,7 @@ class IBOutput extends IBIO {
 	
 	var reciever : String;
 	var input : haxe.io.Input;
-	var filesize : Int;
+	var size : Int;
 	var bufsize : Int;
 	var iq : IQ;
 	
@@ -41,9 +41,9 @@ class IBOutput extends IBIO {
 		this.reciever = reciever;
 	}
 	
-	public function send( input : haxe.io.Input, filesize : Int, bufsize : Int ) {
+	public function send( input : haxe.io.Input, size : Int, bufsize : Int ) {
 		this.input = input;
-		this.filesize = filesize;
+		this.size = size;
 		this.bufsize = bufsize;
 		stream.collect( [cast new xmpp.filter.PacketFromFilter( reciever ),
 						 cast new xmpp.filter.IQFilter( xmpp.file.IB.XMLNS, "close", xmpp.IQType.set )],
@@ -54,7 +54,7 @@ class IBOutput extends IBIO {
 	}
 	
 	function handleIBClose( iq : IQ ) {
-		if( active && bufpos == filesize ) {
+		if( active && bufpos == size ) {
 			stream.sendPacket( IQ.createResult( iq ) );
 			active = false;
 			__onComplete();
@@ -67,7 +67,7 @@ class IBOutput extends IBIO {
 	
 	function sendNextPacket() {
 		iq.id = stream.nextID()+"_ib_"+seq;
-		var remain = filesize-bufpos;
+		var remain = size-bufpos;
 		var len = ( remain > bufsize ) ? bufsize : remain;
 		var buf = Bytes.alloc( len );
 		bufpos += input.readBytes( buf, 0, len );
@@ -79,7 +79,7 @@ class IBOutput extends IBIO {
 	function handleChunkResponse( iq : IQ ) {
 		switch( iq.type ) {
 		case result :
-			if( bufpos < filesize ) {
+			if( bufpos < size ) {
 				seq++;
 				sendNextPacket();
 			} else {

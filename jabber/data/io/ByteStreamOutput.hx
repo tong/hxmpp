@@ -51,6 +51,7 @@ class ByteStreamOutput extends ByteStreamIO  {
 	public var __onProgress : Int->Void;
 	public var __onComplete : Void->Void;
 	
+	var range : xmpp.file.Range;
 	var socket : Socket;
 	var digest : String;
 	#if (neko||cpp||php)
@@ -124,7 +125,7 @@ class ByteStreamOutput extends ByteStreamIO  {
 	}
 	
 	public function send( input : haxe.io.Input, size : Int, bufsize : Int ) {
-		
+
 		#if JABBER_DEBUG
 		trace( "Transfering file [size:"+size+",bufsize:"+bufsize+"]" );
 		#end
@@ -259,7 +260,6 @@ class ByteStreamOutput extends ByteStreamIO  {
 		var onProgress : Int->Void = Thread.readMessage( true );
 		var cb : String->Void = Thread.readMessage( true );
 		var pos = 0;
-		//var err : String = null;
 		while( pos < size ) {
 			var remain = size-pos;
 			var len = ( remain > bufsize ) ? bufsize : remain;
@@ -268,14 +268,11 @@ class ByteStreamOutput extends ByteStreamIO  {
 				pos += input.readBytes( buf, 0, len );
 				socket.output.write( buf );
 				socket.output.flush();
-				onProgress( pos );
 			} catch( e : Dynamic ) {
-				trace(e);
 				cb( e );
 				return;
-				//err = e;
-				//break;
 			}
+			onProgress( pos );
 		}
 		cb( null );
 	}

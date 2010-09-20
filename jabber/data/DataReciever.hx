@@ -33,6 +33,7 @@ class DataReciever {
 	public var xmlns(default,null) : String;
 	public var initiator(default,null) : String;
 	public var file(default,null) : xmpp.file.File;
+	public var range(default,null) : xmpp.file.Range;
 	
 	var request : IQ;
 	var sid : String;
@@ -53,8 +54,13 @@ class DataReciever {
 	/**
 		Accept/deny the data transfer
 	*/
-	public function accept( yes : Bool ) {
+	public function accept( yes : Bool, ?range : xmpp.file.Range ) {
 		// override me
+	}
+	
+	function _accept( yes : Bool, ename : String, ?range : xmpp.file.Range ) {
+		this.range = range;
+		if( yes ) sendAccept( xmlns, ename ) else sendDeny();
 	}
 	
 	function sendDeny() {
@@ -66,6 +72,9 @@ class DataReciever {
 	function sendAccept( xmlns : String, xname : String ) {
 		var r = IQ.createResult( request );
 		var si = new xmpp.file.SI();
+		var file = new xmpp.file.File( null, null );
+		file.range = range;
+		si.any.push( file.toXml() );
 		var feature = Xml.createElement( "feature" );
 		feature.set( "xmlns", xmpp.FeatureNegotiation.XMLNS );
 		var form = new xmpp.DataForm( xmpp.dataform.FormType.submit );

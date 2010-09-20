@@ -75,7 +75,7 @@ class ByteStreamInput extends ByteStreamIO {
 		super( host, port );
 	}
 	
-	public function connect( digest : String, size : Int, bufsize : Int = 4096 ) {
+	public function connect( digest : String, size : Int, ?range : xmpp.file.Range, bufsize : Int = 4096 ) {
 		
 		#if JABBER_DEBUG
 		trace( "Connecting to filetransfer streamhost ["+host+":"+port+"]" );
@@ -100,39 +100,6 @@ class ByteStreamInput extends ByteStreamIO {
 		Thread.readMessage( true );
 		__onConnect();
 		
-		/*
-		#elseif php
-		throw "PHP not supported";
-		socket = new Socket();
-		try {
-			socket.connect( new Host( host ), port );
-			new SOCKS5Out().run( socket, digest );
-		} catch( e : Dynamic ) {
-			trace(e);
-			__onFail( e );
-			return;
-		}
-		var pos = 0;
-		while( pos < size ) {
-			var remain = size-pos;
-			var len = ( remain > bufsize ) ? bufsize : remain;
-			//var bytes = Bytes.alloc( len );
-			var bytes : Bytes = null;
-			try {
-				bytes = socket.input.read( len );
-				pos += len;
-				//pos += input.readBytes( bytes, 0, len );
-				//pos += len;
-			} catch( e : Dynamic ) {
-				//cb( null );
-				trace(e);
-				__onFail( e );
-				return;
-			}
-			__onProgress( bytes );
-		}
-		*/
-		
 		#elseif flash
 		this.digest = digest;
 		this.size = size;
@@ -143,7 +110,7 @@ class ByteStreamInput extends ByteStreamIO {
 		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onSocketError );
 		socket.connect( host, port );
 		
-		#elseif js
+		#elseif (js&&!nodejs)
 		if( untyped js.Lib.window.WebSocket == null ) {
 			__onFail( "No websocket support" );
 			return;
@@ -197,6 +164,8 @@ class ByteStreamInput extends ByteStreamIO {
 		}
 		cb( bytes );
 		*/
+		trace(size);
+		
 		while( pos < size ) {
 			var remain = size-pos;
 			var len = ( remain > bufsize ) ? bufsize : remain;
@@ -208,7 +177,8 @@ class ByteStreamInput extends ByteStreamIO {
 				//pos += input.readBytes( bytes, 0, len );
 				//pos += len;
 			} catch( e : Dynamic ) {
-				cb( null );
+				trace(e);
+				cb( e );
 				return;
 			}
 			onProgress( bytes );

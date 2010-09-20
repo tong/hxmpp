@@ -33,10 +33,10 @@ class IBInput extends IBIO {
 	var size : Int;
 	var collector : PacketCollector;
 	
-	public function new( stream : jabber.Stream, initiator : String, sid : String, filesize : Int ) {
+	public function new( stream : jabber.Stream, initiator : String, sid : String, size : Int ) {
 		super( stream, sid );
 		this.initiator = initiator;
-		this.size = filesize;
+		this.size = size;
 		bufpos = 0;
 		seq = 0;
 		active = true;

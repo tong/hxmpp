@@ -17,21 +17,16 @@
 */
 package xmpp.file;
 
-private typedef Range = {
-	var offset : Null<Int>;
-	var length : Null<Int>;
-}
-
 class File {
 	
 	public var name : String;
-	public var size : Int;
+	public var size : Null<Int>;
 	public var date : String;
 	public var hash : String;
 	public var desc : String;
 	public var range : Range;
 	
-	public function new( name : String, size : Int,
+	public function new( name : String, size : Null<Int>,
 						 ?date : String, ?hash : String, ?desc : String, ?range : Range ) {
 		this.name = name;
 		this.size = size;
@@ -44,8 +39,8 @@ class File {
 	public function toXml() : Xml {
 		var x = Xml.createElement( "file" );
 		x.set( "xmlns", SI.XMLNS_PROFILE );
-		x.set( "name", name );
-		x.set( "size", Std.string( size ) );
+		if( name != null ) x.set( "name", name );
+		if( size != null ) x.set( "size", Std.string( size ) );
 		if( date != null ) x.set( "date", date );
 		if( hash != null ) x.set( "hash", hash );
 		if( desc != null ) x.addChild( xmpp.XMLUtil.createElement( "desc", desc ) );
