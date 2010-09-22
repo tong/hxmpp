@@ -82,9 +82,10 @@ class SITransfer {
 	public function sendData( bytes : Bytes, name : String, ?desc : String, ?date : String, ?range : Bool ) {
 		this.input = new haxe.io.BytesInput( bytes );
 		sendRequest( name, bytes.length, date, jabber.util.MD5.encode( bytes.toString() ), desc );
+		#if flash bytes.getData().position = 0; #end
 	}
 	
-	#if (neko||cpp||air||nodejs)
+	#if (neko||cpp||php||air||nodejs)
 	
 	/**
 	*/
