@@ -18,21 +18,24 @@
 package jabber.data.io;
 
 /**
-	Abstract base for inband data inout/output.
+	Abstract base for inband data in/output.
 */
 class IBIO {
 	
 	public var __onFail : String->Void;
+	public var __onComplete : Void->Void;
 	
 	var stream : jabber.Stream;
 	var sid : String;
+	var size : Int;
 	var seq : Int;
 	var active : Bool;
 	var bufpos : Int;
 	
-	function new( stream : jabber.Stream, sid : String ) {
+	function new( stream : jabber.Stream, sid : String, ?size : Int ) {
 		this.stream = stream;
 		this.sid = sid;
+		this.size = size;
 		active = true;
 		bufpos = 0;
 		seq = 0;

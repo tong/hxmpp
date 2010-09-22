@@ -52,7 +52,6 @@ class ByteStreamInput extends ByteStreamIO {
 	
 	public var __onConnect : Void->Void;
 	public var __onProgress : Bytes->Void;
-	public var __onComplete : Void->Void;
 	
 	var socket : Socket;
 	
@@ -185,10 +184,6 @@ class ByteStreamInput extends ByteStreamIO {
 		}
 		cb( null);
 	}
-	
-	
-	#elseif php
-	//#
 	
 	
 	#elseif (js&&!nodejs)

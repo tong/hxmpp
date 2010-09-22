@@ -27,8 +27,12 @@ import xmpp.filter.FilterGroup;
 /**
 	<a href="http://xmpp.org/rfcs/rfc3920.html#sasl">RFC3920-SASL</a><br/>
 	<a href="http://xmpp.org/rfcs/rfc3920.html#bind">RFC3920-BIND</a><br/>
-	Responsible for authenticating a client account using SASL,
-	binding the resource to the connection and establishing a session with the server.<br/>
+	Responsible for:
+	<ol>
+		<li>Authenticating a client account using SASL</li>
+		<li>Binding the resource to the connection</li>
+		<li>Establishing a session with the server</li>
+	</ol>
 */
 class SASLAuth extends Authentication {
 
@@ -36,7 +40,7 @@ class SASLAuth extends Authentication {
 	
 	/** Used SASL method */
 	public var mechanism(default,null) : jabber.sasl.TMechanism;
-	/** Clients SASL mechanisms */
+	/** Clients SASL mechanisms (in prefered order) */
 	public var mechanisms(default,null) : Array<jabber.sasl.TMechanism>;
 	/** Available mechanisms offered by server */
 	public var serverMechanisms(default,null) : Array<String>;

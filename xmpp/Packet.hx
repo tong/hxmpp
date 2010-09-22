@@ -25,12 +25,13 @@ class Packet {
 	//public static var XMLNS = "urn:ietf:params:xml:ns:xmpp-stanzas";
 	public static var PROTOCOL = "http://jabber.org/protocol";
 	
+	/** The top level type of the XMPP packet */
 	public var _type(default,null) : PacketType;
 	public var to : String;
 	public var from : String;
 	public var id : String;	
 	public var lang : String;
-	public var properties : Array<Xml>; // <PacketElement>
+	public var properties : Array<Xml>;
 	public var errors : Array<xmpp.Error>;
 	
 	function new( ?to : String, ?from : String, ?id : String, ?lang : String ) {
@@ -96,7 +97,6 @@ class Packet {
 		return p;
 	}
 	
-	// TODO remove
 	/**
 		Reflects the elements of the XML into the packet.
 	*/

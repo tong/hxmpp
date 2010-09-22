@@ -29,7 +29,8 @@ COMPILER FLAGS
 * JABBER_DEBUG	Print verbose debug information
 * JABBER_SOCKETBRIDGE	Use a flash socket bridge as stream connection for the javascript target
 * JABBER_COMPONENT	Required to build server-components
-* air  Required to use native air2 sockets
+* air
+
 
 
 NDLL
@@ -92,14 +93,14 @@ NODE.JS
 -------
 HXMPP has experimental support for node.js.
 Use the type signatures from:
-http://github.com/blackdog66/bdog-stdhx
+http://disktree.spektral.at/git/?a=summary&p=hx.node.js
+Add: -D nodejs
 
 
-
-AIR2
-----
-HXMPP supports native, secure and unsecure adobe air2 socket connections.
-Add 'air' as compiler flag.
+ADOBE AIR2
+----------
+HXMPP supports native, secure and unsecure adobe air2 socket connections (flash and javascript).
+Add 'air' compiler flag.
 Get the required external classes from: http://disktree.spektral.at/git/?a=summary&p=hxair
 
 
@@ -111,14 +112,17 @@ XEPS SUPPORTED
 *** 0016 PrivacyLists
 * 0030 ServiceDiscovery
 ** 0045 MUChat
+** 0047 In-Band Bytestreams
 * 0049 Private XML Storage
 * 0054 VCardTemp
 *** 0060 PubSub
+** 0065 SOCKS5 Bytestreams
 * 0071 XHTML-IM
 * 0077 In-Band Registration
 * 0082 XMPP Date and Time Profiles
 * 0085 ChatStateNotification
 * 0092 SoftwareVersion
+** 0096 SI File Transfer
 * 0106 JID Escaping
 * 0114 Jabber Component Protocol
 ** 0115 Entity Capabilities
@@ -139,7 +143,7 @@ XEPS SUPPORTED
 HACKERS
 -------
 This project accepts and *encourages* contributions.
-
+Get in contact.
 
 
 AUTHOR

@@ -17,7 +17,6 @@
 */
 package jabber.data;
 
-import haxe.io.Bytes;
 import xmpp.IQ;
 
 /**
@@ -29,22 +28,33 @@ class SIListener {
 	public dynamic function onFail( info : String ) : Void;
 	
 	public var stream(default,null) : jabber.Stream;
+	/** Available file transfer methods */
 	public var methods(default,null) : Array<DataReciever>;
+	/** Callback handler for incoming transfer requests */
 	public var handler : DataReciever->Void;
 	
-	//var file : xmpp.file.File;
-	//var methodIndex : Int;
+	var collector : jabber.stream.PacketCollector;
 	
 	public function new( stream : jabber.Stream, handler : DataReciever->Void ) {
+		if( !stream.features.add( xmpp.file.SI.XMLNS_PROFILE ) )
+			throw "SI data transfer listener already added";
 		this.stream = stream;
 		this.handler = handler;
 		methods = new Array();
-		stream.features.add( xmpp.file.SI.XMLNS_PROFILE );
-		stream.collect( [cast new xmpp.filter.IQFilter( xmpp.file.SI.XMLNS, "si", xmpp.IQType.set )],
-						 handleRequest, true );
+		collector = stream.collect( [cast new xmpp.filter.IQFilter( xmpp.file.SI.XMLNS, "si", xmpp.IQType.set )],
+						 			handleRequest, true );
 	}
 	
-	function handleRequest( iq : xmpp.IQ ) {
+	public function dispose() {
+		stream.removeCollector( collector );
+		stream.features.remove( xmpp.file.SI.XMLNS_PROFILE  );
+	}
+	
+	function handleRequest( iq : IQ ) {
+		if( this.methods.length == 0 ) {
+			#if JABBER_DEBUG trace( "No file tranfer methods registerd with the SI listener", "warn" ); #end
+			return;
+		}
 		var si = xmpp.file.SI.parse( iq.x.toXml() );
 		var file : xmpp.file.File = null;
 		var _methods = new Array<String>();
@@ -56,11 +66,10 @@ class SIListener {
 			#end
 				for( e in e.elementsNamed( "x" ) ) {
 					var form = xmpp.DataForm.parse( e );
-					var field = form.fields[0];
-					if( field.variable == "stream-method" ) {
-						for( o in field.options ) {
+					var f = form.fields[0];
+					if( f.variable == "stream-method" ) {
+						for( o in f.options )
 							_methods.push( o.value );
-						}
 					}
 				}
 			#if flash // haXe 2.06 fukup
@@ -76,19 +85,19 @@ class SIListener {
 			onFail( "invalid file transfer request" );
 			return;
 		}
-		var acceptedMethods = new Array<DataReciever>();
+		var a_methods = new Array<DataReciever>();
 		for( m in methods ) {
 			for( _m in _methods ) {
-				if( m.xmlns == _m )
-					acceptedMethods.push( m );
+				if( m.xmlns == _m ) a_methods.push( m );
 			}
 		}
-		if( acceptedMethods.length == 0 ) {
+		if( a_methods.length == 0 ) {
 			onFail( "no matching file transfer method" );
+			//TODO send error
 			return;
 		}
 		// new FileTransferNegotiator();
-		var m = acceptedMethods[0];
+		var m = a_methods[0];
 		m.init( file, iq, si.id );
 		handler( m );
 	}

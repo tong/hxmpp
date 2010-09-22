@@ -49,7 +49,6 @@ class ByteStreamOutput extends ByteStreamIO  {
 	
 	public var __onConnect : ByteStreamOutput->Void;
 	public var __onProgress : Int->Void;
-	public var __onComplete : Void->Void;
 	
 	var range : xmpp.file.Range;
 	var socket : Socket;
@@ -90,31 +89,11 @@ class ByteStreamOutput extends ByteStreamIO  {
 		t.sendMessage( port );
 		t.sendMessage( callbackConnect );
 		
-		#elseif php
-		throw "Not implemented";
-		/*
-		server = new Socket();
-		server.bind( new Host( host ), port );
-		server.listen( 1 );
-		//while( true ) {
-			try {
-				socket = server.accept();
-			} catch( e : Dynamic ) {
-				trace( e );
-				__onFail( e );
-				return;
-			}
-			//break;
-		//}
-		trace("CONNECTED...");
-		*/
-		
 		#elseif nodejs
 		server = Node.net.createServer( onConnect );
 		server.listen( port, host );
 		
 		#elseif air
-		server = new flash.net.ServerSocket();
 		server = new ServerSocket();
 		server.bind( port, host );
 		server.addEventListener( ServerSocketConnectEvent.CONNECT, onConnect );
@@ -236,7 +215,6 @@ class ByteStreamOutput extends ByteStreamIO  {
 			trace( e );
 		}
 		*/
-		
 		/* //TODO flashpolicy
 		try {
 			var r = c.input.read( 23 ).toString();

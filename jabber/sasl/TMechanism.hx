@@ -17,19 +17,8 @@
 */
 package jabber.sasl;
 
-//TODO rename Mechanism
 typedef TMechanism = {
-	
-	/**
-	*/
 	var id(default,null) : String;
-	
-	/**
-	*/
-	function createAuthenticationText( username : String, host : String, password : String, resource : String ) : String;
-	
-	/**
-	*/
+	function createAuthenticationText( user : String, host : String, password : String, resource : String ) : String;
 	function createChallengeResponse( challenge : String ) : String;
-	
 }

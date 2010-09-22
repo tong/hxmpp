@@ -17,10 +17,13 @@
 */
 package jabber.data.io;
 
+/**
+	Abstract base for SOCKS5 bytestream in/output.
+*/
 class ByteStreamIO {
 	
 	public var __onFail : String->Void;
-	//public var __onProgress : Int->Void;
+	public var __onComplete : Void->Void;
 	
 	var host : String;
 	var port : Int;

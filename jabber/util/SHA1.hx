@@ -14,7 +14,8 @@ class SHA1 {
 	
 	#if (neko)
 	static var base_encode = Lib.load( "std", "base_encode", 2 );
-	static var make_sha1 = Lib.load( "sha1","make_sha1", 1 );
+	//static var make_sha1 = Lib.load( "sha1","make_sha1", 1 );
+	static var make_sha1 = Lib.load( "hxmpp","make_sha1", 1 );
 	#end
 
 	#if (flash||js||neko)
@@ -94,7 +95,8 @@ class SHA1 {
 		Convert a string to a sequence of 16-word blocks, stored as an array.
 		Append padding bits and the length..
 	*/
-	inline function str2blks( s : String ) : Array<Int> {
+	#if flash inline #end
+	function str2blks( s : String ) : Array<Int> {
 		var nb = ( ( s.length + 8 ) >> 6 ) + 1;
 		var l = nb*16;
 		var bb = new Array<Int>();
@@ -125,7 +127,8 @@ class SHA1 {
 	/**
 		Bitwise rotate a 32-bit number to the left
 	 */
-	inline function rol( n : Int, c : Int ) : Int {
+	#if flash inline #end
+	function rol( n : Int, c : Int ) : Int {
 		return ( n << c ) | ( n >>> ( 32 - c ) );
 	}
 

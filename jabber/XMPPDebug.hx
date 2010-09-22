@@ -27,14 +27,8 @@ import php.Lib;
 import cpp.Lib;
 #elseif nodejs
 import js.Lib;
-#elseif flash
+#elseif (flash&&!air)
 import flash.external.ExternalInterface;
-#end
-
-#if JABBER_CONSOLE
-typedef TStream = {
-	var jidstr : String;
-}
 #end
 
 /**
@@ -45,34 +39,17 @@ typedef TStream = {
 */
 class XMPPDebug {
 	
-	#if (JABBER_CONSOLE&&flash) //HACK TODO
-	public static var stream : Stream;
-	#end
-	
 	#if (flash||js)
 	
 	static function __init__() {
-		#if flash
-		useConsole = ( ExternalInterface.available &&
-					   ExternalInterface.call( "console.error.toString" ) != null );
-		#if JABBER_CONSOLE
-		if( !ExternalInterface.available ) {
-			trace( "Unable to init HXMPP.console, external interface not available", "warn" );
-			return;
-		}
-		ExternalInterface.addCallback( "sendData", function(t:String){
-			if( stream == null )
-				return null;
-			return stream.sendData( t );
-		} );
-		#end
-		#elseif (js&&!nodejs)
 		#if air
 		useConsole = false;
 		#else
-		try {
-			useConsole = untyped console != null && console.error != null;
-		} catch( e : Dynamic ) {
+		#if flash
+		useConsole = ( ExternalInterface.available &&
+					   ExternalInterface.call( "console.error.toString" ) != null );
+		#elseif (js&&!nodejs)
+		try useConsole = untyped console != null && console.error != null catch( e : Dynamic ) {
 			useConsole = false;
 		}
 		#end
@@ -81,45 +58,17 @@ class XMPPDebug {
 	
 	#end // (flash||js)
 	
-	public static inline function inc( t : String ) {
-		#if JABBER_CONSOLE
-		printToXMPPConsole( t, false );
-		#end
-		_inc(t);
-	}
-
-	public static inline function out( t : String ) {
-		#if JABBER_CONSOLE
-		printToXMPPConsole( t, true );
-		#end
-		_out(t);
-	}
-	
-	#if JABBER_CONSOLE
-	static function printToXMPPConsole( t : String, out : Bool ) {
-		try {
-			#if flash
-			ExternalInterface.call( 'XMPPConsole.print("'+t+'",'+out+')' );
-			#elseif js
-			untyped XMPPConsole.print( t, out );
-			#end
-		} catch( e : Dynamic ) {
-			trace( "HXMPP.console error: "+e, "warn" );
-		}
-	}
-	#end
-	
 	/**
 		Default incoming XMPP debug relay.
 	*/
-	public static inline function _inc( t : String ) {
+	public static inline function inc( t : String ) {
 		print( t, false, "log" );
 	}
 	
 	/**
 		Default outgoing XMPP debug relay.
 	*/
-	public static inline function _out( t : String ) {
+	public static inline function out( t : String ) {
 		print( t, true, "log" );
 	}
 	
@@ -130,6 +79,7 @@ class XMPPDebug {
 		_print( t, out, level );
 		#end
 	}
+	
 	
 	#if (neko||cpp||php||nodejs)
 
@@ -151,14 +101,17 @@ class XMPPDebug {
 		Lib.print( b.toString() );
 	}
 	
+	
 	#elseif (flash||js)
 	
-	/** Indicates if the transfer should get printed to the browsers debug console */
+	/** Indicates if the XMPP transfer should get printed to the browsers debug console */
 	public static var useConsole : Bool;
 	
 	public static function _print( t : String, out : Bool = true, level : String = "log" ) {
-		//var dir = "XMPP-"+((out)?"O ":"I ");
 		var dir = out ? "=>" : "<=";
+		#if air
+		haxe.Log.trace( t, { className : "", methodName : "", fileName : "XMPP"+dir, lineNumber : t.length, customParams : [] } );
+		#else
 		if( useConsole ) {
 			#if flash
 			ExternalInterface.call( "console."+level, dir+t );
@@ -169,6 +122,7 @@ class XMPPDebug {
 			//haxe.Log.trace( t, { className : "", methodName : "", fileName : dir, lineNumber : 0, customParams : [] } );
 			haxe.Log.trace( t, { className : "", methodName : "", fileName : "XMPP"+dir, lineNumber : t.length, customParams : [] } );
 		}
+		#end
 	}
 	
 	#end // (flash||js)

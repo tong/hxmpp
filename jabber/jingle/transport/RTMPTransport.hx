@@ -21,8 +21,6 @@ import flash.events.NetStatusEvent;
 import flash.net.NetConnection;
 import flash.net.NetStream;
 
-//rtmpt://red5.jivesoftware.org:9090/jingle
-
 /**
 	flash.
 	RTMP jingle transport base.

@@ -27,16 +27,13 @@ import xmpp.IQType;
 class IBInput extends IBIO {
 	
 	public var __onProgress : Bytes->Void;
-	public var __onComplete : Void->Void;
 	
 	var initiator : String;
-	var size : Int;
 	var collector : PacketCollector;
 	
 	public function new( stream : jabber.Stream, initiator : String, sid : String, size : Int ) {
-		super( stream, sid );
+		super( stream, sid, size );
 		this.initiator = initiator;
-		this.size = size;
 		bufpos = 0;
 		seq = 0;
 		active = true;

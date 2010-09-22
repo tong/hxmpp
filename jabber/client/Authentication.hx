@@ -18,7 +18,7 @@
 package jabber.client;
 
 /**
-	Abstract client authentication.
+	Abstract client account authentication.
 */
 class Authentication {
 	

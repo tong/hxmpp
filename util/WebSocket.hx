@@ -23,8 +23,8 @@ extern class WebSocket {
 	
 	function send( data : String ) : Bool;
 	function close() : Void;
-	
 }
+
 
 #elseif flash
 

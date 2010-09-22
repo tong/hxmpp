@@ -28,7 +28,9 @@ class DataTransfer {
 	public dynamic function onFail( info : String  ) : Void;
 	
 	public var stream(default,null) : jabber.Stream;
+	/** The namespace of this transfer method */
 	public var xmlns(default,null) : String;
+	/** JID of the recieving entity */
 	public var reciever(default,null) : String;
 	public var bufsize(default,null) : Int;
 	public var file(default,null) : xmpp.file.File;

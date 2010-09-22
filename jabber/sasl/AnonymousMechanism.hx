@@ -37,15 +37,15 @@ class AnonymousMechanism {
 	public var challengeResponse : String;
 	
 	public function new( challengeResponse = "any" ) {
-		id = NAME;
+		this.id = NAME;
 		this.challengeResponse = challengeResponse;
 	}
 	
-	public function createAuthenticationText( user : String, host : String, pw : String, resource : String ) : String {
+	public function createAuthenticationText( user : String, host : String, pass : String, resource : String ) : String {
 		return null; // Nothing to send in the <auth> body.
 	}
 	
-	public function createChallengeResponse( chl : String ) : String {
+	public function createChallengeResponse( c : String ) : String {
 		return challengeResponse; // not required
 	}
 	
