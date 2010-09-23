@@ -79,7 +79,7 @@ class SITransfer {
 	
 	/**
 	*/
-	public function sendData( bytes : Bytes, name : String, ?desc : String, ?date : String, ?range : Bool ) {
+	public function sendData( bytes : Bytes, name : String, ?desc : String, ?date : String, ?range : Bool, ?mime : String ) {
 		this.input = new haxe.io.BytesInput( bytes );
 		sendRequest( name, bytes.length, date, jabber.util.MD5.encode( bytes.toString() ), desc );
 		#if flash bytes.getData().position = 0; #end
@@ -89,7 +89,7 @@ class SITransfer {
 	
 	/**
 	*/
-	public function sendFile( filepath : String, ?desc : String, ?hash : String, ?range : Bool ) {
+	public function sendFile( filepath : String, ?desc : String, ?hash : String, ?range : Bool, ?mime : String ) {
 		
 		#if air
 		var f = File.applicationDirectory.resolvePath( filepath ); //TODO 
@@ -117,13 +117,13 @@ class SITransfer {
 		
 		#end
 		
-		sendRequest( fname, fsize, fdate, hash, desc, range );
+		sendRequest( fname, fsize, fdate, hash, desc, range, mime );
 	}
 	
 	#end
 	
 	function sendRequest( name : String, size : Int,
-						  ?date : String, ?hash : String, ?desc : String, ?range : Bool = false ) {
+						  ?date : String, ?hash : String, ?desc : String, ?range : Bool = false, ?mime : String ) {
 		
 		if( methods.length == 0 )
 			throw "No file transfer methods registered";
@@ -133,13 +133,13 @@ class SITransfer {
 		
 		var iq = new IQ( IQType.set );
 		iq.to = reciever;
-		var si = new xmpp.file.SI( id, "text/plain", xmpp.file.SI.XMLNS_PROFILE ); //TODO mime-type
+		var si = new xmpp.file.SI( id, mime, xmpp.file.SI.XMLNS_PROFILE );
 		si.any.push( file.toXml() );
 		var form = new xmpp.DataForm( xmpp.dataform.FormType.form );
 		var form_f = new xmpp.dataform.Field( xmpp.dataform.FieldType.list_single );
 		form_f.variable = "stream-method";
 		for( m in methods )
-			form_f.options.push( new xmpp.dataform.FieldOption( null, m.xmlns ) ); //TODO
+			form_f.options.push( new xmpp.dataform.FieldOption( null, m.xmlns ) );
 		form.fields.push( form_f );
 		var feature = Xml.createElement( "feature" );
 		feature.set( "xmlns", xmpp.FeatureNegotiation.XMLNS );
@@ -203,7 +203,6 @@ class SITransfer {
 			initFileTransfer();
 			
 		case error :
-			//TODO hm?
 			var e = iq.errors[0];
 			onFail( e.condition, e.text );
 			
@@ -219,7 +218,7 @@ class SITransfer {
 		method.init( input, id, file );
 	}
 	
-	function handleFileTransferFail( info ) {
+	function handleFileTransferFail( info : String ) {
 		onFail( info );
 	}
 	

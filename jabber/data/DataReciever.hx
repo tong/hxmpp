@@ -25,6 +25,7 @@ import xmpp.IQ;
 */
 class DataReciever {
 	
+	//public dynamic function onInit() : Void;
 	public dynamic function onProgress( bytes : Bytes ) : Void;
 	public dynamic function onComplete() : Void;
 	public dynamic function onFail( info : String ) : Void;

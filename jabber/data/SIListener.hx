@@ -81,7 +81,8 @@ class SIListener {
 			}
 		}
 		if( file == null ) {
-			//TODO send error
+			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( xmpp.ErrorType.cancel,
+																	xmpp.ErrorCondition.BAD_REQUEST )] ) );
 			onFail( "invalid file transfer request" );
 			return;
 		}
@@ -93,7 +94,8 @@ class SIListener {
 		}
 		if( a_methods.length == 0 ) {
 			onFail( "no matching file transfer method" );
-			//TODO send error
+			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( xmpp.ErrorType.cancel,
+																	xmpp.ErrorCondition.BAD_REQUEST )] ) );
 			return;
 		}
 		// new FileTransferNegotiator();

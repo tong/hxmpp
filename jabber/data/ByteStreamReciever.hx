@@ -58,7 +58,6 @@ class ByteStreamReciever extends DataReciever {
 		input.__onProgress = onProgress;
 		input.__onComplete = onComplete;
 		input.__onFail = handleTransferFail;
-		//input.__onConnectFail = handleTransferConnectFail; //TODO?
 		var size = file.size;
 		if( range != null ) {
 			if( range.length != null ) size = range.length;

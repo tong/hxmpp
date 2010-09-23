@@ -47,7 +47,7 @@ class IBReciever extends DataReciever {
 		
 		input = new IBInput( stream, iq.from, sid, size );
 		input.__onFail = onFail;
-		//input.__onConnect = handleTransferConnect; //TODO
+		//input.__onConnect = handleTransportConnect; //TODO
 		input.__onProgress = onProgress;
 		input.__onComplete = onComplete;
 		stream.sendPacket( IQ.createResult( iq ) );

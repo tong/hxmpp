@@ -35,7 +35,11 @@ class IB {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( Type.enumConstructor( type ) );
+		#if flash //TODO flash 2.06 fukup
+		x.set( "_xmlns_", XMLNS );
+		#else
 		x.set( "xmlns", XMLNS );
+		#end
 		x.set( "sid", sid );
 		switch( type ) {
 		case open : x.set( "block-size", Std.string( blockSize ) );
@@ -79,7 +83,11 @@ class IB {
 	
 	public static function createDataElement( sid : String, seq : Int, d : String ) : Xml {
 		var x = xmpp.XMLUtil.createElement( "data", d );
+		#if flash
+		x.set( "_xmlns_", XMLNS );
+		#else
 		x.set( "xmlns", XMLNS );
+		#end
 		x.set( "sid", sid );
 		x.set( "seq", Std.string( seq ) );
 		return x;

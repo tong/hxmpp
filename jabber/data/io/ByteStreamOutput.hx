@@ -50,15 +50,19 @@ class ByteStreamOutput extends ByteStreamIO  {
 	public var __onConnect : ByteStreamOutput->Void;
 	public var __onProgress : Int->Void;
 	
-	var range : xmpp.file.Range;
+	//var range : xmpp.file.Range;
 	var socket : Socket;
 	var digest : String;
+	
 	#if (neko||cpp||php)
 	var server : Socket;
+	
 	#elseif nodejs
 	var server : Server;
+	
 	#elseif air
 	var server : ServerSocket;
+	
 	#end
 	
 	public function new( host : String, port : Int ) {
@@ -97,7 +101,6 @@ class ByteStreamOutput extends ByteStreamIO  {
 		server = new ServerSocket();
 		server.bind( port, host );
 		server.addEventListener( ServerSocketConnectEvent.CONNECT, onConnect );
-		//TODO...listeners
 		server.listen( 1 );
 		
 		#end
@@ -112,6 +115,7 @@ class ByteStreamOutput extends ByteStreamIO  {
 		#if (neko||cpp)
 		socket = Thread.readMessage( false );
 		if( socket == null ) {
+			cleanup();
 			__onFail( "Client socket not connected" );
 			return;
 		}
@@ -134,14 +138,12 @@ class ByteStreamOutput extends ByteStreamIO  {
 				socket.write( buf.getData() );
 				__onProgress( pos );
 			} catch( e : Dynamic ) {
-				socket.end();
-				server.close();
+				cleanup();
 				__onFail( e );
 				return;
 			}
 		}
-		socket.end();
-		server.close();
+		cleanup();
 		__onComplete();
 		
 		#elseif air
@@ -155,19 +157,20 @@ class ByteStreamOutput extends ByteStreamIO  {
 				socket.writeBytes( buf.getData() );
 				socket.flush();
 			} catch( e : Dynamic ) {
-				closeSockets();
+				cleanup();
 				__onFail( e );
 				return;
 			}
 		}
-		closeSockets();
+		cleanup();
 		__onComplete();
 		
 		#end
 	}
 	
+	//force close unused bytestream transport
 	public function close() {
-		trace("TODO force close unused bytestream transports");
+		cleanup();
 	}
 	
 	
@@ -176,19 +179,14 @@ class ByteStreamOutput extends ByteStreamIO  {
 	function callbackConnect( err : String ) {
 		if( err == null ) __onConnect( this );
 		else {
-			closeSockets();
+			cleanup();
 			__onFail( err );
 		}
 	}
 	
 	function callbackSent( err : String ) {
-		closeSockets();
+		cleanup();
 		( err == null ) ? __onComplete() : __onFail( err );
-	}
-	
-	function closeSockets() {
-		if( socket != null ) try socket.close() catch( e : Dynamic ) { #if JABBER_DEBUG trace(e); #end }
-		if( server != null ) try server.close() catch( e : Dynamic ) { #if JABBER_DEBUG trace(e); #end }
 	}
 	
 	function t_wait() {
@@ -200,7 +198,6 @@ class ByteStreamOutput extends ByteStreamIO  {
 		var c : Socket = null;
 		c = server.accept();
 		main.sendMessage( c );
-		
 		// /TODO websocket handshake
 		/*
 		try {
@@ -255,6 +252,11 @@ class ByteStreamOutput extends ByteStreamIO  {
 		cb( null );
 	}
 	
+	function cleanup() {
+		if( socket != null ) try socket.close() catch( e : Dynamic ) { #if JABBER_DEBUG trace(e); #end }
+		if( server != null ) try server.close() catch( e : Dynamic ) { #if JABBER_DEBUG trace(e); #end }
+	}
+	
 	
 	#elseif nodejs
 	
@@ -277,12 +279,16 @@ class ByteStreamOutput extends ByteStreamIO  {
 	
 	function onSOCKS5Complete( err : String ) {
 		if( err != null ) {
-			socket.end();
-			server.close();
+			cleanup();
 			__onFail( "SOCKS5 failed: "+err );
 		} else {
 			__onConnect( this );
 		}
+	}
+	
+	function cleanup() {
+		if( socket != null ) socket.end();
+		if( server != null ) server.close();
 	}
 	
 	
@@ -295,14 +301,14 @@ class ByteStreamOutput extends ByteStreamIO  {
 	
 	function onSOCKS5Complete( err : String ) {
 		if( err != null ) {
-			closeSockets();
+			cleanup();
 			__onFail( "SOCKS5 failed: "+err );
 		} else {
 			__onConnect( this );
 		}
 	}
 	
-	function closeSockets() {
+	function cleanup() {
 		try {
 			if( socket != null && socket.connected ) socket.close();
 			if( server != null ) server.close();

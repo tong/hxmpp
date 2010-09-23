@@ -18,6 +18,7 @@
 package jabber.data.io;
 
 import haxe.io.Bytes;
+import jabber.stream.PacketCollector;
 import jabber.util.Base64;
 import xmpp.IQ;
 
@@ -33,6 +34,7 @@ class IBOutput extends IBIO {
 	var input : haxe.io.Input;
 	var bufsize : Int;
 	var iq : IQ;
+	var collector : PacketCollector;
 	
 	public function new( stream : jabber.Stream, reciever : String, sid : String ) {
 		super( stream, sid );
@@ -43,9 +45,9 @@ class IBOutput extends IBIO {
 		this.input = input;
 		this.size = size;
 		this.bufsize = bufsize;
-		stream.collect( [cast new xmpp.filter.PacketFromFilter( reciever ),
-						 cast new xmpp.filter.IQFilter( xmpp.file.IB.XMLNS, "close", xmpp.IQType.set )],
-						handleIBClose );
+		collector = stream.collect( [cast new xmpp.filter.PacketFromFilter( reciever ),
+						 			 cast new xmpp.filter.IQFilter( xmpp.file.IB.XMLNS, "close", xmpp.IQType.set )],
+									handleIBClose );
 		iq = new IQ( xmpp.IQType.set, null, reciever );
 		bufpos = 0;
 		sendNextPacket();
@@ -61,6 +63,7 @@ class IBOutput extends IBIO {
 																	xmpp.ErrorCondition.BAD_REQUEST )] ) );
 			__onFail( "invalid IB transfer" );
 		}
+		stream.removeCollector( collector );
 	}
 	
 	function sendNextPacket() {
@@ -91,8 +94,7 @@ class IBOutput extends IBIO {
 						case result :
 							me.__onComplete();
 						case error :
-							//TODO
-							///me.__onFail();
+							me.__onFail( iq.errors[0].condition );
 						default : //
 						}
 					} );

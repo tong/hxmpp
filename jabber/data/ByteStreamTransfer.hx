@@ -74,8 +74,9 @@ class ByteStreamTransfer extends DataTransfer {
 		case error :
 			var e = iq.errors[0];
 			onFail( e.condition );
-			//TODO onFail( e.condition, e.text );
-			//TODO cleanup
+			//TODO
+			//transport.close();
+			//for( t in transports ) { if( t != transport ) t.close(); }
 		default :
 		}
 	}
@@ -88,7 +89,6 @@ class ByteStreamTransfer extends DataTransfer {
 	/*
 	function handleTransportFail( info : String ) {
 		onFail( info );
-		//TODO
 	}
 	*/
 	
