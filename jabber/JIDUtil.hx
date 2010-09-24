@@ -27,12 +27,11 @@ class JIDUtil {
 	public static inline var MAX_LENGTH = 3071;
 	public static inline var MAX_PARTSIZE = 1023;
 	
-	// TODO JID parts
-	/** Regular expression matching a valid jid */
+	/** Regular expression matching a valid JID */
 	#if JABBER_DEBUG
-	public static var EREG = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+(\.[A-Z][A-Z][A-Z]?)?(\/[A-Z0-9._%-])?/i;
+	public static var EREG = ~/([A-Z0-9._%-]+)@([A-Z0-9.-]+(\.[A-Z][A-Z][A-Z]?)?)(\/([A-Z0-9._%-]+))?/i;
 	#else
-	public static var EREG = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?(\/[A-Z0-9._%-])?/i;
+	public static var EREG = ~/([A-Z0-9._%-]+)@([A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?)(\/([A-Z0-9._%-]+))?/i;
 	#end
 	
 	/**
