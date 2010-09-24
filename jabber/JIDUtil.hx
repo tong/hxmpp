@@ -23,15 +23,23 @@ package jabber;
 */	
 class JIDUtil {
 	
+	static function __init__() {
+		#if JABBER_DEBUG
+		EREG = ~/([A-Z0-9._%-]+)@([A-Z0-9.-]+(\.[A-Z][A-Z][A-Z]?)?)(\/([A-Z0-9._%-]+))?/i;
+		#else
+		EREG = ~/([A-Z0-9._%-]+)@([A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?)(\/([A-Z0-9._%-]+))?/i;
+		#end
+	}
+	
 	public static inline var MIN_LENGTH = 8;
 	public static inline var MAX_LENGTH = 3071;
 	public static inline var MAX_PARTSIZE = 1023;
 	
 	/** Regular expression matching a valid JID */
 	#if JABBER_DEBUG
-	public static var EREG = ~/([A-Z0-9._%-]+)@([A-Z0-9.-]+(\.[A-Z][A-Z][A-Z]?)?)(\/([A-Z0-9._%-]+))?/i;
+	public static var EREG(default,null) : EReg;
 	#else
-	public static var EREG = ~/([A-Z0-9._%-]+)@([A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?)(\/([A-Z0-9._%-]+))?/i;
+	public static var EREG(default,null) : EReg;
 	#end
 	
 	/**

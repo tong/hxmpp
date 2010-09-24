@@ -17,28 +17,25 @@
 */
 package jabber;
 
-//TODO ereg for debug and real
-
 /**
 	Static methods for parsing of mutliuser chat addresses.
 */
 class MUCUtil {
 	
-	public static var EREG = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+(\/[A-Z0-9._%-]+)?/i;
-	public static var EREG_FULL = ~/[A-Z0-9._%-]+@[A-Z0-9.-]+\/[A-Z0-9._%-]+/i;
-	
-	/**
-		Returns Bool if the given string is a valid muchat address.
-	*/
-	public static inline function isValid( t : String ) : Bool {
-		return EREG.match( t );
+	static function __init__() {
+		EREG = ~/([A-Z0-9._%-]+)@([A-Z0-9.-]+)(\/([A-Z0-9._%-]+))?/i;
 	}
 	
+	/** Regular expression matching a MUC address */
+	public static var EREG(default,null) : EReg;
+
 	/**
-		Returns Bool if the given string is a full valid muchat address (including occupant name).
+		Returns true if the given string is a valid muchat address.<br/>
+		The 'nick' parameter indicates if a full adress (including nickname) is expected.
 	*/
-	public static inline function isValidFull( t : String ) : Bool {
-		return EREG_FULL.match( t );
+	public static function isValid( t : String, nick : Bool = false ) : Bool {
+		if( !EREG.match( t ) ) return false;
+		return nick ? ( EREG.matched( 4 ) != null ) : true;
 	}
 	
 	/**
