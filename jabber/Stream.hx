@@ -21,6 +21,7 @@ import jabber.stream.Connection;
 import jabber.stream.TPacketInterceptor;
 import jabber.stream.PacketCollector;
 import jabber.stream.PacketTimeout;
+import jabber.stream.Status;
 import jabber.stream.TDataInterceptor;
 import jabber.stream.TDataFilter;
 import jabber.util.Base64;
@@ -57,7 +58,7 @@ class Stream {
 	public dynamic function onOpen() : Void;
 	public dynamic function onClose( ?e : Dynamic ) : Void;
 	
-	public var status : StreamStatus;
+	public var status : Status;
 	public var cnx(default,setConnection) : Connection;
 	public var jidstr(getJIDStr,null) : String;  // TODO replace by JID
 	public var features(default,null) : StreamFeatures;
@@ -77,7 +78,7 @@ class Stream {
 	var numPacketsSent : Int;
 	
 	function new( cnx : Connection ) {
-		status = StreamStatus.closed;
+		status = Status.closed;
 		server = { features : new Hash() };
 		features = new StreamFeatures();
 		version = true;
@@ -96,7 +97,7 @@ class Stream {
 	
 	#if !JABBER_COMPONENT
 	function setJID( j : JID ) : JID {
-		if( status != StreamStatus.closed )
+		if( status != Status.closed )
 			throw "Cannot change JID on open stream";
 		return jid = j;
 	}
@@ -168,10 +169,10 @@ class Stream {
 		Passed argument indicates if the (TCP) connection to the server should also get closed.
 	*/
 	public function close( ?disconnect = false ) {
-		if( status == StreamStatus.closed )
+		if( status == Status.closed )
 			return;
 		if( !cnx.http ) sendData( "</stream:stream>" );
-		status = StreamStatus.closed;
+		status = Status.closed;
 		if( cnx.http ) cnx.disconnect();
 		else if( disconnect ) cnx.disconnect();
 		handleDisconnect();
@@ -194,12 +195,10 @@ class Stream {
 	public function sendData( t : String ) : String {
 		if( !cnx.connected )
 			return null;
-		//TODO !!
-		//for( i in dataInterceptors )
-		//	t = i.interceptData( t );
 #if flash // haXe 2.06 fukup		
 		t = StringTools.replace( t, "_xmlns_=", "xmlns=" );
 #end
+		//TODO !!
 	//	sendRawData( haxe.io.Bytes.ofString( t ) );
 		if( !cnx.write( t ) )
 			return null;
@@ -212,6 +211,7 @@ class Stream {
 	
 	/*
 	public function sendRawData( bytes : haxe.io.Bytes ) : haxe.io.Bytes {
+		//TODO !!
 		for( i in dataInterceptors )
 			bytes = i.interceptData( bytes );
 		if( !cnx.writeBytes( bytes ) )
@@ -331,7 +331,7 @@ class Stream {
 	/**
 	*/
 	public function handleData( buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) : Int {
-		if( status == StreamStatus.closed )
+		if( status == Status.closed )
 			return -1;
 	//TODO .. data filters
 	//	for( f in dataFilters ) {

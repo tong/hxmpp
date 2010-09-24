@@ -19,7 +19,7 @@ package jabber.client;
 
 import jabber.JID;
 import jabber.Stream;
-import jabber.StreamStatus;
+import jabber.stream.Status;
 import jabber.stream.Connection;
 
 /**
@@ -39,7 +39,7 @@ class Stream extends jabber.Stream {
 	}
 	
 	override function handleConnect() {
-		status = StreamStatus.pending;
+		status = Status.pending;
 		if( !cnx.http ) {
 			sendData( xmpp.Stream.createOpenXml( xmpp.Stream.CLIENT, jid.domain, version, lang ) );
 			cnx.read( true ); // start reading input
@@ -65,7 +65,7 @@ class Stream extends jabber.Stream {
 				return -1;
 			}
 			parseServerStreamFeatures( ( x.nodeName == "body" ) ? x.firstElement() : x );
-			status = StreamStatus.open;
+			status = Status.open;
 			onOpen();
 			return buflen;
 		} else {
@@ -78,7 +78,7 @@ class Stream extends jabber.Stream {
 				var sx = Xml.parse( s ).firstElement();
 				id = sx.get( "id" );
 				if( !version ) {
-					status = StreamStatus.open;
+					status = Status.open;
 					//cnx.reset();
 					onOpen();
 					return buflen;
@@ -94,7 +94,7 @@ class Stream extends jabber.Stream {
 				return -1;
 			}
 			if( !version ) {
-				status = StreamStatus.open;
+				status = Status.open;
 				onOpen();
 				return buflen;
 			}
@@ -114,10 +114,10 @@ class Stream extends jabber.Stream {
 			jabber.XMPPDebug.inc( _t );
 			#end
 			if( cnx.secure && !cnx.secured && server.features.get( "starttls" ) != null ) {
-				status = StreamStatus.starttls;
+				status = Status.starttls;
 				sendData( '<starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls"/>' );
 			} else {
-				status = StreamStatus.open;
+				status = Status.open;
 				onOpen();
 			}
 			return buflen;

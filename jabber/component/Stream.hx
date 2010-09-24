@@ -83,7 +83,7 @@ class Stream extends jabber.Stream {
 	
 	override function handleConnect() {
 		sendData( xmpp.Stream.createOpenXml( xmpp.Stream.COMPONENT, subdomain+"."+host ) );
-		status = jabber.StreamStatus.pending;
+		status = jabber.stream.Status.pending;
 		cnx.read( true );
 	}
 	
@@ -97,7 +97,7 @@ class Stream extends jabber.Stream {
 			trace(e);
 			return 0;//-1;
 		}
-		status = jabber.StreamStatus.open;
+		status = jabber.stream.Status.open;
 		#if XMPP_DEBUG
 		jabber.XMPPDebug.inc( t );
 		#end
