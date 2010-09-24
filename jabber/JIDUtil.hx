@@ -111,35 +111,8 @@ class JIDUtil {
 	    provided by a human user in unescaped form, or by a gateway to some external system
 	    (e.g., email or LDAP) that needs to generate a JID.
     */
-	//#if neko
-	//static var __escape = neko.Lib.load( "hxmpp", "jid_escapeNode", 1 );
-	//#end
 	public static function escapeNode( n : String ) : String {
-		//TODO performance comparison
-		/*
-		var b = new StringBuf();
-		for( i in 0...n.length ) {
-			var c = n.charAt( i );
-			switch( c ) {
-			case '"' 	: b.add( "\\22" );
-			case '&' 	: b.add( "\\26" );
-			case '\\' 	: b.add( "\\27" );
-			case '/' 	: b.add( "\\2f" ); // TODO:check xep!
-			case ':' 	: b.add( "\\3a" );
-			case '<' 	: b.add( "\\3c" );
-			case '>' 	: b.add( "\\3e" );
-			case '@' 	: b.add( "\\40" );
-			case '\\\\'	: b.add( "\\5c" );
-			//TODO
-			//case " " : b.add( "\\20" );
-			//default : b.add( c );
-			default : if( c == " " ) b.add( "\\20" ) else b.add( c );
-			}
-		}
-		return b.toString();
-		*/
 		//s.split("&").join("&amp;")
-		//TODO n = s.split( "\\" ).join( "\\5c" );
 		n = StringTools.replace( n, "\\", "\\5c" );
 		n = StringTools.replace( n, " ", "\\20" );
 		n = StringTools.replace( n, "\"", "\\22" );
@@ -163,48 +136,6 @@ class JIDUtil {
      	for foreign systems.
     */
 	public static function unescapeNode( n : String ) : String {
-		//TODO performance comparison
-		/*
-		var l = n.length;
-		var b = new StringBuf();
-		var i = 0;
-		while( i < l ) {
-			var c = n.charAt( i );
-			if( c == '\\' && i+2 < l ) {
-				var c2 = n.charAt( i+1 );
-				var c3 = n.charAt( i+2 );
-				if( c2 == "2" ) {
-					switch( c3 ) {
-					case '0' : b.add( ' ' );  i += 3;
-					case '2' : b.add( '"' );  i += 3;
-					case '6' : b.add( '&' );  i += 3;
-					case '7' : b.add( '\\');  i += 3;
-					case 'f' : b.add( '/' );  i += 3;
-					}
-				} else if( c2 == '3' ) {
-					switch( c3 ) {
-					case 'a' : b.add( ':' ); i += 3;
-					case 'c' : b.add( '<' ); i += 3;
-					case 'e' : b.add( '>' ); i += 3;
-					}
-				} else if( c2 == '4' ) {
-					if( c3 == '0' ) {
-						b.add( '@' );
-						i += 3;
-					}
-				} else if( c2 == '5' ) {
-					if( c3 == 'c' ) {
-						b.add( '\\\\' );
-						i += 4;
-					}
-				}
-			} else {
-				b.add( c );
-				i++;
-			}	
-		}
-		return b.toString();
-		*/
 		n = StringTools.replace( n, "\\20", " " );
 		n = StringTools.replace( n, "\\22", "\"" );
 		n = StringTools.replace( n, "\\26", "&" );
