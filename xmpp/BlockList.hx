@@ -19,7 +19,7 @@ package xmpp;
 
 class BlockList {
 	
-	public static inline var XMLNS = "urn:xmpp:blocking";
+	public static var XMLNS = "urn:xmpp:blocking";
 	
 	public var items : Array<String>;
 	public var unblock : Bool;

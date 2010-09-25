@@ -1,6 +1,6 @@
 package xmpp;
 
-//TODO move to xmpp.Packet
+//TODO move to xmpp.Packet, xmpp.Stream
 
 class XMLUtil {
 	

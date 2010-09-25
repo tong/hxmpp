@@ -29,11 +29,6 @@ class Stream {
 	public static var COMPONENT = "jabber:component:accept";
 	#end
 	
-	//public static inline var CLOSE = "</stream:stream>";
-	//public static inline var ERROR = "</stream:error>";
-	//public static inline var REGEXP_CLOSE = new EReg( CLOSE, "" );
-	//public static inline var REGEXP_ERROR = new EReg( ERROR, "" );
-	
 	/**
 		Creates the opening XML tag of a XMPP stream.
 	*/

@@ -93,9 +93,28 @@ class Packet {
 		p.from = x.get( "from" );
 		p.id = x.get( "id" );
 //		p.lang = x.get( "xml:lang" );
-//		trace("##"+x);
 		return p;
 	}
+	
+	/*TODO replace util.XMLUtil
+	public static function createXmlElement( n : String, ?d : String ) : Xml {
+		var x = Xml.createElement( n );
+		if( d != null ) x.addChild( Xml.createPCData( d ) );
+		return x;
+	}
+	*/
+	
+	/*
+	public static function attachPacketNodes<T>( x : Xml, c : T ) : Xml {
+		for( f in Reflect.fields( c ) ) {
+			var v = Reflect.field( c, f );
+			if( v == null )
+				continue;
+			x.addChild( XMLUtil.createElement( f, Std.string( v ) ) );
+		}
+		return x;
+	}
+	*/
 	
 	/**
 		Reflects the elements of the XML into the packet.
@@ -124,22 +143,6 @@ class Packet {
 	}
 	*/
 	
-	/*TODO replace util.XMLUtil
-	public static function createXmlElement( n : String, ?d : String ) : Xml {
-		var x = Xml.createElement( n );
-		if( d != null ) x.addChild( Xml.createPCData( d ) );
-		return x;
-	}
-	*/
-	
-	/*
-	public static function createPacketElementXml<T>( o : T, name : String ) : Xml {
-		trace( Reflect.field( o, name ) );
-		var v = Reflect.field( o, name );
-		if( v == null ) return null;
-		return XMLUtil.createElement( name, v );
-	}
-*/
 	/*
 	public static function reflectPacketAttributes<T>( x : Xml, p : T ) : T {
 		for( a in x.attributes ) {
@@ -151,7 +154,7 @@ class Packet {
 	}
 	*/
 	/*
-	static inline function parsePacketBase( p : xmpp.Packet, x : Xml ) {
+	static function parsePacketBase( p : xmpp.Packet, x : Xml ) {
 		xmpp.Packet.parseAttributes( p, x );
 		xmpp.Packet.parseChilds( p, x );
 	}

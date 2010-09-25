@@ -22,7 +22,7 @@ package xmpp;
 */
 class Roster extends List<xmpp.roster.Item> {
 	
-	public static inline var XMLNS = "jabber:iq:roster";
+	public static var XMLNS = "jabber:iq:roster";
 	
 	public function new( ?items : Iterable<xmpp.roster.Item> ) {
 		super();

@@ -22,7 +22,7 @@ package xmpp;
 */
 class BOB {
 	
-	public static inline var XMLNS = "urn:xmpp:bob";
+	public static var XMLNS = "urn:xmpp:bob";
 	
 	/** Content ID */
 	public var cid : String;
@@ -60,11 +60,11 @@ class BOB {
 	/**
 		Parses cids ('algo+hash@bob.xmpp.org') from the given string.
 	*/
-	public static function parseCID( t : String ) : {algo:String,hash:String} {
+	public static function parseCID( t : String ) : { algo : String, hash : String } {
 		//TODO return : Array<{algo:String,hash:String}>
 		var algo : String = null;
 		var hash : String = null;
-		~/cid:(.*?)\+(.*?)@bob.xmpp.org/.customReplace( t, function(r) {
+		~/cid:(.*?)\+(.*?)@bob\.xmpp\.org/.customReplace( t, function(r) {
 			algo = r.matched( 1 );
 			hash = r.matched( 2 );
 			return null;
@@ -84,7 +84,7 @@ class BOB {
 	/**
 	*/
 	public static function createCID( algo : String, hash : String ) : String {
-		#if (neko||cpp) //TODO test performance on cpp target
+		#if (neko||cpp)
 		var b = new StringBuf();
 		b.add( algo );
 		b.add( "+" );

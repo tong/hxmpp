@@ -76,7 +76,7 @@ class XHTML {
 	}
 	
 	/*
-	public static inline function create( body : String ) :  {
+	public static inline function create( body : String ) : Xml {
 		return new XHTML( body ).toXml();
 	}
 	*/

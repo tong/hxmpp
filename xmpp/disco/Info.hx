@@ -24,11 +24,11 @@ class Info {
 	public var identities : Array<Identity>; 
 	public var features : Array<String>;
 	public var node : String;
-	public var x : Xml; //TODO check for requirement (not in specs)
+	public var x : Xml; // dataform
 	
 	public function new( ?identities : Array<Identity>, ?features : Array<String>, ?node : String ) {
-		this.identities = identities == null ? new Array() : identities;
-		this.features = features == null ? new Array() : features;
+		this.identities = ( identities == null ) ? new Array() : identities;
+		this.features = ( features == null ) ? new Array() : features;
 		this.node = node;
 	}
 
