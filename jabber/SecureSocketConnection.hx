@@ -17,9 +17,7 @@
 */
 package jabber;
 
-// Legacy socket connection on port 5223
-
-#if (neko||php||cpp)
+#if (neko||php||cpp||rhino)
 
 #if neko
 import neko.tls.Socket;
@@ -31,14 +29,12 @@ import cpp.net.Host;
 import cpp.net.Socket;
 #end
 
-// TODO extend jabber.SocketConnection
-class SecureSocketConnection extends jabber.stream.SocketConnection<Socket> {
-	
+class SecureSocketConnection extends jabber.stream.SocketConnection {
+		
 	public function new( host : String, port : Int = 5223, secure : Bool = true,
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
 		super( host, port, secure, bufSize, maxBufSize, timeout );
-		reading = false;
 	}
 	
 	public override function connect() {
@@ -49,7 +45,7 @@ class SecureSocketConnection extends jabber.stream.SocketConnection<Socket> {
 			#if neko
 			socket.connect( Socket.resolve( host ), port );
 			#elseif php
-			socket.connectTLS( new php.net.Host( host ), port );
+			socket.connect( new Host( host ), port );
 			#end
 		} catch( e : Dynamic ) {
 			__onError( e );
@@ -60,67 +56,12 @@ class SecureSocketConnection extends jabber.stream.SocketConnection<Socket> {
 		__onConnect();
 	}
 	
-	public override function disconnect() {
-		if( !connected )
-			return;
-		reading = connected = false;
-		try socket.close() catch( e : Dynamic ) {
-			trace(e);
-			__onError( "Error closing socket" );
-			return;
-		}
-	}
-	
-	public override function read( ?yes : Bool = true ) : Bool {
-		reading = true;
-		while( reading )
-			readData();
-		return true;
-	}
-	
 	public override function write( t : String ) : Bool {
 		if( !connected || t == null || t.length == 0 )
 			return false;
 		socket.write( t );
 		socket.output.flush();
 		return true;
-	}
-	
-	/*
-	public override function setSecure() {
-		trace( "DO NOTHING");
-	}
-	*/
-	
-	function readData() {
-		var buflen = buf.length;
-		if( bufbytes == buflen ) {
-			var nsize = buflen*2;
-			if( nsize > maxBufSize ) {
-				nsize = maxBufSize;
-				if( buflen == maxBufSize  )
-					throw "Max buffer size reached ("+maxBufSize+")";
-			}
-			var buf2 = haxe.io.Bytes.alloc( nsize );
-			buf2.blit( 0, buf, 0, buflen );
-			buflen = nsize;
-			buf = buf2;
-		}
-		var nbytes = 0;
-		nbytes = socket.input.readBytes( buf, bufbytes, buflen-bufbytes );
-		bufbytes += nbytes;
-		var pos = 0;
-		while( bufbytes > 0 ) {
-			var nbytes = __onData( buf, pos, bufbytes );
-			if( nbytes == 0 ) {
-				return;
-			}
-			pos += nbytes;
-			bufbytes -= nbytes;
-		}
-		if( reading && pos > 0 )
-			buf = haxe.io.Bytes.alloc( bufSize );
-		//buf.blit( 0, buf, pos, bufbytes );
 	}
 }
 
@@ -134,9 +75,12 @@ import flash.events.SecurityErrorEvent;
 import flash.events.ProgressEvent;
 import flash.utils.ByteArray;
 
-class SecureSocketConnection extends jabber.stream.SocketConnection<SecureSocket> {
+class SecureSocketConnection extends jabber.stream.SocketConnection {
 	
 	var buf : ByteArray;
+	#if air
+	var socket : SecureSocket;
+	#end
 	
 	public function new( host : String, port : Int = 5223,
 						 ?bufSize : Int, ?maxBufSize : Int,
@@ -244,7 +188,7 @@ import air.IOErrorEvent;
 import air.SecurityErrorEvent;
 import air.ProgressEvent;
 
-class SecureSocketConnection extends jabber.stream.SocketConnection<SecureSocket> {
+class SecureSocketConnection extends jabber.stream.SocketConnection {
 	
 	var buf : ByteArray;
 	
@@ -322,17 +266,20 @@ class SecureSocketConnection extends jabber.stream.SocketConnection<SecureSocket
 
 
 #elseif nodejs
+
 class SecureSocketConnection extends jabber.SocketConnection {
+	
 	public function new( host : String, port : Int = 5222,
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
 		super( host, port, true, bufSize, maxBufSize, timeout );
 	}
+	
 	override function sockConnectHandler() {
 		socket.setSecure();
 		super.sockConnectHandler();
 	}
 }
-#end //js
 
-#end
+#end //js
+#end //platform
