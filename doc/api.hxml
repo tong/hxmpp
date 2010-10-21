@@ -1,12 +1,4 @@
 
-#jabber.component.Stream
-#-D JABBER_COMPONENT
-#-xml doc/api_component.xml
-#-D xmldoc
-
-#--next
--cp doc/
--cp util/
 jabber.BlockList
 jabber.BOB
 jabber.BOBListener
@@ -38,15 +30,15 @@ jabber.client.Roster
 jabber.client.SASLAuth
 jabber.client.Stream
 jabber.client.VCard
-#jabber.file.IBListener
-#jabber.file.IBReciever
-#jabber.file.IBTransfer
-#jabber.file.io.IBInput
-#jabber.file.io.IBOutput
-#jabber.file.io.IO
-jabber.jingle.RTMPCall
-jabber.jingle.RTMPListener
-jabber.jingle.RTMPResponder
+jabber.data.ByteStreamReciever
+jabber.data.ByteStreamTransfer
+jabber.data.IBReciever
+jabber.data.IBTransfer
+jabber.data.SIListener
+jabber.data.SITransfer
+#jabber.jingle.RTMPCall
+#jabber.jingle.RTMPListener
+#jabber.jingle.RTMPResponder
 jabber.lop.Farm
 jabber.lop.Villein
 #jabber.component.Stream
@@ -72,12 +64,12 @@ xmpp.PrivacyLists
 xmpp.SASL
 xmpp.XHTML
 
--swf9 lib.swf
--xml doc/api.xml
+-cp ../
+-neko temp.n
+-cmd rm temp.n
+-xml api.xml
 -D XMPP_DEBUG
 -D JABBER_DEBUG
--D JABBER_SOCKETBRIDGE
-#-D JABBER_COMPONENT
--cmd rm lib.swf
--cmd cd doc/api/
--cmd haxedoc ../api.xml -f jabber -f jabber.tool -f xmpp -f net -f crypt -f util -f error
+-cmd cd api/
+-cmd haxedoc ../api.xml -f jabber -f xmpp
+#-cmd rm ../api.xml
