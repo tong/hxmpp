@@ -26,6 +26,7 @@ class IQFilter {
 	public var nodeName : String;
 	public var iqType : xmpp.IQType;
 	
+	//TODO public function new( ?xmlns : String, ?type : xmpp.IQType, ?nodeName : String = "query" ) {
 	public function new( ?xmlns : String, ?nodeName : String, ?type : xmpp.IQType ) {
 		this.xmlns = xmlns;
 		this.nodeName = nodeName;

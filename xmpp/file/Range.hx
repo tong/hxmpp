@@ -18,6 +18,13 @@
 package xmpp.file;
 
 typedef Range = {
+	
+	/** The position, in bytes, to start transferring the data from */
 	var offset : Null<Int>;
+	
+	/** 
+		The number of bytes to retrieve starting at offset.<br/>
+		This defaults to the length of the file from offset to the end.
+	*/
 	var length : Null<Int>;
 }

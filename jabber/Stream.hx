@@ -24,6 +24,7 @@ import jabber.stream.PacketTimeout;
 import jabber.stream.Status;
 import jabber.stream.TDataInterceptor;
 import jabber.stream.TDataFilter;
+import jabber.stream.Status;
 import jabber.util.Base64;
 import xmpp.XMLUtil;
 import xmpp.filter.PacketIDFilter;
@@ -41,6 +42,7 @@ private class StreamFeatures {
 		l.add( f );
 		return true;
 	}
+	public function has( f : String ) : Bool { return Lambda.has( l, f ); }
 	public function remove( f : String ) : Bool { return l.remove( f ); }
 	public function clear( f : String ) { l = new List(); }
 	#if JABBER_DEBUG
@@ -113,7 +115,7 @@ class Stream {
 	
 	function setConnection( c : Connection ) : Connection {
 		switch( status ) {
-		case open, pending #if !JABBER_COMPONENT, starttls #end :
+		case Status.open, Status.pending #if !JABBER_COMPONENT, Status.starttls #end :
 			close( true );
 			setConnection( c );
 			 // re-open XMPP stream
@@ -122,7 +124,7 @@ class Stream {
 			#else
 			open( jid );
 			#end
-		case closed :
+		case Status.closed :
 			if( cnx != null && cnx.connected )
 				cnx.disconnect();
 			cnx = c;
@@ -334,9 +336,9 @@ class Stream {
 		if( status == Status.closed )
 			return -1;
 	//TODO .. data filters
-	//	for( f in dataFilters ) {
-	//		buf = f.filterData( buf );
-	//	}
+		for( f in dataFilters ) {
+			buf = f.filterData( buf );
+		}
 	
 		var t : String = buf.readString( bufpos, buflen );
 #if flash // haXe 2.06 fuckup
@@ -367,7 +369,7 @@ class Stream {
 			return processStreamInit( t, buflen );
 		
 		#if !JABBER_COMPONENT
-		case starttls :
+		case Status.starttls :
 			var x : Xml = null;
 			try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
 				#if XMPP_DEBUG
@@ -397,7 +399,7 @@ class Stream {
 			return buflen;
 		#end //!JABBER_COMPONENT
 			
-		case open :
+		case Status.open :
 			// filter data here ?
 			var x : Xml = null;
 			try {

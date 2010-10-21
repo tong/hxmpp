@@ -25,6 +25,8 @@ import neko.Lib;
 import php.Lib;
 #elseif cpp
 import cpp.Lib;
+#elseif rhino
+import js.Lib;
 #elseif nodejs
 import js.Lib;
 #elseif (flash&&!air)
@@ -48,10 +50,12 @@ class XMPPDebug {
 		#if flash
 		useConsole = ( ExternalInterface.available &&
 					   ExternalInterface.call( "console.error.toString" ) != null );
-		#elseif (js&&!nodejs)
-		try useConsole = untyped console != null && console.error != null catch( e : Dynamic ) {
-			useConsole = false;
-		}
+		#elseif js
+			#if (nodejs||rhino) #else
+			try useConsole = untyped console != null && console.error != null catch( e : Dynamic ) {
+				useConsole = false;
+			}
+			#end
 		#end
 		#end
 	}
@@ -73,7 +77,7 @@ class XMPPDebug {
 	}
 	
 	public static inline function print( t : String, out : Bool, level : String = "log" ) {
-		#if (neko||cpp||php||nodejs)
+		#if (neko||cpp||php||rhino||nodejs)
 		_print( t, out ? color_out : color_inc );
 		#elseif (flash||js)
 		_print( t, out, level );
@@ -81,14 +85,16 @@ class XMPPDebug {
 	}
 	
 	
-	#if (neko||cpp||php||nodejs)
+	#if (neko||cpp||php||rhino||nodejs)
 
 	public static var color_out = 36;
 	public static var color_inc = 33;
 	
 	public static function _print( t : String, color : Int ) {
 		if( color == null ) {
-			Lib.print( t );
+			#if rhino Lib._print( t );
+			#else Lib.print( t );
+			#end
 			return;
 		}
 		var b = new StringBuf();
@@ -98,7 +104,11 @@ class XMPPDebug {
 		b.add( t );
 		b.add( "\033[" );
 		b.add( "m\n" );
+		#if rhino
+		Lib._print( b.toString() );
+		#else
 		Lib.print( b.toString() );
+		#end
 	}
 	
 	

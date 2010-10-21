@@ -134,7 +134,7 @@ class Caps {
 	}
 
 	static function sortDataFormFields( a : xmpp.dataform.Field, b : xmpp.dataform.Field ) {
-		return if( a.variable == b.variable ) 0 else if( a.variable > b.variable ) 1 else -1; 
+		return ( a.variable == b.variable ) ? 0 : ( a.variable > b.variable ) ? 1 : -1;
 	}
 	
 	static function sort( a : String, b : String ) : Int {

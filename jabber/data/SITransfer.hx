@@ -133,7 +133,7 @@ class SITransfer {
 		
 		var iq = new IQ( IQType.set );
 		iq.to = reciever;
-		var si = new xmpp.file.SI( id, mime, xmpp.file.SI.XMLNS_PROFILE );
+		var si = new xmpp.file.SI( id, mime, xmpp.file.File.XMLNS );
 		si.any.push( file.toXml() );
 		var form = new xmpp.DataForm( xmpp.dataform.FormType.form );
 		var form_f = new xmpp.dataform.Field( xmpp.dataform.FieldType.list_single );

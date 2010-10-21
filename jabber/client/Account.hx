@@ -70,8 +70,6 @@ class Account {
 	*/
 	//public function register( username : String, password : String, email : String, name : String ) : Bool {
 	public function register( reg : xmpp.Register ) : Bool {				  	
-		if( stream.status != jabber.StreamStatus.open )
-			return false;
 		var self = this;
 		var iq = new xmpp.IQ();
 		iq.x = new xmpp.Register();
@@ -111,16 +109,16 @@ class Account {
 		var ext = new xmpp.Register();
 		ext.remove = true;
 		iq.x = ext;
-		var self = this;
+		var me = this;
 		stream.sendIQ( iq, function(r) {
 			switch( r.type ) {
 			case result :
 				//var l = xmpp.Register.parse( iq.x.toXml() );
 				//if( !l.remove ) {
 				//}
-				self.onRemove();
+				me.onRemove();
 			case error :
-				self.onError( new jabber.XMPPError( self, r ) );
+				me.onError( new jabber.XMPPError( me, r ) );
 			default : //#
 			}
 		} );

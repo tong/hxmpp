@@ -35,12 +35,10 @@ class XMPPError extends xmpp.Error {
 		this.from = p.from;
 	}
 	
-	#if JABBER_DEBUG
 	public function toString() : String {
 		var t = "XMPPError[ "+from+", "+condition+", "+code;
 		if( text != null ) t += ", "+text;
 		return t += " ]";
 	}
-	#end
 	
 }

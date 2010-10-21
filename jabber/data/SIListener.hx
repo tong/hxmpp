@@ -36,7 +36,7 @@ class SIListener {
 	var collector : jabber.stream.PacketCollector;
 	
 	public function new( stream : jabber.Stream, handler : DataReciever->Void ) {
-		if( !stream.features.add( xmpp.file.SI.XMLNS_PROFILE ) )
+		if( !stream.features.add( xmpp.file.File.XMLNS ) )
 			throw "SI data transfer listener already added";
 		this.stream = stream;
 		this.handler = handler;
@@ -47,7 +47,7 @@ class SIListener {
 	
 	public function dispose() {
 		stream.removeCollector( collector );
-		stream.features.remove( xmpp.file.SI.XMLNS_PROFILE  );
+		stream.features.remove( xmpp.file.File.XMLNS  );
 	}
 	
 	function handleRequest( iq : IQ ) {
@@ -73,9 +73,9 @@ class SIListener {
 					}
 				}
 			#if flash // haXe 2.06 fukup
-			} else if( e.nodeName == "file" && e.get( "_xmlns_" ) == xmpp.file.SI.XMLNS_PROFILE ) {
+			} else if( e.nodeName == "file" && e.get( "_xmlns_" ) == xmpp.file.File.XMLNS ) {
 			#else
-			} else if( e.nodeName == "file" && e.get( "xmlns" ) == xmpp.file.SI.XMLNS_PROFILE ) {
+			} else if( e.nodeName == "file" && e.get( "xmlns" ) == xmpp.file.File.XMLNS ) {
 			#end
 				file = xmpp.file.File.parse( e );
 			}

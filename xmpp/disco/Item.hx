@@ -37,7 +37,7 @@ class Item {
 		return x;
 	}
 	
-	public static inline function parse( x : Xml ) : Item {
+	public static function parse( x : Xml ) : Item {
 		return new Item( x.get( "jid" ), x.get( "name" ), x.get( "node" ) );
 	}
 	

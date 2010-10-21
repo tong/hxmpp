@@ -19,6 +19,8 @@ package xmpp.file;
 
 class File {
 	
+	public static var XMLNS = SI.XMLNS+"/profile/file-transfer";
+	
 	public var name : String;
 	public var size : Null<Int>;
 	public var date : String;
@@ -38,7 +40,7 @@ class File {
 
 	public function toXml() : Xml {
 		var x = Xml.createElement( "file" );
-		x.set( "xmlns", SI.XMLNS_PROFILE );
+		x.set( "xmlns", XMLNS );
 		if( name != null ) x.set( "name", name );
 		if( size != null ) x.set( "size", Std.string( size ) );
 		if( date != null ) x.set( "date", date );

@@ -21,10 +21,14 @@ import jabber.util.Base64;
 
 /**
 	<a href="http://xmpp.org/extensions/xep-0231.html">XEP-0231: Bits of Binary</a><br/>
-	Provides requesting entity with 'Bits Of Binary'.
+	Listens for 'Bits Of Binary' requests.
 */
 class BOBListener {
 	
+	/**
+		Callback handler for BOB requests.<br/>
+		JID->CID .. return BOB
+	*/
 	public var onRequest : String->String->xmpp.BOB;
 	
 	public var stream(default,null) : jabber.Stream;

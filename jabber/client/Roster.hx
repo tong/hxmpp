@@ -300,7 +300,7 @@ class Roster {
 		var i = getItem( jid.bare );
 		if( p.type != null ) {
 			switch( p.type ) {
-			case subscribe :
+			case PresenceType.subscribe :
 				switch( subscriptionMode ) {
 				case acceptAll(s) :
 					confirmSubscription( p.from, true, s );
@@ -309,11 +309,11 @@ class Roster {
 				case manual :
 					onAsk( new Item( p.from ) );
 				}
-			case subscribed :
+			case PresenceType.subscribed :
 				onSubscribed( i );
-			case unsubscribe :
+			case PresenceType.unsubscribe :
 				onUnsubscribed( i );
-			case unsubscribed :
+			case PresenceType.unsubscribed :
 				items.remove( i );
 				onUnsubscribed( i );
 			default : //
