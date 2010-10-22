@@ -34,12 +34,11 @@ class PacketCollector {
 	/** Block remaining collectors */
 	public var block : Bool; //TODO remove
 	/** */
-	public var timeout(default,setTimeout) : PacketTimeout;
 	
 	public function new( filters : Iterable<PacketFilter>,
 						 handler : Dynamic->Void,
 						 ?permanent : Bool = false,
-						 ?timeout : PacketTimeout,
+					//	 ?timeout : PacketTimeout,
 						 ?block : Bool = false ) {
 		handlers = new Array();
 		this.filters = new FilterList();
@@ -49,18 +48,8 @@ class PacketCollector {
 			handlers.push( handler );
 		this.permanent = permanent;
 		this.block = block;
-		this.setTimeout( timeout );
 	}
 
-	function setTimeout( t : PacketTimeout ) : PacketTimeout {
-		if( timeout != null ) timeout.stop();
-		timeout = null;
-		if( t == null || permanent ) return null;
-		timeout = t;
-		timeout.collector = this;
-		return timeout;
-	}
-	
 	/**
 		Returns true if the given XMPP packet passes through all filters.
 	*/
@@ -69,7 +58,6 @@ class PacketCollector {
 			if( !f.accept( p ) )
 				return false;
 		}
-		if( timeout != null ) timeout.stop();
 		return true;
 	}
 	

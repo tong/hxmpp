@@ -20,7 +20,6 @@ package jabber;
 import jabber.stream.Connection;
 import jabber.stream.TPacketInterceptor;
 import jabber.stream.PacketCollector;
-import jabber.stream.PacketTimeout;
 import jabber.stream.Status;
 import jabber.stream.TDataInterceptor;
 import jabber.stream.TDataFilter;
@@ -226,7 +225,7 @@ class Stream {
 		Send an IQ packet and forward the collected response to the given handler function.
 	*/
 	public function sendIQ( iq : xmpp.IQ, ?handler : xmpp.IQ->Void,
-							?permanent : Bool, ?timeout : PacketTimeout, ?block : Bool ) //TODO permanent+remove block argument
+							?permanent : Bool, ?block : Bool ) //TODO permanent+remove block argument
 	: { iq : xmpp.IQ, collector : PacketCollector }
 	{
 		if( iq.id == null ) iq.id = nextID();
@@ -301,7 +300,7 @@ class Stream {
 	public function addCollector( c : PacketCollector ) : Bool {
 		if( Lambda.has( collectors, c ) ) return false;
 		collectors.push( c );
-		if( c.timeout != null ) c.timeout.start();
+//		if( c.timeout != null ) c.timeout.start();
 		return true;
 	}
 	
@@ -312,7 +311,7 @@ class Stream {
 			if( !collectors_id.remove( c ) )
 				return false;
 		}
-		if( c.timeout != null ) c.timeout.stop();
+//		if( c.timeout != null ) c.timeout.stop();
 		return true;
 	}
 	
@@ -369,7 +368,8 @@ class Stream {
 			return processStreamInit( t, buflen );
 		
 		#if !JABBER_COMPONENT
-		case Status.starttls :
+		//case jabber.stream.Status.starttls :
+		case starttls :
 			var x : Xml = null;
 			try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
 				#if XMPP_DEBUG
@@ -399,7 +399,7 @@ class Stream {
 			return buflen;
 		#end //!JABBER_COMPONENT
 			
-		case Status.open :
+		case open :
 			// filter data here ?
 			var x : Xml = null;
 			try {
