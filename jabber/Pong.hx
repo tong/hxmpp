@@ -23,10 +23,8 @@ package jabber;
 */
 class Pong {
 	
-	/**
-		Just an informational event that a ping has been recieved and responded to.
-	*/
-	public dynamic function onPong( entity : String ) : Void;
+	/** Informational callback, informing that a ping has been recieved and responded to. */
+	public dynamic function onPong( jid : String ) : Void;
 
 	public var stream(default,null) : Stream;
 	

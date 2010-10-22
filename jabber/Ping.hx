@@ -27,97 +27,82 @@ import jabber.util.Timer;
 */
 class Ping {
 	
-	public static var defaultInterval = 60;
-	
-	public dynamic function onResponse( jid : String ) : Void;
+	public dynamic function onPong( jid : String ) : Void;
 	public dynamic function onTimeout( jid : String ) : Void;
 	public dynamic function onError( e : XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
-	/** Ping interval ms */
-	public var interval : Int; //TODO interval(default,setInterval)
-	/** The pinged target entity */
-	public var target : String; //public var target : Array<String>; //hm??
-	/** Indicates if the ping interval is running */
 	public var active(default,null) : Bool;
+	public var target : String;
+	/** Ping interval in ms */
+	public var interval(default,setInterval) : Int;
 	
-	var timer : Timer;
 	var iq : xmpp.IQ;
+	var timer : Timer;
+	var pending : Bool;
 	
-	public function new( stream : Stream, ?target : String, ?interval : Int ) {
-		if( interval != null && interval <= 0 )
-			throw "Invalid ping interval ("+interval+")";
-		this.target = target;
+	public function new( stream : Stream, ?target : String ) {
 		this.stream = stream;
-		this.interval = ( interval != null ) ? interval : defaultInterval;
+		this.target = target;
 		active = false;
 		iq = new xmpp.IQ( null, null, null, stream.jidstr );
 		iq.properties.push( xmpp.Ping.xml );
 	}
-
-	/**
-		Starts ping packet sending interval.
-	*/
-	public function run() {
-		#if !php
+	
+	public function run( interval : Int ) {
+		if( active ) {
+			#if JABER_DEBUG trace( "Ping is already active", "warn" ); #end
+			return;
+		}
+		this.interval = interval;
 		active = true;
 		send( target );
-		#end
 	}
 	
-	/**
-		Stops the ping interval.
-	*/
+	function setInterval( i : Int ) : Int  {
+		if( i < 1 )
+			return throw "Invalid ping time interval ["+i+"]";
+		return interval = i;
+	}
+	
 	public function stop() {
-		#if !php
-		active = false;
-		if( timer != null ) {
-			timer.stop();
-			timer = null;
+		if( !active ) {
+			#if JABER_DEBUG trace( "Ping is not active", "warn" ); #end
+			return;
 		}
-		#end
-	}
-	
-	/**
-		Sends a ping packet to the given entity, or to the server if the to attribute is omitted.
-	*/
-	public function send( to : String = null ) {
-		#if !php
-		iq.to = to;
-		var me = this;
-		var timeoutHandler = function( c : jabber.stream.PacketCollector ) {
-			if( me.active ) {
-				me.timer.stop();
-				me.timer = null;
-			}
-			me.onTimeout( to );
-		};
-		stream.sendIQ( iq, handlePong, false,
-					   new jabber.stream.PacketTimeout( [timeoutHandler], interval*1000 ) );
-		#end
-	}
-	
-	function handleTimer() {
-		#if !php
 		timer.stop();
-		send( target );
-		#end
+		active = false;
+	}
+	
+	function send( to : String = null ) {
+		iq.to = to;
+		stream.sendIQ( iq, handlePong );
+		pending = true;
+		timer = new Timer( interval );
+		timer.run = handleTimer;
 	}
 	
 	function handlePong( iq : xmpp.IQ ) {
-		#if !php
+		timer.stop();
+		pending = false;
+		onPong( iq.from );
+		timer = new Timer( interval );
+		timer.run = handleTimer;
+	}
+	
+	function handleTimer() {
+		timer.stop();
+		timer = null;
 		switch( iq.type ) {
 		case result :
-			onResponse( iq.from );
-			if( active ) {
-				timer = new Timer( interval*1000 );
-				timer.run = handleTimer;
-			}
+			if( pending ) {
+				onTimeout( target );
+			} else send( target );
 		case error :
 			onError( new XMPPError( this, iq ) );
-		default : //#
+		default :
 		}
-		#end
+		
 	}
-
+	
 }
