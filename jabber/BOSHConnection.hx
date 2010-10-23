@@ -17,6 +17,7 @@
 */
 package jabber;
 
+import jabber.util.Timer;
 #if flash
 import flash.events.Event;
 import flash.events.HTTPStatusEvent;
@@ -24,12 +25,11 @@ import flash.events.IOErrorEvent;
 import flash.events.ProgressEvent;
 import flash.events.SecurityErrorEvent;
 #end
-import jabber.util.Timer;
 	
 	//TODO
 	
 	// timeout timer (?), added but needed?
-	// neko/cpp/php
+	// (neko/cpp/php)
 	// polling 
 	/// multiple streams over one connection
 	// secure!
@@ -132,11 +132,14 @@ class BOSHConnection extends jabber.stream.Connection {
 			XMPPDebug.out( b.toString() );
 			#end
 			sendRequests( b );
+			/*
+			#if (neko||php||cpp)
+			while( connected ) readData();
+			#end
+			*/
 		}
 	}
 	
-	/**
-	*/
 	public override function disconnect() {
 		if( connected ) {
 			var r = createRequest();
@@ -149,11 +152,10 @@ class BOSHConnection extends jabber.stream.Connection {
 		}
 	}
 	
-	/**
-	*/
 	public override function write( t : String ) : Bool {
-		sendQueuedRequests( t );
-		return true;
+		return sendQueuedRequests( t );
+		//sendQueuedRequests( t );
+		//return true;
 	}
 	
 	/**
@@ -179,21 +181,19 @@ class BOSHConnection extends jabber.stream.Connection {
 	
 	function restart() {
 		var r = createRequest();
-		#if flash // haXe 2.06 fuckup
+	#if flash // haXe 2.06 fuckup
 		r.set( '_xmlns_', XMLNS );
 		r.set( "xmpp_restart", "true" );
 		r.set( "xmlns_xmpp", XMLNS_XMPP );
 		r.set( "xml_lang", "en" );
-		#else
+	#else
 		r.set( 'xmlns', XMLNS );
 		r.set( "xmpp:restart", "true" );
 		r.set( "xmlns:xmpp", XMLNS_XMPP );
 		r.set( "xml:lang", "en" );
-		#end
+	#end
 		r.set( "to", host );
-		#if XMPP_DEBUG
-		XMPPDebug.out( r.toString() );
-		#end
+		#if XMPP_DEBUG XMPPDebug.out( r.toString() ); #end
 		sendRequests( r );
 	}
 	
@@ -274,7 +274,6 @@ class BOSHConnection extends jabber.stream.Connection {
 	*/
 	
 	function handleHTTPError( e : String ) {
-		//trace("handleHTTPError"+e);
 		cleanup();
 		__onError( e );
 	}
@@ -287,37 +286,29 @@ class BOSHConnection extends jabber.stream.Connection {
 		t = StringTools.replace( t, "xmpp:version", "_xmpp:version_" );
 		#end
 		var x : Xml = null;
-		try {
-			x = Xml.parse( t ).firstElement();
-		} catch( e : Dynamic ) {
-			#if JABBER_DEBUG
-			trace( "Invalid XML:" );
-			trace( t );
-			#end
+		try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
+			#if JABBER_DEBUG trace( "Invalid XML:\n"+t, "warn" ); #end
 			return;
 		}
 		#if flash // TODO haXe 2.06 fukup hack
 		#else
 		if( x.get( "xmlns" ) != XMLNS ) {
-			#if JABBER_DEBUG trace( "Invalid BOSH body" ); #end
+			#if JABBER_DEBUG trace( "Invalid BOSH body", "warn" ); #end
 			return;
 		}
 		#end
 		requestCount--;
-		if( timeoutTimer != null ) {
+		if( timeoutTimer != null )
 			timeoutTimer.stop();
-		}
 		if( connected ) {
 			switch( x.get( "type" ) ) {
 			case "terminate" :
 				cleanup();
-				#if JABBER_DEBUG
-				trace( "BOSH stream terminated by server", "warn" );
-				#end
+				#if JABBER_DEBUG trace( "BOSH stream terminated by server", "warn" ); #end
 				__onDisconnect();
 				return;
 			case "error" :
-				//TODO
+				trace("TODO");
 				return;
 			}
 			var c = x.firstElement();
@@ -328,16 +319,11 @@ class BOSHConnection extends jabber.stream.Connection {
 					sendQueuedRequests();
 				return;
 			}
-		//	var b = haxe.io.Bytes.ofString( c.toString() );
-		//	__onData( b, 0, b.length );
-			for( e in x.elements() ) {
+			for( e in x.elements() )
 				responseQueue.push( e );
-			}
 			resetResponseProcessor();
-			if( requestCount == 0 &&
-				!sendQueuedRequests() ) {
+			if( requestCount == 0 &&!sendQueuedRequests() )
 				( responseQueue.length > 0 ) ? Timer.delay( poll, 0 ) : poll();
-			}
 			
 		} else {
 			if( !initialized )

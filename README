@@ -6,7 +6,7 @@
 HXMPP is a haXe library for creating XMPP based clients and services.
 The library exists in two namespaces:
 * xmpp: creation and manipulation of XMPP data.
-* jabber: creation and manipulation of XMPP data streams between jabber entities.
+* jabber: creation and manipulation of XMPP data streams to a server.
 
 
 
@@ -115,6 +115,7 @@ XEPS SUPPORTED
 ** 0047 In-Band Bytestreams
 * 0049 Private XML Storage
 * 0054 VCardTemp
+* 0055 Search
 *** 0060 PubSub
 ** 0065 SOCKS5 Bytestreams
 * 0071 XHTML-IM

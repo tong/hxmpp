@@ -74,7 +74,7 @@ class Connection implements AsyncConnection, implements Dynamic<AsyncConnection>
 		var error = __error;
 		stream.sendIQ( iq, function(r) {
 			switch( r.type ) {
-			case IQType.result :
+			case result :
 				var v = xmpp.HXR.getData( r.x.toXml() );
 				var ok = true;
 				var ret;
@@ -90,7 +90,7 @@ class Connection implements AsyncConnection, implements Dynamic<AsyncConnection>
 				}
 				if( ok && onResult != null )
 					onResult( ret );
-			case IQType.error :
+			case error :
 				//TODO check
 				//var err = xmpp.Error.parse( r.x.toXml() );
 				var err = r.errors[0];

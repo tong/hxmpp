@@ -429,7 +429,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 }
 
 
-#elseif JABBER_SOCKETBRIDGE
+#elseif (js||JABBER_SOCKETBRIDGE)
 
 import jabber.stream.SocketConnection;
 

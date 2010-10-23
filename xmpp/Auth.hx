@@ -38,6 +38,7 @@ class Auth {
 	
 	public function toXml() : Xml {
 		var x = xmpp.IQ.createQueryXml( XMLNS );
+		//TODO Packet.attachPacketNodes( x, this );
 		if( username != null ) x.addChild( XMLUtil.createElement( "username", username ) );
 		if( password != null ) x.addChild( XMLUtil.createElement( "password", password ) );
 		if( digest != null )   x.addChild( XMLUtil.createElement( "digest", digest ) );
@@ -47,7 +48,7 @@ class Auth {
 	
 	public static function parse( x : Xml ) : xmpp.Auth {
 		var a = new xmpp.Auth();
-		//xmpp.Packet.reflectPacketNodes( x, a );
+		//TODO  xmpp.Packet.reflectPacketNodes( x, a );
 		for( e in x.elements() ) {
 			var v : String = null;
 			try v = e.firstChild().nodeValue catch( e : Dynamic ) {}
