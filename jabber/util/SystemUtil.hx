@@ -16,16 +16,21 @@ class SystemUtil {
 		Returns the name of the OS used.
 	*/
 	public static #if !js inline #end function systemName() : String {
-		#if (neko||cpp||php||nodejs)
+		
+		#if (neko||cpp||php||nodejs||rhino)
 		return Sys.systemName();
+		
 		#elseif flash
 		return flash.system.Capabilities.os;
+		
 		#elseif js
-		var os = js.Lib.window.navigator.appVersion;
-		return switch( os ) {
-		case "X11","Linux" : "Linux";
-		default : os;
-		}
+		var t  = js.Lib.window.navigator.appVersion;
+		t = t.substr( t.indexOf("(")+1, t.indexOf(")")-3 );
+		return if( t.indexOf( "Linux" ) != -1 ) "Linux";
+		else if( t.indexOf( "Macintosh" ) != -1 ) "Macintosh";
+		else if( t.indexOf( "Windows" ) != -1 ) "Windows";
+		else null;
+		
 		#end
 	}
 	
