@@ -18,7 +18,7 @@
 package jabber.client;
 
 /**
-	Abstract client account authentication.
+	Abstract client account authentication base.
 */
 class Authentication {
 	
@@ -33,11 +33,7 @@ class Authentication {
 	}
 	
 	public function authenticate( password : String, ?resource : String ) : Bool {
-		#if JABBER_DEBUG
-		return throw "abstract";
-		#else
-		return false;
-		#end
+		return throw new jabber.error.AbstractError();
 	}
 	
 }

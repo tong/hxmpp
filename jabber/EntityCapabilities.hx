@@ -41,7 +41,7 @@ class EntityCapabilities {
 	public function new( stream : Stream, node : String, identities : Array<xmpp.disco.Identity>,
 						 ?ext : String ) {
 		if( !stream.features.has( xmpp.disco.Info.XMLNS ) )
-			throw "Disco-info is a required stream feature for entity capabilities";
+			throw new jabber.error.Error( "Disco-info is a required stream feature for entity capabilities" );
 		this.stream = stream;
 		this.node = node;
 		this.identities = identities;

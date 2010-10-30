@@ -37,6 +37,7 @@ class WebSocketConnection extends jabber.stream.Connection {
 	}
 	
 	public override function connect() {
+		trace("CONNECT... "+url);
 		socket = new WebSocket( url );
 		socket.onopen = onConnect;
 		socket.onclose = onClose;
@@ -53,16 +54,19 @@ class WebSocketConnection extends jabber.stream.Connection {
 	}
 	
 	public override function write( t : String ) : Bool {
+		trace("WRITE: "+t );
 		socket.send( t );
 		return true;
 	}
 	
 	function onConnect() {
+		trace("ON CONNECT");
 		connected = true;
 		__onConnect();
 	}
 	
 	function onClose() {
+		trace("ON CLOSE");
 		connected = false;
 		__onDisconnect();
 	}

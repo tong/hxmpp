@@ -49,7 +49,7 @@ class SOCKS5In {
 		var o = socket.output;
 		
 		if( i.readByte() != 0x05 ) // 0x05
-			throw "invalid SOCKS5";
+			throw new jabber.error.Error( "Invalid SOCKS5" );
 		for( _ in 0...i.readByte() )
 			i.readByte();
 		
@@ -63,7 +63,7 @@ class SOCKS5In {
 		i.readByte();
 		i.readByte();
 		if( i.readString( i.readByte() ) != digest )
-			throw "SOCKS5 digest does not match";
+			throw new jabber.error.Error( "SOCKS5 digest does not match" );
 		i.readInt16();
 		
 		o.write( SOCKS5.createOutgoingMessage( 0, digest ) );

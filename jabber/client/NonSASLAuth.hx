@@ -35,7 +35,7 @@ class NonSASLAuth extends Authentication {
 					 	 ?usePlainText : Bool = false ) {
 		#if JABBER_DEBUG
 		if( stream.cnx.http )
-			throw "NonSASL authentication is not supported on HTTP/BOSH connections";
+			throw new jabber.error.Error( "NonSASL authentication is not supported on HTTP/BOSH connections" );
 		#end
 		super( stream );
 		this.usePlainText = usePlainText;
@@ -45,7 +45,7 @@ class NonSASLAuth extends Authentication {
 
 	public override function authenticate( password : String, ?resource : String ) {
 		if( active )
-			throw "Authentication in progress";
+			throw new jabber.error.Error( "Authentication in progress" );
 		this.password = password;
 		if( resource != null ) {
 			this.resource = resource;

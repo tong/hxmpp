@@ -46,7 +46,7 @@ class JID {
 	public function new( str : String ) {
 		if( str != null ) {
 			if( !JIDUtil.isValid( str ) )
-				throw "Invalid JID: "+str; 
+				throw new jabber.error.Error( "Invalid JID ["+str+"]" ); 
 			this.node = JIDUtil.parseNode( str );
 			this.domain = JIDUtil.parseDomain( str );
 			this.resource = JIDUtil.parseResource( str );

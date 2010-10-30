@@ -155,7 +155,7 @@ class MUChat {
 	public function changeNick( t : String ) : xmpp.Presence {
 		if( !joined ) return null;
 		if( t == null || t.length == 0 )
-			throw "Invalid nickname";
+			throw new jabber.error.Error( "Invalid nickname" );
 		nick = t;
 		myjid = jid+"/"+nick;
 		return sendMyPresence();
@@ -168,7 +168,7 @@ class MUChat {
 		// TODO check role
 		var occupant = getOccupant( nick );
 		if( occupant == null ) {
-			#if JABBER_DEBUG trace("MUC occupant to kick not found"); #end
+			#if JABBER_DEBUG trace("MUC occupant to kick not found","warn"); #end
 			return false;
 		}
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, myjid );

@@ -147,7 +147,7 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 		}
 		var b = haxe.io.Bytes.ofData( untyped buf );
 		if( b.length > maxBufSize )
-			throw "Max buffer size reached ("+maxBufSize+")";
+			throw new jabber.error.Error( "Max buffer size reached ["+maxBufSize+"]" );
 		if( __onData(  b, 0, b.length ) > 0 )
 			buf = new ByteArray();
 		//socket.flush();
@@ -257,7 +257,7 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 		}
 		var b = haxe.io.Bytes.ofData( untyped buf );
 		if( b.length > maxBufSize )
-			throw "Max buffer size reached ("+maxBufSize+")";
+			throw new jabber.error.Error( "Max buffer size reached ["+maxBufSize+"]" );
 		if( __onData(  b, 0, b.length ) > 0 )
 			buf = new ByteArray();
 		//socket.flush();

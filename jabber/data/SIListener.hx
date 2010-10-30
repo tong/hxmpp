@@ -37,7 +37,7 @@ class SIListener {
 	
 	public function new( stream : jabber.Stream, handler : DataReciever->Void ) {
 		if( !stream.features.add( xmpp.file.File.XMLNS ) )
-			throw "SI data transfer listener already added";
+			throw new jabber.error.Error( "SI data transfer listener already added" );
 		this.stream = stream;
 		this.handler = handler;
 		methods = new Array();

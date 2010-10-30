@@ -1,17 +1,17 @@
 package xmpp.filter;
 
 /**
-	Filters jingle packets.
+	Filters jingle IQs.
 */
 class JingleFilter extends IQFilter {
 	
-	/**  Jingle session id */
+	/**  Jingle session-id */
 	public var sid : String;
-	/** Jingle transport xml namespace */
+	/** Jingle transport XML namespace */
 	public var transport : String;
 	
-	public function new( ?transport : String, ?sid : String ) {
-		super( xmpp.Jingle.XMLNS, "jingle" );
+	public function new( ?transport : String, ?sid : String, ?iqType : xmpp.IQType ) {
+		super( xmpp.Jingle.XMLNS, "jingle", iqType );
 		this.transport = transport;
 		this.sid = sid;
 	}

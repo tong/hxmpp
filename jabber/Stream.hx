@@ -99,14 +99,14 @@ class Stream {
 	#if !JABBER_COMPONENT
 	function setJID( j : JID ) : JID {
 		if( status != Status.closed )
-			throw "Cannot change JID on open stream";
+			throw new jabber.error.Error( "Cannot change JID on active stream" );
 		return jid = j;
 	}
 	#end
 	
 	function getJIDStr() : String {
 		#if JABBER_COMPONENT
-		return throw "Abstract method";
+		return throw new jabber.error.AbstractError();
 		#else
 		return jid.toString();
 		#end
@@ -149,7 +149,7 @@ class Stream {
 	#if JABBER_COMPONENT
 	public function open( host : String, subdomain : String, secret : String, ?identities : Array<xmpp.disco.Identity> ) {
 		#if JABBER_DEBUG
-		throw "Abstract method";
+		throw new jabber.error.AbstractError();
 		#end
 	}
 	#else
@@ -160,7 +160,7 @@ class Stream {
 		if( jid != null ) this.jid = jid
 		else if( this.jid == null ) this.jid = new JID( null );
 		if( cnx == null )
-			throw "No stream connection set";
+			throw new jabber.error.Error( "No stream connection set" );
 		cnx.connected ? handleConnect() : cnx.connect();
 	}
 	#end
@@ -486,7 +486,7 @@ class Stream {
 	}
 	
 	function processStreamInit( t : String, buflen : Int ) : Int {
-		return throw "Abstract method";
+		return throw new jabber.error.AbstractError();
 	}
 	
 	function handleConnect() {
@@ -498,6 +498,7 @@ class Stream {
 	}
 	
 	function handleConnectionError( e : String ) {
+		//TODO cleanup
 		onClose( e );
 	}
 	

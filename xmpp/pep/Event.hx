@@ -48,7 +48,7 @@ class Event {
 	}
 	
 	public function toXml() : Xml {
-		return throw "Abstract error";
+		return throw new jabber.error.AbstractError();
 	}
 	
 	/*

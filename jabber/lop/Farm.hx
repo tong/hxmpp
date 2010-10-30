@@ -32,7 +32,7 @@ import xmpp.lop.Submit;
 */
 class Farm {
 	
-	public dynamic function onJob( job : Submit ) : String { return throw "No LOP job handler specified"; }
+	public dynamic function onJob( job : Submit ) : String { return throw new jabber.error.Error( "No LOP job handler specified" ); }
 	public dynamic function onKillVM( id : String ) : Void;
 	public dynamic function onPing( ping : Ping ) : String { return null; }
 	public dynamic function onSetBindings( bindings : Bindings ) : Void;
@@ -42,7 +42,6 @@ class Farm {
 	public var species(default,null) : Hash<jabber.JID->SpawnVM->String>;
 	public var password(default,null) : String;
 	
-	// config
 	public var ip : String;
 	public var vm_species : String;
 	public var vm_time_to_live : Float;

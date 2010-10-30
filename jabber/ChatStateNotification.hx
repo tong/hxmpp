@@ -37,7 +37,7 @@ class ChatStateNotification {
 	
 	public function new( stream : jabber.Stream ) {
 		if( !stream.features.add( xmpp.ChatStateNotification.XMLNS ) )
-			throw "ChatState listener already added";
+			throw new jabber.error.Error( "ChatState listener already added" );
 		this.stream = stream;
 		collector = stream.collect( [cast new MessageFilter(MessageType.chat),
 									 cast new PacketPropertyFilter(xmpp.ChatStateNotification.XMLNS)

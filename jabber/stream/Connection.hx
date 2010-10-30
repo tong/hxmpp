@@ -53,20 +53,19 @@ class Connection {
 	}
 	
 	function setHost( t : String ) : String {
-		if( connected ) {
-			throw "Cannot change hostname on active connection";
-		}
+		if( connected )
+			throw new jabber.error.Error( "Cannot change hostname on active connection" );
 		return host = t;
 	}
 	
 	/** */
 	public function connect() {
-		throw "Abstract method";
+		throw throw new jabber.error.AbstractError();
 	}
 	
 	/** */
 	public function disconnect() {
-		throw "Abstract method";
+		throw throw new jabber.error.AbstractError();
 	}
 	
 	/** */
@@ -78,18 +77,17 @@ class Connection {
 	
 	/** Starts/Stops reading data input, returns true if successfully started */
 	public function read( ?yes : Bool = true ) : Bool {
-		return throw "Abstract method";
+		return throw new jabber.error.AbstractError();
 	}
 	
 	/** Sends string, returns true on succeess */
 	public function write( t : String ) : Bool {
-		return throw "Abstract method";
+		return throw new jabber.error.AbstractError();
 	}
 	
 	//TODO Send raw bytes.
 	public function writeBytes( t : haxe.io.Bytes ) : Bool {
-		return throw "Abstract method";
-		//return throw new error.AbstractError();
+		return throw new jabber.error.AbstractError();
 	}
 	
 	/*
