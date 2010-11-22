@@ -18,7 +18,7 @@
 package xmpp.jingle;
 
 /**
-	Actions related to management of the overall Jingle session.
+	Actions related to management of a jingle session.
 */
 enum Action {
 	
@@ -77,10 +77,19 @@ enum Action {
 	*/
 	transport_info;
 	
+	/**
+		Accept a transport-replace action received from another party.
+	*/
 	transport_accept;
 	
+	/**
+		Reject a transport-replace action received from another party.
+	*/
 	transport_reject;
 	
+	/**
+		Redefine a transport method.
+	*/
 	transport_replace;
 	
 }

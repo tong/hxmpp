@@ -1,6 +1,8 @@
 package xmpp.jingle;
 
-enum Creator {
+enum Senders {
 	initiator;
+	none;
 	responder;
+	both;
 }

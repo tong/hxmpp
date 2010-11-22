@@ -1,32 +1,32 @@
 package jabber.jingle;
 
+import jabber.jingle.io.Transport;
 import jabber.stream.PacketCollector;
 
-/**
-	Abstract base for jingle session listeners.
-*/
-class SessionListener<T:SessionResponder> {
+class SessionListener<T:Transport,R:SessionResponder<T>> {
 	
 	public var stream(default,null) : jabber.Stream;
-	public var handler(default,setHandler) : T->Void;
+	public var handler(default,setHandler) : R->Void;
 	
+	var xmlns : String;
 	var c : PacketCollector;
 	
-	function new( stream : jabber.Stream, handler : T->Void ) {
-		stream.features.add( getXMLNS() );
+	function new( stream : jabber.Stream, handler : R->Void, xmlns : String ) {
+		if( !stream.features.add( xmlns ) )
+			throw "RTMP listener already added";
 		this.stream = stream;
 		this.handler = handler;
+		this.xmlns = xmlns;
 	}
 	
-	function setHandler( h : T->Void ) : T->Void {
-		if( c != null ) {
-			stream.removeCollector( c );
-			c = null;
-		}
-		if( h != null ) {
-			c = stream.collect( [cast new xmpp.filter.IQFilter( xmpp.Jingle.XMLNS, "jingle", xmpp.IQType.set ),
-								 cast new xmpp.filter.JingleFilter( getXMLNS() ) ], handleRequest, true );
-		}
+	function setHandler( h : R->Void ) : R->Void {
+		if( h == null ) {
+			if( c != null ) {
+				stream.removeCollector( c );
+				c = null;
+			}
+		} else if( c == null )
+			c = stream.collect( [cast new xmpp.filter.JingleFilter( xmlns )], handleRequest, true );
 		return handler = h;
 	}
 	
@@ -34,18 +34,11 @@ class SessionListener<T:SessionResponder> {
 		if( handler == null )
 			return;
 		var r = createResponder();
-		if( r.handleRequest( iq ) ) {
-			handler( r );
-		}
+		if( r.handleRequest( iq ) ) handler( r );
 	}
 	
 	// override me
-	function getXMLNS() : String {
-		return throw "Abstract method";
-	}
-	
-	// override me
-	function createResponder() : T {
+	function createResponder() : R {
 		return throw "Abstract method";
 	}
 	
