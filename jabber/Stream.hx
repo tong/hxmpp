@@ -360,16 +360,16 @@ class Stream {
 		}
 		switch( status ) {
 		
-		case closed :
+		case Status.closed :
 			// TODO cleanup
 			return -1;//buflen?
 		
-		case pending :
+		case Status.pending :
 			return processStreamInit( t, buflen );
 		
 		#if !JABBER_COMPONENT
 		//case jabber.stream.Status.starttls :
-		case starttls :
+		case Status.starttls :
 			var x : Xml = null;
 			try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
 				#if XMPP_DEBUG
@@ -399,7 +399,7 @@ class Stream {
 			return buflen;
 		#end //!JABBER_COMPONENT
 			
-		case open :
+		case Status.open :
 			// filter data here ?
 			var x : Xml = null;
 			try {

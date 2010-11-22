@@ -5,7 +5,7 @@
 <meta name="keywords" content="xmpp,jabber,haxe,documentation,api,open source,library,lgpl,neko,realtime,framework,pubsub,muchat,roster,jingle,rtmp,sasl,pep,flash,flashplayer,swf,actionscript,actionscript3,as,as3"/>
 <meta name="description" content="Open source haXe library for creating XMPP/jabber based clients and components"/>
 <meta name="author" content="disktree"/>
-<title>HXMPP.api</title>
+<title>HXMPP.API</title>
 <link rel="icon" href="favicon.png" type="image/x-icon"/>
 <script type="text/javascript">
 function toggle(id) {

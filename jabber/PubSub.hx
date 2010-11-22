@@ -137,6 +137,7 @@ class PubSub {
 		iq.x = x;
 		var h = onSubscriptions;
 		sendIQ( iq, function(r:IQ) {
+			//trace(r);
 			h( xmpp.PubSub.parse( r.x.toXml() ).subscriptions );
 		} );
 		return iq;

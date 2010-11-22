@@ -33,31 +33,12 @@ COMPILER FLAGS
 
 
 
-NDLL
-----
-The hxmpp.ndll included is only required if you use one of the following extensions:
-* jabber.BOB
-* jabber.EntityCapabilities
-* jabber.client.NonSASLAuth
-* jabber.component.Stream
-
-
-
 TLS
 ---
+Get opeeSSL for neko from: http://github.com/tong/hxssl
 NekoVM does NOT support startTLS.
 Use jabber.SecureSocketConnection for legacy TLS on port 5223 for secure connections.
-Rquired compiler setup:
-* neko:
-	-cp ../../hxmpp/util/tls_neko
-* flash:
-	-cp ../../hxmpp/util/tls_flash
-	-swf-lib ../../hxmpp/util/tls_flash/tls.swf
-	-D TLS
-* cpp:
-	no support right now
-* js:
-	Use hxmpp/util/socketbridge/socketbridge_tls.swf
+.....
 
 
 
@@ -138,13 +119,14 @@ XEPS SUPPORTED
 
 ** XEP-xxxx: Linked Process Protocol
 ** XEP-xxxx: Jingle RTMP Transport
+** gmail-notifiy
 
 
 
 HACKERS
 -------
 This project accepts and *encourages* contributions.
-Get in contact.
+
 
 
 AUTHOR

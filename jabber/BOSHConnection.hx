@@ -223,16 +223,7 @@ class BOSHConnection extends jabber.stream.Connection {
 				 t = createRequest( tmp );
 			}
 		}
-		
-		#if js
-		var r = new haxe.Http( getHTTPPath() );
-		//r.onStatus = handleHTTPStatus;
-		r.onError = handleHTTPError;
-		r.onData = handleHTTPData;
-		r.setPostData( t.toString() );
-		r.request( true );
-	
-		#elseif flash
+		#if flash
 		var r = new flash.net.URLRequest( getHTTPPath() );
 		r.method = flash.net.URLRequestMethod.POST;
 		r.contentType = "text/xml";
@@ -252,6 +243,14 @@ class BOSHConnection extends jabber.stream.Connection {
 		//l.addEventListener( HTTPStatusEvent.HTTP_STATUS, function(e) me.handleHTTPStatus( e.status ) );
 		l.addEventListener( SecurityErrorEvent.SECURITY_ERROR, handleHTTPError );
 		l.load( r );
+		
+		#else
+		var r = new haxe.Http( getHTTPPath() );
+		//r.onStatus = handleHTTPStatus;
+		r.onError = handleHTTPError;
+		r.onData = handleHTTPData;
+		r.setPostData( t.toString() );
+		r.request( true );
 		
 		#end
 		if( timeoutTimer != null )

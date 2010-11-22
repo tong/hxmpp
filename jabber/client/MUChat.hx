@@ -290,6 +290,7 @@ class MUChat {
 				destroy();
 				//onLeave( this );
 			//case null :
+			default :
 			}
 		case jid :
 			trace( "??? process presence from MUC room ???" );
