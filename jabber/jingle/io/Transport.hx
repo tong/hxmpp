@@ -2,26 +2,26 @@ package jabber.jingle.io;
 
 class Transport {
 	
-	public var __onFail : Void->Void;
+	public var __onFail : String->Void;
 	public var __onConnect : Void->Void;
 	public var __onDisconnect : Void->Void;
 	
 	function new() {}
 	
 	public function connect() {
-		throw "Abstract method";
+		throw new jabber.error.AbstractError();
 	}
 	
 	public function close() {
-		throw "Abstract method";
+		throw new jabber.error.AbstractError();
 	}
 	
 	public function init() {
-		throw "Abstract method";
+		throw new jabber.error.AbstractError();
 	}
 	
 	public function toXml() : Xml {
-		return throw "Abstract method";
+		return throw new jabber.error.AbstractError();
 	}
 	
 }

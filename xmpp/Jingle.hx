@@ -19,23 +19,26 @@ package xmpp;
 
 class Jingle {
 	
-	public static var XMLNS = "urn:xmpp:jingle:1";
+	static var _XMLNS = "urn:xmpp:jingle:";
+	public static var XMLNS = _XMLNS+"1";
+	public static var XMLNS_RTMP = _XMLNS+"apps:rtmp";
+	public static var XMLNS_RTMFP = _XMLNS+"apps:rtmfp";
+	public static var XMLNS_FILETRANSFER = _XMLNS+"apps:file-transfer:1";
+	public static var XMLNS_S5B = _XMLNS+"transports:s5b:1";
 	
 	public var action : xmpp.jingle.Action;
 	public var initiator : String;
 	public var sid : String;
-	public var responder : String;
 	public var content : Array<xmpp.jingle.Content>;
 	public var reason : { type : xmpp.jingle.Reason, content : Xml };
-	public var any : Array<Xml>;
-//	public var thread : Thread;
-
+	public var other : Array<Xml>;
+	
 	public function new( action : xmpp.jingle.Action, initiator : String, sid : String ) {
 		this.action = action;
 		this.initiator = initiator;
 		this.sid = sid;
 		content = new Array();
-		any = new Array();
+		other = new Array();
 	}
 	
 	public function toXml() : Xml {
@@ -44,7 +47,6 @@ class Jingle {
 		x.set( "action", StringTools.replace( Type.enumConstructor( action ), "_", "-" ) );
 		x.set( "initiator", initiator );
 		x.set( "sid", sid );
-		if( responder != null ) x.set( "responder", responder );
 		for( c in content ) x.addChild( c.toXml() );
 		if( reason != null ) {
 			var r = Xml.createElement( "reason" );
@@ -53,13 +55,12 @@ class Jingle {
 			r.addChild( e );
 			x.addChild( r );
 		}
-		for( a in any ) x.addChild( a );
+		for( e in other ) x.addChild( e );
 		return x;
 	}
 	
-	public static function parse( x : Xml ) : xmpp.Jingle {
-		var j = new xmpp.Jingle( Type.createEnum( xmpp.jingle.Action,
-								 StringTools.replace( x.get( "action" ), "-", "_" ) ),
+	public static function parse( x : Xml ) : Jingle {
+		var j = new xmpp.Jingle( Type.createEnum( xmpp.jingle.Action, StringTools.replace( x.get( "action" ), "-", "_" ) ),
 								 x.get( "initiator" ),
 								 x.get( "sid" )  );
 		for( e in x.elements() ) {
@@ -70,12 +71,10 @@ class Jingle {
 				j.reason = { type : Type.createEnum( xmpp.jingle.Reason, e.firstChild().nodeName ),
 							 content : e.firstChild().firstChild() };
 			default :
-				j.any.push( e );
+				j.other.push( e );
 			}
 		}
 		return j;
 	}
-	
-	//public static function createTransport( xmlns : String, e : Array<Xml> )
 	
 }

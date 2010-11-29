@@ -7,7 +7,7 @@ class RTMPInput extends RTMPTransport {
 	}
 	
 	public static inline function ofCandidate( x : Xml ) {
-		return new RTMPInput( x.get( "id" ), x.get( "host" ), Std.parseInt( x.get( "port" ) ), x.get( "name" ) );
+		return new RTMPInput( x.get( "name" ), x.get( "host" ), Std.parseInt( x.get( "port" ) ), x.get( "id" ) );
 	}
 	
 }

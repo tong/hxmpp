@@ -10,6 +10,7 @@ class SessionResponder<T:Transport> extends Session<T> {
 	}
 	
 	public function handleRequest( iq : IQ ) : Bool {
+		trace("handleRequesthandleRequesthandleRequesthandleRequesthandleRequest");
 		var j = xmpp.Jingle.parse( iq.x.toXml() );
 		if( j.action != xmpp.jingle.Action.session_initiate )
 			return false;
@@ -17,23 +18,29 @@ class SessionResponder<T:Transport> extends Session<T> {
 		candidates = new Array();
 		for( e in content.other ) {
 			switch( e.nodeName ) {
+			case "description" :
+				parseDescription( e );
 			case "transport" :
+				/* TODO
 				#if flash
 				if( e.get( "_xmlns_" ) != xmlns ) {
 				#else
 				if( e.get( "xmlns" ) != xmlns ) {
 				#end
-					trace("TODO invalid transport speciefied");
+					trace("TODO invalid transport specified");
 					trace(e);
 					trace( e.get( "xmlns" )+" ::: "+xmlns);
 					return false;
 				}
-				for( cx in e.elementsNamed( "candidate" ) )
+				*/
+				for( cx in e.elementsNamed( "candidate" ) ) {
 					addTransportCandidate( cx );
+				}
 			}
 		}
 		if( candidates.length == 0 ) {
-			//..
+			//..TODO
+			trace("NO TRANSPORT CANDIDATES FOUND");
 			return false;
 		}
 		request = iq;
@@ -54,9 +61,12 @@ class SessionResponder<T:Transport> extends Session<T> {
 		}
 	}
 	
+	function parseDescription( x : Xml ) {
+	}
+	
 	// override me
 	function addTransportCandidate( x : Xml ) {
-		throw "Abstract method";
+		throw new jabber.error.AbstractError();
 	}
 	
 	override function handleTransportConnect() {
@@ -70,12 +80,6 @@ class SessionResponder<T:Transport> extends Session<T> {
 		iq.x = j;
 		stream.sendIQ( iq, handleSessionAccept );
 	}
-	
-	/*
-	override function handleTransportDisconnect() {
-		trace("handleTransportDisconnecthandleTransportDisconnecthandleTransportDisconnect");
-	}
-	*/
 	
 	function handleSessionAccept( iq : IQ ) {
 		switch( iq.type ) {

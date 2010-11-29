@@ -4,8 +4,8 @@ class RTMPOutput extends RTMPTransport {
 	
 	public var __onPublish : Void->Void;
 	
-	public function new( id : String, host : String, port : Int = 1935, ?name : String ) {
-		super( id, host, port, name );
+	public function new( name : String, host : String, port : Int = 1935, id : String ) {
+		super( name, host, port, id );
 	}
 	
 	public function publish( ?record : String = "record.flv" ) {

@@ -17,14 +17,18 @@ class OutgoingSession<T:Transport> extends Session<T> {
 	}
 	
 	public function init() {
+		sendSessionInit();
+	}
+	
+	function sendSessionInit( ?description : Xml ) {
 		if( transports.length == 0 )
-			throw "No transports registered";
+			throw new jabber.error.Error( "No transports registered" );
 		sid = Base64.random( 16 );
 		var iq = new IQ( IQType.set, null, entity );
 		var j = new xmpp.Jingle( xmpp.jingle.Action.session_initiate, stream.jidstr, sid );
 		var content = new xmpp.jingle.Content( xmpp.jingle.Creator.initiator, contentName );
+		if( description != null ) content.other.push( description );
 		content.other.push( createTransportXml() );
-		//TODO add description..
 		j.content.push( content );
 		iq.x = j;
 		addSessionCollector();
@@ -45,8 +49,12 @@ class OutgoingSession<T:Transport> extends Session<T> {
 	function createTransportXml() : Xml {
 		var x = Xml.createElement( "transport" );
 		x.set( "xmlns", xmlns );
-		for( t in transports ) x.addChild( t.toXml() );
+		for( t in transports ) x.addChild( createCandidateXml( t ) );
 		return x;
+	}
+	
+	function createCandidateXml( t  : Transport ) : Xml {
+		return t.toXml();
 	}
 	
 }

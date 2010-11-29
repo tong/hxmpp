@@ -83,7 +83,7 @@ class Session<T:Transport> {
 	
 	// override me
 	function processSessionPacket( iq : IQ, j : xmpp.Jingle ) {
-		throw "Abstract method";
+		new jabber.error.AbstractError();
 	}
 	
 	function addSessionCollector() {
@@ -102,9 +102,9 @@ class Session<T:Transport> {
 	function handleTransportConnect() {
 	}
 	
-	function handleTransportFail() {
+	function handleTransportFail( e : String ) {
 		if( !candidates.iterator().hasNext() ) {
-			onFail( "Failed to connect transport" );
+			onFail( "Failed to connect transport ["+e+"]" );
 			//TODO
 			cleanup();
 		} else connectTransport();

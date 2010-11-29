@@ -185,8 +185,8 @@ class Stream {
 	public function sendPacket<T>( p : T, intercept : Bool = true ) : T {
 		if( !cnx.connected )
 			return null;
-		if( intercept )
-			interceptPacket( untyped p );
+//TODO
+		if( intercept ) interceptPacket( untyped p );
 		return ( sendData( untyped p.toString() ) != null ) ? p : null;
 	}
 	
@@ -199,14 +199,13 @@ class Stream {
 #if flash // haXe 2.06 fukup		
 		t = StringTools.replace( t, "_xmlns_=", "xmlns=" );
 #end
-		//TODO !!
+		//TODO!
 	//	sendRawData( haxe.io.Bytes.ofString( t ) );
-		if( !cnx.write( t ) )
-			return null;
+//		if( !cnx.write( t ) )
+//			return null;
+		cnx.write( t );
 		numPacketsSent++;
-		#if XMPP_DEBUG
-		XMPPDebug.out( t );
-		#end
+		#if XMPP_DEBUG XMPPDebug.out( t ); #end
 		return t;
 	}
 	
@@ -238,6 +237,7 @@ class Stream {
 			c = addIDCollector( iq.id, handler );
 		}
 		var s : xmpp.IQ = sendPacket( iq );
+		// TODO wtf, is his needed ?
 		if( s == null && handler != null ) {
 			collectors.remove( c );
 			c = null;
@@ -261,12 +261,14 @@ class Stream {
 		
 	}
 	
+	/*
 	public function sendPresenceTo( jid : String ) : xmpp.Presence {
 		var p = new xmpp.Presence();
 		p.to = jid;
 		var s : xmpp.Presence = sendPacket(p);
 		return s;
 	}
+	*/
 	
 	/**
 		Runs the XMPP packet interceptor on the given packet.

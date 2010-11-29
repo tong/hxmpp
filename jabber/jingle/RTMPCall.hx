@@ -6,14 +6,13 @@ import xmpp.IQ;
 class RTMPCall extends OutgoingSession<RTMPOutput> {
 	
 	public function new( stream : jabber.Stream, entity : String, contentName : String = "av" ) {
-		super( stream, entity, contentName, "urn:xmpp:jingle:apps:rtmp" );
+		super( stream, entity, contentName, xmpp.Jingle.XMLNS_RTMP );
 	}
 	
 	override function processSessionPacket( iq : IQ, j : xmpp.Jingle ) {
 		switch( j.action ) {
 		case session_accept :
 			var content = j.content[0];
-			var i = 0;
 			candidates = new Array();
 			for( t in transports ) {
 				for( e in content.other ) {
@@ -27,11 +26,25 @@ class RTMPCall extends OutgoingSession<RTMPOutput> {
 				trace("TODO No valid transport candidate selected");
 				return;
 			}
+			/*
+			var i = 0;
+			for( t in transports ) {
+				var match = false;
+				for( e in content.other ) {
+					if( e.get( "name" ) == t.name ) {
+						match = true;
+						continue;
+					}
+				}
+				if( !match ) {
+					transports.splice( i, 1 );
+				}
+			}
+			*/
 			request = iq;
 			connectTransport();
 			
 		default :
-			//
 			trace("Jingle session packet not handled");
 		}
 	}

@@ -15,9 +15,18 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package xmpp.jingle;
+package jabber.jingle;
 
-enum Creator {
-	initiator;
-	responder;
+import jabber.jingle.io.RTMFPInput;
+
+class RTMFPListener extends SessionListener<RTMFPInput,RTMFPResponder> {
+	
+	public function new( stream : jabber.Stream, handler : RTMFPResponder->Void ) {
+		super( stream, handler, xmpp.Jingle.XMLNS_RTMFP );
+	}
+	
+	override function createResponder() : RTMFPResponder {
+		return new RTMFPResponder( stream );
+	}
+	
 }
