@@ -32,24 +32,19 @@ package jabber;
 */
 class JID {
 	
-	public static inline var MAX_PART_SIZE = 1023;
-	
-	//public var node(default,null) : String;
 	public var node : String;
-    //public var domain(default,null) : String;
     public var domain : String;
-    //public var domainFull(getFullDomain,setFullDomain) : String;
     public var resource : String;
     /** JID without resource */
 	public var bare(getBare,null) : String;
 	
-	public function new( str : String ) {
-		if( str != null ) {
-			if( !JIDUtil.isValid( str ) )
-				throw new jabber.error.Error( "Invalid JID ["+str+"]" ); 
-			this.node = JIDUtil.parseNode( str );
-			this.domain = JIDUtil.parseDomain( str );
-			this.resource = JIDUtil.parseResource( str );
+	public function new( t : String ) {
+		if( t != null ) {
+			if( !JIDUtil.isValid( t ) )
+				throw new jabber.error.Error( "Invalid JID ["+t+"]" ); 
+			this.node = JIDUtil.parseNode( t );
+			this.domain = JIDUtil.parseDomain( t );
+			this.resource = JIDUtil.parseResource( t );
 		}
 	}
 	
@@ -59,8 +54,7 @@ class JID {
 	
 	public function toString() : String {
 		var j = getBare();
-		if( j == null ) return null;
-		return ( resource == null ) ? j : j+="/"+resource;
+		return ( j == null ) ? null : ( resource == null ) ? j : j+="/"+resource;
 	}
 	
 }
