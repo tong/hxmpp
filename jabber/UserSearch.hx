@@ -36,7 +36,7 @@ class UserSearch {
 		var iq = new xmpp.IQ();
 		iq.to = jid;
 		iq.x = new xmpp.UserSearch();
-		stream.sendIQ( iq, handleFieldsResult );
+		sendIQ( iq, onFields );
 	}
 	
 	public function search( jid : String, item : xmpp.UserSearchItem ) {
@@ -46,23 +46,18 @@ class UserSearch {
 		for( f in Reflect.fields( item ) )
 			Reflect.setField( u, f, Reflect.field( item, f ) );
 		iq.x = u;
-		stream.sendIQ( iq, handleSearchResult );
+		sendIQ( iq, onResult );
 	}
 	
-	function handleFieldsResult( iq : xmpp.IQ ) {
-		switch( iq.type ) {
-		case result : onFields( iq.from, xmpp.UserSearch.parse( iq.x.toXml() ) );
-		case error : onError( new XMPPError( this, iq ) );
-		default :
-		}
+	function sendIQ( iq : xmpp.IQ, h : String->xmpp.UserSearch->Void ) {
+		var me = this;
+		stream.sendIQ( iq, function(r:xmpp.IQ){
+			switch( r.type ) {
+			case result : h( r.from, xmpp.UserSearch.parse( r.x.toXml() ) );
+			case error : me.onError( new XMPPError( me, r ) );
+			default :
+			}
+		} );
 	}
-	
-	function handleSearchResult( iq : xmpp.IQ ) {
-		switch( iq.type ) {
-		case result : onResult( iq.from, xmpp.UserSearch.parse( iq.x.toXml() ) );
-		case error : onError( new XMPPError( this, iq ) );
-		default :
-		}
-	}
-	
+
 }
