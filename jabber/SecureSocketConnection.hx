@@ -139,7 +139,7 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
-		try socket.readBytes( buf, buf.length, e.bytesLoaded ) catch( e : Dynamic ) {
+		try socket.readBytes( buf, buf.length, Std.int(e.bytesLoaded) ) catch( e : Dynamic ) {
 			#if JABBER_DEBUG
 		//	trace(e);
 			#end

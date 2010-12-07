@@ -203,10 +203,9 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	public override function connect() {
+		trace("CONNECTING..");
 		socket = new Socket();
-		#if flash10
-		socket.timeout = timeout*1000;
-		#end
+		#if flash10 socket.timeout = timeout*1000; #end
 		buf = new ByteArray();
 		socket.addEventListener( Event.CONNECT, sockConnectHandler );
 		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
@@ -267,7 +266,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
-		socket.readBytes( buf, buf.length, e.bytesLoaded );
+		socket.readBytes( buf, buf.length, Std.int(e.bytesLoaded) );
 		var b = haxe.io.Bytes.ofData( buf );
 		if( b.length > maxBufSize )
 			throw new jabber.error.Error( "Max buffer size reached ["+maxBufSize+"]" );
