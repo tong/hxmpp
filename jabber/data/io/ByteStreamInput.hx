@@ -234,7 +234,7 @@ class ByteStreamInput extends ByteStreamIO {
 	
 	function onSocketData( e : ProgressEvent ) {
 		var b = new ByteArray();
-		socket.readBytes( b, 0, e.bytesLoaded );
+		socket.readBytes( b, 0, Std.int(e.bytesLoaded) );
 		bufpos += b.length;
 		__onProgress( Bytes.ofData( b ) );
 		if( bufpos == size ) {
