@@ -235,13 +235,18 @@ class MUChat {
 	}
 	
 	function handlePresence( p : xmpp.Presence ) {
+		if( p.type == xmpp.PresenceType.error ) {
+			onError( new jabber.XMPPError( this, p ) );
+			return;
+		}
 		var x_user : xmpp.MUCUser = null;
 		for( property in p.properties ) {
 			if( property.nodeName == "x" && property.get( "xmlns" ) == xmpp.MUCUser.XMLNS ) {
 				x_user = xmpp.MUCUser.parse( p.properties[0] );
 			}
 		}
-		if( x_user == null ) return;
+		if( x_user == null )
+			return;
 		switch( p.from ) {
 		case myjid :
 			if( p.type == null ) {
@@ -313,7 +318,7 @@ class MUChat {
 				if( x_user.item.role != null ) occupant.role = x_user.item.role;
 				if( x_user.item.affiliation != null ) occupant.affiliation = x_user.item.affiliation;
 			}
-			onPresence( occupant );
+			this.onPresence( occupant );
 		}
 	}
 	
