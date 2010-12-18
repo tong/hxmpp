@@ -33,7 +33,7 @@ class Stream {
 		Creates the opening XML tag of a XMPP stream.
 	*/
 	public static function createOpenXml( ns : String, to : String,
-										  ?version : Bool, ?lang : String, ?xmlHeader : Bool = true ) : String {
+										  ?version : Bool, ?lang : String, ?header : Bool = true ) : String {
 		var b = new StringBuf();
 		b.add( '<stream:stream xmlns="' );
 		b.add( ns );
@@ -48,7 +48,7 @@ class Stream {
 			b.add( '"' );
 		}
 		b.add( '>' );
-		return ( xmlHeader ) ? XMLUtil.HEADER+b.toString() : b.toString();
+		return ( header ) ? '<?xml version="1.0" encoding="UTF-8"?>'+b.toString() : b.toString();
 	}
 	
 }

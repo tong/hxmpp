@@ -109,6 +109,8 @@ class DateTime {
 		#end
 	}
 	
+	/**
+	*/
 	public static function getParts( utc : String ) : Array<Int> {
 		var r = ereg_date;
 		if( !r.match( utc ) )

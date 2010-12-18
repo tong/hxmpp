@@ -32,6 +32,7 @@ private typedef Server = {
 	var features : Hash<Xml>;
 }
 
+// TODO move to jabber.stream. (use platform specific implementation (arrays@js usw))
 private class StreamFeatures {
 	var l : List<String>;
 	public function new() { l = new List(); }
@@ -41,7 +42,7 @@ private class StreamFeatures {
 		l.add( f );
 		return true;
 	}
-	public function has( f : String ) : Bool { return Lambda.has( l, f ); }
+	public inline function has( f : String ) : Bool { return Lambda.has( l, f ); }
 	public function remove( f : String ) : Bool { return l.remove( f ); }
 	public function clear( f : String ) { l = new List(); }
 	#if JABBER_DEBUG
@@ -50,14 +51,14 @@ private class StreamFeatures {
 }
 
 /**
-	Abstract base for XMPP streams.
+	Abstract base for XMPP streams to and from another entity.
 */
 class Stream {
 	
 	public static var defaultPacketIdLength = 5;
 	
 	public dynamic function onOpen() : Void;
-	public dynamic function onClose( ?e : Dynamic ) : Void;
+	public dynamic function onClose( ?error : String ) : Void;
 	
 	public var status : Status;
 	public var cnx(default,setConnection) : Connection;
@@ -139,11 +140,7 @@ class Stream {
 		Get the next unique id for a XMPP packet.
 	*/
 	public function nextID() : String {
-		#if JABBER_DEBUG
-		return Base64.random( defaultPacketIdLength )+"_"+numPacketsSent;
-		#else
-		return Base64.random( defaultPacketIdLength );
-		#end
+		return Base64.random( defaultPacketIdLength )#if JABBER_DEBUG+"_"+numPacketsSent#end;
 	}
 	
 	#if JABBER_COMPONENT

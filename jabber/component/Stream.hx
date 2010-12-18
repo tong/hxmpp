@@ -91,7 +91,8 @@ class Stream extends jabber.Stream {
 		//TODO fuuuuk
 		if( t.charAt( 0 ) != "<" || t.charAt( t.length-1 ) != ">" )
 			return 0;
-		t = XMLUtil.removeXmlHeader( t );
+		var r = ~/^(<\?xml) (.)+\?>/;  //TODO full check
+		if( r.match(t) ) t = r.matchedRight();
 		try id = Xml.parse( t+"</stream:stream>" ).firstChild().get( "id" ) catch( e : Dynamic ) {
 			trace( t+"</stream:stream>");
 			trace(e);
