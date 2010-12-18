@@ -58,10 +58,16 @@ class Presence extends xmpp.Packet {
 		for( c in x.elements() ) {
 			var fc = c.firstChild();
 			switch( c.nodeName ) {
-			case "show" : if( fc != null ) p.show = Type.createEnum( PresenceShow, fc.nodeValue );
-			case "status" : if( fc != null ) p.status =  fc.nodeValue;
-			case "priority" : if( fc != null ) p.priority = Std.parseInt( fc.nodeValue );
-			default : p.properties.push( c );
+			case "show" :
+				if( fc != null ) p.show = Type.createEnum( PresenceShow, fc.nodeValue );
+			case "status" :
+				if( fc != null ) p.status =  fc.nodeValue;
+			case "priority" :
+				if( fc != null ) p.priority = Std.parseInt( fc.nodeValue );
+			case "error" :
+				p.errors.push( xmpp.Error.parse( c ) );
+			default :
+				p.properties.push( c );
 			}
 		}
 		return p;
