@@ -45,9 +45,15 @@ class SASL {
 	public static function createResponse( t : String ) : Xml {
 		if( t == null )
 			return null;
+		// TODO flash 2.06 (+) namespace hack
 		var x = XMLUtil.createElement( "response", t );
+	#if flash // TODO haXe 2.06 fukup
+		x.set( "_xmlns_", XMLNS );
+	#else
 		x.set( "xmlns", XMLNS );
+	#end
 		return x;
+		//return Xml.parse( '<response xmlns="'+XMLNS+'">'+t+'</response>' ).firstElement();
 	}
 	
 	/**
