@@ -127,6 +127,10 @@ class SocketConnection extends Connection {
 		return true;
 	}
 	
+	public override function reset() {
+		buf = haxe.io.Bytes.alloc( bufSize );
+	}
+	
 	function readData() {
 		var buflen = buf.length;
 		if( bufbytes == buflen ) {
@@ -165,6 +169,7 @@ class SocketConnection extends Connection {
 	#end
 	
 }
+
 
 #if JABBER_SOCKETBRIDGE
 

@@ -398,6 +398,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	public override function setSecure() {
+		trace("SET SECURE_________________________________");
 		//socket.addListener( Node.EVENT_STREAM_SECURE, sockSecureHandler );
 		socket.on( Node.EVENT_STREAM_SECURE, sockSecureHandler );
 		socket.setSecure( null );

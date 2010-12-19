@@ -90,9 +90,8 @@ class Connection {
 		return throw new jabber.error.AbstractError();
 	}
 	
-	/*
 	public function reset() {
+		//#if JABBER_DEBUG trace("Not implemented"); #end
 	}
-	*/
 	
 }

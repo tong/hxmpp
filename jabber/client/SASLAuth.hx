@@ -110,6 +110,7 @@ class SASLAuth extends Authentication {
 	}
 	
 	function handleSASLSuccess( p : xmpp.Packet ) {
+		stream.cnx.reset(); // clear connection buffer
 		removeSASLCollectors(); // remove the collectors
 		onStreamOpenHandler = stream.onOpen; // relay the stream open event
 		stream.onOpen = handleStreamOpen;
@@ -122,7 +123,6 @@ class SASLAuth extends Authentication {
 	
 	function handleStreamOpen() {
 		stream.onOpen = onStreamOpenHandler;
-		//stream.cnx.reset();
 		if( stream.server.features.exists( "bind" ) ) { // bind the resource
 			var iq = new IQ( IQType.set );
 			iq.x = new xmpp.Bind( ( mechanism.id == "ANONYMOUS" ) ? null : resource );
