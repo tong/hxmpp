@@ -26,15 +26,14 @@ class SHIM {
 	
 	public static var XMLNS = "http://jabber.org/protocol/shim";
 	
-	public var headers : List<Header>;
+	public var headers : Array<Header>;
 	
 	public function new() {
-		headers = new List();
+		headers = new Array();
 	}
 	
 	public function toXml() : Xml {
-		var x = Xml.createElement( "headers" );
-		x.set( "xmlns", XMLNS );
+		var x = IQ.createQueryXml( XMLNS, "headers" );
 		for( h in headers ) {
 			var e = XMLUtil.createElement( "header", h.value );
 			e.set( "name", h.name );
@@ -46,7 +45,7 @@ class SHIM {
 	public static function parse( x : Xml ) : xmpp.SHIM {
 		var s = new SHIM();
 		for( e in x.elementsNamed( "header" ) ) {
-			s.headers.add( {
+			s.headers.push( {
 				name : e.get("name"),
 				value : e.firstChild().nodeValue
 			} );
