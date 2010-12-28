@@ -12,7 +12,7 @@ class SHA1 {
 		#if php
 		return untyped __call__( "sha1", t );
 		#else
-		var h = Node.crypto().createHash( "sha1" );
+		var h = Node.crypto.createHash( "sha1" );
 		h.update( t );
 		return h.digest( Node.HEX );
 		#end

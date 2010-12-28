@@ -21,7 +21,7 @@ class MD5 {
 		#elseif php
 		return untyped __call__( "md5", s, raw );
 		#elseif nodejs
-		var h = Node.crypto().createHash( "md5" );
+		var h = Node.crypto.createHash( "md5" );
 		h.update( s );
 		return h.digest( raw ? Node.BINARY : Node.HEX );
 		#else
