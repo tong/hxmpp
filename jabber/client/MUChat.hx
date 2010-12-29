@@ -31,13 +31,12 @@ import xmpp.filter.PacketTypeFilter;
 /**
 */
 typedef MUCOccupant = {
-	//TODO ? var muc : MUChat;
 	var nick : String;
 	var jid : String;
 	var presence : xmpp.Presence;
 	var role : xmpp.muc.Role;
 	var affiliation : xmpp.muc.Affiliation;
-	//?? var lastMessage : xmpp.Message;
+	//var lastMessage : xmpp.Message;
 }
 
 //multiple logins/joins ? 
@@ -48,7 +47,6 @@ typedef MUCOccupant = {
 	<p>Multiuser chatroom</p>
 */
 class MUChat {
-//class MUChat<Occupant:IMUCOccupant>
 
 	//TODO public static var defaultPresencePriority = 5;
 	
@@ -70,12 +68,12 @@ class MUChat {
 	public var nick(default,null) : String;
 	public var role(default,null) : Role;
 	public var affiliation(default,null) : Affiliation;
-	public var presence(default,null) : PresenceManager; //TODO remove manager
 	public var occupants(default,null) : Array<MUCOccupant>;
 	public var subject(default,null) : String;
 	public var me(getMe,null) : MUCOccupant;
 	public var stream(default,null) : Stream;
 	
+	var presence : xmpp.Presence;
 	var message : xmpp.Message;
 	var c_presence : PacketCollector;
 	var c_message : PacketCollector;
@@ -100,7 +98,11 @@ class MUChat {
 	}
 	
 	function getMe() : MUCOccupant {
-		return { role : role, presence : presence.last, nick : nick, jid : myjid, affiliation : affiliation };
+		return { role : role,
+				 presence : presence,
+				 nick : nick,
+				 jid : myjid,
+				 affiliation : affiliation };
 	}
 	
 	/**
@@ -122,9 +124,9 @@ class MUChat {
 	*/
 	public function leave( ?message : String, ?forceEvent : Bool = true ) : xmpp.Presence {
 		if( !joined ) return null;
-		trace( presence.target );
 		var p = new xmpp.Presence( null, message, null, xmpp.PresenceType.unavailable );
-		presence.set( p );
+		presence = p;
+		stream.sendPacket( p );
 		if( forceEvent )
 			destroy();
 		return p;
@@ -256,7 +258,7 @@ class MUChat {
 						if( x_user.item.role != null ) role = x_user.item.role;
 						if( x_user.item.affiliation != null ) affiliation = x_user.item.affiliation;
 					}
-					presence = new PresenceManager( stream, myjid );
+					//presence = new PresenceManager( stream, myjid );
 					// unlock room if required
 					//if( x_user.item != null ) {
 					if( x_user.item.role == Role.moderator && x_user.status != null && x_user.status.code == xmpp.muc.Status.WAITS_FOR_UNLOCK ) {
@@ -284,8 +286,8 @@ class MUChat {
 					// changed my nick
 					role = x_user.item.role;
 					affiliation = x_user.item.affiliation;
-					presence.target = myjid;
-					onPresence( me );
+					presence = p;
+					this.onPresence( me );
 				}
 				return;
 			}
