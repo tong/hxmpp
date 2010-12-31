@@ -380,12 +380,10 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	public override function connect() {
 		buf = "";
-		socket = Node.net.createConnection( port, host );
-		socket.setEncoding( Node.UTF8 );
-		socket.on( Node.EVENT_STREAM_CONNECT, sockConnectHandler );
-		socket.on( Node.EVENT_STREAM_END, sockDisconnectHandler );
-		socket.on( Node.EVENT_STREAM_ERROR, sockErrorHandler );
-		socket.on( Node.EVENT_STREAM_DATA, sockDataHandler );
+		createConnection();
+		socket.on( Node.STREAM_END, sockDisconnectHandler );
+		socket.on( Node.STREAM_ERROR, sockErrorHandler );
+		socket.on( Node.STREAM_DATA, sockDataHandler );
 	}
 	
 	public override function disconnect() {
@@ -398,10 +396,12 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	public override function setSecure() {
+		//TODO
 		trace("SET SECURE_________________________________");
-		//socket.addListener( Node.EVENT_STREAM_SECURE, sockSecureHandler );
-		socket.on( Node.EVENT_STREAM_SECURE, sockSecureHandler );
-		socket.setSecure( null );
+		//TODO hmm? TypeError: Object #<a Stream> has no method 'setSecure' ??????????
+		//socket.on( Node.STREAM_SECURE, sockSecureHandler );
+		//trace( socket.getPeerCertificate() );
+		socket.setSecure(  );
 	}
 	
 	public override function write( t : String ) : Bool {
@@ -413,8 +413,13 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	public override function read( ?yes : Bool = true ) : Bool {
 		if( !yes )
-			socket.removeListener( Node.EVENT_STREAM_DATA, sockDataHandler );
+			socket.removeListener( Node.STREAM_DATA, sockDataHandler );
 		return true;
+	}
+	
+	function createConnection() {
+		socket = Node.net.createConnection( port, host );
+		socket.on( Node.STREAM_CONNECT, sockConnectHandler );
 	}
 	
 	function sockConnectHandler() {
@@ -444,6 +449,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		var r = __onData( haxe.io.Bytes.ofString( s ), 0, s.length );
 		buf = ( r == 0 ) ? s : "";
 	}
+	
 }
 
 

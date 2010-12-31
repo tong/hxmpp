@@ -267,6 +267,8 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 
 #elseif nodejs
 
+import js.Node;
+
 class SecureSocketConnection extends jabber.SocketConnection {
 	
 	public function new( host : String, port : Int = 5222,
@@ -275,9 +277,8 @@ class SecureSocketConnection extends jabber.SocketConnection {
 		super( host, port, true, bufSize, maxBufSize, timeout );
 	}
 	
-	override function sockConnectHandler() {
-		socket.setSecure();
-		super.sockConnectHandler();
+	override function createConnection() {
+		socket = Node.tls.connect( port, host, null, sockConnectHandler );
 	}
 }
 
