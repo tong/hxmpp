@@ -1,75 +1,47 @@
 
-jabber.BlockList
-jabber.BOB
-jabber.BOBListener
+include.hxml
+-cp ../util
+-swf file.swf
+-swf-version 10
+-xml flash.xml
 jabber.BOSHConnection
-jabber.ChatStateNotification
-jabber.EntityCapabilities
-jabber.JID
-jabber.JIDUtil
-jabber.LastActivity
-jabber.LastActivityListener
-jabber.MessageListener
 jabber.Ping
-jabber.Pong
-jabber.PrivacyLists
-jabber.PubSub
-jabber.PersonalEvent
-jabber.PersonalEventListener
-jabber.ServiceDiscovery
-jabber.ServiceDiscoveryListener
-jabber.SocketConnection
-jabber.SoftwareVersion
-jabber.WebSocketConnection
-jabber.XMPPDebug
-jabber.XMPPError
-jabber.client.Account
-jabber.client.MUChat
-jabber.client.NonSASLAuth
-jabber.client.Roster
-jabber.client.SASLAuth
-jabber.client.Stream
-jabber.client.VCard
-jabber.data.ByteStreamReciever
-jabber.data.ByteStreamTransfer
-jabber.data.IBReciever
-jabber.data.IBTransfer
-jabber.data.SIListener
-jabber.data.SITransfer
-#jabber.jingle.RTMPCall
-#jabber.jingle.RTMPListener
-#jabber.jingle.RTMPResponder
-jabber.lop.Farm
-jabber.lop.Villein
-#jabber.component.Stream
-jabber.remoting.Connection
-jabber.remoting.Host
-jabber.sasl.AnonymousMechanism
-jabber.sasl.PlainMechanism
-jabber.sasl.MD5Mechanism
-xmpp.Bind
-xmpp.ChatState
-xmpp.ChatStateNotification
-xmpp.Compression
-xmpp.DataForm
-xmpp.DateTime
-xmpp.Delayed
-xmpp.Error
-xmpp.ErrorCondition
-xmpp.IQ
-xmpp.MUC
-xmpp.PlainPacket
-xmpp.Presence
-xmpp.PrivacyLists
-xmpp.SASL
-xmpp.XHTML
+#jabber.WebSocketConnection
+jabber.jingle.RTMPCall
+jabber.jingle.RTMPListener
+jabber.jingle.RTMPResponder
 
--cp ../
--neko temp.n
--cmd rm temp.n
--xml api.xml
--D XMPP_DEBUG
--D JABBER_DEBUG
--cmd cd api/
--cmd haxedoc ../api.xml -f jabber -f xmpp
-#-cmd rm ../api.xml
+--next
+include.hxml
+-cp ../util
+-js file.js
+-xml js.xml
+-D JABBER_SOCKETBRIDGE
+jabber.BOSHConnection
+jabber.Ping
+jabber.WebSocketConnection
+
+--next
+#-cp ../util/tls_neko/
+include.hxml
+-neko file.n
+-xml neko.xml
+jabber.data.ByteStreamTransfer
+jabber.data.ByteStreamReciever
+
+--next
+include.hxml
+-neko file.php
+-xml php.xml
+
+#--next
+#include.hxml
+#-js file.js
+#-xml node.xml
+#-D nodejs
+#-cp ../../hxnodejs/
+
+--next
+-cmd chxdoc -o api --templateDir=templates flash.xml,flash js.xml,js neko.xml,neko php.xml,php    -f haxe -f flash -f js -f neko -f php   -f Array -f Bool -f Class -f Date -f Dynamic -f EReg -f Enum -f Float -f Hash -f Int -f IntHash -f IntIter -f Iterable -f Iterator -f Lambda -f Math -f Null -f Reflect -f Std -f String -f StringTools -f StringBuf -f Type -f UInt -f ValueType -f Void -f Xml -f XmlType
+-cmd rm flash.xml js.xml neko.xml php.xml
+-cmd rm -r tmp
