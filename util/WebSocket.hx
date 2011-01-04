@@ -44,7 +44,7 @@ class WebSocket {
 	
 	public function new( url : String ) {
 		if( !ExternalInterface.available )
-			throw new jabber.Error( "External interface not available" );
+			throw new jabber.error.Error( "External interface not available" );
 		this.url = url;
 		ExternalInterface.addCallback( "init", init );
 		var me = this;
