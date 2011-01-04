@@ -18,7 +18,6 @@
 package jabber;
 
 /**
-	<a href="http://www.xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a><br/>
 	Static methods for JabberID manipulation/validation.
 */	
 class JIDUtil {
@@ -35,15 +34,13 @@ class JIDUtil {
 	public static inline var MAX_LENGTH = 3071;
 	public static inline var MAX_PARTSIZE = 1023;
 	
-	/** Regular expression matching a valid JID */
-	#if JABBER_DEBUG
+	/**
+		Regular expression matching a valid JID
+	*/
 	public static var EREG(default,null) : EReg;
-	#else
-	public static var EREG(default,null) : EReg;
-	#end
 	
 	/**
-		Returns true if the given JID is valid formed.
+		@return True if the given JID is valid formed.
 	*/
 	public static function isValid( t : String ) : Bool {
 		if( t == null || t.length < MIN_LENGTH || t.length > MAX_LENGTH )
@@ -57,14 +54,14 @@ class JIDUtil {
 	}
 	
 	/**
-		Returns the node of the given JID.
+		@returns The node of the given JID.
 	*/
 	public static inline function parseNode( t : String ) : String {
 		return t.substr( 0, t.indexOf( "@" ) );
 	}
 	
 	/**
-		Returns the domain of the given JID.
+		@returns The domain of the given JID.
 	*/
 	public static function parseDomain( t : String ) : String {
 		var i1 = t.indexOf( "@" ) + 1;
@@ -73,7 +70,7 @@ class JIDUtil {
 	}
 	
 	/**
-		Returns the resource of the given JID.
+		@returns The resource of the given JID.
 	*/
 	public static function parseResource( t : String ) : String {
 		var i = t.indexOf( "/" );
@@ -81,7 +78,7 @@ class JIDUtil {
 	}
 	
 	/**
-		Removes the resource from a JID.
+		Removes The resource from a JID.
 	*/
 	public static function parseBare( t : String ) : String {
 		var i = t.indexOf( "/" );
@@ -89,14 +86,14 @@ class JIDUtil {
 	}
 	
 	/**
-		Returns true if the given JID has a valid resource.
+		@returns True if the given JID has a valid resource.
 	*/
 	public static inline function hasResource( t : String ) : Bool {
 		return t.indexOf( "/" ) != -1;
 	}
 	
 	/**
-     	Returns a String array with parsed node, domain and resource.
+     	@returns A String array with parsed node, domain and resource.
     */
 	public static function getParts( jid : String ) : Array<String> {
 		var p : Array<String> = [ parseNode( jid ), parseDomain( jid ) ];
@@ -105,6 +102,7 @@ class JIDUtil {
 	}
 	
 	/**
+		Splits the given JID into parts and returns it as array excluding the resource.
 	*/
 	public static function splitBare( jid : String ) : Array<String> {
 		var i = jid.indexOf( "/" );
@@ -135,7 +133,7 @@ class JIDUtil {
 	}
 
     /**
-     	Un-escapes the node portion of a JID according to "JID Escaping" (XEP-0106 ).<br/>
+     	Un-escapes the node portion of a JID according to "JID Escaping" (<a href="http://www.xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>).<br/>
      	Escaping replaces characters prohibited by node-prep with escape sequences.
      	<br/>
      	Typically, unescaping is performed only by a client that wants to display JIDs
