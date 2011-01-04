@@ -21,7 +21,7 @@ package xmpp.pep;
 	Extension for communicating information about music to which a user is currently listening.
 	<a href="http://xmpp.org/extensions/xep-0118.html">XEP-0118: User Tune</a><br/>
 */
-class UserTune extends Event {
+class UserTune extends xmpp.PersonalEvent {
 
 	public static var XMLNS = xmpp.Packet.PROTOCOL+"/tune";
 	

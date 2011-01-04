@@ -15,13 +15,13 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package xmpp.pep;
+package xmpp;
 
 /**
 	Abstract base for personal event classes.
 	The implementing class HAS TO HAVE a static XMLNS field (required by the jabber.PersonalEventListener)!
 */
-class Event {
+class PersonalEvent {
 	
 	public var nodeName(default,null) : String;
 	public var xmlns(default,null) : String;

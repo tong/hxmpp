@@ -21,7 +21,7 @@ package xmpp.pep;
 	Extended information about the current geographical or physical location of an entity.
 	<a href="http://xmpp.org/extensions/xep-0080.html">XEP-0080: User Location</a><br/>
 */
-class UserLocation extends Event {
+class UserLocation extends xmpp.PersonalEvent {
 
 	public static var XMLNS = xmpp.Packet.PROTOCOL+"/geoloc";
 	

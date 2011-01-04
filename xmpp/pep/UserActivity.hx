@@ -21,7 +21,7 @@ package xmpp.pep;
 	Extended presence data about user activities.
 	<a href="http://xmpp.org/extensions/xep-0108.html">XEP-0108: User Activity</a><br/>
 */
-class UserActivity extends Event {
+class UserActivity extends xmpp.PersonalEvent {
 	
 	public static var XMLNS = xmpp.Packet.PROTOCOL+"/activity";
 	
