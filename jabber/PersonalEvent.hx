@@ -47,7 +47,7 @@ class PersonalEvent {
 	/**
 		Disable publishing.
 	*/
-	public function disable( e : xmpp.PersonalEventt ) {
+	public function disable( e : xmpp.PersonalEvent ) {
 		sendIQ( e, e.empty(), onDisable );
 	}
 	
