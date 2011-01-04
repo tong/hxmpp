@@ -23,8 +23,8 @@ package jabber;
 */
 class PersonalEvent {
 	
-	public dynamic function onPublish( i : xmpp.pep.Event ) : Void;
-	public dynamic function onDisable( i : xmpp.pep.Event ) : Void;
+	public dynamic function onPublish( i : xmpp.PersonalEvent ) : Void;
+	public dynamic function onDisable( i : xmpp.PersonalEvent ) : Void;
 	public dynamic function onError( e : XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
@@ -38,7 +38,7 @@ class PersonalEvent {
 	/**
 		Publish a personal event.
 	*/
-	public function publish( e : xmpp.pep.Event ) {
+	public function publish( e : xmpp.PersonalEvent ) {
 		sendIQ( e, e.toXml(), onPublish );
 	}
 	
@@ -47,11 +47,11 @@ class PersonalEvent {
 	/**
 		Disable publishing.
 	*/
-	public function disable( e : xmpp.pep.Event ) {
+	public function disable( e : xmpp.PersonalEventt ) {
 		sendIQ( e, e.empty(), onDisable );
 	}
 	
-	function sendIQ( e : xmpp.pep.Event, x : Xml, h : xmpp.pep.Event->Void ) {
+	function sendIQ( e : xmpp.PersonalEvent, x : Xml, h : xmpp.PersonalEvent->Void ) {
 		var p = new xmpp.pubsub.Publish( e.getNode(), [new xmpp.pubsub.Item( null, x )] );
 		var x = new xmpp.PubSub();
 		x.publish = p;

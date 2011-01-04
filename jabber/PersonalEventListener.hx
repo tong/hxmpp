@@ -21,7 +21,7 @@ private typedef Listener = {
 	//var nodeName : String;
 	var xmlns : String;
 	var handler : xmpp.Message->Xml->Void;
-	var type : Class<xmpp.pep.Event>;
+	var type : Class<xmpp.PersonalEvent>;
 }
 
 /**
@@ -48,7 +48,7 @@ class PersonalEventListener {
 	/**
 		Add listener for the given type.
 	*/
-	public function add( t : Class<xmpp.pep.Event>, handler : xmpp.Message->Xml->Void ) : Bool {
+	public function add( t : Class<xmpp.PersonalEvent>, handler : xmpp.Message->Xml->Void ) : Bool {
 		var l = getListener( t );
 		if( l != null ) {
 			return false;
@@ -61,7 +61,7 @@ class PersonalEventListener {
 	/**
 		Remove listener for the given type.
 	*/
-	public function remove( type : Class<xmpp.pep.Event> ) : Bool {
+	public function remove( type : Class<xmpp.PersonalEvent> ) : Bool {
 		var l = getListener( type );
 		if( l == null ) return false;
 		return listeners.remove( l );
@@ -77,7 +77,7 @@ class PersonalEventListener {
 	/**
 		Returns the listeners for the given type.
 	*/
-	public function getListener( type : Class<xmpp.pep.Event> ) : Listener {
+	public function getListener( type : Class<xmpp.PersonalEvent> ) : Listener {
 		for( l in listeners )
 			if( l.type == type )
 				return l;
@@ -89,7 +89,6 @@ class PersonalEventListener {
 	}
 	
 	function handlePersonalEvent( m : xmpp.Message ) {
-		trace("handlePersonalEventhandlePersonalEvent");
 		// var event = xmpp.pep.Event.fromMessage();
 		//onEventMessage( m );
 		var event : xmpp.PubSubEvent = null;
