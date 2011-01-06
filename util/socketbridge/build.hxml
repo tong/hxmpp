@@ -17,5 +17,5 @@
 -swf-header 100:100:60:eeeeee
 -swf socketbridge_tls.swf
 -main FlashSocketBridgeTLS
---flash-strict
+#--flash-strict
 #--no-traces
