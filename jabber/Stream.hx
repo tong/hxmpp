@@ -255,7 +255,6 @@ class Stream {
 	*/
 	public function sendPresence( ?show : xmpp.PresenceShow, ?status : String, ?priority : Int, ?type : xmpp.PresenceType ) : xmpp.Presence {
 		return cast sendPacket( new xmpp.Presence( show, status, priority, type ) );
-		
 	}
 	
 	/*

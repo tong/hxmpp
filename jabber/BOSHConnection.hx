@@ -246,7 +246,7 @@ class BOSHConnection extends jabber.stream.Connection {
 		
 		#else
 		var r = new haxe.Http( getHTTPPath() );
-		//r.onStatus = handleHTTPStatus;
+//r.onStatus = handleHTTPStatus;
 		r.onError = handleHTTPError;
 		r.onData = handleHTTPData;
 		r.setPostData( t.toString() );

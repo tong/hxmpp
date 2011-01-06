@@ -69,8 +69,7 @@ class SASLAuth extends Authentication {
 	*/
 	public override function authenticate( password : String, ?resource : String ) : Bool {
 		this.resource = resource;
-		// update stream's JID resource
-		if( stream.jid != null && resource != null )
+		if( stream.jid != null && resource != null ) // update stream's JID resource
 			stream.jid.resource = resource;
 		// locate SASL mechanism to use
 		if( mechanism == null ) {

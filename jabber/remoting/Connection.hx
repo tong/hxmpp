@@ -18,6 +18,7 @@
 package jabber.remoting;
 
 import haxe.remoting.AsyncConnection;
+import xmpp.IQType;
 
 //TODO data context (name) ??
 // needed ..? the jid is already a data context (?)
@@ -72,9 +73,9 @@ class Connection implements AsyncConnection, implements Dynamic<AsyncConnection>
 		var iq = new xmpp.IQ( null, null, target, stream.jidstr );
 		iq.properties.push( xmpp.HXR.create( s.toString() ) );
 		var error = __error;
-		stream.sendIQ( iq, function(r) {
+		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			switch( r.type ) {
-			case result :
+			case IQType.result :
 				var v = xmpp.HXR.getData( r.x.toXml() );
 				var ok = true;
 				var ret;
@@ -90,7 +91,7 @@ class Connection implements AsyncConnection, implements Dynamic<AsyncConnection>
 				}
 				if( ok && onResult != null )
 					onResult( ret );
-			case error :
+			case IQType.error :
 				//TODO check
 				//var err = xmpp.Error.parse( r.x.toXml() );
 				var err = r.errors[0];

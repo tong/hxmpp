@@ -1,6 +1,6 @@
 package jabber.util;
 
-#if (nodejs||php)
+#if (php||nodejs)
 
 #if nodejs
 import js.Node;

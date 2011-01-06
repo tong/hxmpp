@@ -40,9 +40,8 @@ class XHTML {
 	
 	public static function parse( x : Xml ) : XHTML {
 		for( e in x.elementsNamed( "body" ) ) {
-			if( e.get( "xmlns" ) == W3NS ) {
+			if( e.get( "xmlns" ) == W3NS )
 				return new XHTML( parseBody( e ) );
-			}
 		}
 		return null;
 	}
@@ -70,15 +69,9 @@ class XHTML {
 	/**
 		Attaches a HTML body to the properties of the given message packet.
 	*/
-	public static inline function attach( m : xmpp.Message, body : String ) : xmpp.Message {
-		m.properties.push( new XHTML( body ).toXml() );
+	public static inline function attach( m : xmpp.Message, t : String ) : xmpp.Message {
+		m.properties.push( new XHTML( t ).toXml() );
 		return m;
 	}
-	
-	/*
-	public static inline function create( body : String ) : Xml {
-		return new XHTML( body ).toXml();
-	}
-	*/
 	
 }

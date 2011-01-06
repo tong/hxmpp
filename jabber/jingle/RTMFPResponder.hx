@@ -18,7 +18,6 @@
 package jabber.jingle;
 
 import jabber.jingle.io.RTMFPInput;
-import jabber.jingle.io.Transport;
 
 class RTMFPResponder extends SessionResponder<RTMFPInput> {
 	

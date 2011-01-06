@@ -47,8 +47,9 @@ class OutgoingSession<T:Transport> extends Session<T> {
 	}
 	
 	function createTransportXml() : Xml {
+		trace("createTransportXml().....");
 		var x = Xml.createElement( "transport" );
-		x.set( "xmlns", xmlns );
+		x.set( "_xmlns_", xmlns );
 		for( t in transports ) x.addChild( createCandidateXml( t ) );
 		return x;
 	}

@@ -33,6 +33,10 @@ import js.Lib;
 import flash.external.ExternalInterface;
 #end
 
+//#if XMPP_CONSOLE
+//private class XMPPConsoleConnection
+//#end // XMPP_CONSOLE
+
 /**
 	Utility for debugging XMPP transfer.<br/>
 	Set the haXe compiler flag: -D XMPP_DEBUG to activate it.<br/>
@@ -44,6 +48,11 @@ class XMPPDebug {
 	#if (flash||js)
 	
 	static function __init__() {
+		
+		//#if XMPP_CONSOLE
+		//trace("TODO XMPP_CONSOLE...........");
+		//#end
+		
 		#if air
 		useConsole = false;
 		#else

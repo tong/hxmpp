@@ -95,9 +95,9 @@ class SOCKS5In {
 		this.digest = digest;
 		this.cb = cb;
 		state = WaitInit;
-		socket.on( Node.EVENT_STREAM_END, onError );
-		socket.on( Node.EVENT_STREAM_ERROR, onError );
-		socket.on( Node.EVENT_STREAM_DATA, onData );
+		socket.on( Node.STREAM_END, onError );
+		socket.on( Node.STREAM_ERROR, onError );
+		socket.on( Node.STREAM_DATA, onData );
 	}
 	
 	function onData( buf : Buffer ) {
@@ -134,9 +134,9 @@ class SOCKS5In {
 	}
 	
 	function removeSocketListeners() {
-		socket.removeAllListeners( Node.EVENT_STREAM_DATA );
-		socket.removeAllListeners( Node.EVENT_STREAM_END );
-		socket.removeAllListeners( Node.EVENT_STREAM_ERROR );
+		socket.removeAllListeners( Node.STREAM_DATA );
+		socket.removeAllListeners( Node.STREAM_END );
+		socket.removeAllListeners( Node.STREAM_ERROR );
 	}
 }
 

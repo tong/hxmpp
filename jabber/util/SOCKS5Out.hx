@@ -163,9 +163,9 @@ class SOCKS5Out {
 		this.digest = digest;
 		this.cb = cb;
 		state = WaitResponse;
-		socket.on( Node.EVENT_STREAM_END, onError );
-		socket.on( Node.EVENT_STREAM_ERROR, onError );
-		socket.on( Node.EVENT_STREAM_DATA, onData );
+		socket.on( Node.STREAM_END, onError );
+		socket.on( Node.STREAM_ERROR, onError );
+		socket.on( Node.STREAM_DATA, onData );
 		socket.write( "\x05\x01"+String.fromCharCode(0) );
 	}
 	
@@ -193,9 +193,9 @@ class SOCKS5Out {
 	}
 	
 	function removeSocketListeners() {
-		socket.removeAllListeners( Node.EVENT_STREAM_DATA );
-		socket.removeAllListeners( Node.EVENT_STREAM_END );
-		socket.removeAllListeners( Node.EVENT_STREAM_ERROR );
+		socket.removeAllListeners( Node.STREAM_DATA );
+		socket.removeAllListeners( Node.STREAM_END );
+		socket.removeAllListeners( Node.STREAM_ERROR );
 	}
 }
 

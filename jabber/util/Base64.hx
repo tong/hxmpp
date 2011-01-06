@@ -17,16 +17,16 @@ class Base64 {
 		//'+/='
 		//'-_.'
 		CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-		#if (neko||cpp||js||flash)
+		#if (neko||cpp||js||flash||xmldoc)
 		#if !nodejs
 		bc = new BaseCode( Bytes.ofString( CHARS ) );
-		#end
-		#end
+		#end // !nodejs
+		#end // neko||cpp||js||flash||xmldoc
 	}
 	
 	public static var CHARS(default,null) : String;
 	
-	#if (neko||cpp||js||flash)
+	#if (neko||cpp||js||flash||xmldoc)
 	#if !nodejs
 	
 	public static var bc(default,null) : BaseCode;
@@ -43,8 +43,8 @@ class Base64 {
 		return s;
 	}
 	
-	#end // neko||cpp||js||swf
 	#end // !nodejs
+	#end // neko||cpp||js||flash||xmldoc
 	
 	public static function encode( t : String ) : String {
 		#if php

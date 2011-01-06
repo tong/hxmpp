@@ -3,7 +3,7 @@ package jabber.client;
 import jabber.stream.PacketCollector;
 
 /**
-	A custom extension to XMPP to enable users to query their Gmail account for emails,
+	A custom google extension to XMPP to enable users to query their Gmail account for emails,
 	and receive notifications when a new message arrives.
 	
 	http://code.google.com/apis/talk/jep_extensions/gmail.html
@@ -16,7 +16,7 @@ class GMailNotify {
 	
 	public var stream(default,null) : Stream;
 	
-	var collector : PacketCollector;
+	var c : PacketCollector;
 	
 	public function new( stream : Stream ) {
 		this.stream = stream;
@@ -36,8 +36,8 @@ class GMailNotify {
 		The server will also subscribe the client to receive notifications when new mail is received.
 	*/
 	public function request( ?newerThanTime : Int, ?newerThanTid : Int, ?q : String  ) {
-		if( collector == null )
-			collector = stream.collect( [cast new xmpp.filter.IQFilter(XMLNS,"mailbox",xmpp.IQType.set)], handleNotification, true );
+		if( c == null )
+			c = stream.collect( [cast new xmpp.filter.IQFilter(XMLNS,"mailbox",xmpp.IQType.set)], handleNotification, true );
 		var iq = new xmpp.IQ();
 		var x = xmpp.IQ.createQueryXml( XMLNS );
 		if( newerThanTime != null ) x.set( "newer-than-time", Std.string( newerThanTime ) );
@@ -51,8 +51,8 @@ class GMailNotify {
 		This does NOT unsubscribe from getting mail notifications (currently not provided by the service)
 	*/
 	public function dispose() {
-		stream.removeCollector( collector );
-		collector = null;
+		stream.removeCollector( c );
+		c = null;
 	}
 	
 	function handleNotification( iq : xmpp.IQ ) {

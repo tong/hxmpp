@@ -203,7 +203,6 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	public override function connect() {
-		trace("CONNECTING..");
 		socket = new Socket();
 		#if flash10 socket.timeout = timeout*1000; #end
 		buf = new ByteArray();

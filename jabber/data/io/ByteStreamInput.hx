@@ -128,9 +128,9 @@ class ByteStreamInput extends ByteStreamIO {
 		this.digest = digest;
 		this.size = size;
 		socket = Node.net.createConnection( port, host );
-		socket.on( Node.EVENT_STREAM_CONNECT, sockConnectHandler );
-		socket.on( Node.EVENT_STREAM_END, sockDisconnectHandler );
-		socket.on( Node.EVENT_STREAM_ERROR, sockErrorHandler );
+		socket.on( Node.STREAM_CONNECT, sockConnectHandler );
+		socket.on( Node.STREAM_END, sockDisconnectHandler );
+		socket.on( Node.STREAM_ERROR, sockErrorHandler );
 		
 		#end
 	}
@@ -285,16 +285,16 @@ class ByteStreamInput extends ByteStreamIO {
 		} else {
 			#if JABBER_DEBUG trace( "SOCKS5 negotiation complete "+err ); #end
 			bufpos = 0;
-			socket.on( Node.EVENT_STREAM_DATA, sockDataHandler );
+			socket.on( Node.STREAM_DATA, sockDataHandler );
 			__onConnect();
 		}
 	}
 
 	function cleanup() {
-		socket.removeAllListeners( Node.EVENT_STREAM_CONNECT );
-		socket.removeAllListeners( Node.EVENT_STREAM_DATA );
-		socket.removeAllListeners( Node.EVENT_STREAM_END );
-		socket.removeAllListeners( Node.EVENT_STREAM_ERROR );
+		socket.removeAllListeners( Node.STREAM_CONNECT );
+		socket.removeAllListeners( Node.STREAM_DATA );
+		socket.removeAllListeners( Node.STREAM_END );
+		socket.removeAllListeners( Node.STREAM_ERROR );
 		socket.end();
 	}
 	

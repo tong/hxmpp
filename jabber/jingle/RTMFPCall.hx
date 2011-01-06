@@ -22,7 +22,7 @@ import jabber.jingle.io.Transport;
 import xmpp.IQ;
 
 /**
-	Direct RTMFP connection.
+	Outgoing, direct RTMFP connection.
 */
 class RTMFPCall extends OutgoingSession<RTMFPOutput> {
 	

@@ -31,8 +31,8 @@ class JIDUtil {
 	}
 	
 	public static inline var MIN_LENGTH = 8;
-	public static inline var MAX_LENGTH = 3071;
 	public static inline var MAX_PARTSIZE = 1023;
+	public static inline var MAX_SIZE = 3071;
 	
 	/**
 		Regular expression matching a valid JID
@@ -43,7 +43,7 @@ class JIDUtil {
 		@return True if the given JID is valid formed.
 	*/
 	public static function isValid( t : String ) : Bool {
-		if( t == null || t.length < MIN_LENGTH || t.length > MAX_LENGTH )
+		if( t == null || t.length < MIN_LENGTH || t.length > MAX_SIZE )
 			return false;
 		if( !EREG.match( t ) )
 			return false;

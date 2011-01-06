@@ -81,9 +81,8 @@ class Session<T:Transport> {
 		}
 	}
 	
-	// override me
 	function processSessionPacket( iq : IQ, j : xmpp.Jingle ) {
-		new jabber.error.AbstractError();
+		new jabber.error.AbstractError(); // override me
 	}
 	
 	function addSessionCollector() {
@@ -111,7 +110,7 @@ class Session<T:Transport> {
 	}
 	
 	function handleTransportDisconnect() {
-		trace("handleTransportDisconnecthandleTransportDisconnecthandleTransportDisconnect");
+		trace("handleTransportDisconnect");
 	}
 	
 	function cleanup() {
