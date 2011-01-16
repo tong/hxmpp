@@ -42,21 +42,14 @@ class IQFilter {
 				return false;
 		}
 		var x : Xml = null;
+		if( iq.x == null )
+			return false;
 		if( xmlns != null ) {
-			if( iq.x == null )
-				return false;
 			x = iq.x.toXml();
-			//haXe 2.06 fuckup
-			#if flash
-			if( xmlns != x.get( "_xmlns_" ) )
-			#else
-			if( xmlns != x.get( "xmlns" ) )
-			#end
+			if( x.get( "xmlns" ) != xmlns )
 				return false;
 		}
 		if( nodeName != null ) {
-			if( iq.x == null )
-				return false;
 			if( x == null ) x = iq.x.toXml();
 			if( nodeName != x.nodeName )
 				return false;

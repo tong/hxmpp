@@ -7,7 +7,7 @@ class JingleFilter extends IQFilter {
 	
 	/**  Jingle session-id */
 	public var sid : String;
-	/** Jingle transport XML namespace */
+	/** Jingle transport namespace */
 	public var transport : String;
 	
 	public function new( ?transport : String, ?sid : String, ?iqType : xmpp.IQType ) {
@@ -28,12 +28,7 @@ class JingleFilter extends IQFilter {
 		if( transport != null ) {
 			for( e in x.elementsNamed( "content" ) ) {
 				for( e in e.elementsNamed( "transport" ) ) {
-					//haXe 2.06 fuckup
-					#if flash
-					if( e.get( "_xmlns_" ) != transport )
-					#else
 					if( e.get( "xmlns" ) != transport )
-					#end
 						return false;
 				}
 			}

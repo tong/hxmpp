@@ -59,11 +59,7 @@ class SIListener {
 		var file : xmpp.file.File = null;
 		var _methods = new Array<String>();
 		for( e in si.any ) {
-			#if flash // haXe 2.06 fukup
-			if( e.nodeName == "feature" && e.get( "_xmlns_" ) == xmpp.FeatureNegotiation.XMLNS ) {
-			#else
 			if( e.nodeName == "feature" && e.get( "xmlns" ) == xmpp.FeatureNegotiation.XMLNS ) {
-			#end
 				for( e in e.elementsNamed( "x" ) ) {
 					var form = xmpp.DataForm.parse( e );
 					var f = form.fields[0];
@@ -72,11 +68,7 @@ class SIListener {
 							_methods.push( o.value );
 					}
 				}
-			#if flash // haXe 2.06 fukup
-			} else if( e.nodeName == "file" && e.get( "_xmlns_" ) == xmpp.file.File.XMLNS ) {
-			#else
 			} else if( e.nodeName == "file" && e.get( "xmlns" ) == xmpp.file.File.XMLNS ) {
-			#end
 				file = xmpp.file.File.parse( e );
 			}
 		}

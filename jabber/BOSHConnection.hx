@@ -112,12 +112,13 @@ class BOSHConnection extends jabber.stream.Connection {
 			responseQueue = new Array();
 			responseTimer = new Timer( INTERVAL );
 			var b = Xml.createElement( "body" );
-			b.set( 'xmlns', XMLNS );
 		#if flash //flash 2.06 fukup hack
+			b.set( '_xmlns_', XMLNS );
 			b.set( 'xml_lang', 'en' );
 			b.set( 'xmlns_xmpp', XMLNS_XMPP );
 			b.set( 'xmpp_version', '1.0' );
 		#else
+			b.set( 'xmlns', XMLNS );
 			b.set( 'xml:lang', 'en' );
 			b.set( 'xmlns:xmpp', XMLNS_XMPP );
 			b.set( 'xmpp:version', '1.0' );

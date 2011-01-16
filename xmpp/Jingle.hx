@@ -43,8 +43,8 @@ class Jingle {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "jingle" );
-		//TODO
-		//x.set( "xmlns", XMLNS );
+		//TODO 2.06
+	//	x.set( "xmlns", XMLNS );
 		x.set( "_xmlns_", XMLNS );
 		x.set( "action", StringTools.replace( Type.enumConstructor( action ), "_", "-" ) );
 		x.set( "initiator", initiator );

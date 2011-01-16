@@ -10,7 +10,6 @@ class SessionResponder<T:Transport> extends Session<T> {
 	}
 	
 	public function handleRequest( iq : IQ ) : Bool {
-		trace("handleRequesthandleRequesthandleRequesthandleRequesthandleRequest");
 		var j = xmpp.Jingle.parse( iq.x.toXml() );
 		if( j.action != xmpp.jingle.Action.session_initiate )
 			return false;
@@ -21,20 +20,15 @@ class SessionResponder<T:Transport> extends Session<T> {
 			case "description" :
 				parseDescription( e );
 			case "transport" :
-				/* TODO
-				#if flash
-				if( e.get( "_xmlns_" ) != xmlns ) {
-				#else
 				if( e.get( "xmlns" ) != xmlns ) {
-				#end
 					trace("TODO invalid transport specified");
-					trace(e);
-					trace( e.get( "xmlns" )+" ::: "+xmlns);
 					return false;
 				}
-				*/
-				for( cx in e.elementsNamed( "candidate" ) ) {
-					addTransportCandidate( cx );
+				for( e in e.elementsNamed("candidate") ) trace(e);
+				for( e in e.elements() ) {
+					if( e.nodeName == "candidate") {
+						addTransportCandidate( e );
+					}
 				}
 			}
 		}

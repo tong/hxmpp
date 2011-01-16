@@ -73,12 +73,7 @@ class ErrorPacket {
 	
 	static function parseInto( p : ErrorPacket, x : Xml, xmlns : String ) {
 		for( e in x.elements() ) {
-			
-			#if flash //TODO haxe2.06 fukup
-			var ns = e.get( "_xmlns_" );
-			#else
 			var ns = e.get( "xmlns" );
-			#end
 			if( ns == null )
 				continue;
 			switch( e.nodeName ) {

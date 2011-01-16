@@ -332,16 +332,11 @@ class Stream {
 	public function handleData( buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) : Int {
 		if( status == Status.closed )
 			return -1;
-	//TODO .. data filters
+		//TODO .. data filters
 		for( f in dataFilters ) {
 			buf = f.filterData( buf );
 		}
-	
 		var t : String = buf.readString( bufpos, buflen );
-#if flash // haXe 2.06 fuckup
-		t = StringTools.replace( t, "xmlns=", "_xmlns_=" );
-#end
-
 		//TODO
 		if( StringTools.startsWith( t, '</stream:stream' ) ) {
 			#if XMPP_DEBUG
@@ -380,9 +375,15 @@ class Stream {
 			#if XMPP_DEBUG
 			XMPPDebug.inc( t );
 			#end
-			if( x.nodeName != "proceed"
-				// haXe 2.06 flash fukup HACK
-				#if !flash || x.get( "xmlns" ) != "urn:ietf:params:xml:ns:xmpp-tls" #end ) {
+			/*
+			trace(x);
+			trace(x.firstElement());
+			trace(x.nodeName);
+			//trace(x.attributes());
+				for( a in x.attributes() ) trace(a);
+			trace(x.get( "xmlns" ));
+				*/
+			if( x.nodeName != "proceed" || x.get( "xmlns" ) != "urn:ietf:params:xml:ns:xmpp-tls" ) {
 				cnx.disconnect();
 				return 0;
 			}
