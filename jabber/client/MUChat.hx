@@ -125,11 +125,21 @@ class MUChat {
 	public function leave( ?message : String, ?forceEvent : Bool = true ) : xmpp.Presence {
 		if( !joined ) return null;
 		var p = new xmpp.Presence( null, message, null, xmpp.PresenceType.unavailable );
+		p.to = myjid;
 		presence = p;
 		stream.sendPacket( p );
 		if( forceEvent )
 			destroy();
 		return p;
+	}
+	
+	/**
+	*/
+	public function sendPresence( ?show : xmpp.PresenceShow, ?status : String, ?priority : Int, ?type : xmpp.PresenceType ) : xmpp.Presence {
+		var p =  new xmpp.Presence( show, status, priority, type );
+		p.to = myjid;
+		p.properties.push( xmpp.X.create( xmpp.MUC.XMLNS ) );
+		return stream.sendPacket( p );
 	}
 	
 	/**
