@@ -278,12 +278,11 @@ class ByteStreamInput extends ByteStreamIO {
 	}
 
 	function onSOCKS5Complete( err : String ) {
-		cleanup();
 		if( err != null ) {
 			cleanup();
 			__onFail( err );
 		} else {
-			#if JABBER_DEBUG trace( "SOCKS5 negotiation complete "+err ); #end
+			#if JABBER_DEBUG trace( "SOCKS5 negotiation complete " ); #end
 			bufpos = 0;
 			socket.on( Node.STREAM_DATA, sockDataHandler );
 			__onConnect();
