@@ -56,6 +56,7 @@ import air.ByteArray;
 */
 class SITransfer {
 	
+	public dynamic function onInit() : Void;
 	public dynamic function onProgress( bytes : Int ) : Void;
 	public dynamic function onComplete() : Void;
 	public dynamic function onFail( error : String, ?info : String ) : Void;
@@ -121,6 +122,10 @@ class SITransfer {
 	}
 	
 	#end
+	
+	public function abort() {
+		//TODO
+	}
 	
 	function sendRequest( name : String, size : Int,
 						  ?date : String, ?hash : String, ?desc : String, ?range : Bool = false, ?mime : String ) {
@@ -216,6 +221,7 @@ class SITransfer {
 		method.onComplete = onComplete;
 		method.onFail = handleFileTransferFail;
 		method.init( input, id, file );
+		onInit();
 	}
 	
 	function handleFileTransferFail( info : String ) {
