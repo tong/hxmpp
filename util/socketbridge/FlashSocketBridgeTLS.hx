@@ -39,12 +39,11 @@ class FlashSocketBridgeTLS {
 	var ctx : String;
 	var sockets : IntHash<Socket>;
 	
-	function new( ?ctx : String ) {
+	public function new( ?ctx : String ) {
 		this.ctx = ( ctx != null ) ? ctx : "jabber.SocketConnection";
-		init();
 	}
 	
-	function init() {
+	public function init() {
 		if( !ExternalInterface.available )
 			throw "External interface not available";
 		sockets = new IntHash();
@@ -93,7 +92,10 @@ class FlashSocketBridgeTLS {
 		if( !sockets.exists( id ) )
 			return false;
 		var s = sockets.get( id );
-		#if flash10 if( timeout > 0 ) s.timeout = timeout; #end
+		#if flash10
+		//TODO
+	//	if( timeout > 0 ) s.timeout = timeout;
+		#end
 		s.connect( host, port );
 		return true;
 	}
@@ -102,7 +104,12 @@ class FlashSocketBridgeTLS {
 		if( !sockets.exists( id ) )
 			return false;
 		var s = sockets.get( id );
-		s.close();
+		try {
+			s.close();
+		} catch( e : Dynamic ) {
+			trace(e); //TODO
+			return false;	
+		}
 		return true;
 	}
 	
@@ -147,15 +154,8 @@ class FlashSocketBridgeTLS {
 	}
 	
 	function sockDataHandler( e : SecureSocketEvent ) {
+		if( e.rawData == null ) return; // ?
 		ExternalInterface.call( ctx+".handleData", e.target.id, e.rawData.toString() );
 	}
-	
-	static function main() {
-		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
-		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
-		var cm = new flash.ui.ContextMenu();
-		cm.hideBuiltInItems();
-		flash.Lib.current.contextMenu = cm;
-		new FlashSocketBridgeTLS( flash.Lib.current.loaderInfo.parameters.ctx );
-	}
+
 }
