@@ -150,6 +150,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	function sockConnectHandler( e : SecureSocketEvent ) {
+		trace(e);
 		connected = true;
 		__onConnect();
 	}
@@ -452,7 +453,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 }
 
 
-#elseif (js||JABBER_SOCKETBRIDGE)
+#elseif JABBER_SOCKETBRIDGE
 
 import jabber.stream.SocketConnection;
 
@@ -522,9 +523,10 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	function sockDataHandler( t : String ) {
 		var s = buf+t;
-		if( s.length > maxBufSize )
-			throw new jabber.error.Error( "Max socket buffer size reached ["+maxBufSize+"]" );
-		if( __onData( haxe.io.Bytes.ofString( s ), 0, s.length ) == 0 ) s else "";
+		//TODO
+//		if( s.length > maxBufSize )
+//			throw new jabber.error.Error( "Max socket buffer size reached ["+maxBufSize+"]" );
+		buf = if( __onData( haxe.io.Bytes.ofString(s), 0, s.length ) == 0 ) s else "";
 	}
 	
 	function sockErrorHandler( e : String ) {
@@ -545,19 +547,23 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	static var sockets : IntHash<Socket>;
 	
-	public static function init( id : String, cb : Void->Void, ?delay : Int ) {
+	public static function init( id : String, cb : String->Void, ?delay : Int ) {
 		if( initialized ) {
 			#if JABBER_DEBUG
 			trace( "Socketbridge already initialized" );
 			#end
 			return;
 		}
+		swf = js.Lib.document.getElementById( id );
+		if( swf == null ) {
+			cb( "socketbridge swf not found ["+id+"]" );
+			return;
+		}
 		if( delay == null || delay < 0 ) delay = defaultDelay;
 		SocketConnection.id = id;
-		swf = js.Lib.document.getElementById( id );
 		sockets = new IntHash();
 		initialized = true;
-		haxe.Timer.delay( cb, delay );
+		haxe.Timer.delay( function(){ cb(null); }, delay );
 	}
 	
 	public static function createSocket( s : Socket, secure : Bool ) {
@@ -586,6 +592,8 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	static function handleData( id : Int, d : String ) {
 		var s = sockets.get( id );
+		//trace( "###handleData### "+d.length);
+		//trace(d);
 		s.onData( d );
 	}
 	
