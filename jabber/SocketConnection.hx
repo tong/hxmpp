@@ -525,7 +525,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		//TODO
 		var s = buf+t;
 		var bytes = haxe.io.Bytes.ofString(s);
-		if( bytes.length > maxBufSize )
+	//	if( bytes.length > maxBufSize )
 //			throw new jabber.error.Error( "Max socket buffer size reached ["+maxBufSize+"]" );
 		//if( __onData( haxe.io.Bytes.ofString(s), 0, s.length ) == 0 ) {
 		if( __onData( bytes, 0, bytes.length ) == 0 ) {
@@ -596,7 +596,8 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	static function handleData( id : Int, d : String ) {
-		sockets.get( id ).onData( d );
+		var s = sockets.get( id );
+		s.onData( d );
 	}
 	
 	static function handleSecure( id : Int ) {
