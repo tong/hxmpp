@@ -105,6 +105,11 @@ class MUChat {
 				 affiliation : affiliation };
 	}
 	
+	public function getOccupant( nick : String ) : MUCOccupant {
+		for( o in occupants ) { if( o.nick == nick ) return o; }
+		return null;
+	}
+	
 	/**
 		Sends initial presence to room.
 	*/
@@ -341,13 +346,6 @@ class MUChat {
 		p.to = myjid;
 		p.properties.push( xmpp.X.create( xmpp.MUC.XMLNS ) );
 		return stream.sendPacket( p );
-	}
-	
-	function getOccupant( n : String ) : MUCOccupant {
-		for( o in occupants ) {
-			if( o.nick == n ) return o;
-		}
-		return null;
 	}
 	
 	inline function getOccupantName( j : String ) : String {
