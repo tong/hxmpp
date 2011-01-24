@@ -56,7 +56,7 @@ class MUChat {
 	public dynamic function onMessage( o : MUCOccupant, m : xmpp.Message ) : Void;
 	//public dynamic function onRoomMessage( m : xmpp.Message ) : Void;
 	public dynamic function onPresence( o : MUCOccupant ) : Void;
-	public dynamic function onSubject() : Void;
+	public dynamic function onSubject( t : String ) : Void;
 	public dynamic function onKick( nick : String ) : Void;
 	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
@@ -145,8 +145,9 @@ class MUChat {
 	/**
 		Sends message to all room occupants.
 	*/
-	public function speak( t : String ) : xmpp.Message {
+	public function speak( t : String, ?properties : Array<Xml> ) : xmpp.Message {
 		if( !joined ) return null;
+		message.properties = ( properties == null ) ? [] : properties;
 		message.subject = null;
 		message.body = t;
 		return stream.sendPacket( message );
@@ -157,6 +158,7 @@ class MUChat {
 	public function changeSubject( t : String ) : xmpp.Message {
 		if( !joined ) return null;
 		//TODO check/role .. only moderators can change
+		message.properties = null;
 		message.body = null;
 		message.subject = t;
 		return stream.sendPacket( message );
@@ -239,7 +241,7 @@ class MUChat {
 		if( m.subject != null ) {
 			if( subject != null && m.subject == subject ) return;
 			subject = m.subject;
-			onSubject();
+			onSubject( subject = m.subject );
 			return;
 		}
 		if( occupant == null && from == nick  ) occupant = me;
