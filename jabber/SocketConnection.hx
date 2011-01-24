@@ -467,11 +467,11 @@ class SocketConnection extends jabber.stream.SocketConnection {
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
 		super( host, port, secure, bufSize, maxBufSize, timeout );
-		if( !SocketConnection.initialized )
-			throw new jabber.error.Error( "Socketbridge not initialized" );
 	}
 	
 	public override function connect() {
+		if( !SocketConnection.initialized )
+			throw new jabber.error.Error( "socketbridge not initialized" );
 		buf = "";
 		socket = new Socket( secure );
 		socket.onConnect = sockConnectHandler;
@@ -522,11 +522,18 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	function sockDataHandler( t : String ) {
-		var s = buf+t;
 		//TODO
-//		if( s.length > maxBufSize )
+		var s = buf+t;
+		var bytes = haxe.io.Bytes.ofString(s);
+		if( bytes.length > maxBufSize )
 //			throw new jabber.error.Error( "Max socket buffer size reached ["+maxBufSize+"]" );
-		buf = if( __onData( haxe.io.Bytes.ofString(s), 0, s.length ) == 0 ) s else "";
+		//if( __onData( haxe.io.Bytes.ofString(s), 0, s.length ) == 0 ) {
+		if( __onData( bytes, 0, bytes.length ) == 0 ) {
+			buf = s;
+		} else {
+			buf = "";
+		}
+		//buf = if( __onData( haxe.io.Bytes.ofString(s), 0, s.length ) == 0 ) s else "";
 	}
 	
 	function sockErrorHandler( e : String ) {
@@ -559,8 +566,8 @@ class SocketConnection extends jabber.stream.SocketConnection {
 			cb( "socketbridge swf not found ["+id+"]" );
 			return;
 		}
-		if( delay == null || delay < 0 ) delay = defaultDelay;
 		SocketConnection.id = id;
+		if( delay == null || delay < 0 ) delay = defaultDelay;
 		sockets = new IntHash();
 		initialized = true;
 		haxe.Timer.delay( function(){ cb(null); }, delay );
@@ -569,6 +576,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	public static function createSocket( s : Socket, secure : Bool ) {
 		var id : Int = -1;
 		try id = swf.createSocket( secure ) catch( e : Dynamic ) {
+			#if JABBER_DEBUG trace(e); #end
 			return -1;
 		}
 		sockets.set( id, s );
@@ -576,30 +584,23 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	static function handleConnect( id : Int ) {
-		var s = sockets.get( id );
-		s.onConnect();
+		sockets.get( id ).onConnect();
 	}
 	
 	static function handleDisconnect( id : Int ) {
-		var s = sockets.get( id );
-		s.onDisconnect();
+		sockets.get( id ).onDisconnect();
 	}
 	
 	static function handleError( id : Int, e : String ) {
-		var s = sockets.get( id );
-		s.onError( e );
+		sockets.get( id ).onError( e );
 	}
 	
 	static function handleData( id : Int, d : String ) {
-		var s = sockets.get( id );
-		//trace( "###handleData### "+d.length);
-		//trace(d);
-		s.onData( d );
+		sockets.get( id ).onData( d );
 	}
 	
 	static function handleSecure( id : Int ) {
-		var s = sockets.get( id );
-		s.onSecured();
+		sockets.get( id ).onSecured();
 	}
 }
 

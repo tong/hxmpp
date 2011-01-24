@@ -186,7 +186,7 @@ class Socket {
 	public function new( secure : Bool ) {
 		id = jabber.SocketConnection.createSocket( this, secure );
 		if( id < 0 )
-			throw new jabber.error.Error( "Error creating socket on socket bridge" );
+			throw new jabber.error.Error( "Failed to create socket on socket bridge" );
 	}
 	
 	public function connect( host : String, port : Int ) {

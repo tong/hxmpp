@@ -53,7 +53,7 @@ class FlashSocketBridge{
 		ExternalInterface.addCallback( "destroyAll", destroyAll );
 	}
 	
-	function createSocket() : Int {
+	function createSocket( ___secure : Bool = false) : Int {
 		var id = Lambda.count( sockets );
 		var s = new Socket( id );
 		sockets.set( id, s );
