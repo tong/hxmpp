@@ -186,22 +186,22 @@ class Socket {
 	public function new( secure : Bool ) {
 		id = jabber.SocketConnection.createSocket( this, secure );
 		if( id < 0 )
-			throw new jabber.error.Error( "Failed to create socket on socket bridge" );
+			throw new jabber.error.Error( "failed to create socket on socket bridge" );
 	}
 	
-	public function connect( host : String, port : Int ) {
-		jabber.SocketConnection.swf.connect( id, host, port );
+	public inline function connect( host : String, port : Int, ?timeout : Int ) {
+		jabber.SocketConnection.swf.connect( id, host, port, timeout );
 	}
 	
-	public function close() {
+	public inline function close() {
 		jabber.SocketConnection.swf.disconnect( id );
 	}
 	
-	public function send( t : String ) {
+	public inline function send( t : String ) {
 		jabber.SocketConnection.swf.send( id, t );
 	}
 	
-	public function setSecure() {
+	public inline function setSecure() {
 		jabber.SocketConnection.swf.setSecure( id );
 	}
 }

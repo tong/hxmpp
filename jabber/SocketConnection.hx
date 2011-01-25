@@ -459,7 +459,7 @@ import jabber.stream.SocketConnection;
 
 class SocketConnection extends jabber.stream.SocketConnection {
 
-	var buf : String;
+	var buf : StringBuf;
 	
 	public function new( host : String,
 						 ?port : Int = 5222,
@@ -472,13 +472,13 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	public override function connect() {
 		if( !SocketConnection.initialized )
 			throw new jabber.error.Error( "socketbridge not initialized" );
-		buf = "";
+		buf = new StringBuf();
 		socket = new Socket( secure );
 		socket.onConnect = sockConnectHandler;
 		socket.onDisconnect = sockDisconnectHandler;
 		socket.onError = sockErrorHandler;
 		socket.onSecured = sockSecuredHandler;
-		socket.connect( host, port );
+		socket.connect( host, port, timeout*1000 );
 	}
 	
 	public override function disconnect() {
@@ -522,6 +522,12 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	function sockDataHandler( t : String ) {
+		buf.add( t );
+		var bytes = haxe.io.Bytes.ofString( buf.toString() );
+		if( __onData( bytes, 0, bytes.length ) != 0 ) {
+			buf = new StringBuf();
+		}
+		/*
 		//TODO
 		var s = buf+t;
 		var bytes = haxe.io.Bytes.ofString(s);
@@ -534,6 +540,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 			buf = "";
 		}
 		//buf = if( __onData( haxe.io.Bytes.ofString(s), 0, s.length ) == 0 ) s else "";
+		*/
 	}
 	
 	function sockErrorHandler( e : String ) {
@@ -541,23 +548,22 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		__onError( e );
 	}
 	
-	///// Connection to/from the socketbridge ->
+	///// Socketbridge connection
 		
 	static function __init__() {
 		initialized = false;
 	}
 	
-	public static var defaultDelay = 300;
 	public static var id(default,null) : String;
 	public static var swf(default,null) : Dynamic;
 	public static var initialized(default,null) : Bool;
 	
 	static var sockets : IntHash<Socket>;
 	
-	public static function init( id : String, cb : String->Void, ?delay : Int ) {
+	public static function init( id : String, cb : String->Void, ?delay : Int = 300 ) {
 		if( initialized ) {
 			#if JABBER_DEBUG
-			trace( "Socketbridge already initialized" );
+			trace( "socketbridge already initialized" );
 			#end
 			return;
 		}
@@ -567,10 +573,10 @@ class SocketConnection extends jabber.stream.SocketConnection {
 			return;
 		}
 		SocketConnection.id = id;
-		if( delay == null || delay < 0 ) delay = defaultDelay;
 		sockets = new IntHash();
 		initialized = true;
-		haxe.Timer.delay( function(){ cb(null); }, delay );
+		if( delay > 0 ) haxe.Timer.delay( function(){ cb(null); }, delay );
+		else cb(null);
 	}
 	
 	public static function createSocket( s : Socket, secure : Bool ) {
@@ -596,8 +602,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	static function handleData( id : Int, d : String ) {
-		var s = sockets.get( id );
-		s.onData( d );
+		sockets.get( id ).onData( d );
 	}
 	
 	static function handleSecure( id : Int ) {
