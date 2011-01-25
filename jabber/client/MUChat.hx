@@ -90,7 +90,8 @@ class MUChat {
 		// collect all presences and messages from the room
 		var f_from : xmpp.PacketFilter = new PacketFromContainsFilter( jid );
 		c_presence = new PacketCollector( [f_from, cast new PacketTypeFilter( PacketType.presence )], handlePresence, true );
-		c_message = new PacketCollector(  [f_from, cast new MessageFilter( MessageType.groupchat )], handleMessage, true );
+		//c_message = new PacketCollector(  [f_from, cast new MessageFilter( MessageType.groupchat )], handleMessage, true );
+		c_message = new PacketCollector(  [f_from, cast new MessageFilter()], handleMessage, true );
 		
 		message = new xmpp.Message( jid, null, null, MessageType.groupchat, null );
 		joined = false;
@@ -163,7 +164,7 @@ class MUChat {
 	public function changeSubject( t : String ) : xmpp.Message {
 		if( !joined ) return null;
 		//TODO check/role .. only moderators can change
-		message.properties = null;
+		message.properties = [];
 		message.body = null;
 		message.subject = t;
 		return stream.sendPacket( message );
@@ -232,25 +233,29 @@ class MUChat {
 	}
 	*/
 	
-	
 	function handleMessage( m : xmpp.Message ) {
-		//trace("händle MUC room Message");
-		var from = getOccupantName( m.from );
-		var occupant = getOccupant( from );
-		if( occupant == null && from != jid && from != nick ) {
-			//TODO
-			//trace( "??? Message from unknown muc occupant ??? "+from );
-			onMessage( null, m );
-			return;
+		switch( m.type ) {
+		case MessageType.groupchat :
+			var from = getOccupantName( m.from );
+			if( m.subject != null ) {
+				if( m.subject == subject )
+					return;
+				onSubject( subject = m.subject );
+				return;
+			}
+			var occupant = getOccupant( from );
+			if( occupant == null && from != jid && from != nick ) {
+				//TODO
+				//trace( "??? Message from unknown muc occupant ??? "+from );
+				onMessage( null, m );
+				return;
+			}
+			if( occupant == null && from == nick  ) occupant = me;
+			onMessage( occupant, m );
+		case MessageType.error :
+			trace("TODO handle muc error");
+		default :
 		}
-		if( m.subject != null ) {
-			if( subject != null && m.subject == subject ) return;
-			subject = m.subject;
-			onSubject( subject = m.subject );
-			return;
-		}
-		if( occupant == null && from == nick  ) occupant = me;
-		onMessage( occupant, m );
 	}
 	
 	function handlePresence( p : xmpp.Presence ) {
