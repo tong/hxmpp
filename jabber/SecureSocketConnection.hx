@@ -20,6 +20,7 @@ package jabber;
 #if (neko||php||cpp||rhino)
 
 #if neko
+import neko.net.Host;
 import neko.tls.Socket;
 #elseif php
 import php.net.Host;
@@ -43,7 +44,7 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 		bufbytes = 0;
 		try {
 			#if neko
-			socket.connect( Socket.resolve( host ), port );
+			socket.connect( new Host( host ), port );
 			#elseif php
 			socket.connect( new Host( host ), port );
 			#end
@@ -172,6 +173,7 @@ class SecureSocketConnection extends jabber.SocketConnection {
 	}
 	
 	override function secureChannelEstablished( e : SecureSocketEvent ) {
+		trace(e);
 		connected = true;
 		__onConnect();
 	}

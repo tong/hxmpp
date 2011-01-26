@@ -6,6 +6,7 @@ enum SocketHandle {}
 enum CTX {}
 enum TLS {}
 
+
 class Socket {
 
 	static function __init__() {
@@ -28,13 +29,15 @@ class Socket {
 		output = new SocketOutput(__s);
 	}
 	
+	/*
 	public function setSecure() {
 		trace("TODO not implemented");
 	}
+	*/
 	
 	public function connect( host : Host, port : Int ) {
 		try {
-			socket_connect(__s, host, port);
+			socket_connect(__s, host.ip, port);
 			ssl = SSL_new( ctx );
 			input.ssl = ssl;
 			output.ssl = ssl;
@@ -43,7 +46,7 @@ class Socket {
 			var rsc : Int = SSL_connect(ssl);
 		} catch( e : String ) {
 			if( e == "std@socket_connect" )
-				throw "Failed to connect on "+(try reverse(host) catch( e : Dynamic ) hostToString(host))+":"+port;
+				throw "Failed to connect on "+(try host.reverse() catch( e : Dynamic ) host.toString() ) +":" + port;
 			else
 				neko.Lib.rethrow( e );
 		}
@@ -150,30 +153,10 @@ class Socket {
 		};
 	}
 
-	public static function resolve( host : String ) : Host {
-		return host_resolve( neko.Lib.haxeToNeko( host ) );
-	}
-
-	public static function hostToString( host : Host ) : String {
-		return new String(host_to_string( host ) );
-	}
-
-	public static function reverse( host : Host ) : String {
-		return new String( host_reverse( host ) );
-	}
-
-	public static function localhost() : String {
-		return new String( host_local() );
-	}
-
 	static var socket_new = neko.Lib.load( "std", "socket_new", 1 );
 	static var socket_close = neko.Lib.load( "std", "socket_close", 1 );
 	static var socket_write = Loader.load( "__SSL_write", 2 );
 	static var socket_read = Loader.load( "__SSL_read", 1 );
-	static var host_resolve = neko.Lib.load( "std", "host_resolve", 1 );
-	static var host_reverse = neko.Lib.load( "std","host_reverse", 1 );
-	static var host_to_string = neko.Lib.load( "std", "host_to_string", 1 );
-	static var host_local = neko.Lib.load( "std", "host_local", 0 );
 	static var socket_connect = neko.Lib.load( "std", "socket_connect", 3 );
 	static var socket_listen = neko.Lib.load( "std", "socket_listen", 2 );
 	static var socket_select = neko.Lib.load( "std", "socket_select", 4 );
@@ -183,9 +166,9 @@ class Socket {
 	static var socket_host = neko.Lib.load( "std", "socket_host", 1 );
 	static var socket_set_timeout = neko.Lib.load( "std", "socket_set_timeout", 2 );
 	static var socket_shutdown = neko.Lib.load( "std", "socket_shutdown", 3 );
-	static var SSL_shutdown = Loader.load( "_SSL_shutdown", 1 );
 	static var socket_set_blocking = neko.Lib.load( "std", "socket_set_blocking", 2 );
 
+	static var SSL_shutdown = Loader.load( "_SSL_shutdown", 1 );
 	static var SSL_load_error_strings = Loader.load( "_SSL_load_error_strings", 0 );
 	static var SSL_library_init = Loader.load( "_SSL_library_init", 0 );
 	static var SSL_CTX_new = Loader.load( "_SSL_CTX_new", 1 );
