@@ -23,13 +23,13 @@ package xmpp.filter;
 class IQFilter {
 	
 	public var xmlns : String;
-	public var nodeName : String;
+	public var node : String;
 	public var iqType : xmpp.IQType;
 	
-	//TODO public function new( ?xmlns : String, ?type : xmpp.IQType, ?nodeName : String = "query" ) {
-	public function new( ?xmlns : String, ?nodeName : String, ?type : xmpp.IQType ) {
+	//TODO public function new( ?xmlns : String, ?type : xmpp.IQType, ?node : String = "query" ) {
+	public function new( ?xmlns : String, ?node : String, ?type : xmpp.IQType ) {
 		this.xmlns = xmlns;
-		this.nodeName = nodeName;
+		this.node = node;
 		this.iqType = type;
 	}
 	
@@ -42,16 +42,18 @@ class IQFilter {
 				return false;
 		}
 		var x : Xml = null;
-		if( iq.x == null )
-			return false;
 		if( xmlns != null ) {
+			if( iq.x == null )
+				return false;
 			x = iq.x.toXml();
 			if( x.get( "xmlns" ) != xmlns )
 				return false;
 		}
-		if( nodeName != null ) {
+		if( node != null ) {
+			if( iq.x == null )
+				return false;
 			if( x == null ) x = iq.x.toXml();
-			if( nodeName != x.nodeName )
+			if( node != x.nodeName )
 				return false;
 		}
 		return true;
