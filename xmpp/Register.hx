@@ -17,8 +17,6 @@
 */
 package xmpp;
 
-//TODO  dataform, oob
-
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a>
 */
@@ -46,7 +44,7 @@ class Register {
 	
 	public var registered : Bool;
 	public var remove : Bool;
-	//public var dataform : xmpp.DataForm;
+	public var form : xmpp.DataForm;
 	
 	public function new( ?username:	String, ?password : String, ?email : String, ?name : String ) {
 		this.username = username;
@@ -78,6 +76,7 @@ class Register {
 			createElement( x, "misc" );
 			createElement( x, "text" );
 			createElement( x, "key" );
+			if( form != null ) x.addChild( form.toXml() );
 		}
 		return x;
 	}
@@ -113,12 +112,13 @@ class Register {
 				case "text" : p.text = v.toString();
 				case "key" : p.key = v.toString();
 				case "registered" : p.registered = true; 
-				case "remove" : p.remove = true; 
-			//	case "x" :
-				//TODO
-				//case "remove" :
-				//	p.remove = true;
-				//	break;
+				case "remove" :
+					p.remove = true;
+					break;
+				case "x" :
+					if( e.get("xmlns") == xmpp.DataForm.XMLNS ) {
+						p.form = xmpp.DataForm.parse( e );
+					}
 				}
 			}
 		}
