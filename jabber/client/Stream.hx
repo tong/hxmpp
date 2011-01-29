@@ -41,7 +41,6 @@ class Stream extends jabber.Stream {
 	override function handleConnect() {
 		status = Status.pending;
 		if( !cnx.http ) {
-			//TODO do not know 'host' when using anonymous login
 			sendData( xmpp.Stream.createOpenXml( xmpp.Stream.CLIENT, jid.domain, version, lang ) );
 			cnx.read( true ); // start reading input
 		} else {

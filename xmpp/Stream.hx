@@ -37,8 +37,11 @@ class Stream {
 		var b = new StringBuf();
 		b.add( '<stream:stream xmlns="' );
 		b.add( ns );
-		b.add( '" xmlns:stream="'+STREAM+'" to="' );
-		b.add( to );
+		b.add( '" xmlns:stream="'+STREAM );
+		if( to != null ) {
+			b.add( '" to="' );
+			b.add( to );
+		}
 		b.add( '" xmlns:xml="http://www.w3.org/XML/1998/namespace"' );
 		if( version )
 			b.add( ' version="1.0"' );

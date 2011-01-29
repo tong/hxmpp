@@ -348,28 +348,15 @@ class Stream {
 			return processStreamInit( t, buflen );
 		
 		#if !JABBER_COMPONENT
-		//case jabber.stream.Status.starttls :
 		case Status.starttls :
 			var x : Xml = null;
 			try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
-				#if XMPP_DEBUG
-				XMPPDebug.inc( t );
-				#end
+				#if XMPP_DEBUG XMPPDebug.inc( t ); #end
 				#if JABBER_DEBUG trace( "StartTLS failed" ); #end
 				cnx.disconnect();
 				return 0;
 			}
-			#if XMPP_DEBUG
-			XMPPDebug.inc( t );
-			#end
-			/*
-			trace(x);
-			trace(x.firstElement());
-			trace(x.nodeName);
-			//trace(x.attributes());
-				for( a in x.attributes() ) trace(a);
-			trace(x.get( "xmlns" ));
-				*/
+			#if XMPP_DEBUG XMPPDebug.inc( t ); #end
 			if( x.nodeName != "proceed" || x.get( "xmlns" ) != "urn:ietf:params:xml:ns:xmpp-tls" ) {
 				cnx.disconnect();
 				return 0;
@@ -388,9 +375,7 @@ class Stream {
 		case Status.open :
 			// filter data here ?
 			var x : Xml = null;
-			try {
-				x = Xml.parse( t );
-			} catch( e : Dynamic ) {
+			try x = Xml.parse( t ) catch( e : Dynamic ) {
 				//#if JABBER_DEBUG trace( "Packet incomplete, waiting for more data ..", "info" ); #end
 				return 0; // wait for more data
 			}
@@ -419,21 +404,17 @@ class Stream {
 		Returns true if the packet got handled.
 	*/
 	public function handlePacket( p : xmpp.Packet ) : Bool {
-		#if XMPP_DEBUG
-		XMPPDebug.inc( p.toString() );
-		#end
+		#if XMPP_DEBUG XMPPDebug.inc( p.toString() ); #end
 		var i = -1;
-	//	if( collectors_id.length > 0 ) {
-			while( ++i < collectors_id.length ) {
-				var c = collectors_id[i];
-				if( c.accept( p ) ) {
-					c.deliver( p );
-					collectors_id.splice( i, 1 );
-					c = null;
-					return true;
-				}
+		while( ++i < collectors_id.length ) {
+			var c = collectors_id[i];
+			if( c.accept( p ) ) {
+				c.deliver( p );
+				collectors_id.splice( i, 1 );
+				c = null;
+				return true;
 			}
-	//	}
+		}
 		var collected = false;
 		i = -1;
 		while( ++i < collectors.length ) {
