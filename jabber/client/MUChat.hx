@@ -17,7 +17,6 @@
 */
 package jabber.client;
 
-import jabber.PresenceManager;
 import jabber.stream.PacketCollector;
 import xmpp.Message;
 import xmpp.MessageType;
@@ -90,8 +89,8 @@ class MUChat {
 		// collect all presences and messages from the room
 		var f_from : xmpp.PacketFilter = new PacketFromContainsFilter( jid );
 		c_presence = new PacketCollector( [f_from, cast new PacketTypeFilter( PacketType.presence )], handlePresence, true );
-		//c_message = new PacketCollector(  [f_from, cast new MessageFilter( MessageType.groupchat )], handleMessage, true );
 		c_message = new PacketCollector(  [f_from, cast new MessageFilter()], handleMessage, true );
+		//c_message = new PacketCollector(  [f_from, cast new MessageFilter( MessageType.groupchat )], handleMessage, true );
 		
 		message = new xmpp.Message( jid, null, null, MessageType.groupchat, null );
 		joined = false;
@@ -280,7 +279,6 @@ class MUChat {
 						if( x_user.item.role != null ) role = x_user.item.role;
 						if( x_user.item.affiliation != null ) affiliation = x_user.item.affiliation;
 					}
-					//presence = new PresenceManager( stream, myjid );
 					// unlock room if required
 					//if( x_user.item != null ) {
 					if( x_user.item.role == Role.moderator && x_user.status != null && x_user.status.code == xmpp.muc.Status.WAITS_FOR_UNLOCK ) {
@@ -320,6 +318,7 @@ class MUChat {
 				//onLeave( this );
 			//case null :
 			default :
+				trace("##############");
 			}
 		case jid :
 			trace( "??? process presence from MUC room ???" );
@@ -354,7 +353,7 @@ class MUChat {
 	}
 	
 	inline function getOccupantName( j : String ) : String {
-		return j.substr( j.lastIndexOf( "/" ) + 1 );
+		return j.substr( j.lastIndexOf( "/" )+1 );
 	}
 	
 	function destroy() {
