@@ -36,19 +36,28 @@ private typedef Server = {
 	var features : Hash<Xml>;
 }
 
-// TODO  (use platform specific implementation (arrays@js usw))
 private class StreamFeatures {
-	var l : List<String>;
-	public function new() { l = new List(); }
-	public inline function iterator() { return l.iterator(); }
+	var l : #if neko List<String> #else Array<String> #end;
+	public function new() {
+		l = #if neko new List() #else new Array<String>() #end;
+	}
+	public inline function iterator() : Iterator<String> {
+		return l.iterator();
+	}
 	public function add( f : String ) : Bool {
 		if( Lambda.has( l, f ) ) return false;
-		l.add( f );
+		#if neko l.add(f) #else l.push(f) #end;
 		return true;
 	}
-	public inline function has( f : String ) : Bool { return Lambda.has( l, f ); }
-	public function remove( f : String ) : Bool { return l.remove( f ); }
-	public function clear( f : String ) { l = new List(); }
+	public inline function has( f : String ) : Bool {
+		return Lambda.has( l, f );
+	}
+	public inline function remove( f : String ) : Bool {
+		return l.remove( f );
+	}
+	public inline function clear( f : String ) {
+		l = #if neko new List() #else new Array<String>() #end;
+	}
 	#if JABBER_DEBUG
 	public inline function toString() : String { return l.toString(); }
 	#end
