@@ -45,7 +45,7 @@ class Ping {
 		this.stream = stream;
 		this.target = target;
 		active = false;
-		iq = new xmpp.IQ( null, null, null, stream.jidstr );
+		iq = new xmpp.IQ( null, null, null, stream.jid.toString() );
 		iq.properties.push( xmpp.Ping.xml );
 	}
 	

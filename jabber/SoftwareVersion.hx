@@ -60,7 +60,6 @@ class SoftwareVersion {
 	}
 	
 	function handleQuery( iq : xmpp.IQ ) {
-		//var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from, stream.jidstr );
 		var r = xmpp.IQ.createResult( iq );
 		r.x = new xmpp.SoftwareVersion( name, version, os );
 		stream.sendData( r.toString() );

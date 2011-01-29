@@ -42,13 +42,13 @@ class IBTransfer extends DataTransfer {
 	
 	public override function init( input : haxe.io.Input, sid : String, file : xmpp.file.File ) {
 		super.init( input, sid, file );
-		var iq = new IQ( xmpp.IQType.set, null, reciever, stream.jidstr );
+		var iq = new IQ( xmpp.IQType.set, null, reciever, stream.jid.toString() );
 		iq.x = new xmpp.file.IB( xmpp.file.IBType.open, sid, bufsize );
 		stream.sendIQ( iq, handleRequestResponse );
 	}
 	
 	function sendRequest() {
-		var iq = new IQ( xmpp.IQType.set, null, reciever, stream.jidstr );
+		var iq = new IQ( xmpp.IQType.set, null, reciever, stream.jid.toString() );
 		iq.x = new xmpp.file.IB( xmpp.file.IBType.open, sid, bufsize );
 		stream.sendIQ( iq, handleRequestResponse );
 	}

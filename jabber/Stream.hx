@@ -27,12 +27,16 @@ import jabber.stream.Status;
 import jabber.util.Base64;
 import xmpp.XMLUtil;
 import xmpp.filter.PacketIDFilter;
+#if JABBER_COMPONENT
+import jabber.component.Stream;
+private typedef JID = ComponentJID;
+#end
 
 private typedef Server = {
 	var features : Hash<Xml>;
 }
 
-// TODO move to jabber.stream. (use platform specific implementation (arrays@js usw))
+// TODO  (use platform specific implementation (arrays@js usw))
 private class StreamFeatures {
 	var l : List<String>;
 	public function new() { l = new List(); }
@@ -60,9 +64,9 @@ class Stream {
 	public dynamic function onOpen() : Void;
 	public dynamic function onClose( ?error : String ) : Void;
 	
+	public var jid(default,setJID) : JID;
 	public var status : Status;
 	public var cnx(default,setConnection) : Connection;
-	public var jidstr(getJIDStr,null) : String;  // TODO replace by JID
 	public var features(default,null) : StreamFeatures;
 	public var server(default,null) : Server;
 	public var id(default,null) : String;
@@ -70,9 +74,6 @@ class Stream {
 	public var version : Bool;
 	public var dataFilters(default,null) : Array<TDataFilter>;
 	public var dataInterceptors(default,null) : Array<TDataInterceptor>;
-	#if !JABBER_COMPONENT
-	public var jid(default,setJID) : JID;
-	#end
 	
 	var collectors_id : Array<PacketCollector>;
 	var collectors : Array<PacketCollector>;
@@ -97,14 +98,13 @@ class Stream {
 		#end
 	}
 	
-	#if !JABBER_COMPONENT
 	function setJID( j : JID ) : JID {
 		if( status != Status.closed )
 			throw new jabber.error.Error( "Cannot change JID on active stream" );
 		return jid = j;
 	}
-	#end
 	
+	/*
 	function getJIDStr() : String {
 		#if JABBER_COMPONENT
 		return throw new jabber.error.AbstractError();
@@ -112,6 +112,7 @@ class Stream {
 		return jid.toString();
 		#end
 	}
+	*/
 	
 	function setConnection( c : Connection ) : Connection {
 		switch( status ) {
@@ -143,16 +144,14 @@ class Stream {
 		return Base64.random( defaultPacketIdLength )#if JABBER_DEBUG+"_"+numPacketsSent#end;
 	}
 	
-	#if JABBER_COMPONENT
-	public function open( host : String, subdomain : String, secret : String, ?identities : Array<xmpp.disco.Identity> ) {
-		#if JABBER_DEBUG
-		throw new jabber.error.AbstractError();
-		#end
-	}
-	#else
 	/**
 		Open the XMPP stream.
 	*/
+	#if JABBER_COMPONENT
+	public function open( host : String, subdomain : String, secret : String, ?identities : Array<xmpp.disco.Identity> ) {
+		#if JABBER_DEBUG throw new jabber.error.AbstractError(); #end
+	}
+	#else
 	public function open( jid : JID ) {
 		if( jid != null ) this.jid = jid
 		else if( this.jid == null ) this.jid = new JID( null );
@@ -225,7 +224,6 @@ class Stream {
 	: { iq : xmpp.IQ, collector : PacketCollector }
 	{
 		if( iq.id == null ) iq.id = nextID();
-		//iq.from = jidstr;
 		var c : PacketCollector = null;
 		if( handler != null ) {
 //			c = new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block );
@@ -333,9 +331,9 @@ class Stream {
 		if( status == Status.closed )
 			return -1;
 		//TODO .. data filters
-		for( f in dataFilters ) {
-			buf = f.filterData( buf );
-		}
+//		for( f in dataFilters ) {
+//			buf = f.filterData( buf );
+//		}
 		var t : String = buf.readString( bufpos, buflen );
 		//TODO
 		if( StringTools.startsWith( t, '</stream:stream' ) ) {

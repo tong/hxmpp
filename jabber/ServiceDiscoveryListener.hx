@@ -60,7 +60,7 @@ class ServiceDiscoveryListener {
 				return;
 			}
 		}
-		var r = new IQ( xmpp.IQType.result, iq.id, iq.from, stream.jidstr );
+		var r = new IQ( xmpp.IQType.result, iq.id, iq.from, stream.jid.toString() );
 		r.x = new xmpp.disco.Info( identities, Lambda.array( stream.features ) );
 		stream.sendData( r.toString() );
 	}

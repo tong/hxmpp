@@ -103,7 +103,7 @@ class PubSub {
 		var iq = new IQ( IQType.set );
 		var x = new xmpp.PubSub();
 		x.subscribe = { node : node,
-						jid : ( jid == null ) ? stream.jidstr : jid };
+						jid : ( jid == null ) ? stream.jid.toString() : jid };
 		iq.x = x;
 		var h = onSubscribe;
 		sendIQ( iq, function(r:IQ) {
@@ -118,7 +118,7 @@ class PubSub {
 	public function unsubscribe( node : String, ?jid : String, ?subid : String ) : IQ {
 		var iq = new IQ( IQType.set );
 		var x = new xmpp.PubSub();
-		x.unsubscribe = { jid : ( jid != null ) ? jid : stream.jidstr ,
+		x.unsubscribe = { jid : ( jid != null ) ? jid : stream.jid.toString() ,
 						  node : node,
 						  subid : subid };
 		iq.x = x;
@@ -177,7 +177,7 @@ class PubSub {
 		Load all items from the given node.
 	*/
 	public function loadItems( node : String, ?subid : String, ?maxItems : Int, ?ids : Array<String> ) : IQ {
-		//var iq = new xmpp.IQ( null, null, service, stream.jidstr );
+		//var iq = new xmpp.IQ( null, null, service, stream.jid.toString() );
 		var iq = new IQ();
 		var x = new xmpp.PubSub();
 		x.items = new xmpp.pubsub.Items( node, subid, maxItems );
@@ -255,7 +255,7 @@ class PubSub {
 	
 	function sendIQ( iq : IQ, h : IQ->Void ) : IQ {
 		iq.to = service;
-		iq.from = stream.jidstr;
+		iq.from = stream.jid.toString();
 		var me = this;
 		return stream.sendIQ( iq, function(r:IQ) {
 			switch( r.type ) {

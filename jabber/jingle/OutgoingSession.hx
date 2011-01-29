@@ -25,7 +25,7 @@ class OutgoingSession<T:Transport> extends Session<T> {
 			throw new jabber.error.Error( "No transports registered" );
 		sid = Base64.random( 16 );
 		var iq = new IQ( IQType.set, null, entity );
-		var j = new xmpp.Jingle( xmpp.jingle.Action.session_initiate, stream.jidstr, sid );
+		var j = new xmpp.Jingle( xmpp.jingle.Action.session_initiate, stream.jid.toString(), sid );
 		var content = new xmpp.jingle.Content( xmpp.jingle.Creator.initiator, contentName );
 		if( description != null ) content.other.push( description );
 		content.other.push( createTransportXml() );
@@ -47,9 +47,12 @@ class OutgoingSession<T:Transport> extends Session<T> {
 	}
 	
 	function createTransportXml() : Xml {
-		trace("createTransportXml().....");
 		var x = Xml.createElement( "transport" );
+		#if flash //TODO flash 2.06
 		x.set( "_xmlns_", xmlns );
+		#else
+		x.set( "xmlns", xmlns );
+		#end
 		for( t in transports ) x.addChild( createCandidateXml( t ) );
 		return x;
 	}

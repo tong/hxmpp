@@ -17,10 +17,25 @@
 */
 package jabber.component;
 
+#if JABBER_COMPONENT
+
+import jabber.Stream;
 import jabber.stream.Connection;
 import jabber.ServiceDiscoveryListener;
 import jabber.util.SHA1;
 import xmpp.XMLUtil;
+
+class ComponentJID {
+	public var subdomain(default,null) : String;
+	public var host(default,null) : String;
+	public function new( subdomain : String, host : String ) {
+		this.subdomain = subdomain;
+		this.host = host;
+	}
+	public function toString() : String {
+		return subdomain+'.'+host;
+	}
+}
 
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a><br/>
@@ -35,9 +50,9 @@ class Stream extends jabber.Stream {
 	public dynamic function onConnect() : Void;
 	
 	/** XMPP server hostname */
-	public var host(default,null) : String;
+//	public var host(default,null) : String;
 	/** The subdomain of the server component */
-	public var subdomain(default,null) : String;
+//	public var subdomain(default,null) : String;
 	/** Full name/address of the server component */
 	public var serviceName(getServiceName,null) : String;
 	/** Shared secret string used to identify legacy components*/
@@ -60,21 +75,24 @@ class Stream extends jabber.Stream {
 			throw new jabber.error.Error( "Invalid stream subdomain" );
 		if( secret == null )
 			throw new jabber.error.Error( "Invalid stream secret (null)" );
-		this.host = host;
-		this.subdomain = subdomain;
+		//this.host = host;
+		//this.subdomain = subdomain;
+		this.jid = new ComponentJID( subdomain, host );
 		this.secret = secret;
 		items = new xmpp.disco.Items();
 		discoListener = new ServiceDiscoveryListener( this, identities );
 		cnx.connected ? handleConnect() : cnx.connect();
 	}
 	
+	/*
 	override function getJIDStr() : String {
 		return getServiceName();
 	}
+	*/
 	
 	function getServiceName() : String {
-		if( subdomain == null || host == null ) return null;
-		return subdomain+"."+host;
+		if( jid.subdomain == null || jid.host == null ) return null;
+		return jid.toString();
 	}
 	
 	function getItems() : xmpp.disco.Items {
@@ -82,7 +100,7 @@ class Stream extends jabber.Stream {
 	}
 	
 	override function handleConnect() {
-		sendData( xmpp.Stream.createOpenXml( xmpp.Stream.COMPONENT, subdomain+"."+host ) );
+		sendData( xmpp.Stream.createOpenXml( xmpp.Stream.COMPONENT, jid.toString() ) );
 		status = jabber.stream.Status.pending;
 		cnx.read( true );
 	}
@@ -114,3 +132,5 @@ class Stream extends jabber.Stream {
 	}
 	
 }
+
+#end

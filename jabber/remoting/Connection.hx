@@ -70,7 +70,7 @@ class Connection implements AsyncConnection, implements Dynamic<AsyncConnection>
 		var s = new haxe.Serializer();
 		s.serialize( __path );
 		s.serialize( params );
-		var iq = new xmpp.IQ( null, null, target, stream.jidstr );
+		var iq = new xmpp.IQ( null, null, target, stream.jid.toString() );
 		iq.properties.push( xmpp.HXR.create( s.toString() ) );
 		var error = __error;
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
