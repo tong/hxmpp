@@ -11,7 +11,7 @@ class JingleFilter extends IQFilter {
 	public var transport : String;
 	
 	public function new( ?transport : String, ?sid : String, ?iqType : xmpp.IQType ) {
-		super( xmpp.Jingle.XMLNS, "jingle", iqType );
+		super( xmpp.Jingle.XMLNS, iqType, "jingle" );
 		this.transport = transport;
 		this.sid = sid;
 	}

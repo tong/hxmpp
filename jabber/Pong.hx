@@ -32,7 +32,7 @@ class Pong {
 		if( !stream.features.add( xmpp.Ping.XMLNS ) )
 			throw new jabber.error.Error( "Ping listener already added" );
 		this.stream = stream;
-		stream.collect( [ cast new xmpp.filter.IQFilter( xmpp.Ping.XMLNS, null, xmpp.IQType.get ) ], handlePing, true );
+		stream.collect( [ cast new xmpp.filter.IQFilter( xmpp.Ping.XMLNS, xmpp.IQType.get ) ], handlePing, true );
 	}
 	
 	function handlePing( iq : xmpp.IQ ) {

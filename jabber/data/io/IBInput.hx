@@ -39,10 +39,10 @@ class IBInput extends IBIO {
 		active = true;
 		var fromfilter : xmpp.PacketFilter = new xmpp.filter.PacketFromFilter( initiator );
 		stream.collect( [fromfilter,
-						 new IQFilter( xmpp.file.IB.XMLNS, "close", IQType.set )],
+						 new IQFilter( xmpp.file.IB.XMLNS, IQType.set, "close" )],
 						 handleClose );
 		collector = stream.collect( [fromfilter,
-						 			 cast new IQFilter( xmpp.file.IB.XMLNS, "data", IQType.set )],
+						 			 cast new IQFilter( xmpp.file.IB.XMLNS, IQType.set, "data" )],
 						 			 handleChunk, true );
 	}
 	

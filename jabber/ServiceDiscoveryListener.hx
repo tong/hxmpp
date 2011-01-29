@@ -45,9 +45,9 @@ class ServiceDiscoveryListener {
 			throw new jabber.error.Error( "ServiceDiscovery listener already added" );
 		this.stream = stream;
 		this.identities = ( identities == null ) ? [defaultIdentity] : identities;
-		stream.collect( [cast new IQFilter( xmpp.disco.Info.XMLNS, null, xmpp.IQType.get )], handleInfoQuery, true );
+		stream.collect( [cast new IQFilter( xmpp.disco.Info.XMLNS, xmpp.IQType.get )], handleInfoQuery, true );
 		#if JABBER_COMPONENT
-		stream.collect( [cast new IQFilter( xmpp.disco.Items.XMLNS, null, xmpp.IQType.get )], handleItemsQuery, true );
+		stream.collect( [cast new IQFilter( xmpp.disco.Items.XMLNS, xmpp.IQType.get )], handleItemsQuery, true );
 		#end
 	}
 	

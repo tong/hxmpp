@@ -46,7 +46,7 @@ class IBOutput extends IBIO {
 		this.size = size;
 		this.bufsize = bufsize;
 		collector = stream.collect( [cast new xmpp.filter.PacketFromFilter( reciever ),
-						 			 cast new xmpp.filter.IQFilter( xmpp.file.IB.XMLNS, "close", xmpp.IQType.set )],
+						 			 cast new xmpp.filter.IQFilter( xmpp.file.IB.XMLNS, xmpp.IQType.set, "close" )],
 									handleIBClose );
 		iq = new IQ( xmpp.IQType.set, null, reciever );
 		bufpos = 0;

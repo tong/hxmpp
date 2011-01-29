@@ -28,12 +28,12 @@ class SIListener {
 	public dynamic function onFail( info : String ) : Void;
 	
 	public var stream(default,null) : jabber.Stream;
-	/** Available file transfer methods */
-	public var methods(default,null) : Array<DataReciever>;
 	/** Callback handler for incoming transfer requests */
 	public var handler : DataReciever->Void;
+	/** Available file transfer methods */
+	public var methods(default,null) : Array<DataReciever>;
 	
-	var collector : jabber.stream.PacketCollector;
+	var c : jabber.stream.PacketCollector;
 	
 	public function new( stream : jabber.Stream, handler : DataReciever->Void ) {
 		if( !stream.features.add( xmpp.file.File.XMLNS ) )
@@ -41,12 +41,12 @@ class SIListener {
 		this.stream = stream;
 		this.handler = handler;
 		methods = new Array();
-		collector = stream.collect( [cast new xmpp.filter.IQFilter( xmpp.file.SI.XMLNS, "si", xmpp.IQType.set )],
-						 			handleRequest, true );
+		c = stream.collect( [cast new xmpp.filter.IQFilter( xmpp.file.SI.XMLNS, xmpp.IQType.set, "si" )],
+						 	 handleRequest, true );
 	}
 	
 	public function dispose() {
-		stream.removeCollector( collector );
+		stream.removeCollector( c );
 		stream.features.remove( xmpp.file.File.XMLNS  );
 	}
 	

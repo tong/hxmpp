@@ -18,27 +18,26 @@
 package xmpp.filter;
 
 /**
-	Filters IQ packets: namespace/node-name/iq-type
+	Filters IQ packets: namespace/nodename/iqtype
 */
 class IQFilter {
 	
 	public var xmlns : String;
 	public var node : String;
-	public var iqType : xmpp.IQType;
+	public var type : xmpp.IQType;
 	
-	//TODO public function new( ?xmlns : String, ?type : xmpp.IQType, ?node : String = "query" ) {
-	public function new( ?xmlns : String, ?node : String, ?type : xmpp.IQType ) {
+	public function new( ?xmlns : String, ?type : xmpp.IQType, ?node : String ) {
 		this.xmlns = xmlns;
 		this.node = node;
-		this.iqType = type;
+		this.type = type;
 	}
 	
 	public function accept( p : xmpp.Packet ) : Bool {
 		if( !Type.enumEq( p._type, xmpp.PacketType.iq ) )
 			return false;
-		var iq : xmpp.IQ = untyped p; //cast( p, xmpp.IQ );
-		if( iqType != null ) {
-			if( !Type.enumEq( iqType, iq.type ) )
+		var iq : xmpp.IQ = untyped p;
+		if( type != null ) {
+			if( !Type.enumEq( type, iq.type ) )
 				return false;
 		}
 		var x : Xml = null;

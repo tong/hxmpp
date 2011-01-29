@@ -34,7 +34,7 @@ class Host {
 		this.stream = stream;
 		this.ctx = ctx;
 		stream.features.add( xmpp.HXR.XMLNS );
-		stream.collect( [cast new xmpp.filter.IQFilter( xmpp.HXR.XMLNS, null, xmpp.IQType.get )], handleIQ, true );
+		stream.collect( [cast new xmpp.filter.IQFilter( xmpp.HXR.XMLNS, xmpp.IQType.get )], handleIQ, true );
 	}
 	
 	function handleIQ( iq : xmpp.IQ ) {

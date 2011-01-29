@@ -87,7 +87,7 @@ class DataReciever {
 		si.any.push( feature );
 		r.x = si;
 		stream.sendPacket( r );
-		stream.collect( [cast new xmpp.filter.IQFilter( xmlns, xname, xmpp.IQType.set )], handleRequest );
+		stream.collect( [cast new xmpp.filter.IQFilter( xmlns, xmpp.IQType.set, xname )], handleRequest );
 	}
 	
 	function handleRequest( iq : IQ ) {

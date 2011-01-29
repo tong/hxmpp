@@ -52,6 +52,12 @@ class DataTransfer {
 		// override me
 	}
 	
+	/*
+		//TODO
+	public function abort() {
+	}
+	*/
+	
 	function handleTransportFail( info : String ) {
 		onFail( info );
 	}
