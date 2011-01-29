@@ -101,10 +101,6 @@ class Stream {
 		dataFilters = new Array();
 		dataInterceptors = new Array();
 		if( cnx != null ) setConnection( cnx );
-		// TODO remove HACK
-		#if (flash&&JABBER_CONSOLE)
-		XMPPDebug.stream = this;
-		#end
 	}
 	
 	function setJID( j : JID ) : JID {
@@ -112,16 +108,6 @@ class Stream {
 			throw new jabber.error.Error( "Cannot change JID on active stream" );
 		return jid = j;
 	}
-	
-	/*
-	function getJIDStr() : String {
-		#if JABBER_COMPONENT
-		return throw new jabber.error.AbstractError();
-		#else
-		return jid.toString();
-		#end
-	}
-	*/
 	
 	function setConnection( c : Connection ) : Connection {
 		switch( status ) {
@@ -190,7 +176,6 @@ class Stream {
 	public function sendPacket<T>( p : T, intercept : Bool = true ) : T {
 		if( !cnx.connected )
 			return null;
-//TODO
 		if( intercept ) interceptPacket( untyped p );
 		return ( sendData( untyped p.toString() ) != null ) ? p : null;
 	}
@@ -344,17 +329,12 @@ class Stream {
 //			buf = f.filterData( buf );
 //		}
 		var t : String = buf.readString( bufpos, buflen );
-		//TODO
 		if( StringTools.startsWith( t, '</stream:stream' ) ) {
-			#if XMPP_DEBUG
-			XMPPDebug.inc( t );
-			#end
+			#if XMPP_DEBUG XMPPDebug.inc( t ); #end
 			close( cnx.connected );
 			return 0;
 		} else if( StringTools.startsWith( t, '</stream:error' ) ) {
-			#if XMPP_DEBUG
-			XMPPDebug.inc( t );
-			#end
+			#if XMPP_DEBUG XMPPDebug.inc( t ); #end
 			close( cnx.connected );
 			return 0;
 		}
@@ -427,15 +407,9 @@ class Stream {
 	public function handleXml( x : Xml ) : Array<xmpp.Packet> {
 		var ps = new Array<xmpp.Packet>();
 		for( e in x.elements() ) {
-			//TODO
-			/*
 			var p = xmpp.Packet.parse( e );
 			if( p != null && handlePacket( p ) ) 
 				ps.push( p );
-			*/
-			var p = xmpp.Packet.parse( e );
-			handlePacket( p );
-			ps.push( p );
 		}
 		return ps;
 	}
