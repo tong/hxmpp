@@ -22,14 +22,6 @@ package jabber;
 */	
 class JIDUtil {
 	
-	static function __init__() {
-		#if JABBER_DEBUG
-		EREG = ~/([A-Z0-9._%-]+)@([A-Z0-9.-]+(\.[A-Z][A-Z][A-Z]?)?)(\/([A-Z0-9._%-]+))?/i;
-		#else
-		EREG = ~/([A-Z0-9._%-]+)@([A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?)(\/([A-Z0-9._%-]+))?/i;
-		#end
-	}
-	
 	public static inline var MIN_LENGTH = 8;
 	public static inline var MAX_PARTSIZE = 1023;
 	public static inline var MAX_SIZE = 3071;
@@ -37,7 +29,12 @@ class JIDUtil {
 	/**
 		Regular expression matching a valid JID
 	*/
-	public static var EREG(default,null) : EReg;
+	public static var EREG = 
+		#if JABBER_DEBUG
+		~/([A-Z0-9._%-]+)@([A-Z0-9.-]+(\.[A-Z][A-Z][A-Z]?)?)(\/([A-Z0-9._%-]+))?/i;
+		#else
+		~/([A-Z0-9._%-]+)@([A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?)(\/([A-Z0-9._%-]+))?/i;
+		#end
 	
 	/**
 		@return True if the given JID is valid formed.
