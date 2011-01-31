@@ -20,24 +20,30 @@ package jabber.stream;
 #if neko
 import neko.net.Host;
 import neko.net.Socket;
+
 #elseif php
 import php.net.Host;
 import php.net.Socket;
+
 #elseif cpp
 import cpp.net.Host;
 import cpp.net.Socket;
+
 #elseif rhino
 import js.net.Host;
 import js.net.Socket;
+
 #elseif nodejs
 import js.Node;
 typedef Socket = Stream;
+
 #elseif flash
-	#if TLS
-	import tls.controller.SecureSocket;
-	#else
-	import flash.net.Socket;
-	#end
+#if TLS
+import tls.controller.SecureSocket;
+#else
+import flash.net.Socket;
+#end
+	
 #end
 
 #if (neko||php||cpp)

@@ -29,7 +29,7 @@ import flash.events.SecurityErrorEvent;
 	//TODO
 	
 	// timeout timer (?), added but needed?
-	// (neko/cpp/php)
+	// (neko/cpp/node)
 	// polling 
 	/// multiple streams over one connection
 	// secure!
@@ -245,19 +245,31 @@ class BOSHConnection extends jabber.stream.Connection {
 		l.addEventListener( SecurityErrorEvent.SECURITY_ERROR, handleHTTPError );
 		l.load( r );
 		
-		#else
+		#elseif js
 		var r = new haxe.Http( getHTTPPath() );
-//r.onStatus = handleHTTPStatus;
+		//r.onStatus = handleHTTPStatus;
 		r.onError = handleHTTPError;
 		r.onData = handleHTTPData;
 		r.setPostData( t.toString() );
 		r.request( true );
 		
+		#else
+		//TODO
+		var r = new haxe.Http( getHTTPPath() );
+		//r.onStatus = handleHTTPStatus;
+		r.onError = handleHTTPError;
+		r.onData = handleHTTPData;
+		r.setPostData( t.toString() );
+		r.request( true );
+		return true;
+		
 		#end
+		
 		if( timeoutTimer != null )
 			timeoutTimer.stop();
 		timeoutTimer = new Timer( (wait*1000)+(timeoutOffset*1000) );
 		timeoutTimer.run = handleTimeout;
+		
 		return true;
 	}
 	
@@ -290,7 +302,8 @@ class BOSHConnection extends jabber.stream.Connection {
 			#if JABBER_DEBUG trace( "Invalid XML:\n"+t, "warn" ); #end
 			return;
 		}
-		#if flash // TODO haXe 2.06 fukup hack
+		#if flash
+		// TODO haXe 2.06 fukup hack
 		#else
 		if( x.get( "xmlns" ) != XMLNS ) {
 			#if JABBER_DEBUG trace( "Invalid BOSH body", "warn" ); #end
@@ -355,14 +368,10 @@ class BOSHConnection extends jabber.stream.Connection {
 			t = null;
 			t = x.get( "inactivity" );
 			if( t != null ) inactivity = Std.parseInt( t );
-		//	#if XMPP_DEBUG
-		//	XMPPDebug.inc( t );
-		//	#end
+		//	#if XMPP_DEBUG XMPPDebug.inc( t ); #end
 			__onConnect();
 			connected = true;
-			var b = haxe.io.Bytes.ofString( x.toString() );
-			__onData( b, 0, b.length );
-			//__onData( b, 0 );
+			__onString( x.toString() );
 		}
 	}
 	
@@ -374,10 +383,7 @@ class BOSHConnection extends jabber.stream.Connection {
 	
 	function processResponse() {
 		responseTimer.stop();
-		var x = responseQueue.shift();
-		var b = haxe.io.Bytes.ofString( x.toString() );
-		__onData( b, 0, b.length );
-		//__onData( b, 0 );
+		__onString( responseQueue.shift().toString() );
 		resetResponseProcessor();
 	}
 	

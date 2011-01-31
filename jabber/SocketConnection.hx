@@ -175,7 +175,8 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		if( b.length > maxBufSize ) {
 			throw new jabber.error.Error( "Max buffer size reached ["+maxBufSize+"]" );
 		}
-		__onData(  b, 0, b.length );
+		__onData( b, 0, b.length );
+		//TODO
 		//if( __onData(  b, 0, b.length ) > 0 )
 		//	buf = new ByteArray();
 	}
@@ -419,6 +420,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	function createConnection() {
 		socket = Node.net.createConnection( port, host );
+		//socket = Node.tls.connect( port, host, null, sockConnectHandler );
 		socket.on( Node.STREAM_CONNECT, sockConnectHandler );
 	}
 	
@@ -523,24 +525,12 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	function sockDataHandler( t : String ) {
 		buf.add( t );
-		var bytes = haxe.io.Bytes.ofString( buf.toString() );
-		if( __onData( bytes, 0, bytes.length ) != 0 ) {
+		var s = buf.toString();
+		if( s.length > maxBufSize )
+			throw new jabber.error.Error( "Max socket buffer size reached ["+maxBufSize+"]" );
+		if( __onString( s ) != 0 ) {
 			buf = new StringBuf();
 		}
-		/*
-		//TODO
-		var s = buf+t;
-		var bytes = haxe.io.Bytes.ofString(s);
-	//	if( bytes.length > maxBufSize )
-//			throw new jabber.error.Error( "Max socket buffer size reached ["+maxBufSize+"]" );
-		//if( __onData( haxe.io.Bytes.ofString(s), 0, s.length ) == 0 ) {
-		if( __onData( bytes, 0, bytes.length ) == 0 ) {
-			buf = s;
-		} else {
-			buf = "";
-		}
-		//buf = if( __onData( haxe.io.Bytes.ofString(s), 0, s.length ) == 0 ) s else "";
-		*/
 	}
 	
 	function sockErrorHandler( e : String ) {

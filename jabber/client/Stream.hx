@@ -58,10 +58,7 @@ class Stream extends jabber.Stream {
 			jabber.XMPPDebug.inc( t );
 			#end
 			var x : Xml = null;
-			try {
-				x = Xml.parse( t ).firstElement();
-			} catch( e : Dynamic ) {
-				trace(e); //TODO
+			try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
 				return -1;
 			}
 			parseServerStreamFeatures( ( x.nodeName == "body" ) ? x.firstElement() : x );
@@ -87,9 +84,7 @@ class Stream extends jabber.Stream {
 				}
 			}
 			if( id == null ) {
-				#if JABBER_DEBUG
-				trace( "Invalid XMPP stream, missing ID" );
-				#end
+				#if JABBER_DEBUG trace( "Invalid XMPP stream, missing ID" ); #end
 				close( true );
 				//TODO ?
 				//onClose( "Invalid stream id" );
