@@ -49,7 +49,7 @@ class Ping {
 		iq.properties.push( xmpp.Ping.xml );
 	}
 	
-	public function run( interval : Int ) {
+	public function run( interval : Int = 30000 ) {
 		if( active ) {
 			#if JABER_DEBUG trace( "Ping is already active", "warn" ); #end
 			return;
