@@ -25,12 +25,17 @@ import flash.net.NetStream;
 
 class RTMFPTransport extends Transport {
 	
+	static var EREG_URL = ~/(rtmfp:\/\/)([A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?)(\/([A-Z0-9\-]+))?/i;
+	
 	public var url(default,null) : String;
 	public var ns(default,null) : NetStream;
+	public var id(default,null) : String;
 	
 	var nc : NetConnection;
 	
 	function new( url : String ) {
+		if( !EREG_URL.match( url ) )
+			throw "invalid rtmfp url";
 		super();
 		this.url = url;
 	}
@@ -39,22 +44,23 @@ class RTMFPTransport extends Transport {
 		nc = new NetConnection();
 		nc.addEventListener( NetStatusEvent.NET_STATUS, netConnectionHandler );
 		try nc.connect( url ) catch( e : Dynamic ) {
-			__onFail( "Failed to connect to RTMFP service" );
+			__onFail( "Failed to connect to rtmfp service" );
 		}
 	}
 	
 	public override function close() {
-		if( ns != null ) ns.close();
-		if( nc != null && nc.connected ) nc.close();
+		if( ns != null ) try ns.close() catch(e:Dynamic){trace(e);}
+		if( nc != null && nc.connected ) try nc.close() catch(e:Dynamic){trace(e);}
 	}
 	
 	function netConnectionHandler( e : NetStatusEvent ) {
-		trace(e.info.code);
+		#if JABBER_DEBUG trace( e.info.code ); #end
 	}
 	
 	function netStreamHandler( e : NetStatusEvent ) {
-		trace(e.info.code);
+		#if JABBER_DEBUG trace( e.info.code ); #end
 	}
 	
 }
+
 #end // flash

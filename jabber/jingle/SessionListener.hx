@@ -40,7 +40,6 @@ class SessionListener<T:Transport,R:SessionResponder<T>> {
 	}
 	
 	public function dispose() {
-		
 	}
 	
 	function setHandler( h : R->Void ) : R->Void {

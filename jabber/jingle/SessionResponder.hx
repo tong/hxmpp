@@ -1,3 +1,20 @@
+/*
+ *	This file is part of HXMPP.
+ *	Copyright (c)2009 http://www.disktree.net
+ *	
+ *	HXMPP is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  HXMPP is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *	See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
+*/
 package jabber.jingle;
 
 import jabber.jingle.io.Transport;
@@ -24,7 +41,7 @@ class SessionResponder<T:Transport> extends Session<T> {
 					trace("TODO invalid transport specified");
 					return false;
 				}
-				for( e in e.elementsNamed("candidate") ) trace(e);
+				//for( e in e.elementsNamed("candidate") ) trace(e);
 				for( e in e.elements() ) {
 					if( e.nodeName == "candidate") {
 						addTransportCandidate( e );
@@ -33,8 +50,9 @@ class SessionResponder<T:Transport> extends Session<T> {
 			}
 		}
 		if( candidates.length == 0 ) {
-			//..TODO
 			trace("NO TRANSPORT CANDIDATES FOUND");
+			onFail( "no transport candidates found" );
+			cleanup();
 			return false;
 		}
 		request = iq;
@@ -42,13 +60,16 @@ class SessionResponder<T:Transport> extends Session<T> {
 		initiator = j.initiator;
 		sid = j.sid;
 		contentName = content.name;
+		
+		addSessionCollector();
+		
 		return true;
 	}
 	
 	public function accept( yes : Bool = true ) {
 		stream.sendPacket( IQ.createResult( request ) );
 		if( yes ) {
-			addSessionCollector();
+		//	addSessionCollector();
 			connectTransport();
 		} else {
 			terminate( xmpp.jingle.Reason.decline );
@@ -64,7 +85,7 @@ class SessionResponder<T:Transport> extends Session<T> {
 	}
 	
 	override function handleTransportConnect() {
-		transport.__onDisconnect = handleTransportDisconnect;
+//TODO		transport.__onDisconnect = handleTransportDisconnect;
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, initiator );
 		var j = new xmpp.Jingle( xmpp.jingle.Action.session_accept, initiator, sid );
 //		j.responder = stream.jid.toString();

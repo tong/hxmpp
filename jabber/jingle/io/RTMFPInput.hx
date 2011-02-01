@@ -22,7 +22,6 @@ import flash.net.NetStream;
 
 class RTMFPInput extends RTMFPTransport {
 	
-	var id : String;
 	var pubid : String;
 	
 	public function new( url : String, id : String, pubid : String ) {
@@ -36,24 +35,14 @@ class RTMFPInput extends RTMFPTransport {
 	}
 	
 	public override function toXml() : Xml {
-		//TODO
+		//TODO out of any (non-existing) spec
 		var x = Xml.createElement( "candidate" );
-		//x.set( "id", nc.nearID );
-		/*
-		var r = ~/(rtmfp:\/\/)([A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?)(\/([A-Z0-9\-]+))?/i;
-		if( !r.match( url ) ) {
-			//TODO
-			trace("IIIIIIIIIINVAID RTMFP URL");	
-			return null;
-		}
-		x.set( "url", r.matched(1)+r.matched(2) );
-		*/
-		//x.set( "url", url );
+		x.set( "id", id );
 		return x;
 	}
 	
 	override function netConnectionHandler( e : NetStatusEvent ) {
-		trace(e.info.code);
+		#if JABBER_DEBUG trace( e.info.code ); #end
 		switch( e.info.code ) {
 		case "NetConnection.Connect.Failed" :
 			__onFail( e.info.code );
@@ -67,7 +56,7 @@ class RTMFPInput extends RTMFPTransport {
 	}
 	
 	override function netStreamHandler( e : NetStatusEvent ) {
-		trace(e.info.code);
+		#if JABBER_DEBUG trace( e.info.code ); #end
 		switch( e.info.code ) {
 		case "NetStream.Play.UnpublishNotify" :
 		case "NetStream.Play.Start" :
@@ -75,20 +64,8 @@ class RTMFPInput extends RTMFPTransport {
 		}
 	}
 	
-	public static function ofCandidate( x : Xml ) {
-		//var url = x.get( "url" );
-		//var r = ~/(rtmfp:\/\/)([A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?)(\/([A-Z0-9.-]+)?/i;
-		/*
-		var r = ~/(rtmfp:\/\/)(.+)(\/(.+))?/i;
-		if( !r.match( url ) ) {
-			trace("IIIIIIIIIIIIIIIIIIIIINVALID RTMFP URL");
-			return null;
-		}
-		trace( r.matched(1) );
-		trace( r.matched(2) );
-		trace( r.matched(3) );
-		trace( r.matched(4) );
-		*/
+	public static function ofCandidate( x : Xml ) : RTMFPInput {
+		//TODO maybe url splitting here
 		return new RTMFPInput( x.get( "url" ), x.get( "id" ), x.get( "pubid" ) );
 	}
 	

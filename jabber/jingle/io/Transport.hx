@@ -26,19 +26,20 @@ class Transport {
 	function new() {}
 	
 	public function connect() {
-		throw new jabber.error.AbstractError();
+		//throw new jabber.error.AbstractError();
 	}
 	
 	public function close() {
-		throw new jabber.error.AbstractError();
+		//throw new jabber.error.AbstractError();
 	}
 	
 	public function init() {
-		throw new jabber.error.AbstractError();
+		//throw new jabber.error.AbstractError();
 	}
 	
 	public function toXml() : Xml {
-		return throw new jabber.error.AbstractError();
+		//return throw new jabber.error.AbstractError();
+		return null;
 	}
 	
 }

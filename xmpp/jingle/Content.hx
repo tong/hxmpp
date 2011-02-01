@@ -49,16 +49,6 @@ class Content {
 							 x.get( "name" ),
 							 x.get( "disposition" ),
 							 x.exists( "senders" ) ? Type.createEnum( Senders, x.get( "senders" ) ) : null );
-		//TODO
-		/*
-		for( e in x.elements() ) {
-			switch( e.nodeName ) {
-			case "transport" :
-				//TODO
-			default : c.other.push( e );
-			}
-		}
-		*/
 		c.other = Lambda.array( x );
 		return c;
 	}

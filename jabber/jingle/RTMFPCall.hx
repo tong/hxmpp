@@ -22,7 +22,7 @@ import jabber.jingle.io.Transport;
 import xmpp.IQ;
 
 /**
-	Outgoing, direct RTMFP connection.
+	Outgoing (direct) RTMFP connection.
 */
 class RTMFPCall extends OutgoingSession<RTMFPOutput> {
 	
@@ -45,7 +45,24 @@ class RTMFPCall extends OutgoingSession<RTMFPOutput> {
 	override function processSessionPacket( iq : IQ, j : xmpp.Jingle ) {
 		switch( j.action ) {
 		case session_accept :
-			//TODO....check candidates, hmm. no since we use one and only (?)
+			// TODO this is kinda shitty, just offering one transport here #
+			var rid : String = null;
+			for( c in j.content[0].other ) {
+				rid = c.get("id");
+				break;
+				/*
+				var rid = c.get("id");
+				for( t in transports ) {
+					if( rid == t.id )
+						rids.push(rid);
+				}
+				*/
+			}
+			if( rid != transport.id ) {
+				terminate( xmpp.jingle.Reason.unsupported_transports );
+				cleanup();
+				return;
+			}
 			transport.publish( pubid );
 			onInit();
 			stream.sendPacket( IQ.createResult( iq ) );

@@ -22,8 +22,15 @@ import flash.net.NetStream;
 
 class RTMFPOutput extends RTMFPTransport {
 	
-	public function new( url : String ) {
+	/**
+		Determines if the cirrus development key should get sent to the occupant in the candidate URL.
+	*/
+	public var send_cirrus_key : Bool;
+	
+	public function new( url : String,
+						 send_cirrus_key : Bool = true ) {
 		super( url );
+		this.send_cirrus_key = send_cirrus_key;
 	}
 	
 	public function publish( pubid : String ) {
@@ -32,25 +39,22 @@ class RTMFPOutput extends RTMFPTransport {
 	
 	public override function toXml() : Xml {
 		var x = Xml.createElement( "candidate" );
-		//x.set( "name", name );
-		x.set( "id", nc.nearID );
-		/*
-		var r = ~/(rtmfp:\/\/)([A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?)(\/([A-Z0-9\-]+))?/i;
-		if( !r.match( url ) ) {
-			//TODO
-			trace("IIIIIIIIIINVAID RTMFP URL");	
-			return null;
+		x.set( "id", id );
+		if( send_cirrus_key ) {
+			x.set( "url", url );
+		} else {
+			RTMFPTransport.EREG_URL.match( url );
+			x.set( "url", RTMFPTransport.EREG_URL.matched(1)+
+						  RTMFPTransport.EREG_URL.matched(2) );
 		}
-		x.set( "url", r.matched(1)+r.matched(2) );
-		*/
-		x.set( "url", url );
 		return x;
 	}
 	
 	override function netConnectionHandler( e : NetStatusEvent ) {
-		trace(e.info.code);
+		#if JABBER_DEBUG trace( e.info.code ); #end
 		switch( e.info.code ) {
 		case "NetConnection.Connect.Success" :
+			id = nc.nearID;
 			ns = new NetStream( nc, NetStream.DIRECT_CONNECTIONS );
 			ns.addEventListener( NetStatusEvent.NET_STATUS, netStreamHandler );
 			__onConnect();

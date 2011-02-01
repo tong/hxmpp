@@ -7,6 +7,7 @@ import xmpp.IQType;
 
 class OutgoingSession<T:Transport> extends Session<T> {
 	
+	/** Offered transports */
 	public var transports(default,null) : Array<T>;
 	
 	function new( stream : jabber.Stream, entity : String, contentName : String, xmlns : String ) {
@@ -53,11 +54,12 @@ class OutgoingSession<T:Transport> extends Session<T> {
 		#else
 		x.set( "xmlns", xmlns );
 		#end
-		for( t in transports ) x.addChild( createCandidateXml( t ) );
+		for( t in transports )
+			x.addChild( createCandidateXml( t ) );
 		return x;
 	}
 	
-	function createCandidateXml( t  : Transport ) : Xml {
+	function createCandidateXml( t : Transport ) : Xml {
 		return t.toXml();
 	}
 	
