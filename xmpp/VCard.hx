@@ -143,7 +143,11 @@ class VCard {
 	
 	public static function empty() : PacketElement {
 		var x = Xml.createElement( "vCard" );
+		#if flash // TODO haxe 2.06
+		x.set( "_xmlns_", XMLNS );
+		#else
 		x.set( "xmlns", XMLNS );
+		#end
 		x.set( "version", VERSION );
 		x.set( "prodid", PROD_ID );
 		return { toXml : function(){ return x; } };
