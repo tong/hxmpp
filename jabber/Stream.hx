@@ -126,6 +126,7 @@ class Stream {
 			cnx = c;
 			cnx.__onConnect = handleConnect;
 			cnx.__onDisconnect = handleDisconnect;
+			cnx.__onString = handleString;
 			cnx.__onData = handleData;
 			cnx.__onError = handleConnectionError;
 		}
@@ -328,7 +329,16 @@ class Stream {
 //		for( f in dataFilters ) {
 //			buf = f.filterData( buf );
 //		}
-		var t : String = buf.readString( bufpos, buflen );
+		return handleString( buf.readString( bufpos, buflen ) );
+	}
+	
+	/**
+	*/
+	public function handleString( t : String ) : Int {
+		if( status == Status.closed )
+			return -1;
+		
+		//var t : String = buf.readString( bufpos, buflen );
 		if( StringTools.startsWith( t, '</stream:stream' ) ) {
 			#if XMPP_DEBUG XMPPDebug.inc( t ); #end
 			close( cnx.connected );
@@ -338,6 +348,7 @@ class Stream {
 			close( cnx.connected );
 			return 0;
 		}
+		
 		switch( status ) {
 		
 		case Status.closed :
@@ -345,7 +356,7 @@ class Stream {
 			return -1;//buflen?
 		
 		case Status.pending :
-			return processStreamInit( t, buflen );
+			return processStreamInit( t, t.length );
 		
 		#if !JABBER_COMPONENT
 		case Status.starttls :
@@ -369,18 +380,17 @@ class Stream {
 				me.open( null );
 			}
 			cnx.setSecure();
-			return buflen;
+			return t.length;
 		#end //!JABBER_COMPONENT
 			
 		case Status.open :
-			// filter data here ?
 			var x : Xml = null;
 			try x = Xml.parse( t ) catch( e : Dynamic ) {
 				//#if JABBER_DEBUG trace( "Packet incomplete, waiting for more data ..", "info" ); #end
 				return 0; // wait for more data
 			}
 			handleXml( x );
-			return buflen;
+			return t.length;
 		}
 		return 0;
 	}
@@ -409,8 +419,8 @@ class Stream {
 		while( ++i < collectors_id.length ) {
 			var c = collectors_id[i];
 			if( c.accept( p ) ) {
-				c.deliver( p );
 				collectors_id.splice( i, 1 );
+				c.deliver( p );
 				c = null;
 				return true;
 			}
@@ -434,7 +444,7 @@ class Stream {
 			#if JABBER_DEBUG
 			trace( "Incoming '"+Type.enumConstructor( p._type )+"' packet not handled ( "+p.from+" -> "+p.to+" )", "warn" );
 			#end
-			if( p._type == xmpp.PacketType.iq ) { // send 'feature not implemented' response
+			if( p._type == xmpp.PacketType.iq ) { // 'feature not implemented' response
 				var q : xmpp.IQ = cast p;
 				if( q.type != xmpp.IQType.error ) {
 					var r = new xmpp.IQ( xmpp.IQType.error, p.id, p.from, p.to );
