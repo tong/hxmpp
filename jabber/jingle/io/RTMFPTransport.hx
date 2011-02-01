@@ -28,10 +28,8 @@ class RTMFPTransport extends Transport {
 	static var EREG_URL = ~/(rtmfp:\/\/)([A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?)(\/([A-Z0-9\-]+))?/i;
 	
 	public var url(default,null) : String;
-	public var ns(default,null) : NetStream;
+	public var nc(default,null) : NetConnection;
 	public var id(default,null) : String;
-	
-	var nc : NetConnection;
 	
 	function new( url : String ) {
 		if( !EREG_URL.match( url ) )
@@ -49,7 +47,6 @@ class RTMFPTransport extends Transport {
 	}
 	
 	public override function close() {
-		if( ns != null ) try ns.close() catch(e:Dynamic){trace(e);}
 		if( nc != null && nc.connected ) try nc.close() catch(e:Dynamic){trace(e);}
 	}
 	

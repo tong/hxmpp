@@ -33,16 +33,11 @@ class RTMFPOutput extends RTMFPTransport {
 		this.send_cirrus_key = send_cirrus_key;
 	}
 	
-	public function publish( pubid : String ) {
-		ns.publish( pubid );
-	}
-	
 	public override function toXml() : Xml {
 		var x = Xml.createElement( "candidate" );
 		x.set( "id", id );
-		if( send_cirrus_key ) {
-			x.set( "url", url );
-		} else {
+		if( send_cirrus_key ) x.set( "url", url );
+		else {
 			RTMFPTransport.EREG_URL.match( url );
 			x.set( "url", RTMFPTransport.EREG_URL.matched(1)+
 						  RTMFPTransport.EREG_URL.matched(2) );
@@ -55,8 +50,6 @@ class RTMFPOutput extends RTMFPTransport {
 		switch( e.info.code ) {
 		case "NetConnection.Connect.Success" :
 			id = nc.nearID;
-			ns = new NetStream( nc, NetStream.DIRECT_CONNECTIONS );
-			ns.addEventListener( NetStatusEvent.NET_STATUS, netStreamHandler );
 			__onConnect();
 		//case "NetStream.Connect.Success" :
 			//__onInit();

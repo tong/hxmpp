@@ -26,7 +26,7 @@ import xmpp.IQ;
 */
 class RTMFPCall extends OutgoingSession<RTMFPOutput> {
 	
-	var pubid : String;
+	public var pubid(default,null) : String;
 	
 	public function new( stream : jabber.Stream, entity : String,
 						 contentName : String = "av" ) {
@@ -63,7 +63,6 @@ class RTMFPCall extends OutgoingSession<RTMFPOutput> {
 				cleanup();
 				return;
 			}
-			transport.publish( pubid );
 			onInit();
 			stream.sendPacket( IQ.createResult( iq ) );
 			

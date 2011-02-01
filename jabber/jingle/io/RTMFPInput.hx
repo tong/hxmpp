@@ -22,16 +22,12 @@ import flash.net.NetStream;
 
 class RTMFPInput extends RTMFPTransport {
 	
-	var pubid : String;
+	public var pubid(default,null) : String;
 	
 	public function new( url : String, id : String, pubid : String ) {
 		super( url );
 		this.id = id;
 		this.pubid = pubid;
-	}
-	
-	public override function init() {
-		ns.play( pubid );
 	}
 	
 	public override function toXml() : Xml {
@@ -47,23 +43,12 @@ class RTMFPInput extends RTMFPTransport {
 		case "NetConnection.Connect.Failed" :
 			__onFail( e.info.code );
 		case "NetConnection.Connect.Success" :
-			ns = new NetStream( nc, id );
-			ns.addEventListener( NetStatusEvent.NET_STATUS, netStreamHandler );
 			__onConnect();
 		case "NetConnection.Connect.Closed" :
 			__onDisconnect();
 		}
 	}
-	
-	override function netStreamHandler( e : NetStatusEvent ) {
-		#if JABBER_DEBUG trace( e.info.code ); #end
-		switch( e.info.code ) {
-		case "NetStream.Play.UnpublishNotify" :
-		case "NetStream.Play.Start" :
-			//__onInit();
-		}
-	}
-	
+
 	public static function ofCandidate( x : Xml ) : RTMFPInput {
 		//TODO maybe url splitting here
 		return new RTMFPInput( x.get( "url" ), x.get( "id" ), x.get( "pubid" ) );

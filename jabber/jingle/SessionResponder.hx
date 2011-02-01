@@ -37,11 +37,12 @@ class SessionResponder<T:Transport> extends Session<T> {
 			case "description" :
 				parseDescription( e );
 			case "transport" :
+				/*
 				if( e.get( "xmlns" ) != xmlns ) {
 					trace("TODO invalid transport specified");
 					return false;
 				}
-				//for( e in e.elementsNamed("candidate") ) trace(e);
+				*/
 				for( e in e.elements() ) {
 					if( e.nodeName == "candidate") {
 						addTransportCandidate( e );
@@ -50,7 +51,6 @@ class SessionResponder<T:Transport> extends Session<T> {
 			}
 		}
 		if( candidates.length == 0 ) {
-			trace("NO TRANSPORT CANDIDATES FOUND");
 			onFail( "no transport candidates found" );
 			cleanup();
 			return false;
@@ -69,7 +69,7 @@ class SessionResponder<T:Transport> extends Session<T> {
 	public function accept( yes : Bool = true ) {
 		stream.sendPacket( IQ.createResult( request ) );
 		if( yes ) {
-		//	addSessionCollector();
+			//addSessionCollector();
 			connectTransport();
 		} else {
 			terminate( xmpp.jingle.Reason.decline );
@@ -77,6 +77,7 @@ class SessionResponder<T:Transport> extends Session<T> {
 	}
 	
 	function parseDescription( x : Xml ) {
+		#if JABBER_DEBUG trace("not implemented","warn"); #end
 	}
 	
 	// override me
@@ -88,7 +89,7 @@ class SessionResponder<T:Transport> extends Session<T> {
 //TODO		transport.__onDisconnect = handleTransportDisconnect;
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, initiator );
 		var j = new xmpp.Jingle( xmpp.jingle.Action.session_accept, initiator, sid );
-//		j.responder = stream.jid.toString();
+		//j.responder = stream.jid.toString();
 		var content = new xmpp.jingle.Content( xmpp.jingle.Creator.initiator, contentName );
 		content.other.push( transport.toXml() );
 		j.content.push( content );
