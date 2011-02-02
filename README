@@ -4,6 +4,7 @@
  \_/ \_/ \_/ \_/ \_/ 
 =====================
 HXMPP is a haXe library for creating XMPP based clients and services.
+
 The library exists in two namespaces:
 * xmpp: creation and manipulation of XMPP data.
 * jabber: creation and manipulation of XMPP data streams to a server.
@@ -12,14 +13,14 @@ The library exists in two namespaces:
 
 SOURCE
 -------
-http://github.com/tong/hxmpp
+https://github.com/tong/hxmpp
 git://github.com/tong/hxmpp.git
 
 
 
 USAGE
 -----
-http://github.com/tong/hxmpp.examples
+Browse tests/examples: http://github.com/tong/hxmpp.examples
 
 
 
@@ -28,17 +29,7 @@ COMPILER FLAGS
 * XMPP_DEBUG	Print XMPP transfer
 * JABBER_DEBUG	Print verbose debug information
 * JABBER_SOCKETBRIDGE	Use a flash socket bridge as stream connection for the javascript target
-* JABBER_COMPONENT	Required to build server-components
-* air
-
-
-
-TLS
----
-Get opeeSSL for neko from: http://github.com/tong/hxssl
-NekoVM does NOT support startTLS.
-Use jabber.SecureSocketConnection for legacy TLS on port 5223 for secure connections.
-.....
+* JABBER_COMPONENT	Required when building server components
 
 
 
@@ -73,16 +64,16 @@ var cnx = new BOSHConnection( "domain.net", "127.0.0.1/xmpp/" );
 NODE.JS
 -------
 HXMPP has experimental support for node.js.
-Use the type signatures from:
-http://disktree.spektral.at/git/?a=summary&p=hx.node.js
+Use the type signatures from: https://github.com/tong/hxnodejs
 Add: -D nodejs
+
 
 
 ADOBE AIR2
 ----------
 HXMPP supports native, secure and unsecure adobe air2 socket connections (flash and javascript).
-Add 'air' compiler flag.
-Get the required external classes from: http://disktree.spektral.at/git/?a=summary&p=hxair
+* Get the required external classes from: http://disktree.spektral.at/git/?a=summary&p=hxair
+* Add 'air' compiler flag.
 
 
 
@@ -119,6 +110,7 @@ XEPS SUPPORTED
 
 ** XEP-xxxx: Linked Process Protocol
 ** XEP-xxxx: Jingle RTMP Transport
+** XEP-xxxx: Jingle RTMFP Transport
 ** gmail-notifiy
 
 
