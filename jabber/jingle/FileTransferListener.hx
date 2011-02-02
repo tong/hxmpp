@@ -19,6 +19,9 @@ package jabber.jingle;
 
 import jabber.jingle.io.ByteStreamInput;
 
+/**
+	EXPERIMENTAL
+*/
 class FileTransferListener extends SessionListener<ByteStreamInput,FileTransferResponder> {
 	
 	public function new( stream : jabber.Stream, handler : FileTransferResponder->Void ) {

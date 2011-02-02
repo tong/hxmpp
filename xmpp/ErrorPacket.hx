@@ -80,7 +80,12 @@ class ErrorPacket {
 			case "text" :
 				if( ns == xmlns ) {
 					p.text = e.firstChild().nodeValue;
-					#if !flash p.lang = e.get( "xml:lang" ); #end //TODO
+					//TODO 2.06
+					#if flash
+					//p.lang = e.get( "xml:lang" );
+					#else
+					p.lang = e.get( "xml:lang" );
+					#end
 				}
 			default :
 				if( ns == xmlns )
@@ -90,4 +95,5 @@ class ErrorPacket {
 			}
 		}
 	}
+	
 }

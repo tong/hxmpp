@@ -74,4 +74,10 @@ class XHTML {
 		return m;
 	}
 	
+	/*
+	public static inline function create( t : String ) : Xml {
+		return new xmpp.XHTML( t ).toXml();
+	}
+	*/
+	
 }

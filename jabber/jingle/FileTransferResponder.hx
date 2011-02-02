@@ -3,6 +3,9 @@ package jabber.jingle;
 import haxe.io.Bytes;
 import jabber.jingle.io.ByteStreamInput;
 
+/**
+	EXPERIMENTAL
+*/
 class FileTransferResponder extends SessionResponder<ByteStreamInput> {
 	
 	public dynamic function onProgress( data : Bytes ) : Void;

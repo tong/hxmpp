@@ -74,6 +74,8 @@ class Caps {
 	
 	/**
 	*/
+	//TODO
+	//public static function ofPacket( p : xmpp.Packet ) : xmpp.Caps {
 	public static function fromPresence( p : xmpp.Presence ) : xmpp.Caps {
 		for( p in p.properties )
 			if( p.nodeName == "c" && p.get( "xmlns" ) == XMLNS )

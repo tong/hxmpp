@@ -138,7 +138,6 @@ class Villein {
 	
 	//TODO
 	function handlePing( iq : xmpp.IQ ) {
-		trace("handlePingResulthandlePingResulthandlePingResult");
 		switch( iq.type ) {
 		case result :
 			trace("######################PING RESULT");

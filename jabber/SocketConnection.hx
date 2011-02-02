@@ -444,6 +444,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		__onSecured( null );
 	}
 	
+	//TODO use bytes (no compression + stuff otherwise)
 	function sockDataHandler( t : String ) {
 		var s = buf+t;
 		if( s.length > maxBufSize )

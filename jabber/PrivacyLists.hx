@@ -39,7 +39,10 @@ class PrivacyLists {
 		if( !stream.features.add( xmpp.PrivacyLists.XMLNS ) )
 			throw new jabber.error.Error( "PrivacyLists feature already added" );
 		this.stream = stream;
-		stream.addCollector( new jabber.stream.PacketCollector([cast new xmpp.filter.IQFilter(xmpp.PrivacyLists.XMLNS,xmpp.IQType.set)], handleListPush, true ) );
+		collect( 
+			[cast new xmpp.filter.IQFilter(xmpp.PrivacyLists.XMLNS,xmpp.IQType.set)],
+			handleListPush,
+			true );
 	}
 	
 	public function loadLists() {

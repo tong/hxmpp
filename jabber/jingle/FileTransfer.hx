@@ -10,6 +10,9 @@ import neko.io.File;
 import neko.io.Path;
 #end
 
+/**
+	EXPERIMENTAL
+*/
 class FileTransfer extends OutgoingSession<ByteStreamOutput> {
 	
 	//public dynamic function onProgress( bytes : Bytes ) : Void;

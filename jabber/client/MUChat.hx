@@ -47,8 +47,6 @@ typedef MUCOccupant = {
 */
 class MUChat {
 
-	//TODO public static var defaultPresencePriority = 5;
-	
 	public dynamic function onJoin() : Void;
 	public dynamic function onLeave() : Void;
 	public dynamic function onUnlock() : Void;

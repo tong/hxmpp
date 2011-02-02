@@ -50,7 +50,7 @@ class XMPPDebug {
 	static function __init__() {
 		
 		//#if XMPP_CONSOLE
-		//trace("TODO XMPP_CONSOLE...........");
+		//trace(" XMPP_CONSOLE...........");
 		//#end
 		
 		#if air

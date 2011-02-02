@@ -273,7 +273,7 @@ import js.Node;
 
 class SecureSocketConnection extends jabber.SocketConnection {
 	
-	public function new( host : String, port : Int = 5222,
+	public function new( host : String, port : Int = 5223,
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
 		super( host, port, true, bufSize, maxBufSize, timeout );

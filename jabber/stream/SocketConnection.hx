@@ -63,7 +63,8 @@ private typedef AbstractSocket = {
 */
 class SocketConnection extends Connection {
 	
-	public static var defaultBufSize = #if php 65536 #else 128 #end; //TODO php buf
+	//public static var defaultBufSize = #if php 65536 #else 128 #end; //TODO php buf
+	public static var defaultBufSize = 128;
 	public static var defaultMaxBufSize = 262144;
 	
 	public var port(default,null) : Int;
@@ -143,6 +144,7 @@ class SocketConnection extends Connection {
 			var nsize = buflen*2;
 			if( nsize > maxBufSize ) {
 				nsize = maxBufSize;
+				trace(buflen +":"+ maxBufSize);
 				if( buflen == maxBufSize  )
 					throw new jabber.error.Error( "Max buffer size reached ["+maxBufSize+"]" );
 			}

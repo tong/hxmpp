@@ -34,6 +34,7 @@ enum RosterSubscriptionMode {
 	rejectAll;
 	/** Ask how to proceed. */
 	manual;
+	//manual(cb:RosterItem->Bool);
 	/** Accept all subscription and unsubscription requests. */
 	acceptAll( subscribe : Bool );
 }

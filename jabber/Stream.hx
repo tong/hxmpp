@@ -431,11 +431,18 @@ class Stream {
 			var c = collectors[i];
 			if( c.accept( p ) ) {
 				collected = true;
+				/*
 				c.deliver( p );
 				if( !c.permanent ) {
 					collectors.splice( i, 1 );
-					//c = null;
+					c = null;
 				}
+				*/
+				if( !c.permanent ) {
+					collectors.splice( i, 1 );
+				}
+				c.deliver( p );
+				
 				if( c.block )
 					break;
 			}

@@ -66,6 +66,12 @@ class ByteStreamTransfer extends DataTransfer {
 		stream.sendIQ( iq, handleRequestResponse );
 	}
 	
+	/*
+	//TODO
+	public override function abort() {
+	}
+	*/
+	
 	function handleRequestResponse( iq : IQ ) {
 		switch( iq.type ) {
 		case result :

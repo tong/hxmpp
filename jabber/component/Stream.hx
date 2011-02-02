@@ -58,7 +58,7 @@ class Stream extends jabber.Stream {
 	/** Shared secret string used to identify legacy components*/
 	public var secret(default,null) : String;
 	public var connected(default,null) : Bool;
-	public var items(getItems,null) : xmpp.disco.Items; //TODO move into jabber.Stream? 
+	public var items(getItems,null) : xmpp.disco.Items;
 	public var discoListener(default,null) : ServiceDiscoveryListener;
 	
 	public function new( cnx : Connection ) {
