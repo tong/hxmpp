@@ -22,12 +22,8 @@ package jabber;
 */
 class MUCUtil {
 	
-	static function __init__() {
-		EREG = ~/([A-Z0-9._%-]+)@([A-Z0-9.-]+)(\/([A-Z0-9._%-]+))?/i;
-	}
-	
 	/** Regular expression matching a MUC address */
-	public static var EREG(default,null) : EReg;
+	public static var EREG = ~/([A-Z0-9._%-]+)@([A-Z0-9.-]+)(\/([A-Z0-9._%-]+))?/i;
 
 	/**
 		Returns true if the given string is a valid muchat address.<br/>
