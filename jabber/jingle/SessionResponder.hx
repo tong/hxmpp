@@ -37,12 +37,6 @@ class SessionResponder<T:Transport> extends Session<T> {
 			case "description" :
 				parseDescription( e );
 			case "transport" :
-				/*
-				if( e.get( "xmlns" ) != xmlns ) {
-					trace("TODO invalid transport specified");
-					return false;
-				}
-				*/
 				for( e in e.elements() ) {
 					if( e.nodeName == "candidate") {
 						addTransportCandidate( e );
@@ -50,6 +44,7 @@ class SessionResponder<T:Transport> extends Session<T> {
 				}
 			}
 		}
+		trace(candidates);
 		if( candidates.length == 0 ) {
 			onFail( "no transport candidates found" );
 			cleanup();
