@@ -128,7 +128,6 @@ class Stream {
 			cnx.__onDisconnect = handleDisconnect;
 			cnx.__onString = handleString;
 			cnx.__onData = handleData;
-			cnx.__onError = handleConnectionError;
 		}
 		return cnx;
 	}
@@ -166,9 +165,8 @@ class Stream {
 			return;
 		if( !cnx.http ) sendData( "</stream:stream>" );
 		status = Status.closed;
-		if( cnx.http ) cnx.disconnect();
-		else if( disconnect ) cnx.disconnect();
-		handleDisconnect();
+		if( disconnect || cnx.http ) cnx.disconnect();
+		handleDisconnect(null);
 	}
 	
 	/**
@@ -212,28 +210,21 @@ class Stream {
 	*/
 	
 	/**
-		Send an IQ packet and forward the collected response to the given handler function.
+		Send an IQ packet and forwards the response to the given handler function.
 	*/
-	public function sendIQ( iq : xmpp.IQ, ?handler : xmpp.IQ->Void,
-							?permanent : Bool, ?block : Bool ) //TODO permanent+remove block argument
-	: { iq : xmpp.IQ, collector : PacketCollector }
-	{
+	public function sendIQ( iq : xmpp.IQ, ?handler : xmpp.IQ->Void ) : xmpp.IQ {
 		if( iq.id == null ) iq.id = nextID();
 		var c : PacketCollector = null;
-		if( handler != null ) {
-//			c = new PacketCollector( [cast new PacketIDFilter( iq.id )], handler, permanent, timeout, block );
-//			addCollector( c );
-			//addIDCollector( c );
-			c = addIDCollector( iq.id, handler );
-		}
+		if( handler != null ) c = addIDCollector( iq.id, handler );
 		var s : xmpp.IQ = sendPacket( iq );
-		// TODO wtf, is his needed ?
+		// TODO wtf, is this needed ?
 		if( s == null && handler != null ) {
 			collectors.remove( c );
 			c = null;
 			return null;
 		}
-		return { iq : s, collector : c };
+		//return { iq : s, collector : c };
+		return iq;
 	}
 
 	/**
@@ -277,7 +268,7 @@ class Stream {
 	
 	/**
 		Adds an packet collector which filters XMPP packets by ids.
-		These collectors get processed before any other collectors.
+		These collectors get processed before any other.
 	*/
 	public function addIDCollector( id : String, handler : Dynamic->Void ) : PacketCollector {
 		var c = new PacketCollector( [cast new PacketIDFilter(id)], handler );
@@ -289,27 +280,26 @@ class Stream {
 		Adds a XMPP packet collector to this stream and starts the timeout if not null.
 	*/
 	public function addCollector( c : PacketCollector ) : Bool {
-		if( Lambda.has( collectors, c ) ) return false;
+		if( Lambda.has( collectors, c ) )
+			return false;
 		collectors.push( c );
-//		if( c.timeout != null ) c.timeout.start();
 		return true;
 	}
 	
 	/**
 	*/
 	public function removeCollector( c : PacketCollector ) : Bool {
-		if( !collectors.remove( c ) ) {
+		if( !collectors.remove( c ) )
 			if( !collectors_id.remove( c ) )
 				return false;
-		}
-//		if( c.timeout != null ) c.timeout.stop();
 		return true;
 	}
 	
 	/**
 	*/
 	public function addInterceptor( i : TPacketInterceptor ) : Bool {
-		if( Lambda.has( interceptors, i ) ) return false;
+		if( Lambda.has( interceptors, i ) )
+			return false;
 		interceptors.push( i );
 		return true;
 	}
@@ -335,10 +325,10 @@ class Stream {
 	/**
 	*/
 	public function handleString( t : String ) : Int {
+		
 		if( status == Status.closed )
 			return -1;
-		
-		//var t : String = buf.readString( bufpos, buflen );
+
 		if( StringTools.startsWith( t, '</stream:stream' ) ) {
 			#if XMPP_DEBUG XMPPDebug.inc( t ); #end
 			close( cnx.connected );
@@ -468,16 +458,12 @@ class Stream {
 	}
 	
 	function handleConnect() {
-		trace("handleConnecthandleConnecthandleConnect");
+		trace("handleConnect");
 	}
 
-	function handleDisconnect() {
-		onClose();
-	}
-	
-	function handleConnectionError( e : String ) {
+	function handleDisconnect(e:String) {
 		//TODO cleanup
-		onClose( e );
+		onClose(e);
 	}
 	
 	/*

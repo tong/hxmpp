@@ -23,11 +23,14 @@ import jabber.util.Base64;
 import xmpp.IQ;
 import xmpp.IQType;
 
+/**
+	Abstract base for incoming or outgoing jingle sessions
+*/
 class Session<T:Transport> {
 	
 	public dynamic function onInit() : Void;
 	public dynamic function onEnd( reason : xmpp.jingle.Reason ) : Void;
-	public dynamic function onFail( error : String ) : Void;
+	public dynamic function onFail( e : String ) : Void;
 	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
 	public var stream(default,null) : jabber.Stream;
@@ -75,15 +78,20 @@ class Session<T:Transport> {
 		Send a informational message.
 	*/
 	public function sendInfo( ?payload : Xml ) {
-		var iq = new xmpp.IQ( xmpp.IQType.set, null, entity );
+		var iq = new IQ( xmpp.IQType.set, null, entity );
 		var j = new xmpp.Jingle( xmpp.jingle.Action.session_info, initiator, sid );
 		if( payload != null ) j.other.push( payload );
 		iq.x = j;
+		var me = this;
 		stream.sendIQ( iq, function(r:IQ) {
 			//TODO
 			switch( r.type ) {
 			case result :
 			case error :
+				// uiuiui we need to pass the complete packet here to the onError callback
+				// .. otherwise the application would never know whats this all about
+				//me.onError( new jabber.XMPPError(me,iq) );
+				//me.cleanup();
 			default :
 			}
 		} );
@@ -95,6 +103,7 @@ class Session<T:Transport> {
 		case session_terminate :
 			onEnd( j.reason.type );
 			stream.sendPacket( IQ.createResult( iq ) );
+		//case whatelse? :
 			cleanup();
 		default :
 			processSessionPacket( iq, j );
@@ -102,7 +111,8 @@ class Session<T:Transport> {
 	}
 	
 	function processSessionPacket( iq : IQ, j : xmpp.Jingle ) {
-		new jabber.error.AbstractError(); // override me
+		//new jabber.error.AbstractError();
+		// override me
 	}
 	
 	function addSessionCollector() {

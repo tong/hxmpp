@@ -2,7 +2,7 @@
 include.hxml
 -cp ../util
 -swf file.swf
--swf-version 10
+-swf-version 10.1
 -xml flash.xml
 jabber.BOSHConnection
 jabber.Ping
@@ -10,6 +10,9 @@ jabber.Ping
 jabber.jingle.RTMPCall
 jabber.jingle.RTMPListener
 jabber.jingle.RTMPResponder
+jabber.jingle.RTMFPCall
+jabber.jingle.RTMFPListener
+jabber.jingle.RTMFPResponder
 
 --next
 include.hxml
@@ -45,3 +48,4 @@ include.hxml
 -cmd chxdoc -o api --templateDir=templates flash.xml,flash js.xml,js neko.xml,neko php.xml,php    -f haxe -f flash -f js -f neko -f php   -f Array -f Bool -f Class -f Date -f Dynamic -f EReg -f Enum -f Float -f Hash -f Int -f IntHash -f IntIter -f Iterable -f Iterator -f Lambda -f Math -f Null -f Reflect -f Std -f String -f StringTools -f StringBuf -f Type -f UInt -f ValueType -f Void -f Xml -f XmlType
 -cmd rm flash.xml js.xml neko.xml php.xml
 -cmd rm -r tmp
+#-cmd zip hxmpp_api_doc.zip api

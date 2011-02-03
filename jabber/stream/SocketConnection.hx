@@ -63,8 +63,7 @@ private typedef AbstractSocket = {
 */
 class SocketConnection extends Connection {
 	
-	//public static var defaultBufSize = #if php 65536 #else 128 #end; //TODO php buf
-	public static var defaultBufSize = 128;
+	public static var defaultBufSize = #if php 65536 #else 128 #end; //TODO php buf
 	public static var defaultMaxBufSize = 262144;
 	
 	public var port(default,null) : Int;
@@ -117,8 +116,7 @@ class SocketConnection extends Connection {
 			return;
 		reading = connected = false;
 		try socket.close() catch( e : Dynamic ) {
-			trace(e);
-			__onError( "Error closing socket" );
+			__onDisconnect( e );
 			return;
 		}
 	}
@@ -156,7 +154,7 @@ class SocketConnection extends Connection {
 		var nbytes = 0;
 		try nbytes = socket.input.readBytes( buf, bufbytes, buflen-bufbytes ) catch( e : Dynamic ) {
 			reading = connected = false;
-			__onError( e );
+			__onDisconnect( e );
 			return;
 		}
 		bufbytes += nbytes;

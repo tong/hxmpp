@@ -44,7 +44,6 @@ class SessionResponder<T:Transport> extends Session<T> {
 				}
 			}
 		}
-		trace(candidates);
 		if( candidates.length == 0 ) {
 			onFail( "no transport candidates found" );
 			cleanup();
@@ -56,7 +55,7 @@ class SessionResponder<T:Transport> extends Session<T> {
 		sid = j.sid;
 		contentName = content.name;
 		
-		addSessionCollector();
+		addSessionCollector(); // collect session packets
 		
 		return true;
 	}
@@ -64,7 +63,6 @@ class SessionResponder<T:Transport> extends Session<T> {
 	public function accept( yes : Bool = true ) {
 		stream.sendPacket( IQ.createResult( request ) );
 		if( yes ) {
-			//addSessionCollector();
 			connectTransport();
 		} else {
 			terminate( xmpp.jingle.Reason.decline );
@@ -81,7 +79,7 @@ class SessionResponder<T:Transport> extends Session<T> {
 	}
 	
 	override function handleTransportConnect() {
-//TODO		transport.__onDisconnect = handleTransportDisconnect;
+		//transport.__onDisconnect = handleTransportDisconnect;
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, initiator );
 		var j = new xmpp.Jingle( xmpp.jingle.Action.session_accept, initiator, sid );
 		//j.responder = stream.jid.toString();

@@ -25,15 +25,13 @@ class Connection {
 	/** Succesfully connected callback */
 	public var __onConnect : Void->Void;
 	/** Disconnected callback */
-	public var __onDisconnect : Void->Void;
+	public var __onDisconnect : String->Void;
 	/** Data recieved callback */
 	public var __onData : haxe.io.Bytes->Int->Int->Int;
 	/** String recieved callback */
 	public var __onString : String->Int;
 	/** TLS negotiation complete callback */
 	public var __onSecured : String->Void;
-	/** Error callback */
-	public var __onError : String->Void; //TODO replace public var __onDisconnect(?e)
 	
 	/** Hostname or IP address of the XMPP server. */
 	public var host(default,setHost) : String;

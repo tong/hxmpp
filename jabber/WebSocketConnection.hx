@@ -33,11 +33,10 @@ class WebSocketConnection extends jabber.stream.Connection {
 		super( host, secure );
 		this.port = port;
 		this.secure = secure;
-		url = "ws"+(secure?"s":"")+"://"+host+":"+port;
+		url = "ws"+(secure?"s":"")+"://"+host+":"+port; // unofficial specs do not support secure websocket connections (?)
 	}
 	
 	public override function connect() {
-		trace("COnnecting: "+url );
 		socket = new WebSocket( url );
 		socket.onopen = onConnect;
 		socket.onclose = onClose;
@@ -64,15 +63,13 @@ class WebSocketConnection extends jabber.stream.Connection {
 	}
 	
 	function onClose() {
-		trace("onClose");
 		connected = false;
-		__onDisconnect();
+		__onDisconnect(null);
 	}
 	
 	function onError() {
-		trace("onError");
 		connected = false;
-		__onError( "WebSocket error" ); // no error message?
+		__onDisconnect( "websocket error" ); // no error message?
 	}
 	
 	function onData( m ) {

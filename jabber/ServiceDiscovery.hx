@@ -51,7 +51,7 @@ class ServiceDiscovery {
 	public function info( jid : String, ?node : String ) {
 		var r = new IQ( IQType.get, null, jid );
 		r.x = new Info( null, null, node );
-		stream.sendIQ( r, handleInfo, false );
+		stream.sendIQ( r, handleInfo );
 	}
 	
 	/**
@@ -60,7 +60,7 @@ class ServiceDiscovery {
 	public function items( jid : String, ?node : String ) {
 		var r = new IQ( IQType.get, null, jid );
 		r.x = new Items( node );
-		stream.sendIQ( r, handleItems, false );
+		stream.sendIQ( r, handleItems );
 	}
 	
 	function handleInfo( iq : IQ ) {

@@ -49,7 +49,7 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 			socket.connect( new Host( host ), port );
 			#end
 		} catch( e : Dynamic ) {
-			__onError( e );
+			__onDisconnect( e );
 			return;
 		}
 		secured = true;
@@ -104,8 +104,7 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 			return;
 		connected = false;
 		try socket.close() catch( e : Dynamic ) {
-			trace(e);
-			__onError( "Error closing socket" );
+			__onDisconnect( e );
 		}
 	}
 	
@@ -131,12 +130,12 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 
 	function sockDisconnectHandler( e : Event ) {
 		connected = false;
-		__onDisconnect();
+		__onDisconnect(null);
 	}
 	
 	function sockErrorHandler( e : Event ) {
 		connected = false;
-		__onError( e.type );
+		__onDisconnect( e.type );
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {

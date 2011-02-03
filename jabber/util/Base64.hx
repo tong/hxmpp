@@ -1,3 +1,20 @@
+/*
+ *	This file is part of HXMPP.
+ *	Copyright (c)2009 http://www.disktree.net
+ *	
+ *	HXMPP is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  HXMPP is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *	See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
+*/
 package jabber.util;
 
 import haxe.BaseCode;
@@ -11,25 +28,12 @@ import js.Node;
 */
 class Base64 {
 	
-	static function __init__() {
-		//TODO hmm?
-		//%:";
-		//'+/='
-		//'-_.'
-		CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-		#if (neko||cpp||js||flash||xmldoc)
-		#if !nodejs
-		bc = new BaseCode( Bytes.ofString( CHARS ) );
-		#end // !nodejs
-		#end // neko||cpp||js||flash||xmldoc
-	}
-	
-	public static var CHARS(default,null) : String;
+	public static var CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	
 	#if (neko||cpp||js||flash||xmldoc)
 	#if !nodejs
 	
-	public static var bc(default,null) : BaseCode;
+	static var bc = new BaseCode( Bytes.ofString( CHARS ) );
 	
 	public static function fillNullbits( s : String ) : String {
 		var n = (s.length)%3;
@@ -46,7 +50,8 @@ class Base64 {
 	#end // !nodejs
 	#end // neko||cpp||js||flash||xmldoc
 	
-	public static function encode( t : String ) : String {
+	public static #if (nodejs) inline #end
+	function encode( t : String ) : String {
 		#if php
 		return untyped __call__( "base64_encode", t );
 		#elseif nodejs
@@ -56,7 +61,8 @@ class Base64 {
 		#end
 	}
 	
-	public static function decode( t : String ) : String {
+	public static #if (nodejs) inline #end
+	function decode( t : String ) : String {
 		#if php
 		return untyped __call__( "base64_decode", t );
 		#elseif nodejs
@@ -66,7 +72,8 @@ class Base64 {
 		#end
 	}
 	
-	public static function encodeBytes( b : Bytes ) : String {
+	public static #if (nodejs) inline #end
+	function encodeBytes( b : Bytes ) : String {
 		#if php
 		return untyped __call__( "base64_encode", b.getData() );
 		#elseif nodejs
@@ -76,7 +83,8 @@ class Base64 {
 		#end
 	}
 	
-	public static function decodeBytes( t : String ) : Bytes {
+	public static #if (nodejs) inline #end
+	function decodeBytes( t : String ) : Bytes {
 		#if php
 		return Bytes.ofString( untyped __call__( "base64_decode", t ) );
 		#elseif nodejs

@@ -34,10 +34,11 @@ class BOBListener {
 	public var stream(default,null) : jabber.Stream;
 
 	public function new( stream : jabber.Stream, onRequest : String->String->xmpp.BOB ) {
+		if( !stream.features.add( xmpp.BOB.XMLNS ) )
+			throw "bob listener already added";
 		this.stream = stream;
 		this.onRequest = onRequest;
-		var f_iq : xmpp.PacketFilter = new xmpp.filter.IQFilter( xmpp.BOB.XMLNS, "data", xmpp.IQType.get );
-		stream.addCollector( new jabber.stream.PacketCollector( [f_iq], handleRequest, true ) );
+		stream.collect( [new xmpp.filter.IQFilter(xmpp.BOB.XMLNS,xmpp.IQType.get,'data')], handleRequest, true );
 	}
 
 	function handleRequest( iq : xmpp.IQ ) {

@@ -93,8 +93,7 @@ class FlashSocketBridgeTLS {
 			return false;
 		var s = sockets.get( id );
 		#if flash10
-		//TODO
-	//	if( timeout > 0 ) s.timeout = timeout;
+		if( timeout > 0 ) s.timeout = timeout;
 		#end
 		s.connect( host, port );
 		return true;
@@ -107,7 +106,7 @@ class FlashSocketBridgeTLS {
 		try {
 			s.close();
 		} catch( e : Dynamic ) {
-			trace(e); //TODO
+			trace(e);
 			return false;	
 		}
 		return true;

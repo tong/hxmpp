@@ -33,14 +33,16 @@ class SessionListener<T:Transport,R:SessionResponder<T>> {
 	
 	function new( stream : jabber.Stream, handler : R->Void, xmlns : String ) {
 		if( !stream.features.add( xmlns ) )
-			throw new jabber.error.Error( "RTMP listener already added" );
+			throw new jabber.error.Error( "rtmp listener already added ["+xmlns+"]" );
 		this.stream = stream;
 		this.handler = handler;
 		this.xmlns = xmlns;
 	}
 	
+	/*
 	public function dispose() {
 	}
+	*/
 	
 	function setHandler( h : R->Void ) : R->Void {
 		if( h == null ) {

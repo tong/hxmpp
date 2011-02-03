@@ -265,7 +265,7 @@ class PubSub {
 				me.onError( new jabber.XMPPError( me, r ) );
 			default : // #
 			}
-		} ).iq;
+		} );
 	}
 
 }

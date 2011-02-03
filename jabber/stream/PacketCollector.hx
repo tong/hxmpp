@@ -21,7 +21,6 @@ import xmpp.PacketFilter;
 
 /**
 	Default XMPP packet collector implementation.<br/> 
-	Mind! Packet timeouts don't work for PHP!
 */
 class PacketCollector {
 	
@@ -32,20 +31,14 @@ class PacketCollector {
 	/** Indicates if the the collector should get removed from the stream after collecting. */
 	public var permanent : Bool;
 	/** Block remaining collectors */
-	public var block : Bool; //TODO remove
-	/** */
+	public var block : Bool; //remove?
 	
-	public function new( filters : Iterable<PacketFilter>,
-						 handler : Dynamic->Void,
-						 ?permanent : Bool = false,
-					//	 ?timeout : PacketTimeout,
-						 ?block : Bool = false ) {
+	public function new( filters : Iterable<PacketFilter>, handler : Dynamic->Void,
+						 ?permanent : Bool = false, ?block : Bool = false ) {
 		handlers = new Array();
 		this.filters = new FilterList();
-		for( f in filters )
-			this.filters.push( f );
-		if( handler != null )
-			handlers.push( handler );
+		for( f in filters ) this.filters.push( f );
+		if( handler != null ) handlers.push( handler );
 		this.permanent = permanent;
 		this.block = block;
 	}
@@ -54,10 +47,9 @@ class PacketCollector {
 		Returns true if the given XMPP packet passes through all filters.
 	*/
 	public function accept( p : xmpp.Packet ) : Bool {
-		for( f in filters ) {
+		for( f in filters )
 			if( !f.accept( p ) )
 				return false;
-		}
 		return true;
 	}
 	
@@ -65,7 +57,7 @@ class PacketCollector {
 		Delivers the given packet to all registerd handlers.
 	*/
 	public function deliver( p : xmpp.Packet ) {
-		for( h in handlers ) { h( p ); }
+		for( h in handlers ) h( p );
 	}
 
 }

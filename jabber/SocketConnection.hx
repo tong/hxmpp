@@ -57,7 +57,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		buf = haxe.io.Bytes.alloc( bufSize );
 		bufbytes = 0;
 		try socket.connect( new Host( host ), port ) catch( e : Dynamic ) {
-			__onError( e );
+			__onDisconnect( e );
 			return;
 		}
 		connected = true;
@@ -126,8 +126,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 			return;
 		connected = false;
 		try socket.close() catch( e : Dynamic ) {
-			trace(e);
-			__onError( "Error closing socket" );
+			__onDisconnect( e );
 		}
 	}
 	
@@ -157,7 +156,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	function sockDisconnectHandler( e : SecureSocketEvent ) {
 		connected = false;
-		__onDisconnect();
+		__onDisconnect(null);
 	}
 	
 	function secureChannelEstablished( e : SecureSocketEvent ) {
@@ -167,13 +166,13 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	function sockErrorHandler( e : SecureSocketEvent ) {
 		connected = false;
-		__onError( e.toString() );
+		__onDisconnect( e.toString() );
 	}
 	
 	function socketDataHandler( e : SecureSocketEvent ) {
 		var b = haxe.io.Bytes.ofData( e.rawData );
 		if( b.length > maxBufSize ) {
-			throw new jabber.error.Error( "Max buffer size reached ["+maxBufSize+"]" );
+			throw new jabber.error.Error( "max buffer size reached ["+maxBufSize+"]" );
 		}
 		__onData( b, 0, b.length );
 		//TODO
@@ -220,8 +219,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 			return;
 		connected = false;
 		try socket.close() catch( e : Dynamic ) {
-			trace(e);
-			__onError( "Error closing socket" );
+			__onDisconnect( e );
 		}
 	}
 	
@@ -258,19 +256,19 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	function sockDisconnectHandler( e : Event ) {
 		connected = false;
-		__onDisconnect();
+		__onDisconnect(null);
 	}
 	
 	function sockErrorHandler( e : Event ) {
 		connected = false;
-		__onError( e.type );
+		__onDisconnect( e.type );
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
 		socket.readBytes( buf, buf.length, Std.int(e.bytesLoaded) );
 		var b = haxe.io.Bytes.ofData( buf );
 		if( b.length > maxBufSize )
-			throw new jabber.error.Error( "Max buffer size reached ["+maxBufSize+"]" );
+			throw new jabber.error.Error( "max buffer size reached ["+maxBufSize+"]" );
 		if( __onData(  b, 0, b.length ) > 0 )
 			buf = new ByteArray();
 		//socket.flush();
@@ -358,7 +356,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		}
 		var b = haxe.io.Bytes.ofData( untyped buf ); //TODO
 		if( b.length > maxBufSize )
-			throw new jabber.error.Error( "Max buffer size reached ["+maxBufSize+"]" );
+			throw new jabber.error.Error( "max buffer size reached ["+maxBufSize+"]" );
 		if( __onData(  b, 0, b.length ) > 0 )
 			buf = new ByteArray();
 		//socket.flush();
@@ -391,15 +389,14 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		if( !connected )
 			return;
 		try socket.end() catch( e : Dynamic ) {
-			trace(e);
-			__onError( "Error closing socket" );
+			__onDisconnect( e );
 		}
 	}
 	
 	public override function setSecure() {
 		//TODO
 		trace("SET SECURE_________________________________");
-		//TODO hmm? TypeError: Object #<a Stream> has no method 'setSecure' ??????????
+		// hmm? TypeError: Object #<a Stream> has no method 'setSecure' ??????????
 		//socket.on( Node.STREAM_SECURE, sockSecureHandler );
 		//trace( socket.getPeerCertificate() );
 		socket.setSecure(  );
@@ -431,12 +428,12 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	function sockDisconnectHandler() {
 		connected = false;
-		__onDisconnect();
+		__onDisconnect(null);
 	}
 	
 	function sockErrorHandler( e : String ) {
 		connected = false;
-		__onError( e );
+		__onDisconnect( e );
 	}
 	
 	function sockSecureHandler() {
@@ -448,7 +445,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	function sockDataHandler( t : String ) {
 		var s = buf+t;
 		if( s.length > maxBufSize )
-			throw new jabber.error.Error( "Max socket buffer size reached ["+maxBufSize+"]" );
+			throw new jabber.error.Error( "max socket buffer size reached ["+maxBufSize+"]" );
 		var r = __onData( haxe.io.Bytes.ofString( s ), 0, s.length );
 		buf = ( r == 0 ) ? s : "";
 	}
@@ -489,7 +486,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 			return;
 		connected = false;
 		try socket.close() catch( e : Dynamic ) {
-			__onError( "Error closing socket" );
+			__onDisconnect( e );
 		}
 	}
 	
@@ -516,7 +513,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	function sockDisconnectHandler() {
 		connected = false;
-		__onDisconnect();
+		__onDisconnect(null);
 	}
 	
 	function sockSecuredHandler() {
@@ -528,7 +525,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		buf.add( t );
 		var s = buf.toString();
 		if( s.length > maxBufSize )
-			throw new jabber.error.Error( "Max socket buffer size reached ["+maxBufSize+"]" );
+			throw new jabber.error.Error( "max socket buffer size reached ["+maxBufSize+"]" );
 		if( __onString( s ) != 0 ) {
 			buf = new StringBuf();
 		}
@@ -536,7 +533,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	function sockErrorHandler( e : String ) {
 		connected = false;
-		__onError( e );
+		__onDisconnect( e );
 	}
 	
 	///// Socketbridge connection

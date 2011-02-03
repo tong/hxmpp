@@ -42,27 +42,11 @@ class RTMPCall extends OutgoingSession<RTMPOutput> {
 				}
 			}
 			if( candidates.length == 0 ) {
-				trace("TODO No valid transport candidate selected");
+				onFail( 'no valid transport candidate selected' );
 				return;
 			}
-			/*
-			var i = 0;
-			for( t in transports ) {
-				var match = false;
-				for( e in content.other ) {
-					if( e.get( "name" ) == t.name ) {
-						match = true;
-						continue;
-					}
-				}
-				if( !match ) {
-					transports.splice( i, 1 );
-				}
-			}
-			*/
 			request = iq;
 			connectTransport();
-			
 		default :
 			trace("Jingle session packet not handled");
 		}

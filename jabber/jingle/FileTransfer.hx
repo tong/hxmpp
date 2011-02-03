@@ -44,7 +44,7 @@ class FileTransfer extends OutgoingSession<ByteStreamOutput> {
 	function sendRequest( name : String, size : Int,
 						  ?date : String, ?desc : String ) {
 		for( t in transports ) {
-			t.__onConnect = handleTransportConnect;
+			//t.__onConnect = handleTransportConnect;
 			t.__onClientConnect = handleClientConnect;
 			t.__onFail = onTransportFail;
 			try t.init() catch( e : Dynamic ) {

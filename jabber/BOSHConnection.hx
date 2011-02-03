@@ -276,7 +276,7 @@ class BOSHConnection extends jabber.stream.Connection {
 	function handleTimeout() {
 		timeoutTimer.stop();
 		cleanup();
-		__onError( "BOSH timeout" );
+		__onDisconnect( "BOSH timeout" );
 	}
 	
 	/*
@@ -287,7 +287,7 @@ class BOSHConnection extends jabber.stream.Connection {
 	
 	function handleHTTPError( e : String ) {
 		cleanup();
-		__onError( e );
+		__onDisconnect( e );
 	}
 	
 	function handleHTTPData( t : String ) {
@@ -318,7 +318,7 @@ class BOSHConnection extends jabber.stream.Connection {
 			case "terminate" :
 				cleanup();
 				#if JABBER_DEBUG trace( "BOSH stream terminated by server", "warn" ); #end
-				__onDisconnect();
+				__onDisconnect(null);
 				return;
 			case "error" :
 				trace("TODO");
@@ -344,7 +344,7 @@ class BOSHConnection extends jabber.stream.Connection {
 			sid = x.get( "sid" );
 			if( sid == null ) {
 				cleanup();
-				__onError( "Invalid SID" );
+				__onDisconnect( "invalid sid" );
 				return;
 			}
 			wait = Std.parseInt( x.get( "wait" ) );

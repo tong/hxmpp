@@ -19,7 +19,6 @@ package jabber.component;
 
 #if JABBER_COMPONENT
 
-import jabber.Stream;
 import jabber.stream.Connection;
 import jabber.ServiceDiscoveryListener;
 import jabber.util.SHA1;
@@ -70,25 +69,17 @@ class Stream extends jabber.Stream {
 	*/
 	public override function open( host : String, subdomain : String, secret : String, ?identities : Array<xmpp.disco.Identity> ) {
 		if( cnx == null )
-			throw new jabber.error.Error( "No stream connection set" );
+			throw new jabber.error.Error( "no stream connection set" );
 		if( subdomain == null || subdomain == "" )
-			throw new jabber.error.Error( "Invalid stream subdomain" );
+			throw new jabber.error.Error( "invalid stream subdomain" );
 		if( secret == null )
-			throw new jabber.error.Error( "Invalid stream secret (null)" );
-		//this.host = host;
-		//this.subdomain = subdomain;
+			throw new jabber.error.Error( "invalid stream secret (null)" );
 		this.jid = new ComponentJID( subdomain, host );
 		this.secret = secret;
 		items = new xmpp.disco.Items();
 		discoListener = new ServiceDiscoveryListener( this, identities );
 		cnx.connected ? handleConnect() : cnx.connect();
 	}
-	
-	/*
-	override function getJIDStr() : String {
-		return getServiceName();
-	}
-	*/
 	
 	function getServiceName() : String {
 		if( jid.subdomain == null || jid.host == null ) return null;
@@ -105,21 +96,34 @@ class Stream extends jabber.Stream {
 		cnx.read( true );
 	}
 	
+	override function handleDisconnect( e : String ) {
+		connected = false;
+		onClose(e);
+	}
+	
+	/*
+	override function handleConnectionError( e : String ) {
+		connected = false;
+		onClose( e );
+	}
+	*/
+	
 	override function processStreamInit( t : String, len : Int ) {
-		//TODO fuuuuk
 		if( t.charAt( 0 ) != "<" || t.charAt( t.length-1 ) != ">" )
 			return 0;
-		var r = ~/^(<\?xml) (.)+\?>/;  //TODO full check
+		var r = ~/^(<\?xml) (.)+\?>/;
 		if( r.match(t) ) t = r.matchedRight();
-		try id = Xml.parse( t+"</stream:stream>" ).firstChild().get( "id" ) catch( e : Dynamic ) {
-			trace( t+"</stream:stream>");
-			trace(e);
-			return 0;//-1;
+		var i = t.indexOf( ">" );
+		if( i == -1 )
+			return 0;
+		t = t.substr( 0, i )+" />";
+		var x : Xml = null;
+		try x = Xml.parse(t).firstElement() catch(e:Dynamic){
+			return 0;
 		}
+		id = x.get('id');
 		status = jabber.stream.Status.open;
-		#if XMPP_DEBUG
-		jabber.XMPPDebug.inc( t );
-		#end
+		#if XMPP_DEBUG jabber.XMPPDebug.inc( t ); #end
 		onOpen();
 		collect( [ cast new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], readyHandler, false );
 		sendData( XMLUtil.createElement( "handshake", Xml.createPCData( SHA1.encode( id+secret ) ).toString() ).toString() );

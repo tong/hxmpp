@@ -52,11 +52,8 @@ class Stream extends jabber.Stream {
 	}
 	
 	override function processStreamInit( t : String, buflen : Int ) : Int {
-	//	var _t = t;
 		if( cnx.http ) {
-			#if XMPP_DEBUG
-			jabber.XMPPDebug.inc( t );
-			#end
+			#if XMPP_DEBUG jabber.XMPPDebug.inc( t ); #end
 			var x : Xml = null;
 			try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
 				return -1;
@@ -66,8 +63,7 @@ class Stream extends jabber.Stream {
 			onOpen();
 			return buflen;
 		} else {
-			//~/^(\<\?xml) (version=["']1.0["']) (encoding=["']UTF-8["'])\?\>/   //TODO
-			var r = ~/^(<\?xml) (.)+\?>/;
+			var r = ~/^(<\?xml) (.)+\?>/; //~/^(\<\?xml) (version=["']1.0["']) (encoding=["']UTF-8["'])\?\>/   //TODO
 			if( r.match(t) ) t = r.matchedRight();
 			var sei = t.indexOf( ">" );
 			if( sei == -1 )
@@ -86,8 +82,7 @@ class Stream extends jabber.Stream {
 			if( id == null ) {
 				#if JABBER_DEBUG trace( "Invalid XMPP stream, missing ID" ); #end
 				close( true );
-				//TODO ?
-				//onClose( "Invalid stream id" );
+				onClose( "invalid stream id" );
 				return -1;
 			}
 			if( !version ) {
