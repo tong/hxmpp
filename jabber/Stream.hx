@@ -17,6 +17,7 @@
 */
 package jabber;
 
+import haxe.io.Bytes;
 import jabber.stream.Connection;
 import jabber.stream.TPacketInterceptor;
 import jabber.stream.PacketCollector;
@@ -176,38 +177,40 @@ class Stream {
 		if( !cnx.connected )
 			return null;
 		if( intercept ) interceptPacket( untyped p );
+		//TODO return the given packet?
 		return ( sendData( untyped p.toString() ) != null ) ? p : null;
 	}
 	
 	/**
 		Send raw string.
 	*/
+	//TODO public function sendString( t : String ) : String {
 	public function sendData( t : String ) : String {
 		if( !cnx.connected )
 			return null;
-#if flash // haXe 2.06 fukup		
+		#if flash // haXe 2.06 fukup		
 		t = StringTools.replace( t, "_xmlns_=", "xmlns=" );
-#end
-		//TODO!
-	//	sendRawData( haxe.io.Bytes.ofString( t ) );
-//		if( !cnx.write( t ) )
-//			return null;
-		cnx.write( t );
+		#end
+		if( dataInterceptors.length > 0 ) {
+			if( sendRawData( haxe.io.Bytes.ofString(t) ) == null )
+				return null;
+		} else {
+			if( !cnx.write( t ) )
+				return null;
+		}
 		numPacketsSent++;
 		#if XMPP_DEBUG XMPPDebug.out( t ); #end
 		return t;
 	}
 	
-	/*
-	public function sendRawData( bytes : haxe.io.Bytes ) : haxe.io.Bytes {
-		//TODO !!
+	//TODO public function sendData( bytes : Bytes ) : Bytes {
+	public function sendRawData( bytes : Bytes ) : Bytes {
 		for( i in dataInterceptors )
 			bytes = i.interceptData( bytes );
 		if( !cnx.writeBytes( bytes ) )
 			return null;
 		return bytes;
 	}
-	*/
 	
 	/**
 		Send an IQ packet and forwards the response to the given handler function.

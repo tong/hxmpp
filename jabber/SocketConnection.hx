@@ -17,6 +17,8 @@
 */
 package jabber;
 
+import haxe.io.Bytes;
+
 #if (neko||php||cpp||rhino)
 
 #if neko
@@ -54,7 +56,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	public override function connect() {
 		socket = new Socket();
-		buf = haxe.io.Bytes.alloc( bufSize );
+		buf = Bytes.alloc( bufSize );
 		bufbytes = 0;
 		try socket.connect( new Host( host ), port ) catch( e : Dynamic ) {
 			__onDisconnect( e );
@@ -86,14 +88,13 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		return true;
 	}
 	
-	/*
-	public override function writeBytes( t : haxe.io.Bytes ) : Bool {
+	public override function writeBytes( t : Bytes ) : Bool {
+		if( !connected || t == null || t.length == 0 )
+			return false;
 		socket.output.write( t );
 		socket.output.flush();
-		trace("wWW");
 		return true;
 	}
-	*/
 }
 
 #elseif flash
@@ -144,6 +145,11 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		return true;
 	}
 	
+	public override function writeBytes( bytes : Bytes ) : Bool {
+		socket.sendByteArray( bytes.getData(), 0, bytes.length );
+		return true;
+	}
+	
 	public override function setSecure() {
 		socket.startSecureSupport( SecurityOptionsVO.getDefaultOptions( SecurityOptionsVO.SECURITY_TYPE_TLS ) );
 	}
@@ -170,7 +176,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	function socketDataHandler( e : SecureSocketEvent ) {
-		var b = haxe.io.Bytes.ofData( e.rawData );
+		var b = Bytes.ofData( e.rawData );
 		if( b.length > maxBufSize ) {
 			throw new jabber.error.Error( "max buffer size reached ["+maxBufSize+"]" );
 		}
@@ -240,14 +246,13 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		return true;
 	}
 	
-	/*
-	public override function writeBytes( t : haxe.io.Bytes ) : Bool {
+	public override function writeBytes( t : Bytes ) : Bool {
+		if( !connected || t == null || t.length == 0 )
+			return false;
 		socket.writeBytes( t.getData() ); 
 		socket.flush();
-		trace("www");
 		return true;
 	}
-	*/
 	
 	function sockConnectHandler( e : Event ) {
 		connected = true;
@@ -266,7 +271,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	function sockDataHandler( e : ProgressEvent ) {
 		socket.readBytes( buf, buf.length, Std.int(e.bytesLoaded) );
-		var b = haxe.io.Bytes.ofData( buf );
+		var b = Bytes.ofData( buf );
 		if( b.length > maxBufSize )
 			throw new jabber.error.Error( "max buffer size reached ["+maxBufSize+"]" );
 		if( __onData(  b, 0, b.length ) > 0 )
@@ -334,6 +339,14 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		return true;
 	}
 	
+	public override function writeBytes( t : Bytes ) : Bool {
+		if( !connected || t == null || t.length == 0 )
+			return false;
+		socket.writeBytes( t.getData() ); 
+		socket.flush();
+		return true;
+	}
+	
 	function sockConnectHandler( e : Event ) {
 		connected = true;
 		__onConnect();
@@ -354,7 +367,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 			#if JABBER_DEBUG trace(e); #end
 			return;
 		}
-		var b = haxe.io.Bytes.ofData( untyped buf ); //TODO
+		var b = Bytes.ofData( untyped buf ); //TODO
 		if( b.length > maxBufSize )
 			throw new jabber.error.Error( "max buffer size reached ["+maxBufSize+"]" );
 		if( __onData(  b, 0, b.length ) > 0 )
@@ -409,6 +422,13 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		return true;
 	}
 	
+	public override function writeBytes( t : Bytes ) : Bool {
+		if( !connected || t == null || t.length == 0 )
+			return false;
+		socket.write( t.getData() ); 
+		return true;
+	}
+	
 	public override function read( ?yes : Bool = true ) : Bool {
 		if( !yes )
 			socket.removeListener( Node.STREAM_DATA, sockDataHandler );
@@ -446,7 +466,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		var s = buf+t;
 		if( s.length > maxBufSize )
 			throw new jabber.error.Error( "max socket buffer size reached ["+maxBufSize+"]" );
-		var r = __onData( haxe.io.Bytes.ofString( s ), 0, s.length );
+		var r = __onData( Bytes.ofString( s ), 0, s.length );
 		buf = ( r == 0 ) ? s : "";
 	}
 	

@@ -17,6 +17,8 @@
 */
 package jabber.stream;
 
+import haxe.io.Bytes;
+
 /**
 	Abstract base class for stream connections.
 */
@@ -27,7 +29,7 @@ class Connection {
 	/** Disconnected callback */
 	public var __onDisconnect : String->Void;
 	/** Data recieved callback */
-	public var __onData : haxe.io.Bytes->Int->Int->Int;
+	public var __onData : Bytes->Int->Int->Int;
 	/** String recieved callback */
 	public var __onString : String->Int;
 	/** TLS negotiation complete callback */
@@ -80,16 +82,17 @@ class Connection {
 		return throw new jabber.error.AbstractError();
 	}
 	
-	/** Sends string, returns true on succeess */
+	/** Sends a string, returns true on succeess */
 	public function write( t : String ) : Bool {
 		return throw new jabber.error.AbstractError();
 	}
 	
-	//TODO Send raw bytes.
-	public function writeBytes( t : haxe.io.Bytes ) : Bool {
+	/** Send raw bytes */
+	public function writeBytes( t : Bytes ) : Bool {
 		return throw new jabber.error.AbstractError();
 	}
 	
+	/***/
 	public function reset() {
 		//#if JABBER_DEBUG trace("Not implemented"); #end
 	}
