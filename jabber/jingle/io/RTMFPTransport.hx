@@ -23,7 +23,7 @@ import flash.events.NetStatusEvent;
 import flash.net.NetConnection;
 import flash.net.NetStream;
 
-class RTMFPTransport extends Transport {
+@:require(flash10) class RTMFPTransport extends Transport {
 	
 	static var EREG_URL = ~/(rtmfp:\/\/)([A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?)(\/([A-Z0-9\-]+))?/i;
 	

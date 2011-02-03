@@ -21,6 +21,7 @@ class Jingle {
 	
 	static var _XMLNS = "urn:xmpp:jingle:";
 	public static var XMLNS = _XMLNS+"1";
+	public static var XMLNS_RTP = _XMLNS+"apps:rtp";
 	public static var XMLNS_RTMP = _XMLNS+"apps:rtmp";
 	public static var XMLNS_RTMFP = _XMLNS+"apps:rtmfp";
 	public static var XMLNS_FILETRANSFER = _XMLNS+"apps:file-transfer:1";

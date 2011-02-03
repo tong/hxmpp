@@ -31,6 +31,9 @@ include.hxml
 -xml neko.xml
 jabber.data.ByteStreamTransfer
 jabber.data.ByteStreamReciever
+jabber.jingle.FileTransfer
+jabber.jingle.FileTransferListener
+jabber.jingle.FileTransferResponder
 
 --next
 include.hxml

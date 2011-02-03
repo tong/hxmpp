@@ -44,7 +44,7 @@ class MUCUtil {
 	/**
 		Returns the host of the muc jid.
 	*/
-	public inline static function getHost( t : String ) : String {
+	public static inline function getHost( t : String ) : String {
 		return getParts( t )[1];
 	}
 	

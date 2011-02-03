@@ -17,10 +17,12 @@
 */
 package jabber.jingle.io;
 
+#if flash
+
 import flash.events.NetStatusEvent;
 import flash.net.NetStream;
 
-class RTMFPOutput extends RTMFPTransport {
+@:require(flash10) class RTMFPOutput extends RTMFPTransport {
 	
 	/**
 		Determines if the cirrus development key should get sent to the occupant in the candidate URL.
@@ -57,3 +59,5 @@ class RTMFPOutput extends RTMFPTransport {
 	}
 	
 }
+
+#end // flash

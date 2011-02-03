@@ -56,13 +56,13 @@ class Info {
 	
 	public static function parse( x : Xml ) : Info {
 		var i = new Info( null, null, x.get( "node" ) );
-		for( f in x.elements() ) {
-			switch( f.nodeName ) {
-			case "feature"  : i.features.push( f.get( "var" ) );
-			case "identity" : i.identities.push( { category : f.get( "category" ),
-												   name : f.get( "name" ),
-												   type : f.get( "type" ) } );
-			case "x" : i.x = f;
+		for( e in x.elements() ) {
+			switch( e.nodeName ) {
+			case "feature"  : i.features.push( e.get( "var" ) );
+			case "identity" : i.identities.push( { category : e.get( "category" ),
+												   name : e.get( "name" ),
+												   type : e.get( "type" ) } );
+			case "x" : i.x = e;
 			}
 		}
 		return i;

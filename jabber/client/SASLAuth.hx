@@ -22,7 +22,6 @@ import jabber.util.Base64;
 import xmpp.IQ;
 import xmpp.IQType;
 import xmpp.filter.PacketNameFilter;
-import xmpp.filter.FilterGroup;
 
 /**
 	<a href="http://xmpp.org/rfcs/rfc3920.html#sasl">RFC3920-SASL</a><br/>

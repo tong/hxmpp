@@ -37,6 +37,7 @@ class SessionResponder<T:Transport> extends Session<T> {
 			case "description" :
 				parseDescription( e );
 			case "transport" :
+				//TODO check/process arguments
 				for( e in e.elements() ) {
 					if( e.nodeName == "candidate") {
 						addTransportCandidate( e );
@@ -70,7 +71,7 @@ class SessionResponder<T:Transport> extends Session<T> {
 	}
 	
 	function parseDescription( x : Xml ) {
-		#if JABBER_DEBUG trace("not implemented","warn"); #end
+		//#if JABBER_DEBUG trace("not implemented","warn"); #end
 	}
 	
 	// override me
@@ -78,13 +79,19 @@ class SessionResponder<T:Transport> extends Session<T> {
 		throw new jabber.error.AbstractError();
 	}
 	
+	//TODO remove (handle by specific impl )
 	override function handleTransportConnect() {
 		//transport.__onDisconnect = handleTransportDisconnect;
+		sendSessionAccept();
+	}
+	
+	function sendSessionAccept( ?description : Xml ) {
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, initiator );
 		var j = new xmpp.Jingle( xmpp.jingle.Action.session_accept, initiator, sid );
 		//j.responder = stream.jid.toString();
 		var content = new xmpp.jingle.Content( xmpp.jingle.Creator.initiator, contentName );
 		content.other.push( transport.toXml() );
+		if( description != null ) content.other.push( description );
 		j.content.push( content );
 		iq.x = j;
 		stream.sendIQ( iq, handleSessionAccept );
@@ -93,6 +100,7 @@ class SessionResponder<T:Transport> extends Session<T> {
 	function handleSessionAccept( iq : IQ ) {
 		switch( iq.type ) {
 		case result :
+			//trace("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII "+transport);
 			onInit();
 			transport.init();
 		case error :

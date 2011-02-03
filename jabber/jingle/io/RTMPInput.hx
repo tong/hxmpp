@@ -23,7 +23,7 @@ class RTMPInput extends RTMPTransport {
 		ns.play( "#"+id );
 	}
 	
-	public static inline function ofCandidate( x : Xml ) {
+	public static inline function ofCandidate( x : Xml ) : RTMPInput {
 		return new RTMPInput( x.get( "name" ), x.get( "host" ), Std.parseInt( x.get( "port" ) ), x.get( "id" ) );
 	}
 	

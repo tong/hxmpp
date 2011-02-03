@@ -91,7 +91,6 @@ class Session<T:Transport> {
 				// uiuiui we need to pass the complete packet here to the onError callback
 				// .. otherwise the application would never know whats this all about
 				//me.onError( new jabber.XMPPError(me,iq) );
-				//me.cleanup();
 			default :
 			}
 		} );
@@ -131,17 +130,17 @@ class Session<T:Transport> {
 	function handleTransportConnect() {
 	}
 	
-	function handleTransportFail( e : String ) {
-		if( ++transportCandidateIndex == candidates.length ) {
-			onFail( e );
-			cleanup();
-		} else connectTransport();
-	}
-	
 	/*
 	function handleTransportDisconnect() {
 	}
 	*/
+	
+	function handleTransportFail( e : String ) {
+		if( ++transportCandidateIndex == candidates.length ) {
+			onFail( e );
+			cleanup();
+		} else connectTransport(); // try next
+	}
 	
 	function cleanup() {
 		if( transport != null ) transport.close();

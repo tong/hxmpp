@@ -20,7 +20,7 @@ package jabber.jingle.io;
 import flash.events.NetStatusEvent;
 import flash.net.NetStream;
 
-class RTMFPInput extends RTMFPTransport {
+@:require(flash10) class RTMFPInput extends RTMFPTransport {
 	
 	public var pubid(default,null) : String;
 	

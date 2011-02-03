@@ -43,7 +43,7 @@ class OutgoingSession<T:Transport> extends Session<T> {
 	
 	function sendSessionInit( ?description : Xml ) {
 		if( transports.length == 0 )
-			throw new jabber.error.Error( "No transports registered" );
+			throw new jabber.error.Error( "no transports registered" );
 		sid = Base64.random( 16 );
 		var iq = new IQ( IQType.set, null, entity );
 		var j = new xmpp.Jingle( xmpp.jingle.Action.session_initiate, stream.jid.toString(), sid );
