@@ -96,7 +96,7 @@ class EntityCapabilities {
 			}
 			onInfo( iq.from, i, ver );
 		case error :
-			onError( new jabber.XMPPError( this, iq ) );
+			onError( new jabber.XMPPError( iq ) );
 		default :
 		}
 	}

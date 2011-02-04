@@ -65,7 +65,7 @@ class Session<T:Transport> {
 		stream.sendIQ( iq, function(r:IQ) {
 			switch( r.type ) {
 			case error :
-				me.onError( new jabber.XMPPError( me, iq ) );
+				me.onError( new jabber.XMPPError( iq ) );
 			case result :
 				me.onEnd( reason );
 			default :
@@ -90,7 +90,7 @@ class Session<T:Transport> {
 			case error :
 				// uiuiui we need to pass the complete packet here to the onError callback
 				// .. otherwise the application would never know whats this all about
-				//me.onError( new jabber.XMPPError(me,iq) );
+				//me.onError( new jabber.XMPPError(iq) );
 			default :
 			}
 		} );

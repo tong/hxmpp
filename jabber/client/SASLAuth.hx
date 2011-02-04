@@ -147,7 +147,7 @@ class SASLAuth extends Authentication {
 				onSuccess();
 			}
 		case error :
-			onFail( new jabber.XMPPError( this, iq ) );
+			onFail( new jabber.XMPPError( iq ) );
 		default : //
 		}
 	}
@@ -157,7 +157,7 @@ class SASLAuth extends Authentication {
 		case result :
 			onSuccess();
 		case error :
-			onFail( new jabber.XMPPError( this, iq ) );
+			onFail( new jabber.XMPPError( iq ) );
 		default : //#
 		}
 	}

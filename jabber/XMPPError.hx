@@ -22,23 +22,23 @@ package jabber;
 */
 class XMPPError extends xmpp.Error {
 	
-	public var dispatcher(default,null) : Dynamic;
 	public var from(default,null) : String;
+	//TODO reference to the packet (?)
 	
-	public function new( dispatcher : Dynamic, p : xmpp.Packet ) {
+	public function new( p : xmpp.Packet ) {
 		var e = p.errors[0];
-		#if JABBER_DEBUG
-		if( e == null ) trace( "XMPP packet has no errors" );
-		#end
 		super( e.type, e.condition, e.code, e.text );
-		this.dispatcher = dispatcher;
 		this.from = p.from;
 	}
+	
+	#if JABBER_DEBUG
 	
 	public function toString() : String {
 		var t = "XMPPError[ "+from+", "+condition+", "+code;
 		if( text != null ) t += ", "+text;
-		return t += " ]";
+		return t+" ]";
 	}
+	
+	#end
 	
 }

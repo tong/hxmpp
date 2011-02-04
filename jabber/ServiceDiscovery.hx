@@ -68,7 +68,7 @@ class ServiceDiscovery {
 		case result :
 			onInfo( iq.from, Info.parse( iq.x.toXml() ) );
 		case error :
-			onError( new XMPPError( this, iq ) );
+			onError( new XMPPError( iq ) );
 		default :
 		}
 	}
@@ -78,7 +78,7 @@ class ServiceDiscovery {
 		case result :
 			onItems( iq.from, Items.parse( iq.x.toXml() ) );
 		case error :
-			onError( new XMPPError( this, iq ) );
+			onError( new XMPPError( iq ) );
 		default:
 		}
 	}

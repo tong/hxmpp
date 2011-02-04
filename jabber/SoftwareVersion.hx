@@ -53,7 +53,7 @@ class SoftwareVersion {
 		stream.sendIQ( iq, function( r ) {
 			switch( r.type ) {
 			case result : me.onLoad( jid, xmpp.SoftwareVersion.parse( r.x.toXml() ) );
-			case error : me.onError( new jabber.XMPPError( me, r ) );
+			case error : me.onError( new jabber.XMPPError( r ) );
 			default : //
 			}
 		} );

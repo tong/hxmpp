@@ -87,7 +87,7 @@ class PrivacyLists {
 			case result :
 				me.onDefaultChange( name );
 			case error :
-				me.onError( new jabber.XMPPError( me, r ) );
+				me.onError( new jabber.XMPPError( r ) );
 			default :
 			}
 		} );

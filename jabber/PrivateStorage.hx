@@ -44,7 +44,7 @@ class PrivateStorage {
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			switch( r.type ) {
 			case result : me.onStored( xt );
-			case error : me.onError( new jabber.XMPPError( me, iq ) );
+			case error : me.onError( new jabber.XMPPError( iq ) );
 			default://#
 			}
 		} );
@@ -60,7 +60,7 @@ class PrivateStorage {
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			switch( r.type ) {
 			case result : me.onLoad( xmpp.PrivateStorage.parse( r.x.toXml() ) );
-			case error : me.onError( new jabber.XMPPError( me, iq ) );
+			case error : me.onError( new jabber.XMPPError( iq ) );
 			default://#
 			}
 		} );

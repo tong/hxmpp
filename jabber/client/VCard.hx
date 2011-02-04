@@ -53,7 +53,7 @@ class VCard {
 	function handleLoad( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 		case result : onLoad( iq.from, ( iq.x != null ) ? xmpp.VCard.parse( iq.x.toXml() ) : null );
-		case error : onError( new jabber.XMPPError( this, iq ) );
+		case error : onError( new jabber.XMPPError( iq ) );
 		default : //
 		}
 	}
@@ -61,7 +61,7 @@ class VCard {
 	function handleUpdate( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 		case result : onUpdate();
-		case error : onError( new jabber.XMPPError( this, iq ) );
+		case error : onError( new jabber.XMPPError( iq ) );
 		default : //
 		}
 	}

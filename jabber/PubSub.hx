@@ -262,7 +262,7 @@ class PubSub {
 			case result :
 				h( r );
 			case error :
-				me.onError( new jabber.XMPPError( me, r ) );
+				me.onError( new jabber.XMPPError( r ) );
 			default : // #
 			}
 		} );

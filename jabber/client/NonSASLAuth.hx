@@ -20,7 +20,7 @@ package jabber.client;
 import jabber.util.SHA1;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0078.html">XEP-0078: Multi-User Chat</a><br>
+	<a href="http://xmpp.org/extensions/xep-0078.html">XEP-0078: Non-SASL Authentication</a><br>
 	Obsolete, superseded in favor of SASL authentication!
 */
 class NonSASLAuth extends Authentication {
@@ -30,12 +30,10 @@ class NonSASLAuth extends Authentication {
 	public var username(default,null) : String;
 	public var password(default,null) : String;
 
-	public function new( stream : Stream,
-						 /*?onSuccess : Void->Void, ?onFail : jabber.XMPPError->Void,*/
-					 	 ?usePlainText : Bool = false ) {
+	public function new( stream : Stream, ?usePlainText : Bool = false ) {
 		#if JABBER_DEBUG
 		if( stream.cnx.http )
-			throw new jabber.error.Error( "NonSASL authentication is not supported on HTTP/BOSH connections" );
+			throw new jabber.error.Error( "non SASL authentication is not supported on HTTP/BOSH connections" );
 		#end
 		super( stream );
 		this.usePlainText = usePlainText;
@@ -67,7 +65,7 @@ class NonSASLAuth extends Authentication {
 			r.x = if( hasDigest ) new xmpp.Auth( username, null, SHA1.encode( stream.id+password ), resource );
 			else new xmpp.Auth( username, password, null, resource );
 			stream.sendIQ( r, handleResult );
-		case error : onFail( new jabber.XMPPError( this, iq ) );
+		case error : onFail( new jabber.XMPPError( iq ) );
 		default : //#
 		}
 	}
@@ -76,7 +74,7 @@ class NonSASLAuth extends Authentication {
 		active = false;
 		switch( iq.type ) {
 		case result : onSuccess();
-		case error : onFail( new jabber.XMPPError( this, iq ) );
+		case error : onFail( new jabber.XMPPError( iq ) );
 		default : //#
 		}
 	}

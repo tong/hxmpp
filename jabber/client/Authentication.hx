@@ -33,7 +33,11 @@ class Authentication {
 	}
 	
 	public function authenticate( password : String, ?resource : String ) : Bool {
+		#if JABBER_DEBUG
 		return throw new jabber.error.AbstractError();
+		#else
+		return null;
+		#end
 	}
 	
 }

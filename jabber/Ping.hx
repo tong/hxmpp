@@ -99,7 +99,7 @@ class Ping {
 				onTimeout( target );
 			} else send( target );
 		case error :
-			onError( new XMPPError( this, iq ) );
+			onError( new XMPPError( iq ) );
 		default :
 		}
 		

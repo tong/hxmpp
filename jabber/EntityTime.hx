@@ -24,7 +24,7 @@ package jabber;
 class EntityTime {
 	
 	public dynamic function onLoad( jid : String, t : xmpp.EntityTime ) {}
-	public dynamic function onError( err : XMPPError ) {}
+	public dynamic function onError( e : XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
 	
@@ -44,7 +44,7 @@ class EntityTime {
 	function handleLoad( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 		case result : onLoad( iq.from, xmpp.EntityTime.parse( iq.x.toXml() ) );
-		case error : onError( new XMPPError( this, iq ) );
+		case error : onError( new XMPPError( iq ) );
 		default : //#
 		}
 	}

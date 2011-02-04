@@ -63,7 +63,7 @@ class PersonalEvent {
 			case result :
 				h( e );
 			case error :
-				me.onError( new jabber.XMPPError( me, r ) );
+				me.onError( new jabber.XMPPError( r ) );
 			default : //#
 			}
 		} );

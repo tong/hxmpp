@@ -61,7 +61,7 @@ class OutgoingSession<T:Transport> extends Session<T> {
 //		case result :
 //			trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		case error :
-			onError( new jabber.XMPPError( this, iq ) );
+			onError( new jabber.XMPPError( iq ) );
 			cleanup();
 		default :
 		}

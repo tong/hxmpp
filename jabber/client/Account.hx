@@ -59,7 +59,7 @@ class Account {
 					}
 				}
 			case error :
-				me.onError( new jabber.XMPPError( me, r ) );
+				me.onError( new jabber.XMPPError( r ) );
 			default : //#
 			}
 		} );
@@ -89,12 +89,12 @@ class Account {
 						//}
 						self.onRegister( reg.username );
 					case error:
-						self.onError( new jabber.XMPPError( self, r ) );
+						self.onError( new jabber.XMPPError( r ) );
 					default : //#
 					}
 				} );
 			case error :
-				self.onError( new jabber.XMPPError( self, r ) );
+				self.onError( new jabber.XMPPError( r ) );
 			default : //#
 			}
 		} );
@@ -118,7 +118,7 @@ class Account {
 				//}
 				me.onRemove();
 			case error :
-				me.onError( new jabber.XMPPError( me, r ) );
+				me.onError( new jabber.XMPPError( r ) );
 			default : //#
 			}
 		} );
@@ -140,7 +140,7 @@ class Account {
 				//var l = xmpp.Register.parse( iq.x.toXml() );
 				self.onPasswordChange( pass );
 			case error :
-				self.onError( new jabber.XMPPError( self, r ) );
+				self.onError( new jabber.XMPPError( r ) );
 			default : //#
 			}
 		} );

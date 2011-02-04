@@ -44,7 +44,7 @@ class BOB {
 	function handleResponse( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 		case result : onLoad( iq.from, xmpp.BOB.parse( iq.x.toXml() ));
-		case error : onError( new jabber.XMPPError( this, iq ) );
+		case error : onError( new jabber.XMPPError( iq ) );
 		default : //#
 		}
 	}

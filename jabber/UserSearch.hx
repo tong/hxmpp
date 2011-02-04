@@ -54,7 +54,7 @@ class UserSearch {
 		stream.sendIQ( iq, function(r:xmpp.IQ){
 			switch( r.type ) {
 			case result : h( r.from, xmpp.UserSearch.parse( r.x.toXml() ) );
-			case error : me.onError( new XMPPError( me, r ) );
+			case error : me.onError( new XMPPError( r ) );
 			default :
 			}
 		} );

@@ -152,7 +152,7 @@ class Roster {
 				me.items.remove( i );
 				me.onRemove( i );
 			case error :
-				me.onError( new jabber.XMPPError( me, r ) );
+				me.onError( new jabber.XMPPError( r ) );
 			default : //
 			}
 		} );
@@ -174,7 +174,7 @@ class Roster {
 				case result :
 					me.sendPresence( jid, PresenceType.subscribe );
 				case error :
-					me.onError( new XMPPError( me, r ) );
+					me.onError( new XMPPError( r ) );
 				default : //
 				}
 			});
@@ -244,7 +244,7 @@ class Roster {
 				me.items.push( item );
 				me.onAdd( item );
 			case error :
-				me.onError( new XMPPError( me, r ) );
+				me.onError( new XMPPError( r ) );
 			default : //
 			}
 		} );
@@ -290,7 +290,7 @@ class Roster {
 				}
 			}
 		case error :
-			onError( new XMPPError( this, iq ) );
+			onError( new XMPPError( iq ) );
 		default :
 			#if JABBER_DEBUG trace( "Unhandled roster IQ" ); #end
 		}

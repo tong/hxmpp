@@ -200,7 +200,7 @@ class MUChat {
 		stream.sendIQ( iq, function(r) {
 			switch( r.type ) {
 			case result : me.onKick( nick );
-			case error : me.onError( new jabber.XMPPError( me, r ) );
+			case error : me.onError( new jabber.XMPPError( r ) );
 			default : // #
 			}
 		} );
@@ -242,8 +242,6 @@ class MUChat {
 			}
 			var occupant = getOccupant( from );
 			if( occupant == null && from != jid && from != nick ) {
-				//TODO
-				//trace( "??? Message from unknown muc occupant ??? "+from );
 				onMessage( null, m );
 				return;
 			}
@@ -257,7 +255,7 @@ class MUChat {
 	
 	function handlePresence( p : xmpp.Presence ) {
 		if( p.type == xmpp.PresenceType.error ) {
-			onError( new jabber.XMPPError( this, p ) );
+			onError( new jabber.XMPPError( p ) );
 			return;
 		}
 		var x_user : xmpp.MUCUser = null;
@@ -287,9 +285,7 @@ class MUChat {
 						var self = this;
 						stream.sendIQ( iq, function(r:xmpp.IQ) {
 							if( r.type == xmpp.IQType.result ) {
-								#if JABBER_DEBUG
-								trace( "Unlocked MUC room: "+self.room, "info" );
-								#end
+								#if JABBER_DEBUG trace( "Unlocked MUC room: "+self.room, "info" ); #end
 								//unlocked = true; //TODO
 								//self.onUnlock();
 								self.joined = true;

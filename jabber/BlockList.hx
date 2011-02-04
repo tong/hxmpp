@@ -63,7 +63,7 @@ class BlockList {
 	function handleLoad( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 		case result : onLoad( xmpp.BlockList.parse( iq.x.toXml() ).items );
-		case error : onError( new jabber.XMPPError( this, iq ) );
+		case error : onError( new jabber.XMPPError( iq ) );
 		default : //#
 		}
 	}
@@ -71,7 +71,7 @@ class BlockList {
 	function handleBlock( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 		case result : onBlock( xmpp.BlockList.parse( iq.x.toXml() ).items );
-		case error : onError( new jabber.XMPPError( this, iq ) );
+		case error : onError( new jabber.XMPPError( iq ) );
 		default : //#
 		}
 	}
@@ -79,7 +79,7 @@ class BlockList {
 	function handleUnblock( iq : xmpp.IQ ) {
 		switch( iq.type ) {
 		case result : onUnblock( xmpp.BlockList.parse( iq.x.toXml() ).items );
-		case error : onError( new jabber.XMPPError( this, iq ) );
+		case error : onError( new jabber.XMPPError( iq ) );
 		default : //#
 		}
 	}

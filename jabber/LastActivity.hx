@@ -47,7 +47,7 @@ class LastActivity {
 		case result :
 			onLoad( iq.from, xmpp.LastActivity.parseSeconds( iq.x.toXml() ) );
 		case error :
-			onError( new XMPPError( this, iq ) );
+			onError( new XMPPError( iq ) );
 		default : ///
 		}
 	}

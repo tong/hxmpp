@@ -17,6 +17,8 @@
 */
 package jabber.stream;
 
+import haxe.io.Bytes;
+
 #if neko
 import neko.net.Host;
 import neko.net.Socket;
@@ -74,7 +76,7 @@ class SocketConnection extends Connection {
 	#if (neko||php||cpp||rhino)
 	public var socket(default,null) : AbstractSocket;
 	public var reading(default,null) : Bool;
-	var buf : haxe.io.Bytes;
+	var buf : Bytes;
 	var bufbytes : Int;
 	
 	#elseif nodejs
@@ -133,7 +135,7 @@ class SocketConnection extends Connection {
 	}
 	
 	public override function reset() {
-		buf = haxe.io.Bytes.alloc( bufSize );
+		buf = Bytes.alloc( bufSize );
 	}
 	
 	function readData() {
@@ -146,7 +148,7 @@ class SocketConnection extends Connection {
 				if( buflen == maxBufSize  )
 					throw new jabber.error.Error( "Max buffer size reached ["+maxBufSize+"]" );
 			}
-			var buf2 = haxe.io.Bytes.alloc( nsize );
+			var buf2 = Bytes.alloc( nsize );
 			buf2.blit( 0, buf, 0, buflen );
 			buflen = nsize;
 			buf = buf2;
@@ -168,7 +170,7 @@ class SocketConnection extends Connection {
 			bufbytes -= nbytes;
 		}
 		if( reading && pos > 0 )
-			buf = haxe.io.Bytes.alloc( bufSize );
+			buf = Bytes.alloc( bufSize );
 		//buf.blit( 0, buf, pos, bufbytes );
 	}
 	
