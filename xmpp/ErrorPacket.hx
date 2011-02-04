@@ -79,7 +79,8 @@ class ErrorPacket {
 			switch( e.nodeName ) {
 			case "text" :
 				if( ns == xmlns ) {
-					p.text = e.firstChild().nodeValue;
+					var c = e.firstChild();
+					if( c != null ) p.text = c.nodeValue;
 					//TODO 2.06
 					#if flash
 					//p.lang = e.get( "xml:lang" );
