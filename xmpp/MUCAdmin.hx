@@ -28,8 +28,7 @@ class MUCAdmin {
 	}
 
 	public function toXml() : Xml {
-		var x = Xml.createElement( "query" );
-		x.set( "xmlns", XMLNS );
+		var x = IQ.createQueryXml( XMLNS );
 		for( i in items ) x.addChild( i.toXml() );
 		return x;
 	}

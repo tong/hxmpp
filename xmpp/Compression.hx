@@ -28,20 +28,27 @@ class Compression {
 	*/
 	public static function createXml( methods : Iterable<String> ) : Xml {
 		var x = Xml.createElement( "compress" );
+		#if flash //TODO 2.06
+		x.set( "_xmlns_", XMLNS );
+		#else
 		x.set( "xmlns", XMLNS );
+		#end
 		for( m in methods )
 			x.addChild( XMLUtil.createElement( "method", m ) );
 		return x;
 	}
 	
 	/**
-		Returns an array of parsed compression methods.
+		Returns an array of compression methods.
 		//TODO same method as SASL.parseMechanisms
 	*/
 	public static function parseMethods( x : Xml ) : Array<String> {
 		var a = new Array<String>();
-		for( e in x.elementsNamed( "method" ) )
-			a.push( e.firstChild().nodeValue );
+		for( e in x.elements() ) {
+			switch(e.nodeName) {
+			case "method" : a.push( e.firstChild().nodeValue );
+			}
+		}
 		return a;
 	}
 	

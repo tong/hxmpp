@@ -31,9 +31,7 @@ class MUCOwner {
 	
 	public function toXml() : Xml {
 		var x = xmpp.IQ.createQueryXml( XMLNS );
-		for( item in items ) {
-			x.addChild( item.toXml() );
-		}
+		for( item in items ) x.addChild( item.toXml() );
 		//if( destroy != null ) x.addChild( destroy.toXml() );
 		//empty
 		return x;

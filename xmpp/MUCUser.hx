@@ -38,8 +38,7 @@ class MUCUser {
 	public function new() {}
 	
 	public function toXml() : Xml {
-		var x = Xml.createElement( "x" );
-		x.set( "xmlns", XMLNS );
+		var x = IQ.createQueryXml( XMLNS, 'x' );
 		if( invite != null ) x.addChild( invite.toXml() );
 		if( decline != null ) x.addChild( decline.toXml() );
 		if( item != null ) x.addChild( item.toXml() );
@@ -60,30 +59,6 @@ class MUCUser {
 				}
 		}
 		return p;
-		/*
-		var ext = new MUCUser();
-		for( e in x.elements() ) {
-			//trace(">>>>>>>>>>>>>>>>>>>>>>>>>> "+e.nodeName );
-			//trace(e.nodeName);
-			//trace( e.get( "xmlns" ) );
-			
-		((	if( e.nodeName != "x" || e.get( "xmlns" ) != XMLNS ) continue;
-			
-			trace(">>>>>>>>>>>>>>>>>>>>>>>>>> "+ee.nodeName );
-			for( ee in e.elements() ) {
-				switch( ee.nodeName ) {
-					//
-					case "item" :
-						ext.item = Item.parse( ee );
-						trace(ext.item);
-						
-					case "status" :
-						ext.status = Status.parse( ee );
-				}
-			}
-		}
-		return ext;
-			*/
 	}
 	
 }

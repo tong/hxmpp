@@ -22,11 +22,10 @@ package xmpp;
 */
 class Ping {
 	
-	public static var XMLNS(default,null) : String;
+	public static var XMLNS = 'urn:xmpp:ping';
 	
 	static function __init__() {
-		xml = Xml.createElement( "ping" );
-		xml.set( "xmlns", XMLNS = "urn:xmpp:ping" );
+		xml = IQ.createQueryXml( XMLNS, 'ping' );
 	}
 	
 	public static var xml(default,null) : Xml;

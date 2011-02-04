@@ -32,8 +32,7 @@ class XHTML {
 	}
 	
 	public function toXml() : Xml {
-		var x = Xml.createElement( "html" );
-		x.set( "xmlns", XMLNS );
+		var x = IQ.createQueryXml( XMLNS, 'html' );
 		x.addChild( Xml.parse( '<body xmlns="'+W3NS+'">'+body+'</body>' ).firstElement() );
 		return x;
 	}
