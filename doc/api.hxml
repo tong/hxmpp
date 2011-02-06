@@ -1,11 +1,15 @@
 
 include.hxml
 -cp ../util
+-cp ../util/tls_flash/
+-D TLS
+-swf-lib ../../hxmpp/util/tls_flash/tls.swf
 -swf file.swf
 -swf-version 10.1
 -xml flash.xml
 jabber.BOSHConnection
 jabber.Ping
+jabber.SecureSocketConnection
 #jabber.WebSocketConnection
 jabber.jingle.RTMPCall
 jabber.jingle.RTMPListener
@@ -25,10 +29,11 @@ jabber.Ping
 jabber.WebSocketConnection
 
 --next
-#-cp ../util/tls_neko/
+-cp ../util/tls_neko/
 include.hxml
 -neko file.n
 -xml neko.xml
+jabber.SecureSocketConnection
 jabber.data.ByteStreamTransfer
 jabber.data.ByteStreamReciever
 jabber.jingle.FileTransfer
@@ -42,13 +47,19 @@ include.hxml
 
 #--next
 #include.hxml
+#-cpp cpptemp
+#-xml cpp.xml
+
+#--next
+#include.hxml
 #-js file.js
 #-xml node.xml
 #-D nodejs
 #-cp ../../hxnodejs/
 
+
 --next
--cmd chxdoc -o api --templateDir=templates flash.xml,flash js.xml,js neko.xml,neko php.xml,php    -f haxe -f flash -f js -f neko -f php   -f Array -f Bool -f Class -f Date -f Dynamic -f EReg -f Enum -f Float -f Hash -f Int -f IntHash -f IntIter -f Iterable -f Iterator -f Lambda -f Math -f Null -f Reflect -f Std -f String -f StringTools -f StringBuf -f Type -f UInt -f ValueType -f Void -f Xml -f XmlType
+-cmd chxdoc -o api --templateDir=templates flash.xml,flash js.xml,js neko.xml,neko php.xml,php  -f haxe -f flash -f js -f neko -f php   -f Array -f Bool -f Class -f Date -f Dynamic -f EReg -f Enum -f Float -f Hash -f Int -f IntHash -f IntIter -f Iterable -f Iterator -f Lambda -f Math -f Null -f Reflect -f Std -f String -f StringTools -f StringBuf -f Type -f UInt -f ValueType -f Void -f Xml -f XmlType -f tls 
 -cmd rm flash.xml js.xml neko.xml php.xml
--cmd rm -r tmp
+#-cmd rm -r tmp
 #-cmd zip hxmpp_api_doc.zip api

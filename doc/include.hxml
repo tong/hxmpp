@@ -1,4 +1,7 @@
 
+-cp ../
+--no-output
+
 jabber.BlockList
 jabber.BOB
 jabber.BOBListener
@@ -46,6 +49,3 @@ jabber.sasl.AnonymousMechanism
 jabber.sasl.PlainMechanism
 jabber.sasl.MD5Mechanism
 xmpp.XHTML
-
--cp ../
---no-output
