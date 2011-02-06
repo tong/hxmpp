@@ -26,12 +26,22 @@ class LastActivityListener {
 	public var time : Int;
 	public var stream(default,null) : Stream;
 	
+	var c : jabber.stream.PacketCollector;
+	
 	public function new( stream : Stream, time : Int = 0 ) {
 		if( !stream.features.add( xmpp.LastActivity.XMLNS ) )
 			throw new jabber.error.Error( "Last activity listener already added" );
 		this.stream = stream;
 		this.time = time;
-		stream.collect( [ cast new xmpp.filter.IQFilter( xmpp.LastActivity.XMLNS, xmpp.IQType.get, "query" ) ], handleRequest, true );
+		c = stream.collect( [ cast new xmpp.filter.IQFilter( xmpp.LastActivity.XMLNS, xmpp.IQType.get, "query" ) ], handleRequest, true );
+	}
+	
+	public function dispose() {
+		if( c == null )
+			return;
+		stream.features.remove( xmpp.LastActivity.XMLNS );
+		stream.removeCollector(c);
+		c = null;
 	}
 	
 	function handleRequest( iq : xmpp.IQ ) {

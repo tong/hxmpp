@@ -249,6 +249,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	public override function writeBytes( t : Bytes ) : Bool {
 		if( !connected || t == null || t.length == 0 )
 			return false;
+		trace("WRITE: "+t.length );
 		socket.writeBytes( t.getData() ); 
 		socket.flush();
 		return true;

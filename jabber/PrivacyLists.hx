@@ -130,7 +130,7 @@ class PrivacyLists {
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			switch( r.type ) {
 				case result : resultHandler( r );
-				case error : me.onError( new jabber.XMPPError( me, r ) );
+				case error : me.onError( new jabber.XMPPError( r ) );
 				default : // #
 			}
 		} );

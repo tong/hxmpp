@@ -23,15 +23,15 @@ import xmpp.disco.Info;
 import xmpp.disco.Items;
 
 /**
-	<a href="http://www.xmpp.org/extensions/xep-0030.html">XEP 30 - ServiceDiscovery</a>
 	<p>
 	Manages discovery of services from XMPP entities.<br/>
 	Two kinds of information can be discovered:<br/>
-	<ol>
+	<ul>
 		<li>The identity and capabilities of an entity, including the protocols and features it supports,</li>
 		<li>The items associated with an entity, such as the list of rooms hosted at a multi-user chat service.</li>
-	</ol>
+	</ul>
 	</p>
+	<a href="http://www.xmpp.org/extensions/xep-0030.html">XEP 30 - ServiceDiscovery</a>
 */
 class ServiceDiscovery {
 	

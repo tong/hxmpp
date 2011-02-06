@@ -66,7 +66,7 @@ class XMPPDebug {
 			}
 			#end
 		#end
-		#end
+		#end // air
 	}
 	
 	#end // (flash||js)
@@ -86,10 +86,16 @@ class XMPPDebug {
 	}
 	
 	public static inline function print( t : String, out : Bool, level : String = "log" ) {
-		#if (neko||cpp||php||rhino||nodejs)
+		#if XMPP_CONSOLE
+		//TODO
+		//XMPPConsole.print(stream,t,out);
+	//	out ? XMPPConsole.o(t) : XMPPConsole.i(t); 
+		#else
+		#if (neko||cpp||php||nodejs||rhino)
 		_print( t, out ? color_out : color_inc );
 		#elseif (flash||js)
 		_print( t, out, level );
+		#end
 		#end
 	}
 	

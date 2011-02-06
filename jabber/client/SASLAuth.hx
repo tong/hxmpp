@@ -64,14 +64,13 @@ class SASLAuth extends Authentication {
 	
 	/**
 		Inits SASL authentication.<br/>
-		Returns false if no compatible SASL mechanism was found.
+		Returns false if no supported SASL mechanism was offered by the server.
 	*/
 	public override function authenticate( password : String, ?resource : String ) : Bool {
 		this.resource = resource;
 		if( stream.jid != null && resource != null ) // update stream's JID resource
 			stream.jid.resource = resource;
-		// locate SASL mechanism to use
-		if( mechanism == null ) {
+		if( mechanism == null ) { // locate SASL mechanism to use
 			for( s_mechs in serverMechanisms ) {
 				for( m in mechanisms ) {
 					if( m.id != s_mechs )
@@ -84,7 +83,7 @@ class SASLAuth extends Authentication {
 			}
 		}
 		if( mechanism == null ) {
-			#if JABBER_DEBUG trace( "No matching SASL mechanism found.", "warn" ); #end
+			#if JABBER_DEBUG trace( 'no supported SASL mechanism found', 'warn' ); #end
 			return false;
 		}
 		c_fail = stream.collect( [cast new PacketNameFilter( xmpp.SASL.EREG_FAILURE )], handleSASLFailed );

@@ -26,6 +26,8 @@ class SessionResponder<T:Transport> extends Session<T> {
 		super( stream, xmlns );
 	}
 	
+	/**
+	*/
 	public function handleRequest( iq : IQ ) : Bool {
 		var j = xmpp.Jingle.parse( iq.x.toXml() );
 		if( j.action != xmpp.jingle.Action.session_initiate )
@@ -61,6 +63,9 @@ class SessionResponder<T:Transport> extends Session<T> {
 		return true;
 	}
 	
+	/**
+		Accept/Deny incoming jingle session request
+	*/
 	public function accept( yes : Bool = true ) {
 		stream.sendPacket( IQ.createResult( request ) );
 		if( yes ) {

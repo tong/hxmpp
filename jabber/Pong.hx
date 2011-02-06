@@ -18,21 +18,31 @@
 package jabber;
 
 /**
-	<a href="http://www.xmpp.org/extensions/xep-0199.html">XEP 199 - XMPP Ping</a><br/>
-	Listens for incoming ping messages and automaticly responds with a pong.
+	Listens for incoming ping messages and automaticly responds with a pong.<br/>
+	<a href="http://www.xmpp.org/extensions/xep-0199.html">XEP 199 - XMPP Ping</a>
 */
 class Pong {
 	
-	/** Informational callback, informing that a ping has been recieved and responded to. */
+	/** Informational callback on ping-pong */
 	public dynamic function onPong( jid : String ) : Void;
 
 	public var stream(default,null) : Stream;
+	
+	var c : jabber.stream.PacketCollector;
 	
 	public function new( stream : Stream ) {
 		if( !stream.features.add( xmpp.Ping.XMLNS ) )
 			throw new jabber.error.Error( "Ping listener already added" );
 		this.stream = stream;
-		stream.collect( [ cast new xmpp.filter.IQFilter( xmpp.Ping.XMLNS, xmpp.IQType.get ) ], handlePing, true );
+		c = stream.collect( [ cast new xmpp.filter.IQFilter( xmpp.Ping.XMLNS, xmpp.IQType.get ) ], handlePing, true );
+	}
+	
+	public function dispose() {
+		if( c == null )
+			return;
+		stream.features.remove( xmpp.Ping.XMLNS );
+		stream.removeCollector(c);
+		c = null;
 	}
 	
 	function handlePing( iq : xmpp.IQ ) {

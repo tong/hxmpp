@@ -28,6 +28,8 @@ class RTMFPCall extends OutgoingSession<RTMFPOutput> {
 	
 	public var pubid(default,null) : String;
 	
+	//var payloads : Array<PayloadType>;
+	
 	public function new( stream : jabber.Stream, entity : String,
 						 contentName : String = "av" ) {
 		super( stream, entity, contentName, xmpp.Jingle.XMLNS_RTMFP );

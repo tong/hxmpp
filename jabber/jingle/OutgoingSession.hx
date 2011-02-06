@@ -46,21 +46,26 @@ class OutgoingSession<T:Transport> extends Session<T> {
 			throw new jabber.error.Error( "no transports registered" );
 		sid = Base64.random( 16 );
 		var iq = new IQ( IQType.set, null, entity );
-		var j = new xmpp.Jingle( xmpp.jingle.Action.session_initiate, stream.jid.toString(), sid );
+		var j = new xmpp.Jingle( xmpp.jingle.Action.session_initiate, stream.jid.toString(), sid, entity );
 		var content = new xmpp.jingle.Content( xmpp.jingle.Creator.initiator, contentName );
+		content.senders = xmpp.jingle.Senders.both; //TODO
 		if( description != null ) content.other.push( description );
 		content.other.push( createTransportXml() );
 		j.content.push( content );
 		iq.x = j;
 		addSessionCollector();
+		iq.from = stream.jid.toString();
 		stream.sendIQ( iq, handleSessionInitResponse );
 	}
 	
 	function handleSessionInitResponse( iq : IQ ) {
+		trace("handleSessionInitResponsehandleSessionInitResponse");
 		switch( iq.type ) {
 //		case result :
 //			trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		case error :
+			trace("ERROR");
+			//TODO remove onError (use onFail!)
 			onError( new jabber.XMPPError( iq ) );
 			cleanup();
 		default :

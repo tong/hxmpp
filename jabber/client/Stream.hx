@@ -63,7 +63,7 @@ class Stream extends jabber.Stream {
 			onOpen();
 			return buflen;
 		} else {
-			var r = ~/^(<\?xml) (.)+\?>/; //~/^(\<\?xml) (version=["']1.0["']) (encoding=["']UTF-8["'])\?\>/   //TODO
+			var r = ~/^(<\?xml) (.)+\?>/;
 			if( r.match(t) ) t = r.matchedRight();
 			var sei = t.indexOf( ">" );
 			if( sei == -1 )

@@ -205,8 +205,10 @@ class Stream {
 	
 	//TODO public function sendData( bytes : Bytes ) : Bytes {
 	public function sendRawData( bytes : Bytes ) : Bytes {
+		trace("RAW "+bytes.length);
 		for( i in dataInterceptors )
 			bytes = i.interceptData( bytes );
+		trace("RAW "+bytes.length);
 		if( !cnx.writeBytes( bytes ) )
 			return null;
 		return bytes;

@@ -31,10 +31,10 @@ import php.net.Socket;
 #end
 
 /**
-	<a href="http://www.faqs.org/rfcs/rfc1928.html">RFC 1928</a>
 	SOCKS5 negotiation for incoming socket connections (outgoing datatransfers).<br/>
-	This is not a complete implementation of the SOCKS5 protocol,<br/>
-	just a subset fulfilling requirements in context of XMPP (datatransfers).
+	This is not a complete implementation of the SOCKS5 protocol, 
+	just a subset for requirements in context of XMPP (datatransfers).<br/>
+	<a href="http://www.faqs.org/rfcs/rfc1928.html">RFC 1928</a>
 */
 class SOCKS5In {
 	

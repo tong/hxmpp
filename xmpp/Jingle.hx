@@ -21,7 +21,7 @@ class Jingle {
 	
 	static var _XMLNS = "urn:xmpp:jingle:";
 	public static var XMLNS = _XMLNS+"1";
-	public static var XMLNS_RTP = _XMLNS+"apps:rtp";
+	public static var XMLNS_RTP = _XMLNS+"apps:rtp:1";
 	public static var XMLNS_RTMP = _XMLNS+"apps:rtmp";
 	public static var XMLNS_RTMFP = _XMLNS+"apps:rtmfp";
 	public static var XMLNS_FILETRANSFER = _XMLNS+"apps:file-transfer:1";
@@ -29,15 +29,17 @@ class Jingle {
 	
 	public var action : xmpp.jingle.Action;
 	public var initiator : String;
+	public var responder : String;
 	public var sid : String;
 	public var content : Array<xmpp.jingle.Content>;
 	public var reason : { type : xmpp.jingle.Reason, content : Xml };
 	public var other : Array<Xml>;
 	
-	public function new( action : xmpp.jingle.Action, initiator : String, sid : String ) {
+	public function new( action : xmpp.jingle.Action, initiator : String, sid : String, ?responder : String ) {
 		this.action = action;
 		this.initiator = initiator;
 		this.sid = sid;
+		this.responder = responder;
 		content = new Array();
 		other = new Array();
 	}
@@ -52,6 +54,7 @@ class Jingle {
 		#end
 		x.set( "action", StringTools.replace( Type.enumConstructor( action ), "_", "-" ) );
 		x.set( "initiator", initiator );
+		if( responder != null ) x.set( "responder", responder );
 		x.set( "sid", sid );
 		for( c in content ) x.addChild( c.toXml() );
 		if( reason != null ) {
@@ -68,7 +71,8 @@ class Jingle {
 	public static function parse( x : Xml ) : Jingle {
 		var j = new xmpp.Jingle( Type.createEnum( xmpp.jingle.Action, StringTools.replace( x.get( "action" ), "-", "_" ) ),
 								 x.get( "initiator" ),
-								 x.get( "sid" )  );
+								 x.get( "sid" ), 
+								 x.get( "responder" ) );
 		for( e in x.elements() ) {
 			switch( e.nodeName ) {
 			case "content" :

@@ -49,9 +49,15 @@ class Ping {
 		iq.properties.push( xmpp.Ping.xml );
 	}
 	
+	function setInterval( i : Int ) : Int  {
+		if( i < 1 )
+			return throw new jabber.error.Error( "invalid ping time interval ["+i+"]" );
+		return interval = i;
+	}
+	
 	public function run( interval : Int = 30000 ) {
 		if( active ) {
-			#if JABER_DEBUG trace( "Ping is already active", "warn" ); #end
+			#if JABER_DEBUG trace( "ping is already active", "warn" ); #end
 			return;
 		}
 		this.interval = interval;
@@ -59,15 +65,9 @@ class Ping {
 		send( target );
 	}
 	
-	function setInterval( i : Int ) : Int  {
-		if( i < 1 )
-			return throw new jabber.error.Error( "Invalid ping time interval ["+i+"]" );
-		return interval = i;
-	}
-	
 	public function stop() {
 		if( !active ) {
-			#if JABER_DEBUG trace( "Ping is not active", "warn" ); #end
+			#if JABER_DEBUG trace( "cannot stop ping, not active", "warn" ); #end
 			return;
 		}
 		timer.stop();
