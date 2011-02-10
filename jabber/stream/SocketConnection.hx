@@ -82,8 +82,8 @@ class SocketConnection extends Connection {
 	#elseif nodejs
 	public var socket(default,null) : Socket;
 	
-	#elseif air
-	//#
+	#elseif (air&&js)
+	public var socket(default,null) : air.Socket;
 	
 	#elseif flash
 	#if TLS

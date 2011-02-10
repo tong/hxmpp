@@ -24,14 +24,14 @@ import xmpp.IQType;
 import xmpp.filter.PacketNameFilter;
 
 /**
-	<a href="http://xmpp.org/rfcs/rfc3920.html#sasl">RFC3920-SASL</a><br/>
-	<a href="http://xmpp.org/rfcs/rfc3920.html#bind">RFC3920-BIND</a><br/>
 	Responsible for:
 	<ol>
 		<li>Authenticating a client account using SASL</li>
 		<li>Binding the resource to the connection</li>
 		<li>Establishing a session with the server</li>
 	</ol>
+	<a href="http://xmpp.org/rfcs/rfc3920.html#sasl">RFC3920-SASL</a><br/>
+	<a href="http://xmpp.org/rfcs/rfc3920.html#bind">RFC3920-BIND</a><br/>
 */
 class SASLAuth extends Authentication {
 

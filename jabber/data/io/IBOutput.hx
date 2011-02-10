@@ -23,8 +23,8 @@ import jabber.util.Base64;
 import xmpp.IQ;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a><br/>
 	Outgoing inband data transfer.
+	<a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a><br/>
 */
 class IBOutput extends IBIO {
 	

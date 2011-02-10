@@ -200,7 +200,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	var buf : ByteArray;
 	#if air
-	var socket : Socket;
+//	var socket : Socket;
 	#end
 	
 	public function new( host : String, port : Int = 5222, secure : Bool = false,
@@ -305,6 +305,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	public override function connect() {
 		buf = new air.ByteArray();
 		socket = new Socket();
+		socket.timeout = timeout*1000;
 		socket.addEventListener( Event.CONNECT, sockConnectHandler );
 		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
 		socket.addEventListener( IOErrorEvent.IO_ERROR, sockErrorHandler );
@@ -317,8 +318,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 			return;
 		connected = false;
 		try socket.close() catch( e : Dynamic ) {
-			trace(e);
-			__onError( "Error closing socket" );
+			__onDisconnect( e );
 			return;
 		}
 	}
@@ -340,6 +340,12 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		return true;
 	}
 	
+	//??
+	public override function reset() {
+		#if JABBER_DEBUG trace('clearing socket buffer','info'); #end
+		buf = new ByteArray();
+	}
+	
 	public override function writeBytes( t : Bytes ) : Bool {
 		if( !connected || t == null || t.length == 0 )
 			return false;
@@ -355,25 +361,25 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	function sockDisconnectHandler( e : Event ) {
 		connected = false;
-		__onDisconnect();
+		__onDisconnect(null);
 	}
 	
 	function sockErrorHandler( e : Event ) {
 		connected = false;
-		__onError( e.type );
+		__onDisconnect( e.type );
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
 		try socket.readBytes( buf, buf.length, e.bytesLoaded ) catch( e : Dynamic ) {
-			#if JABBER_DEBUG trace(e); #end
+			#if JABBER_DEBUG trace(e,'error');#end //?
 			return;
 		}
-		var b = Bytes.ofData( untyped buf ); //TODO
-		if( b.length > maxBufSize )
+		if( buf.length > maxBufSize )
 			throw new jabber.error.Error( "max buffer size reached ["+maxBufSize+"]" );
+		var b = Bytes.ofData( buf );
 		if( __onData(  b, 0, b.length ) > 0 )
 			buf = new ByteArray();
-		//socket.flush();
+		socket.flush();
 	}
 }
 

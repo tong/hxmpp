@@ -80,7 +80,7 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 	
 	var buf : ByteArray;
 	#if air
-	var socket : SecureSocket;
+	//var socket : SecureSocket;
 	#end
 	
 	public function new( host : String, port : Int = 5223,
@@ -214,8 +214,7 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 			return;
 		connected = false;
 		try socket.close() catch( e : Dynamic ) {
-			trace(e);
-			__onError( "Error closing socket" );
+			__onDisconnect( "Error closing socket" );
 		}
 	}
 	
@@ -241,19 +240,17 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 
 	function sockDisconnectHandler( e : Event ) {
 		connected = false;
-		__onDisconnect();
+		__onDisconnect(null);
 	}
 	
 	function sockErrorHandler( e : Event ) {
 		connected = false;
-		__onError( e.type );
+		__onDisconnect( e.type );
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
 		try socket.readBytes( buf, buf.length, e.bytesLoaded ) catch( e : Dynamic ) {
-			#if JABBER_DEBUG
-		//	trace(e);
-			#end
+			#if JABBER_DEBUG trace(e); #end
 			return;
 		}
 		var b = haxe.io.Bytes.ofData( untyped buf );
@@ -261,7 +258,7 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 			throw new jabber.error.Error( "Max buffer size reached ["+maxBufSize+"]" );
 		if( __onData(  b, 0, b.length ) > 0 )
 			buf = new ByteArray();
-		//socket.flush();
+		socket.flush();
 	}
 }
 
