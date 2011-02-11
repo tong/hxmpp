@@ -23,29 +23,24 @@ package xmpp;
 */
 class DateTime {
 	
-	static function __init__() {
-		ereg_date = ~/^([0-9]{4})-([0-9]{2})-([0-9]{2})(T([0-9]{2}):([0-9]{2}):([0-9]{2})(\.[0-9]{3})?(Z|(-[0-9]{2}:[0-9]{2}))?)?$/;
-		ereg_time = ~/^([0-9]{2}):([0-9]{2}):([0-9]{2})(\.[0-9]{3}Z?)?$/;
-	}
-	
 	/**
 		UTC date expression.
 		CCYY-MM-DDThh:mm:ss[.sss]TZD
 	*/								
-	public static var ereg_date(default,null) : EReg;
+	public static var EREG_DATE = ~/^([0-9]{4})-([0-9]{2})-([0-9]{2})(T([0-9]{2}):([0-9]{2}):([0-9]{2})(\.[0-9]{3})?(Z|(-[0-9]{2}:[0-9]{2}))?)?$/;
 	
 	/**
 		UTC time expression.
 		hh:mm:ss[.sss][TZD]
 	*/
-	public static var ereg_time(default,null) : EReg;
+	public static var EREG_TIME = ~/^([0-9]{2}):([0-9]{2}):([0-9]{2})(\.[0-9]{3}Z?)?$/;
 	
 	public static inline function isValidDate( t : String ) : Bool {
-		return ereg_date.match( t );
+		return EREG_DATE.match( t );
 	}
 	
 	public static inline function isValidTime( t : String ) : Bool {
-		return ereg_time.match( t );
+		return EREG_TIME.match( t );
 	}
 	
 	public static inline function now( ?offset : Int ) : String {
@@ -112,7 +107,7 @@ class DateTime {
 	/**
 	*/
 	public static function getParts( utc : String ) : Array<Int> {
-		var r = ereg_date;
+		var r = EREG_DATE;
 		if( !r.match( utc ) )
 			return null;
 		var t = r.matched( 4 );
