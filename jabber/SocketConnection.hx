@@ -575,23 +575,27 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	static var sockets : IntHash<Socket>;
 	
-	public static function init( id : String, cb : String->Void, ?delay : Int = 300 ) {
+	public static function init( id : String, cb : String->Void, ?delay : Int = 0 ) {
 		if( initialized ) {
-			#if JABBER_DEBUG
-			trace( "socketbridge already initialized" );
-			#end
+			#if JABBER_DEBUG trace( 'socketbridge already initialized ['+id+']', 'warn' ); #end
+			cb( 'socketbridge already initialized ['+id+']' );
 			return;
 		}
-		swf = js.Lib.document.getElementById( id );
-		if( swf == null ) {
-			cb( "socketbridge swf not found ["+id+"]" );
-			return;
+		var _init = function(){
+			swf = js.Lib.document.getElementById( id );
+			if( swf == null ) {
+				cb( 'socketbridge swf not found ['+id+']' );
+				return;
+			}
+			sockets = new IntHash();
+			initialized = true;
+			cb(null);
 		}
-		SocketConnection.id = id;
-		sockets = new IntHash();
-		initialized = true;
-		if( delay > 0 ) haxe.Timer.delay( function(){ cb(null); }, delay );
-		else cb(null);
+		if( delay > 0 ) haxe.Timer.delay( _init, delay );
+		else {
+			_init();
+			cb(null);
+		}
 	}
 	
 	public static function createSocket( s : Socket, secure : Bool ) {

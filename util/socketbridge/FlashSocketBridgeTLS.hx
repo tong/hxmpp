@@ -92,9 +92,9 @@ class FlashSocketBridgeTLS {
 		if( !sockets.exists( id ) )
 			return false;
 		var s = sockets.get( id );
-		#if flash10
-		if( timeout > 0 ) s.timeout = timeout;
-		#end
+	//	#if flash10
+	//	if( timeout > 0 ) s.timeout = timeout;
+	//	#end
 		s.connect( host, port );
 		return true;
 	}
