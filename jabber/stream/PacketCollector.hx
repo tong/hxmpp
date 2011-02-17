@@ -18,6 +18,47 @@
 package jabber.stream;
 
 import xmpp.PacketFilter;
+import xmpp.filter.PacketIDFilter;
+
+private class FilterList {
+	
+	var fid : Array<PacketFilter>;
+	var f : Array<PacketFilter>;
+	
+	public function new() {
+		clear();
+	}
+	
+	public function clear( ) {
+		fid = new Array<PacketFilter>();
+		f = new Array<PacketFilter>();
+	}
+	
+	public inline function iterator() : Iterator<PacketFilter> {
+		return fid.concat( f ).iterator();
+	}
+	
+	public inline function addIDFilter( _f : PacketIDFilter ) {
+		fid.push( _f );
+	}
+	
+	public inline function addFilter( _f : PacketFilter ) {
+		f.push( _f );
+	}
+	
+	public function push( _f : PacketFilter ) {
+		( Std.is( _f, PacketIDFilter ) ) ? fid.push( _f ) : f.push( _f );
+	}
+	
+	public function unshift( _f : PacketFilter ) {
+		( Std.is( _f, PacketIDFilter ) ) ? fid.unshift( _f ) : f.unshift( _f );
+	}
+	
+	public function remove( _f : PacketFilter ) : Bool {
+		if( fid.remove( _f ) || f.remove( _f ) ) return true;
+		return false;
+	}
+}
 
 /**
 	Default XMPP packet collector implementation.<br/> 
@@ -34,7 +75,8 @@ class PacketCollector {
 	public var block : Bool; //remove?
 	
 	public function new( filters : Iterable<PacketFilter>, handler : Dynamic->Void,
-						 ?permanent : Bool = false, ?block : Bool = false ) {
+						 permanent : Bool = false,
+						 block : Bool = false ) {
 		handlers = new Array();
 		this.filters = new FilterList();
 		for( f in filters ) this.filters.push( f );
