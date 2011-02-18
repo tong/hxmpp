@@ -25,11 +25,7 @@ package jabber.sasl;
 */
 class PlainMechanism {
 	
-	static function __init__() {
-		NAME = "PLAIN";
-	}
-	
-	public static var NAME(default,null) : String;
+	public static var NAME = 'PLAIN';
 	
 	public var id(default,null) : String;
 	

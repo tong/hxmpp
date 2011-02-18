@@ -22,11 +22,7 @@ package jabber.sasl;
 */
 class AnonymousMechanism {
 	
-	static function __init__() {
-		NAME = "ANONYMOUS";
-	}
-	
-	public static var NAME(default,null) : String;
+	public static var NAME = 'ANONYMOUS';
 	
 	public var id(default,null) : String;
 	
