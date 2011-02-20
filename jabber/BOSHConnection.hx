@@ -291,25 +291,16 @@ class BOSHConnection extends jabber.stream.Connection {
 	}
 	
 	function handleHTTPData( t : String ) {
-		#if flash // TODO haXe 2.06 fukup hack
-		t = StringTools.replace( t, "xmlns=", "_xmlns_=" );
-		t = StringTools.replace( t, "xml:lang", "_xml_lang_" );
-		t = StringTools.replace( t, "xmlns:xmpp", "_xmlns:xmpp_" );
-		t = StringTools.replace( t, "xmpp:version", "_xmpp:version_" );
-		#end
 		var x : Xml = null;
 		try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
-			#if JABBER_DEBUG trace( "Invalid XML:\n"+t, "warn" ); #end
+			#if JABBER_DEBUG trace( 'invalid XML:\n'+t, 'warn' ); #end
 			return;
 		}
-		#if flash
-		// TODO haXe 2.06 fukup hack
-		#else
-		if( x.get( "xmlns" ) != XMLNS ) {
-			#if JABBER_DEBUG trace( "Invalid BOSH body", "warn" ); #end
+		if( x.get( 'xmlns' ) != XMLNS ) {
+			#if JABBER_DEBUG trace( 'invalid BOSH body', 'warn' ); #end
+			//TODO. disconnect
 			return;
 		}
-		#end
 		requestCount--;
 		if( timeoutTimer != null )
 			timeoutTimer.stop();
