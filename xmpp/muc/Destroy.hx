@@ -21,24 +21,25 @@ import xmpp.XMLUtil;
 
 class Destroy {
 	
-	public var password : String;
-	public var reason : String;
 	public var jid : String;
+	public var reason : String;
 	
-	public function new( password : String, reason : String, jid : String ) {
-		this.password = password;
-		this.reason = reason;
+	public function new( ?jid : String, ?reason : String ) {
 		this.jid = jid;
+		this.reason = reason;
 	}
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "destroy" );
 		if( jid != null ) x.set( "jid", jid );
-		if( password != null ) x.addChild( XMLUtil.createElement( "password", password ) );
 		if( reason != null ) x.addChild( XMLUtil.createElement( "reason", reason ) );
 		return x;
 	}
 	
-	//TODO public static function parse(x : Xml) {
+	public static function parse( x : Xml ) : Destroy {
+		var r = if( x.firstElement() == null ) null;
+		else x.firstElement().firstChild().nodeValue;
+		return new Destroy( x.get('jid'), r );
+	}
 	
 }

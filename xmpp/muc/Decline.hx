@@ -21,9 +21,9 @@ import xmpp.XMLUtil;
 
 class Decline {
 	
-	public var reason : String;
 	public var to : String;
 	public var from : String;
+	public var reason : String;
 
 	var nodeName : String;
 	
@@ -37,11 +37,15 @@ class Decline {
 	public function toXml() : Xml {
 		var x = Xml.createElement( nodeName );
 		if( to != null ) x.set( "to", to );
-		if( from != null ) x.set( "to", from );
+		if( from != null ) x.set( "from", from );
 		if( reason != null ) x.addChild( XMLUtil.createElement( "reason", reason ) );
 		return x;
 	}
 	
-	//TODO public static function parse( x : Xml ) :  {
+	public static function parse( x : Xml ) : Decline {
+		var r = if( x.firstElement() == null ) null;
+		else x.firstElement().firstChild().nodeValue;
+		return new Decline( r, x.get('to'), x.get('from') );
+	}
 	
 }
