@@ -35,8 +35,7 @@ class IQ extends Packet {
 	
 	public override function toXml(): Xml {
 		var p = super.addAttributes( Xml.createElement( "iq" ) );
-		if( type == null ) type = IQType.get;
-		p.set( "type", Type.enumConstructor( type ) );
+		p.set( "type", Type.enumConstructor( (type==null)?IQType.get:type ) );
 		if( id != null ) p.set( "id", id );
 		if( x != null ) p.addChild( x.toXml() );
 		return p;
