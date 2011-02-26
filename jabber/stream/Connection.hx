@@ -33,7 +33,7 @@ class Connection {
 	/** String recieved callback */
 	public var __onString : String->Int;
 	/** TLS negotiation complete callback */
-	public var __onSecured : String->Void;
+	@:keep public var __onSecured : String->Void;
 	
 	/** Hostname or IP address of the XMPP server. */
 	public var host(default,setHost) : String;
@@ -71,7 +71,7 @@ class Connection {
 	}
 	
 	/** */
-	public function setSecure() {
+	@:keep public function setSecure() {
 		#if JABBER_DEBUG
 		trace( "Connection.setSecure not implemented", "warn" );
 		#end
@@ -93,7 +93,7 @@ class Connection {
 	}
 	
 	/***/
-	public function reset() {
+	@:keep public function reset() {
 		//#if JABBER_DEBUG trace("Not implemented"); #end
 	}
 	

@@ -52,7 +52,7 @@ class JID {
 		return ( node == null || domain == null ) ? null : node+"@"+domain;
 	}
 	
-	public function toString() : String {
+	@:keep public function toString() : String {
 		var j = getBare();
 		return ( j == null ) ? null : ( resource == null ) ? j : j+="/"+resource;
 	}

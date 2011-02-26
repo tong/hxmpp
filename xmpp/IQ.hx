@@ -62,7 +62,7 @@ class IQ extends Packet {
 	/**
 		Creates a '<query xmlns="namspace"/>' XML tag.
 	*/
-    public static function createQueryXml( ns : String, name : String = "query" ) : Xml {
+    @:keep public static function createQueryXml( ns : String, name : String = "query" ) : Xml {
 		var x = Xml.createElement( name );
 		x.set( "xmlns", ns );
 		return x;
