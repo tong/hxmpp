@@ -29,7 +29,7 @@ class FilterGroup extends List<xmpp.PacketFilter> {
 				add( f );
 	}
 	
-	public function accept( p : xmpp.Packet ) : Bool {
+	@:keep public function accept( p : xmpp.Packet ) : Bool {
 		for( f in iterator() )
 			if( f.accept( p ) )
 				return true;

@@ -29,7 +29,7 @@ class PacketPropertyFilter {
 		this.name = name;
 	}
 	
-	public function accept( p : xmpp.Packet ) : Bool {
+	@:keep public function accept( p : xmpp.Packet ) : Bool {
 		for( prop in p.properties ) {
 			if( ns != null && prop.get( "xmlns" ) != ns )
 				continue;

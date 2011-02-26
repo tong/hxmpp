@@ -34,7 +34,7 @@ class PacketToContainsFilter {
 		return this.contains = t;
 	}
 	
-	public function accept( p : xmpp.Packet ) : Bool {
+	@:keep public function accept( p : xmpp.Packet ) : Bool {
 		return ( p.to == null ) ? false : ereg.match( p.to );
 	}
 	

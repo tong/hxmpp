@@ -31,7 +31,7 @@ class PacketFieldFilter {
 		this.value = value;
 	}
 	
-	public function accept( p : xmpp.Packet ) : Bool {
+	@:keep public function accept( p : xmpp.Packet ) : Bool {
 		if( !Reflect.hasField( p, name ) ) return false;
 		/*
 		if( value == null ) return true;

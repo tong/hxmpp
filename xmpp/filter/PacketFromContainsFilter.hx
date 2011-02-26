@@ -35,7 +35,7 @@ class PacketFromContainsFilter {
 		return this.contains = t;
 	}
 	
-	public function accept( p : xmpp.Packet ) : Bool {
+	@:keep public function accept( p : xmpp.Packet ) : Bool {
 		if( p.from == null )
 			return false;
 		try {

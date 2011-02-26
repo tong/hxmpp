@@ -28,7 +28,7 @@ class PacketFromFilter {
 		this.jid = jid;
 	}
 	
-	public function accept( p : xmpp.Packet ) : Bool {
+	@:keep public inline function accept( p : xmpp.Packet ) : Bool {
 		return p.from == jid;
 	}
 	

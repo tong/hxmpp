@@ -29,7 +29,7 @@ class FilterReverse {
 		this.filter = filter;
 	}
 	
-	public inline function accept( p : xmpp.Packet ) : Bool {
+	@:keep public inline function accept( p : xmpp.Packet ) : Bool {
 		return !filter.accept( p );
 	}
 	

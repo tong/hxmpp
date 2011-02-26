@@ -28,7 +28,7 @@ class MessageFilter {
 		this.type = type;
 	}
 	
-	public function accept( p : xmpp.Packet ) : Bool {
+	@:keep public function accept( p : xmpp.Packet ) : Bool {
 		if( p._type != xmpp.PacketType.message )
 			return false;
 		return ( type == null ) ? true : ( type == untyped p.type );

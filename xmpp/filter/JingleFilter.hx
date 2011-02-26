@@ -16,7 +16,7 @@ class JingleFilter extends IQFilter {
 		this.sid = sid;
 	}
 	
-	public override function accept( p : xmpp.Packet ) {
+	@:keep public override function accept( p : xmpp.Packet ) {
 		if( !super.accept( p ) )
 			return false;
 		var iq : xmpp.IQ = untyped p;

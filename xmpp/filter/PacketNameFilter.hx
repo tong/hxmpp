@@ -28,7 +28,7 @@ class PacketNameFilter {
 		this.expr = expr;
 	}
 	
-	public function accept( p : xmpp.Packet ) : Bool {
+	@:keep public function accept( p : xmpp.Packet ) : Bool {
 		/* hmm
 		if( p._type != xmpp.PacketType.custom ) 
 			return false;
