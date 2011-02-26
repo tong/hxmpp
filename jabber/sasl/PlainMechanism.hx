@@ -33,7 +33,7 @@ class PlainMechanism {
 		id = NAME;
 	}
 	
-	public function createAuthenticationText( username : String, host : String, password : String, resource : String ) : String {
+	@:keep public function createAuthenticationText( username : String, host : String, password : String, resource : String ) : String {
 		var b = new StringBuf();
 		b.add( String.fromCharCode( 0 ) );
 		b.add( username );

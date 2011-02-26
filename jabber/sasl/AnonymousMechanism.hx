@@ -37,7 +37,7 @@ class AnonymousMechanism {
 		this.challengeResponse = challengeResponse;
 	}
 	
-	public function createAuthenticationText( user : String, host : String, pass : String, resource : String ) : String {
+	@:keep public function createAuthenticationText( user : String, host : String, pass : String, resource : String ) : String {
 		return null; // Nothing to send in the <auth> body.
 	}
 	
