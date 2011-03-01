@@ -42,20 +42,12 @@ class PersonalEvent {
 		Returns a empty XML node for disabling the personal event.
 	*/
 	public function empty() : Xml {
-		var x = Xml.createElement( nodeName );
-		x.set( "xmlns", xmlns );
-		return x;
+		return IQ.createQueryXml( xmlns, nodeName );
 	}
 	
 	public function toXml() : Xml {
 		return throw new jabber.error.AbstractError();
 	}
-	
-	/*
-	public static function emptyXml() : Xml {
-		return null;
-	}
-	*/
 	
 	/*
 	public static function fromMessage( m : xmpp.Message ) : xmpp.pep.Event {

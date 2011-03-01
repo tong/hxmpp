@@ -72,15 +72,20 @@ class UserTune extends xmpp.PersonalEvent {
 	}
 	
 	public static function parse( x : Xml ) : UserTune  {
-		//TODO remove dependency of haxe.xml.Fast
-		var f = new haxe.xml.Fast( x );
-		return new UserTune( f.node.artist.innerData,
-							 Std.parseInt( f.node.length.innerData ),
-							 Std.parseInt( f.node.rating.innerData ),
-							 f.node.source.innerData,
-							 f.node.title.innerData,
-							 f.node.track.innerData,
-							 f.node.uri.innerData );
+		var t = new UserTune();
+		for( e in x.elements() ) {
+			var v = e.firstChild().nodeValue;
+			switch( e.nodeName ) {
+			case 'artist' : t.artist = v;
+			case 'length' : t.length = Std.parseInt(v);
+			case 'rating' : t.rating = Std.parseInt(v);
+			case 'source' : t.source = v;
+			case 'title' : t.title = v;
+			case 'track' : t.track = v;
+			case 'uri' : t.uri = v;
+			}
+		}
+		return t;
 	}
 	
 }

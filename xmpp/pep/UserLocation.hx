@@ -103,30 +103,33 @@ class UserLocation extends xmpp.PersonalEvent {
 	}
 	
 	public static function parse( x : Xml ) : UserLocation  {
-		//TODO remove dependency of haxe.xml.Fast
-		var f = new haxe.xml.Fast( x );
 		var l = new UserLocation();
-		if( f.hasNode.accuracy ) 	l.accuracy = Std.parseInt( f.node.accuracy.innerData );
-		if( f.hasNode.alt ) 		l.alt = Std.parseInt( f.node.alt.innerData );
-		if( f.hasNode.area ) 		l.area = f.node.area.innerData;
-		if( f.hasNode.bearing ) 	l.bearing = Std.parseInt( f.node.bearing.innerData );
-		if( f.hasNode.building ) 	l.building = f.node.building.innerData;
-		if( f.hasNode.country ) 	l.country = f.node.country.innerData;
-		if( f.hasNode.datum ) 		l.datum = f.node.datum.innerData;
-		if( f.hasNode.description ) l.description = f.node.description.innerData;
-		if( f.hasNode.error ) 		l.error = Std.parseInt( f.node.error.innerData );
-		if( f.hasNode.floor ) 		l.floor = f.node.floor.innerData;
-		if( f.hasNode.lat ) 		l.lat = Std.parseFloat( f.node.lat.innerData );
-		if( f.hasNode.locality ) 	l.locality = f.node.locality.innerData;
-		if( f.hasNode.lon ) 		l.lon = Std.parseFloat( f.node.lon.innerData );
-		if( f.hasNode.postalcode ) 	l.postalcode = f.node.postalcode.innerData;
-		if( f.hasNode.region ) 		l.region = f.node.region.innerData;
-		if( f.hasNode.room ) 		l.room = f.node.room.innerData;
-		if( f.hasNode.speed ) 		l.speed = Std.parseFloat( f.node.speed.innerData );
-		if( f.hasNode.street ) 		l.street = f.node.street.innerData;
-		if( f.hasNode.text ) 		l.text = f.node.text.innerData;
-		if( f.hasNode.timestamp ) 	l.timestamp = f.node.timestamp.innerData;
-		if( f.hasNode.uri ) 		l.uri = f.node.uri.innerData;
+		for( e in x.elements() ) {
+			var v = e.firstChild().nodeValue;
+			switch( e.nodeName ) {
+			case 'accuracy' : l.accuracy = Std.parseInt(v);
+			case 'alt' : l.alt = Std.parseInt(v);
+			case 'area' : l.area = v;
+			case 'bearing' : l.bearing = Std.parseInt(v);
+			case 'building' : l.building = v;
+			case 'country' : l.country = v;
+			case 'datum' : l.datum = v;
+			case 'description' : l.description = v;
+			case 'error' : l.error = Std.parseInt(v);
+			case 'floor' : l.floor = v;
+			case 'lat' : l.lat = Std.parseFloat(v);
+			case 'locality' : l.locality = v;
+			case 'lon' : l.lon = Std.parseFloat(v);
+			case 'postalcode' : l.postalcode = v;
+			case 'region' : l.region = v;
+			case 'room' : l.room = v;
+			case 'speed' : l.speed = Std.parseFloat(v);
+			case 'street' : l.street = v;
+			case 'text' : l.text = v;
+			case 'timestamp' : l.timestamp = v;
+			case 'uri' : l.uri = v;
+			}
+		}
 		return l;
 	}
 	
