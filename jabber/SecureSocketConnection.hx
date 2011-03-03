@@ -24,12 +24,15 @@ import neko.net.Host;
 import neko.tls.Socket;
 #elseif php
 import php.net.Host;
-import jabber.util.php.Socket;
+import php.net.Socket;
 #elseif cpp
 import cpp.net.Host;
 import cpp.net.Socket;
 #end
 
+/**
+	Legacy TLS socket connection (port 5223)
+*/
 class SecureSocketConnection extends jabber.stream.SocketConnection {
 		
 	public function new( host : String, port : Int = 5223, secure : Bool = true,
@@ -39,16 +42,10 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	public override function connect() {
-		socket = new Socket();
+		socket = #if php Socket.newSslSocket(); #else new Socket(); #end
 		buf = haxe.io.Bytes.alloc( bufSize );
 		bufbytes = 0;
-		try {
-			#if neko
-			socket.connect( new Host( host ), port );
-			#elseif php
-			socket.connect( new Host( host ), port );
-			#end
-		} catch( e : Dynamic ) {
+		try socket.connect( new Host( host ), port ) catch( e : Dynamic ) {
 			__onDisconnect( e );
 			return;
 		}
