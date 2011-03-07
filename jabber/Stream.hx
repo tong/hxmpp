@@ -117,7 +117,7 @@ class Stream {
 			setConnection( c );
 			 // re-open XMPP stream
 			#if JABBER_COMPONENT
-			trace("TODO");
+			//trace("TODO");
 			#else
 			open( jid );
 			#end
@@ -158,8 +158,8 @@ class Stream {
 	#end
 	
 	/**
-		Close the XMPP stream.
-		Passed argument indicates if the (TCP) connection to the server should also get closed.
+		Close the XMPP stream.<br/>
+		Passed argument indicates if the connection to the server should also get closed.
 	*/
 	public function close( ?disconnect = false ) {
 		if( status == Status.closed )
@@ -188,7 +188,7 @@ class Stream {
 	public function sendData( t : String ) : String {
 		if( !cnx.connected )
 			return null;
-		#if flash // haXe 2.06 fukup		
+		#if flash // TODO haXe 2.06 fukup		
 		t = StringTools.replace( t, "_xmlns_=", "xmlns=" );
 		#end
 		if( dataInterceptors.length > 0 ) {
@@ -447,7 +447,11 @@ class Stream {
 			trace( "Incoming '"+Type.enumConstructor( p._type )+"' packet not handled ( "+p.from+" -> "+p.to+" )", "warn" );
 			#end
 			if( p._type == xmpp.PacketType.iq ) { // 'feature not implemented' response
+				#if as3
+				var q : Dynamic = p;
+				#else
 				var q : xmpp.IQ = cast p;
+				#end
 				if( q.type != xmpp.IQType.error ) {
 					var r = new xmpp.IQ( xmpp.IQType.error, p.id, p.from, p.to );
 					r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );

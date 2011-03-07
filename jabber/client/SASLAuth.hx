@@ -50,12 +50,12 @@ class SASLAuth extends Authentication {
 	var c_success : PacketCollector;
 	
 	public function new( stream : Stream, mechanisms : Iterable<jabber.sasl.TMechanism> ) {
+		super( stream );
 		var x = stream.server.features.get( "mechanisms" );
 		if( x == null )
 			throw new jabber.error.Error( "Server does not support SASL" );
 		if( mechanisms == null || Lambda.count( mechanisms ) == 0 )
 			throw new jabber.error.Error( "Missing SASL mechanisms" );
-		super( stream );
 		this.serverMechanisms = xmpp.SASL.parseMechanisms( x );
 		this.mechanisms = new Array();
 		for( m in mechanisms )

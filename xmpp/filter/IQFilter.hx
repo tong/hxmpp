@@ -35,7 +35,11 @@ class IQFilter {
 	@:keep public function accept( p : xmpp.Packet ) : Bool {
 		if( !Type.enumEq( p._type, xmpp.PacketType.iq ) )
 			return false;
-		var iq : xmpp.IQ = untyped p;
+		#if as3
+		var iq : Dynamic = p;
+		#else
+		var iq : xmpp.IQ = cast p;
+		#end
 		if( type != null ) {
 			if( !Type.enumEq( type, iq.type ) )
 				return false;

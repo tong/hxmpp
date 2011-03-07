@@ -92,8 +92,8 @@ class Stream extends jabber.Stream {
 			}
 		}
 		var sfi = t.indexOf( "<stream:features>" );
-		var sf = t.substr( sfi );
 		if( sfi != -1 ) {
+			var sf = t.substr( sfi );
 			#if flash // TODO haxe 2.06 xml namespace fuckup
 			sf = StringTools.replace( sf, "stream:features", "stream_features" );
 			#end
