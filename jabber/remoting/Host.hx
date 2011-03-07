@@ -18,6 +18,7 @@
 package jabber.remoting;
 
 import haxe.remoting.Context;
+import jabber.stream.PacketCollector;
 
 /**
 	<a href="http://haxe.org/doc/remoting">http://haxe.org/doc/remoting</a><br/>
@@ -30,11 +31,17 @@ class Host {
 	public var ctx : Context;
 	public var stream(default,null) : jabber.Stream;
 	
+	var c : PacketCollector;
+	
 	public function new( stream : jabber.Stream, ctx : Context ) {
 		this.stream = stream;
 		this.ctx = ctx;
 		stream.features.add( xmpp.HXR.XMLNS );
-		stream.collect( [cast new xmpp.filter.IQFilter( xmpp.HXR.XMLNS, xmpp.IQType.get )], handleIQ, true );
+		c = stream.collect( [cast new xmpp.filter.IQFilter( xmpp.HXR.XMLNS, xmpp.IQType.get )], handleIQ, true );
+	}
+	
+	public function close() {
+		stream.removeCollector( c );
 	}
 	
 	function handleIQ( iq : xmpp.IQ ) {
