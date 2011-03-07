@@ -64,7 +64,11 @@ class IQ extends Packet {
 	*/
     @:keep public static function createQueryXml( ns : String, name : String = "query" ) : Xml {
 		var x = Xml.createElement( name );
-		x.set( "xmlns", ns );
+		#if flash
+		x.set( '_xmlns_', ns );
+		#else
+		x.set( 'xmlns', ns );
+		#end
 		return x;
 	}
 	

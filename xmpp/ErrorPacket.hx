@@ -47,7 +47,11 @@ class ErrorPacket {
 	function _toXml( p : String, ns: String ) : Xml {
 		var x = Xml.createElement( p );
 		var c = Xml.createElement( condition );
+		#if flash //TODO haxe2.06 fukup
+		c.set( "_xmlns_", ns );
+		#else
 		c.set( "xmlns", ns );
+		#end
 		x.addChild( c );
 		if( text != null ) {
 			var t = XMLUtil.createElement( "text", text );
