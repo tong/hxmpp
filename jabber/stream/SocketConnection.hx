@@ -80,7 +80,7 @@ class SocketConnection extends Connection {
 	var bufbytes : Int;
 	
 	#elseif nodejs
-	public var socket(default,null) : Socket;
+//	public var socket(default,null) : Socket;
 	
 	#elseif (air&&js)
 	public var socket(default,null) : air.Socket;

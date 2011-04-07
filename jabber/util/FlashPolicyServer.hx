@@ -51,13 +51,10 @@ private typedef AllowedDomain = {
 */
 class FlashPolicyServer {
 	
-	static function __init__() {
-		domains = new Array();
-	}
-	
 	public static inline var PORT = 843;
-	public static var domains(default,null) : Array<AllowedDomain>;
-	public static var allowAll : Bool = false;
+	
+	public static var domains = new Array<AllowedDomain>;
+	public static var allowAll = false;
 	
 	#if nodejs
 	static var s : js.Server;
@@ -95,10 +92,6 @@ class FlashPolicyServer {
 	
 	public static function stop() {
 		s.close();
-	}
-	
-	public static function clearDomains() {
-		domains = new Array();
 	}
 	
 	public static function getXml() : String {

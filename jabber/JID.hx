@@ -54,7 +54,7 @@ class JID {
 	
 	@:keep public function toString() : String {
 		var j = getBare();
-		return ( j == null ) ? null : ( resource == null ) ? j : j+="/"+resource;
+		return ( j == null ) ? null : ( resource == null ) ? j : j+"/"+resource;
 	}
 	
 }

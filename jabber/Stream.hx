@@ -21,12 +21,10 @@ import haxe.io.Bytes;
 import jabber.stream.Connection;
 import jabber.stream.TPacketInterceptor;
 import jabber.stream.PacketCollector;
-import jabber.stream.Status;
 import jabber.stream.TDataInterceptor;
 import jabber.stream.TDataFilter;
 import jabber.stream.Status;
 import jabber.util.Base64;
-import xmpp.XMLUtil;
 import xmpp.filter.PacketIDFilter;
 #if JABBER_COMPONENT
 import jabber.component.Stream;

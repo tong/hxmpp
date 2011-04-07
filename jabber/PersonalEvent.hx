@@ -23,8 +23,8 @@ package jabber;
 */
 class PersonalEvent {
 	
-	public dynamic function onPublish( i : xmpp.PersonalEvent ) : Void;
-	public dynamic function onDisable( i : xmpp.PersonalEvent ) : Void;
+	public dynamic function onPublish( e : xmpp.PersonalEvent ) : Void;
+	public dynamic function onDisable( e : xmpp.PersonalEvent ) : Void;
 	public dynamic function onError( e : XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
@@ -32,7 +32,6 @@ class PersonalEvent {
 	
 	public function new( stream : jabber.Stream ) {
 		this.stream = stream;
-		//TODO! add to stream features
 	}
 	
 	/**

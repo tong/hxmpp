@@ -19,8 +19,6 @@ package xmpp;
 
 /**
 	XMPP message packet.<br/>
-	Default type of message packets is 'normal' (if you set it to null),
-	but the class assigns 'chat' as default in the constructor.
 */
 class Message extends xmpp.Packet {
 	

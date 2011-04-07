@@ -30,7 +30,7 @@ private typedef Listener = {
 */
 class PersonalEventListener {
 	
-	/** Optional to collect ALL personal events */
+	/** Optional to collect ALL events */
 	//public dynamic function onEventMessage( m : xmpp.Message ) : Void;
 	
 	public var stream(default,null) : Stream;
@@ -38,22 +38,23 @@ class PersonalEventListener {
 	var listeners : List<Listener>;
 	
 	public function new( stream : Stream ) {
+		//TODO! add to stream features
 		this.stream = stream;
 		listeners = new List();
-		stream.collect( [ cast new xmpp.filter.MessageFilter( xmpp.MessageType.normal ), //TODO hm ?
-						  cast new xmpp.filter.PacketPropertyFilter( xmpp.PubSubEvent.XMLNS, "event" ) ],
-						  handlePersonalEvent, true );
+		stream.collect( [ cast new xmpp.filter.MessageFilter(),
+						  cast new xmpp.filter.PacketPropertyFilter( xmpp.PubSubEvent.XMLNS, 'event' ) ],
+						handlePersonalEvent, true );
 	}
 	
 	/**
 		Add listener for the given type.
 	*/
-	public function add( t : Class<xmpp.PersonalEvent>, handler : xmpp.Message->Xml->Void ) : Bool {
+	public function add( t : Class<xmpp.PersonalEvent>, h : xmpp.Message->Xml->Void ) : Bool {
 		var l = getListener( t );
 		if( l != null ) {
 			return false;
 		} else {
-			listeners.add( { xmlns : untyped t.XMLNS, handler : handler, type : t } );
+			listeners.add( { xmlns : untyped t.XMLNS, handler : h, type : t } );
 			return true;
 		}
 	}
@@ -102,6 +103,7 @@ class PersonalEventListener {
 			for( l in listeners )
 				if( /*l.nodeName == i.payload.nodeName &&*/ l.xmlns == i.payload.get( "xmlns" ) )
 					l.handler( m, i.payload );
+					
 	}
 	
 }

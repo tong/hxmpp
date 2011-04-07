@@ -24,7 +24,8 @@ class Info {
 	public var identities : Array<Identity>; 
 	public var features : Array<String>;
 	public var node : String;
-	public var x : Xml; // dataform
+	/** Dataform */
+	public var x : Xml;
 	
 	public function new( ?identities : Array<Identity>, ?features : Array<String>, ?node : String ) {
 		this.identities = ( identities == null ) ? new Array() : identities;

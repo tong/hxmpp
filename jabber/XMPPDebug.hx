@@ -52,9 +52,11 @@ class XMPPDebug {
 		//#if XMPP_CONSOLE
 		//trace(" XMPP_CONSOLE...........");
 		//#end
+		//TODO remove from __init__
 		
 		#if air
 		useConsole = false;
+		
 		#else
 		#if flash
 		useConsole = ( ExternalInterface.available &&
@@ -92,9 +94,9 @@ class XMPPDebug {
 	//	out ? XMPPConsole.o(t) : XMPPConsole.i(t); 
 		#else
 		#if (neko||cpp||php||nodejs||rhino)
-		_print( t, out ? color_out : color_inc );
+		__print( t, out ? color_out : color_inc );
 		#elseif (flash||js)
-		_print( t, out, level );
+		__print( t, out, level );
 		#end
 		#end
 	}
@@ -105,7 +107,7 @@ class XMPPDebug {
 	public static var color_out = 36;
 	public static var color_inc = 33;
 	
-	public static function _print( t : String, color : Int ) {
+	public static function __print( t : String, color : Int ) {
 		if( color == null ) {
 			#if rhino Lib._print( t );
 			#else Lib.print( t );
@@ -132,7 +134,7 @@ class XMPPDebug {
 	/** Indicates if the XMPP transfer should get printed to the browsers debug console */
 	public static var useConsole : Bool;
 	
-	public static function _print( t : String, out : Bool = true, level : String = "log" ) {
+	public static function __print( t : String, out : Bool = true, level : String = "log" ) {
 		var dir = out ? "=>" : "<=";
 		#if air
 		haxe.Log.trace( t, { className : "", methodName : "", fileName : "XMPP"+dir, lineNumber : t.length, customParams : [] } );

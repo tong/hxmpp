@@ -24,15 +24,15 @@ import xmpp.lop.SpawnVM;
 import xmpp.lop.Submit;
 
 /**
-	<a href="http://xmpp.org/extensions/inbox/lop.html">Linked Process Protocol</a><br/>
-	<a href="http://linkedprocess.org">Linked Process Website</a><br/>
 	Manages the spawning of virtual machines.<br/>
 	The disco 'identity' of a farm MUST be of category="client" and type="bot" (name is up to the implementation).<br/>
+	<a href="http://xmpp.org/extensions/inbox/lop.html">Linked Process Protocol</a><br/>
+	<a href="http://linkedprocess.org">Linked Process Website</a><br/>
 */
 class Farm {
 	
-	public dynamic function onJob( job : Submit ) : String { return throw new jabber.error.Error( "No LOP job handler specified" ); }
-	public dynamic function onKillVM( id : String ) : Void;
+	public dynamic function onJob( job : Submit ) : String { return throw new jabber.error.Error( "no LOP job handler specified" ); }
+	public dynamic function onVMKill( id : String ) : Void;
 	public dynamic function onPing( ping : Ping ) : String { return null; }
 	public dynamic function onSetBindings( bindings : Bindings ) : Void;
 	public dynamic function onGetBindings( bindings : Bindings ) : Bindings { return null; }
@@ -61,6 +61,7 @@ class Farm {
 						 vm_species : String = "unknown",
 						 vm_time_to_live : Float = 1.0,
 						 job_timeout : Float = 1.0 ) {
+		
 		this.stream = stream;
 		stream.features.add( xmpp.LOP.XMLNS );
 		this.password = password;
@@ -71,10 +72,10 @@ class Farm {
 		this.read_file = new Array();
 		this.write_file = new Array();
 		this.delete_file = new Array();
+		
 		//open_connection = listen_for_connection = accept_connection = perform_multicast = false;
 		species = new Hash();
-		stream.collect( [ cast new xmpp.filter.IQFilter( xmpp.LOP.XMLNS, null ) ], handleIQ, true );
-		
+		stream.collect( [ cast new xmpp.filter.IQFilter(xmpp.LOP.XMLNS,null) ], handleIQ, true );
 	}
 	
 	/**
@@ -161,13 +162,16 @@ class Farm {
 			
 		case "terminate_vm" :
 			//onKillVM( xmpp.lop.Terminate.parse( iq.x.toXml() ).vm_id );
-			onKillVM( iq.x.toXml().get( "vm_id" ) );
+			onVMKill( iq.x.toXml().get( "vm_id" ) );
 			var r = xmpp.IQ.createResult( iq );
 			r.x = iq.x;
 			stream.sendPacket( r );
 		}
 	}
 	
+	/**
+		Generate a dataform of this farms settings.
+	*/
 	public function getDataForm() : xmpp.DataForm {
 		var f = new xmpp.DataForm( xmpp.dataform.FormType.result ); //?
 		f.fields.push( createFormField( "farm_password", Std.string( password != null ), FieldType.boolean ) );

@@ -53,7 +53,6 @@ class SASL {
 		x.set( "xmlns", XMLNS );
 	#end
 		return x;
-		//return Xml.parse( '<response xmlns="'+XMLNS+'">'+t+'</response>' ).firstElement();
 	}
 	
 	/**

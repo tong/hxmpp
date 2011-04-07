@@ -42,12 +42,13 @@ class SocketConnection extends jabber.stream.SocketConnection {
 						 secure : Bool = #if (neko||cpp||air) false #else true #end,
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
+		
 		super( host, port, secure, bufSize, maxBufSize, timeout );
+		
 		#if (neko||cpp)
 		#if JABBER_DEBUG
 		if( secure ) {
-			trace( "StartTLS not implemented" );
-			trace( "Use jabber.SecureSocketConnection for legacy TLS on port 5223" );
+			trace( "StartTLS not implemented, use jabber.SecureSocketConnection for legacy TLS on port 5223", "warn" );
 			this.secure = false;
 		}
 		#end
@@ -303,6 +304,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	public override function connect() {
+		trace("connectconnectconnect "+host+":"+port );
 		buf = new air.ByteArray();
 		socket = new Socket();
 		socket.timeout = timeout*1000;
@@ -355,21 +357,25 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	function sockConnectHandler( e : Event ) {
+		trace(e);
 		connected = true;
 		__onConnect();
 	}
 	
 	function sockDisconnectHandler( e : Event ) {
+		trace(e);
 		connected = false;
 		__onDisconnect(null);
 	}
 	
 	function sockErrorHandler( e : Event ) {
+		trace(e);
 		connected = false;
 		__onDisconnect( e.type );
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
+		trace(e);
 		try socket.readBytes( buf, buf.length, e.bytesLoaded ) catch( e : Dynamic ) {
 			#if JABBER_DEBUG trace(e,'error');#end //?
 			return;
@@ -387,7 +393,11 @@ class SocketConnection extends jabber.stream.SocketConnection {
 
 import js.Node;
 
+private typedef Socket = Stream;
+
 class SocketConnection extends jabber.stream.SocketConnection {
+	
+	public var socket(default,null) : Socket;
 	
 	var buf : String;
 	
@@ -591,11 +601,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 			initialized = true;
 			cb(null);
 		}
-		if( delay > 0 ) haxe.Timer.delay( _init, delay );
-		else {
-			_init();
-			cb(null);
-		}
+		if( delay > 0 ) haxe.Timer.delay( _init, delay ) else _init();
 	}
 	
 	public static function createSocket( s : Socket, secure : Bool ) {

@@ -247,6 +247,7 @@ class BOSHConnection extends jabber.stream.Connection {
 		
 		#elseif js
 		var r = new haxe.Http( getHTTPPath() );
+		//r.setHeader( "Accept-Encoding", "gzip" );
 		//r.onStatus = handleHTTPStatus;
 		r.onError = handleHTTPError;
 		r.onData = handleHTTPData;
@@ -279,13 +280,12 @@ class BOSHConnection extends jabber.stream.Connection {
 		__onDisconnect( "BOSH timeout" );
 	}
 	
-	/*
 	function handleHTTPStatus( s : Int ) {
-		trace( "handleHTTPStatus "+s );
+		//trace( "handleHTTPStatus "+s );
 	}
-	*/
 	
 	function handleHTTPError( e : String ) {
+		trace(e);
 		cleanup();
 		__onDisconnect( e );
 	}

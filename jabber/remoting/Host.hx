@@ -25,7 +25,13 @@ import jabber.stream.PacketCollector;
 	haXe/XMPP remoting host.<br/>
 */
 class Host {
-
+	
+	static function __init__() {
+		numActive = 0;
+	}
+	
+	public static var numActive(default,null) : Int; 
+	
 	/** JID of current/last processed entity */
 	public var client(default,null) : String;
 	public var ctx : Context;
@@ -38,10 +44,14 @@ class Host {
 		this.ctx = ctx;
 		stream.features.add( xmpp.HXR.XMLNS );
 		c = stream.collect( [cast new xmpp.filter.IQFilter( xmpp.HXR.XMLNS, xmpp.IQType.get )], handleIQ, true );
+		numActive++;
 	}
 	
 	public function close() {
+		//TODO maybe other hosts are active (check in this class internal, statics)
 		stream.removeCollector( c );
+		if( --numActive == 0 )
+			stream.features.remove( xmpp.HXR.XMLNS );
 	}
 	
 	function handleIQ( iq : xmpp.IQ ) {
