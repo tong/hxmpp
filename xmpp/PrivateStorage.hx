@@ -17,6 +17,8 @@
 */
 package xmpp;
 
+using xmpp.XMLUtil;
+
 class PrivateStorage {
 	
 	public static var XMLNS = "jabber:iq:private";
@@ -34,7 +36,7 @@ class PrivateStorage {
 	public function toXml() : Xml {
 		var x = xmpp.IQ.createQueryXml( XMLNS );
 		var e = Xml.createElement( name );
-		e.set( "xmlns", namespace );
+		e.ns( namespace );
 		if( data != null ) e.addChild( data );
 		x.addChild( e );
 		return x;
@@ -42,7 +44,7 @@ class PrivateStorage {
 	
 	public static function parse( x : Xml ) : PrivateStorage {
 		var e = x.firstElement();
-		return new PrivateStorage( e.nodeName, e.get("xmlns" ), e.firstElement() );
+		return new PrivateStorage( e.nodeName, e.ns(), e.firstElement() );
 	}
 	
 }

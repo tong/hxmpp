@@ -18,6 +18,7 @@
 package xmpp.muc;
 
 import xmpp.XMLUtil;
+using xmpp.XMLUtil;
 
 class Decline {
 	
@@ -38,7 +39,7 @@ class Decline {
 		var x = Xml.createElement( nodeName );
 		if( to != null ) x.set( "to", to );
 		if( from != null ) x.set( "from", from );
-		if( reason != null ) x.addChild( XMLUtil.createElement( "reason", reason ) );
+		x.addField( this, "reason" );
 		return x;
 	}
 	

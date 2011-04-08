@@ -52,7 +52,7 @@ class IB {
 	public static function parse( x : Xml ) : IB {
 		var _type = Type.createEnum( IBType, x.nodeName );
 		var ib = new IB( _type, x.get( "sid" ), Std.parseInt( x.get( "block-size" ) ) );
-		if( _type == IBType.data ) {
+		if( Type.enumEq( _type, xmpp.file.IBType.data ) ) {
 			ib.data = x.firstChild().nodeValue;
 			ib.sid = x.get( "sid" );
 			ib.seq = Std.parseInt( x.get( "seq" ) );

@@ -17,6 +17,8 @@
 */
 package xmpp.lop;
 
+using xmpp.XMLUtil;
+
 class Ping {
 	
 	public var vm_id : String;
@@ -31,7 +33,7 @@ class Ping {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "spawn_vm" );
-		x.set( "xmlns", xmpp.LOP.XMLNS );
+		x.ns( xmpp.LOP.XMLNS );
 		if( vm_id != null ) x.set( "vm_id", vm_id );
 		if( job_id != null ) x.set( "job_id", job_id );
 		if( status != null ) x.set( "status", status );

@@ -17,6 +17,8 @@
 */
 package xmpp;
 
+using xmpp.XMLUtil;
+
 class Jingle {
 	
 	static var _XMLNS = "urn:xmpp:jingle:";
@@ -46,12 +48,7 @@ class Jingle {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "jingle" );
-		//TODO 2.06
-		#if flash
-		x.set( "_xmlns_", XMLNS );
-		#else
-		x.set( "xmlns", XMLNS );
-		#end
+		x.ns( XMLNS );
 		x.set( "action", StringTools.replace( Type.enumConstructor( action ), "_", "-" ) );
 		x.set( "initiator", initiator );
 		if( responder != null ) x.set( "responder", responder );

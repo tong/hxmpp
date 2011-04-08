@@ -17,6 +17,8 @@
 */
 package xmpp.lop;
 
+using xmpp.XMLUtil;
+
 class Terminate {
 	
 	public var vm_id : String;
@@ -27,7 +29,7 @@ class Terminate {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "terminate_vm" );
-		x.set( "xmlns", xmpp.LOP.XMLNS );
+		x.ns( xmpp.LOP.XMLNS );
 		if( vm_id != null ) x.set( "vm_id", vm_id );
 		return x;
 	}

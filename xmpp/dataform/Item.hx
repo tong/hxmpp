@@ -29,14 +29,13 @@ class Item {
 		return createXml( "item" );
 	}
 	
-	inline function createXml( n : String ) : Xml {
+	function createXml( n : String ) : Xml {
 		var x = Xml.createElement( n );
-		for( f in fields )
-			x.addChild( f.toXml() );
+		for( f in fields ) x.addChild( f.toXml() );
 		return x;
 	}
 	
-	public static function parse( x : Xml ) : Item {
+	public static inline function parse( x : Xml ) : Item {
 		return cast Field.parseFields( new Item(), x );
 	}
 	

@@ -17,6 +17,8 @@
 */
 package xmpp.lop;
 
+using xmpp.XMLUtil;
+
 class Bindings extends List<Binding> {
 
 	public var vm_id : String;
@@ -28,7 +30,7 @@ class Bindings extends List<Binding> {
 
 	public function toXml() : Xml {
 		var x = Xml.createElement( "manage_bindings" );
-		x.set( "xmlns", xmpp.LOP.XMLNS );
+		x.ns( xmpp.LOP.XMLNS );
 		x.set( "vm_id", vm_id );
 		for( b in iterator() ) {
 			var e = Xml.createElement( "binding" );

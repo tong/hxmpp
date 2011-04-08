@@ -32,8 +32,7 @@ class PubSubOwner {
 	public function new() {}
 	
 	public function toXml() {
-		var x = Xml.createElement( "pubsub" );
-		x.set( "xmlns", XMLNS );
+		var x = IQ.createQueryXml( XMLNS, "pubsub" );
 		if( delete != null ) {
 			var e = Xml.createElement( "delete" );
 			if( delete != "" ) e.set( "node", delete );

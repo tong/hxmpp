@@ -17,6 +17,8 @@
 */
 package xmpp;
 
+using xmpp.XMLUtil;
+
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
 */
@@ -28,11 +30,7 @@ class Compression {
 	*/
 	public static function createXml( methods : Iterable<String> ) : Xml {
 		var x = Xml.createElement( "compress" );
-		#if flash //TODO 2.06
-		x.set( "_xmlns_", XMLNS );
-		#else
-		x.set( "xmlns", XMLNS );
-		#end
+		x.ns( XMLNS );
 		for( m in methods )
 			x.addChild( XMLUtil.createElement( "method", m ) );
 		return x;

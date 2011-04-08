@@ -17,6 +17,8 @@
 */
 package xmpp.lop;
 
+using xmpp.XMLUtil;
+
 class SpawnVM {
 	
 	public var species : String;
@@ -31,7 +33,7 @@ class SpawnVM {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "spawn_vm" );
-		x.set( "xmlns", xmpp.LOP.XMLNS );
+		x.ns( xmpp.LOP.XMLNS );
 		if( species != null ) x.set( "vm_species", species );
 		if( id != null ) x.set( "vm_id", id );
 		if( password != null ) x.set( "farm_password", password );

@@ -17,6 +17,8 @@
 */
 package xmpp;
 
+using xmpp.XMLUtil;
+
 private typedef Conference = {
 	var jid : String;
 	var name : String;
@@ -50,7 +52,7 @@ class Bookmark {
 			e.set( 'jid', c.jid );
 			if( c.name != null ) e.set( 'name', c.name );
 			if( c.autojoin != null ) e.set( 'autojoin', Std.string( c.autojoin ) );	
-			if( c.nick != null ) e.addChild( XMLUtil.createElement( 'nick', c.nick ) );
+			e.addField( c, 'nick' );
 			if( c.password != null ) e.addChild( XMLUtil.createElement( 'password', c.password ) );
 			x.addChild(e);
 		}

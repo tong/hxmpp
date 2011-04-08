@@ -18,6 +18,7 @@
 package xmpp.muc;
 
 import xmpp.XMLUtil;
+using xmpp.XMLUtil;
 
 class Destroy {
 	
@@ -32,7 +33,7 @@ class Destroy {
 	public function toXml() : Xml {
 		var x = Xml.createElement( "destroy" );
 		if( jid != null ) x.set( "jid", jid );
-		if( reason != null ) x.addChild( XMLUtil.createElement( "reason", reason ) );
+		x.addField( this, "reason" );
 		return x;
 	}
 	

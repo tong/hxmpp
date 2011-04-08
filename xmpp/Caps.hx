@@ -19,6 +19,7 @@ package xmpp;
 
 import jabber.util.Base64;
 import jabber.util.SHA1;
+using xmpp.XMLUtil;
 
 /**
 	<a href="http://xmpp.org/extensions/xep-0115.html">XEP-0085: Entity Capabilities</a><br/>
@@ -58,7 +59,7 @@ class Caps {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "c" );
-		x.set( "xmlns", XMLNS );
+		x.ns( XMLNS );
 		x.set( "hash", hash );
 		x.set( "node", node );
 		x.set( "ver", ver );

@@ -17,6 +17,8 @@
 */
 package xmpp;
 
+using xmpp.XMLUtil;
+
 class UserSearch {
 	
 	public static var XMLNS = "jabber:iq:search";
@@ -35,11 +37,11 @@ class UserSearch {
 	
 	public function toXml() : Xml {
 		var x = IQ.createQueryXml( XMLNS );
-		if( instructions != null ) x.addChild( XMLUtil.createElement( "instructions", instructions ) );
-		if( first != null ) x.addChild( XMLUtil.createElement( "first", first ) );
-		if( last != null ) x.addChild( XMLUtil.createElement( "last", last ) );
-		if( nick != null ) x.addChild( XMLUtil.createElement( "nick", nick ) );
-		if( email != null ) x.addChild( XMLUtil.createElement( "email", email ) );
+		x.addField( this, 'instructions' );
+		x.addField( this, 'first' );
+		x.addField( this, 'last' );
+		x.addField( this, 'nick' );
+		x.addField( this, 'email' );
 		for( i in items ) {
 			var e = Xml.createElement( "item" );
 			e.set( "jid", i.jid );

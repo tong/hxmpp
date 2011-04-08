@@ -17,13 +17,15 @@
 */
 package xmpp;
 
+using xmpp.XMLUtil;
+
 /**
 	IQ extension used to bind a resource to a stream.<br/>
 	<a href="http://xmpp.org/rfcs/rfc3920.html#bind">RFC3920#bind</a>
 */
 class Bind {
 	
-	public static var XMLNS = "urn:ietf:params:xml:ns:xmpp-bind";
+	public static var XMLNS = 'urn:ietf:params:xml:ns:xmpp-bind';
 	
 	public var resource : String;
 	public var jid : String;
@@ -34,14 +36,19 @@ class Bind {
 	}
 	
 	public function toXml() : Xml {
-		var x = Xml.createElement( "bind" );
-	#if flash // TODO haXe 2.06 fukup
+		var x = Xml.createElement( 'bind' );
+		/* 
+#if flash // TODO haXe 2.06 fukup
 		x.set( "_xmlns_", XMLNS );
-	#else
+#else
 		x.set( "xmlns", XMLNS );
-	#end
-		if( resource != null ) x.addChild( XMLUtil.createElement( "resource", resource ) );
-		if( jid != null ) x.addChild( XMLUtil.createElement( "jid", jid ) );
+#end
+	*/
+		//if( resource != null ) x.addChild( XMLUtil.createElement( "resource", resource ) );
+		//if( jid != null ) x.addChild( XMLUtil.createElement( "jid", jid ) );
+		x.ns( XMLNS );
+		x.addField( this, 'jid' );
+		x.addField( this, 'resource' );
 		return x;
 	}
 	

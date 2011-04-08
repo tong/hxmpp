@@ -17,11 +17,13 @@
 */
 package xmpp;
 
+using xmpp.XMLUtil;
+
 class X {
 	
-	public static function create( xmlns : String, ?childs : Iterable<Xml> ) : Xml {
+	public static function create( ns : String, ?childs : Iterable<Xml> ) : Xml {
 		var x = Xml.createElement( "x" );
-		x.set( "xmlns", xmlns );
+		x.set( ns );
 		if( childs != null ) 
 			for( c in childs )
 				x.addChild( c );

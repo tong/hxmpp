@@ -86,6 +86,12 @@ class XMLUtil {
 	}
 	
 	/*
+	public static function setField( x : Xml, n : String, v : String ) : String {
+		
+	}
+	*/
+	
+	/*
 	public static function reflectElementValues<T>( x : Xml, o : T ) : T {
 		for( e in x.elements() ) {
 			

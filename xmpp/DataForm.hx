@@ -18,6 +18,7 @@
 package xmpp;
 
 import xmpp.dataform.FormType;
+using xmpp.XMLUtil;
 
 /**
 	DataForm packet extension (for IQ and message packets).
@@ -42,10 +43,10 @@ class DataForm {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "x" );
-		x.set( "xmlns", XMLNS );
+		x.ns( XMLNS );
 		if( type != null ) x.set( "type", Type.enumConstructor( type ) );
-		if( title != null ) x.addChild( XMLUtil.createElement( "title", title ) );
-		if( instructions != null ) x.addChild( XMLUtil.createElement( "instructions", instructions ) );
+		x.addField( this, 'title' );
+		x.addField( this, 'instructions' );
 		for( f in fields ) x.addChild( f.toXml() );
 		if( reported != null ) x.addChild( reported.toXml() );
 		for( i in items ) x.addChild( i.toXml() ); 

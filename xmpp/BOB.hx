@@ -17,12 +17,14 @@
 */
 package xmpp;
 
+using xmpp.XMLUtil;
+
 /**
 	<a href="http://xmpp.org/extensions/xep-0231.html">XEP-0231: Bits of Binary</a><br/>
 */
 class BOB {
 	
-	public static var XMLNS = "urn:xmpp:bob";
+	public static var XMLNS = 'urn:xmpp:bob';
 	
 	/** Content ID */
 	public var cid : String;
@@ -42,7 +44,7 @@ class BOB {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "data" );
-		x.set( "xmlns", XMLNS );
+		x.ns( XMLNS );
 		x.set( "cid", cid );
 		x.set( "type", type );
 		if( max_age >= 0 ) x.set( "max-age", Std.string( max_age ) );

@@ -27,7 +27,7 @@ class Reported extends Item {
 		return createXml( "reported" );
 	}
 	
-	public static function parse( x : Xml ) : Reported {
+	public static inline function parse( x : Xml ) : Reported {
 		return cast Field.parseFields( new Reported(), x );
 	}
 	

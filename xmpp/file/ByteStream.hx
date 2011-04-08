@@ -17,6 +17,8 @@
 */
 package xmpp.file;
 
+using xmpp.XMLUtil;
+
 class ByteStream {
 	
 	public static var XMLNS = xmpp.Packet.PROTOCOL+"/bytestreams";
@@ -44,7 +46,7 @@ class ByteStream {
 			x.addChild( e );
 		}
 		if( mode != null ) x.set( "mode", Type.enumConstructor( mode ) );
-		if( activate != null ) x.addChild( xmpp.XMLUtil.createElement( "activate", activate ) );
+		x.addField( this, 'activate' );
 		return x;
 	}
 	

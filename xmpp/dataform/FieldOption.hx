@@ -17,7 +17,7 @@
 */
 package xmpp.dataform;
 
-import xmpp.XMLUtil;
+using xmpp.XMLUtil;
 
 class FieldOption {
 	
@@ -31,14 +31,15 @@ class FieldOption {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "option" );
-		if( label != null ) x.set( "label", label );
-		if( value != null ) x.addChild( XMLUtil.createElement( "value", value ) );
+		x.addField( this, "label" );
+		x.addField( this, "value" );
 		return x;
 	}
 	
 	public static function parse( x : Xml ) : FieldOption {
-		var option = new FieldOption( x.get( "label" ) );
-		option.value = x.elements().next().firstChild().nodeValue;
-		return option;
+		var o = new FieldOption( x.get( "label" ), x.elements().next().firstChild().nodeValue );
+		o.value = x.elements().next().firstChild().nodeValue;
+		return o;
 	}
+	
 }

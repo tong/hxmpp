@@ -17,6 +17,8 @@
 */
 package xmpp.lop;
 
+using xmpp.XMLUtil;
+
 class Submit {
 	
 	public var id : String; // vm id
@@ -29,7 +31,7 @@ class Submit {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "submit_job" );
-		x.set( "xmlns", xmpp.LOP.XMLNS );
+		x.ns( xmpp.LOP.XMLNS );
 		x.set( "vm_id", id );
 		if( code != null ) x.addChild( Xml.createPCData( code ) );
 		return x;

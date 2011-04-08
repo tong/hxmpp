@@ -17,6 +17,8 @@
 */
 package xmpp;
 
+using xmpp.XMLUtil;
+
 typedef PacketDelay = {
 	
 	/**
@@ -55,7 +57,7 @@ class Delayed {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "delay" );
-		x.set( "xmlns", XMLNS );
+		x.ns( XMLNS );
 		x.set( "from", from );
 		x.set( "stamp", stamp );
 		if( description != null ) x.set( "description", description );

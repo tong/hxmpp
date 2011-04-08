@@ -17,6 +17,8 @@
 */
 package xmpp;
 
+using xmpp.XMLUtil;
+
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0202.html">XEP 202 - EntityTime</a>
 */
@@ -56,7 +58,7 @@ class EntityTime {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "time" );
-		x.set( "xmlns", XMLNS );
+		x.ns( XMLNS );
 		if( utc != null ) x.addChild( XMLUtil.createElement( "utc", utc ) );
 		if( tzo != null ) x.addChild( XMLUtil.createElement( "tzo", tzo ) );
 		return x;

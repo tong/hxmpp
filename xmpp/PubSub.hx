@@ -17,6 +17,8 @@
 */
 package xmpp;
 
+using xmpp.XMLUtil;
+
 class PubSub {
 	
 	public static var XMLNS = xmpp.Packet.PROTOCOL+"/pubsub";
@@ -37,8 +39,7 @@ class PubSub {
 	public function new() {}
 	
 	public function toXml() : Xml {
-		var x = Xml.createElement( "pubsub" );
-		x.set( "xmlns", XMLNS );
+		var x = IQ.createQueryXml( XMLNS, "pubsub" );
 		var c =	if( subscribe != null ) {
 			var e = Xml.createElement( "subscribe" );
 			e.set( "jid", subscribe.jid );

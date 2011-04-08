@@ -30,8 +30,7 @@ class PubSubEvent {
 	public function new() {}
 	
 	public function toXml() : Xml {
-		var x = Xml.createElement( "event" );
-		x.set( "xmlns", XMLNS );
+		var x = IQ.createQueryXml( XMLNS, "event" );
 		if( items != null ) {
 			x.addChild( items.toXml() );
 			return x;

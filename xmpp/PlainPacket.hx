@@ -33,7 +33,7 @@ class PlainPacket extends Packet {
 		this.src = src;
 	}
 	
-	public override function toXml() : Xml {
+	public override inline function toXml() : Xml {
 		return src;
 	}
 	
