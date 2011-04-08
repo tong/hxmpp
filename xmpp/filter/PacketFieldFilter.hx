@@ -32,12 +32,19 @@ class PacketFieldFilter {
 	}
 	
 	@:keep public function accept( p : xmpp.Packet ) : Bool {
-		if( !Reflect.hasField( p, name ) ) return false;
+		/* hmmm cpp bug
+		if( !Reflect.hasField( p, name ) )
+			return false;
+		*/
+		var v = Reflect.field( p, name );
+		if( v == null )
+			return false;
+			
 		/*
 		if( value == null ) return true;
 		return Reflect.field( p, name ) == value;
 		*/
-		return ( value == null ) ? true : ( Reflect.field( p, name ) == value );
+		return ( value == null ) ? true : ( v == value );
 	}
 	
 }
