@@ -57,6 +57,8 @@ class Base64 {
 		#elseif nodejs
 		return Node.newBuffer(t).toString( Node.BASE64 );
 		#else
+		if( t == "" ) // HACK for cpp
+			return "";
 		return fillNullbits( bc.encodeString( t ) );
 		#end
 	}
