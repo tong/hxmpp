@@ -23,7 +23,7 @@ class X {
 	
 	public static function create( ns : String, ?childs : Iterable<Xml> ) : Xml {
 		var x = Xml.createElement( "x" );
-		x.set( ns );
+		x.ns( ns );
 		if( childs != null ) 
 			for( c in childs )
 				x.addChild( c );
