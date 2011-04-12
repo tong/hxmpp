@@ -27,82 +27,71 @@ import jabber.util.Timer;
 */
 class Ping {
 	
+	/** Informational callback that we recieved a pong for the ping */
 	public dynamic function onPong( jid : String ) : Void;
 	public dynamic function onTimeout( jid : String ) : Void;
 	public dynamic function onError( e : XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
+	/** Indicates if this instance is currently sending pings in intervals */
 	public var active(default,null) : Bool;
+	/** JID of the target entity sending pings to */
 	public var target : String;
 	/** Ping interval in ms */
-	public var interval(default,setInterval) : Int;
+	public var ms(default,setInterval) : Int;
 	
 	var iq : xmpp.IQ;
 	var timer : Timer;
 	var pending : Bool;
 	
-	public function new( stream : Stream, ?target : String ) {
+	public function new( stream : Stream, ?target : String, ?ms : Int = 30000 ) {
 		this.stream = stream;
 		this.target = target;
-		active = false;
-		iq = new xmpp.IQ( null, null, null, stream.jid.toString() );
-		iq.properties.push( xmpp.Ping.xml );
+		this.ms = ms;
 	}
 	
 	function setInterval( i : Int ) : Int  {
 		if( i < 1 )
-			return throw new jabber.error.Error( "invalid ping time interval ["+i+"]" );
-		return interval = i;
+			return throw new jabber.error.Error( "invalid ping interval ["+i+"]" );
+		return ms = i;
 	}
 	
-	public function run( interval : Int = 30000 ) {
-		if( active ) {
-			#if JABER_DEBUG trace( "ping is already active", "warn" ); #end
-			return;
-		}
-		this.interval = interval;
-		active = true;
-		send( target );
+	public function run( ?ms : Int ) {
+		if( target == null )
+			throw 'no ping target specified';
+		if( active ) stop();
+		if( ms != null ) this.ms = ms;
+		iq = new xmpp.IQ( null, null, null, stream.jid.toString() );
+		iq.properties.push( xmpp.Ping.xml );
+		sendPingIQ( target );
 	}
 	
 	public function stop() {
-		if( !active ) {
-			#if JABER_DEBUG trace( "cannot stop ping, not active", "warn" ); #end
-			return;
-		}
 		timer.stop();
-		active = false;
+		iq = null;
 	}
 	
-	function send( to : String = null ) {
+	function sendPingIQ( to : String = null ) {
 		iq.to = to;
+		iq.id = stream.nextID();
 		stream.sendIQ( iq, handlePong );
 		pending = true;
-		timer = new Timer( interval );
-		timer.run = handleTimer;
+		timer = new Timer( ms );
+		timer.run = handleTimeout;
 	}
 	
 	function handlePong( iq : xmpp.IQ ) {
-		timer.stop();
 		pending = false;
-		onPong( iq.from );
-		timer = new Timer( interval );
-		timer.run = handleTimer;
 	}
 	
-	function handleTimer() {
+	function handleTimeout() {
 		timer.stop();
 		timer = null;
-		switch( iq.type ) {
-		case result :
-			if( pending ) {
-				onTimeout( target );
-			} else send( target );
-		case error :
-			onError( new XMPPError( iq ) );
-		default :
+		if( pending ) {
+			onTimeout( target );
+		} else {
+			sendPingIQ( target );
 		}
-		
 	}
 	
 }
