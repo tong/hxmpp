@@ -17,11 +17,14 @@
 */
 package jabber;
 
+#if php #error
+#else
+
 import jabber.util.Timer;
 
 /**
-	<a href="http://www.xmpp.org/extensions/xep-0199.html">XEP 199 - XMPP Ping</a><br/>
 	<p>flash,js,neko</p>
+	<a href="http://www.xmpp.org/extensions/xep-0199.html">XEP 199 - XMPP Ping</a><br/>
 	Sends application-level pings over XML streams.<br/>
 	Such pings can be sent from a client to a server, from one server to another, or end-to-end.<br/>
 */
@@ -33,9 +36,9 @@ class Ping {
 	public dynamic function onError( e : XMPPError ) : Void;
 	
 	public var stream(default,null) : Stream;
-	/** Indicates if this instance is currently sending pings in intervals */
+	/** Indicates if this instance is currently sending pings */
 	public var active(default,null) : Bool;
-	/** JID of the target entity sending pings to */
+	/** JID of the target entity (server if null) */
 	public var target : String;
 	/** Ping interval in ms */
 	public var ms(default,setInterval) : Int;
@@ -79,7 +82,11 @@ class Ping {
 	}
 	
 	function handlePong( iq : xmpp.IQ ) {
-		pending = false;
+		if( Type.enumEq( iq.type, xmpp.IQType.result ) )
+			pending = false;
+		else {
+			//TODO
+		}
 	}
 	
 	function handleTimeout() {
@@ -93,3 +100,5 @@ class Ping {
 	}
 	
 }
+
+#end
