@@ -57,8 +57,6 @@ class Ping {
 	}
 	
 	public function run( ?ms : Int ) {
-		if( target == null )
-			throw 'no ping target specified';
 		if( active ) stop();
 		if( ms != null ) this.ms = ms;
 		iq = new xmpp.IQ( null, null, null, stream.jid.toString() );
