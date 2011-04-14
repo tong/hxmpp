@@ -33,7 +33,7 @@ class Authentication {
 	}
 	
 	public function authenticate( password : String, ?resource : String ) : Bool {
-		return #if JABBER_DEBUG throw 'abstract method' #else null #end;
+		return #if JABBER_DEBUG throw 'abstract method' #else false #end;
 	}
 	
 }

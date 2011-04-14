@@ -43,15 +43,14 @@ class Connection {
 	public var secure(default,null) : Bool;
 	/** Indicates if TLS is negotiation is complete and data transfered is encrypted */
 	public var secured(default,null) : Bool;
-	/** Indicates if this streams data connection is a HTTP (BOSH) connection (default is false) */
+	/** Indicates if this data connection is a HTTP (BOSH) connection (default is false) */
 	public var http(default,null) : Bool;
 	
 	function new( host : String, secure : Bool, http : Bool = false ) {
 		this.host = host;
 		this.secure = secure;
 		this.http = http;
-		connected = false;
-		secured = false;
+		connected = secured = false;
 	}
 	
 	function setHost( t : String ) : String {
@@ -62,12 +61,12 @@ class Connection {
 	
 	/** */
 	public function connect() {
-		throw 'abstract method';
+		#if JABBER_DEBUG trace( 'abstract method', 'warn' ); #end
 	}
 	
 	/** */
 	public function disconnect() {
-		throw 'abstract method';
+		#if JABBER_DEBUG trace( 'abstract method', 'warn' ); #end
 	}
 	
 	/** */
@@ -79,22 +78,24 @@ class Connection {
 	
 	/** Starts/Stops reading data input, returns true if successfully started */
 	public function read( ?yes : Bool = true ) : Bool {
-		return throw 'abstract method';
+		#if JABBER_DEBUG trace( 'abstract method', 'warn' ); #end
+		return false;
 	}
 	
 	/** Sends a string, returns true on succeess */
 	public function write( t : String ) : Bool {
-		return throw 'abstract method';
+		#if JABBER_DEBUG trace( 'abstract method', 'warn' ); #end
+		return false;
 	}
 	
 	/** Send raw bytes */
 	public function writeBytes( t : Bytes ) : Bool {
-		return throw 'abstract method';
+		#if JABBER_DEBUG trace( 'abstract method', 'warn' ); #end
+		return false;
 	}
 	
 	/***/
 	@:keep public function reset() {
-		//#if JABBER_DEBUG trace("Not implemented"); #end
 	}
 	
 }
