@@ -79,7 +79,6 @@ class Stream {
 	public var server(default,null) : Server;
 	public var id(default,null) : String;
 	public var lang(default,null) : String;
-	public var version : Bool;
 	public var dataFilters(default,null) : Array<TDataFilter>;
 	public var dataInterceptors(default,null) : Array<TDataInterceptor>;
 	
@@ -92,7 +91,6 @@ class Stream {
 		status = Status.closed;
 		server = { features : new Hash() };
 		features = new StreamFeatures();
-		version = true;
 		collectors_id = new Array();
 		collectors = new Array();
 		interceptors = new Array();
@@ -465,12 +463,12 @@ class Stream {
 	}
 	
 	function handleConnect() {
-		trace("handleConnect");
+		#if JABBER_DEBUG trace( 'Connection connected', 'info' ); #end
 	}
 
-	function handleDisconnect(e:String) {
-		//TODO cleanup
-		onClose(e);
+	function handleDisconnect( e : String ) {
+		//TODO cleanup here
+		onClose( e );
 	}
 	
 	/*

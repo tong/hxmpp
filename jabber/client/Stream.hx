@@ -32,10 +32,12 @@ class Stream extends jabber.Stream {
 	public static var defaultPort = PORT_STANDARD;
 	public static var defaultPortSecure = PORT_STANDARD_SECURE;
 	
-	public function new( cnx : Connection, ?version : Bool = true ) {
+	var version : Bool;
+	
+	public function new( cnx : Connection ) {
 		super( cnx );
 		this.jid = jid;
-		this.version = version;
+		version = true;
 	}
 	
 	override function handleConnect() {
