@@ -76,7 +76,7 @@ class IQ extends Packet {
 		Creates a result type IQ from the given request.
 	*/
 	public static inline function createResult( iq : IQ ) : IQ {
-		return new IQ( IQType.result, iq.id, iq.from );
+		return new IQ( IQType.result, iq.id, iq.from, iq.to );
 	}
 	
 	/**

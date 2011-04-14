@@ -29,15 +29,13 @@ class Subscriptions extends List<Subscription> {
 	public function toXml() {
 		var x = Xml.createElement( "subscriptions" );
 		if( node != null ) x.set( "node", node );
-		for( s in iterator() )
-			x.addChild( s.toXml() );
+		for( s in iterator() ) x.addChild( s.toXml() );
 		return x;
 	}
 	
 	public static function parse( x : Xml ) : Subscriptions {
 		var s = new Subscriptions( x.get( "node" ) );
-		for( e in x.elementsNamed( "subscription" ) )
-			s.add( Subscription.parse( e ) );
+		for( e in x.elementsNamed( "subscription" ) ) s.add( Subscription.parse( e ) );
 		return s;
 	}
 	

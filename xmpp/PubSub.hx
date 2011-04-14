@@ -54,9 +54,9 @@ class PubSub {
 		} else if( create != null ) {
 			var e = Xml.createElement( "create" );
 			e.set( "node", create );
-			var conf = Xml.createElement( "configure" );
-			if( configure != null ) conf.addChild( configure.toXml() );
-			e.addChild( conf );
+//			var conf = Xml.createElement( "configure" );
+//			if( configure != null ) conf.addChild( configure.toXml() );
+//			e.addChild( conf );
 			e;
 		} else if( subscription != null ) {
 			subscription.toXml();
@@ -75,6 +75,11 @@ class PubSub {
 			x.addChild( options.toXml() );
 		if( c != null )
 			x.addChild( c );
+		if( configure != null ) {	
+			var c = Xml.createElement( "configure" );
+			c.addChild( configure.toXml() );
+			x.addChild( c );
+		}
 		return x;
 	}
 	

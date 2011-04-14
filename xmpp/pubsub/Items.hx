@@ -41,10 +41,23 @@ class Items extends List<Item> {
 	}
 	
 	public static function parse( x : Xml ) : Items {
-		var maxItems = x.get( "maxItems" );
-		var i = new Items( x.get( "node" ), x.get( "subid" ), if( maxItems != null ) Std.parseInt( maxItems ) );
-		for( e in x.elementsNamed( "item" ) )
+		var max = x.get( "maxItems" );
+		var i = new Items( x.get( "node" ), x.get( "subid" ),
+						   if( max != null ) Std.parseInt( max ) );
+		/* 
+		for( e in x.elementsNamed( "item" ) ) {
 			i.add( Item.parse( e ) );
+		}
+		*/
+		//TODO correct ? testit
+		for( e in x.elements() ) {
+			switch( e.nodeName ) {
+			case 'items' :
+				for( e in e.elements() ) {
+					i.add( Item.parse( e ) );
+				}
+			}
+		}
 		return i;
 	}
 	

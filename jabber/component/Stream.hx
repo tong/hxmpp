@@ -67,7 +67,8 @@ class Stream extends jabber.Stream {
 	
 	/**
 	*/
-	public override function open( host : String, subdomain : String, secret : String, ?identities : Array<xmpp.disco.Identity> ) {
+	public override function open( host : String, subdomain : String, secret : String,
+								   ?identities : Array<xmpp.disco.Identity> ) {
 		if( cnx == null )
 			throw new jabber.error.Error( "no stream connection set" );
 		if( subdomain == null || subdomain == "" )

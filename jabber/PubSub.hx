@@ -21,8 +21,7 @@ import xmpp.IQ;
 import xmpp.IQType;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a><br/>
-	PubSub client.
+	PubSub client <a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a><br/>
 */
 class PubSub {
 	
@@ -32,9 +31,8 @@ class PubSub {
 	public dynamic function onNodeDelete( node : String ) : Void;
 	public dynamic function onSubscribe( a : xmpp.pubsub.Subscription ) : Void;
 	public dynamic function onUnsubscribe( node : String ) : Void;
-	public dynamic function onSubscriptions( a : xmpp.pubsub.Subscriptions ) : Void;
+	public dynamic function onSubscriptions( subs : xmpp.pubsub.Subscriptions ) : Void;
 	public dynamic function onPublish( node : String, item : xmpp.pubsub.Item ) : Void;
-	//public dynamic function onItems( node : String, items : xmpp.pubsub.Items ) : Void;
 	public dynamic function onItems( items : xmpp.pubsub.Items ) : Void;
 	public dynamic function onAffiliations( a : xmpp.pubsub.Affiliations ) : Void;
 	public dynamic function onRetract( r : xmpp.pubsub.Retract ) : Void;
@@ -44,7 +42,9 @@ class PubSub {
 	public var service(default,null) : String;
 	public var stream(default,null) : Stream;
 	
-	//var disco : ServiceDicovery; //TODO add disco funtions related to pubsub to this client. (an entity which supports pubsub ;UST support servicedisco anyway)
+	//TODO add disco funtions related to pubsub to this client
+	// (an entity which supports pubsub MUST support disco anyway)
+	//var disco : ServiceDicovery;
 	
 	public function new( stream : Stream, service : String ) {
 		this.stream = stream;
@@ -52,7 +52,7 @@ class PubSub {
 	}
 	
 	/**
-		Create a pubsub node with the given name.
+		Create a pubsub node with the given name (<a href="http://xmpp.org/extensions/xep-0060.html#owner-create">XEP</a>).
 	*/
 	public function createNode( name : String, ?config : xmpp.DataForm ) : IQ {
 		var iq = new IQ( IQType.set );
@@ -66,7 +66,7 @@ class PubSub {
 	}
 	
 	/**
-		Delete pubsub node with the given name.
+		Delete pubsub node with the given name (<a href="http://xmpp.org/extensions/xep-0060.html#owner-delete">XEP</a>).
 	*/
 	public function deleteNode( name : String ) : IQ {
 		var iq = new IQ( IQType.set );
@@ -176,7 +176,8 @@ class PubSub {
 	/**
 		Load all items from the given node.
 	*/
-	public function loadItems( node : String, ?subid : String, ?maxItems : Int, ?ids : Array<String> ) : IQ {
+	public function loadItems( node : String,
+							   ?subid : String, ?maxItems : Int, ?ids : Array<String> ) : IQ {
 		//var iq = new xmpp.IQ( null, null, service, stream.jid.toString() );
 		var iq = new IQ();
 		var x = new xmpp.PubSub();

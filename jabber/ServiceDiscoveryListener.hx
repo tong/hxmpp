@@ -52,7 +52,7 @@ class ServiceDiscoveryListener {
 	}
 	
 	function handleInfoQuery( iq : IQ ) {
-		// TODO just attach the extended info ()
+		// TODO just >attach< the extended info ()
 		if( onInfoQuery != null ) { // redirect to custom handler
 			var r = onInfoQuery( iq );
 			if( r != null ) {
@@ -60,6 +60,14 @@ class ServiceDiscoveryListener {
 				return;
 			}
 		}
+		// TODO
+		/*
+		var info = xmpp.disco.Info.parse();
+		if( info.node != null ) {
+			// send error
+			return;
+		}
+		*/
 		var r = new IQ( xmpp.IQType.result, iq.id, iq.from, stream.jid.toString() );
 		r.x = new xmpp.disco.Info( identities, Lambda.array( stream.features ) );
 		stream.sendData( r.toString() );

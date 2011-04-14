@@ -25,8 +25,9 @@ class PubSubListener {
 	
 	/** Every(!) full pubsub event message */
 	public dynamic function onMessage( m : xmpp.Message ) : Void;
-	/** Just the pubsub event ( message may contain additional information, like delay,.. ! ) */
+	///** Just the pubsub event ( message may contain additional information, like delay,.. ! ) */
 	//public dynamic function onEvent( service : String, event : xmpp.PubSubEvent ) : Void;
+	
 	/** New pubsub items recieved */
 	public dynamic function onItems( service : String, items : xmpp.pubsub.Items ) : Void;
 	/** Configuration got changed */
@@ -38,22 +39,24 @@ class PubSubListener {
 	/** Subscription action notification */
 	public dynamic function onSubscription( service : String, subscription : xmpp.pubsub.Subscription ) : Void;
 	
-	/////** Publishing entites to listen for, others get ignored */
-	/////public var targets : List<String>;
 	public var stream(default,null) : Stream;
 	
-	public function new( stream : Stream ) {
+	var c : jabber.stream.PacketCollector;
+	
+	public function new( stream : Stream, service : String ) {
 		this.stream = stream;
-		stream.collect( [ cast new xmpp.filter.MessageFilter( xmpp.MessageType.normal ),
-						  cast new xmpp.filter.PacketPropertyFilter( xmpp.PubSubEvent.XMLNS, "event" ) ],
-						handlePubSubEvent, true );
+		c = stream.collect( [ cast new xmpp.filter.PacketFromFilter( service ),
+							  cast new xmpp.filter.MessageFilter( xmpp.MessageType.normal ),
+						 	  cast new xmpp.filter.PacketPropertyFilter( xmpp.PubSubEvent.XMLNS, 'event' ) ],
+							  handlePubSubEvent, true );
+	}
+	
+	public function dispose() {
+		stream.removeCollector( c );
 	}
 	
 	function handlePubSubEvent( m : xmpp.Message ) {
-		
-		// fire EVERY event message
-		onMessage( m );
-		
+		onMessage( m ); // fire EVERY event message
 		var service = m.from;
 		var event : xmpp.PubSubEvent = null;
 		for( p in m.properties ) {
@@ -74,7 +77,6 @@ class PubSubListener {
 		} else if( event.subscription != null ) {
 			onSubscription( service, event.subscription );
 		} 
-		
 		//onEvent( service, event );
 	}
 	
