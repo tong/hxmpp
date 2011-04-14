@@ -110,7 +110,7 @@ class Session<T:Transport> {
 	}
 	
 	function processSessionPacket( iq : IQ, j : xmpp.Jingle ) {
-		//new jabber.error.AbstractError();
+		//();
 		// override me
 	}
 	

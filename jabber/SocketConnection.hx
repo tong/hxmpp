@@ -69,7 +69,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	public override function setSecure() {
 		#if (neko||cpp)
-		throw new jabber.error.Error( "StartTLS not implemented" );
+		throw "startTLS not implemented";
 		#elseif php
 		try {
 			secured = untyped __call__( 'stream_socket_enable_crypto', socket.__s, true, 1 );
@@ -179,7 +179,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	function socketDataHandler( e : SecureSocketEvent ) {
 		var b = Bytes.ofData( e.rawData );
 		if( b.length > maxBufSize ) {
-			throw new jabber.error.Error( "max buffer size reached ["+maxBufSize+"]" );
+			throw "max buffer size reached ["+maxBufSize+"]";
 		}
 		__onData( b, 0, b.length );
 		//TODO
@@ -275,7 +275,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		socket.readBytes( buf, buf.length, Std.int(e.bytesLoaded) );
 		var b = Bytes.ofData( buf );
 		if( b.length > maxBufSize )
-			throw new jabber.error.Error( "max buffer size reached ["+maxBufSize+"]" );
+			throw "max buffer size reached ["+maxBufSize+"]";
 		if( __onData(  b, 0, b.length ) > 0 )
 			buf = new ByteArray();
 		//socket.flush();
@@ -381,7 +381,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 			return;
 		}
 		if( buf.length > maxBufSize )
-			throw new jabber.error.Error( "max buffer size reached ["+maxBufSize+"]" );
+			throw "max buffer size reached ["+maxBufSize+"]";
 		var b = Bytes.ofData( buf );
 		if( __onData(  b, 0, b.length ) > 0 )
 			buf = new ByteArray();
@@ -482,7 +482,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	function sockDataHandler( t : String ) {
 		var s = buf+t;
 		if( s.length > maxBufSize )
-			throw new jabber.error.Error( "max socket buffer size reached ["+maxBufSize+"]" );
+			throw "max socket buffer size reached ["+maxBufSize+"]";
 		var r = __onData( Bytes.ofString( s ), 0, s.length );
 		buf = ( r == 0 ) ? s : "";
 	}
@@ -508,7 +508,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	public override function connect() {
 		if( !SocketConnection.initialized )
-			throw new jabber.error.Error( "socketbridge not initialized" );
+			throw "socketbridge not initialized";
 		buf = new StringBuf();
 		socket = new Socket( secure );
 		socket.onConnect = sockConnectHandler;
@@ -562,7 +562,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		buf.add( t );
 		var s = buf.toString();
 		if( s.length > maxBufSize )
-			throw new jabber.error.Error( "max socket buffer size reached ["+maxBufSize+"]" );
+			throw "max socket buffer size reached ["+maxBufSize+"]";
 		if( __onString( s ) != 0 ) {
 			buf = new StringBuf();
 		}

@@ -35,7 +35,7 @@ class SoftwareVersion {
 	public function new( stream : Stream,
 						 name : String, version : String, ?os : String ) {
 		if( !stream.features.add( xmpp.SoftwareVersion.XMLNS ) )
-			throw new jabber.error.Error( "SoftwareVersion feature already added" );
+			throw "softwareversion feature already added";
 		this.stream = stream;
 		this.name = name;
 		this.version = version;

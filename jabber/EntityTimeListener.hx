@@ -28,7 +28,7 @@ class EntityTimeListener {
 	 
 	public function new( stream : Stream, ?tzo : String = "00:00" ) {
 		if( !stream.features.add( xmpp.EntityTime.XMLNS ) )
-			throw new jabber.error.Error( "EntityTime listener already added" );
+			throw "entitytime listener already added";
 		this.stream = stream;
 		time = new xmpp.EntityTime( tzo );
 		stream.collect( [ cast new xmpp.filter.IQFilter(xmpp.EntityTime.XMLNS,xmpp.IQType.get,"time")], handleRequest, true );

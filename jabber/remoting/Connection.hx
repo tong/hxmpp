@@ -81,7 +81,7 @@ class Connection implements AsyncConnection, implements Dynamic<AsyncConnection>
 				var ret;
 				try {
 					if( v.substr(0,3) != "hxr" )
-						throw new jabber.error.Error( "Invalid response : '"+v+"'" );
+						throw "invalid response : '"+v+"'";
 					var s = new haxe.Unserializer( v.substr( 3 ) );
 					ret = s.unserialize();
 				} catch( err : Dynamic ) {

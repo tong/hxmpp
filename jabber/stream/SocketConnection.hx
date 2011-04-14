@@ -146,7 +146,7 @@ class SocketConnection extends Connection {
 				nsize = maxBufSize;
 				trace(buflen +":"+ maxBufSize);
 				if( buflen == maxBufSize  )
-					throw new jabber.error.Error( "Max buffer size reached ["+maxBufSize+"]" );
+					throw "max buffer size reached ["+maxBufSize+"]";
 			}
 			var buf2 = Bytes.alloc( nsize );
 			buf2.blit( 0, buf, 0, buflen );
@@ -194,7 +194,7 @@ class Socket {
 	public function new( secure : Bool ) {
 		id = jabber.SocketConnection.createSocket( this, secure );
 		if( id < 0 )
-			throw new jabber.error.Error( "failed to create socket on socket bridge" );
+			throw "failed to create socket on socket bridge";
 	}
 	
 	public inline function connect( host : String, port : Int, ?timeout : Int ) {

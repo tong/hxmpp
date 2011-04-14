@@ -31,7 +31,7 @@ import xmpp.lop.Submit;
 */
 class Farm {
 	
-	public dynamic function onJob( job : Submit ) : String { return throw new jabber.error.Error( "no LOP job handler specified" ); }
+	public dynamic function onJob( job : Submit ) : String { return "no LOP job handler specified"; }
 	public dynamic function onVMKill( id : String ) : Void;
 	public dynamic function onPing( ping : Ping ) : String { return null; }
 	public dynamic function onSetBindings( bindings : Bindings ) : Void;

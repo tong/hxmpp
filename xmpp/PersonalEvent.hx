@@ -46,7 +46,7 @@ class PersonalEvent {
 	}
 	
 	public function toXml() : Xml {
-		return throw new jabber.error.AbstractError();
+		return throw 'abstract method';
 	}
 	
 	/*

@@ -70,11 +70,11 @@ class Stream extends jabber.Stream {
 	public override function open( host : String, subdomain : String, secret : String,
 								   ?identities : Array<xmpp.disco.Identity> ) {
 		if( cnx == null )
-			throw new jabber.error.Error( "no stream connection set" );
+			throw "no stream connection set";
 		if( subdomain == null || subdomain == "" )
-			throw new jabber.error.Error( "invalid stream subdomain" );
+			throw "invalid stream subdomain";
 		if( secret == null )
-			throw new jabber.error.Error( "invalid stream secret (null)" );
+			throw "invalid stream secret (null)";
 		this.jid = new ComponentJID( subdomain, host );
 		this.secret = secret;
 		items = new xmpp.disco.Items();

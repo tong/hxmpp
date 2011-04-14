@@ -95,7 +95,7 @@ class SITransfer {
 		#if air
 		var f = File.applicationDirectory.resolvePath( filepath ); //TODO 
 		if( !f.exists )
-			throw new jabber.error.Error( "File not found ["+filepath+"]" );
+			throw "file not found ["+filepath+"]";
 		this.filepath = filepath;
 		var fname = f.name;
 		var fsize = f.size;
@@ -108,7 +108,7 @@ class SITransfer {
 		
 		#else
 		if( !FileSystem.exists( filepath ) )
-			throw new jabber.error.Error( "File not found ["+filepath+"]" );
+			throw "file not found ["+filepath+"]";
 		this.filepath = filepath;
 		var fstat = FileSystem.stat( filepath );
 		var fname = Path.withoutDirectory( filepath );
@@ -131,7 +131,7 @@ class SITransfer {
 						  ?date : String, ?hash : String, ?desc : String, ?range : Bool = false, ?mime : String ) {
 		
 		if( methods.length == 0 )
-			throw new jabber.error.Error( "No file transfer methods registered" );
+			throw "no file transfer methods registered";
 		id = Base64.random( 16 );
 		file = new xmpp.file.File( name, size, date, hash, desc );
 		if( range ) file.range = { offset : null, length : null };

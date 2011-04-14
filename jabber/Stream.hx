@@ -104,7 +104,7 @@ class Stream {
 	
 	function setJID( j : JID ) : JID {
 		if( status != Status.closed )
-			throw new jabber.error.Error( "Cannot change JID on active stream" );
+			throw "cannot change jid on active stream";
 		return jid = j;
 	}
 	
@@ -143,14 +143,14 @@ class Stream {
 	*/
 	#if JABBER_COMPONENT
 	public function open( host : String, subdomain : String, secret : String, ?identities : Array<xmpp.disco.Identity> ) {
-		#if JABBER_DEBUG throw new jabber.error.AbstractError(); #end
+		#if JABBER_DEBUG throw 'abstract method'; #end
 	}
 	#else
 	public function open( jid : JID ) {
 		if( jid != null ) this.jid = jid
 		else if( this.jid == null ) this.jid = new JID( null );
 		if( cnx == null )
-			throw new jabber.error.Error( "No stream connection set" );
+			throw 'no stream connection set';
 		cnx.connected ? handleConnect() : cnx.connect();
 	}
 	#end
@@ -461,7 +461,7 @@ class Stream {
 	}
 	
 	function processStreamInit( t : String, buflen : Int ) : Int {
-		return throw new jabber.error.AbstractError();
+		return throw 'abstract method';
 	}
 	
 	function handleConnect() {

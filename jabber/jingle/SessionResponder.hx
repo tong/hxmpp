@@ -81,7 +81,7 @@ class SessionResponder<T:Transport> extends Session<T> {
 	
 	// override me
 	function addTransportCandidate( x : Xml ) {
-		throw new jabber.error.AbstractError();
+		throw 'abstract method';
 	}
 	
 	//TODO remove (handle by specific impl )

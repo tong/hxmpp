@@ -33,7 +33,7 @@ class SessionListener<T:Transport,R:SessionResponder<T>> {
 	
 	function new( stream : jabber.Stream, handler : R->Void, xmlns : String ) {
 		if( !stream.features.add( xmlns ) )
-			throw new jabber.error.Error( "rtmp listener already added ["+xmlns+"]" );
+			throw "rtmp listener already added ["+xmlns+"]";
 		this.stream = stream;
 		this.handler = handler;
 		this.xmlns = xmlns;
@@ -66,7 +66,7 @@ class SessionListener<T:Transport,R:SessionResponder<T>> {
 	
 	// override me
 	function createResponder() : R {
-		return throw new jabber.error.AbstractError();
+		return throw 'abstract method';
 	}
 	
 }

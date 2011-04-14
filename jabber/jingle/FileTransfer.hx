@@ -32,7 +32,7 @@ class FileTransfer extends OutgoingSession<ByteStreamOutput> {
 	
 	public function sendFile( filepath : String, ?desc : String ) {
 		if( !FileSystem.exists( filepath ) )
-			throw new jabber.error.Error( "File not found ["+filepath+"]" );
+			throw "file not found ["+filepath+"]";
 		this.input = File.read( filepath, true );
 		var fstat = FileSystem.stat( filepath );
 		var fname = Path.withoutDirectory( filepath );

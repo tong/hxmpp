@@ -172,7 +172,7 @@ class MUChat {
 	public function changeNick( t : String ) : xmpp.Presence {
 		if( !joined ) return null;
 		if( t == null || t.length == 0 )
-			throw new jabber.error.Error( "Invalid nickname" );
+			throw "invalid nickname";
 		nick = t;
 		myjid = jid+"/"+nick;
 		return sendMyPresence();

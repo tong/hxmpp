@@ -47,7 +47,7 @@ class ByteStreamTransfer extends DataTransfer {
 	
 	public override function init( input : haxe.io.Input, sid : String, file : xmpp.file.File ) {
 		if( hosts.length == 0 )
-			throw new jabber.error.Error( "No streamhosts specified" );
+			throw "no streamhosts specified";
 		super.init( input, sid, file );
 		var digest = SHA1.encode( sid+stream.jid.toString()+reciever );
 		transports = new Array();

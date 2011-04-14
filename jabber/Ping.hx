@@ -55,7 +55,7 @@ class Ping {
 	
 	function setInterval( i : Int ) : Int  {
 		if( i < 1 )
-			return throw new jabber.error.Error( "invalid ping interval ["+i+"]" );
+			return throw "invalid ping interval ["+i+"]";
 		return ms = i;
 	}
 	

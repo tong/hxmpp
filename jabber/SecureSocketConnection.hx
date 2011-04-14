@@ -144,7 +144,7 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 		}
 		var b = haxe.io.Bytes.ofData( untyped buf );
 		if( b.length > maxBufSize )
-			throw new jabber.error.Error( "Max buffer size reached ["+maxBufSize+"]" );
+			throw "max buffer size reached ["+maxBufSize+"]";
 		if( __onData(  b, 0, b.length ) > 0 )
 			buf = new ByteArray();
 		//socket.flush();
@@ -252,7 +252,7 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 		}
 		var b = haxe.io.Bytes.ofData( untyped buf );
 		if( b.length > maxBufSize )
-			throw new jabber.error.Error( "Max buffer size reached ["+maxBufSize+"]" );
+			throw "max buffer size reached ["+maxBufSize+"]";
 		if( __onData(  b, 0, b.length ) > 0 )
 			buf = new ByteArray();
 		socket.flush();
@@ -264,109 +264,6 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 
 import haxe.io.Bytes;
 import js.Node;
-/*
-class SecureSocketConnection extends jabber.stream.SocketConnection {
-	
-	//public var socket(default,null) : CryptoStream;
-	public var socket(default,null) : Stream;
-
-	var buf : String;
-	
-	public function new( host : String, port : Int = 5222, secure : Bool = true,
-						 ?bufSize : Int, ?maxBufSize : Int,
-						 timeout : Int = 10 ) {
-		super( host, port, true, bufSize, maxBufSize, timeout );
-	}
-	
-	public override function connect() {
-		buf = "";
-		createConnection();
-		socket.on( Node.STREAM_END, sockDisconnectHandler );
-		socket.on( Node.STREAM_ERROR, sockErrorHandler );
-		socket.on( Node.STREAM_DATA, sockDataHandler );
-	}
-	
-	public override function disconnect() {
-		if( !connected )
-			return;
-		try socket.end() catch( e : Dynamic ) {
-			__onDisconnect( e );
-		}
-	}
-	
-	public override function setSecure() {
-		//TODO
-		trace("SET SECURE_________________________________");
-		// hmm? TypeError: Object #<a Stream> has no method 'setSecure' ??????????
-		//socket.on( Node.STREAM_SECURE, sockSecureHandler );
-		//trace( socket.getPeerCertificate() );
-//		socket.setSecure(  );
-		__onSecured(null);
-	}
-	
-	public override function write( t : String ) : Bool {
-		trace("write");
-		if( !connected || t == null || t.length == 0 )
-			return false;
-		socket.write( t );
-		return true;
-	}
-	
-	public override function writeBytes( t : Bytes ) : Bool {
-		if( !connected || t == null || t.length == 0 )
-			return false;
-		socket.write( t.getData() ); 
-		return true;
-	}
-	
-	public override function read( ?yes : Bool = true ) : Bool {
-		trace("read "+yes);
-		if( !yes )
-			socket.removeListener( Node.STREAM_DATA, sockDataHandler );
-		return true;
-	}
-	
-	function createConnection() {
-		socket = Node.net.createConnection( port, host );
-		//socket = Node.tls.connect( port, host, null, sockConnectHandler );
-		socket.on( Node.STREAM_CONNECT, sockConnectHandler );
-	}
-	
-	function sockConnectHandler() {
-		trace("sockConnectHandler");
-		connected = true;
-		__onConnect();
-	}
-	
-	function sockDisconnectHandler() {
-		trace("sockDisconnectHandler");
-		connected = false;
-		__onDisconnect(null);
-	}
-	
-	function sockErrorHandler( e : String ) {
-		trace("sockErrorHandler");
-		connected = false;
-		__onDisconnect( e );
-	}
-	
-	function sockSecureHandler() {
-		secured = true;
-		__onSecured( null );
-	}
-	
-	//TODO use bytes (no compression + stuff otherwise)
-	function sockDataHandler( t : String ) {
-		trace("sockDataHandler");
-		var s = buf+t;
-		if( s.length > maxBufSize )
-			throw new jabber.error.Error( "max socket buffer size reached ["+maxBufSize+"]" );
-		var r = __onData( Bytes.ofString( s ), 0, s.length );
-		buf = ( r == 0 ) ? s : "";
-	}
-	
-}
-*/
 
 class SecureSocketConnection extends jabber.SocketConnection {
 	

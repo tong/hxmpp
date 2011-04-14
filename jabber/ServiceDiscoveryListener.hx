@@ -42,7 +42,7 @@ class ServiceDiscoveryListener {
 	public function new( stream : Stream, ?identities : Array<xmpp.disco.Identity> ) {
 		if( !stream.features.add( xmpp.disco.Info.XMLNS )
 			#if JABBER_COMPONENT || !stream.features.add( xmpp.disco.Items.XMLNS ) #end )
-			throw new jabber.error.Error( "ServiceDiscovery listener already added" );
+			throw "service discovery listener already added";
 		this.stream = stream;
 		this.identities = ( identities == null ) ? [defaultIdentity] : identities;
 		stream.collect( [cast new IQFilter( xmpp.disco.Info.XMLNS, xmpp.IQType.get )], handleInfoQuery, true );

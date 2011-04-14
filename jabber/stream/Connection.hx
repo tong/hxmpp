@@ -56,18 +56,18 @@ class Connection {
 	
 	function setHost( t : String ) : String {
 		if( connected )
-			throw new jabber.error.Error( "Cannot change hostname on active connection" );
+			throw "cannot change hostname on active connection" ;
 		return host = t;
 	}
 	
 	/** */
 	public function connect() {
-		throw throw new jabber.error.AbstractError();
+		throw 'abstract method';
 	}
 	
 	/** */
 	public function disconnect() {
-		throw throw new jabber.error.AbstractError();
+		throw 'abstract method';
 	}
 	
 	/** */
@@ -79,17 +79,17 @@ class Connection {
 	
 	/** Starts/Stops reading data input, returns true if successfully started */
 	public function read( ?yes : Bool = true ) : Bool {
-		return throw new jabber.error.AbstractError();
+		return throw 'abstract method';
 	}
 	
 	/** Sends a string, returns true on succeess */
 	public function write( t : String ) : Bool {
-		return throw new jabber.error.AbstractError();
+		return throw 'abstract method';
 	}
 	
 	/** Send raw bytes */
 	public function writeBytes( t : Bytes ) : Bool {
-		return throw new jabber.error.AbstractError();
+		return throw 'abstract method';
 	}
 	
 	/***/
