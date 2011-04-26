@@ -1,6 +1,7 @@
 
 -cp ../
 --no-output
+-D XMPP_DEBUG
 
 jabber.BlockList
 jabber.BOB
@@ -23,7 +24,6 @@ jabber.PersonalEvent
 jabber.PersonalEventListener
 jabber.ServiceDiscovery
 jabber.ServiceDiscoveryListener
-#jabber.SecureSocketConnection
 jabber.SocketConnection
 jabber.SoftwareVersion
 jabber.UserSearch

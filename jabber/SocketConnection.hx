@@ -363,19 +363,18 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	function sockDisconnectHandler( e : Event ) {
-		trace(e);
 		connected = false;
 		__onDisconnect(null);
 	}
 	
 	function sockErrorHandler( e : Event ) {
-		trace(e);
 		connected = false;
 		__onDisconnect( e.type );
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
-		trace(e);
+		trace("####################### "+buf.length+":"+e.bytesLoaded );
+		//try socket.readBytes( buf, buf.length, e.bytesLoaded ) catch( e : Dynamic ) {
 		try socket.readBytes( buf, buf.length, e.bytesLoaded ) catch( e : Dynamic ) {
 			#if JABBER_DEBUG trace(e,'error');#end //?
 			return;

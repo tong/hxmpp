@@ -19,7 +19,7 @@ package jabber;
 
 /**
 	<a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a><br/>
-	Listens for incoming pubsub events.
+	Listens for incoming pubsub events from a given service.
 */
 class PubSubListener {
 	

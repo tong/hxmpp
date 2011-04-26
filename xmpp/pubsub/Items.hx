@@ -35,8 +35,7 @@ class Items extends List<Item> {
 		if( node != null ) x.set( "node", node );
 		if( subid != null ) x.set( "subid", subid );
 		if( maxItems != null ) x.set( "max_items", Std.string( maxItems ) );
-		for( i in iterator() )
-			x.addChild( i.toXml() );
+		for( i in iterator() ) x.addChild( i.toXml() );
 		return x;
 	}
 	
@@ -44,8 +43,7 @@ class Items extends List<Item> {
 		var max = x.get( "maxItems" );
 		var i = new Items( x.get( "node" ), x.get( "subid" ),
 						   if( max != null ) Std.parseInt( max ) );
-		for( e in x.elementsNamed( "item" ) )
-			i.add( Item.parse( e ) );
+		for( e in x.elementsNamed( "item" ) ) i.add( Item.parse( e ) );
 		return i;
 	}
 	

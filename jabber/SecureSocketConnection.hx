@@ -169,7 +169,7 @@ class SecureSocketConnection extends jabber.SocketConnection {
 	}
 	
 	override function secureChannelEstablished( e : SecureSocketEvent ) {
-		trace(e);
+		//trace(e);
 		connected = true;
 		__onConnect();
 	}

@@ -1,8 +1,9 @@
-  _   _   _   _   _  
- / \ / \ / \ / \ / \ 
-( H | X | M | P | P )
- \_/ \_/ \_/ \_/ \_/ 
-=====================
+                   ___   ___  
+|   |  \ /  |\ /| |   | |   | 
+|-+-|   +   | + | |-+-  |-+-  
+|   |  / \  |   | |     |     
+
+                                          
 HXMPP is a haXe library for creating XMPP based clients and services.
 
 The library exists in two namespaces:
@@ -13,9 +14,9 @@ The library exists in two namespaces:
 
 SOURCE
 -------
-http://hxmpp.disktree.net
-https://github.com/tong/hxmpp
 git://github.com/tong/hxmpp.git
+https://github.com/tong/hxmpp
+http://hxmpp.disktree.net
 
 
 
@@ -34,47 +35,25 @@ COMPILER FLAGS
 
 
 
-BOSH
-----
-BOSH essentially provides a "drop-in" alternative to a long-lived, bidirectional TCP connection using a request-response mechansim over HTTP.
-To use it you have to connect your client to the BOSH adress of your jabber server.
-Your webserver doesn’t know about your jabber server .. you have to setup a proxy to forward requests: 
-
-# Activate mod_proxy apache module
-sudo ln -s /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled/
-# Add following line to proxy.load to activate the proxy-http module
-LoadModule proxy_http_module /usr/lib/apache2/modules/mod_proxy_http.so
-# Add the proxy directive to the host settings in your http.conf
-# This will proxy requests: htp://127.0.0.1/xmpp -> http://127.0.0.1:7070/http-bind/
-<VirtualHost *:80>
-	...
-	ProxyRequests Off
-	ProxyPass /xmpp http://127.0.0.1:7070/http-bind/
-	ProxyPassReverse /xmpp http://127.0.0.1:7070/http-bind/
-	...
-</VirtualHost>
-
-# Restart apache
-sudo /etc/init.d/apache2 restart
-
-# Now you can pass in the path to the constructor of the jabber.BOSHConection class:
-var cnx = new BOSHConnection( "domain.net", "127.0.0.1/xmpp/" );
-
-
-
-NODE.JS
--------
-HXMPP has experimental support for node.js.
-Use the type signatures from: https://github.com/tong/hxnodejs
-Add: -D nodejs
+ACTIONSCRIPT3/MXMLC
+-------------------
+See: https://github.com/tong/hxmpp.examples/tree/master/swc
 
 
 
 ADOBE AIR2
 ----------
-HXMPP supports native, secure and unsecure adobe air2 socket connections (flash and javascript).
+HXMPP supports native, secure and unsecure adobe air2 socket connections.
 * Get the required external classes from: http://disktree.spektral.at/git/?a=summary&p=hxair
 * Add 'air' compiler flag.
+
+
+
+NODE.JS
+-------
+Use the type signatures from: https://github.com/tong/hxnodejs
+Set compiler flag: -D nodejs
+
 
 
 
@@ -113,6 +92,34 @@ XEPS SUPPORTED
 ** XEP-xxxx: Jingle RTMP Transport
 ** XEP-xxxx: Jingle RTMFP Transport
 ** gmail-notifiy
+
+
+
+BOSH
+----
+BOSH essentially provides a "drop-in" alternative to a long-lived, bidirectional TCP connection using a request-response mechansim over HTTP.
+To use it you have to connect your client to the BOSH adress of your jabber server.
+Your webserver doesn’t know about your jabber server .. you have to setup a proxy to forward requests: 
+
+# Activate mod_proxy apache module
+sudo ln -s /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled/
+# Add following line to proxy.load to activate the proxy-http module
+LoadModule proxy_http_module /usr/lib/apache2/modules/mod_proxy_http.so
+# Add the proxy directive to the host settings in your http.conf
+# This will proxy requests: htp://127.0.0.1/xmpp -> http://127.0.0.1:7070/http-bind/
+<VirtualHost *:80>
+	...
+	ProxyRequests Off
+	ProxyPass /xmpp http://127.0.0.1:7070/http-bind/
+	ProxyPassReverse /xmpp http://127.0.0.1:7070/http-bind/
+	...
+</VirtualHost>
+
+# Restart apache
+sudo /etc/init.d/apache2 restart
+
+# Now you can pass in the path to the constructor of the jabber.BOSHConection class:
+var cnx = new BOSHConnection( "domain.net", "127.0.0.1/xmpp/" );
 
 
 

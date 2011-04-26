@@ -49,9 +49,9 @@ class XMPPDebug {
 	
 	static function __init__() {
 		
-		//#if XMPP_CONSOLE
-		//trace(" XMPP_CONSOLE...........");
-		//#end
+		#if XMPP_CONSOLE
+	//	XMPPConsole.init();
+		#end
 		//TODO remove from __init__
 		
 		#if air
@@ -89,9 +89,8 @@ class XMPPDebug {
 	
 	public static inline function print( t : String, out : Bool, level : String = "log" ) {
 		#if XMPP_CONSOLE
-		//TODO
 		//XMPPConsole.print(stream,t,out);
-	//	out ? XMPPConsole.o(t) : XMPPConsole.i(t); 
+		XMPPConsole.printXMPP(t,out);
 		#else
 		#if (neko||cpp||php||nodejs||rhino)
 		__print( t, out ? color_out : color_inc );

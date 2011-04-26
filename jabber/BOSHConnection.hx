@@ -29,7 +29,6 @@ import flash.events.SecurityErrorEvent;
 	//TODO
 	
 	// timeout timer (?), added but needed?
-	// (neko/cpp/node)
 	// polling 
 	/// multiple streams over one connection
 	// secure!
