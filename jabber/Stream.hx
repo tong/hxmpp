@@ -459,7 +459,7 @@ class Stream {
 	}
 	
 	function processStreamInit( t : String, buflen : Int ) : Int {
-		return #if JABBER_DEBUG throw 'abstract method' #else null #end;
+		return #if JABBER_DEBUG throw 'abstract method' #else -1 #end;
 	}
 	
 	function handleConnect() {
