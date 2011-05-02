@@ -40,8 +40,12 @@ class Roster extends List<xmpp.roster.Item> {
 	
 	public static function parse( x : Xml ) : xmpp.Roster {
 		var r = new xmpp.Roster();
-		for( e in x.elementsNamed( "item" ) )
-			r.add( xmpp.roster.Item.parse( e ) );
+		for( e in x.elements() ) {
+			switch( e.nodeName ) {
+			case 'item' :
+				r.add( xmpp.roster.Item.parse( e ) );
+			}
+		}
 		return r;
 	}
 	
