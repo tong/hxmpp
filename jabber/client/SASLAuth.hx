@@ -97,7 +97,10 @@ class SASLAuth extends Authentication {
 	
 	function handleSASLFailed( p : xmpp.Packet ) {
 		removeSASLCollectors();
-		onFail();
+	//	onFail();
+		//var e = new jabber.XMPPError( p );
+		//onFail( e );
+		//onFail( p.toXml().firstElement().nodeName  );
 	}
 	
 	function handleSASLChallenge( p : xmpp.Packet ) {

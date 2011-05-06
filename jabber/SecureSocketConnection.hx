@@ -174,7 +174,7 @@ class SecureSocketConnection extends jabber.SocketConnection {
 		__onConnect();
 	}
 }
-#end //TLS
+#end // TLS
 
 #elseif js
 
@@ -259,11 +259,10 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 	}
 }
 
-
 #elseif nodejs
 
-import haxe.io.Bytes;
 import js.Node;
+import haxe.io.Bytes;
 
 class SecureSocketConnection extends jabber.SocketConnection {
 	
@@ -279,4 +278,4 @@ class SecureSocketConnection extends jabber.SocketConnection {
 }
 
 #end //js
-#end //platform
+#end
