@@ -157,7 +157,8 @@ class VCard {
 		var vc = new xmpp.VCard();
 		for( e in x.elements() ) {
 			switch( e.nodeName ) {
-			case "FN" : vc.fn = e.firstChild().nodeValue;
+			case "FN" :
+				if( e.firstChild() != null ) vc.fn = e.firstChild().nodeValue;
 			case "N" :
 				vc.n = cast {};
 				for( n in e.elements() ) {
@@ -174,9 +175,12 @@ class VCard {
 						}
 					}
 				}
-			case "NICKNAME" : vc.nickname = e.firstChild().nodeValue;
-			case "PHOTO" : vc.photo = parsePhoto( e );
-			case "BDAY" : vc.birthday = e.firstChild().nodeValue;
+			case "NICKNAME" :
+				if( e.firstChild() != null ) vc.nickname = e.firstChild().nodeValue;
+			case "PHOTO" :
+				vc.photo = parsePhoto( e );
+			case "BDAY" :
+				if( e.firstChild() != null ) vc.birthday = e.firstChild().nodeValue;
 			case "ADR" :
 				var a : Address = untyped {};
 				for( n in e.elements() ) {
@@ -262,8 +266,10 @@ class VCard {
 						}
 					}
 				}	
-			case "TITLE" : vc.title = e.firstChild().nodeValue;
-			case "ROLE" : vc.role = e.firstChild().nodeValue;
+			case "TITLE" :
+				if( e.firstChild() != null ) vc.title = e.firstChild().nodeValue;
+			case "ROLE" :
+				if( e.firstChild() != null ) vc.role = e.firstChild().nodeValue;
 			case "ORG" :
 				vc.org = untyped {};
 				for( n in e.elements() ) {
@@ -277,8 +283,10 @@ class VCard {
 						}
 					}
 				}
-			case "URL" : vc.url = e.firstChild().nodeValue;
-			case "DESC" : vc.desc = e.firstChild().nodeValue;
+			case "URL" :
+				if( e.firstChild() != null ) vc.url = e.firstChild().nodeValue;
+			case "DESC" :
+				if( e.firstChild() != null )vc.desc = e.firstChild().nodeValue;
 			}
 		}
 		return vc;
