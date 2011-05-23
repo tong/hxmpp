@@ -27,8 +27,8 @@ class SessionListener<T:Transport,R:SessionResponder<T>> {
 	
 	public var stream(default,null) : jabber.Stream;
 	public var handler(default,setHandler) : R->Void;
+	public var xmlns(default,null) : String;
 	
-	var xmlns : String;
 	var c : PacketCollector;
 	
 	function new( stream : jabber.Stream, handler : R->Void, xmlns : String ) {
@@ -39,11 +39,10 @@ class SessionListener<T:Transport,R:SessionResponder<T>> {
 		this.xmlns = xmlns;
 	}
 	
-	/*
 	public function dispose() {
-		//TODO
+		stream.features.remove( xmlns );
+		setHandler( null );
 	}
-	*/
 	
 	function setHandler( h : R->Void ) : R->Void {
 		if( h == null ) {
@@ -65,8 +64,7 @@ class SessionListener<T:Transport,R:SessionResponder<T>> {
 		}
 	}
 	
-	// override me
-	function createResponder() : R {
+	function createResponder() : R { // override me
 		return throw 'abstract method';
 	}
 	
