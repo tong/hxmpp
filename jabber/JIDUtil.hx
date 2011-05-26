@@ -118,9 +118,9 @@ class JIDUtil {
 	/**
 	*/
 	public static function compare( a : JID, b : JID ) : Bool {
-		if( a.node == b.node ) return false;
-		if( a.domain == b.domain ) return false;
-		if( a.resource == b.resource ) return false;
+		if( a.node != b.node ) return false;
+		if( a.domain != b.domain ) return false;
+		if( a.resource != b.resource ) return false;
 		return true;
 	}
 	
