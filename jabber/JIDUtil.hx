@@ -116,6 +116,15 @@ class JIDUtil {
 	}
 	
 	/**
+	*/
+	public static function compare( a : JID, b : JID ) : Bool {
+		if( a.node == b.node ) return false;
+		if( a.domain == b.domain ) return false;
+		if( a.resource == b.resource ) return false;
+		return true;
+	}
+	
+	/**
 	    Escapes the node portion of a JID according to "JID Escaping" (XEP-0106).<br/>
 	    Escaping replaces characters prohibited by node-prep with escape sequences.
 	    <br/>
