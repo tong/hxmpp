@@ -17,58 +17,47 @@
 */
 package jabber;
 
-#if XMPP_DEBUG
-
 #if neko
 import neko.Lib;
 #elseif php
 import php.Lib;
 #elseif cpp
 import cpp.Lib;
-#elseif rhino
-import js.Lib;
 #elseif nodejs
 import js.Lib;
 #elseif (flash&&!air)
 import flash.external.ExternalInterface;
+#elseif rhino
+import js.Lib;
 #end
-
-//#if XMPP_CONSOLE
-//private class XMPPConsoleConnection
-//#end // XMPP_CONSOLE
 
 /**
 	Utility for debugging XMPP transfer.<br/>
 	Set the haXe compiler flag: -D XMPP_DEBUG to activate it.<br/>
-	Displayed XMPP transfer gets relayed to the default debug console on browser targets,
-	color highlighted on terminal targets.
+	XMPP transfer gets:
+	* printed to the default debug console on browser targets
+	* color highlighted on terminal targets
+	* printed to adobe fdb 'trace' on air targets
 */
-class XMPPDebug {
+@:require(XMPP_DEBUG) class XMPPDebug {
 	
 	#if (flash||js)
 	
 	static function __init__() {
-		
-		#if XMPP_CONSOLE
-	//	XMPPConsole.init();
-		#end
-		//TODO remove from __init__
-		
-		#if air
-		useConsole = false;
-		
+		#if (air)
 		#else
-		#if flash
-		useConsole = ( ExternalInterface.available &&
-					   ExternalInterface.call( "console.error.toString" ) != null );
-		#elseif js
-			#if (nodejs||rhino) #else
-			try useConsole = untyped console != null && console.error != null catch( e : Dynamic ) {
-				useConsole = false;
-			}
+			#if flash
+			useConsole = ( ExternalInterface.available &&
+						   ExternalInterface.call( "console.error.toString" ) != null );
+			#elseif js
+				#if (nodejs||rhino)
+				#else
+				try useConsole = untyped console != null && console.error != null catch( e : Dynamic ) {
+					useConsole = false;
+				}
+				#end
 			#end
 		#end
-		#end // air
 	}
 	
 	#end // (flash||js)
@@ -77,39 +66,42 @@ class XMPPDebug {
 		Default incoming XMPP debug relay.
 	*/
 	public static inline function inc( t : String ) {
-		print( t, false, "log" );
+		print( t, false );
 	}
 	
 	/**
 		Default outgoing XMPP debug relay.
 	*/
 	public static inline function out( t : String ) {
-		print( t, true, "log" );
+		print( t, true );
 	}
 	
 	public static inline function print( t : String, out : Bool, level : String = "log" ) {
 		#if XMPP_CONSOLE
-		//XMPPConsole.print(stream,t,out);
 		XMPPConsole.printXMPP(t,out);
 		#else
-		#if (neko||cpp||php||nodejs||rhino)
+		#if (neko||cpp||php||air||nodejs||rhino)
 		__print( t, out ? color_out : color_inc );
 		#elseif (flash||js)
 		__print( t, out, level );
 		#end
-		#end
+		#end // XMPP_CONSOLE
 	}
 	
-	
-	#if (neko||cpp||php||rhino||nodejs)
+	#if (neko||cpp||php||air||nodejs||rhino)
 
 	public static var color_out = 36;
 	public static var color_inc = 33;
 	
-	public static function __print( t : String, color : Int ) {
-		if( color == null ) {
-			#if rhino Lib._print( t );
-			#else Lib.print( t );
+	public static function __print( t : String, color : Int = -1 ) {
+		t = StringTools.replace( t, '\n',  '' );
+		if( color == -1 ) {
+			#if rhino
+			Lib._print( t );
+			#elseif air
+			untyped __global__['trace']( t );
+			#else
+			Lib.print( t );
 			#end
 			return;
 		}
@@ -122,16 +114,17 @@ class XMPPDebug {
 		b.add( "m\n" );
 		#if rhino
 		Lib._print( b.toString() );
+		#elseif air
+		untyped __global__['trace']( b.toString() );
 		#else
 		Lib.print( b.toString() );
 		#end
 	}
 	
-	
 	#elseif (flash||js)
 	
-	/** Indicates if the XMPP transfer should get printed to the browsers debug console */
-	public static var useConsole : Bool;
+	/** Indicates if the XMPP transfer should get printed to the browser console */
+	public static var useConsole : Bool = false;
 	
 	public static function __print( t : String, out : Bool = true, level : String = "log" ) {
 		var dir = out ? "=>" : "<=";
@@ -145,7 +138,6 @@ class XMPPDebug {
 			untyped console[level]( dir+t );
 			#end
 		} else {
-			//haxe.Log.trace( t, { className : "", methodName : "", fileName : dir, lineNumber : 0, customParams : [] } );
 			haxe.Log.trace( t, { className : "", methodName : "", fileName : "XMPP"+dir, lineNumber : t.length, customParams : [] } );
 		}
 		#end
@@ -154,5 +146,3 @@ class XMPPDebug {
 	#end // (flash||js)
 	
 }
-
-#end // XMPP_DEBUG
