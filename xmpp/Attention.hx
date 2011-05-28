@@ -15,24 +15,14 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package jabber;
+package xmpp;
 
-/**
-	<a href="http://www.xmpp.org/extensions/xep-0224.html">XEP 224 - Attention</a><br/>
-	Extension for getting the attention of another user.
-*/
 class Attention {
 	
-	public var stream(default,null) : Stream;
+	public static var XMLNS = 'urn:xmpp:attention:0';
 	
-	public function new( stream : Stream ) {
-		this.stream = stream;
-	}
-	
-	public function capture( jid : String, message : String ) {
-		var m = new xmpp.Message( jid, message );
-		m.properties.push( xmpp.Attention.createXml() );
-		stream.sendPacket( m );
+	public static inline function createXml() : Xml {
+		return IQ.createQueryXml( XMLNS, 'attention' );
 	}
 	
 }
