@@ -23,13 +23,9 @@ package jabber;
 */
 class Attention {
 	
-	public var stream(default,null) : Stream;
-	
-	public function new( stream : Stream ) {
-		this.stream = stream;
-	}
-	
-	public function capture( jid : String, message : String ) {
+	/**
+	*/
+	public static function capture( stream : Stream, jid : String, message : String ) {
 		var m = new xmpp.Message( jid, message );
 		m.properties.push( xmpp.Attention.createXml() );
 		stream.sendPacket( m );
