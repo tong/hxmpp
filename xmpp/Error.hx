@@ -47,7 +47,7 @@ class Error extends xmpp.ErrorPacket {
 		ErrorPacket.parseInto( p, x, XMLNS );
 		if( p.condition == null )
 			return null;
-		p.type = Type.createEnum( ErrorType, x.get( "type" ) );
+		p.type = Type.createEnum( ErrorType, x.get( "type" ).toLowerCase() );
 		var v = x.get( "code" );
 		if( v != null ) p.code = Std.parseInt( v );
 		return p;
