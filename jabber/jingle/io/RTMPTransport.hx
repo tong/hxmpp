@@ -17,13 +17,11 @@
 */
 package jabber.jingle.io;
 
-#if !flash #error #else
-
 import flash.events.NetStatusEvent;
 import flash.net.NetConnection;
 import flash.net.NetStream;
 
-class RTMPTransport extends Transport {
+@:require(flash) class RTMPTransport extends Transport {
 	
 	public var name(default,null) : String;
 	public var host(default,null) : String;
@@ -82,5 +80,3 @@ class RTMPTransport extends Transport {
 	}
 	
 }
-
-#end // flash

@@ -71,7 +71,6 @@ class SOCKS5In {
 	}
 }
 
-
 #elseif nodejs
 
 import js.Node;
@@ -188,7 +187,7 @@ class SOCKS5In {
 	}
 	
 	function onData( e : ProgressEvent ) {
-		trace("SOCKS5 "+state);
+		#if JABBER_DEBUG trace( 'SOCKS5 '+state, 'debug' ); #end
 		switch( state ) {
 		case WaitInit :
 			i.readByte(); // 0x05

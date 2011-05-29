@@ -51,11 +51,11 @@ import flash.net.NetStream;
 	}
 	
 	function netConnectionHandler( e : NetStatusEvent ) {
-		#if JABBER_DEBUG trace( e.info.code ); #end
-	}
-	
-	function netStreamHandler( e : NetStatusEvent ) {
-		#if JABBER_DEBUG trace( e.info.code ); #end
+		//#if JABBER_DEBUG trace( e.info.code ); #end
+		switch( e.info.code ) {
+		case 'NetConnection.Connect.Failed' :
+			__onFail( e.info.code );
+		}
 	}
 	
 }

@@ -34,6 +34,7 @@ class Session<T:Transport> {
 	public dynamic function onError( e : jabber.XMPPError ) : Void;
 	
 	public var stream(default,null) : jabber.Stream;
+	/** Counterpart station */
 	public var entity(default,null) : String;
 	/** Used transport */
 	public var transport(default,null) : T;

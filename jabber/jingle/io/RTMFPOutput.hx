@@ -48,14 +48,18 @@ import flash.net.NetStream;
 	}
 	
 	override function netConnectionHandler( e : NetStatusEvent ) {
-		#if JABBER_DEBUG trace( e.info.code ); #end
+		#if JABBER_DEBUG trace( e.info.code, 'debug' ); #end
 		switch( e.info.code ) {
 		case "NetConnection.Connect.Success" :
 			id = nc.nearID;
 			__onConnect();
+			return;
 		//case "NetStream.Connect.Success" :
 			//__onInit();
+		//case "NetConnection.Connect.Failed" :
+		//	trace("DFFFFFFFFFFFFFF");
 		}
+		super.netConnectionHandler( e );
 	}
 	
 }

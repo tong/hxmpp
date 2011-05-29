@@ -105,7 +105,7 @@ class SessionResponder<T:Transport> extends Session<T> {
 	function handleSessionAccept( iq : IQ ) {
 		switch( iq.type ) {
 		case result :
-			//trace("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII "+transport);
+			//trace(transport);
 			onInit();
 			transport.init();
 		case error :

@@ -440,7 +440,7 @@ class Stream {
 		}
 		if( !collected ) {
 			#if JABBER_DEBUG
-			trace( "Incoming '"+Type.enumConstructor( p._type )+"' packet not handled ( "+p.from+" -> "+p.to+" )", "warn" );
+			trace( "Incoming '"+Type.enumConstructor( p._type )+"' packet not handled ( "+p.from+" -> "+p.to+" )( "+p.id+" )", "warn" );
 			#end
 			if( p._type == xmpp.PacketType.iq ) { // 'feature not implemented' response
 				#if as3

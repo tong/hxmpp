@@ -18,7 +18,7 @@
 package jabber.data.io;
 
 /**
-	Abstract base for inband data in/output.
+	Abstract base class for inband data in/output.
 */
 class IBIO {
 	

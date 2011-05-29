@@ -23,7 +23,8 @@ package jabber.client;
 class Authentication {
 	
 	public dynamic function onSuccess() : Void;
-	public dynamic function onFail( ?e : jabber.XMPPError ) : Void;
+	//public dynamic function onFail( ?e : jabber.XMPPError ) : Void;
+	public dynamic function onFail( info : String ) : Void;
 	
 	public var resource(default,null) : String;
 	public var stream(default,null) : Stream;

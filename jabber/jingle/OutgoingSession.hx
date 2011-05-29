@@ -59,14 +59,14 @@ class OutgoingSession<T:Transport> extends Session<T> {
 	}
 	
 	function handleSessionInitResponse( iq : IQ ) {
-		trace("handleSessionInitResponsehandleSessionInitResponse");
 		switch( iq.type ) {
 //		case result :
 //			trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		case error :
-			trace("ERROR");
-			//TODO remove onError (use onFail!)
-			onError( new jabber.XMPPError( iq ) );
+			//onError( new jabber.XMPPError( iq ) );
+			var err = iq.errors[0];
+			onFail( err.condition );
+			//onFail( new jabber.XMPPError( iq ) );
 			cleanup();
 		default :
 		}

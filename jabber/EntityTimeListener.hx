@@ -25,13 +25,20 @@ class EntityTimeListener {
 	
 	public var stream(default,null) : Stream;
 	public var time(default,null) : xmpp.EntityTime;
-	 
+	
+	var c : jabber.stream.PacketCollector;
+	
 	public function new( stream : Stream, ?tzo : String = "00:00" ) {
 		if( !stream.features.add( xmpp.EntityTime.XMLNS ) )
 			throw "entitytime listener already added";
 		this.stream = stream;
 		time = new xmpp.EntityTime( tzo );
-		stream.collect( [ cast new xmpp.filter.IQFilter(xmpp.EntityTime.XMLNS,xmpp.IQType.get,"time")], handleRequest, true );
+		c = stream.collect( [ cast new xmpp.filter.IQFilter(xmpp.EntityTime.XMLNS,xmpp.IQType.get,"time")], handleRequest, true );
+	}
+	
+	public function dispose() {
+		stream.removeCollector( c );
+		stream.features.remove( xmpp.EntityTime.XMLNS );
 	}
 	
 	function handleRequest( iq : xmpp.IQ ) {

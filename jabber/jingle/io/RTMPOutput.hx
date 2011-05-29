@@ -17,7 +17,7 @@
 */
 package jabber.jingle.io;
 
-class RTMPOutput extends RTMPTransport {
+@:require(flash) class RTMPOutput extends RTMPTransport {
 	
 	public var __onPublish : Void->Void;
 	

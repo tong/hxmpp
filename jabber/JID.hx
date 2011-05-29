@@ -37,6 +37,7 @@ class JID {
     public var resource : String;
     /** JID without resource */
 	public var bare(getBare,null) : String;
+	//public var str(toString,null) : String;
 	
 	public function new( t : String ) {
 		if( t != null ) {

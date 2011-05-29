@@ -97,11 +97,10 @@ class SASLAuth extends Authentication {
 	
 	function handleSASLFailed( p : xmpp.Packet ) {
 		removeSASLCollectors();
-		onFail();
-		//TODO!!!!!!!!!!!!!!
-		//var e = new jabber.XMPPError( p );
-		//onFail( e );
-		//onFail( p.toXml().firstElement().nodeName  );
+		var info : String = null;
+		var c = p.toXml().firstChild();
+		if( c != null ) info = c.nodeName;
+		onFail( info );
 	}
 	
 	function handleSASLChallenge( p : xmpp.Packet ) {
@@ -150,7 +149,9 @@ class SASLAuth extends Authentication {
 				onSuccess();
 			}
 		case error :
-			onFail( new jabber.XMPPError( iq ) );
+			trace(iq.errors);
+			onFail( iq.errors[0].condition ); // TODO condition ?
+//			onFail( new jabber.XMPPError( iq ) );
 		default : //
 		}
 	}
@@ -160,7 +161,9 @@ class SASLAuth extends Authentication {
 		case result :
 			onSuccess();
 		case error :
-			onFail( new jabber.XMPPError( iq ) );
+			trace(iq.errors);
+			onFail( iq.errors[0].condition ); // TODO condition ?
+//			onFail( new jabber.XMPPError( iq ) );
 		default : //#
 		}
 	}

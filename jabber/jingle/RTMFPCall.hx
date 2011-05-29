@@ -31,7 +31,7 @@ class RTMFPCall extends OutgoingSession<RTMFPOutput> {
 	//var payloads : Array<PayloadType>;
 	
 	public function new( stream : jabber.Stream, entity : String,
-						 contentName : String = "av" ) {
+						 contentName : String = 'av' ) {
 		super( stream, entity, contentName, xmpp.Jingle.XMLNS_RTMFP );
 	}
 	
@@ -46,6 +46,7 @@ class RTMFPCall extends OutgoingSession<RTMFPOutput> {
 	
 	override function processSessionPacket( iq : IQ, j : xmpp.Jingle ) {
 		switch( j.action ) {
+		
 		case session_accept :
 			// TODO this is kinda shitty, just offering one transport here #
 			var rid : String = null;
@@ -69,7 +70,9 @@ class RTMFPCall extends OutgoingSession<RTMFPOutput> {
 			stream.sendPacket( IQ.createResult( iq ) );
 			
 		default :
-			trace( "Jingle session packet not handled" );
+			#if JABBER_DEBUG
+			trace( "jingle session packet not handled", "warn" );
+			#end
 		}
 	}
 	
