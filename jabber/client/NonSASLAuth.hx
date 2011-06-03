@@ -65,7 +65,8 @@ class NonSASLAuth extends Authentication {
 			r.x = if( hasDigest ) new xmpp.Auth( username, null, SHA1.encode( stream.id+password ), resource );
 			else new xmpp.Auth( username, password, null, resource );
 			stream.sendIQ( r, handleResult );
-		case error : onFail( new jabber.XMPPError( iq ) );
+		case error :
+			onFail( iq.errors[0].condition );
 		default : //#
 		}
 	}
@@ -74,7 +75,8 @@ class NonSASLAuth extends Authentication {
 		active = false;
 		switch( iq.type ) {
 		case result : onSuccess();
-		case error : onFail( new jabber.XMPPError( iq ) );
+		case error :
+			onFail( iq.errors[0].condition );
 		default : //#
 		}
 	}
