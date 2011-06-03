@@ -41,11 +41,11 @@ import flash.net.NetStream;
 		#if JABBER_DEBUG trace( e.info.code ); #end
 		switch( e.info.code ) {
 		case "NetConnection.Connect.Failed" :
-			__onFail( e.info.code );
+			if( __onFail != null ) __onFail( e.info.code );
 		case "NetConnection.Connect.Success" :
-			__onConnect();
+			if( __onConnect != null ) __onConnect();
 		case "NetConnection.Connect.Closed" :
-			__onDisconnect();
+			if( __onDisconnect != null ) __onDisconnect();
 		}
 	}
 

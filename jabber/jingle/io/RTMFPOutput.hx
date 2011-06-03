@@ -54,10 +54,6 @@ import flash.net.NetStream;
 			id = nc.nearID;
 			__onConnect();
 			return;
-		//case "NetStream.Connect.Success" :
-			//__onInit();
-		//case "NetConnection.Connect.Failed" :
-		//	trace("DFFFFFFFFFFFFFF");
 		}
 		super.netConnectionHandler( e );
 	}
