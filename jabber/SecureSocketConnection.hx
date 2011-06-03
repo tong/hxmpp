@@ -151,6 +151,7 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 	}
 }
 
+
 #elseif TLS
 
 import tls.event.SecureSocketEvent;
