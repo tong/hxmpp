@@ -45,7 +45,7 @@ class Presence extends xmpp.Packet {
 		var x = super.addAttributes( Xml.createElement( "presence" ) );
 		if( type != null ) x.set( "type", Type.enumConstructor( type ) );
 		if( show != null ) x.addChild( XMLUtil.createElement( "show", Type.enumConstructor( show ) ) );
-		if( status != null && status != "" ) x.addChild( XMLUtil.createElement( "status", status ) );
+		if( status != null ) x.addChild( XMLUtil.createElement( "status", status ) );
 		if( priority != null ) x.addChild( XMLUtil.createElement( "priority", Std.string( priority ) ) );
 		return x;
 	}
