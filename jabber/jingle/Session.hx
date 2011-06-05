@@ -66,7 +66,7 @@ class Session<T:Transport> {
 		stream.sendIQ( iq, function(r:IQ) {
 			switch( r.type ) {
 			case error :
-				me.onError( new jabber.XMPPError( iq ) );
+				me.onError( new jabber.XMPPError( r ) );
 			case result :
 				me.onEnd( reason );
 			default :
