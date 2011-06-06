@@ -18,6 +18,7 @@
 package jabber.client;
 
 import jabber.XMPPError;
+import jabber.stream.PacketCollector;
 import xmpp.IQ;
 import xmpp.IQType;
 import xmpp.Presence;
@@ -73,13 +74,16 @@ class Roster {
 	public var items(default,null) : Array<Item>;
 	public var groups(getGroups,null) : Array<String>;
 	
+	var c_presence : PacketCollector;
+	var c_message : PacketCollector;
+
 	public function new( stream : Stream, ?subscriptionMode : RosterSubscriptionMode ) {
 		this.stream = stream;
 		this.subscriptionMode = subscriptionMode != null ? subscriptionMode : defaultSubscriptionMode;
 		available = false;
 		items = new Array();
-		stream.collect( [cast new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence )], handlePresence, true );
-		stream.collect( [cast new xmpp.filter.IQFilter( xmpp.Roster.XMLNS )], handleIQ, true );
+		c_presence = stream.collect( [cast new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence )], handlePresence, true );
+		c_message = stream.collect( [cast new xmpp.filter.IQFilter( xmpp.Roster.XMLNS )], handleIQ, true );
 	}
 	
 	function getGroups() : Array<String> {
@@ -97,6 +101,13 @@ class Roster {
 			}
 		}
 		return r;
+	}
+	
+	public function dispose() {
+		stream.removeCollector( c_presence );
+		stream.removeCollector( c_message );
+		available = false;
+		items = new Array();
 	}
 	
 	public function getItem( jid : String ) : Item {
