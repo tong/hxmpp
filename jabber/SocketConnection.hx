@@ -156,7 +156,6 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	function sockConnectHandler( e : SecureSocketEvent ) {
-		trace(e);
 		connected = true;
 		__onConnect();
 	}
