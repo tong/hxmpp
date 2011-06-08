@@ -36,6 +36,7 @@ class EntityTime {
 	/**
 		The entity's numeric time zone offset from UTC.
 		The format conforms to the Time Zone Definition (TZD) specified in XEP-0082 (http://www.xmpp.org/extensions/xep-0082.html).
+		Example: +02:00
 	*/
 	public var tzo : String;// (default,setTZO) : String;
 	
@@ -53,6 +54,12 @@ class EntityTime {
 	function setUTC( t : String ) : String {
 		if( !xmpp.DateTime.isValid( t ) ) return utc = null;
 		return utc = t;
+	}
+	*/
+	
+	/*
+	public function getTime() : Float {
+		fromTime();
 	}
 	*/
 	

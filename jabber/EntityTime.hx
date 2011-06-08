@@ -43,7 +43,9 @@ class EntityTime {
 	
 	function handleLoad( iq : xmpp.IQ ) {
 		switch( iq.type ) {
-		case result : onLoad( iq.from, xmpp.EntityTime.parse( iq.x.toXml() ) );
+		case result :
+			if( iq.x != null )
+				onLoad( iq.from, xmpp.EntityTime.parse( iq.x.toXml() ) );
 		case error : onError( new XMPPError( iq ) );
 		default : //#
 		}

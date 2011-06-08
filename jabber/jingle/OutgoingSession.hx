@@ -34,6 +34,7 @@ class OutgoingSession<T:Transport> extends Session<T> {
 		super( stream, xmlns );
 		this.entity = entity;
 		this.contentName = contentName;
+		this.initiator = stream.jid.toString();
 		transports = new Array();
 	}
 	
@@ -73,12 +74,7 @@ class OutgoingSession<T:Transport> extends Session<T> {
 	}
 	
 	function createTransportXml() : Xml {
-		var x = Xml.createElement( "transport" );
-		#if flash //TODO flash 2.06
-		x.set( "_xmlns_", xmlns );
-		#else
-		x.set( "xmlns", xmlns );
-		#end
+		var x = xmpp.IQ.createQueryXml( xmlns, 'transport' );
 		for( t in transports )
 			x.addChild( createCandidateXml( t ) );
 		return x;
