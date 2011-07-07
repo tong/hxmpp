@@ -28,8 +28,8 @@ import flash.net.NetStream;
 	public static var EREG_URL = ~/(rtmfp:\/\/)([A-Z0-9.-]+?)(\/([A-Z0-9\-]+))?/i;
 	
 	public var url(default,null) : String;
-	public var nc(default,null) : NetConnection;
 	public var id(default,null) : String;
+	public var nc : NetConnection; // set with care !
 	
 	function new( url : String ) {
 		if( !EREG_URL.match( url ) )
@@ -39,10 +39,34 @@ import flash.net.NetStream;
 	}
 	
 	public override function connect() {
-		nc = new NetConnection();
-		nc.addEventListener( NetStatusEvent.NET_STATUS, netConnectionHandler );
-		try nc.connect( url ) catch( e : Dynamic ) {
-			__onFail( "failed to connect to rtmfp service ["+url+"]" );
+		/*
+		if( nc == null ) {
+			nc = new NetConnection();
+			nc.addEventListener( NetStatusEvent.NET_STATUS, netConnectionHandler, false, 0, true );
+			try nc.connect( url ) catch( e : Dynamic ) {
+				__onFail( "failed to connect to rtmfp service ["+url+"]" );
+			}
+		} else {
+			if( nc.connected ) {
+				id = nc.nearID;
+				__onConnect();
+			} else {
+				try nc.connect( url ) catch( e : Dynamic ) {
+					__onFail( "failed to connect to rtmfp service ["+url+"]" );
+				}
+			}
+		}
+		*/
+		
+		if( nc == null ) nc = new NetConnection();
+		nc.addEventListener( NetStatusEvent.NET_STATUS, netConnectionHandler, false, 0, true );
+		if( nc.connected ) {
+			id = nc.nearID;
+			__onConnect();
+		} else {
+			try nc.connect( url ) catch( e : Dynamic ) {
+				__onFail( "failed to connect to rtmfp service ["+url+"]" );
+			}
 		}
 	}
 	

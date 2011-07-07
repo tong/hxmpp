@@ -26,12 +26,6 @@ Browse tests/examples: http://github.com/tong/hxmpp.examples
 
 
 
-GOOGLE GROUP
-------------
-https://groups.google.com/group/hxmpp
-
-
-
 COMPILER FLAGS
 --------------
 * XMPP_DEBUG	Print XMPP transfer
@@ -126,6 +120,12 @@ sudo /etc/init.d/apache2 restart
 
 # Now you can pass in the path to the constructor of the jabber.BOSHConection class:
 var cnx = new BOSHConnection( "domain.net", "127.0.0.1/xmpp/" );
+
+
+
+GOOGLE GROUP
+------------
+https://groups.google.com/group/hxmpp
 
 
 

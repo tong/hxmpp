@@ -34,7 +34,7 @@ class XMLUtil {
 	}
 	
 	/**
-		@param x XML element to attach the create element to
+		@param x XML element to attach the created element to
 		@param n Name of xml node
 		@param t Node content
 	*/

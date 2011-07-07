@@ -62,7 +62,7 @@ class Stream extends jabber.Stream {
 			}
 			parseServerStreamFeatures( ( x.nodeName == "body" ) ? x.firstElement() : x );
 			status = Status.open;
-			onOpen();
+			handleStreamOpen();
 			return buflen;
 		} else {
 			var r = ~/^(<\?xml) (.)+\?>/;
@@ -77,7 +77,7 @@ class Stream extends jabber.Stream {
 				if( !version ) {
 					status = Status.open;
 					//cnx.reset();
-					onOpen();
+					handleStreamOpen();
 					return buflen;
 				}
 			}
@@ -89,7 +89,7 @@ class Stream extends jabber.Stream {
 			}
 			if( !version ) {
 				status = Status.open;
-				onOpen();
+				handleStreamOpen();
 				return buflen;
 			}
 		}
@@ -110,7 +110,7 @@ class Stream extends jabber.Stream {
 				sendData( '<starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls"/>' );
 			} else {
 				status = Status.open;
-				onOpen();
+				handleStreamOpen();
 			}
 			return buflen;
 		}

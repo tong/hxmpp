@@ -72,6 +72,7 @@ class SocketConnection extends Connection {
 	public var bufSize(default,null) : Int;
 	public var maxBufSize(default,null) : Int;
 	public var timeout(default,null) : Int;
+	//public var timeout(default,setTimeout) : Int;
 	
 	#if (neko||php||cpp||rhino)
 	public var socket(default,null) : AbstractSocket;
@@ -110,6 +111,14 @@ class SocketConnection extends Connection {
 		reading = false;
 		#end
 	}
+	
+	/*
+	function setTimeout( t : Int ) : Int {
+		if( socket != null )
+			throw 'cannot change timeout on active connection';
+		return timeout = t;
+	}
+	*/
 	
 	#if (neko||cpp||php||rhino)
 	

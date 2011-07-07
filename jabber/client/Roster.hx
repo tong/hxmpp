@@ -228,6 +228,7 @@ class Roster {
 	public function confirmSubscription( jid : String, allow : Bool = true,
 										 subscribe : Bool = false ) {
 		sendPresence( jid, ( allow ) ? PresenceType.subscribed : PresenceType.unsubscribed );
+		jid = JIDUtil.parseBare( jid );
 		onSubscription( jid );
 		if( subscribe ) {
 			this.subscribe( jid );

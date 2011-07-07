@@ -34,6 +34,7 @@ import flash.events.SecurityErrorEvent;
 	// secure!
 	// secure keys
 	// pause -> test
+	// setable 'timeout'
 	
 /**
 	<a href="http://xmpp.org/extensions/xep-0124.html">Bidirectional-streams Over Synchronous HTTP (BOSH)</a><br/>
@@ -111,17 +112,17 @@ class BOSHConnection extends jabber.stream.Connection {
 			responseQueue = new Array();
 			responseTimer = new Timer( INTERVAL );
 			var b = Xml.createElement( "body" );
-		#if flash //flash 2.06 fukup hack
+#if flash //flash 2.06 fukup hack
 			b.set( '_xmlns_', XMLNS );
 			b.set( 'xml_lang', 'en' );
 			b.set( 'xmlns_xmpp', XMLNS_XMPP );
 			b.set( 'xmpp_version', '1.0' );
-		#else
+#else
 			b.set( 'xmlns', XMLNS );
 			b.set( 'xml:lang', 'en' );
 			b.set( 'xmlns:xmpp', XMLNS_XMPP );
 			b.set( 'xmpp:version', '1.0' );
-		#end
+#end
 			b.set( 'ver', BOSH_VERSION );
 			b.set( 'hold', Std.string( hold ) );
 			b.set( 'rid', Std.string( rid ) );
@@ -181,17 +182,17 @@ class BOSHConnection extends jabber.stream.Connection {
 	
 	function restart() {
 		var r = createRequest();
-	#if flash // haXe 2.06 fuckup
+#if flash // haXe 2.06 fuckup
 		r.set( '_xmlns_', XMLNS );
 		r.set( "xmpp_restart", "true" );
 		r.set( "xmlns_xmpp", XMLNS_XMPP );
 		r.set( "xml_lang", "en" );
-	#else
+#else
 		r.set( 'xmlns', XMLNS );
 		r.set( "xmpp:restart", "true" );
 		r.set( "xmlns:xmpp", XMLNS_XMPP );
 		r.set( "xml:lang", "en" );
-	#end
+#end
 		r.set( "to", host );
 		#if XMPP_DEBUG XMPPDebug.out( r.toString() ); #end
 		sendRequests( r );

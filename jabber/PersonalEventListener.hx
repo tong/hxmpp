@@ -46,6 +46,10 @@ class PersonalEventListener {
 						handlePersonalEvent, true );
 	}
 	
+	public inline function iterator() : Iterator<Listener> {
+		return listeners.iterator();
+	}
+	
 	/**
 		Add listener for the given type.
 	*/
@@ -64,7 +68,8 @@ class PersonalEventListener {
 	*/
 	public function remove( type : Class<xmpp.PersonalEvent> ) : Bool {
 		var l = getListener( type );
-		if( l == null ) return false;
+		if( l == null )
+			return false;
 		return listeners.remove( l );
 	}
 	
@@ -83,10 +88,6 @@ class PersonalEventListener {
 			if( l.type == type )
 				return l;
 		return null;
-	}
-	
-	public function iterator() : Iterator<Listener> {
-		return listeners.iterator();
 	}
 	
 	function handlePersonalEvent( m : xmpp.Message ) {

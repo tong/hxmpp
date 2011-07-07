@@ -99,13 +99,13 @@ class Stream extends jabber.Stream {
 	
 	override function handleDisconnect( e : String ) {
 		connected = false;
-		onClose(e);
+		handleStreamClose(e);
 	}
 	
 	/*
 	override function handleConnectionError( e : String ) {
 		connected = false;
-		onClose( e );
+		handleStreamClose( e );
 	}
 	*/
 	
@@ -125,7 +125,7 @@ class Stream extends jabber.Stream {
 		id = x.get('id');
 		status = jabber.stream.Status.open;
 		#if XMPP_DEBUG jabber.XMPPDebug.inc( t ); #end
-		onOpen();
+		handleStreamOpen();
 		collect( [ cast new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], readyHandler, false );
 		sendData( XMLUtil.createElement( "handshake", Xml.createPCData( SHA1.encode( id+secret ) ).toString() ).toString() );
 		return len;

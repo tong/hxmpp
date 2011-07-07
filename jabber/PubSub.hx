@@ -21,7 +21,7 @@ import xmpp.IQ;
 import xmpp.IQType;
 
 /**
-	PubSub client <a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a><br/>
+	<a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a><br/>
 */
 class PubSub {
 	
@@ -29,7 +29,7 @@ class PubSub {
 	public dynamic function onNodeCreate( node : String ) : Void;
 	//TODO public dynamic function onNodeConfig( node : String, form : xmpp.DataForm ) : Void;
 	public dynamic function onNodeDelete( node : String ) : Void;
-	public dynamic function onSubscribe( a : xmpp.pubsub.Subscription ) : Void;
+	public dynamic function onSubscribe( sub : xmpp.pubsub.Subscription ) : Void;
 	public dynamic function onUnsubscribe( node : String ) : Void;
 	public dynamic function onSubscriptions( subs : xmpp.pubsub.Subscriptions ) : Void;
 	public dynamic function onPublish( node : String, item : xmpp.pubsub.Item ) : Void;
@@ -42,8 +42,7 @@ class PubSub {
 	public var service(default,null) : String;
 	public var stream(default,null) : Stream;
 	
-	//TODO add disco funtions related to pubsub to this client
-	// (an entity which supports pubsub MUST support disco anyway)
+	//TODO add disco funtions related to pubsub to this client (an entity which supports pubsub MUST support disco anyway)
 	//var disco : ServiceDicovery;
 	
 	public function new( stream : Stream, service : String ) {
@@ -174,7 +173,7 @@ class PubSub {
 	
 	//TODO why subid required?
 	/**
-		Load all items from the given node.
+		Load (all) items from the given node.
 	*/
 	public function loadItems( node : String,
 							   ?subid : String, ?maxItems : Int, ?ids : Array<String> ) : IQ {
@@ -189,7 +188,7 @@ class PubSub {
 		iq.x = x;
 		var h = onItems;
 		sendIQ( iq, function(r:IQ) {
-			var items = xmpp.pubsub.Items.parse( r.x.toXml() );
+			var items = xmpp.pubsub.Items.parse( r.x.toXml().firstElement() );
 			//h( node, items );
 			h( items );
 		} );

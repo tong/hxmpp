@@ -23,7 +23,7 @@ class Items extends List<Item> {
 	public var subid : String;
 	public var maxItems : Null<Int>;
 	
-	public function new( ?node : String, ?subid :String, ?maxItems : Int ) {
+	public function new( ?node : String, ?subid :String, ?maxItems : Null<Int> ) {
 		super();
 		this.node = node;
 		this.subid = subid;
@@ -41,9 +41,11 @@ class Items extends List<Item> {
 	
 	public static function parse( x : Xml ) : Items {
 		var max = x.get( "maxItems" );
-		var i = new Items( x.get( "node" ), x.get( "subid" ),
+		var i = new Items( x.get( "node" ),
+						   x.get( "subid" ),
 						   if( max != null ) Std.parseInt( max ) );
-		for( e in x.elementsNamed( "item" ) ) i.add( Item.parse( e ) );
+		for( e in x.elementsNamed( "item" ) )
+			i.add( Item.parse( e ) );
 		return i;
 	}
 	

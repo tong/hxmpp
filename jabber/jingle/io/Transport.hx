@@ -23,6 +23,9 @@ class Transport {
 	public var __onConnect : Void->Void;
 	public var __onDisconnect : Void->Void;
 	
+	//public var connected(default,null) : Bool;
+	
+	
 	function new() {}
 	
 	public function connect() {

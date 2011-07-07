@@ -32,12 +32,17 @@ address-literal = IPv4address / IPv6address
 */
 class JID {
 	
+	/***/
 	public var node : String;
-    public var domain : String;
-    public var resource : String;
-    /** JID without resource */
+	/***/
+	public var domain : String;
+	/***/
+	public var resource : String;
+	/** JID without resource */
 	public var bare(getBare,null) : String;
-	//public var str(toString,null) : String;
+	/** */
+	public var s(toString,null) : String;
+	//public var s(default,null) : String;
 	
 	public function new( t : String ) {
 		if( t != null ) {
@@ -46,6 +51,7 @@ class JID {
 			this.node = JIDUtil.parseNode( t );
 			this.domain = JIDUtil.parseDomain( t );
 			this.resource = JIDUtil.parseResource( t );
+			//s = t;
 		}
 	}
 	

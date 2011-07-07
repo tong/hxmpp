@@ -30,7 +30,7 @@ import flash.net.NetStream;
 	public var send_cirrus_key : Bool;
 	
 	public function new( url : String,
-						 send_cirrus_key : Bool = true ) {
+						 send_cirrus_key : Bool = false ) {
 		super( url );
 		this.send_cirrus_key = send_cirrus_key;
 	}
@@ -38,7 +38,8 @@ import flash.net.NetStream;
 	public override function toXml() : Xml {
 		var x = Xml.createElement( "candidate" );
 		x.set( "id", id );
-		if( send_cirrus_key ) x.set( "url", url );
+		if( send_cirrus_key )
+			x.set( "url", url );
 		else {
 			RTMFPTransport.EREG_URL.match( url );
 			x.set( "url", RTMFPTransport.EREG_URL.matched(1)+

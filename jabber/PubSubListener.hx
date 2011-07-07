@@ -28,10 +28,10 @@ class PubSubListener {
 	///** Just the pubsub event ( message may contain additional information, like delay,.. ! ) */
 	//public dynamic function onEvent( service : String, event : xmpp.PubSubEvent ) : Void;
 	
-	/** New pubsub items recieved */
+	/** New pubsub item(s) recieved */
 	public dynamic function onItems( service : String, items : xmpp.pubsub.Items ) : Void;
 	/** Configuration got changed */
-	public dynamic function onConfig( service : String, config : { form : xmpp.DataForm, node : String } ) : Void;
+	public dynamic function onConfig( service : String, config : { node : String, form : xmpp.DataForm } ) : Void;
 	/** Node got deleted */
 	public dynamic function onDelete( service : String, node : String ) : Void;
 	/** Node got purged */

@@ -366,7 +366,7 @@ class Stream {
 			var me = this;
 			cnx.__onSecured = function(err:String) {
 				if( err != null ) {
-					me.onClose( "TLS failed ["+err+"]" );
+					me.handleStreamClose( "TLS failed ["+err+"]" );
 				}
 				me.open( null );
 			}
@@ -420,6 +420,13 @@ class Stream {
 		i = -1;
 		while( ++i < collectors.length ) {
 			var c = collectors[i];
+			//TODO remove unused collectors
+			/*
+			if( c.handlers.length == 0 ) {
+				collectors.splice( i, 1 );
+				continue;
+			}
+			*/
 			if( c.accept( p ) ) {
 				collected = true;
 				/*
@@ -458,16 +465,41 @@ class Stream {
 		return collected;
 	}
 	
+	//TODO is this needed ?
+	/*
+	public function replaceConnection( n : Connection ) {
+		if( !n.connected )
+			throw 'not connected';
+		#if JABBER_DEBUG
+		if( n.http )
+			throw 'cannot replace with http connection';
+		trace( 'replacing stream connection', 'debug' );
+		#end
+		n.__onConnect = handleConnect;
+		n.__onDisconnect = handleDisconnect;
+		n.__onString = handleString;
+		n.__onData = handleData;
+		cnx = n;
+	}
+	*/
+	
 	function processStreamInit( t : String, buflen : Int ) : Int {
 		return #if JABBER_DEBUG throw 'abstract method' #else -1 #end;
 	}
 	
 	function handleConnect() {
-		#if JABBER_DEBUG trace( 'Connection connected', 'info' ); #end
+		//#if JABBER_DEBUG trace( 'connected', 'info' ); #end
 	}
 
 	function handleDisconnect( e : String ) {
-		//TODO cleanup here
+		handleStreamClose( e );
+	}
+	
+	function handleStreamOpen() {
+		onOpen();
+	}
+	
+	function handleStreamClose( ?e : String ) {
 		onClose( e );
 	}
 	
@@ -479,7 +511,6 @@ class Stream {
 		interceptors = new List();
 		sever = { features : new Hash() };
 		features = new StreamFeatures();
-		onClose();
 	}
 	*/
 	
