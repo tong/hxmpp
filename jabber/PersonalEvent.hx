@@ -23,9 +23,9 @@ package jabber;
 */
 class PersonalEvent {
 	
-	public dynamic function onPublish( e : xmpp.PersonalEvent ) : Void;
-	public dynamic function onDisable( e : xmpp.PersonalEvent ) : Void;
-	public dynamic function onError( e : XMPPError ) : Void;
+	public dynamic function onPublish( e : xmpp.PersonalEvent ) {}
+	public dynamic function onDisable( e : xmpp.PersonalEvent ) {}
+	public dynamic function onError( e : XMPPError ) {}
 	
 	public var stream(default,null) : Stream;
 	//var service : String;

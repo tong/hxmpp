@@ -24,7 +24,7 @@ package jabber;
 class Pong {
 	
 	/** Informational callback on ping-pong */
-	public dynamic function onPong( jid : String ) : Void;
+	public dynamic function onPong( jid : String ) {}
 
 	public var stream(default,null) : Stream;
 	

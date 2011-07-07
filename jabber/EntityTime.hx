@@ -24,7 +24,7 @@ package jabber;
 class EntityTime {
 	
 	public dynamic function onLoad( jid : String, t : xmpp.EntityTime ) {}
-	public dynamic function onError( e : XMPPError ) : Void;
+	public dynamic function onError( e : XMPPError ) {}
 	
 	public var stream(default,null) : Stream;
 	

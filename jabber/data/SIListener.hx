@@ -25,7 +25,7 @@ import xmpp.IQ;
 */
 class SIListener {
 	
-	public dynamic function onFail( info : String ) : Void;
+	public dynamic function onFail( info : String ) {}
 	
 	public var stream(default,null) : jabber.Stream;
 	/** Callback handler for incoming transfer requests */

@@ -22,10 +22,10 @@ package jabber.data;
 */
 class DataTransfer {
 	
-	//public dynamic function onInit( ft : FileTransfer ) : Void; //TODO
-	public dynamic function onProgress( bytes : Int ) : Void;
-	public dynamic function onComplete() : Void;
-	public dynamic function onFail( info : String  ) : Void;
+	//public dynamic function onInit( ft : FileTransfer ) {} //TODO
+	public dynamic function onProgress( bytes : Int ) {}
+	public dynamic function onComplete() {}
+	public dynamic function onFail( info : String  ) {}
 	
 	public var stream(default,null) : jabber.Stream;
 	/** The namespace of this transfer method */

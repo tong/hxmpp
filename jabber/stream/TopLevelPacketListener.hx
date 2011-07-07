@@ -24,7 +24,7 @@ import jabber.stream.PacketCollector;
 */
 class TopLevelPacketListener<T:xmpp.Packet> {
 	
-	public dynamic function onPacket( p : T ) : Void;
+	public dynamic function onPacket( p : T ) {}
 	
 	/**
 		Activates/Deactivates packet collecting.

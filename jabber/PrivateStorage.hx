@@ -23,9 +23,9 @@ package jabber;
 */
 class PrivateStorage {
 	
-	public dynamic function onStored( s : xmpp.PrivateStorage ) : Void;
-	public dynamic function onLoad( s : xmpp.PrivateStorage ) : Void;
-	public dynamic function onError( e : jabber.XMPPError ) : Void;
+	public dynamic function onStored( s : xmpp.PrivateStorage ) {}
+	public dynamic function onLoad( s : xmpp.PrivateStorage ) {}
+	public dynamic function onError( e : jabber.XMPPError ) {}
 	
 	public var stream(default,null) : jabber.Stream;
 

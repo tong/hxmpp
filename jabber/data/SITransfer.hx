@@ -56,10 +56,10 @@ import air.ByteArray;
 */
 class SITransfer {
 	
-	public dynamic function onInit() : Void;
-	public dynamic function onProgress( bytes : Int ) : Void;
-	public dynamic function onComplete() : Void;
-	public dynamic function onFail( error : String, ?info : String ) : Void;
+	public dynamic function onInit() {}
+	public dynamic function onProgress( bytes : Int ) {}
+	public dynamic function onComplete() {}
+	public dynamic function onFail( error : String, ?info : String ) {}
 	
 	public var stream(default,null) : jabber.Stream;
 	public var reciever(default,null) : String;

@@ -31,9 +31,9 @@ import jabber.util.Timer;
 class Ping {
 	
 	/** Informational callback that we recieved a pong for the ping */
-	public dynamic function onPong( jid : String ) : Void;
-	public dynamic function onTimeout( jid : String ) : Void;
-	public dynamic function onError( e : XMPPError ) : Void;
+	public dynamic function onPong( jid : String ) {}
+	public dynamic function onTimeout( jid : String ) {}
+	public dynamic function onError( e : XMPPError ) {}
 	
 	public var stream(default,null) : Stream;
 	/** Indicates if this instance is currently sending pings */

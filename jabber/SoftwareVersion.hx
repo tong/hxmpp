@@ -24,8 +24,8 @@ import jabber.util.SystemUtil;
 */
 class SoftwareVersion {
 	
-	public dynamic function onLoad( jid : String, sv : xmpp.SoftwareVersion );
-	public dynamic function onError( e : jabber.XMPPError );
+	public dynamic function onLoad( jid : String, sv : xmpp.SoftwareVersion ) {}
+	public dynamic function onError( e : jabber.XMPPError ) {}
 	
 	public var stream(default,null) : Stream;
 	public var name : String;

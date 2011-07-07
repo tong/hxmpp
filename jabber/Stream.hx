@@ -69,8 +69,8 @@ class Stream {
 	
 	public static var defaultPacketIdLength = 5;
 	
-	public dynamic function onOpen() : Void;
-	public dynamic function onClose( ?error : String ) : Void;
+	public dynamic function onOpen() {}
+	public dynamic function onClose( ?error : String ) {}
 	
 	public var jid(default,setJID) : JID;
 	public var status : Status;

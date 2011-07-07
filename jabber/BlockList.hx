@@ -22,10 +22,10 @@ package jabber;
 */
 class BlockList {
 	
-	public dynamic function onLoad( i : Array<String> ) : Void;
-	public dynamic function onBlock( i : Array<String> ) : Void;
-	public dynamic function onUnblock( i : Array<String> ) : Void;
-	public dynamic function onError( e : jabber.XMPPError ) : Void;
+	public dynamic function onLoad( i : Array<String> ) {}
+	public dynamic function onBlock( i : Array<String> ) {}
+	public dynamic function onUnblock( i : Array<String> ) {}
+	public dynamic function onError( e : jabber.XMPPError ) {}
 	
 	public var stream(default,null) : jabber.Stream;
 	

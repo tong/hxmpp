@@ -35,10 +35,10 @@ import flash.external.ExternalInterface;
 */
 class WebSocket {
 	
-	public dynamic function onopen() : Void;
-	public dynamic function onmessage(e:{data:String}) : Void; //correct?
-	public dynamic function onclose() : Void;
-	public dynamic function onerror() : Void;
+	public dynamic function onopen() {}
+	public dynamic function onmessage(e:{data:String}) {} //correct?
+	public dynamic function onclose() {}
+	public dynamic function onerror() {}
 	
 	public var url(default,null) : String;
 	

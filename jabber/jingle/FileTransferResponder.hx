@@ -8,8 +8,8 @@ import jabber.jingle.io.ByteStreamInput;
 */
 class FileTransferResponder extends SessionResponder<ByteStreamInput> {
 	
-	public dynamic function onProgress( data : Bytes ) : Void;
-	public dynamic function onComplete() : Void;
+	public dynamic function onProgress( data : Bytes ) {}
+	public dynamic function onComplete() {}
 	
 	public var filename(default,null) : String;
 	public var filedate(default,null) : String;

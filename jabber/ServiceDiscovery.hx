@@ -35,9 +35,9 @@ import xmpp.disco.Items;
 */
 class ServiceDiscovery {
 	
-	public dynamic function onInfo( jid : String, info : Info ) : Void;
-	public dynamic function onItems( jid : String, items : Items ) : Void;
-	public dynamic function onError( e : XMPPError ) : Void;
+	public dynamic function onInfo( jid : String, info : Info ) {}
+	public dynamic function onItems( jid : String, items : Items ) {}
+	public dynamic function onError( e : XMPPError ) {}
 	
 	public var stream(default,null) : jabber.Stream;
 	

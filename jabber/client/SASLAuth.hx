@@ -35,7 +35,7 @@ import xmpp.filter.PacketNameFilter;
 */
 class SASLAuth extends Authentication {
 
-	public dynamic function onNegotiated() : Void;
+	public dynamic function onNegotiated() {}
 	
 	/** Used SASL method */
 	public var mechanism(default,null) : jabber.sasl.TMechanism;

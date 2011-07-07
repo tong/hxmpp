@@ -48,25 +48,25 @@ class Roster {
 	public static var defaultSubscriptionMode = manual;
 	
 	/** Roster got loaded */
-	public dynamic function onLoad() : Void;
+	public dynamic function onLoad() {}
 	/** Item got added to the roster */
-	public dynamic function onAdd( i : Item ) : Void;
+	public dynamic function onAdd( i : Item ) {}
 	/** Item got removed from your roster */
-	public dynamic function onRemove( i : Item ) : Void;
+	public dynamic function onRemove( i : Item ) {}
 	/** Item got updated */
-	public dynamic function onUpdate( i : Item ) : Void;
+	public dynamic function onUpdate( i : Item ) {}
 	/** Subscribed to the presence of the contact */
-	public dynamic function onSubscribed( i : Item ) : Void;
+	public dynamic function onSubscribed( i : Item ) {}
 	/** Unsubscribed presence of the contact */
-	public dynamic function onUnsubscribed( i : Item ) : Void;
+	public dynamic function onUnsubscribed( i : Item ) {}
 	/** Incoming presence subscription request */
-	public dynamic function onAsk( i : Item  ) : Void;
+	public dynamic function onAsk( i : Item  ) {}
 	/** Contact subscribed to your presence */
-	public dynamic function onSubscription( jid : String  ) : Void;
+	public dynamic function onSubscription( jid : String  ) {}
 	/** Contact unsubscribed from your presence */
-	public dynamic function onUnsubscription( i : Item ) : Void;
+	public dynamic function onUnsubscription( i : Item ) {}
 	/** A roster manipulation error occured */
-	public dynamic function onError( e : XMPPError ) : Void;
+	public dynamic function onError( e : XMPPError ) {}
 	
 	public var stream(default,null) : Stream;
 	public var subscriptionMode : RosterSubscriptionMode;

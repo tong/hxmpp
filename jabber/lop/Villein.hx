@@ -30,15 +30,15 @@ import xmpp.lop.Terminate;
 */
 class Villein {
 	
-	public dynamic function onSpawn( s : SpawnVM ) : Void;
-	public dynamic function onResult( job : Submit ) : Void;
-	public dynamic function onFail( id : String, e : xmpp.Error ) : Void;
-	public dynamic function onTerminate( vm : String ) : Void;
-	public dynamic function onTerminateFail( id : String, e : xmpp.Error ) : Void;
-	public dynamic function onBind( bindings : Bindings ) : Void;
-	public dynamic function onBindFail( id : String, e : xmpp.Error ) : Void;
-	public dynamic function onVariables( bindings : Bindings ) : Void;
-	public dynamic function onVariablesFail( id : String, e : xmpp.Error ) : Void;
+	public dynamic function onSpawn( s : SpawnVM ) {}
+	public dynamic function onResult( job : Submit ) {}
+	public dynamic function onFail( id : String, e : xmpp.Error ) {}
+	public dynamic function onTerminate( vm : String ) {}
+	public dynamic function onTerminateFail( id : String, e : xmpp.Error ) {}
+	public dynamic function onBind( bindings : Bindings ) {}
+	public dynamic function onBindFail( id : String, e : xmpp.Error ) {}
+	public dynamic function onVariables( bindings : Bindings ) {}
+	public dynamic function onVariablesFail( id : String, e : xmpp.Error ) {}
 	
 	/** The jid of the farm */
 	public var farm(default,null) : String;

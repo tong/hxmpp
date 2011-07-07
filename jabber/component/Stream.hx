@@ -46,7 +46,7 @@ class Stream extends jabber.Stream {
 	public static var defaultPort = PORT_STANDARD;
 	
 	/** Called if stream got authenticated and is ready to use */
-	public dynamic function onConnect() : Void;
+	public dynamic function onConnect() {}
 	
 	/** XMPP server hostname */
 //	public var host(default,null) : String;

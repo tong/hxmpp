@@ -28,10 +28,10 @@ import xmpp.IQType;
 */
 class Session<T:Transport> {
 	
-	public dynamic function onInit() : Void;
-	public dynamic function onEnd( reason : xmpp.jingle.Reason ) : Void;
-	public dynamic function onFail( e : String ) : Void;
-	public dynamic function onError( e : jabber.XMPPError ) : Void;
+	public dynamic function onInit() {}
+	public dynamic function onEnd( reason : xmpp.jingle.Reason ) {}
+	public dynamic function onFail( e : String ) {}
+	public dynamic function onError( e : jabber.XMPPError ) {}
 	
 	public var stream(default,null) : jabber.Stream;
 	/** Counterpart station */

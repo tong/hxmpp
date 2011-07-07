@@ -25,18 +25,18 @@ import xmpp.IQType;
 */
 class PubSub {
 	
-	public dynamic function onError( e : XMPPError ) : Void;
-	public dynamic function onNodeCreate( node : String ) : Void;
-	//TODO public dynamic function onNodeConfig( node : String, form : xmpp.DataForm ) : Void;
-	public dynamic function onNodeDelete( node : String ) : Void;
-	public dynamic function onSubscribe( sub : xmpp.pubsub.Subscription ) : Void;
-	public dynamic function onUnsubscribe( node : String ) : Void;
-	public dynamic function onSubscriptions( subs : xmpp.pubsub.Subscriptions ) : Void;
-	public dynamic function onPublish( node : String, item : xmpp.pubsub.Item ) : Void;
-	public dynamic function onItems( items : xmpp.pubsub.Items ) : Void;
-	public dynamic function onAffiliations( a : xmpp.pubsub.Affiliations ) : Void;
-	public dynamic function onRetract( r : xmpp.pubsub.Retract ) : Void;
-	public dynamic function onPurge( node : String ) : Void;
+	public dynamic function onError( e : XMPPError ) {}
+	public dynamic function onNodeCreate( node : String ) {}
+	//TODO public dynamic function onNodeConfig( node : String, form : xmpp.DataForm ) {}
+	public dynamic function onNodeDelete( node : String ) {}
+	public dynamic function onSubscribe( sub : xmpp.pubsub.Subscription ) {}
+	public dynamic function onUnsubscribe( node : String ) {}
+	public dynamic function onSubscriptions( subs : xmpp.pubsub.Subscriptions ) {}
+	public dynamic function onPublish( node : String, item : xmpp.pubsub.Item ) {}
+	public dynamic function onItems( items : xmpp.pubsub.Items ) {}
+	public dynamic function onAffiliations( a : xmpp.pubsub.Affiliations ) {}
+	public dynamic function onRetract( r : xmpp.pubsub.Retract ) {}
+	public dynamic function onPurge( node : String ) {}
 	
 	/** Name of the pubsub service */
 	public var service(default,null) : String;

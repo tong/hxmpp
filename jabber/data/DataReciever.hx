@@ -25,10 +25,10 @@ import xmpp.IQ;
 */
 class DataReciever {
 	
-	//public dynamic function onInit() : Void;
-	public dynamic function onProgress( bytes : Bytes ) : Void;
-	public dynamic function onComplete() : Void;
-	public dynamic function onFail( info : String ) : Void;
+	//public dynamic function onInit() {}
+	public dynamic function onProgress( bytes : Bytes ) {}
+	public dynamic function onComplete() {}
+	public dynamic function onFail( info : String ) {}
 	
 	public var stream(default,null) : jabber.Stream;
 	public var xmlns(default,null) : String;

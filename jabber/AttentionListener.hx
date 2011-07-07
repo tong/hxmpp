@@ -25,7 +25,7 @@ import jabber.stream.PacketCollector;
 */
 class AttentionListener {
 	
-	public dynamic function onCapture( m : xmpp.Message ) : Void;
+	public dynamic function onCapture( m : xmpp.Message ) {}
 	
 	public var stream(default,null) : Stream;
 	

@@ -24,20 +24,20 @@ package jabber;
 class PubSubListener {
 	
 	/** Every(!) full pubsub event message */
-	public dynamic function onMessage( m : xmpp.Message ) : Void;
+	public dynamic function onMessage( m : xmpp.Message ) {}
 	///** Just the pubsub event ( message may contain additional information, like delay,.. ! ) */
-	//public dynamic function onEvent( service : String, event : xmpp.PubSubEvent ) : Void;
+	//public dynamic function onEvent( service : String, event : xmpp.PubSubEvent ) {}
 	
 	/** New pubsub item(s) recieved */
-	public dynamic function onItems( service : String, items : xmpp.pubsub.Items ) : Void;
+	public dynamic function onItems( service : String, items : xmpp.pubsub.Items ) {}
 	/** Configuration got changed */
-	public dynamic function onConfig( service : String, config : { node : String, form : xmpp.DataForm } ) : Void;
+	public dynamic function onConfig( service : String, config : { node : String, form : xmpp.DataForm } ) {}
 	/** Node got deleted */
-	public dynamic function onDelete( service : String, node : String ) : Void;
+	public dynamic function onDelete( service : String, node : String ) {}
 	/** Node got purged */
-	public dynamic function onPurge( service : String, node : String ) : Void;
+	public dynamic function onPurge( service : String, node : String ) {}
 	/** Subscription action notification */
-	public dynamic function onSubscription( service : String, subscription : xmpp.pubsub.Subscription ) : Void;
+	public dynamic function onSubscription( service : String, subscription : xmpp.pubsub.Subscription ) {}
 	
 	public var stream(default,null) : Stream;
 	

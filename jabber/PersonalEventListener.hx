@@ -31,7 +31,7 @@ private typedef Listener = {
 class PersonalEventListener {
 	
 	/** Optional to collect ALL events */
-	//public dynamic function onEventMessage( m : xmpp.Message ) : Void;
+	//public dynamic function onEventMessage( m : xmpp.Message ) {}
 	
 	public var stream(default,null) : Stream;
 	

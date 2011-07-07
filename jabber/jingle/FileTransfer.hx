@@ -15,8 +15,8 @@ import neko.io.Path;
 */
 class FileTransfer extends OutgoingSession<ByteStreamOutput> {
 	
-	//public dynamic function onProgress( bytes : Bytes ) : Void;
-	public dynamic function onComplete() : Void;
+	//public dynamic function onProgress( bytes : Bytes ) {}
+	public dynamic function onComplete() {}
 	
 	var input : haxe.io.Input;
 	var filesize : Int;

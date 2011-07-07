@@ -23,10 +23,10 @@ package jabber;
 */
 class EntityCapabilities {
 	
-	//public dynamic function onCaps( jid : String, caps : xmpp.Caps ) : Void;
+	//public dynamic function onCaps( jid : String, caps : xmpp.Caps ) {}
 	/** Fired if a new entity capability got discovered */
-	public dynamic function onInfo( jid : String, info : xmpp.disco.Info, ?ver : String ) : Void;
-	public dynamic function onError( e : jabber.XMPPError ) : Void;
+	public dynamic function onInfo( jid : String, info : xmpp.disco.Info, ?ver : String ) {}
+	public dynamic function onError( e : jabber.XMPPError ) {}
 	
 	public var stream(default,null) : Stream;
 	public var cached(default,null) : Hash<xmpp.disco.Info>;

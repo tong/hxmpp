@@ -28,7 +28,7 @@ import xmpp.filter.PacketPropertyFilter;
 */
 class ChatStateNotification {
 	
-	public dynamic function onState( jid : String, state : xmpp.ChatState ) : Void;
+	public dynamic function onState( jid : String, state : xmpp.ChatState ) {}
 	
 	public var stream(default,null) : Stream;
 	public var state : xmpp.ChatState;

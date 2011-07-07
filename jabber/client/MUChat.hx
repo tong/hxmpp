@@ -47,15 +47,15 @@ typedef MUCOccupant = {
 */
 class MUChat {
 
-	public dynamic function onJoin() : Void;
-	public dynamic function onLeave() : Void;
-	public dynamic function onUnlock() : Void;
-	public dynamic function onMessage( o : MUCOccupant, m : xmpp.Message ) : Void;
-	//public dynamic function onRoomMessage( m : xmpp.Message ) : Void;
-	public dynamic function onPresence( o : MUCOccupant ) : Void;
-	public dynamic function onSubject( t : String ) : Void;
-	public dynamic function onKick( nick : String ) : Void;
-	public dynamic function onError( e : jabber.XMPPError ) : Void;
+	public dynamic function onJoin() {}
+	public dynamic function onLeave() {}
+	public dynamic function onUnlock() {}
+	public dynamic function onMessage( o : MUCOccupant, m : xmpp.Message ) {}
+	//public dynamic function onRoomMessage( m : xmpp.Message ) {}
+	public dynamic function onPresence( o : MUCOccupant ) {}
+	public dynamic function onSubject( t : String ) {}
+	public dynamic function onKick( nick : String ) {}
+	public dynamic function onError( e : jabber.XMPPError ) {}
 	
 	public var jid(default,null) : String;
 	public var room(default,null) : String;

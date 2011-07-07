@@ -32,9 +32,9 @@ import xmpp.lop.Submit;
 class Farm {
 	
 	public dynamic function onJob( job : Submit ) : String { return "no LOP job handler specified"; }
-	public dynamic function onVMKill( id : String ) : Void;
+	public dynamic function onVMKill( id : String ) {}
 	public dynamic function onPing( ping : Ping ) : String { return null; }
-	public dynamic function onSetBindings( bindings : Bindings ) : Void;
+	public dynamic function onSetBindings( bindings : Bindings ) {}
 	public dynamic function onGetBindings( bindings : Bindings ) : Bindings { return null; }
 	
 	public var stream(default,null) : jabber.Stream;

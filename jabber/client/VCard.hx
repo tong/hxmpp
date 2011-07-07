@@ -22,9 +22,9 @@ package jabber.client;
 */
 class VCard {
 	
-	public dynamic function onLoad( jid : String, data : xmpp.VCard ) : Void;
-	public dynamic function onUpdate() : Void;
-	public dynamic function onError( e : jabber.XMPPError ) : Void;
+	public dynamic function onLoad( jid : String, data : xmpp.VCard ) {}
+	public dynamic function onUpdate() {}
+	public dynamic function onError( e : jabber.XMPPError ) {}
 	
 	public var stream(default,null) : Stream;
 	

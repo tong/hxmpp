@@ -23,8 +23,8 @@ package jabber;
 */
 class BOB {
 	
-	public dynamic function onLoad( from : String, bob : xmpp.BOB ) : Void;
-	public dynamic function onError( e : jabber.XMPPError ) : Void;
+	public dynamic function onLoad( from : String, bob : xmpp.BOB ) {}
+	public dynamic function onError( e : jabber.XMPPError ) {}
 	
 	public var stream(default,null) : jabber.Stream;
 	

@@ -23,11 +23,11 @@ package jabber.client;
 */
 class Account {
 	
-	public dynamic function onFields( fields : Array<String> ) : Void;
-	public dynamic function onRegister( node : String ) : Void;
-	public dynamic function onRemove() : Void;
-	public dynamic function onPasswordChange( pass : String ) : Void;
-	public dynamic function onError( e : jabber.XMPPError ) : Void;
+	public dynamic function onFields( fields : Array<String> ) {}
+	public dynamic function onRegister( node : String ) {}
+	public dynamic function onRemove() {}
+	public dynamic function onPasswordChange( pass : String ) {}
+	public dynamic function onError( e : jabber.XMPPError ) {}
 	
 	public var stream(default,null) : Stream;
 	

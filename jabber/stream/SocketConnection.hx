@@ -192,11 +192,11 @@ class SocketConnection extends Connection {
 
 class Socket {
 	
-	public dynamic function onConnect() : Void;
-	public dynamic function onDisconnect() : Void;
-	public dynamic function onData( d : String ) : Void;
-	public dynamic function onSecured() : Void;
-	public dynamic function onError( e : String ) : Void;
+	public dynamic function onConnect() {}
+	public dynamic function onDisconnect() {}
+	public dynamic function onData( d : String ) {}
+	public dynamic function onSecured() {}
+	public dynamic function onError( e : String ) {}
 	
 	public var id(default,null) : Int;
 	

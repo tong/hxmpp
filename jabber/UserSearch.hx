@@ -22,9 +22,9 @@ package jabber;
 */
 class UserSearch {
 	
-	public dynamic function onFields( jid : String, l : xmpp.UserSearch ) : Void;
-	public dynamic function onResult( jid : String, l : xmpp.UserSearch ) : Void;
-	public dynamic function onError( e : XMPPError ) : Void;
+	public dynamic function onFields( jid : String, l : xmpp.UserSearch ) {}
+	public dynamic function onResult( jid : String, l : xmpp.UserSearch ) {}
+	public dynamic function onError( e : XMPPError ) {}
 	
 	public var stream(default,null) : Stream;
 	

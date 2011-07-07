@@ -29,7 +29,7 @@ class GMailNotify {
 	
 	public static var XMLNS = "google:mail:notify";
 	
-	public dynamic function onMail( m : Xml ) : Void;
+	public dynamic function onMail( m : Xml ) {}
 	
 	public var stream(default,null) : Stream;
 	
