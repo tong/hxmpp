@@ -66,7 +66,7 @@ class DataReciever {
 	
 	function sendDeny() {
 		var r = IQ.createError( request );
-		r.errors.push( new xmpp.Error( xmpp.ErrorType.auth, xmpp.ErrorCondition.NOT_ACCEPTABLE ) );
+		r.errors.push( new xmpp.Error( xmpp.ErrorType.auth, "not-acceptable" ) );
 		stream.sendPacket( r );
 	}
 	

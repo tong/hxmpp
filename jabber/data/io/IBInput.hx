@@ -65,14 +65,12 @@ class IBInput extends IBIO {
 		var ib = xmpp.file.IB.parse( iq.x.toXml() );
 		if( ib.sid != sid ) {
 			stream.removeCollector( collector );
-			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( xmpp.ErrorType.cancel,
-																	xmpp.ErrorCondition.BAD_REQUEST )] ) );
+			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( xmpp.ErrorType.cancel, "bad-request" )] ) );
 			return;
 		}
 		if( ib.seq != seq ) {
 			stream.removeCollector( collector );
-			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( xmpp.ErrorType.cancel,
-																	xmpp.ErrorCondition.UNEXPECTED_REQUEST )] ) );
+			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( xmpp.ErrorType.cancel, "unexpected-request" )] ) );
 			return;
 		}
 		seq++;

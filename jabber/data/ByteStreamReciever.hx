@@ -80,8 +80,7 @@ class ByteStreamReciever extends DataReciever {
 		if( bytestreamIndex < bytestream.streamhosts.length ) {
 			connect();
 		} else {
-			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( xmpp.ErrorType.cancel,
-																    xmpp.ErrorCondition.ITEM_NOT_FOUND)] ) );
+			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( xmpp.ErrorType.cancel, "item-not-found" )] ) );
 		}
 	}
 	

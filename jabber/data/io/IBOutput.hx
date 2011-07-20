@@ -59,8 +59,7 @@ class IBOutput extends IBIO {
 			active = false;
 			__onComplete();
 		} else {
-			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( xmpp.ErrorType.cancel,
-																	xmpp.ErrorCondition.BAD_REQUEST )] ) );
+			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( xmpp.ErrorType.cancel, "bad-request" )] ) );
 			__onFail( "invalid IB transfer" );
 		}
 		stream.removeCollector( collector );

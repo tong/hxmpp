@@ -201,10 +201,10 @@ class Stream {
 	
 	//TODO public function sendData( bytes : Bytes ) : Bytes {
 	public function sendRawData( bytes : Bytes ) : Bytes {
-		trace("RAW "+bytes.length);
+		//trace("RAW "+bytes.length);
 		for( i in dataInterceptors )
 			bytes = i.interceptData( bytes );
-		trace("RAW "+bytes.length);
+		//trace("RAW "+bytes.length);
 		if( !cnx.writeBytes( bytes ) )
 			return null;
 		return bytes;
@@ -457,7 +457,7 @@ class Stream {
 				#end
 				if( q.type != xmpp.IQType.error ) {
 					var r = new xmpp.IQ( xmpp.IQType.error, p.id, p.from, p.to );
-					r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, xmpp.ErrorCondition.FEATURE_NOT_IMPLEMENTED ) );
+					r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, 'feature-not-implemented' ) );
 					sendData( r.toString() );
 				}
 			}
