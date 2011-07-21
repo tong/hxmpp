@@ -96,7 +96,7 @@ class MD5 {
 		for( i in 0...(nblk * 16) ) blks[i] = 0;
 		var i = 0;
 		while( i < str.length ) {
-			blks[i >> 2] |= str.charCodeAt(i) << (((str.length * 8 + i) % 4) * 8);
+			blks[i >> 2] |= StringTools.fastCodeAt(str,i) << (((str.length * 8 + i) % 4) * 8);
 			i++;
 		}
 		blks[i >> 2] |= 0x80 << (((str.length * 8 + i) % 4) * 8);
@@ -139,7 +139,7 @@ class MD5 {
 			r[i] = 0;
 		var i2 = 0;
 		while( i2 < inp.length * 8 ) {
-		    r[i2>>5] |=  ( inp.charCodeAt( Std.int( i2 / 8 ) ) & 0xFF) << ( i2 % 32 );
+		    r[i2>>5] |=  ( StringTools.fastCodeAt( inp, Std.int( i2 / 8 ) ) & 0xFF) << ( i2 % 32 );
 		    i2 += 8;
 		}
 		return r;
