@@ -47,7 +47,7 @@ private typedef AllowedDomain = {
 }
 
 /**
-	A standalone flash policy server (neko,cpp,nodejs,air).
+	Flash policy server (neko,cpp,nodejs,air).
 */
 class FlashPolicyServer {
 	

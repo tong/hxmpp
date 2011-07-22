@@ -34,7 +34,7 @@ jabber.client.GMailNotify
 jabber.client.MUChat
 jabber.client.NonSASLAuth
 jabber.client.Roster
-jabber.client.SASLAuth
+jabber.client.Authentication
 jabber.client.Stream
 jabber.client.VCard
 jabber.data.IBReciever

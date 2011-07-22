@@ -62,7 +62,7 @@ include.hxml
 
 --next
 
--cmd chxdoc -o api --templateDir=templates api_flash.xml,flash api_js.xml,js  -f haxe -f flash -f js -f neko -f php   -f Array -f Bool -f Class -f Date -f Dynamic -f EReg -f Enum -f Float -f Hash -f Int -f IntHash -f IntIter -f Iterable -f Iterator -f Lambda -f Math -f Null -f Reflect -f Std -f String -f StringTools -f StringBuf -f Type -f UInt -f ValueType -f Void -f Xml -f XmlType -f tls 
+-cmd chxdoc -o api --templateDir=templates api_flash.xml,flash api_js.xml,js -f haxe -f flash -f js -f neko -f php -f Array -f Bool -f Class -f Date -f Dynamic -f EReg -f Enum -f Float -f Hash -f Int -f IntHash -f IntIter -f Iterable -f Iterator -f Lambda -f Math -f Null -f Reflect -f Std -f String -f StringTools -f StringBuf -f Type -f UInt -f ValueType -f Void -f Xml -f XmlType -f tls 
 #--showTodoTags=true --generateTodoFile=true
 #-cmd rm api_flash.xml api_js.xml api_neko.xml api_php.xml
 
