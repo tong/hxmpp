@@ -1,5 +1,5 @@
 <project name="hxmpp" url="http://hxmpp.disktree.net" license="LGPL">
 	<user name="tong"/>
 	<description>XMPP/Jabber client/component library</description>
-	<version name="0.4.7">Misc</version>
+	<version name="0.4.8">Misc</version>
 </project>
