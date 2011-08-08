@@ -29,9 +29,9 @@ class Connection {
 	/** Disconnected callback */
 	public var __onDisconnect : String->Void;
 	/** Data recieved callback */
-	public var __onData : Bytes->Int->Int->Int;
+	public var __onData : Bytes->Bool;
 	/** String recieved callback */
-	public var __onString : String->Int;
+	public var __onString : String->Bool;
 	/** TLS negotiation complete callback */
 	@:keep public var __onSecured : String->Void;
 	

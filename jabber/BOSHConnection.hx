@@ -149,7 +149,7 @@ class BOSHConnection extends jabber.stream.Connection {
 			//sendQueuedRequests( r.toString() );
 			sendRequests( r );
 			cleanup();
-			//onDisconnect();
+			//__onDisconnect(null);
 		}
 	}
 	

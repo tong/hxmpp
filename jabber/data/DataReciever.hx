@@ -53,7 +53,7 @@ class DataReciever {
 	}
 	
 	/**
-		Accept/deny the data transfer
+		Accept/Deny the data transfer
 	*/
 	public function accept( yes : Bool, ?range : xmpp.file.Range ) {
 		// override me

@@ -109,18 +109,18 @@ class Stream extends jabber.Stream {
 	}
 	*/
 	
-	override function processStreamInit( t : String, len : Int ) {
+	override function processStreamInit( t : String ) : Bool {
 		if( t.charAt( 0 ) != "<" || t.charAt( t.length-1 ) != ">" )
-			return 0;
+			return false;
 		var r = ~/^(<\?xml) (.)+\?>/;
 		if( r.match(t) ) t = r.matchedRight();
 		var i = t.indexOf( ">" );
 		if( i == -1 )
-			return 0;
+			return false;
 		t = t.substr( 0, i )+" />";
 		var x : Xml = null;
 		try x = Xml.parse(t).firstElement() catch(e:Dynamic){
-			return 0;
+			return false;
 		}
 		id = x.get('id');
 		status = jabber.stream.Status.open;
@@ -128,7 +128,7 @@ class Stream extends jabber.Stream {
 		handleStreamOpen();
 		collect( [ cast new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], readyHandler, false );
 		sendData( XMLUtil.createElement( "handshake", Xml.createPCData( SHA1.encode( id+secret ) ).toString() ).toString() );
-		return len;
+		return true;
 	}
 	
 	function readyHandler( p : xmpp.Packet ) {

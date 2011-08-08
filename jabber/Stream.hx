@@ -82,6 +82,10 @@ class Stream {
 	public var dataFilters(default,null) : Array<TDataFilter>;
 	public var dataInterceptors(default,null) : Array<TDataInterceptor>;
 	
+	var buf : StringBuf;
+	var maxBufSize : Int;
+	var bufSize : Int;
+	
 	var collectors_id : Array<PacketCollector>;
 	var collectors : Array<PacketCollector>;
 	var interceptors : Array<TPacketInterceptor>;
@@ -97,7 +101,10 @@ class Stream {
 		numPacketsSent = 0;
 		dataFilters = new Array();
 		dataInterceptors = new Array();
-		if( cnx != null ) setConnection( cnx );
+		resetBuffer();
+		maxBufSize = 131072;
+		if( cnx != null )
+			setConnection( cnx );
 	}
 	
 	function setJID( j : JID ) : JID {
@@ -173,14 +180,13 @@ class Stream {
 		if( !cnx.connected )
 			return null;
 		if( intercept ) interceptPacket( untyped p );
-		//TODO return the given packet?
 		return ( sendData( untyped p.toString() ) != null ) ? p : null;
 	}
 	
 	/**
 		Send raw string.
 	*/
-	//TODO public function sendString( t : String ) : String {
+	//TODO public function send( t : String ) : String {
 	public function sendData( t : String ) : String {
 		if( !cnx.connected )
 			return null;
@@ -188,7 +194,7 @@ class Stream {
 		t = StringTools.replace( t, "_xmlns_=", "xmlns=" );
 		#end
 		if( dataInterceptors.length > 0 ) {
-			if( sendRawData( haxe.io.Bytes.ofString(t) ) == null )
+			if( sendBytes( haxe.io.Bytes.ofString(t) ) == null )
 				return null;
 		} else {
 			if( !cnx.write( t ) )
@@ -199,12 +205,10 @@ class Stream {
 		return t;
 	}
 	
-	//TODO public function sendData( bytes : Bytes ) : Bytes {
-	public function sendRawData( bytes : Bytes ) : Bytes {
-		//trace("RAW "+bytes.length);
+	//TODO public function sendBytes( bytes : Bytes ) : Bytes {
+	public function sendBytes( bytes : Bytes ) : Bytes {
 		for( i in dataInterceptors )
 			bytes = i.interceptData( bytes );
-		//trace("RAW "+bytes.length);
 		if( !cnx.writeBytes( bytes ) )
 			return null;
 		return bytes;
@@ -313,55 +317,71 @@ class Stream {
 	
 	/**
 	*/
-	public function handleData( buf : haxe.io.Bytes, bufpos : Int, buflen : Int ) : Int {
+	public function handleData( bytes : Bytes ) : Bool {
 		if( status == Status.closed )
-			return -1;
-		//TODO .. data filters
+			return false;
+		//TODO
 //		for( f in dataFilters ) {
-//			buf = f.filterData( buf );
+//			b = f.filterData( b );
 //		}
-		return handleString( buf.readString( bufpos, buflen ) );
+		return handleString( bytes.toString() );
 	}
 	
 	/**
 	*/
-	public function handleString( t : String ) : Int {
+	public function handleString( t : String ) : Bool {
 		
 		if( status == Status.closed )
-			return -1;
-
+			throw "stream is closed";
+		
+		//TODO remove all \n here?
+		//t = StringTools.replace( t, "\n", "" );
+		
+		if( StringTools.fastCodeAt( t, t.length-1 ) != 62 ) { // ">"
+			buffer( t );
+			return false;
+		}
+		
 		if( StringTools.startsWith( t, '</stream:stream' ) ) {
 			#if XMPP_DEBUG XMPPDebug.inc( t ); #end
 			close( cnx.connected );
-			return 0;
+			return true;
 		} else if( StringTools.startsWith( t, '</stream:error' ) ) {
 			#if XMPP_DEBUG XMPPDebug.inc( t ); #end
 			close( cnx.connected );
-			return 0;
+			return true;
 		}
+		
+		buffer( t );
+		if( bufSize > maxBufSize )
+			throw "max buffer size reached";
 		
 		switch( status ) {
 		
 		case Status.closed :
-			// TODO cleanup
-			return -1;//buflen?
+			return false;
 		
 		case Status.pending :
-			return processStreamInit( t, t.length );
+			if( processStreamInit( buf.toString() ) ) {
+				resetBuffer();
+				return true;
+			} else {
+				return false;
+			}
 		
 		#if !JABBER_COMPONENT
 		case Status.starttls :
 			var x : Xml = null;
 			try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
 				#if XMPP_DEBUG XMPPDebug.inc( t ); #end
-				#if JABBER_DEBUG trace( "StartTLS failed" ); #end
+				#if JABBER_DEBUG trace( "StartTLS failed", "warn" ); #end
 				cnx.disconnect();
-				return 0;
+				return true;
 			}
 			#if XMPP_DEBUG XMPPDebug.inc( t ); #end
 			if( x.nodeName != "proceed" || x.get( "xmlns" ) != "urn:ietf:params:xml:ns:xmpp-tls" ) {
 				cnx.disconnect();
-				return 0;
+				return true;
 			}
 			var me = this;
 			cnx.__onSecured = function(err:String) {
@@ -371,19 +391,20 @@ class Stream {
 				me.open( null );
 			}
 			cnx.setSecure();
-			return t.length;
+			return true;
 		#end //!JABBER_COMPONENT
 			
 		case Status.open :
 			var x : Xml = null;
-			try x = Xml.parse( t ) catch( e : Dynamic ) {
+			try x = Xml.parse( buf.toString() ) catch( e : Dynamic ) {
 				//#if JABBER_DEBUG trace( "Packet incomplete, waiting for more data ..", "info" ); #end
-				return 0; // wait for more data
+				return false; // wait for more data
 			}
+			resetBuffer();
 			handleXml( x );
-			return t.length;
+			return true;
 		}
-		return 0;
+		return true;
 	}
 	
 	/**
@@ -465,6 +486,16 @@ class Stream {
 		return collected;
 	}
 	
+	function buffer( t : String ) {
+		buf.add( t );
+		bufSize += t.length;
+	}
+	
+	function resetBuffer() {
+		buf = new StringBuf();
+		bufSize = 0;
+	}
+	
 	//TODO is this needed ?
 	/*
 	public function replaceConnection( n : Connection ) {
@@ -483,8 +514,8 @@ class Stream {
 	}
 	*/
 	
-	function processStreamInit( t : String, buflen : Int ) : Int {
-		return #if JABBER_DEBUG throw 'abstract method' #else -1 #end;
+	function processStreamInit( t : String ) : Bool {
+		return #if JABBER_DEBUG throw 'abstract method' #else false #end;
 	}
 	
 	function handleConnect() {
@@ -500,18 +531,17 @@ class Stream {
 	}
 	
 	function handleStreamClose( ?e : String ) {
+		resetBuffer();
+		numPacketsSent = 0;
+		collectors = new Array();
+		collectors_id = new Array();
+		interceptors = new Array();
+		server = { features : new Hash() };
+		features = new StreamFeatures();
+		status = Status.closed;
+		dataFilters = new Array();
+		dataInterceptors = new Array();
 		onClose( e );
 	}
-	
-	/*
-	function cleanup() {
-		id = null;
-		numPacketsSent = 0;
-		collectors = new List();
-		interceptors = new List();
-		sever = { features : new Hash() };
-		features = new StreamFeatures();
-	}
-	*/
 	
 }

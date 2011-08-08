@@ -73,8 +73,7 @@ class WebSocketConnection extends jabber.stream.Connection {
 	}
 	
 	function onData( m ) {
-		var d = m.data;
-		__onData( haxe.io.Bytes.ofString( d ), 0, d.length );
+		__onString( m.data );
 	}
 	
 	public static function isSupported() : Bool {

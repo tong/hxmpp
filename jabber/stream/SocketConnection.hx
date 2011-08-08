@@ -22,31 +22,90 @@ import haxe.io.Bytes;
 #if neko
 import neko.net.Host;
 import neko.net.Socket;
-
 #elseif php
 import php.net.Host;
 import php.net.Socket;
-
 #elseif cpp
 import cpp.net.Host;
 import cpp.net.Socket;
-
 #elseif rhino
 import js.net.Host;
 import js.net.Socket;
-
 #elseif nodejs
 import js.Node;
 typedef Socket = Stream;
-
 #elseif flash
 #if TLS
 import tls.controller.SecureSocket;
 #else
 import flash.net.Socket;
 #end
-	
 #end
+
+#if droid
+
+import droid.net.Socket;
+
+class SocketConnection extends jabber.stream.Connection {
+	
+	public var port(default,null) : Int;
+	
+	var s : Socket;
+	
+	public function new( host : String, port : Int = 5222, secure : Bool ) {
+		super( host, secure );
+		this.port = port;
+	}
+	
+	public override function connect() {
+		s = new Socket( secure );
+		s.onopen = onConnect;
+		s.onclose = onClose;
+		s.onerror = onError;
+		s.onmessage = onData;
+		s.connect( host, port );
+	}
+	
+	public override function disconnect() {
+		s.close();
+	}
+	
+	public override function write( t : String ) : Bool {
+		s.send( t );
+		return true;
+	}
+	
+	public override function read( ?yes : Bool = true ) : Bool {
+		//s.onmessage = yes ? onData : null;
+		//s.read();
+		return true;
+	}
+	
+	function onConnect() {
+		//trace("onConnect!");
+		connected = true;
+		__onConnect();
+	}
+	
+	function onClose() {
+		//trace("onClose!");
+		connected = false;
+		__onDisconnect(null);
+	}
+	
+	function onError() {
+		//trace("onError!");
+		connected = false;
+		__onDisconnect( "socket error" ); // no error message?
+	}
+	
+	function onData( m : String ) {
+		__onString( m );
+		//__onData( haxe.io.Bytes.ofString( m ), 0, m.length );
+	}
+}
+
+#else
 
 #if (neko||php||cpp)
 private typedef AbstractSocket = {
@@ -60,13 +119,10 @@ private typedef AbstractSocket = {
 }
 #end
 
-/**
-	Abstract base class for socket connections.
-*/
 class SocketConnection extends Connection {
 	
-	public static var defaultBufSize = #if php 65536 #else 128 #end; //TODO php buf
-	public static var defaultMaxBufSize = 262144;
+	public static var defaultBufSize = #if php 65536 #else 256 #end; //TODO php buf
+	public static var defaultMaxBufSize = 262144; //TODO !
 	
 	public var port(default,null) : Int;
 	public var bufSize(default,null) : Int;
@@ -135,8 +191,9 @@ class SocketConnection extends Connection {
 	public override function read( ?yes : Bool = true ) : Bool {
 		if( yes ) {
 			reading = true;
-			while( reading  && connected )
+			while( reading  && connected ) {
 				readData();
+			}
 		} else {
 			reading = false;
 		}
@@ -148,6 +205,22 @@ class SocketConnection extends Connection {
 	}
 	
 	function readData() {
+		
+		//TODO still double the buffer size if packet was not handled
+		// ...
+		
+		var len = 0;
+		//try len = socket.input.readBytes( buf, bufbytes, buflen-bufbytes ) catch( e : Dynamic ) {
+		try len = socket.input.readBytes( buf, 0, bufSize ) catch( e : Dynamic ) {
+			reading = connected = false;
+			__onDisconnect( e );
+			return;
+		}
+		__onData( buf.sub( 0, len ) );
+		buf = Bytes.alloc( bufSize );
+		//trace(len);
+		
+		/*
 		var buflen = buf.length;
 		if( bufbytes == buflen ) {
 			var nsize = buflen*2;
@@ -170,6 +243,7 @@ class SocketConnection extends Connection {
 		}
 		bufbytes += nbytes;
 		var pos = 0;
+		//TODO move buffering into jabber.Stream class
 		while( bufbytes > 0 ) {
 			var nbytes = __onData( buf, pos, bufbytes );
 			if( nbytes == 0 ) {
@@ -181,11 +255,17 @@ class SocketConnection extends Connection {
 		if( reading && pos > 0 )
 			buf = Bytes.alloc( bufSize );
 		//buf.blit( 0, buf, pos, bufbytes );
+		*/
 	}
 	
 	#end
 	
 }
+
+#end
+
+
+////////////////////////////////////////////////////////
 
 
 #if JABBER_SOCKETBRIDGE

@@ -15,6 +15,10 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
+
+/**
+	Compile this to a standalone flash socket bridge swf
+*/
 class Standalone {
 	
 	static function main() {

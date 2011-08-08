@@ -75,7 +75,6 @@ import flash.utils.ByteArray;
 
 class SecureSocketConnection extends jabber.stream.SocketConnection {
 	
-	var buf : ByteArray;
 	#if air
 	//var socket : SecureSocket;
 	#end
@@ -87,7 +86,6 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	public override function connect() {
-		buf = new ByteArray();
 		socket = new SecureSocket();
 		socket.addEventListener( Event.CONNECT, sockConnectHandler );
 		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
@@ -136,18 +134,9 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
-		try socket.readBytes( buf, buf.length, Std.int(e.bytesLoaded) ) catch( e : Dynamic ) {
-			#if JABBER_DEBUG
-		//	trace(e);
-			#end
-			return;
-		}
-		var b = haxe.io.Bytes.ofData( untyped buf );
-		if( b.length > maxBufSize )
-			throw "max buffer size reached ["+maxBufSize+"]";
-		if( __onData(  b, 0, b.length ) > 0 )
-			buf = new ByteArray();
-		//socket.flush();
+		var d = new ByteArray();
+		socket.readBytes( d, 0, Std.int(e.bytesLoaded) );
+		__onData( haxe.io.Bytes.ofData( d ) );
 	}
 }
 
@@ -170,7 +159,6 @@ class SecureSocketConnection extends jabber.SocketConnection {
 	}
 	
 	override function secureChannelEstablished( e : SecureSocketEvent ) {
-		//trace(e);
 		connected = true;
 		__onConnect();
 	}
@@ -179,7 +167,15 @@ class SecureSocketConnection extends jabber.SocketConnection {
 
 #elseif js
 
-#if air
+#if droid
+
+class SecureSocketConnection extends jabber.stream.SocketConnection {
+	public function new( host : String, port : Int = 5223 ) {
+		super( host, port, true );
+	}
+}
+
+#elseif air
 import air.ByteArray;
 import air.SecureSocket;
 import air.Event;
@@ -247,16 +243,9 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
-		try socket.readBytes( buf, buf.length, e.bytesLoaded ) catch( e : Dynamic ) {
-			#if JABBER_DEBUG trace(e); #end
-			return;
-		}
-		var b = haxe.io.Bytes.ofData( untyped buf );
-		if( b.length > maxBufSize )
-			throw "max buffer size reached ["+maxBufSize+"]";
-		if( __onData(  b, 0, b.length ) > 0 )
-			buf = new ByteArray();
-		socket.flush();
+		var d = new ByteArray();
+		socket.readBytes( d, 0, Std.int(e.bytesLoaded) );
+		__onData(  haxe.io.Bytes.ofData( d )  );
 	}
 }
 
@@ -275,6 +264,7 @@ class SecureSocketConnection extends jabber.SocketConnection {
 	
 	override function createConnection() {
 		socket = Node.tls.connect( port, host, null, sockConnectHandler );
+		socket.setEncoding( Node.UTF8 );
 	}
 }
 

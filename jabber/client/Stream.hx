@@ -53,23 +53,23 @@ class Stream extends jabber.Stream {
 		}
 	}
 	
-	override function processStreamInit( t : String, buflen : Int ) : Int {
+	override function processStreamInit( t : String ) : Bool {
 		if( cnx.http ) {
 			#if XMPP_DEBUG jabber.XMPPDebug.inc( t ); #end
 			var x : Xml = null;
 			try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
-				return -1;
+				return false;
 			}
 			parseServerStreamFeatures( ( x.nodeName == "body" ) ? x.firstElement() : x );
 			status = Status.open;
 			handleStreamOpen();
-			return buflen;
+			return true;
 		} else {
 			var r = ~/^(<\?xml) (.)+\?>/;
 			if( r.match(t) ) t = r.matchedRight();
 			var sei = t.indexOf( ">" );
 			if( sei == -1 )
-				return 0;
+				return false;
 			if( id == null ) { // parse open stream
 				var s = t.substr( 0, sei )+" />";
 				var sx = Xml.parse( s ).firstElement();
@@ -78,19 +78,19 @@ class Stream extends jabber.Stream {
 					status = Status.open;
 					//cnx.reset();
 					handleStreamOpen();
-					return buflen;
+					return true;
 				}
 			}
 			if( id == null ) {
 				#if JABBER_DEBUG trace( "Invalid XMPP stream, missing ID" ); #end
 				close( true );
 				onClose( "invalid stream id" );
-				return -1;
+				return false;
 			}
 			if( !version ) {
 				status = Status.open;
 				handleStreamOpen();
-				return buflen;
+				return true;
 			}
 		}
 		var sfi = t.indexOf( "<stream:features>" );
@@ -101,7 +101,7 @@ class Stream extends jabber.Stream {
 			#end
 			var x : Xml;
 			try x = Xml.parse( sf ).firstElement() catch( e : Dynamic ) {
-				return 0;
+				return false;
 			}
 			parseServerStreamFeatures( x );
 			#if XMPP_DEBUG jabber.XMPPDebug.inc( t ); #end
@@ -112,15 +112,14 @@ class Stream extends jabber.Stream {
 				status = Status.open;
 				handleStreamOpen();
 			}
-			return buflen;
+			return true;
 		}
-		return 0; // read more
+		return false; // read more
 	}
 	
 	function parseServerStreamFeatures( x : Xml ) {
-		for( e in x.elements() ) {
+		for( e in x.elements() )
 			server.features.set( e.nodeName, e );
-		}
 	}
 	
 }
