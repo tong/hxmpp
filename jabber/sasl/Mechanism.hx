@@ -17,7 +17,7 @@
 */
 package jabber.sasl;
 
-typedef TMechanism = {
+typedef Mechanism = {
 	var id(default,null) : String;
 	function createAuthenticationText( user : String, host : String, password : String, resource : String ) : String;
 	function createChallengeResponse( challenge : String ) : String;
