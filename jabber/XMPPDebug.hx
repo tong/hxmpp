@@ -47,8 +47,9 @@ import js.Lib;
 		#if (air)
 		#else
 			#if flash
-			useConsole = ( ExternalInterface.available &&
-						   ExternalInterface.call( "console.error.toString" ) != null );
+			//useConsole = ( ExternalInterface.available &&
+			//			   ExternalInterface.call( "console.error.toString" ) != null );
+			useConsole = ExternalInterface.available;
 			#elseif js
 				#if (nodejs||rhino)
 				#else
@@ -98,8 +99,10 @@ import js.Lib;
 		if( color == -1 ) {
 			#if rhino
 			Lib._print( t );
-			#elseif air
+			#elseif (air&&flash)
 			untyped __global__['trace']( t );
+			#elseif (air&&js)
+			untyped air.trace(t);
 			#else
 			Lib.print( t );
 			#end
@@ -112,19 +115,27 @@ import js.Lib;
 		b.add( t );
 		b.add( "\033[" );
 		b.add( "m\n" );
+		
 		#if rhino
 		Lib._print( b.toString() );
+		
 		#elseif air
+		#if flash
 		untyped __global__['trace']( b.toString() );
 		#else
+		untyped air.trace( b.toString() );
+		#end
+		
+		#else
 		Lib.print( b.toString() );
+		
 		#end
 	}
 	
 	#elseif (flash||js)
 	
 	/** Indicates if the XMPP transfer should get printed to the browser console */
-	public static var useConsole : Bool = false;
+	public static var useConsole : Bool;
 	
 	public static function __print( t : String, out : Bool = true, level : String = "log" ) {
 		var dir = out ? "=>" : "<=";
