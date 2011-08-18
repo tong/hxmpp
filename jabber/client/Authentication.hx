@@ -38,9 +38,9 @@ class Authentication extends Auth {
 	public dynamic function onNegotiated() {}
 	
 	/** Used SASL method */
-	public var mechanism(default,null) : jabber.sasl.TMechanism;
+	public var mechanism(default,null) : jabber.sasl.Mechanism;
 	/** Clients SASL mechanisms (in prefered order) */
-	public var mechanisms(default,null) : Array<jabber.sasl.TMechanism>;
+	public var mechanisms(default,null) : Array<jabber.sasl.Mechanism>;
 	/** Available mechanisms offered by server */
 	public var serverMechanisms(default,null) : Array<String>;
 	
@@ -49,7 +49,7 @@ class Authentication extends Auth {
 	var c_fail : PacketCollector;
 	var c_success : PacketCollector;
 	
-	public function new( stream : Stream, mechanisms : Iterable<jabber.sasl.TMechanism> ) {
+	public function new( stream : Stream, mechanisms : Iterable<jabber.sasl.Mechanism> ) {
 		super( stream );
 		var x = stream.server.features.get( "mechanisms" );
 		if( x == null )
@@ -110,7 +110,7 @@ class Authentication extends Auth {
 	}
 	
 	function handleSASLSuccess( p : xmpp.Packet ) {
-		stream.cnx.reset(); // clear connection buffer
+//		stream.cnx.reset(); // clear connection buffer
 		removeSASLCollectors(); // remove the collectors
 		onStreamOpenHandler = stream.onOpen; // relay the stream open event
 		stream.onOpen = handleStreamOpen;

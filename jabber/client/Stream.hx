@@ -27,24 +27,28 @@ import jabber.stream.Connection;
 */
 class Stream extends jabber.Stream {
 	
-	public static inline var PORT_STANDARD = 5222;
-	public static inline var PORT_STANDARD_SECURE = 5223;
-	public static var defaultPort = PORT_STANDARD;
-	public static var defaultPortSecure = PORT_STANDARD_SECURE;
+	public static inline var PORT = 5222;
+	public static inline var PORT_SECURE = 5223;
+	
+	public static var defaultPort = PORT;
+	public static var defaultPortSecure = PORT_SECURE;
 	
 	var version : Bool;
 	
-	public function new( cnx : Connection ) {
-		super( cnx );
+	public function new( cnx : Connection, ?maxBufSize : Int ) {
+		super( cnx, maxBufSize );
 		this.jid = jid;
 		version = true;
 	}
 	
 	override function handleConnect() {
+		var wasOpen = status == Status.open;
 		status = Status.pending;
 		if( !cnx.http ) {
 			sendData( xmpp.Stream.createOpenXml( xmpp.Stream.CLIENT, jid.domain, version, lang ) );
-			cnx.read( true ); // start reading input
+			if( !wasOpen ) {
+				cnx.read( true ); // start reading input
+			}
 		} else {
 			if( cnx.connected ) {
 				//server.features = new Hash(); // clear the server features offered (?)

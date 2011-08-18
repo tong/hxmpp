@@ -19,8 +19,9 @@ package jabber.component;
 
 #if JABBER_COMPONENT
 
-import jabber.stream.Connection;
 import jabber.ServiceDiscoveryListener;
+import jabber.stream.Connection;
+import jabber.stream.Status;
 import jabber.util.SHA1;
 import xmpp.XMLUtil;
 
@@ -60,8 +61,8 @@ class Stream extends jabber.Stream {
 	public var items(getItems,null) : xmpp.disco.Items;
 	public var discoListener(default,null) : ServiceDiscoveryListener;
 	
-	public function new( cnx : Connection ) {
-		super( cnx );
+	public function new( cnx : Connection, ?maxBufSize : Int ) {
+		super( cnx, maxBufSize );
 		connected = false;
 	}
 	
@@ -97,9 +98,11 @@ class Stream extends jabber.Stream {
 		cnx.read( true );
 	}
 	
-	override function handleDisconnect( e : String ) {
+	override function handleDisconnect( ?e : String ) {
 		connected = false;
-		handleStreamClose(e);
+		if( status != Status.closed ) {
+			handleStreamClose( e );
+		}
 	}
 	
 	/*

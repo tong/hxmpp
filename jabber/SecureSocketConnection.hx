@@ -249,6 +249,16 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 	}
 }
 
+/*
+#elseif JABBER_SOCKETBRIDGE
+
+class SecureSocketConnection extends jabber.SocketConnection {
+	public function new( host : String, ?port : Int = 5223, secure = true, ?bufSize : Int, ?maxBufSize : Int, timeout : Int = 10) {
+		super( host, port, true );
+	}
+}
+*/
+
 #elseif nodejs
 
 import js.Node;

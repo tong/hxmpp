@@ -45,13 +45,11 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		
 		super( host, port, secure, bufSize, maxBufSize, timeout );
 		
-		#if (neko||cpp)
-		#if JABBER_DEBUG
+		#if (JABBER_DEBUG && (neko||cpp||air) )
 		if( secure ) {
 			trace( "StartTLS not implemented, use jabber.SecureSocketConnection for legacy TLS on port 5223", "warn" );
 			this.secure = false;
 		}
-		#end
 		#end
 	}
 	
@@ -200,7 +198,9 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	public override function connect() {
 		socket = new Socket();
-		#if flash10 socket.timeout = timeout*1000; #end
+		#if flash
+		socket.timeout = timeout*1000;
+		#end
 		socket.addEventListener( Event.CONNECT, sockConnectHandler );
 		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );
 		socket.addEventListener( IOErrorEvent.IO_ERROR, sockErrorHandler );
@@ -258,9 +258,9 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
-		var buf = new ByteArray();
-		socket.readBytes( buf, 0, Std.int(e.bytesLoaded) );
-		__onData(  haxe.io.Bytes.ofData( buf )  );
+		var d = new ByteArray();
+		socket.readBytes( d, 0, Std.int( e.bytesLoaded ) );
+		__onData(  haxe.io.Bytes.ofData( d )  );
 	}
 }
 #end
@@ -323,26 +323,37 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	public override function write( t : String ) : Bool {
 		if( !connected || t == null || t.length == 0 )
 			return false;
-		socket.writeUTFBytes( t ); 
-		socket.flush();
+		try {
+			socket.writeUTFBytes( t );
+			socket.flush();
+		} catch(e:Dynamic) {
+			#if JABBER_DEBUG trace( e, "error" ); #end
+			return false;
+		}
 		return true;
-	}
-	
-	//??
-	public override function reset() {
-		#if JABBER_DEBUG trace('clearing socket buffer','info'); #end
 	}
 	
 	public override function writeBytes( t : Bytes ) : Bool {
 		if( !connected || t == null || t.length == 0 )
 			return false;
-		socket.writeBytes( t.getData() ); 
-		socket.flush();
+		try {
+			socket.writeBytes( t.getData() ); 
+			socket.flush();
+		} catch(e:Dynamic) {
+			#if JABBER_DEBUG trace( e, "error" ); #end
+			return false;
+		}
 		return true;
 	}
 	
+	//??
+	/*
+	public override function reset() {
+		#if JABBER_DEBUG trace('clearing socket buffer','info'); #end
+	}
+	*/
+	
 	function sockConnectHandler( e : Event ) {
-		trace(e);
 		connected = true;
 		__onConnect();
 	}
@@ -359,7 +370,10 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	function sockDataHandler( e : ProgressEvent ) {
 		var d = new ByteArray();
-		socket.readBytes( d, 0, Std.int(e.bytesLoaded) );
+		try socket.readBytes( d, 0, Std.int(e.bytesLoaded) ) catch( e : Dynamic ) {
+			#if JABBER_DEBUG trace(e,"error"); #end
+			return;
+		}
 		__onData(  haxe.io.Bytes.ofData( d )  );
 	}
 }
@@ -396,7 +410,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	public override function setSecure() {
-		//TODO
+		//TODO 'setSecure' got removed from node.js
 		trace("SET SECURE_________________________________");
 		// hmm? TypeError: Object #<a Stream> has no method 'setSecure' ??????????
 		//socket.on( Node.STREAM_SECURE, sockSecureHandler );
@@ -471,21 +485,16 @@ import jabber.stream.SocketConnection;
 
 class SocketConnection extends jabber.stream.SocketConnection {
 
-	public function new( host : String,
-						 ?port : Int = 5222,
-						 secure = true,
-						 ?bufSize : Int, ?maxBufSize : Int,
-						 timeout : Int = 10 ) {
-		super( host, port, secure, bufSize, maxBufSize, timeout );
+	public function new( host : String, ?port : Int = 5222, secure = true, timeout : Int = 10 ) {
+		super( host, port, secure, null, null, timeout );
 	}
 	
 	public override function connect() {
 		if( !SocketConnection.initialized )
-			throw "socketbridge not initialized";
-		socket = new Socket( secure );
+			throw "flash socketbridge not initialized";
+		socket = new Socket( secure, timeout );
 		socket.onConnect = sockConnectHandler;
 		socket.onDisconnect = sockDisconnectHandler;
-		socket.onError = sockErrorHandler;
 		socket.onSecured = sockSecuredHandler;
 		socket.connect( host, port, timeout*1000 );
 	}
@@ -520,9 +529,9 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		__onConnect();
 	}
 	
-	function sockDisconnectHandler() {
+	function sockDisconnectHandler( ?e : String ) {
 		connected = false;
-		__onDisconnect(null);
+		__onDisconnect( e );
 	}
 	
 	function sockSecuredHandler() {
@@ -534,19 +543,17 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		__onString( t );
 	}
 	
-	function sockErrorHandler( e : String ) {
-		connected = false;
-		__onDisconnect( e );
-	}
-	
-	///// Socketbridge connection
+	///// Flash socketbridge connection(s) ->
 		
 	static function __init__() {
 		initialized = false;
 	}
 	
+	/** The id of the html element holding the swf */
 	public static var id(default,null) : String;
+	/** Reference to the swf itself */
 	public static var swf(default,null) : Dynamic;
+	/** Indicates if the socketbridge stuff is initialized */
 	public static var initialized(default,null) : Bool;
 	
 	static var sockets : IntHash<Socket>;
@@ -570,10 +577,10 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		if( delay > 0 ) haxe.Timer.delay( _init, delay ) else _init();
 	}
 	
-	public static function createSocket( s : Socket, secure : Bool ) {
+	public static function createSocket( s : Socket, secure : Bool, timeout : Int ) {
 		var id : Int = -1;
-		try id = swf.createSocket( secure ) catch( e : Dynamic ) {
-			#if JABBER_DEBUG trace(e); #end
+		try id = swf.createSocket( secure, false, timeout ) catch( e : Dynamic ) {
+			#if JABBER_DEBUG trace(e,"error"); #end
 			return -1;
 		}
 		sockets.set( id, s );
@@ -584,12 +591,8 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		sockets.get( id ).onConnect();
 	}
 	
-	static function handleDisconnect( id : Int ) {
-		sockets.get( id ).onDisconnect();
-	}
-	
-	static function handleError( id : Int, e : String ) {
-		sockets.get( id ).onError( e );
+	static function handleDisconnect( id : Int, e : String ) {
+		sockets.get( id ).onDisconnect( e );
 	}
 	
 	static function handleData( id : Int, d : String ) {

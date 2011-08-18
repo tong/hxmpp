@@ -68,48 +68,41 @@ private class StreamFeatures {
 class Stream {
 	
 	public static var defaultPacketIdLength = 5;
+	public static var defaultMaxBufSize = 524288;
 	
 	public dynamic function onOpen() {}
 	public dynamic function onClose( ?error : String ) {}
 	
-	public var jid(default,setJID) : JID;
 	public var status : Status;
 	public var cnx(default,setConnection) : Connection;
 	public var features(default,null) : StreamFeatures;
 	public var server(default,null) : Server;
 	public var id(default,null) : String;
 	public var lang(default,null) : String;
+	public var jid(default,setJID) : JID;
+
 	public var dataFilters(default,null) : Array<TDataFilter>;
 	public var dataInterceptors(default,null) : Array<TDataInterceptor>;
+
+	public var bufSize(default,null) : Int;
+	public var maxBufSize : Int;
 	
 	var buf : StringBuf;
-	var maxBufSize : Int;
-	var bufSize : Int;
-	
 	var collectors_id : Array<PacketCollector>;
 	var collectors : Array<PacketCollector>;
 	var interceptors : Array<TPacketInterceptor>;
 	var numPacketsSent : Int;
 	
-	function new( cnx : Connection ) {
-		status = Status.closed;
-		server = { features : new Hash() };
-		features = new StreamFeatures();
-		collectors_id = new Array();
-		collectors = new Array();
-		interceptors = new Array();
-		numPacketsSent = 0;
-		dataFilters = new Array();
-		dataInterceptors = new Array();
-		resetBuffer();
-		maxBufSize = 131072;
+	function new( cnx : Connection, ?maxBufSize : Int ) {
+		this.maxBufSize = ( maxBufSize == null || maxBufSize < 1 ) ? defaultMaxBufSize : maxBufSize;
+		cleanup();
 		if( cnx != null )
 			setConnection( cnx );
 	}
 	
 	function setJID( j : JID ) : JID {
 		if( status != Status.closed )
-			throw "cannot change jid on active stream";
+			throw "cannot change jid on open xmpp stream";
 		return jid = j;
 	}
 	
@@ -127,6 +120,7 @@ class Stream {
 		case Status.closed :
 			if( cnx != null && cnx.connected )
 				cnx.disconnect();
+			resetBuffer();
 			cnx = c;
 			cnx.__onConnect = handleConnect;
 			cnx.__onDisconnect = handleDisconnect;
@@ -142,7 +136,6 @@ class Stream {
 	public function nextID() : String {
 		return Base64.random( defaultPacketIdLength )#if JABBER_DEBUG+"_"+numPacketsSent#end;
 	}
-	
 	/**
 		Open the XMPP stream.
 	*/
@@ -156,21 +149,22 @@ class Stream {
 		else if( this.jid == null ) this.jid = new JID( null );
 		if( cnx == null )
 			throw 'no stream connection set';
+		//status = Status.pending;
 		cnx.connected ? handleConnect() : cnx.connect();
 	}
+	
 	#end
 	
 	/**
-		Close the XMPP stream.<br/>
-		Passed argument indicates if the connection to the server should also get closed.
+		Closes the XMPP stream.<br/>
+		Passed argument indicates if the data connection to the server should also get disconnected.
 	*/
 	public function close( ?disconnect = false ) {
 		if( status == Status.closed )
 			return;
 		if( !cnx.http ) sendData( "</stream:stream>" );
-		status = Status.closed;
 		if( disconnect || cnx.http ) cnx.disconnect();
-		handleDisconnect(null);
+		handleDisconnect( null );
 	}
 	
 	/**
@@ -247,7 +241,7 @@ class Stream {
 	}
 	
 	/*
-	public function sendPresenceTo( jid : String ) : xmpp.Presence {
+	public function sendDirectedPresence( jid : String ) : xmpp.Presence {
 		var p = new xmpp.Presence();
 		p.to = jid;
 		var s : xmpp.Presence = sendPacket(p);
@@ -320,10 +314,9 @@ class Stream {
 	public function handleData( bytes : Bytes ) : Bool {
 		if( status == Status.closed )
 			return false;
-		//TODO
-//		for( f in dataFilters ) {
-//			b = f.filterData( b );
-//		}
+		for( f in dataFilters ) {
+			bytes = f.filterData( bytes );
+		}
 		return handleString( bytes.toString() );
 	}
 	
@@ -331,30 +324,39 @@ class Stream {
 	*/
 	public function handleString( t : String ) : Bool {
 		
-		if( status == Status.closed )
+		if( status == Status.closed ) {
+			#if JABBER_DEBUG trace( "cannot process incoming data, xmpp stream not connected", "debug" ); #end
 			throw "stream is closed";
-		
-		//TODO remove all \n here?
-		//t = StringTools.replace( t, "\n", "" );
+		}
 		
 		if( StringTools.fastCodeAt( t, t.length-1 ) != 62 ) { // ">"
 			buffer( t );
 			return false;
 		}
+		/*
+		if( bufSize == 0 && StringTools.fastCodeAt( t, 0 ) != 60 ) {
+			trace("Invalid XMPP data recieved","error");
+		}
+		*/
 		
 		if( StringTools.startsWith( t, '</stream:stream' ) ) {
 			#if XMPP_DEBUG XMPPDebug.inc( t ); #end
 			close( cnx.connected );
 			return true;
 		} else if( StringTools.startsWith( t, '</stream:error' ) ) {
+			// TODO report error info (?)
 			#if XMPP_DEBUG XMPPDebug.inc( t ); #end
 			close( cnx.connected );
 			return true;
 		}
 		
 		buffer( t );
-		if( bufSize > maxBufSize )
-			throw "max buffer size reached";
+		if( bufSize > maxBufSize ) {
+			#if JABBER_DEBUG
+			trace( "max buffer size reached ("+bufSize+":"+maxBufSize+")", "error" );
+			#end
+			close( false );
+		}
 		
 		switch( status ) {
 		
@@ -496,7 +498,7 @@ class Stream {
 		bufSize = 0;
 	}
 	
-	//TODO is this needed ?
+	//TODO is this needed ? seamless connection changin
 	/*
 	public function replaceConnection( n : Connection ) {
 		if( !n.connected )
@@ -519,10 +521,14 @@ class Stream {
 	}
 	
 	function handleConnect() {
-		//#if JABBER_DEBUG trace( 'connected', 'info' ); #end
+		trace( 'connected', 'info' );
+		#if JABBER_DEBUG
+		#end
 	}
 
-	function handleDisconnect( e : String ) {
+	function handleDisconnect( ?e : String ) {
+		//if( status != closed )
+		//	handleStreamClose( e );
 		handleStreamClose( e );
 	}
 	
@@ -532,16 +538,24 @@ class Stream {
 	
 	function handleStreamClose( ?e : String ) {
 		resetBuffer();
-		numPacketsSent = 0;
+		cleanup();
+		onClose( e );
+	}
+	
+	function cleanup() {
+		
+		status = Status.closed;
+		server = { features : new Hash() };
+		features = new StreamFeatures();
+		
 		collectors = new Array();
 		collectors_id = new Array();
 		interceptors = new Array();
-		server = { features : new Hash() };
-		features = new StreamFeatures();
-		status = Status.closed;
+
 		dataFilters = new Array();
 		dataInterceptors = new Array();
-		onClose( e );
+		
+		numPacketsSent = 0;
 	}
 	
 }

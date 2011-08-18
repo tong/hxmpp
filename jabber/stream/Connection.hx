@@ -94,8 +94,9 @@ class Connection {
 		return false;
 	}
 	
-	/***/
+	/**
 	@:keep public function reset() {
 	}
+	*/
 	
 }

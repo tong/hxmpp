@@ -46,6 +46,7 @@ import flash.net.Socket;
 
 import droid.net.Socket;
 
+/** EXPERIMENTAL!!! */
 class SocketConnection extends jabber.stream.Connection {
 	
 	public var port(default,null) : Int;
@@ -62,7 +63,7 @@ class SocketConnection extends jabber.stream.Connection {
 		s.onopen = onConnect;
 		s.onclose = onClose;
 		s.onerror = onError;
-		s.onmessage = onData;
+		//s.onmessage = onData;
 		s.connect( host, port );
 	}
 	
@@ -76,32 +77,27 @@ class SocketConnection extends jabber.stream.Connection {
 	}
 	
 	public override function read( ?yes : Bool = true ) : Bool {
-		//s.onmessage = yes ? onData : null;
-		//s.read();
+		s.onmessage = yes ? onData : null;
 		return true;
 	}
 	
 	function onConnect() {
-		//trace("onConnect!");
 		connected = true;
 		__onConnect();
 	}
 	
 	function onClose() {
-		//trace("onClose!");
 		connected = false;
 		__onDisconnect(null);
 	}
 	
 	function onError() {
-		//trace("onError!");
 		connected = false;
 		__onDisconnect( "socket error" ); // no error message?
 	}
 	
 	function onData( m : String ) {
 		__onString( m );
-		//__onData( haxe.io.Bytes.ofString( m ), 0, m.length );
 	}
 }
 
@@ -154,15 +150,16 @@ class SocketConnection extends Connection {
 	
 	#end
 	
-	function new( host : String, port : Int,
-				  secure : Bool,
+	function new( host : String, port : Int, secure : Bool,
 				  ?bufSize : Int, ?maxBufSize : Int,
 				  ?timeout : Int ) {
+				  	
 		super( host, secure, false );
 		this.port = port;
 		this.bufSize = ( bufSize == null ) ? defaultBufSize : bufSize;
 		this.maxBufSize = ( maxBufSize == null ) ? defaultMaxBufSize : maxBufSize;
 		this.timeout = timeout;
+		
 		#if (neko||cpp||php||rhino)
 		reading = false;
 		#end
@@ -200,9 +197,11 @@ class SocketConnection extends Connection {
 		return true;
 	}
 	
+	/*
 	public override function reset() {
 		buf = Bytes.alloc( bufSize );
 	}
+	*/
 	
 	function readData() {
 		
@@ -273,17 +272,17 @@ class SocketConnection extends Connection {
 class Socket {
 	
 	public dynamic function onConnect() {}
-	public dynamic function onDisconnect() {}
+	public dynamic function onDisconnect( ?e : String ) {}
 	public dynamic function onData( d : String ) {}
 	public dynamic function onSecured() {}
-	public dynamic function onError( e : String ) {}
+	//public dynamic function onError( e : String ) {}
 	
 	public var id(default,null) : Int;
 	
-	public function new( secure : Bool ) {
-		id = jabber.SocketConnection.createSocket( this, secure );
+	public function new( secure : Bool, timeout : Int = 10 ) {
+		id = jabber.SocketConnection.createSocket( this, secure, timeout );
 		if( id < 0 )
-			throw "failed to create socket on socket bridge";
+			throw "failed to create socket on flash bridge";
 	}
 	
 	public inline function connect( host : String, port : Int, ?timeout : Int ) {
