@@ -15,7 +15,6 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package;
 
 import flash.external.ExternalInterface;
 import flash.events.Event;
@@ -36,8 +35,13 @@ class FlashSocketBridge{
 	var ctx : String;
 	var sockets : IntHash<Socket>;
 	
-	public function new( ?ctx : String ) {
+	var outputInterval : Int;
+	var queue : Array<{id:Int,data:String}>;
+	var timer : haxe.Timer;
+	
+	public function new( ?ctx : String, outputInterval : Int = 1 ) {
 		this.ctx = ( ctx != null ) ? ctx : "jabber.SocketConnection";
+		this.outputInterval = outputInterval;
 	}
 	
 	public function init() {
@@ -51,11 +55,17 @@ class FlashSocketBridge{
 		ExternalInterface.addCallback( "send", send );
 		//ExternalInterface.addCallback( "destroy", destroy );
 		ExternalInterface.addCallback( "destroyAll", destroyAll );
+		queue = new Array();
+		timer = new haxe.Timer( outputInterval );
+		timer.run = onTimer;
 	}
 	
-	function createSocket( ___secure : Bool = false) : Int {
+	function createSocket( ___secure : Bool, __legacy__ : Bool, timeout : Int = -1 ) : Int {
 		var id = Lambda.count( sockets );
 		var s = new Socket( id );
+		#if flash10
+		if( timeout != -1 ) s.timeout = timeout*1000;
+		#end
 		sockets.set( id, s );
 		s.addEventListener( Event.CONNECT, sockConnectHandler );
 		s.addEventListener( Event.CLOSE, sockDisconnectHandler );
@@ -116,15 +126,23 @@ class FlashSocketBridge{
 	}
 
 	function sockDisconnectHandler( e : Event ) {
-		ExternalInterface.call( ctx+".handleDisconnect", e.target.id );
+		ExternalInterface.call( ctx+".handleDisconnect", e.target.id, null );
 	}
 	
 	function sockErrorHandler( e : Event ) {
-		ExternalInterface.call( ctx+".handleError", e.target.id, e.type );
+		ExternalInterface.call( ctx+".handleDisconnect", e.target.id, e.type );
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
-		ExternalInterface.call( ctx+".handleData", e.target.id, e.target.readUTFBytes( e.bytesLoaded ) );
+		//ExternalInterface.call( ctx+".handleData", e.target.id, e.target.readUTFBytes( e.bytesLoaded ) );
+		queue.push( { id : e.target.id, data : e.target.readUTFBytes( e.bytesLoaded ) } );
+	}
+	
+	function onTimer() {
+		if( queue.length > 0 ) {
+			var n = queue.shift();
+			ExternalInterface.call( ctx+".handleData", n.id, n.data );
+		}
 	}
 
 }

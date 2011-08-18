@@ -15,7 +15,6 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with HXMPP. If not, see <http://www.gnu.org/licenses/>.
 */
-package;
 
 import flash.external.ExternalInterface;
 import tls.controller.SecureSocket;
@@ -39,8 +38,13 @@ class FlashSocketBridgeTLS {
 	var ctx : String;
 	var sockets : IntHash<Socket>;
 	
-	public function new( ?ctx : String ) {
+	var outputInterval : Int;
+	var queue : Array<{id:Int,data:String}>;
+	var timer : haxe.Timer;
+	
+	public function new( ?ctx : String,  outputInterval : Int = 1 ) {
 		this.ctx = ( ctx != null ) ? ctx : "jabber.SocketConnection";
+		this.outputInterval = outputInterval;
 	}
 	
 	public function init() {
@@ -55,9 +59,12 @@ class FlashSocketBridgeTLS {
 		ExternalInterface.addCallback( "send", send );
 		//ExternalInterface.addCallback( "destroy", destroy );
 		ExternalInterface.addCallback( "destroyAll", destroyAll );
+		queue = new Array();
+		timer = new haxe.Timer( outputInterval );
+		timer.run = onTimer;
 	}
 	
-	function createSocket( secure : Bool = true, legacy : Bool = false ) : Int {
+	function createSocket( secure : Bool = true, legacy : Bool = false, timeout : Int ) : Int {
 		var id = Lambda.count( sockets );
 		var s = new Socket( id, secure, legacy );
 		sockets.set( id, s );
@@ -149,12 +156,20 @@ class FlashSocketBridgeTLS {
 	}
 	
 	function sockErrorHandler( e : SecureSocketEvent ) {
-		ExternalInterface.call( ctx+".handleError", e.target.id, e.type );
+		ExternalInterface.call( ctx+".handleDisconnect", e.target.id, e.type );
 	}
 	
 	function sockDataHandler( e : SecureSocketEvent ) {
-		if( e.rawData == null ) return; // ?
-		ExternalInterface.call( ctx+".handleData", e.target.id, e.rawData.toString() );
+		if( e.rawData == null )
+			return; // ?
+		queue.push( { id : e.target.id, data : e.rawData.toString() } );
 	}
-
+	
+	function onTimer() {
+		if( queue.length > 0 ) {
+			var n = queue.shift();
+			ExternalInterface.call( ctx+".handleData", n.id, n.data );
+		}
+	}
+	
 }
