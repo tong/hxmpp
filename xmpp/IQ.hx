@@ -24,6 +24,7 @@ class IQ extends Packet {
 	
 	/** Either: get/set/result/error */
 	public var type : IQType;
+	
 	/** The exclusiv child of the IQ packet. */
 	public var x : PacketElement;
 	
@@ -48,7 +49,9 @@ class IQ extends Packet {
 		for( c in x.elements() ) {
 			switch( c.nodeName ) {
 			case "error" :
-				iq.errors.push( xmpp.Error.parse( c ) );
+				var e = xmpp.Error.parse( c );
+				if( e != null )
+					iq.errors.push( e );
 			default :
 				iq.properties.push( c );
 			}

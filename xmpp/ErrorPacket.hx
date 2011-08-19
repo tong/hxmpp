@@ -73,22 +73,17 @@ class ErrorPacket {
 		return x;
 	}
 	
-	static function parseInto( p : ErrorPacket, x : Xml, xmlns : String ) {
+	static function parseInto( p : ErrorPacket, x : Xml, xmlns : String ) : Bool {
 		for( e in x.elements() ) {
 			var ns = e.get( "xmlns" );
 			if( ns == null )
-				continue;
+				return false;
 			switch( e.nodeName ) {
 			case "text" :
 				if( ns == xmlns ) {
 					var c = e.firstChild();
 					if( c != null ) p.text = c.nodeValue;
-					//TODO 2.06
-					#if flash
-					//p.lang = e.get( "xml:lang" );
-					#else
 					p.lang = e.get( "xml:lang" );
-					#end
 				}
 			default :
 				if( ns == xmlns )
@@ -97,6 +92,7 @@ class ErrorPacket {
 					p.app = { condition : e.nodeName, xmlns : ns };
 			}
 		}
+		return true;
 	}
 	
 }

@@ -44,12 +44,18 @@ class Error extends xmpp.ErrorPacket {
 	
 	public static function parse( x : Xml ) : xmpp.Error {
 		var p = new Error( null, null );
-		ErrorPacket.parseInto( p, x, XMLNS );
-		if( p.condition == null )
+		if( !ErrorPacket.parseInto( p, x, XMLNS ) )
 			return null;
-		p.type = Type.createEnum( ErrorType, x.get( "type" ).toLowerCase() );
-		var v = x.get( "code" );
-		if( v != null ) p.code = Std.parseInt( v );
+		try {
+			p.type = Type.createEnum( ErrorType, x.get( "type" ).toLowerCase() );
+			var v = x.get( "code" );
+			if( v != null ) p.code = Std.parseInt( v );
+		} catch(e:Dynamic) {
+			#if JABBER_DEBUG
+			trace(e,"error");
+			#end
+			return null;
+		}
 		return p;
 	}
 	
