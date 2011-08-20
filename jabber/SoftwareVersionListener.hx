@@ -17,34 +17,35 @@
 */
 package jabber;
 
+import jabber.util.SystemUtil;
+
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0092.html">XEP 0092 - Software Version</a>
 */
-class SoftwareVersion {
+class SoftwareVersionListener {
 	
-	public dynamic function onLoad( jid : String, sv : xmpp.SoftwareVersion ) {}
-	public dynamic function onError( e : jabber.XMPPError ) {}
+	//public dynamic function onLoad( jid : String, sv : xmpp.SoftwareVersion ) {}
 	
 	public var stream(default,null) : Stream;
+	public var name : String;
+	public var version : String;
+	public var os : String;
 	
-	public function new( stream : Stream ) {
+	public function new( stream : Stream,
+						 name : String, version : String, ?os : String ) {
+		if( !stream.features.add( xmpp.SoftwareVersion.XMLNS ) )
+			throw "softwareversion feature already added";
 		this.stream = stream;
+		this.name = name;
+		this.version = version;
+		this.os = ( os != null ) ? os : SystemUtil.systemName();
+		stream.addCollector( new jabber.stream.PacketCollector( [ cast new xmpp.filter.IQFilter( xmpp.SoftwareVersion.XMLNS, xmpp.IQType.get ) ], handleQuery, true ) );
 	}
 	
-	/**
-		Requests the software version of the given entity.
-	*/
-	public function load( jid : String ) {
-		var iq = new xmpp.IQ( xmpp.IQType.get, null, jid );
-		iq.x = new xmpp.SoftwareVersion();
-		var me = this;
-		stream.sendIQ( iq, function( r ) {
-			switch( r.type ) {
-			case result : me.onLoad( jid, xmpp.SoftwareVersion.parse( r.x.toXml() ) );
-			case error : me.onError( new jabber.XMPPError( r ) );
-			default : //
-			}
-		} );
+	function handleQuery( iq : xmpp.IQ ) {
+		var r = xmpp.IQ.createResult( iq );
+		r.x = new xmpp.SoftwareVersion( name, version, os );
+		stream.sendData( r.toString() );
 	}
 	
 }
