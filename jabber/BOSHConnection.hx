@@ -34,7 +34,6 @@ import flash.events.SecurityErrorEvent;
 	// secure!
 	// secure keys
 	// pause -> test
-	// setable 'timeout'
 	
 /**
 	<a href="http://xmpp.org/extensions/xep-0124.html">Bidirectional-streams Over Synchronous HTTP (BOSH)</a><br/>
@@ -207,12 +206,16 @@ class BOSHConnection extends jabber.stream.Connection {
 	}
 	
 	function sendRequests( ?t : Xml, poll : Bool = false ) : Bool {
-		if( requestCount >= maxConcurrentRequests ) {
-			//#if JABBER_DEBUG trace( "max concurrent request limit reached ("+requestCount+","+maxConcurrentRequests+")", "info" ); #end
+		
+		if( requestCount++ >= maxConcurrentRequests ) {
+			#if JABBER_DEBUG
+			trace( "max concurrent request limit reached ("+requestCount+","+maxConcurrentRequests+")", "warn" );
+			#end
 			//requestQueue.push(t);
 			return false;
 		}
-		requestCount++;
+		//requestCount++;
+		
 		if( t == null ) {
 			if( poll ) {
 				t = createRequest();
@@ -224,19 +227,41 @@ class BOSHConnection extends jabber.stream.Connection {
 				 t = createRequest( tmp );
 			}
 		}
-		#if flash
+		
+		createHTTPRequest( t.toString() );
+
+		if( timeoutTimer != null )
+			timeoutTimer.stop();
+		timeoutTimer = new Timer( (wait*1000)+(timeoutOffset*1000) );
+		timeoutTimer.run = handleTimeout;
+		
+		return true;
+	}
+	
+	function createHTTPRequest( data : String ) {
+		
+		#if js
+		var r = new haxe.Http( getHTTPPath() );
+		//r.setHeader( "Accept-Encoding", "gzip" );
+		//r.onStatus = handleHTTPStatus;
+		r.onError = handleHTTPError;
+		r.onData = handleHTTPData;
+		r.setPostData( data );
+		r.request( true );
+		
+		#elseif flash
 		var r = new flash.net.URLRequest( getHTTPPath() );
 		r.method = flash.net.URLRequestMethod.POST;
 		r.contentType = "text/xml";
+		r.requestHeaders.push( new flash.net.URLRequestHeader( "Accept", "text/xml" ) );
 		// haXe 2.06 HACK
-		var s = t.toString();
+		var s = data;
 		s = StringTools.replace( s, "_xmlns_", "xmlns" );
 		s = StringTools.replace( s, "xml_lang", "xml:lang" );
 		s = StringTools.replace( s, "xmlns_xmpp", "xmlns:xmpp" );
 		s = StringTools.replace( s, "xmpp_version", "xmpp:version" );
 		s = StringTools.replace( s, "xmpp_restart", "xmpp:restart" );
-		r.data = s; //t.toString();
-		r.requestHeaders.push( new flash.net.URLRequestHeader( "Accept", "text/xml" ) );
+		r.data = s;
 		var me = this;
 		var l = new flash.net.URLLoader();
 		l.addEventListener( Event.COMPLETE, function(e) me.handleHTTPData( e.target.data ) );
@@ -244,15 +269,6 @@ class BOSHConnection extends jabber.stream.Connection {
 		//l.addEventListener( HTTPStatusEvent.HTTP_STATUS, function(e) me.handleHTTPStatus( e.status ) );
 		l.addEventListener( SecurityErrorEvent.SECURITY_ERROR, handleHTTPError );
 		l.load( r );
-		
-		#elseif js
-		var r = new haxe.Http( getHTTPPath() );
-		//r.setHeader( "Accept-Encoding", "gzip" );
-		//r.onStatus = handleHTTPStatus;
-		r.onError = handleHTTPError;
-		r.onData = handleHTTPData;
-		r.setPostData( t.toString() );
-		r.request( true );
 		
 		#else
 		//TODO
@@ -265,13 +281,6 @@ class BOSHConnection extends jabber.stream.Connection {
 		return true;
 		
 		#end
-		
-		if( timeoutTimer != null )
-			timeoutTimer.stop();
-		timeoutTimer = new Timer( (wait*1000)+(timeoutOffset*1000) );
-		timeoutTimer.run = handleTimeout;
-		
-		return true;
 	}
 	
 	function handleTimeout() {
@@ -285,7 +294,7 @@ class BOSHConnection extends jabber.stream.Connection {
 	}
 	
 	function handleHTTPError( e : String ) {
-		trace(e);
+		#if JABBER_DEBUG trace( e , "error" ); #end
 		cleanup();
 		__onDisconnect( e );
 	}
@@ -297,8 +306,8 @@ class BOSHConnection extends jabber.stream.Connection {
 			return;
 		}
 		if( x.get( 'xmlns' ) != XMLNS ) {
-			#if JABBER_DEBUG trace( 'invalid BOSH body', 'warn' ); #end
-			//TODO. disconnect
+			#if JABBER_DEBUG trace( 'invalid BOSH body ('+x+')', 'warn' ); #end
+			//TODO disconnect
 			return;
 		}
 		requestCount--;
@@ -381,7 +390,7 @@ class BOSHConnection extends jabber.stream.Connection {
 	function resetResponseProcessor() {
 		if( responseQueue != null && responseQueue.length > 0 ) {
 			responseTimer.stop();
-			responseTimer = new Timer( 0 );
+			responseTimer = new Timer( INTERVAL );
 			responseTimer.run = processResponse;
 		}
 	}
@@ -410,12 +419,16 @@ class BOSHConnection extends jabber.stream.Connection {
 	}
 	
 	function getHTTPPath() : String {
+		#if neko
 		var b = new StringBuf();
 		b.add( "http" );
 		//if( secure ) b.add( "s" );
 		b.add( "://" );
 		b.add( path );
 		return b.toString();
+		#else
+		return "http://"+path;
+		#end
 	}
 	
 	function cleanup() {
