@@ -98,9 +98,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 }
 
-#elseif flash
-
-#if TLS
+#elseif ( flash && TLS )
 
 import flash.utils.ByteArray;
 import tls.controller.SecureSocket;
@@ -181,7 +179,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 }
 
-#else
+#elseif flash
 
 import flash.net.Socket;
 import flash.events.Event;
@@ -192,7 +190,9 @@ import flash.utils.ByteArray;
 
 class SocketConnection extends jabber.stream.SocketConnection {
 	
+	#if air
 	public var socket(default,null) : Socket;
+	#end
 	
 	public function new( host : String, port : Int = 5222, secure : Bool = false,
 						 ?bufSize : Int, ?maxBufSize : Int,
@@ -202,7 +202,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	public override function connect() {
 		socket = new Socket();
-		#if flash
+		#if flash10
 		socket.timeout = timeout*1000;
 		#end
 		socket.addEventListener( Event.CONNECT, sockConnectHandler );
@@ -268,11 +268,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 		__onData(  haxe.io.Bytes.ofData( d )  );
 	}
 }
-#end
-
-#elseif js
-
-#if droid
+#elseif (js&&droid)
 
 class SocketConnection extends jabber.stream.SocketConnection {
 	public function new( host : String, port : Int = 5222 ) {
@@ -280,7 +276,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 }
 
-#elseif air
+#elseif (js&&air)
 import air.Socket;
 import air.ByteArray;
 import air.Event;
@@ -383,7 +379,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 }
 
-#elseif nodejs
+#elseif (js&&nodejs)
 
 import js.Node;
 
@@ -484,7 +480,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 }
 
-#elseif JABBER_SOCKETBRIDGE
+#elseif (js&&JABBER_SOCKETBRIDGE)
 
 import jabber.stream.SocketConnection;
 
@@ -609,5 +605,4 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 }
 
-#end // js
 #end
