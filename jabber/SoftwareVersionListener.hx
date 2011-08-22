@@ -17,19 +17,26 @@
 */
 package jabber;
 
+import jabber.stream.PacketCollector;
 import jabber.util.SystemUtil;
 
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0092.html">XEP 0092 - Software Version</a>
+	Extension for retrieving information about the software application associated with an XMPP entity
 */
 class SoftwareVersionListener {
 	
 	//public dynamic function onLoad( jid : String, sv : xmpp.SoftwareVersion ) {}
 	
 	public var stream(default,null) : Stream;
+	/** The natural-language name of the software */
 	public var name : String;
+	/** The specific version of the software*/
 	public var version : String;
+	/** The operating system of the queried entity (optional) */
 	public var os : String;
+	
+	var c : PacketCollector;
 	
 	public function new( stream : Stream,
 						 name : String, version : String, ?os : String ) {
@@ -39,7 +46,12 @@ class SoftwareVersionListener {
 		this.name = name;
 		this.version = version;
 		this.os = ( os != null ) ? os : SystemUtil.systemName();
-		stream.addCollector( new jabber.stream.PacketCollector( [ cast new xmpp.filter.IQFilter( xmpp.SoftwareVersion.XMLNS, xmpp.IQType.get ) ], handleQuery, true ) );
+		c = stream.collect( [ cast new xmpp.filter.IQFilter( xmpp.SoftwareVersion.XMLNS, xmpp.IQType.get ) ], handleQuery, true);
+	}
+	
+	public function dispose() {
+		stream.removeCollector( c );
+		stream.features.remove( xmpp.SoftwareVersion.XMLNS );
 	}
 	
 	function handleQuery( iq : xmpp.IQ ) {
