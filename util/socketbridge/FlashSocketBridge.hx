@@ -135,7 +135,37 @@ class FlashSocketBridge{
 	
 	function sockDataHandler( e : ProgressEvent ) {
 		//ExternalInterface.call( ctx+".handleData", e.target.id, e.target.readUTFBytes( e.bytesLoaded ) );
-		queue.push( { id : e.target.id, data : e.target.readUTFBytes( e.bytesLoaded ) } );
+	//	trace(e.bytesLoaded );
+		/*
+		var s : Socket = e.target;
+		var pos = 0;
+		var len = 256;
+		while( pos < e.bytesLoaded ) {
+			//pos += len;
+			if( pos+len > e.bytesLoaded ) len = Std.int( e.bytesLoaded-pos );
+			trace(pos+":"+len+":"+e.bytesLoaded);
+			var buf = new flash.utils.ByteArray();
+			s.readBytes( buf, pos, len );
+			pos += len;
+			var t = buf.toString();
+			trace(t);
+			queue.push( { id : s.id, data : t } );
+		}
+		*/
+		/*
+		var pos = 0;
+		var len = 4096;
+		var s : Socket = e.target;
+		var data = e.target.readUTFBytes( e.bytesLoaded );
+		while( pos < e.bytesLoaded ) {
+			if( pos+len > e.bytesLoaded ) len = Std.int( e.bytesLoaded-pos );
+			var t = data.substr( pos, len );
+			queue.push( { id : e.target.id, data : t } );
+			pos += len;
+		}
+		*/
+		ExternalInterface.call( ctx+".handleData", e.target.id, e.target.readUTFBytes( e.bytesLoaded ) );
+		//queue.push( { id : e.target.id, data : e.target.readUTFBytes( e.bytesLoaded ) } );
 	}
 	
 	function onTimer() {

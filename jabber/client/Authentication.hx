@@ -68,7 +68,7 @@ class Authentication extends Auth {
 	*/
 	public override function authenticate( password : String, ?resource : String ) : Bool {
 		this.resource = resource;
-		if( stream.jid != null && resource != null ) // update stream's JID resource
+		if( stream.jid != null && resource != null ) // update JID resource
 			stream.jid.resource = resource;
 		if( mechanism == null ) { // locate SASL mechanism to use
 			for( s_mechs in serverMechanisms ) {

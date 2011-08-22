@@ -18,7 +18,7 @@
 package xmpp;
 
 /**
-	XML extending utilities.
+	XML utilities.
 */
 class XMLUtil {
 	
@@ -28,7 +28,6 @@ class XMLUtil {
 	*/
 	public static function createElement( n : String, t : String ) : Xml {
 		var x = Xml.createElement( n );
-		//TODO required ? if( t != null )
 		x.addChild( Xml.createPCData( t ) );
 		return x;
 	}
@@ -38,18 +37,18 @@ class XMLUtil {
 		@param n Name of xml node
 		@param t Node content
 	*/
-	public static inline function addElement( x : Xml, n : String, t : String ) : Xml {
-		x.addChild( createElement( n, t ) );
+	public static inline function addElement( x : Xml, name : String, content : String ) : Xml {
+		x.addChild( createElement( name, content ) );
 		return x;
 	}
 	
 	/**
-		@param x XML element to attach the create element to
-		@param o The target object to get the field value from
-		@param n Name of xml node
+		@param x XML element to attach the element to
+		@param o The target object, provider of value
+		@param n Name of XML node
 		@param t Node content
 	*/
-	public static function addField( x: Xml, o : Dynamic, n : String, ?required : Bool = false ) : Xml {
+	public static function addField( x : Xml, o : Dynamic, n : String, ?required : Bool = false ) : Xml {
 		var v = Reflect.field( o, n );
 		if( v != null ) addElement( x, n, Std.string(v) );
 		else if( required )
@@ -60,7 +59,7 @@ class XMLUtil {
 	/**
 		@param x XML element to attach the create element to
 		@param o The target object to get the field value from
-		@param fields Names of the fields
+		@param fields Optional names of fields, reflected if null
 	*/
 	public static function addFields( x: Xml, o : Dynamic, ?fields : Iterable<String> ) : Xml {
 		if( fields == null ) fields = Reflect.fields( o );
@@ -69,19 +68,27 @@ class XMLUtil {
 	}
 	
 	/**
+		TODO use?
+	*/
+	public static function reflectElements<T>( target : T, x : Xml ) : T {
+		for( e in x.elements() ) Reflect.setField( target, e.nodeName, e.firstChild().nodeValue );
+		return target;
+	}
+	
+	/**
 		Set or get the namespace of the given xml element.
 	*/
-	public static function ns( x : Xml, ?ns : String ) : String {
-		return if( ns == null )
+	public static inline function ns( x : Xml, ?ns : String ) : String {
+		return if( ns == null ) {
 			x.get( 'xmlns' );
-		else {
+		} else {
 			// TODO haXe 2.06 fukup
 			#if flash
 			x.set( '_xmlns_', ns );
 			#else
 			x.set( 'xmlns', ns );
 			#end
-			null;
+			ns;
 		}
 	}
 	

@@ -21,7 +21,7 @@ package jabber;
 
 /**
 	<a href="http://dev.w3.org/html5/websockets/">HTML5-WebSocket</a><br/>
-	For flash you need to add hxmpp/util/flash_websocket.js glue code to your website
+	For flash you have to add hxmpp/util/flash_websocket.js glue code to your website
 */
 class WebSocketConnection extends jabber.stream.Connection {
 	
@@ -76,7 +76,7 @@ class WebSocketConnection extends jabber.stream.Connection {
 		__onString( m.data );
 	}
 	
-	public static function isSupported() : Bool {
+	public static inline function isSupported() : Bool {
 		#if js
 		return untyped js.Lib.window.WebSocket != null;
 		#elseif flash

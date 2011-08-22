@@ -25,8 +25,7 @@ class StreamError extends ErrorPacket {
 	
 	public static var XMLNS = "urn:ietf:params:xml:ns:xmpp-streams";
 	
-	public function new( condition : String,
-				  		 ?text : String, ?lang : String, ?app : ApplicationErrorCondition) {
+	public function new( condition : String,  ?text : String, ?lang : String, ?app : ApplicationErrorCondition) {
 		super( condition, text, lang, app );
 	}
 	
@@ -38,23 +37,11 @@ class StreamError extends ErrorPacket {
 #end
 	}
 	
-	/*
-	public function toString() : String {
-		#if flash
-		var s = toXml().toString();
-		s = StringTools.replace( s, "_", ":" );
-		return s;
-		#else
-		return toXml().toString();
-		#end
-	}
-	*/
-	
 	public static function parse( x : Xml ) : StreamError {
 		var p = new StreamError( null );
 		ErrorPacket.parseInto( p, x, XMLNS );
-		if( p.condition == null )
-			return null;
+//		if( p.condition == null )
+//			return null;
 		return p;
 	}
 	

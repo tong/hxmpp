@@ -89,7 +89,7 @@ class Stream {
 	
 	var buf : StringBuf;
 	var collectors_id : Array<PacketCollector>;
-	var collectors : Array<PacketCollector>;
+public var collectors : Array<PacketCollector>;
 	var interceptors : Array<TPacketInterceptor>;
 	var numPacketsSent : Int;
 	
@@ -188,7 +188,7 @@ class Stream {
 		t = StringTools.replace( t, "_xmlns_=", "xmlns=" );
 		#end
 		if( dataInterceptors.length > 0 ) {
-			if( sendBytes( haxe.io.Bytes.ofString(t) ) == null )
+			if( sendBytes( haxe.io.Bytes.ofString(t+"\n") ) == null )
 				return null;
 		} else {
 			if( !cnx.write( t ) )
@@ -328,7 +328,7 @@ class Stream {
 			#if JABBER_DEBUG trace( "cannot process incoming data, xmpp stream not connected", "debug" ); #end
 			throw "stream is closed";
 		}
-		
+
 		if( StringTools.fastCodeAt( t, t.length-1 ) != 62 ) { // ">"
 			buffer( t );
 			return false;
@@ -428,7 +428,9 @@ class Stream {
 		Returns true if the packet got handled.
 	*/
 	public function handlePacket( p : xmpp.Packet ) : Bool {
-		#if XMPP_DEBUG XMPPDebug.inc( p.toString() ); #end
+		#if XMPP_DEBUG
+		XMPPDebug.inc( p.toString() );
+		#end
 		var i = -1;
 		while( ++i < collectors_id.length ) {
 			var c = collectors_id[i];
@@ -443,7 +445,7 @@ class Stream {
 		i = -1;
 		while( ++i < collectors.length ) {
 			var c = collectors[i];
-			//TODO remove unused collectors
+			//remove unused collectors
 			/*
 			if( c.handlers.length == 0 ) {
 				collectors.splice( i, 1 );
