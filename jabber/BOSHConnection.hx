@@ -207,14 +207,14 @@ class BOSHConnection extends jabber.stream.Connection {
 	
 	function sendRequests( ?t : Xml, poll : Bool = false ) : Bool {
 		
-		if( requestCount++ >= maxConcurrentRequests ) {
+		if( requestCount >= maxConcurrentRequests ) {
 			#if JABBER_DEBUG
-			trace( "max concurrent request limit reached ("+requestCount+","+maxConcurrentRequests+")", "warn" );
+			trace( "max concurrent request limit reached ("+requestCount+","+maxConcurrentRequests+")", "error" );
 			#end
-			//requestQueue.push(t);
+			//requestQueue.push(t); //TODO
 			return false;
 		}
-		//requestCount++;
+		requestCount++;
 		
 		if( t == null ) {
 			if( poll ) {
@@ -241,6 +241,19 @@ class BOSHConnection extends jabber.stream.Connection {
 	function createHTTPRequest( data : String ) {
 		
 		#if js
+		var r = new js.XMLHttpRequest();
+		r.open( "POST", getHTTPPath(), true );
+		r.onreadystatechange = function(){
+			if( r.readyState != 4 )
+				return;
+			var s = r.status;
+			if( s != null && s >= 200 && s < 400 )
+				handleHTTPData( r.responseText );
+			else
+				handleHTTPError( "Http Error #"+r.status );
+		}
+		r.send( data );
+		/*
 		var r = new haxe.Http( getHTTPPath() );
 		//r.setHeader( "Accept-Encoding", "gzip" );
 		//r.onStatus = handleHTTPStatus;
@@ -248,6 +261,7 @@ class BOSHConnection extends jabber.stream.Connection {
 		r.onData = handleHTTPData;
 		r.setPostData( data );
 		r.request( true );
+		*/
 		
 		#elseif flash
 		var r = new flash.net.URLRequest( getHTTPPath() );
@@ -289,9 +303,11 @@ class BOSHConnection extends jabber.stream.Connection {
 		__onDisconnect( "BOSH timeout" );
 	}
 	
+	/*
 	function handleHTTPStatus( s : Int ) {
 		//trace( "handleHTTPStatus "+s );
 	}
+	*/
 	
 	function handleHTTPError( e : String ) {
 		#if JABBER_DEBUG trace( e , "error" ); #end
