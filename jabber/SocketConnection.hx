@@ -40,11 +40,10 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	public function new( host : String,
 						 port : Int = #if JABBER_COMPONENT 5275 #else 5222 #end,
 						 secure : Bool = #if (neko||cpp||air) false #else true #end,
-						 ?bufSize : Int, ?maxBufSize : Int,
+						 ?bufsize : Int, ?maxbufsize : Int,
 						 timeout : Int = 10 ) {
 		
-		super( host, port, secure, bufSize, maxBufSize, timeout );
-		
+		super( host, port, secure, bufsize, maxbufsize, timeout );
 		#if (JABBER_DEBUG && (neko||cpp||air) )
 		if( secure ) {
 			trace( "StartTLS not implemented, use jabber.SecureSocketConnection for legacy TLS on port 5223", "warn" );
@@ -55,8 +54,8 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	
 	public override function connect() {
 		socket = new Socket();
-		buf = Bytes.alloc( bufSize );
-		bufbytes = 0;
+		buf = Bytes.alloc( bufsize );
+		bufpos = 0;
 		try socket.connect( new Host( host ), port ) catch( e : Dynamic ) {
 			__onDisconnect( e );
 			return;
@@ -82,8 +81,11 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	public override function write( t : String ) : Bool {
 		if( !connected || t == null || t.length == 0 )
 			return false;
-		socket.output.writeString( t );
-		socket.output.flush();
+		try {
+			socket.output.writeString( t );
+			socket.output.flush();
+		} catch(e:Dynamic) {
+		}
 		return true;
 	}
 	
@@ -190,6 +192,8 @@ import flash.utils.ByteArray;
 
 class SocketConnection extends jabber.stream.SocketConnection {
 	
+	public var socket(default,null) : Socket;
+	
 	public function new( host : String, port : Int = 5222, secure : Bool = false,
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
@@ -258,6 +262,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
+		trace("sockDataHandler");
 		var d = new ByteArray();
 		socket.readBytes( d, 0, Std.int( e.bytesLoaded ) );
 		__onData(  haxe.io.Bytes.ofData( d )  );

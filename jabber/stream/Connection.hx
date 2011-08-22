@@ -26,9 +26,9 @@ class Connection {
 	
 	/** Succesfully connected callback */
 	public var __onConnect : Void->Void;
-	/** Disconnected callback */
+	/** Disconnected callback. Parameter is an optional error message  */
 	public var __onDisconnect : String->Void;
-	/** Data recieved callback */
+	/** Bytes recieved callback */
 	public var __onData : Bytes->Bool;
 	/** String recieved callback */
 	public var __onString : String->Bool;
@@ -71,9 +71,7 @@ class Connection {
 	
 	/** */
 	@:keep public function setSecure() {
-		#if JABBER_DEBUG
-		trace( "Connection.setSecure not implemented", "warn" );
-		#end
+		#if JABBER_DEBUG trace( "Connection.setSecure not implemented", "warn" ); #end
 	}
 	
 	/** Starts/Stops reading data input, returns true if successfully started */
@@ -93,10 +91,5 @@ class Connection {
 		#if JABBER_DEBUG trace( 'abstract method', 'warn' ); #end
 		return false;
 	}
-	
-	/**
-	@:keep public function reset() {
-	}
-	*/
 	
 }

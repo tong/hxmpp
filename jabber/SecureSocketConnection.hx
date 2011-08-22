@@ -36,15 +36,15 @@ import cpp.net.Socket;
 class SecureSocketConnection extends jabber.stream.SocketConnection {
 		
 	public function new( host : String, port : Int = 5223, secure : Bool = true,
-						 ?bufSize : Int, ?maxBufSize : Int,
+						 ?bufsize : Int, ?maxbufsize : Int,
 						 timeout : Int = 10 ) {
-		super( host, port, secure, bufSize, maxBufSize, timeout );
+		super( host, port, secure, bufsize, maxbufsize, timeout );
 	}
 	
 	public override function connect() {
 		socket = #if php Socket.newSslSocket(); #else new Socket(); #end
-		buf = haxe.io.Bytes.alloc( bufSize );
-		bufbytes = 0;
+		buf = haxe.io.Bytes.alloc( bufsize );
+		bufpos = 0;
 		try socket.connect( new Host( host ), port ) catch( e : Dynamic ) {
 			__onDisconnect( e );
 			return;
@@ -75,9 +75,7 @@ import flash.utils.ByteArray;
 
 class SecureSocketConnection extends jabber.stream.SocketConnection {
 	
-	#if air
-	//var socket : SecureSocket;
-	#end
+	public var socket(default,null) : SecureSocket;
 	
 	public function new( host : String, port : Int = 5223,
 						 ?bufSize : Int, ?maxBufSize : Int,
@@ -176,6 +174,7 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 }
 
 #elseif air
+import haxe.io.Bytes;
 import air.ByteArray;
 import air.SecureSocket;
 import air.Event;
@@ -185,8 +184,6 @@ import air.ProgressEvent;
 
 class SecureSocketConnection extends jabber.stream.SocketConnection {
 	
-	var buf : ByteArray;
-	
 	public function new( host : String, port : Int = 5223,
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
@@ -194,7 +191,7 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	public override function connect() {
-		buf = new ByteArray();
+		buf = Bytes.alloc( bufsize );
 		socket = new SecureSocket();
 		socket.addEventListener( Event.CONNECT, sockConnectHandler );
 		socket.addEventListener( Event.CLOSE, sockDisconnectHandler );

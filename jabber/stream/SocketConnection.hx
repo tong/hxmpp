@@ -46,7 +46,7 @@ import flash.net.Socket;
 
 import droid.net.Socket;
 
-/** EXPERIMENTAL!!! */
+/** !!!!!!!!!!!!!!!!!!!!!!!!!!! EXPERIMENTAL !!!!!!!!!!!!!!!!!!!!!!!!!!! */
 class SocketConnection extends jabber.stream.Connection {
 	
 	public var port(default,null) : Int;
@@ -112,56 +112,55 @@ private typedef AbstractSocket = {
 	function write( str : String ) : Void;
 	function close() : Void;
 	function shutdown( read : Bool, write : Bool ) : Void;
+	//function setBlocking( b : Bool ) : Void;
 }
 #end
 
 class SocketConnection extends Connection {
 	
 	public static var defaultBufSize = #if php 65536 #else 256 #end; //TODO php buf
-	public static var defaultMaxBufSize = 262144; //TODO !
+	public static var defaultMaxBufSize = 1<<20; // 1MB
+	public static var defaultTimeout = 10; // secs
 	
 	public var port(default,null) : Int;
-	public var bufSize(default,null) : Int;
-	public var maxBufSize(default,null) : Int;
+	public var maxbufsize(default,null) : Int;
 	public var timeout(default,null) : Int;
 	//public var timeout(default,setTimeout) : Int;
 	
 	#if (neko||php||cpp||rhino)
 	public var socket(default,null) : AbstractSocket;
 	public var reading(default,null) : Bool;
-	var buf : Bytes;
-	var bufbytes : Int;
 	
 	#elseif nodejs
 //	public var socket(default,null) : Socket;
 	
-	#elseif (air&&js)
+	#elseif (js&&air)
 	public var socket(default,null) : air.Socket;
-	
-	#elseif flash
-	#if TLS
-	public var socket(default,null) : SecureSocket;
-	#else
-	public var socket(default,null) : Socket;
-	#end
 	
 	#elseif (js&&JABBER_SOCKETBRIDGE)
 	public var socket(default,null) : Socket;
 	
+	#elseif (flash&&air)
+	//#
+	#elseif flash
+	public var socket(default,null) : #if TLS SecureSocket #else Socket #end;
 	#end
 	
+	var buf : Bytes;
+	var bufpos : Int;
+	var bufsize : Int;
+	
 	function new( host : String, port : Int, secure : Bool,
-				  ?bufSize : Int, ?maxBufSize : Int,
-				  ?timeout : Int ) {
-				  	
+				  bufsize : Int = -1, maxbufsize : Int = -1,
+				  timeout : Int = -1 ) {
+
 		super( host, secure, false );
 		this.port = port;
-		this.bufSize = ( bufSize == null ) ? defaultBufSize : bufSize;
-		this.maxBufSize = ( maxBufSize == null ) ? defaultMaxBufSize : maxBufSize;
-		this.timeout = timeout;
-		
+		this.bufsize = ( bufsize == -1 ) ? defaultBufSize : bufsize;
+		this.maxbufsize = ( maxbufsize == -1 ) ? defaultMaxBufSize : maxbufsize;
+		this.timeout = ( timeout == -1 ) ? defaultTimeout : timeout;
 		#if (neko||cpp||php||rhino)
-		reading = false;
+		this.reading = false;
 		#end
 	}
 	
@@ -205,19 +204,36 @@ class SocketConnection extends Connection {
 	
 	function readData() {
 		
-		//TODO still double the buffer size if packet was not handled
-		// ...
+		var len = try socket.input.readBytes( buf, bufpos, bufsize ) catch( e : Dynamic ) {
+			error( "socket read failed" );
+			return;
+		}
+		bufpos += len;
+		if( len < bufsize ) {
+			__onData( buf.sub( 0, bufpos ) );
+			bufpos = 0;
+			buf = Bytes.alloc( bufsize = defaultBufSize );
+		} else {
+			var nsize = buf.length + bufsize;
+			if( nsize > maxbufsize ) {
+				error( "max buffer size site reached ("+maxbufsize+")" );
+				return;
+			}
+			var nbuf = Bytes.alloc( nsize );
+			nbuf.blit( 0, buf, 0, buf.length );
+			buf = nbuf;
+		}
 		
+		/*
 		var len = 0;
-		//try len = socket.input.readBytes( buf, bufbytes, buflen-bufbytes ) catch( e : Dynamic ) {
-		try len = socket.input.readBytes( buf, 0, bufSize ) catch( e : Dynamic ) {
+		try len = socket.input.readBytes( buf, 0, bufsize ) catch( e : Dynamic ) {
 			reading = connected = false;
 			__onDisconnect( e );
 			return;
 		}
 		__onData( buf.sub( 0, len ) );
-		buf = Bytes.alloc( bufSize );
-		//trace(len);
+		buf = Bytes.alloc( bufsize );
+		*/
 		
 		/*
 		var buflen = buf.length;
@@ -257,7 +273,13 @@ class SocketConnection extends Connection {
 		*/
 	}
 	
-	#end
+	function error( info : String ) {
+		reading = connected = false;
+		try socket.close() catch(e:Dynamic) { #if JABBER_DEBUG trace(e,"error"); #end }
+		__onDisconnect( info );
+	}
+	
+	#end // (neko||cpp||php||rhino)
 	
 }
 
