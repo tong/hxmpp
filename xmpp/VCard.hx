@@ -254,18 +254,18 @@ class VCard {
 			case "JABBERID" :  vc.jid = e.firstChild().nodeValue;
 			case "TZ" :  vc.tz = e.firstChild().nodeValue;
 			case "GEO" :
+				vc.geo = untyped {};
 				for( n in e.elements() ) {
 					if( n.firstChild() != null ) {
-						vc.geo = untyped {};
 						var v : String = n.firstChild().nodeValue;
 						if( v != null ) {
 							switch( n.nodeName ) {
-							case "LAT" : vc.geo.lat = Std.parseInt( v );
-							case "LON" : vc.geo.lon = Std.parseInt( v );
+							case "LAT" : vc.geo.lat = Std.parseFloat( v );
+							case "LON" : vc.geo.lon = Std.parseFloat( v );
 							}
 						}
 					}
-				}	
+				}
 			case "TITLE" :
 				if( e.firstChild() != null ) vc.title = e.firstChild().nodeValue;
 			case "ROLE" :
