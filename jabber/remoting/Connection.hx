@@ -24,9 +24,9 @@ import xmpp.IQType;
 // needed ..? the jid is already a data context (?)
 
 /**
-	<a href="http://haxe.org/doc/remoting">haXe-remoting</a><br/>
-	haXe remoting connection to a XMPP entity.<br/>
-	User ServiceDiscovery to determine if an entity supports haXe-remoting.
+	HaXe remoting connection to an XMPP entity.<br/>
+	User ServiceDiscovery to determine if an entity supports haXe-remoting.<br>
+	<a href="http://haxe.org/doc/remoting">http://haxe.org/doc/remoting</a>
 */
 class Connection implements AsyncConnection, implements Dynamic<AsyncConnection> {
 	

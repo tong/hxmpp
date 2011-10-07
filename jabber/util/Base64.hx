@@ -30,7 +30,7 @@ class Base64 {
 	
 	public static var CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	
-	#if (neko||cpp||js||flash||xmldoc)
+	#if (cpp||flash||js||neko||xmldoc)
 	#if !nodejs
 	
 	static var bc = new BaseCode( Bytes.ofString( CHARS ) );
@@ -48,7 +48,7 @@ class Base64 {
 	}
 	
 	#end // !nodejs
-	#end // neko||cpp||js||flash||xmldoc
+	#end // cpp||flash||js||neko||xmldoc
 	
 	public static #if (nodejs) inline #end
 	function encode( t : String ) : String {

@@ -18,8 +18,8 @@
 package jabber;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0231.html">XEP-0231: Bits Of Binary.</a><br/>
-	Request entity for 'Bits Of Binary'.
+	Request entity for 'Bits Of Binary'.<br>
+	<a href="http://xmpp.org/extensions/xep-0231.html">XEP-0231: Bits Of Binary.</a>
 */
 class BOB {
 	

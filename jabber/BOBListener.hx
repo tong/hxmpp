@@ -20,8 +20,8 @@ package jabber;
 import jabber.util.Base64;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0231.html">XEP-0231: Bits of Binary</a><br/>
 	Listens for 'Bits Of Binary' requests.
+	<a href="http://xmpp.org/extensions/xep-0231.html">XEP-0231: Bits of Binary</a>
 */
 class BOBListener {
 	

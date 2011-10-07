@@ -23,9 +23,9 @@ import jabber.data.io.IBOutput;
 import xmpp.IQ;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a><br/>
-	Outgoing in-band file transfer negotiator.<br/>
-	Data is broken down into smaller chunks and transported in-band over XMPP.<br/>
+	Outgoing in-band file transfer negotiator
+	<a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>
+	Data is broken down into smaller chunks and transported in-band over XMPP.
 	Use only as a last resort. SOCKS5 Bytestreams will almost always be preferable.
 */
 class IBTransfer extends DataTransfer {

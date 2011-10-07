@@ -24,7 +24,7 @@ import xmpp.lop.Submit;
 import xmpp.lop.Terminate;
 
 /**
-	Communicates with a resource provider's farm in order to spawn and compute with virtual machines that leverage provided resources.
+	Communicates with a resource provider's farm in order to spawn and compute with virtual machines that leverage provided resources.<br/>
 	<a href="http://xmpp.org/extensions/inbox/lop.html">Linked Process Protocol</a><br/>
 	<a href="http://linkedprocess.org">Linked Process Website</a><br/>
 */

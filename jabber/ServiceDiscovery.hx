@@ -68,7 +68,15 @@ class ServiceDiscovery {
 		case result :
 			onInfo( iq.from, Info.parse( iq.x.toXml() ) );
 		case error :
-			onError( new XMPPError( iq ) );
+			trace("error","error");
+			trace(iq,"error");
+			//TODO wtf .. this error packet thing handling is such a shit !
+			if( iq.errors[0] != null ) {
+				onError( new XMPPError( iq ) );
+			} else {
+				onError( null );
+			}
+			trace("-------------------------------------------------");
 		default :
 		}
 	}
@@ -78,7 +86,10 @@ class ServiceDiscovery {
 		case result :
 			onItems( iq.from, Items.parse( iq.x.toXml() ) );
 		case error :
-			onError( new XMPPError( iq ) );
+			//TODO wtf .. this error packet thing handling is such a shit !
+			if( iq.errors[0] != null ) {
+				onError( new XMPPError( iq ) );
+			}
 		default:
 		}
 	}

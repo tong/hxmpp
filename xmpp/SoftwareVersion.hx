@@ -17,6 +17,8 @@
 */
 package xmpp;
 
+using xmpp.XMLUtil;
+
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0092.html">XEP 0092 - Software Version</a>
 */
@@ -36,14 +38,15 @@ class SoftwareVersion {
 	
 	public function toXml() : Xml {
 		var x = IQ.createQueryXml( XMLNS );
-		if( name != null ) x.addChild( XMLUtil.createElement( "name", name ) );
-		if( version != null ) x.addChild( XMLUtil.createElement( "version", version ) );
-		if( os != null ) x.addChild( XMLUtil.createElement( "os", os ) );
+		if( name != null ) x.addElement( "name", name );
+		if( version != null ) x.addElement( "version", version );
+		if( os != null ) x.addElement( "os", os );
 		return x;
 	}
 	
-	public static function parse( x : Xml ) : xmpp.SoftwareVersion {
-		var s = new SoftwareVersion();
+	public static inline function parse( x : Xml ) : xmpp.SoftwareVersion {
+		return new SoftwareVersion().reflectElements( x );
+		/*
 		for( e in x.elements() ) {
 			switch( e.nodeName ) {
 			case "name" : s.name = e.firstChild().nodeValue;
@@ -51,7 +54,9 @@ class SoftwareVersion {
 			case "os" : s.os = e.firstChild().nodeValue;
 			}
 		}
+		//s.reflectElements( x );
 		return s;
+		*/
 	}
 	
 }

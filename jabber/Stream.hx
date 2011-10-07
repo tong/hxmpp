@@ -324,6 +324,7 @@ public var collectors : Array<PacketCollector>;
 	*/
 	public function handleString( t : String ) : Bool {
 		
+		
 		if( status == Status.closed ) {
 			#if JABBER_DEBUG trace( "cannot process incoming data, xmpp stream not connected", "debug" ); #end
 			throw "stream is closed";
@@ -338,6 +339,7 @@ public var collectors : Array<PacketCollector>;
 			trace("Invalid XMPP data recieved","error");
 		}
 		*/
+
 		
 		if( StringTools.startsWith( t, '</stream:stream' ) ) {
 			#if XMPP_DEBUG XMPPDebug.inc( t ); #end
@@ -350,6 +352,7 @@ public var collectors : Array<PacketCollector>;
 			return true;
 		}
 		
+		
 		buffer( t );
 		if( bufSize > maxBufSize ) {
 			#if JABBER_DEBUG
@@ -357,6 +360,7 @@ public var collectors : Array<PacketCollector>;
 			#end
 			close( false );
 		}
+
 		
 		switch( status ) {
 		

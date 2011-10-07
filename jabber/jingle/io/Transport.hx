@@ -19,12 +19,11 @@ package jabber.jingle.io;
 
 class Transport {
 	
-	public var __onFail : String->Void;
 	public var __onConnect : Void->Void;
 	public var __onDisconnect : Void->Void;
+	public var __onFail : String->Void;
 	
 	//public var connected(default,null) : Bool;
-	
 	
 	function new() {}
 	

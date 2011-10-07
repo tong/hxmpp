@@ -23,8 +23,8 @@ import jabber.util.SHA1;
 import xmpp.IQ;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams.</a><br/>
-	Incoming bytestream file transfer.
+	Incoming bytestream file transfer
+	<a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams.</a>
 */
 class ByteStreamReciever extends DataReciever {
 	

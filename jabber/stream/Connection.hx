@@ -61,34 +61,34 @@ class Connection {
 	
 	/** */
 	public function connect() {
-		#if JABBER_DEBUG trace( 'abstract method', 'warn' ); #end
+		#if JABBER_DEBUG trace( 'abstract method', 'error' ); #end
 	}
 	
 	/** */
 	public function disconnect() {
-		#if JABBER_DEBUG trace( 'abstract method', 'warn' ); #end
+		#if JABBER_DEBUG trace( 'abstract method', 'error' ); #end
 	}
 	
 	/** */
 	@:keep public function setSecure() {
-		#if JABBER_DEBUG trace( "Connection.setSecure not implemented", "warn" ); #end
+		#if JABBER_DEBUG trace( 'Connection.setSecure not implemented', 'error' ); #end
 	}
 	
 	/** Starts/Stops reading data input, returns true if successfully started */
 	public function read( ?yes : Bool = true ) : Bool {
-		#if JABBER_DEBUG trace( 'abstract method', 'warn' ); #end
+		#if JABBER_DEBUG trace( 'abstract method', 'error' ); #end
 		return false;
 	}
 	
 	/** Sends a string, returns true on succeess */
 	public function write( t : String ) : Bool {
-		#if JABBER_DEBUG trace( 'abstract method', 'warn' ); #end
+		#if JABBER_DEBUG trace( 'abstract method', 'error' ); #end
 		return false;
 	}
 	
 	/** Send raw bytes */
 	public function writeBytes( t : Bytes ) : Bool {
-		#if JABBER_DEBUG trace( 'abstract method', 'warn' ); #end
+		#if JABBER_DEBUG trace( 'abstract method', 'error' ); #end
 		return false;
 	}
 	

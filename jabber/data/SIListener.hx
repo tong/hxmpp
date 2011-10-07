@@ -20,8 +20,7 @@ package jabber.data;
 import xmpp.IQ;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a><br/>
-	Listens/Negotiates incoming data transfer requests.
+	Listens/Negotiates incoming data transfer requests <a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a>
 */
 class SIListener {
 	

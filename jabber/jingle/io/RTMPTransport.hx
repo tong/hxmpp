@@ -17,6 +17,8 @@
 */
 package jabber.jingle.io;
 
+#if flash
+
 import flash.events.NetStatusEvent;
 import flash.net.NetConnection;
 import flash.net.NetStream;
@@ -80,3 +82,67 @@ import flash.net.NetStream;
 	}
 	
 }
+
+/* TODO jingle flash bridge
+#elseif (js&&JINGLE_BRIDGE)
+
+@:require(JINGLE_BRIDGE) class RTMPTransport extends Transport {
+	
+	static var transports = new IntHash<RTMPTransport>();
+	
+	public var name(default,null) : String;
+	public var host(default,null) : String;
+	public var port(default,null) : Int;
+	public var id(default,null) : String;
+	
+	var bridgeId : Int;
+	
+	function new( name : String, host : String, port : Int = 1935, id : String ) {
+		
+		super();
+		this.name = name;
+		this.host = host;
+		this.port = port;
+		this.id = id;
+
+		transports.set( bridgeId = Lambda.count(transports), this );
+	}
+	
+	public override function connect() {
+		//nc = new NetConnection();
+		//nc.addEventListener( NetStatusEvent.NET_STATUS, netStatusHandler );
+		//try nc.connect( "rtmp://"+host+":"+port ) catch( e : Dynamic ) {
+		//	__onFail( e );
+		//}
+		swf.connectRTMPTranport( bridgeId, host, port );
+	}
+	
+	public override function close() {
+		swf.closeRTMPTransport( bridgeId );
+	}
+	
+	public override function toXml() : Xml {
+		var x = Xml.createElement( "candidate" );
+		x.set( "name", name );
+		x.set( "host", host );
+		x.set( "port", Std.string( port ) );
+		x.set( "id", id );
+		return x;
+	}
+	
+	static function __onConnect( id : Int ) {
+		transports.get( id ).__onConnect;
+	}
+	
+	static function __onDisconnect( id : Int ) {
+		transports.get( id ).__onDisconnect;
+	}
+	
+	static function __onFail( id : Int, info : String ) {
+		transports.get( id ).__onFail( info );
+	}
+	
+}
+*/
+
+#end

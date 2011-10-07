@@ -21,8 +21,8 @@ import haxe.remoting.Context;
 import jabber.stream.PacketCollector;
 
 /**
-	<a href="http://haxe.org/doc/remoting">http://haxe.org/doc/remoting</a><br/>
-	haXe/XMPP remoting host.<br/>
+	HaXe remoting host.<br/>
+	<a href="http://haxe.org/doc/remoting">http://haxe.org/doc/remoting</a>
 */
 class Host {
 	

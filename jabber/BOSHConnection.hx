@@ -26,15 +26,6 @@ import flash.events.ProgressEvent;
 import flash.events.SecurityErrorEvent;
 #end
 	
-	//TODO
-	
-	// timeout timer (?), added but needed?
-	// polling 
-	/// multiple streams over one connection
-	// secure!
-	// secure keys
-	// pause -> test
-	
 /**
 	<a href="http://xmpp.org/extensions/xep-0124.html">Bidirectional-streams Over Synchronous HTTP (BOSH)</a><br/>
 	<a href="http://xmpp.org/extensions/xep-0206.html">XMPP Over BOSH</a>
@@ -98,8 +89,6 @@ class BOSHConnection extends jabber.stream.Connection {
 		pollingEnabled = true;
 	}
 	
-	/**
-	*/
 	public override function connect() {
 		if( initialized && connected ) {
 			restart();
@@ -209,9 +198,8 @@ class BOSHConnection extends jabber.stream.Connection {
 		
 		if( requestCount >= maxConcurrentRequests ) {
 			#if JABBER_DEBUG
-			trace( "max concurrent request limit reached ("+requestCount+","+maxConcurrentRequests+")", "error" );
+			trace( "max concurrent request limit reached ("+requestCount+","+maxConcurrentRequests+")", "info" );
 			#end
-			//requestQueue.push(t); //TODO
 			return false;
 		}
 		requestCount++;

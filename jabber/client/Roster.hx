@@ -28,7 +28,7 @@ import xmpp.roster.AskType;
 import xmpp.roster.Subscription;
 
 /**
-	Configuration how to handle incoming presence subscription requests
+	Configuration how to handle recieved presence subscriptions
 */
 enum RosterSubscriptionMode {
 	/** Reject all subscription requests. */
