@@ -66,11 +66,11 @@ class SecureSocketConnection extends jabber.stream.SocketConnection {
 #elseif flash
 
 #if air
-import flash.net.SecureSocket;
 import flash.events.Event;
 import flash.events.IOErrorEvent;
 import flash.events.SecurityErrorEvent;
 import flash.events.ProgressEvent;
+import flash.net.SecureSocket;
 import flash.utils.ByteArray;
 
 class SecureSocketConnection extends jabber.stream.SocketConnection {

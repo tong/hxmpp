@@ -35,7 +35,7 @@ import js.net.Host;
 import js.net.Socket;
 #end
 
-class SocketConnection extends jabber.stream.SocketConnection {
+class SocketConnection extends jabber.stream.SocketConnectionBase {
 		
 	public function new( host : String,
 						 port : Int = #if JABBER_COMPONENT 5275 #else 5222 #end,
@@ -105,8 +105,8 @@ import tls.controller.SecureSocket;
 import tls.event.SecureSocketEvent;
 import tls.valueobject.SecurityOptionsVO;
 
-class SocketConnection extends jabber.stream.SocketConnection {
-		
+class SocketConnection extends jabber.stream.SocketConnectionBase {
+	
 	public function new( host : String, port : Int = 5222, secure : Bool = true,
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
@@ -188,11 +188,11 @@ import flash.events.SecurityErrorEvent;
 import flash.events.ProgressEvent;
 import flash.utils.ByteArray;
 
-class SocketConnection extends jabber.stream.SocketConnection {
+class SocketConnection extends jabber.stream.SocketConnectionBase {
 	
-	#if air
+	//#if air
 	public var socket(default,null) : Socket;
-	#end
+	//#end
 	
 	public function new( host : String, port : Int = 5222, secure : Bool = false,
 						 ?bufSize : Int, ?maxBufSize : Int,
@@ -262,15 +262,23 @@ class SocketConnection extends jabber.stream.SocketConnection {
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
-		trace("sockDataHandler");
 		var d = new ByteArray();
 		socket.readBytes( d, 0, Std.int( e.bytesLoaded ) );
+		__onData( haxe.io.Bytes.ofData( d )  );
+		/*
+		var d = new ByteArray();
+		try socket.readBytes( d, 0, Std.int(e.bytesLoaded) ) catch( e : Dynamic ) {
+			#if JABBER_DEBUG trace( e, "error" ); #end
+			return;
+		}
+		trace(d.length);
 		__onData(  haxe.io.Bytes.ofData( d )  );
+		*/
 	}
 }
 #elseif (js&&droid)
 
-class SocketConnection extends jabber.stream.SocketConnection {
+class SocketConnection extends jabber.stream.SocketConnectionBase {
 	public function new( host : String, port : Int = 5222 ) {
 		super( host, port, false );
 	}
@@ -284,7 +292,7 @@ import air.IOErrorEvent;
 import air.ProgressEvent;
 import air.SecurityErrorEvent;
 
-class SocketConnection extends jabber.stream.SocketConnection {
+class SocketConnection extends jabber.stream.SocketConnectionBase {
 	
 	public function new( host : String, port : Int = 5222, secure : Bool = false,
 						 ?bufSize : Int, ?maxBufSize : Int,
@@ -385,7 +393,7 @@ import js.Node;
 
 private typedef Socket = Stream;
 
-class SocketConnection extends jabber.stream.SocketConnection {
+class SocketConnection extends jabber.stream.SocketConnectionBase {
 	
 	public var socket(default,null) : Socket;
 	
@@ -484,7 +492,7 @@ class SocketConnection extends jabber.stream.SocketConnection {
 
 import jabber.stream.SocketConnection;
 
-class SocketConnection extends jabber.stream.SocketConnection {
+class SocketConnection extends jabber.stream.SocketConnectionBase {
 
 	public function new( host : String, ?port : Int = 5222, secure = true, timeout : Int = 10 ) {
 		super( host, port, secure, null, null, timeout );

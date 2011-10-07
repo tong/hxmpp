@@ -47,7 +47,7 @@ import flash.net.Socket;
 import droid.net.Socket;
 
 /** !!!!!!!!!!!!!!!!!!!!!!!!!!! EXPERIMENTAL !!!!!!!!!!!!!!!!!!!!!!!!!!! */
-class SocketConnection extends jabber.stream.Connection {
+class SocketConnectionBase extends jabber.stream.Connection {
 	
 	public var port(default,null) : Int;
 	
@@ -116,7 +116,7 @@ private typedef AbstractSocket = {
 }
 #end
 
-class SocketConnection extends Connection {
+class SocketConnectionBase extends Connection {
 	
 	public static var defaultBufSize = #if php 65536 #else 256 #end; //TODO php buf
 	public static var defaultMaxBufSize = 1<<20; // 1MB
@@ -143,7 +143,8 @@ class SocketConnection extends Connection {
 	#elseif (flash&&air)
 	//#
 	#elseif flash
-	public var socket(default,null) : #if TLS SecureSocket #else Socket #end;
+	//public var socket(default,null) : #if TLS SecureSocket #else Socket #end;
+	//public var socket(default,null) : #if TLS SecureSocket #else Socket #end;
 	#end
 	
 	var buf : Bytes;
@@ -204,10 +205,21 @@ class SocketConnection extends Connection {
 	
 	function readData() {
 		
+		/*
 		var len = try socket.input.readBytes( buf, bufpos, bufsize ) catch( e : Dynamic ) {
 			error( "socket read failed" );
 			return;
 		}
+		*/
+		
+		var len : Int;
+		try {
+			len = try socket.input.readBytes( buf, bufpos, bufsize );
+		} catch( e : Dynamic ) {
+			error( "socket read failed" );
+			return;
+		}
+		
 		bufpos += len;
 		if( len < bufsize ) {
 			__onData( buf.sub( 0, bufpos ) );
