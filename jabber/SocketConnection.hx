@@ -190,9 +190,9 @@ import flash.utils.ByteArray;
 
 class SocketConnection extends jabber.stream.SocketConnectionBase {
 	
-	//#if air
+	#if air
 	public var socket(default,null) : Socket;
-	//#end
+	#end
 	
 	public function new( host : String, port : Int = 5222, secure : Bool = false,
 						 ?bufSize : Int, ?maxBufSize : Int,
@@ -490,7 +490,7 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 
 #elseif (js&&JABBER_SOCKETBRIDGE)
 
-import jabber.stream.SocketConnection;
+import jabber.stream.SocketConnectionBase;
 
 class SocketConnection extends jabber.stream.SocketConnectionBase {
 

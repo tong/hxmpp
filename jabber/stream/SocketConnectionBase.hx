@@ -143,8 +143,7 @@ class SocketConnectionBase extends Connection {
 	#elseif (flash&&air)
 	//#
 	#elseif flash
-	//public var socket(default,null) : #if TLS SecureSocket #else Socket #end;
-	//public var socket(default,null) : #if TLS SecureSocket #else Socket #end;
+	public var socket(default,null) : #if TLS SecureSocket #else Socket #end;
 	#end
 	
 	var buf : Bytes;

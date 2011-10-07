@@ -33,7 +33,7 @@ import cpp.net.Socket;
 /**
 	Legacy TLS socket connection (port 5223)
 */
-class SecureSocketConnection extends jabber.stream.SocketConnection {
+class SecureSocketConnection extends jabber.stream.SocketConnectionBase {
 		
 	public function new( host : String, port : Int = 5223, secure : Bool = true,
 						 ?bufsize : Int, ?maxbufsize : Int,
@@ -73,7 +73,7 @@ import flash.events.ProgressEvent;
 import flash.net.SecureSocket;
 import flash.utils.ByteArray;
 
-class SecureSocketConnection extends jabber.stream.SocketConnection {
+class SecureSocketConnection extends jabber.stream.SocketConnectionBase {
 	
 	public var socket(default,null) : SecureSocket;
 	
@@ -182,7 +182,7 @@ import air.IOErrorEvent;
 import air.SecurityErrorEvent;
 import air.ProgressEvent;
 
-class SecureSocketConnection extends jabber.stream.SocketConnection {
+class SecureSocketConnection extends jabber.stream.SocketConnectionBase {
 	
 	public function new( host : String, port : Int = 5223,
 						 ?bufSize : Int, ?maxBufSize : Int,
