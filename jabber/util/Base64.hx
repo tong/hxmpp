@@ -100,10 +100,14 @@ class Base64 {
 		Create a random string of given length.
 	*/
 	public static function random( len : Int = 1, ?chars : String ) : String {
-		if( chars == null ) chars = CHARS;
-		var r = "";
-		for( i in 0...len ) r += chars.substr( Math.floor( Math.random()*chars.length ), 1 );
-		return r;
+		var n : Null<Int> = null;
+		if( chars == null ) {
+			chars = CHARS;
+			n = CHARS.length-2;
+		} else n = chars.length;
+		var s = "";
+		for( i in 0...len ) s += chars.charAt( Std.random( n ) );
+		return s;
 	}
 	
 }
