@@ -25,7 +25,7 @@ package jabber.sasl;
 */
 class PlainMechanism {
 	
-	public static var NAME = 'PLAIN';
+	public static inline var NAME = 'PLAIN';
 	
 	public var id(default,null) : String;
 	

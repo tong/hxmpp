@@ -26,7 +26,7 @@ import jabber.util.MD5;
 */
 class MD5Mechanism {
 	
-	public static var NAME = 'DIGEST-MD5';
+	public static inline var NAME = 'DIGEST-MD5';
 	
 	public var id(default,null) : String;
 	public var serverType : String;
