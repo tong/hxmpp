@@ -22,7 +22,7 @@ package jabber.client;
 */
 class VCard {
 	
-	public dynamic function onLoad( jid : String, data : xmpp.VCard ) {}
+	public dynamic function onLoad( jid : String, data : xmpp.VCardTemp ) {}
 	public dynamic function onUpdate() {}
 	public dynamic function onError( e : jabber.XMPPError ) {}
 	
@@ -37,14 +37,14 @@ class VCard {
 	*/
 	public function load( ?jid : String  ) {
 		var iq = new xmpp.IQ( null, null, jid );
-		iq.x = xmpp.VCard.empty();
+		iq.x = xmpp.VCardTemp.empty();
 		stream.sendIQ( iq, handleLoad );
 	}
 	
 	/**
 		Update own vcard.
 	*/
-	public function update( vc : xmpp.VCard ) {
+	public function update( vc : xmpp.VCardTemp ) {
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, stream.jid.domain );
 		iq.x = vc;
 		stream.sendIQ( iq, handleUpdate );
@@ -52,7 +52,7 @@ class VCard {
 	
 	function handleLoad( iq : xmpp.IQ ) {
 		switch( iq.type ) {
-		case result : onLoad( iq.from, ( iq.x != null ) ? xmpp.VCard.parse( iq.x.toXml() ) : null );
+		case result : onLoad( iq.from, ( iq.x != null ) ? xmpp.VCardTemp.parse( iq.x.toXml() ) : null );
 		case error : onError( new jabber.XMPPError( iq ) );
 		default : //
 		}
