@@ -59,7 +59,7 @@ class Stream extends jabber.Stream {
 	
 	override function processStreamInit( t : String ) : Bool {
 		if( cnx.http ) {
-			#if XMPP_DEBUG jabber.XMPPDebug.inc( t ); #end
+			#if XMPP_DEBUG jabber.XMPPDebug.i( t ); #end
 			var x : Xml = null;
 			try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
 				return false;
@@ -108,7 +108,7 @@ class Stream extends jabber.Stream {
 				return false;
 			}
 			parseServerStreamFeatures( x );
-			#if XMPP_DEBUG jabber.XMPPDebug.inc( t ); #end
+			#if XMPP_DEBUG jabber.XMPPDebug.i( t ); #end
 			if( cnx.secure && !cnx.secured && server.features.get( "starttls" ) != null ) {
 				status = Status.starttls;
 				sendData( '<starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls"/>' );

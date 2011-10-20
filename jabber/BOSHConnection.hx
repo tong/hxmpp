@@ -118,7 +118,7 @@ class BOSHConnection extends jabber.stream.Connection {
 			b.set( 'to', host );
 			b.set( 'secure', Std.string( secure ) );
 			#if XMPP_DEBUG
-			XMPPDebug.out( b.toString() );
+			XMPPDebug.o( b.toString() );
 			#end
 			sendRequests( b );
 			/*
@@ -182,7 +182,7 @@ class BOSHConnection extends jabber.stream.Connection {
 		r.set( "xml:lang", "en" );
 #end
 		r.set( "to", host );
-		#if XMPP_DEBUG XMPPDebug.out( r.toString() ); #end
+		#if XMPP_DEBUG XMPPDebug.o( r.toString() ); #end
 		sendRequests( r );
 	}
 	
@@ -372,7 +372,7 @@ class BOSHConnection extends jabber.stream.Connection {
 			t = null;
 			t = x.get( "inactivity" );
 			if( t != null ) inactivity = Std.parseInt( t );
-		//	#if XMPP_DEBUG XMPPDebug.inc( t ); #end
+		//	#if XMPP_DEBUG XMPPDebug.i( t ); #end
 			__onConnect();
 			connected = true;
 			__onString( x.toString() );

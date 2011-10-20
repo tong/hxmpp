@@ -30,25 +30,24 @@ import flash.external.ExternalInterface;
 #elseif rhino
 import js.Lib;
 #end
+import xmpp.XMLBeautify;
 
 /**
-	Utility for debugging XMPP transfer.<br/>
-	Set the haXe compiler flag: -D XMPP_DEBUG to activate it.<br/>
-	XMPP transfer gets:
-	* printed to the default debug console on browser targets
-	* color highlighted on terminal targets
-	* printed to adobe fdb 'trace' on air targets
+	Utility for debugging XMPP transfer.
+	Set the haXe compiler flag: -D XMPP_DEBUG to activate it.
+	
+	* Terminal targets: Color highlighted
+	* Browser targets: Printed to the default debug console
+	* Adobe air: Printed to fdb 'trace'
 */
 @:require(XMPP_DEBUG) class XMPPDebug {
 	
 	#if (flash||js)
-	
 	static function __init__() {
 		#if (air)
 		#else
 			#if flash
-			//useConsole = ( ExternalInterface.available &&
-			//			   ExternalInterface.call( "console.error.toString" ) != null );
+			//useConsole = ( ExternalInterface.available && ExternalInterface.call( "console.error.toString" ) != null );
 			useConsole = ExternalInterface.available;
 			#elseif js
 				#if (nodejs||rhino)
@@ -60,42 +59,50 @@ import js.Lib;
 			#end
 		#end
 	}
-	
-	#end // (flash||js)
+	#end
 	
 	/**
-		Default incoming XMPP debug relay.
+		Indicates if the XMPP debug output should get formatted/beautified.
+		If active, it is not ensured that the shown string matches the sent/recieved ones.
+		Default value is false.
+		Currently only supported in terminal targets.
 	*/
-	public static inline function inc( t : String ) {
+	public static var beautify = false;
+	
+	/**
+		Print incoming XMPP data
+	*/
+	public static inline function i( t : String ) {
 		print( t, false );
 	}
 	
 	/**
-		Default outgoing XMPP debug relay.
+		Print outgoing XMPP data
 	*/
-	public static inline function out( t : String ) {
+	public static inline function o( t : String ) {
 		print( t, true );
 	}
 	
+	/**
+	*/
 	public static inline function print( t : String, out : Bool, level : String = "log" ) {
 		#if XMPP_CONSOLE
 		XMPPConsole.printXMPP(t,out);
 		#else
-		#if (neko||cpp||php||air||nodejs||rhino)
-		__print( t, out ? color_out : color_inc );
-		#elseif (flash||js)
-		__print( t, out, level );
-		#end
+			#if (neko||cpp||php||air||nodejs||rhino)
+			__print( beautify ? XMLBeautify.it(t) : t+"\n", out ? color_out : color_inc );
+			#elseif (flash||js)
+			__print( beautify ? XMLBeautify.it(t) : t, out, level );
+			#end
 		#end // XMPP_CONSOLE
 	}
 	
 	#if (neko||cpp||php||air||nodejs||rhino)
-
+	
 	public static var color_out = 36;
 	public static var color_inc = 33;
 	
 	public static function __print( t : String, color : Int = -1 ) {
-		t = StringTools.replace( t, '\n',  '' );
 		if( color == -1 ) {
 			#if rhino
 			Lib._print( t );
@@ -114,27 +121,25 @@ import js.Lib;
 		b.add( "m" );
 		b.add( t );
 		b.add( "\033[" );
-		b.add( "m\n" );
-		
+		b.add( "m" );
 		#if rhino
 		Lib._print( b.toString() );
-		
 		#elseif air
-		#if flash
-		untyped __global__['trace']( b.toString() );
-		#else
-		untyped air.trace( b.toString() );
-		#end
-		
+			#if flash
+			untyped __global__['trace']( b.toString() );
+			#else
+			untyped air.trace( b.toString() );
+			#end
 		#else
 		Lib.print( b.toString() );
-		
 		#end
 	}
 	
 	#elseif (flash||js)
 	
-	/** Indicates if the XMPP transfer should get printed to the browser console */
+	/**
+		Indicates if the XMPP transfer should get printed to the browser console
+	*/
 	public static var useConsole : Bool;
 	
 	public static function __print( t : String, out : Bool = true, level : String = "log" ) {

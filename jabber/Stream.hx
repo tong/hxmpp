@@ -134,8 +134,9 @@ public var collectors : Array<PacketCollector>;
 		Get the next unique id for a XMPP packet.
 	*/
 	public function nextID() : String {
-		return Base64.random( defaultPacketIdLength )#if JABBER_DEBUG+"_"+numPacketsSent#end;
+		return Base64.random( defaultPacketIdLength ) #if JABBER_DEBUG+"_"+numPacketsSent#end;
 	}
+	
 	/**
 		Open the XMPP stream.
 	*/
@@ -195,7 +196,7 @@ public var collectors : Array<PacketCollector>;
 				return null;
 		}
 		numPacketsSent++;
-		#if XMPP_DEBUG XMPPDebug.out( t ); #end
+		#if XMPP_DEBUG XMPPDebug.o( t ); #end
 		return t;
 	}
 	
@@ -342,12 +343,12 @@ public var collectors : Array<PacketCollector>;
 
 		
 		if( StringTools.startsWith( t, '</stream:stream' ) ) {
-			#if XMPP_DEBUG XMPPDebug.inc( t ); #end
+			#if XMPP_DEBUG XMPPDebug.i( t ); #end
 			close( cnx.connected );
 			return true;
 		} else if( StringTools.startsWith( t, '</stream:error' ) ) {
 			// TODO report error info (?)
-			#if XMPP_DEBUG XMPPDebug.inc( t ); #end
+			#if XMPP_DEBUG XMPPDebug.i( t ); #end
 			close( cnx.connected );
 			return true;
 		}
@@ -379,12 +380,12 @@ public var collectors : Array<PacketCollector>;
 		case Status.starttls :
 			var x : Xml = null;
 			try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
-				#if XMPP_DEBUG XMPPDebug.inc( t ); #end
+				#if XMPP_DEBUG XMPPDebug.i( t ); #end
 				#if JABBER_DEBUG trace( "StartTLS failed", "warn" ); #end
 				cnx.disconnect();
 				return true;
 			}
-			#if XMPP_DEBUG XMPPDebug.inc( t ); #end
+			#if XMPP_DEBUG XMPPDebug.i( t ); #end
 			if( x.nodeName != "proceed" || x.get( "xmlns" ) != "urn:ietf:params:xml:ns:xmpp-tls" ) {
 				cnx.disconnect();
 				return true;
@@ -433,7 +434,7 @@ public var collectors : Array<PacketCollector>;
 	*/
 	public function handlePacket( p : xmpp.Packet ) : Bool {
 		#if XMPP_DEBUG
-		XMPPDebug.inc( p.toString() );
+		XMPPDebug.i( p.toString() );
 		#end
 		var i = -1;
 		while( ++i < collectors_id.length ) {
@@ -534,7 +535,6 @@ public var collectors : Array<PacketCollector>;
 
 	function handleDisconnect( ?e : String ) {
 		//if( status != closed )
-		//	handleStreamClose( e );
 		handleStreamClose( e );
 	}
 	
