@@ -98,12 +98,16 @@ class Stream extends jabber.Stream {
 		cnx.read( true );
 	}
 	
+	/*
 	override function handleDisconnect( ?e : String ) {
+		trace("hanaaaaaaaaaaaaaaaaaaaaaaadleDisconnect();");
+		trace(status );
 		connected = false;
 		if( status != Status.closed ) {
 			handleStreamClose( e );
 		}
 	}
+	*/
 	
 	/*
 	override function handleConnectionError( e : String ) {
