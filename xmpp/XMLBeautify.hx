@@ -4,7 +4,7 @@ using Lambda;
 
 class XMLBeautify {
 	
-	#if (cpp||neko||php||nodejs||rhino)
+	//#if (cpp||neko||php||nodejs||rhino)
 	
 	public static function it( t : String ) : String  {
 		var x : Xml = null;
@@ -50,6 +50,7 @@ class XMLBeautify {
 	
 	static inline function indent( b : StringBuf, n : Int ) for( i in 0...n ) b.add( '\t' )
 	
+	/* 
 	#else
 	
 	//TODO
@@ -58,5 +59,6 @@ class XMLBeautify {
 	}
 	
 	#end
+	*/
 	
 }

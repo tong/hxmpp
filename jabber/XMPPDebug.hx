@@ -42,24 +42,31 @@ import xmpp.XMLBeautify;
 */
 @:require(XMPP_DEBUG) class XMPPDebug {
 	
-	#if (flash||js)
 	static function __init__() {
-		#if (air)
-		#else
-			#if flash
-			//useConsole = ( ExternalInterface.available && ExternalInterface.call( "console.error.toString" ) != null );
-			useConsole = ExternalInterface.available;
-			#elseif js
-				#if (nodejs||rhino)
-				#else
+		//numPrinted = numPrintedIncoming = numPrintedOutgoing = 0;
+		lastPrintWasOutgoing = false;
+		#if (flash||js)
+			#if (air||nodejs||rhino)
+			#else
+				#if flash
+				useConsole = ExternalInterface.available; // && ExternalInterface.call( "console.error.toString" ) != null );
+				#elseif js
 				try useConsole = untyped console != null && console.error != null catch( e : Dynamic ) {
+					trace(e,"warn");
 					useConsole = false;
 				}
 				#end
 			#end
 		#end
 	}
-	#end
+	
+	//public static var numPrinted(getNumPrinted,null) : Int;
+	//public static var numPrinted(default,null) : Int;
+	//public static var numPrintedIncoming(default,null) : Int;
+	//public static var numPrintedOutgoing(default,null) : Int;
+	
+	/** */
+	public static var lastPrintWasOutgoing(default,null) : Bool; //= false;
 	
 	/**
 		Indicates if the XMPP debug output should get formatted/beautified.
@@ -67,7 +74,7 @@ import xmpp.XMLBeautify;
 		Default value is false.
 		Currently only supported in terminal targets.
 	*/
-	public static var beautify = false;
+	public static var beautify = true;
 	
 	/**
 		Print incoming XMPP data
@@ -83,11 +90,14 @@ import xmpp.XMLBeautify;
 		print( t, true );
 	}
 	
+	//public static inline function ox( x : Xml )
+	//public static inline function op( p : xmpp.Packet )
+	
 	/**
 	*/
 	public static inline function print( t : String, out : Bool, level : String = "log" ) {
 		#if XMPP_CONSOLE
-		XMPPConsole.printXMPP(t,out);
+		XMPPConsole.printXMPP( t, out );
 		#else
 			#if (neko||cpp||php||air||nodejs||rhino)
 			__print( beautify ? XMLBeautify.it(t) : t+"\n", out ? color_out : color_inc );
@@ -137,25 +147,47 @@ import xmpp.XMLBeautify;
 	
 	#elseif (flash||js)
 	
-	/**
-		Indicates if the XMPP transfer should get printed to the browser console
-	*/
+	/** Indicates if the XMPP transfer should get printed to the browser console */
 	public static var useConsole : Bool;
+
+	static var currentGroup : String;
 	
 	public static function __print( t : String, out : Bool = true, level : String = "log" ) {
-		var dir = out ? "=>" : "<=";
+		//var num = out ? numPrintedOutgoing++ : numPrintedIncoming++;
+		var info = out ? ">>> xmpp >>>" : "<<< xmpp <<< "; // )+" ("+num+":"+(++numPrinted)+")";
 		#if air
-		haxe.Log.trace( t, { className : "", methodName : "", fileName : "XMPP"+dir, lineNumber : t.length, customParams : [] } );
+		haxe.Log.trace( t, { className : "", methodName : "", fileName : info, lineNumber : t.length, customParams : [] } );
 		#else
 		if( useConsole ) {
-			#if flash
-			ExternalInterface.call( "console."+level, dir+t );
-			#else
-			untyped console[level]( dir+t );
-			#end
+			if( currentGroup == null ) {
+				__console( "group", currentGroup = "xmpp "+(out?">>>":"<<<") );
+			} else {
+				if( out && !lastPrintWasOutgoing || !out && lastPrintWasOutgoing ) {
+					__console( "groupEnd" );
+					__console( "group", currentGroup = "xmpp "+(out?">>>":"<<<") );
+				}
+			}
+			__console( level, t );
 		} else {
-			haxe.Log.trace( t, { className : "", methodName : "", fileName : "XMPP"+dir, lineNumber : t.length, customParams : [] } );
+			haxe.Log.trace( t, { className : "", methodName : "", fileName : info, lineNumber : t.length, customParams : [] } );
 		}
+		#end
+		lastPrintWasOutgoing = out;
+	}
+	
+	/*
+	static function __printConsoleGroup( t : String, group : String, level : String ) {
+		__console( "group", group );
+		__console( level, t );
+		__console( "groupEnd" );
+	}
+	*/
+
+	static inline function __console( c : String, ?t : Dynamic ) {
+		#if js
+		untyped console[c]( t );
+		#elseif flash
+		ExternalInterface.call( "console."+c, t );
 		#end
 	}
 	
