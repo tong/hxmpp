@@ -1,0 +1,66 @@
+
+-cp ../
+include.hxml
+-neko temp.n
+-xml neko.xml
+jabber.data.ByteStreamTransfer
+jabber.data.ByteStreamReciever
+jabber.jingle.FileTransfer
+jabber.jingle.FileTransferListener
+jabber.jingle.FileTransferResponder
+
+--next
+include.hxml
+-cp ../util
+-js temp.js
+-xml js.xml
+jabber.BOSHConnection
+jabber.Ping
+jabber.WebSocketConnection
+
+--next
+include.hxml
+-swf temp.swf
+-xml flash.xml 
+jabber.BOSHConnection
+jabber.Ping
+#jabber.WebSocketConnection
+jabber.jingle.RTMPCall
+jabber.jingle.RTMPListener
+jabber.jingle.RTMPResponder
+jabber.jingle.RTMFPCall
+jabber.jingle.RTMFPListener
+jabber.jingle.RTMFPResponder
+#--macro excludeFile('haxe.Int32')
+
+--next
+include.hxml
+-php .
+-xml php.xml 
+
+# TODO !!!!!!!! cpp
+#--next
+#include.hxml
+#-cpp cpp
+#-xml cpp.xml 
+#-main Main.hx
+
+--next
+include.hxml
+-js temp.js
+-xml node.xml
+-D nodejs
+-cp ../../hxnodejs
+
+#//TODO add all available classes
+#--next
+#-cp ../
+#-D XMPP_DEBUG
+#-neko temp.n
+#-xml component.xml
+#-D JABBER_COMPONENT
+#jabber.component.Stream
+
+-cmd chxdoc -o api --ignoreRoot=true  neko.xml,neko js.xml,js flash.xml,flash php.xml,php node.xml,node -f neko -f js -f flash -f php -f cpp -f haxe
+-cmd rm -f *.xml temp.*
+-cmd rm -rf lib cpp

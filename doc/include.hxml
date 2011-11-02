@@ -1,6 +1,6 @@
 
 -cp ../
---no-output
+#--no-output
 -D XMPP_DEBUG
 
 jabber.BlockList
