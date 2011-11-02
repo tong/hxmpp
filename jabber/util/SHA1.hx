@@ -17,27 +17,34 @@
 */
 package jabber.util;
 
-#if (php||nodejs)
-
 #if nodejs
 import js.Node;
 #end
 
 class SHA1 {
 	
-	public static function encode( t : String ) : String {
+	public static inline function encode( s : String ) : String {
 		#if php
-		return untyped __call__( "sha1", t );
-		#else
+		return untyped __call__( "sha1", s );
+		#elseif nodejs
 		var h = Node.crypto.createHash( "sha1" );
-		h.update( t );
+		h.update( s );
 		return h.digest( Node.HEX );
+		#else
+		return haxe.SHA1.encode(s);
 		#end
 	}
 	
 }
 
+/* 
 #else
-typedef SHA1 = haxe.SHA1;
+//typedef SHA1 = haxe.SHA1;
+class SHA1 {
+	public static function encode( s : String ) : String {
+		return haxe.SHA1.encode(s);
+	}
+}
 
 #end
+*/
