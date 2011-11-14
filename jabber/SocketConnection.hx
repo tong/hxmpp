@@ -37,7 +37,7 @@ import js.net.Socket;
 
 class SocketConnection extends jabber.stream.SocketConnectionBase {
 		
-	public function new( host : String,
+	public function new( host : String = "localhost",
 						 port : Int = #if JABBER_COMPONENT 5275 #else 5222 #end,
 						 secure : Bool = #if (neko||cpp||air) false #else true #end,
 						 ?bufsize : Int, ?maxbufsize : Int,
@@ -107,7 +107,7 @@ import tls.valueobject.SecurityOptionsVO;
 
 class SocketConnection extends jabber.stream.SocketConnectionBase {
 	
-	public function new( host : String, port : Int = 5222, secure : Bool = true,
+	public function new( host : String = "localhost", port : Int = 5222, secure : Bool = true,
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
 		super( host, port, secure, bufSize, maxBufSize, timeout );
@@ -194,7 +194,7 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 	public var socket(default,null) : Socket;
 	#end
 	
-	public function new( host : String, port : Int = 5222, secure : Bool = false,
+	public function new( host : String = "localhost", port : Int = 5222, secure : Bool = false,
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
 		super( host, port, false, bufSize, maxBufSize, timeout );
@@ -279,7 +279,7 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 #elseif (js&&droid)
 
 class SocketConnection extends jabber.stream.SocketConnectionBase {
-	public function new( host : String, port : Int = 5222 ) {
+	public function new( host : String = "localhost", port : Int = 5222 ) {
 		super( host, port, false );
 	}
 }
@@ -294,7 +294,7 @@ import air.SecurityErrorEvent;
 
 class SocketConnection extends jabber.stream.SocketConnectionBase {
 	
-	public function new( host : String, port : Int = 5222, secure : Bool = false,
+	public function new( host : String = "localhost", port : Int = 5222, secure : Bool = false,
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
 		super( host, port, false, bufSize, maxBufSize, timeout );
@@ -397,7 +397,7 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 	
 	public var socket(default,null) : Socket;
 	
-	public function new( host : String, port : Int = 5222, secure : Bool = true,
+	public function new( host : String = "localhost", port : Int = 5222, secure : Bool = true,
 						 ?bufSize : Int, ?maxBufSize : Int,
 						 timeout : Int = 10 ) {
 		super( host, port, secure, bufSize, maxBufSize, timeout );
@@ -494,7 +494,7 @@ import jabber.stream.SocketConnectionBase;
 
 class SocketConnection extends jabber.stream.SocketConnectionBase {
 
-	public function new( host : String, ?port : Int = 5222, secure = true, timeout : Int = 10 ) {
+	public function new( host : String = "localhost", ?port : Int = 5222, secure = true, timeout : Int = 10 ) {
 		super( host, port, secure, null, null, timeout );
 	}
 	
@@ -567,7 +567,7 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 	
 	static var sockets : IntHash<Socket>;
 	
-	public static function init( id : String, cb : String->Void, ?delay : Int = 0 ) {
+	public static function init( id : String = "localhost", cb : String->Void, ?delay : Int = 0 ) {
 		if( initialized ) {
 			#if JABBER_DEBUG trace( 'socketbridge already initialized ['+id+']', 'warn' ); #end
 			cb( 'socketbridge already initialized ['+id+']' );
