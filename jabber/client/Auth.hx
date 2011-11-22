@@ -22,18 +22,23 @@ package jabber.client;
 */
 class Auth {
 	
+	/***/
 	public dynamic function onSuccess() {}
-	//public dynamic function onFail( ?e : jabber.XMPPError ) {}
+	
+	/***/
 	public dynamic function onFail( info : String ) {}
 	
+	/***/
 	public var resource(default,null) : String;
+	
+	/***/
 	public var stream(default,null) : Stream;
 	
 	function new( s : Stream ) {
 		this.stream = s;
 	}
 	
-	public function authenticate( password : String, ?resource : String ) : Bool {
+	public function start( password : String, ?resource : String ) : Bool {
 		return #if JABBER_DEBUG throw 'abstract method' #else false #end;
 	}
 	

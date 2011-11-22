@@ -21,7 +21,7 @@ import jabber.util.SHA1;
 
 /**
 	<a href="http://xmpp.org/extensions/xep-0078.html">XEP-0078: Non-SASL Authentication</a><br>
-	Obsolete, superseded in favor of SASL authentication!
+	Obsolete, superseded in favor of SASL authentication (jabber.client.Authentication)!
 */
 class NonSASLAuth extends Auth {
 	
@@ -41,7 +41,7 @@ class NonSASLAuth extends Auth {
 		active = false;
 	}
 
-	public override function authenticate( password : String, ?resource : String ) {
+	public override function start( password : String, ?resource : String ) {
 		if( active )
 			throw "authentication already in progress";
 		this.password = password;

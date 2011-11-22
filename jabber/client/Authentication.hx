@@ -24,6 +24,8 @@ import xmpp.IQType;
 import xmpp.filter.PacketNameFilter;
 
 /**
+	SASL authentication.
+
 	Responsible for:
 	<ol>
 		<li>Authenticating a client account using SASL</li>
@@ -34,15 +36,18 @@ import xmpp.filter.PacketNameFilter;
 	<a href="http://xmpp.org/rfcs/rfc3920.html#bind">RFC3920-BIND</a><br/>
 */
 class Authentication extends Auth {
-
+	
+	/** */
 	public dynamic function onNegotiated() {}
+	
+	/** Clients SASL mechanisms (in prefered order) */
+	public var mechanisms(default,null) : Array<jabber.sasl.Mechanism>;
+	
+	/** Available mechanisms offered by server */
+	public var serverMechanisms(default,null) : Array<String>;
 	
 	/** Used SASL method */
 	public var mechanism(default,null) : jabber.sasl.Mechanism;
-	/** Clients SASL mechanisms (in prefered order) */
-	public var mechanisms(default,null) : Array<jabber.sasl.Mechanism>;
-	/** Available mechanisms offered by server */
-	public var serverMechanisms(default,null) : Array<String>;
 	
 	var onStreamOpenHandler : Void->Void;
 	var c_challenge : PacketCollector;
@@ -66,7 +71,7 @@ class Authentication extends Auth {
 		Inits SASL authentication.<br/>
 		Returns false if no supported SASL mechanism was offered by the server.
 	*/
-	public override function authenticate( password : String, ?resource : String ) : Bool {
+	public override function start( password : String, ?resource : String ) : Bool {
 		this.resource = resource;
 		if( stream.jid != null && resource != null ) // update JID resource
 			stream.jid.resource = resource;
