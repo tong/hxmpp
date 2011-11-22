@@ -18,7 +18,7 @@
 package jabber.data.io;
 
 import haxe.io.Bytes;
-import jabber.util.SOCKS5Out;
+import jabber.util.SOCKS5Output;
 #if neko
 import neko.net.Host;
 import neko.net.Socket;
@@ -87,7 +87,7 @@ class ByteStreamInput extends ByteStreamIO {
 		socket = new Socket();
 		try {
 			socket.connect( new Host( host ), port );
-			new SOCKS5Out().run( socket, digest );
+			new SOCKS5Output().run( socket, digest );
 		} catch( e : Dynamic ) {
 			__onFail( e );
 			return;
@@ -201,7 +201,7 @@ class ByteStreamInput extends ByteStreamIO {
 	function onSocketConnect( e : Event ) {
 		#if JABBER_DEBUG trace( "Filetransfer socket connected ["+host+":"+port+"]", "info" ); #end
 		try {
-			new SOCKS5Out().run( socket, digest, onSOCKS5Complete );
+			new SOCKS5Output().run( socket, digest, onSOCKS5Complete );
 		} catch( e : Dynamic ) {
 			cleanup();
 			__onFail( e );
@@ -257,7 +257,7 @@ class ByteStreamInput extends ByteStreamIO {
 	
 	function sockConnectHandler() {
 		#if JABBER_DEBUG trace( "Filetransfer socket connected ["+host+":"+port+"]" ); #end
-		new SOCKS5Out().run( socket, digest, onSOCKS5Complete );
+		new SOCKS5Output().run( socket, digest, onSOCKS5Complete );
 	}
 
 	function sockDisconnectHandler() {

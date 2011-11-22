@@ -35,7 +35,7 @@ import php.net.Socket;
 	just a subset for requirements in context of XMPP (datatransfers).<br/>
 	<a href="http://www.faqs.org/rfcs/rfc1928.html">RFC 1928</a>
 */
-class SOCKS5Out {
+class SOCKS5Output {
 	
 	public function new() {}
 	
@@ -78,7 +78,7 @@ private enum State {
 	WaitAuth;
 }
 
-class SOCKS5Out {
+class SOCKS5Output {
 	
 	var socket : Socket;
 	var digest : String;
@@ -149,7 +149,7 @@ private enum State {
 	WaitAuth;
 }
 
-class SOCKS5Out {
+class SOCKS5Output {
 	
 	var socket : Stream;
 	var digest : String;

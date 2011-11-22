@@ -1,7 +1,7 @@
 package jabber.jingle.io;
 
 import haxe.io.Bytes;
-import jabber.util.SOCKS5In;
+import jabber.util.SOCKS5Input;
 #if neko
 import neko.net.Host;
 import neko.net.Socket;

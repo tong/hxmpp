@@ -6,7 +6,7 @@ import neko.net.Socket;
 import neko.vm.Thread;
 #end
 import haxe.io.Bytes;
-import jabber.util.SOCKS5Out;
+import jabber.util.SOCKS5Output;
 
 class ByteStreamInput extends ByteStreamTransport {
 

@@ -18,7 +18,7 @@
 package jabber.data.io;
 
 import haxe.io.Bytes;
-import jabber.util.SOCKS5In;
+import jabber.util.SOCKS5Input;
 #if neko
 import neko.net.Host;
 import neko.net.Socket;
@@ -220,7 +220,7 @@ class ByteStreamOutput extends ByteStreamIO  {
 			trace(e);
 		}
 		*/
-		try new SOCKS5In().run( c, digest ) catch( e : Dynamic ) {
+		try new SOCKS5Input().run( c, digest ) catch( e : Dynamic ) {
 			cb( e );
 			return;
 		}
@@ -263,7 +263,7 @@ class ByteStreamOutput extends ByteStreamIO  {
 	function onConnect( s : Stream ) {
 		socket = s;
 		//socket.on( Node.EVENT_STREAM_DATA, onData );
-		new SOCKS5In().run( socket, digest, onSOCKS5Complete );
+		new SOCKS5Input().run( socket, digest, onSOCKS5Complete );
 	}
 	
 	/*
@@ -296,7 +296,7 @@ class ByteStreamOutput extends ByteStreamIO  {
 	
 	function onConnect( e : ServerSocketConnectEvent ) {
 		socket = e.socket;
-		new SOCKS5In().run( socket, digest, onSOCKS5Complete );
+		new SOCKS5Input().run( socket, digest, onSOCKS5Complete );
 	}
 	
 	function onSOCKS5Complete( err : String ) {
