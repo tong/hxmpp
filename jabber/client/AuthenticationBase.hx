@@ -18,17 +18,17 @@
 package jabber.client;
 
 /**
-	Abstract client account authentication base.
+	Abstract client account authentication.
 */
-class Auth {
+class AuthenticationBase {
 	
-	/***/
+	/** Authenication was success full callback */
 	public dynamic function onSuccess() {}
 	
-	/***/
+	/** Authenication failed callback */
 	public dynamic function onFail( info : String ) {}
 	
-	/***/
+	/** The jid resource to authenticate */
 	public var resource(default,null) : String;
 	
 	/***/
@@ -38,6 +38,9 @@ class Auth {
 		this.stream = s;
 	}
 	
+	/**
+		Start the authentication process.
+	*/
 	public function start( password : String, ?resource : String ) : Bool {
 		return #if JABBER_DEBUG throw 'abstract method' #else false #end;
 	}
