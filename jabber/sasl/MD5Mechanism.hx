@@ -71,11 +71,6 @@ class MD5Mechanism {
 		//if( host != null ) digest_uri += "/"+host;
 		var cnonce = hh( Date.now().toString() );
 		
-		trace(realm);
-		trace(nonce);
-		trace(digest_uri);
-		trace(cnonce);
-		
 		// compute response
 	//	var authzid = username+"@"+realm+"/"+resource;
 		var a1 = h( username+":"+realm+":"+pass )+":"+nonce+":"+cnonce;

@@ -40,7 +40,7 @@ class File {
 
 	public function toXml() : Xml {
 		var x = Xml.createElement( "file" );
-		x.set( "xmlns", XMLNS );
+		XMLUtil.ns( x, XMLNS );
 		if( name != null ) x.set( "name", name );
 		if( size != null ) x.set( "size", Std.string( size ) );
 		if( date != null ) x.set( "date", date );

@@ -59,12 +59,15 @@ class SIListener {
 		var _methods = new Array<String>();
 		for( e in si.any ) {
 			if( e.nodeName == "feature" && e.get( "xmlns" ) == xmpp.FeatureNegotiation.XMLNS ) {
-				for( e in e.elementsNamed( "x" ) ) {
-					var form = xmpp.DataForm.parse( e );
-					var f = form.fields[0];
-					if( f.variable == "stream-method" ) {
-						for( o in f.options )
-							_methods.push( o.value );
+				for( e in e.elements() ) {
+					switch( e.nodeName ) {
+					case "x" :
+						var form = xmpp.DataForm.parse( e );
+						var f = form.fields[0];
+						if( f.variable == "stream-method" ) {
+							for( o in f.options )
+								_methods.push( o.value );
+						}
 					}
 				}
 			} else if( e.nodeName == "file" && e.get( "xmlns" ) == xmpp.file.File.XMLNS ) {

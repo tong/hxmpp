@@ -71,21 +71,26 @@ class DataReciever {
 	}
 	
 	function sendAccept( xmlns : String, xname : String ) {
+		
 		var r = IQ.createResult( request );
 		var si = new xmpp.file.SI();
 		var file = new xmpp.file.File( null, null );
 		file.range = range;
 		si.any.push( file.toXml() );
 		var feature = Xml.createElement( "feature" );
-		feature.set( "xmlns", xmpp.FeatureNegotiation.XMLNS );
+		xmpp.XMLUtil.setNamespace( feature, xmpp.FeatureNegotiation.XMLNS );
+		//feature.set( "xmlns", xmpp.FeatureNegotiation.XMLNS );
+		
 		var form = new xmpp.DataForm( xmpp.dataform.FormType.submit );
 		var form_f = new xmpp.dataform.Field();
 		form_f.variable = "stream-method";
 		form_f.values.push( xmlns );
 		form.fields.push( form_f );
 		feature.addChild( form.toXml() );
+		
 		si.any.push( feature );
 		r.x = si;
+		
 		stream.sendPacket( r );
 		stream.collect( [cast new xmpp.filter.IQFilter( xmlns, xmpp.IQType.set, xname )], handleRequest );
 	}

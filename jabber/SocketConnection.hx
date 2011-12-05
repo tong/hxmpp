@@ -391,7 +391,7 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 
 import js.Node;
 
-private typedef Socket = Stream;
+private typedef Socket = js.Stream;
 
 class SocketConnection extends jabber.stream.SocketConnectionBase {
 	

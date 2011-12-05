@@ -35,7 +35,7 @@ class SI {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "si" );
-		x.set( "xmlns", XMLNS );
+		xmpp.XMLUtil.ns( x, XMLNS );
 		if( id != null ) x.set( "id", id );
 		if( mime != null ) x.set( "mime", mime );
 		if( profile != null ) x.set( "profile", profile );

@@ -83,11 +83,7 @@ class IB {
 	
 	public static function createDataElement( sid : String, seq : Int, d : String ) : Xml {
 		var x = xmpp.XMLUtil.createElement( "data", d );
-		#if flash
-		x.set( "_xmlns_", XMLNS );
-		#else
-		x.set( "xmlns", XMLNS );
-		#end
+		xmpp.XMLUtil.ns( x, XMLNS );
 		x.set( "sid", sid );
 		x.set( "seq", Std.string( seq ) );
 		return x;

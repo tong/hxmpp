@@ -63,11 +63,7 @@ class ErrorPacket {
 		}
 		if( app != null && app.condition != null && app.xmlns != null ) {
 			var a = Xml.createElement( app.condition );
-			#if flash //TODO haxe2.06 fukup
-			a.set( "_xmlns_", app.xmlns );
-			#else
-			a.set( "xmlns", app.xmlns );
-			#end
+			a.ns( app.xmlns );
 			x.addChild( a );
 		}
 		return x;

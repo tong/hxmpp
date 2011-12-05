@@ -45,11 +45,7 @@ class SASL {
 			return null;
 		// TODO flash 2.06 (+) namespace hack
 		var x = XMLUtil.createElement( "response", t );
-	#if flash // TODO haXe 2.06 fukup
-		x.set( "_xmlns_", XMLNS );
-	#else
-		x.set( "xmlns", XMLNS );
-	#end
+		x.ns( XMLNS );
 		return x;
 	}
 	

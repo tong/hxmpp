@@ -41,7 +41,7 @@ class UserActivity extends xmpp.PersonalEvent {
 		var a = Xml.createElement( Type.enumConstructor( activity ) );
 		if( extended != null ) {
 			var e = Xml.createElement( extended.activity );
-			if( extended.xmlns != null ) e.set( "xmlns", extended.xmlns );
+			if( extended.xmlns != null ) xmpp.XMLUtil.setNamespace( e, extended.xmlns );
 			a.addChild( e );
 		}
 		x.addChild( a );
