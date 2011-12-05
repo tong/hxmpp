@@ -68,7 +68,11 @@ class ServiceDiscovery {
 		case result :
 			onInfo( iq.from, Info.parse( iq.x.toXml() ) );
 		case error :
-			trace("error","error");
+			//trace("TODO");
+			//trace( iq.errors[0] );
+			onError( new XMPPError( iq ) );
+			/* 
+			trace("TODO error","error");
 			trace(iq,"error");
 			//TODO wtf .. this error packet thing handling is such a shit !
 			if( iq.errors[0] != null ) {
@@ -77,6 +81,8 @@ class ServiceDiscovery {
 				onError( null );
 			}
 			trace("-------------------------------------------------");
+			*/
+			
 		default :
 		}
 	}

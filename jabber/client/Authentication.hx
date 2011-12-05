@@ -35,7 +35,7 @@ import xmpp.filter.PacketNameFilter;
 	<a href="http://xmpp.org/rfcs/rfc3920.html#sasl">RFC3920-SASL</a><br/>
 	<a href="http://xmpp.org/rfcs/rfc3920.html#bind">RFC3920-BIND</a><br/>
 */
-class Authentication extends Auth {
+class Authentication extends AuthenticationBase {
 	
 	/** */
 	public dynamic function onNegotiated() {}

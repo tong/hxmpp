@@ -2,6 +2,9 @@ package xmpp;
 
 using Lambda;
 
+/**
+	Utility to 'beautify' a xml string for debugging.
+*/
 class XMLBeautify {
 	
 	//#if (cpp||neko||php||nodejs||rhino)

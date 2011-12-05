@@ -32,6 +32,16 @@ import js.Lib;
 #end
 import xmpp.XMLBeautify;
 
+/*
+#if js
+@:native("xmppsend")
+#end
+class XMPPSend {
+	public static function o() {
+	}
+}
+*/
+
 /**
 	Utility for debugging XMPP transfer.
 	Set the haXe compiler flag: -D XMPP_DEBUG to activate it.
@@ -99,7 +109,7 @@ import xmpp.XMLBeautify;
 		#if XMPP_CONSOLE
 		XMPPConsole.printXMPP( t, out );
 		#else
-			#if (neko||cpp||php||air||nodejs||rhino)
+			#if (air||cpp||neko||nodejs||php||rhino)
 			__print( beautify ? XMLBeautify.it(t) : t+"\n", out ? color_out : color_inc );
 			#elseif (flash||js)
 			__print( beautify ? XMLBeautify.it(t) : t, out, level );

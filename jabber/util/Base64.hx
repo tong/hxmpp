@@ -73,7 +73,6 @@ class Base64 {
 				c += 3;
 			}
 			return r.substr( 0, r.length-p.length ) + p; // add the actual padding string, after removing the zero pad
-			
 		#end
 	}
 	

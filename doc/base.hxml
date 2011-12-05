@@ -32,11 +32,11 @@ jabber.XMPPError
 jabber.client.Account
 jabber.client.GMailNotify
 jabber.client.MUChat
-jabber.client.NonSASLAuth
+jabber.client.NonSASLAuthentication
 jabber.client.Roster
 jabber.client.Authentication
 jabber.client.Stream
-jabber.client.VCard
+jabber.client.VCardTemp
 jabber.data.IBReciever
 jabber.data.IBTransfer
 jabber.data.SIListener

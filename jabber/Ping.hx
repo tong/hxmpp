@@ -37,7 +37,7 @@ class Ping {
 	
 	public var stream(default,null) : Stream;
 	/** Indicates if this instance is currently sending pings */
-	public var active(default,null) : Bool;
+	public var active(default,never) : Bool;
 	/** JID of the target entity (server if null) */
 	public var target : String;
 	/** Ping interval in ms */

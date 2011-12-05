@@ -11,7 +11,6 @@ The library exists in two namespaces:
 * jabber: creation and manipulation of XMPP data streams to a server.
 
 
-
 SOURCE
 -------
 git://github.com/tong/hxmpp.git
@@ -19,11 +18,9 @@ https://github.com/tong/hxmpp
 http://hxmpp.disktree.net
 
 
-
 USAGE
 -----
 Browse tests/examples: http://github.com/tong/hxmpp.examples
-
 
 
 COMPILER FLAGS
@@ -34,11 +31,9 @@ COMPILER FLAGS
 * JABBER_COMPONENT	Required when building server components
 
 
-
 ACTIONSCRIPT3/MXMLC
 -------------------
 See: https://github.com/tong/hxmpp.examples/tree/master/swc
-
 
 
 ADOBE AIR2
@@ -48,13 +43,10 @@ HXMPP supports native, secure and unsecure adobe air2 socket connections.
 * Add 'air' compiler flag.
 
 
-
 NODE.JS
 -------
-Use the type signatures from: https://github.com/tong/hxnodejs
+To compile to nodejs you have to use the type definitioons from: https://github.com/tong/hxnodejs
 Set compiler flag: -D nodejs
-
-
 
 
 XEPS SUPPORTED
@@ -132,5 +124,5 @@ This project accepts and *encourages* contributions.
 
 AUTHOR
 ------
-xmpp://tong@jabber.spektral.at
+xmpp://tong.disktree@gmail.com
 

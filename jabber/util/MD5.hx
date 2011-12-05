@@ -17,53 +17,43 @@
 */
 package jabber.util;
 
-#if neko
-import neko.Lib;
-#elseif cpp
-import cpp.Lib;
-#elseif nodejs
-import js.Node;
-#end
-
 /**
-	Creates a MD5 of a String.<br/>
+	Creates a MD5 of a String.
 	Modified version from the haXe std lib to provide raw encoding.
 **/
 class MD5 {
 	
-	public static function encode( s : String, raw : Bool = false ) : String {
-		#if (neko)//||cpp)
+	public static inline function encode( s : String, raw : Bool = false ) : String {
+		#if neko
 		var t = make_md5( untyped s.__s );
 		return untyped new String( raw ? t : base_encode( t, "0123456789abcdef".__s ) );
+		#elseif nodejs
+		var h = js.Node.crypto.createHash( "md5" );
+		h.update( s );
+		return h.digest( raw ? js.Node.BINARY : js.Node.HEX );
 		#elseif php
 		return untyped __call__( "md5", s, raw );
-		#elseif nodejs
-		var h = Node.crypto.createHash( "md5" );
-		h.update( s );
-		return h.digest( raw ? Node.BINARY : Node.HEX );
 		#else
-		return raw ? inst.doEncodeRaw(s) : inst.doEncode(s);
+		return raw ? new MD5().doEncodeRaw(s) : new MD5().doEncode(s);
 		#end
 	}
-
-	#if (neko)//||cpp)
-	static var base_encode = Lib.load( "std", "base_encode", 2 );
-	static var make_md5 = Lib.load( "std", "make_md5", 1 );
 	
-	#elseif !php
-
-	static var inst = new MD5();
+	#if neko
+	static var base_encode = neko.Lib.load( "std", "base_encode", 2 );
+	static var make_md5 = neko.Lib.load( "std", "make_md5", 1 );
+	#elseif php
+	#else
 
 	function new() {}
 	
-	function rhex( num : Int ){
-		var str = "";
-		var hex_chr = "0123456789abcdef";
-		for( j in 0...4 ){
-			str += hex_chr.charAt((num >> (j * 8 + 4)) & 0x0F) +
-						 hex_chr.charAt((num >> (j * 8)) & 0x0F);
+	function rhex( n : Int ) : String {
+		var s = "";
+		var hex = "0123456789abcdef";
+		for( j in 0...4 ) {
+			s += hex.charAt( (n >> (j * 8 + 4)) & 0x0F ) +
+				 hex.charAt( (n >> (j * 8)) & 0x0F );
 		}
-		return str;
+		return s;
 	}
 	
 	function bitOR( a : Int, b : Int ) : Int {
@@ -90,17 +80,17 @@ class MD5 {
 		return (msw << 16) | (lsw & 0xFFFF);
 	}
 
-	inline function str2blks( str : String ) : Array<Int> {
-		var nblk = ((str.length + 8) >> 6) + 1;
+	function str2blks( s : String ) : Array<Int> {
+		var nblk = ((s.length + 8) >> 6) + 1;
 		var blks = new Array<Int>();
 		for( i in 0...(nblk * 16) ) blks[i] = 0;
 		var i = 0;
-		while( i < str.length ) {
-			blks[i >> 2] |= StringTools.fastCodeAt(str,i) << (((str.length * 8 + i) % 4) * 8);
+		while( i < s.length ) {
+			blks[i >> 2] |= StringTools.fastCodeAt(s,i) << (((s.length * 8 + i) % 4) * 8);
 			i++;
 		}
-		blks[i >> 2] |= 0x80 << (((str.length * 8 + i) % 4) * 8);
-		var l = str.length * 8;
+		blks[i >> 2] |= 0x80 << (((s.length * 8 + i) % 4) * 8);
+		var l = s.length * 8;
 		var k = nblk * 16 - 2;
 		blks[k] = (l & 0xFF);
 		blks[k] |= ((l >>> 8) & 0xFF) << 8;
@@ -145,7 +135,7 @@ class MD5 {
 		return r;
 	}
 	
-	inline function bin2str( inp : Array<Int> ) : String {
+	function bin2str( inp : Array<Int> ) : String {
 		var r = "";
 		var i = 0;
 		while( i < inp.length * 32 ) {
@@ -155,7 +145,7 @@ class MD5 {
 		return r;
 	}
 	
-	inline function doEncodeRaw( t : String ) : String {
+	function doEncodeRaw( t : String ) : String {
 		var len = t.length*8;
 		var x = str2bin( t );
 		x[len >> 5] |= 0x80 << ((len) % 32);
@@ -163,7 +153,7 @@ class MD5 {
 		return bin2str( __encode( x ) );
 	}
 	
-	inline function doEncode( t : String ) : String {
+	function doEncode( t : String ) : String {
 		var t = __encode( str2blks(t) );
 		return rhex(t[0])+rhex(t[1])+rhex(t[2])+rhex(t[3]);
 	}

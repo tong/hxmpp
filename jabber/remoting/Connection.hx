@@ -73,15 +73,15 @@ class Connection implements AsyncConnection, implements Dynamic<AsyncConnection>
 		var iq = new xmpp.IQ( null, null, target, stream.jid.toString() );
 		iq.properties.push( xmpp.HXR.create( s.toString() ) );
 		var error = __error;
-		trace("REMOTEOTE-OUT:::"+iq.id );
+		//trace("REMOTEOTE-OUT:::"+iq.id );
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
-			trace("RESSUUUUUUUUUUULT");
+			//trace("RESSUUUUUUUUUUULT");
 			switch( r.type ) {
 			case IQType.result :
 				var v = xmpp.HXR.getData( r.x.toXml() );
 				var ok = true;
 				var ret;
-				trace("RESSUlT2 "+v);
+				//trace("RESSUlT2 "+v);
 				try {
 					if( v.substr(0,3) != "hxr" )
 						throw "invalid response : '"+v+"'";
@@ -92,7 +92,7 @@ class Connection implements AsyncConnection, implements Dynamic<AsyncConnection>
 					ok = false;
 					error( err );
 				}
-				trace("REPORTED "+ret);
+				//trace("REPORTED "+ret);
 				if( ok && onResult != null )
 					onResult( ret );
 					

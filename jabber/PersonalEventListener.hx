@@ -58,7 +58,11 @@ class PersonalEventListener {
 		if( l != null ) {
 			return false;
 		} else {
+			#if !cpp
 			listeners.add( { xmlns : untyped t.XMLNS, handler : h, type : t } );
+			#else
+			//TODO !!!!!!!!
+			#end
 			return true;
 		}
 	}

@@ -18,7 +18,7 @@
 package jabber;
 
 /**
-	<a href="http://www.xmpp.org/extensions/xep-0224.html">XEP 224 - Attention</a><br/>
+	<a href="http://www.xmpp.org/extensions/xep-0224.html">XEP 224 - Attention</a>
 	Extension for getting the attention of another user.
 */
 class Attention {

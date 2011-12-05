@@ -30,7 +30,7 @@ import js.Sys;
 class SystemUtil {
 	
 	/**
-		Returns the name of the OS used.
+		Returns the name of the OS used (crossplatform).
 	*/
 	public static #if !js inline #end function systemName() : String {
 		

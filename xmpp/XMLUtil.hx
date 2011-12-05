@@ -18,9 +18,17 @@
 package xmpp;
 
 /**
-	XML utilities.
+	Misc XML utilities.
 */
 class XMLUtil {
+	
+	// Misc XML utilities.
+	/* Misc XML utilities. */
+	static var test : Array<String>;
+	static function testit( a : Null<Array<XMLUtil>> ) : String {
+		return null;
+	}
+	
 	
 	/**
 		@param n Name of xml element to create
@@ -57,9 +65,9 @@ class XMLUtil {
 	}
 	
 	/**
-		@param x XML element to attach the create element to
-		@param o The target object to get the field value from
-		@param fields Optional names of fields, reflected if null
+		@param x XML element to attach the created element to
+		@param o The target object to retrieve the field values from
+		@param fields Optional names of fields, gets reflected if null
 	*/
 	public static function addFields( x: Xml, o : Dynamic, ?fields : Iterable<String> ) : Xml {
 		if( fields == null ) fields = Reflect.fields( o );
@@ -71,25 +79,35 @@ class XMLUtil {
 		TODO use?
 	*/
 	public static function reflectElements<T>( target : T, x : Xml ) : T {
-		for( e in x.elements() ) Reflect.setField( target, e.nodeName, e.firstChild().nodeValue );
+		for( e in x.elements() )
+			Reflect.setField( target, e.nodeName, e.firstChild().nodeValue );
 		return target;
 	}
 	
 	/**
-		Set or get the namespace of the given xml element.
+		Get (if no ns specified) or set the namespace of the given xml element.
+
+		@param x XML element to attach the create element to
+		@param ns Optional namespace to set
 	*/
-	public static inline function ns( x : Xml, ?ns : String ) : String {
-		return if( ns == null ) {
-			x.get( 'xmlns' );
-		} else {
-			// TODO haXe 2.06 fukup
-			#if flash
-			x.set( '_xmlns_', ns );
-			#else
-			x.set( 'xmlns', ns );
-			#end
-			ns;
+	public static function ns( x : Xml, ?ns : String ) : String {
+		if( ns == null )
+			return x.get( 'xmlns' );
+		else {
+			setNamespace( x, ns );
+			return ns;
 		}
+	}
+	
+	/**
+		Hack because flash is unable to set xml namespace (since haxe 2.06)
+	*/
+	public static inline function setNamespace( x : Xml, s : String ) {
+		#if flash
+		x.set( '_xmlns_', s );
+		#else
+		x.set( 'xmlns', s );
+		#end
 	}
 	
 	/*

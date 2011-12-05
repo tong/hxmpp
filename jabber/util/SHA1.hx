@@ -22,29 +22,17 @@ import js.Node;
 #end
 
 class SHA1 {
-	
+
 	public static inline function encode( s : String ) : String {
 		#if php
 		return untyped __call__( "sha1", s );
 		#elseif nodejs
-		var h = Node.crypto.createHash( "sha1" );
+		var h = js.Node.crypto.createHash( "sha1" );
 		h.update( s );
-		return h.digest( Node.HEX );
+		return h.digest( js.Node.HEX );
 		#else
 		return haxe.SHA1.encode(s);
 		#end
 	}
 	
 }
-
-/* 
-#else
-//typedef SHA1 = haxe.SHA1;
-class SHA1 {
-	public static function encode( s : String ) : String {
-		return haxe.SHA1.encode(s);
-	}
-}
-
-#end
-*/

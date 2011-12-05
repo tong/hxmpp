@@ -53,6 +53,7 @@ class MD5Mechanism {
 	public function createChallengeResponse( challenge : String ) : String {
 		
 		var c = Base64.decode( challenge );
+		
 		var s = c.split( "," );
 		var elements = new Hash<String>();
 		for( e in s ) {
@@ -69,6 +70,11 @@ class MD5Mechanism {
 		var digest_uri = serverType+"/"+host;
 		//if( host != null ) digest_uri += "/"+host;
 		var cnonce = hh( Date.now().toString() );
+		
+		trace(realm);
+		trace(nonce);
+		trace(digest_uri);
+		trace(cnonce);
 		
 		// compute response
 	//	var authzid = username+"@"+realm+"/"+resource;

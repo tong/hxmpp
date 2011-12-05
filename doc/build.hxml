@@ -43,12 +43,12 @@ base.hxml
 
 ### CPP ###
 --next
--cmd echo 'class Main{static function main(){}}' > Main.hx
+#-cmd echo 'class Main{static function main(){}}' > Main.hx
 base.hxml
 -cpp cpp
 -xml cpp.xml 
 -main Main.hx
--cmd rm Main.hx
+#-cmd rm Main.hx
 
 ### NODE ###
 --next
@@ -56,7 +56,7 @@ base.hxml
 -js temp.js
 -xml node.xml
 -D nodejs
--cp ../../hxnodejs
+-cp ../../node.hx
 
 #//TODO add all available classes
 #--next
@@ -67,7 +67,7 @@ base.hxml
 #-D JABBER_COMPONENT
 #jabber.component.Stream
 
--cmd chxdoc -o hxmpp-apidoc-0.4.7 --ignoreRoot=true neko.xml,neko js.xml,js flash.xml,flash php.xml,php cpp.xml,cpp node.xml,node -f neko -f js -f flash -f php -f cpp -f haxe
+-cmd chxdoc -o hxmpp-apidoc-0.4.7 --ignoreRoot=true neko.xml,neko js.xml,js flash.xml,flash php.xml,php node.xml,node -f neko -f js -f flash -f php -f cpp -f haxe
 -cmd rm -f *.xml temp.*
 #-cmd rm -rf lib cpp
 

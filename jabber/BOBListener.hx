@@ -19,6 +19,40 @@ package jabber;
 
 import jabber.util.Base64;
 
+/*
+class BOBListener extends jabber.stream.IQListener {
+	
+	public var onRequest : String->String->xmpp.BOB;
+	
+	public function new( stream : jabber.Stream, onRequest : String->String->xmpp.BOB ) {
+		super( stream, xmpp.BOB.XMLNS );
+		this.onRequest = onRequest;
+	}
+	
+	public override function listen( ?filters : Array<PacketFilter>, ?iqType : xmpp.IQType, ?nodeName : String ) : String {
+		super.listen( filters, xmpp.IQType.get, "data" );
+	}
+	
+	override function handleRequest( iq : xmpp.IQ ) {
+		var _bob = xmpp.BOB.parse( iq.x.toXml() );
+		var _cid = xmpp.BOB.getCIDParts( _bob.cid );
+		var bob : xmpp.BOB = onRequest( iq.from, _cid[1] );
+		if( bob == null ) {
+			//trace("NO BOB FOUND");
+			//TODO check XEP for updates
+			//.??
+		} else {
+			var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
+			// encode here?
+			bob.data =  new haxe.BaseCode( haxe.io.Bytes.ofString( Base64.CHARS ) ).encodeString( bob.data );
+			r.x = bob;
+			stream.sendPacket( r );
+		}
+	}
+	
+}
+*/
+
 /**
 	Listens for 'Bits Of Binary' requests.
 	<a href="http://xmpp.org/extensions/xep-0231.html">XEP-0231: Bits of Binary</a>
@@ -33,12 +67,19 @@ class BOBListener {
 	
 	public var stream(default,null) : jabber.Stream;
 
+	var c : jabber.stream.PacketCollector;
+
 	public function new( stream : jabber.Stream, onRequest : String->String->xmpp.BOB ) {
 		if( !stream.features.add( xmpp.BOB.XMLNS ) )
 			throw "bob listener already added";
 		this.stream = stream;
 		this.onRequest = onRequest;
-		stream.collect( [new xmpp.filter.IQFilter(xmpp.BOB.XMLNS,xmpp.IQType.get,'data')], handleRequest, true );
+		c = stream.collect( [new xmpp.filter.IQFilter(xmpp.BOB.XMLNS,xmpp.IQType.get,'data')], handleRequest, true );
+	}
+	
+	public function dispose() {
+		stream.removeCollector( c );
+		stream.features.remove( xmpp.BOB.XMLNS );
 	}
 
 	function handleRequest( iq : xmpp.IQ ) {
