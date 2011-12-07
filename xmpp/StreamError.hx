@@ -30,11 +30,11 @@ class StreamError extends ErrorPacket {
 	}
 	
 	public function toXml() : Xml {
-#if flash //TODO
+		#if flash //TODO
 		return _toXml( "stream_error", XMLNS );
-#else
+		#else
 		return _toXml( "stream:error", XMLNS );
-#end
+		#end
 	}
 	
 	public static function parse( x : Xml ) : StreamError {

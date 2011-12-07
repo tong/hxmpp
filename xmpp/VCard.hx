@@ -2,6 +2,7 @@ package xmpp;
 
 //TODO VCard4
 
+/*
 typedef Name = {
 	var family : String;
 	var given : String;
@@ -9,6 +10,7 @@ typedef Name = {
 	var prefix : String;
 	var suffix : String;
 }
+*/
 
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0292.html">XEP-0292: vCard4</a>
@@ -17,12 +19,12 @@ typedef Name = {
 
 	Obsoletes VCardTemp.
 */
-class VCard {
+class VCard extends VCardBase {
 	
 	public static var XMLNS = "urn:ietf:params:xml:ns:vcard-4.0";
 	
-	public var fn : String; // required
-	public var n : xmpp.vcard.Name; // required
+	public var geo : String;
+	public var note : String;
 	
 	/*
 	public var nickname : String;
@@ -51,9 +53,10 @@ class VCard {
 	*/
 	
 	public function new() {
+		super( XMLNS );
 	}
 	
-	public function toXml() : Xml {
+	public override function toXml() : Xml {
 		var x = emptyXml();
 		addXmlField( "fn", x );
 		addXmlField( "birthday", x );
@@ -61,41 +64,12 @@ class VCard {
 		return x;
 	}
 	
-	function addXmlField( n : String, x : Xml, ?name : String ) {
-		var v = Reflect.field( this, n );
-		if( v != null )
-			x.addChild( XMLUtil.createElement( (name==null) ? n : name, v ) );
-	}
-	
-	function addXmlFields( id : String, x : Xml ) {
-		var field = Reflect.field( this, id );
-		if( field != null ) {
-			for( f in Reflect.fields( field ) ) {
-				var v = Reflect.field( field, f );
-				if( v != null ) {
-					
-				}
-				/*
-				var v = Reflect.field( f, f) );
-				if( f != null ) {
-					
-				}
-				*/
-			}
-		}
-	}
-	
-	/**
-	*/
 	public static function emptyXml() : Xml {
 		var x = Xml.createElement( "vcard" );
 		x.set( "xmlns", XMLNS );
-		//#if flash x.set( "_xmlns_", XMLNS ); #else x.set( "xmlns", XMLNS ); #end // TODO haxe 2.06
 		return x;
 	}
 	
-	/**
-	*/
 	public static function parse( x : Xml ) : VCard {
 		var vc = new VCard();
 		for( e in x.elements() ) {

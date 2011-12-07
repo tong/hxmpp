@@ -33,7 +33,7 @@ class SASL {
 		if( mech == null )
 			return null;
 		var x = ( text != null ) ? XMLUtil.createElement( "auth", text ) : Xml.createElement( "auth" );
-		x.ns( XMLNS );
+		x.setNamespace( XMLNS );
 		x.set( "mechanism", mech );
 		return x;
 	}
@@ -43,9 +43,8 @@ class SASL {
 	public static function createResponse( t : String ) : Xml {
 		if( t == null )
 			return null;
-		// TODO flash 2.06 (+) namespace hack
 		var x = XMLUtil.createElement( "response", t );
-		x.ns( XMLNS );
+		x.setNamespace( XMLNS );
 		return x;
 	}
 	

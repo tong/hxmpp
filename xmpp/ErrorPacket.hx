@@ -53,11 +53,7 @@ class ErrorPacket {
 		x.addChild( c );
 		if( text != null ) {
 			var t = XMLUtil.createElement( "text", text );
-			#if flash //TODO haxe2.06 fukup
-			t.set( "_xmlns_", ns );
-			#else
-			t.set( "xmlns", ns );
-			#end
+			XMLUtil.setNamepsace( t, ns );
 			if( lang != null ) t.set( "lang", lang );
 			x.addChild( t );
 		}
