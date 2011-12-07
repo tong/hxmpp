@@ -53,7 +53,7 @@ class ErrorPacket {
 		x.addChild( c );
 		if( text != null ) {
 			var t = XMLUtil.createElement( "text", text );
-			XMLUtil.setNamepsace( t, ns );
+			XMLUtil.setNamespace( t, ns );
 			if( lang != null ) t.set( "lang", lang );
 			x.addChild( t );
 		}

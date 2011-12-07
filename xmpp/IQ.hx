@@ -67,7 +67,7 @@ class IQ extends Packet {
 	*/
     public static function createQueryXml( ns : String, name : String = "query" ) : Xml {
 		var x = Xml.createElement( name );
-		XMUtil.setNamespace( x, ns );
+		XMLUtil.setNamespace( x, ns );
 		return x;
 	}
 	

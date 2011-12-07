@@ -35,7 +35,7 @@ class IB {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( Type.enumConstructor( type ) );
-		xmpp.XMUtil.setNamespace( x, XMLNS );
+		xmpp.XMLUtil.setNamespace( x, XMLNS );
 		x.set( "sid", sid );
 		switch( type ) {
 		case IBType.open : x.set( "block-size", Std.string( blockSize ) );
