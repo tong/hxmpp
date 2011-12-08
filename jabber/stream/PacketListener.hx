@@ -22,19 +22,18 @@ import jabber.stream.PacketCollector;
 /**
 	Abstract base for top level packet listeners ( jabber.PresenceListener, jabber.MessageListener ).
 */
-class TopLevelPacketListener<T:xmpp.Packet> {
+class PacketListener<T:xmpp.Packet> {
 	
+	/** Packet recieved callback */
 	public dynamic function onPacket( p : T ) {}
 	
-	/**
-		Activates/Deactivates packet collecting.
-	*/
+	/** Activates/Deactivates packet collecting */
 	public var listen(default,setListening) : Bool;
-	/**
-		The collector for this listener.
-		Public because extra/changed filters and settings may get applied.
-	*/
+	
+	/** The collector for this listener */
 	public var collector(default,null) : PacketCollector;
+	
+	/** */
 	public var stream(default,null) : jabber.Stream;
 	
 	function new( stream : jabber.Stream, handler : T->Void, packetType : xmpp.PacketType, listen : Bool ) {
@@ -45,7 +44,9 @@ class TopLevelPacketListener<T:xmpp.Packet> {
 	}
 	
 	function setListening( v : Bool ) : Bool {
-		return ( listen = v ) ? stream.addCollector( collector ) : stream.removeCollector( collector );
+		return ( listen = v ) ?
+			stream.addCollector( collector ) :
+			stream.removeCollector( collector );
 	}
 	
 	// override me if you want
