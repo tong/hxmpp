@@ -20,7 +20,7 @@ http://hxmpp.disktree.net
 
 USAGE
 -----
-Browse tests/examples: http://github.com/tong/hxmpp.examples
+See: http://github.com/tong/hxmpp.examples
 
 
 COMPILER FLAGS
@@ -45,7 +45,7 @@ HXMPP supports native, secure and unsecure adobe air2 socket connections.
 
 NODE.JS
 -------
-To compile to nodejs you have to use the type definitioons from: https://github.com/tong/hxnodejs
+To compile for nodejs you have to use the type definitions from: https://github.com/tong/node.hx
 Set compiler flag: -D nodejs
 
 
@@ -86,7 +86,6 @@ XEPS SUPPORTED
 ** gmail-notifiy
 
 
-
 BOSH
 ----
 BOSH essentially provides a "drop-in" alternative to a long-lived, bidirectional TCP connection using a request-response mechansim over HTTP.
@@ -115,14 +114,11 @@ var cnx = new BOSHConnection( "domain.net", "127.0.0.1/xmpp/" );
 
 
 
-
 HACKERS
 -------
 This project accepts and *encourages* contributions.
 
 
-
 AUTHOR
 ------
 xmpp://tong.disktree@gmail.com
-
