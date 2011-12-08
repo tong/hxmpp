@@ -46,11 +46,11 @@ private class FilterList {
 		f.push( _f );
 	}
 	
-	public function push( _f : PacketFilter ) {
+	public inline function push( _f : PacketFilter ) {
 		( Std.is( _f, PacketIDFilter ) ) ? fid.push( _f ) : f.push( _f );
 	}
 	
-	public function unshift( _f : PacketFilter ) {
+	public inline function unshift( _f : PacketFilter ) {
 		( Std.is( _f, PacketIDFilter ) ) ? fid.unshift( _f ) : f.unshift( _f );
 	}
 	
