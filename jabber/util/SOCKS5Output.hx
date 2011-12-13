@@ -28,6 +28,23 @@ import cpp.net.Socket;
 #elseif php
 import php.net.Socket;
 #end
+#elseif nodejs
+import js.Node;
+#elseif flash
+import flash.net.Socket;
+import flash.events.Event;
+import flash.events.IOErrorEvent;
+import flash.events.ProgressEvent;
+import flash.events.SecurityErrorEvent;
+import flash.utils.ByteArray;
+#end
+
+#if (nodejs||flash)
+private enum State {
+	WaitResponse;
+	WaitAuth;
+}
+#end
 
 /**
 	SOCKS5 negotiation for outgoing socket connections (incoming filetransfers).<br/>
@@ -38,6 +55,8 @@ import php.net.Socket;
 class SOCKS5Output {
 	
 	public function new() {}
+	
+	#if (neko||cpp||php)
 	
 	public function run( socket : Socket, digest : String ) {
 		
@@ -61,32 +80,14 @@ class SOCKS5Output {
 		i.readString( i.readByte() ); // digest
 		i.readInt16();
 	}
-}
-
-
-#elseif flash
-
-import flash.net.Socket;
-import flash.events.Event;
-import flash.events.IOErrorEvent;
-import flash.events.ProgressEvent;
-import flash.events.SecurityErrorEvent;
-import flash.utils.ByteArray;
-
-private enum State {
-	WaitResponse;
-	WaitAuth;
-}
-
-class SOCKS5Output {
+	
+	#elseif flash
 	
 	var socket : Socket;
 	var digest : String;
 	var cb : String->Void;
 	var state : State;
 	var i : flash.utils.IDataInput;
-	
-	public function new() {}
 	
 	public function run( socket : Socket, digest : String, cb : String->Void ) {
 		this.socket = socket;
@@ -137,26 +138,13 @@ class SOCKS5Output {
 		socket.removeEventListener( IOErrorEvent.IO_ERROR, onError );
 		socket.removeEventListener( SecurityErrorEvent.SECURITY_ERROR, onError );
 	}
-}
-
-
-#elseif nodejs
-
-import js.Node;
-
-private enum State {
-	WaitResponse;
-	WaitAuth;
-}
-
-class SOCKS5Output {
+	
+	#elseif nodejs
 	
 	var socket : Stream;
 	var digest : String;
 	var cb : String->Void;
 	var state : State;
-	
-	public function new() {}
 	
 	public function run( socket : Stream, digest : String, cb : String->Void ) {
 		this.socket = socket;
@@ -197,6 +185,6 @@ class SOCKS5Output {
 		socket.removeAllListeners( Node.STREAM_END );
 		socket.removeAllListeners( Node.STREAM_ERROR );
 	}
+	
+	#end
 }
-
-#end

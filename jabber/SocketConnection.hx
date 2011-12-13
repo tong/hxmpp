@@ -396,6 +396,9 @@ private typedef Socket = js.Stream;
 class SocketConnection extends jabber.stream.SocketConnectionBase {
 	
 	public var socket(default,null) : Socket;
+	public var credentials : Credentials;
+	
+	var cleartext : Dynamic;
 	
 	public function new( host : String = "localhost", port : Int = 5222, secure : Bool = true,
 						 ?bufSize : Int, ?maxBufSize : Int,
@@ -419,12 +422,28 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 	}
 	
 	public override function setSecure() {
-		//TODO 'setSecure' got removed from node.js
-		trace("SET SECURE_________________________________");
+		//TODO 'setSecure' got removed from nodejs 0.4+
+		trace("_____SET SECURE__________TODO");
+		
+		/*
+		socket.removeAllListeners( 'data' );
+		socket.removeAllListeners( 'drain' );
+		socket.removeAllListeners( 'close' );
+		socket.on( 'secureConnect', function(){ trace("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"); } );
+		
+		if( credentials == null ) credentials = cast {};
+		trace(".......");
+		var ctx = jabber.util.StartTLS.run( socket, credentials, true, function() {
+			trace(">>>>>>>>>>>>>");
+		});
+		*/
+		
+		//secured = true;
+		//__onSecured( null );
 		// hmm? TypeError: Object #<a Stream> has no method 'setSecure' ??????????
 		//socket.on( Node.STREAM_SECURE, sockSecureHandler );
 		//trace( socket.getPeerCertificate() );
-		socket.setSecure(  );
+//		socket.setSecure(  );
 	}
 	
 	public override function write( t : String ) : Bool {
@@ -448,10 +467,16 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 	}
 	
 	function createConnection() {
+		//if( credentials == null ) credentials = cast {};
+		//socket = Node.tls.connect( port, host, credentials, sockConnectHandler );
+		socket = Node.net.connect( port, host, sockConnectHandler );
+		socket.setEncoding( Node.UTF8 );
+		/*
 		socket = Node.net.createConnection( port, host );
 		socket.setEncoding( Node.UTF8 );
 		//socket = Node.tls.connect( port, host, null, sockConnectHandler );
 		socket.on( Node.STREAM_CONNECT, sockConnectHandler );
+		*/
 	}
 	
 	function sockConnectHandler() {

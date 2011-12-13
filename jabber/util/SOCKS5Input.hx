@@ -20,8 +20,6 @@ package jabber.util;
 import haxe.io.Bytes;
 import haxe.io.BytesBuffer;
 
-#if (neko||cpp||php)
-
 #if neko
 import neko.net.Socket;
 #elseif cpp
@@ -29,6 +27,33 @@ import cpp.net.Socket;
 #elseif php
 import php.net.Socket;
 #end
+
+#if nodejs
+import js.Node;
+#elseif air
+#if flash
+import flash.net.Socket;
+import flash.events.Event;
+import flash.events.IOErrorEvent;
+import flash.events.ProgressEvent;
+import flash.events.SecurityErrorEvent;
+import flash.utils.ByteArray;
+import flash.utils.IDataInput;
+#elseif js
+import air.Socket;
+import air.Event;
+import air.IOErrorEvent;
+import air.ProgressEvent;
+import air.SecurityErrorEvent;
+import air.ByteArray;
+import air.IDataInput;
+#end
+#end
+
+private enum State {
+	WaitInit;
+	WaitResponse;
+}
 
 /**
 	SOCKS5 negotiation for incoming socket connections (outgoing datatransfers).<br/>
@@ -39,6 +64,8 @@ import php.net.Socket;
 class SOCKS5Input {
 	
 	public function new() {}
+	
+	#if (neko||cpp||php)
 	
 	/**
 		SOCKS5 negotiation for incoming socket connections (outgoing datatransfers).
@@ -69,110 +96,15 @@ class SOCKS5Input {
 		o.write( SOCKS5.createOutgoingMessage( 0, digest ) );
 		o.flush();
 	}
-}
-
-#elseif nodejs
-
-import js.Node;
-
-private enum State {
-	WaitInit;
-	WaitResponse;
-}
-
-class SOCKS5Input {
 	
-	var socket : Stream;
-	var digest : String;
-	var cb : String->Void;
-	var state : State;
 	
-	public function new() {}
-	
-	public function run( socket : Stream, digest : String, cb : String->Void ) {
-		this.socket = socket;
-		this.digest = digest;
-		this.cb = cb;
-		state = WaitInit;
-		socket.on( Node.STREAM_END, onError );
-		socket.on( Node.STREAM_ERROR, onError );
-		socket.on( Node.STREAM_DATA, onData );
-	}
-	
-	function onData( buf : Buffer ) {
-		switch( state ) {
-		case WaitInit :
-			var b = new haxe.io.BytesBuffer();
-			b.addByte( 0x05 );
-			b.addByte( 0x00 );
-			socket.write( b.getBytes().getData() );
-			state = WaitResponse;
-			
-		case WaitResponse :
-			var i = new haxe.io.BytesInput( Bytes.ofData( buf ) );
-			i.readByte();
-			i.readByte();
-			i.readByte();
-			i.readByte();
-			if( i.readString( i.readByte() ) != digest ) {
-				cb( "SOCKS5 digest does not match" );
-				return;
-			}
-			i.readInt16();
-			
-			socket.write( SOCKS5.createOutgoingMessage( 0, digest ).getData() );
-			
-			removeSocketListeners();
-			cb( null );
-		}
-	}
-	
-	function onError() {
-		removeSocketListeners();
-		cb( "SOCKS5 negotiation socket error" );
-	}
-	
-	function removeSocketListeners() {
-		socket.removeAllListeners( Node.STREAM_DATA );
-		socket.removeAllListeners( Node.STREAM_END );
-		socket.removeAllListeners( Node.STREAM_ERROR );
-	}
-}
-
-#elseif air
-
-#if flash
-import flash.net.Socket;
-import flash.events.Event;
-import flash.events.IOErrorEvent;
-import flash.events.ProgressEvent;
-import flash.events.SecurityErrorEvent;
-import flash.utils.ByteArray;
-import flash.utils.IDataInput;
-#elseif js
-import air.Socket;
-import air.Event;
-import air.IOErrorEvent;
-import air.ProgressEvent;
-import air.SecurityErrorEvent;
-import air.ByteArray;
-import air.IDataInput;
-#end
-
-private enum State {
-	WaitInit;
-	WaitResponse;
-}
-
-class SOCKS5Input {
+	#elseif flash
 	
 	var socket : Socket;
 	var digest : String;
 	var cb : String->Void;
 	var state : State;
 	var i : IDataInput;
-	
-	public function new() {}
 	
 	public function run( socket : Socket, digest : String, cb : String->Void ) {
 		this.socket = socket;
@@ -226,6 +158,63 @@ class SOCKS5Input {
 		socket.removeEventListener( SecurityErrorEvent.SECURITY_ERROR, onError );
 	}
 	
+	
+	#elseif nodejs
+	
+	var socket : Stream;
+	var digest : String;
+	var cb : String->Void;
+	var state : State;
+	
+	public function run( socket : Stream, digest : String, cb : String->Void ) {
+		this.socket = socket;
+		this.digest = digest;
+		this.cb = cb;
+		state = WaitInit;
+		socket.on( Node.STREAM_END, onError );
+		socket.on( Node.STREAM_ERROR, onError );
+		socket.on( Node.STREAM_DATA, onData );
+	}
+	
+	function onData( buf : Buffer ) {
+		switch( state ) {
+		case WaitInit :
+			var b = new haxe.io.BytesBuffer();
+			b.addByte( 0x05 );
+			b.addByte( 0x00 );
+			socket.write( b.getBytes().getData() );
+			state = WaitResponse;
+			
+		case WaitResponse :
+			var i = new haxe.io.BytesInput( Bytes.ofData( buf ) );
+			i.readByte();
+			i.readByte();
+			i.readByte();
+			i.readByte();
+			if( i.readString( i.readByte() ) != digest ) {
+				cb( "SOCKS5 digest does not match" );
+				return;
+			}
+			i.readInt16();
+			
+			socket.write( SOCKS5.createOutgoingMessage( 0, digest ).getData() );
+			
+			removeSocketListeners();
+			cb( null );
+		}
+	}
+	
+	function onError() {
+		removeSocketListeners();
+		cb( "SOCKS5 negotiation socket error" );
+	}
+	
+	function removeSocketListeners() {
+		socket.removeAllListeners( Node.STREAM_DATA );
+		socket.removeAllListeners( Node.STREAM_END );
+		socket.removeAllListeners( Node.STREAM_ERROR );
+	}
+	
+	#end
+	
 }
-
-#end

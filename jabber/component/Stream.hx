@@ -38,8 +38,8 @@ class ComponentJID {
 }
 
 /**
-	<a href="http://www.xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a><br/>
-	Component-2-Server XMPP stream.<br/>
+	XMPP server component stream.
+	<a href="http://www.xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>
 */
 class Stream extends jabber.Stream {
 	

@@ -17,6 +17,8 @@
 */
 package jabber;
 
+// Legacy TLS socket connection (port 5223)
+
 #if (neko||php||cpp||rhino)
 
 #if neko
@@ -30,9 +32,6 @@ import cpp.net.Host;
 import cpp.net.Socket;
 #end
 
-/**
-	Legacy TLS socket connection (port 5223)
-*/
 class SecureSocketConnection extends jabber.stream.SocketConnectionBase {
 		
 	public function new( host : String, port : Int = 5223, secure : Bool = true,
@@ -270,7 +269,13 @@ class SecureSocketConnection extends jabber.SocketConnection {
 	}
 	
 	override function createConnection() {
-		socket = Node.tls.connect( port, host, null, sockConnectHandler );
+		if( credentials == null ) {
+			#if JABBER_DEBUG
+			trace( "No TLS credenntials set!", "warn" );
+			#end
+			credentials = cast {};
+		}
+		socket = Node.tls.connect( port, host, credentials, sockConnectHandler );
 		socket.setEncoding( Node.UTF8 );
 	}
 }

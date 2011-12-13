@@ -3,6 +3,8 @@
 #--no-output
 -D XMPP_DEBUG
 
+jabber.Attention
+jabber.AttentionListener
 jabber.BlockList
 jabber.BOB
 jabber.BOBListener
@@ -26,6 +28,7 @@ jabber.ServiceDiscovery
 jabber.ServiceDiscoveryListener
 jabber.SocketConnection
 jabber.SoftwareVersion
+jabber.SoftwareVersionListener
 jabber.UserSearch
 jabber.XMPPDebug
 jabber.XMPPError

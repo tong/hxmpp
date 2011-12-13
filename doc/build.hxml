@@ -1,73 +1,90 @@
 
-### NEKO ###
+### NEKO
+-lib hxssl
 -cp ../
-base.hxml
+_base.hxml
 -neko temp.n
 -xml neko.xml
+jabber.SecureSocketConnection
 jabber.data.ByteStreamTransfer
 jabber.data.ByteStreamReciever
 jabber.jingle.FileTransfer
 jabber.jingle.FileTransferListener
 jabber.jingle.FileTransferResponder
+-cmd rm temp.n
 
-### JAVASCRIPT ###
+### JAVASCRIPT
 --next
-base.hxml
+_base.hxml
 -cp ../util
 -js temp.js
 -xml js.xml
 jabber.BOSHConnection
 jabber.Ping
 jabber.WebSocketConnection
+-cmd rm temp.js
 
-### FLASH ###
+### FLASH
 --next
-base.hxml
+_base.hxml
 -swf temp.swf
 -xml flash.xml 
 jabber.BOSHConnection
 jabber.Ping
-#jabber.WebSocketConnection
+jabber.data.ByteStreamReciever
+jabber.jingle.FileTransferListener
 jabber.jingle.RTMPCall
 jabber.jingle.RTMPListener
 jabber.jingle.RTMPResponder
 jabber.jingle.RTMFPCall
 jabber.jingle.RTMFPListener
 jabber.jingle.RTMFPResponder
+-cmd rm temp.swf
 
-### PHP ###
+### PHP
 --next
-base.hxml
+_base.hxml
 -php .
--xml php.xml 
+-xml php.xml
+-cmd rm -r lib
+jabber.SecureSocketConnection
 
-### CPP ###
---next
-#-cmd echo 'class Main{static function main(){}}' > Main.hx
-base.hxml
--cpp cpp
--xml cpp.xml 
--main Main.hx
+### CPP # TODO
+#--next
+#_base.hxml
+#-cpp cpp
+#-xml cpp.xml 
+#-main Main.hx
 #-cmd rm Main.hx
+#--macro exclude('haxe.Int32')
+#-cmd rm -r cpp
 
-### NODE ###
+### NODE
 --next
-base.hxml
+_base.hxml
 -js temp.js
 -xml node.xml
 -D nodejs
 -cp ../../node.hx
+jabber.SecureSocketConnection
+jabber.data.ByteStreamTransfer
+jabber.data.ByteStreamReciever
+jabber.jingle.FileTransfer
+jabber.jingle.FileTransferListener
+jabber.jingle.FileTransferResponder
 
-#//TODO add all available classes
-#--next
-#-cp ../
-#-D XMPP_DEBUG
-#-neko temp.n
-#-xml component.xml
-#-D JABBER_COMPONENT
-#jabber.component.Stream
+### XMPP SERVER COMPONENTS
+--next
+-cp ../
+-neko temp.n
+-xml component.xml
+-D JABBER_COMPONENT
+jabber.component.Stream
+-cmd rm temp.n
 
--cmd chxdoc -o hxmpp-apidoc-0.4.7 --ignoreRoot=true neko.xml,neko js.xml,js flash.xml,flash php.xml,php node.xml,node -f neko -f js -f flash -f php -f cpp -f haxe
+
+############### Run chxdoc
+-cmd chxdoc -o hxmpp-apidoc --ignoreRoot=true neko.xml,neko js.xml,js flash.xml,flash php.xml,php node.xml,node component.xml,component -f neko -f js -f flash -f php -f cpp -f haxe
 -cmd rm -f *.xml temp.*
 #-cmd rm -rf lib cpp
 
