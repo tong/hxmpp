@@ -61,9 +61,8 @@ class MD5Mechanism {
 			elements.set( s[0], s[1] );
 		}
 		
-		if( Lambda.count( elements ) == 1 && elements.exists( "rspauth" ) ) {
+		if( Lambda.count( elements ) == 1 && elements.exists( "rspauth" ) )
 			return ''; // negotiation complete
-		}
 	
 		var realm = if( elements.exists( "realm" ) ) unquote( elements.get( "realm" ) ) else "";
 		var nonce = unquote( elements.get( "nonce" ) );
@@ -97,20 +96,9 @@ class MD5Mechanism {
 		return b.toString();
 	}
 	
-	static inline function h( t : String)  {
-		return MD5.encode( t, true );
-	}
-	
-	static inline function hh( t : String ) : String {
-		return MD5.encode( t );
-	}
-	
-	static inline function quote( t : String ) : String {
-		return '"'+t+'"';
-	}
-	
-	static inline function unquote( t : String ) : String {
-		return t.substr( 1, t.length-2 );
-	}
+	static inline function h( t : String)  return MD5.encode( t, true )
+	static inline function hh( t : String ) : String return MD5.encode( t )
+	static inline function quote( t : String ) : String return '"'+t+'"'
+	static inline function unquote( t : String ) : String return t.substr( 1, t.length-2 )
 	
 }

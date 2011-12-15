@@ -5,48 +5,11 @@
 
                                           
 HXMPP is a haXe library for creating XMPP based clients and services.
+http://hxmpp.disktree.net/
 
 The library exists in two namespaces:
 * xmpp: creation and manipulation of XMPP data.
 * jabber: creation and manipulation of XMPP data streams to a server.
-
-
-SOURCE
--------
-git://github.com/tong/hxmpp.git
-https://github.com/tong/hxmpp
-http://hxmpp.disktree.net
-
-
-USAGE
------
-See: http://github.com/tong/hxmpp.examples
-
-
-COMPILER FLAGS
---------------
-* XMPP_DEBUG	Print XMPP transfer
-* JABBER_DEBUG	Print verbose debug information
-* JABBER_SOCKETBRIDGE	Use a flash socket bridge as stream connection for the javascript target
-* JABBER_COMPONENT	Required when building server components
-
-
-ACTIONSCRIPT3/MXMLC
--------------------
-See: https://github.com/tong/hxmpp.examples/tree/master/swc
-
-
-ADOBE AIR2
-----------
-HXMPP supports native, secure and unsecure adobe air2 socket connections.
-* Get the required external classes from: http://disktree.spektral.at/git/?a=summary&p=hxair
-* Add 'air' compiler flag.
-
-
-NODE.JS
--------
-To compile for nodejs you have to use the type definitions from: https://github.com/tong/node.hx
-Set compiler flag: -D nodejs
 
 
 XEPS SUPPORTED
@@ -86,6 +49,37 @@ XEPS SUPPORTED
 ** gmail-notifiy
 
 
+USAGE
+-----
+See: http://github.com/tong/hxmpp.examples
+
+
+COMPILER FLAGS
+--------------
+* XMPP_DEBUG	Print XMPP transfer
+* JABBER_DEBUG	Print verbose debug information
+* JABBER_SOCKETBRIDGE	Use a flash socket bridge as stream connection for the javascript target
+* JABBER_COMPONENT	Required when building server components
+
+
+NODE.JS
+-------
+To compile for nodejs you have to use the type definitions from: https://github.com/tong/node.hx
+Set compiler flag: -D nodejs
+
+
+ACTIONSCRIPT3/MXMLC
+-------------------
+See: https://github.com/tong/hxmpp.examples/tree/master/swc
+
+
+ADOBE AIR2
+----------
+HXMPP supports native, secure and unsecure adobe air2 socket connections.
+* Get the required external classes from: http://disktree.spektral.at/git/?a=summary&p=hxair
+* Add 'air' compiler flag.
+
+
 BOSH
 ----
 BOSH essentially provides a "drop-in" alternative to a long-lived, bidirectional TCP connection using a request-response mechansim over HTTP.
@@ -112,6 +106,11 @@ sudo /etc/init.d/apache2 restart
 # Now you can pass in the path to the constructor of the jabber.BOSHConection class:
 var cnx = new BOSHConnection( "domain.net", "127.0.0.1/xmpp/" );
 
+
+SOURCE
+-------
+git://github.com/tong/hxmpp.git
+https://github.com/tong/hxmpp
 
 
 HACKERS

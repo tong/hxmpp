@@ -29,7 +29,7 @@ class WebSocketConnection extends jabber.stream.Connection {
 	public var port(default,null) : Int;
 	public var socket(default,null) : WebSocket;
 	
-	public function new( host : String, port : Int = 5222, secure : Bool = false ) {
+	public function new( host : String = "localhost", port : Int = 5222, secure : Bool = false ) {
 		super( host, secure );
 		this.port = port;
 		this.secure = secure;

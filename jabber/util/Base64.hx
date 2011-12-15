@@ -44,6 +44,7 @@ class Base64 {
 	function encode( s : String ) : String {
 		#if nodejs
 		return new Buffer(s).toString( Node.BASE64 );
+		//return new Buffer( s, Node.BASE64 ).toString( Node.UTF8 );
 		#elseif php
 		return untyped __call__( "base64_encode", s );
 		#else

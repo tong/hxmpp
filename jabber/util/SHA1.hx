@@ -22,14 +22,26 @@ import js.Node;
 #end
 
 class SHA1 {
-
+	
+	/*
+	#if neko
+	static var base_encode = neko.Lib.load("std","base_encode",2);
+	static var make_sha1 = neko.Lib.load("std","make_sha1",3);
+	static inline var hex_chr = "0123456789abcdef";
+	#end
+	*/
+	
 	public static inline function encode( s : String ) : String {
-		#if php
-		return untyped __call__( "sha1", s );
-		#elseif nodejs
+		//TODO
+		//#if neko
+		//return new String( base_encode( make_sha1( untyped t.__s ), untyped hex_chr.__s ) );
+		//#elseif nodejs
+		#if nodejs
 		var h = js.Node.crypto.createHash( "sha1" );
 		h.update( s );
 		return h.digest( js.Node.HEX );
+		#elseif php
+		return untyped __call__( "sha1", s );
 		#else
 		return haxe.SHA1.encode(s);
 		#end
