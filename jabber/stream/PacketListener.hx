@@ -33,7 +33,6 @@ class PacketListener<T:xmpp.Packet> {
 	/** The collector for this listener */
 	public var collector(default,null) : PacketCollector;
 	
-	/** */
 	public var stream(default,null) : jabber.Stream;
 	
 	function new( stream : jabber.Stream, handler : T->Void, packetType : xmpp.PacketType, listen : Bool ) {

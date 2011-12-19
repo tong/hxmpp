@@ -42,11 +42,27 @@ import flash.net.Socket;
 #end
 #end
 
+#if (neko||php||cpp)
+private typedef AbstractSocket = {
+	var input(default,null) : haxe.io.Input;
+	var output(default,null) : haxe.io.Output;
+	function connect( host : Host, port : Int ) : Void;
+	function setTimeout( t : Float ) : Void;
+	function write( str : String ) : Void;
+	function close() : Void;
+	function shutdown( read : Bool, write : Bool ) : Void;
+	//function setBlocking( b : Bool ) : Void;
+}
+#end
+
+
 #if droid
 
 import droid.net.Socket;
 
-/** !!!!!!!!!!!!!!!!!!!!!!!!!!! EXPERIMENTAL !!!!!!!!!!!!!!!!!!!!!!!!!!! */
+/**
+	EXPERIMENTAL !!!
+*/
 class SocketConnectionBase extends jabber.stream.Connection {
 	
 	public var port(default,null) : Int;
@@ -101,20 +117,8 @@ class SocketConnectionBase extends jabber.stream.Connection {
 	}
 }
 
-#else
 
-#if (neko||php||cpp)
-private typedef AbstractSocket = {
-	var input(default,null) : haxe.io.Input;
-	var output(default,null) : haxe.io.Output;
-	function connect( host : Host, port : Int ) : Void;
-	function setTimeout( t : Float ) : Void;
-	function write( str : String ) : Void;
-	function close() : Void;
-	function shutdown( read : Bool, write : Bool ) : Void;
-	//function setBlocking( b : Bool ) : Void;
-}
-#end
+#else
 
 class SocketConnectionBase extends Connection {
 	
@@ -289,16 +293,14 @@ class SocketConnectionBase extends Connection {
 		try socket.close() catch(e:Dynamic) { #if JABBER_DEBUG trace(e,"error"); #end }
 		__onDisconnect( info );
 	}
-	
-	#end // (neko||cpp||php||rhino)
+
+	#end
 	
 }
 
 #end
 
-
-////////////////////////////////////////////////////////
-
+/////////////////////////////////////////////////
 
 #if JABBER_SOCKETBRIDGE
 

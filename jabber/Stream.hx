@@ -19,10 +19,10 @@ package jabber;
 
 import haxe.io.Bytes;
 import jabber.stream.Connection;
-import jabber.stream.TPacketInterceptor;
+import jabber.stream.DataInterceptor;
+import jabber.stream.DataFilter;
+import jabber.stream.PacketInterceptor;
 import jabber.stream.PacketCollector;
-import jabber.stream.TDataInterceptor;
-import jabber.stream.TDataFilter;
 import jabber.stream.Status;
 import jabber.util.Base64;
 import xmpp.filter.PacketIDFilter;
@@ -81,8 +81,8 @@ class Stream {
 	public var lang(default,null) : String;
 	public var jid(default,setJID) : JID;
 
-	public var dataFilters(default,null) : Array<TDataFilter>;
-	public var dataInterceptors(default,null) : Array<TDataInterceptor>;
+	public var dataFilters(default,null) : Array<DataFilter>;
+	public var dataInterceptors(default,null) : Array<DataInterceptor>;
 
 	public var bufSize(default,null) : Int;
 	public var maxBufSize : Int;
@@ -90,7 +90,7 @@ class Stream {
 	var buf : StringBuf;
 	var collectors_id : Array<PacketCollector>;
 public var collectors : Array<PacketCollector>;
-	var interceptors : Array<TPacketInterceptor>;
+	var interceptors : Array<PacketInterceptor>;
 	var numPacketsSent : Int;
 	
 	function new( cnx : Connection, ?maxBufSize : Int ) {
@@ -297,7 +297,7 @@ public var collectors : Array<PacketCollector>;
 	
 	/**
 	*/
-	public function addInterceptor( i : TPacketInterceptor ) : Bool {
+	public function addInterceptor( i : PacketInterceptor ) : Bool {
 		if( Lambda.has( interceptors, i ) )
 			return false;
 		interceptors.push( i );
@@ -306,7 +306,7 @@ public var collectors : Array<PacketCollector>;
 	
 	/**
 	*/
-	public function removeInterceptor( i : TPacketInterceptor ) : Bool {
+	public function removeInterceptor( i : PacketInterceptor ) : Bool {
 		return interceptors.remove( i );
 	}
 	
