@@ -68,6 +68,10 @@ class BOSHConnection extends jabber.stream.Connection {
 	var timeoutTimer : Timer;
 	var timeoutOffset : Int;
 	
+	#if BOSH_HTTP_WEBWORKER
+	var worker_http : Dynamic; // = Type.createInstance( untyped Worker, ["../../hxmpp/util/worker_bosh_http.js"] );
+	#end
+
 	/**
 		A new connection to a HTTP gateway of a jabber server.<br/>
 		The default wait time for responses is 30 seconds.
@@ -87,6 +91,16 @@ class BOSHConnection extends jabber.stream.Connection {
 		this.timeoutOffset = timeoutOffset;
 		initialized = pauseEnabled = false;
 		pollingEnabled = true;
+		#if BOSH_HTTP_WEBWORKER
+		worker_http = Type.createInstance( untyped Worker, ["../../hxmpp/util/worker_bosh_http.js"] );
+		worker_http.onmessage = function(e) {
+			var d = e.data;
+			if( StringTools.startsWith( d, "Http Error #" ) )
+				handleHTTPError( d );
+			else
+				handleHTTPData( e.data );
+		}
+		#end
 	}
 	
 	public override function connect() {
@@ -229,6 +243,9 @@ class BOSHConnection extends jabber.stream.Connection {
 	function createHTTPRequest( data : String ) {
 		
 		#if js
+		#if BOSH_HTTP_WEBWORKER
+		worker_http.postMessage( untyped JSON.stringify( { url : getHTTPPath(), data : data } ) );
+		#else
 		var r = new js.XMLHttpRequest();
 		r.open( "POST", getHTTPPath(), true );
 		r.onreadystatechange = function(){
@@ -250,6 +267,7 @@ class BOSHConnection extends jabber.stream.Connection {
 		r.setPostData( data );
 		r.request( true );
 		*/
+		#end
 		
 		#elseif flash
 		var r = new flash.net.URLRequest( getHTTPPath() );
