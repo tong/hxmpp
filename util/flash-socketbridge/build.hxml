@@ -1,5 +1,5 @@
 
-### Socketbridge
+### Flash socketbridge
 -cp ../../
 --flash-strict
 -swf-version 10
@@ -8,12 +8,12 @@
 -main Standalone
 --no-traces
 
-### TLS Socketbridge
+### Flash SSL socketbridge
 --next
 -cp ../../
--cp ../tls
+-cp ../../../hxssl.fl
 --flash-strict
--swf-lib ../tls_flash/tls.swf
+-swf-lib ../../../hxssl.fl/ssl.swf
 -swf-version 10
 -swf-header 100:100:60:eeeeee
 -swf socketbridge_tls.swf
