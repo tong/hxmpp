@@ -142,7 +142,7 @@ class Authentication extends AuthenticationBase {
 		case result :
 			//onBind();
 			var b = xmpp.Bind.parse( iq.x.toXml() );
-			var p = jabber.JIDUtil.getParts( b.jid );
+			var p = jabber.JIDUtil.parts( b.jid );
 			stream.jid.node = p[0];
 			stream.jid.domain = p[1];
 			stream.jid.resource = p[2];

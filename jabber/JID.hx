@@ -53,9 +53,9 @@ class JID {
 		if( t != null ) {
 			if( !JIDUtil.isValid( t ) )
 				throw "invalid JID ["+t+"]"; 
-			this.node = JIDUtil.parseNode( t );
-			this.domain = JIDUtil.parseDomain( t );
-			this.resource = JIDUtil.parseResource( t );
+			this.node = JIDUtil.node( t );
+			this.domain = JIDUtil.domain( t );
+			this.resource = JIDUtil.resource( t );
 		}
 	}
 	

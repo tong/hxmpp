@@ -116,7 +116,7 @@ class Roster {
 	}
 	
 	public function hasItem( jid : String ) : Bool {
-		return ( getItem( jabber.JIDUtil.parseBare( jid ) ) != null );
+		return ( getItem( jabber.JIDUtil.bare( jid ) ) != null );
 	}
 	
 	/*
@@ -228,7 +228,7 @@ class Roster {
 	public function confirmSubscription( jid : String, allow : Bool = true,
 										 subscribe : Bool = false ) {
 		sendPresence( jid, ( allow ) ? PresenceType.subscribed : PresenceType.unsubscribed );
-		var _jid = JIDUtil.parseBare( jid );
+		var _jid = JIDUtil.bare( jid );
 		onSubscription( _jid );
 		if( subscribe ) {
 			this.subscribe( _jid );

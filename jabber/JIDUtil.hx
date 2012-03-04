@@ -53,7 +53,7 @@ class JIDUtil {
 			return false;
 		if( !EREG.match( t ) )
 			return false;
-		for( p in getParts( t ) )
+		for( p in parts( t ) )
 			if( p.length > MAX_PARTSIZE )
 				return false;
 		return true;
@@ -62,14 +62,14 @@ class JIDUtil {
 	/**
 		@returns The node of the given JID.
 	*/
-	public static inline function parseNode( t : String ) : String {
+	public static inline function node( t : String ) : String {
 		return t.substr( 0, t.indexOf( "@" ) );
 	}
 	
 	/**
 		@returns The domain of the given JID.
 	*/
-	public static function parseDomain( t : String ) : String {
+	public static function domain( t : String ) : String {
 		var i1 = t.indexOf( "@" ) + 1;
 		var i2 = t.indexOf( "/" );
 		return ( i2 == -1 ) ? t.substr( i1 ) : t.substr( i1, i2-i1 );
@@ -78,7 +78,7 @@ class JIDUtil {
 	/**
 		@returns The resource of the given JID.
 	*/
-	public static function parseResource( t : String ) : String {
+	public static function resource( t : String ) : String {
 		var i = t.indexOf( "/" );
 		return ( i == -1 ) ? null : t.substr( i+1  );
 	}
@@ -86,7 +86,7 @@ class JIDUtil {
 	/**
 		Removes The resource from a JID.
 	*/
-	public static function parseBare( t : String ) : String {
+	public static function bare( t : String ) : String {
 		var i = t.indexOf( "/" );
 		return ( i == -1 ) ? t : t.substr( 0, i );
 	}
@@ -101,9 +101,9 @@ class JIDUtil {
 	/**
      	@returns A String array with parsed node, domain and resource.
     */
-	public static function getParts( jid : String ) : Array<String> {
-		var p : Array<String> = [ parseNode( jid ), parseDomain( jid ) ];
-		if( hasResource( jid ) ) p.push( parseResource( jid ) );
+	public static function parts( jid : String ) : Array<String> {
+		var p : Array<String> = [ node( jid ), domain( jid ) ];
+		if( hasResource( jid ) ) p.push( resource( jid ) );
 		return p;
 	}
 	
