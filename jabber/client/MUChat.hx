@@ -29,21 +29,22 @@ import xmpp.filter.PacketTypeFilter;
 
 /**
 */
-typedef MUCOccupant = {
-	var nick : String;
-	var jid : String;
-	var presence : xmpp.Presence;
-	var role : xmpp.muc.Role;
-	var affiliation : xmpp.muc.Affiliation;
+class MUCOccupant {
+
+	public var nick : String;
+	public var jid : String;
+	public var presence : xmpp.Presence;
+	public var role : xmpp.muc.Role;
+	public var affiliation : xmpp.muc.Affiliation;
 	//var lastMessage : xmpp.Message;
+	
+	public function new() {}
 }
 
-//multiple logins/joins ? 
-
 /**
-	<a href="http://www.xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a><br>
+	Multiuser chatroom.
+	<a href="http://www.xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
 	<a href="http://www.xmpp.org/extensions/xep-0249.html">XEP-0249: Direct MUC Invitations</a>
-	<p>Multiuser chatroom</p>
 */
 class MUChat {
 
@@ -96,11 +97,20 @@ class MUChat {
 	}
 	
 	function getMe() : MUCOccupant {
+		var o = new MUCOccupant();
+		o.role = role;
+		o.presence = presence;
+		o.nick = nick;
+		o.jid = myjid;
+		o.affiliation = affiliation;
+		return o;
+		/*
 		return { role : role,
 				 presence : presence,
 				 nick : nick,
 				 jid : myjid,
 				 affiliation : affiliation };
+		*/
 	}
 	
 	public function getOccupant( nick : String ) : MUCOccupant {
@@ -327,7 +337,8 @@ class MUChat {
 				//..
 				
 			} else { // process new occupant
-				occupant = { role : null, presence : null, nick : from, jid : null, affiliation : null };
+				occupant = new MUCOccupant();
+				occupant.nick = from;
 				occupants.push( occupant );
 			}
 			occupant.presence = p;

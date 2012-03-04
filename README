@@ -5,6 +5,7 @@
 
                                           
 HXMPP is a haXe library for creating XMPP based clients and services.
+
 http://hxmpp.disktree.net/
 
 
@@ -39,10 +40,10 @@ XEPS SUPPORTED
 * 0206 BOSH
 *** 0232 Bits of Binary
 
-** XEP-xxxx: Linked Process Protocol
-** XEP-xxxx: Jingle RTMP Transport
+** XEP-xxxx: Linked Process Protocol (http://xmpp.org/extensions/inbox/lop.html)
+** XEP-xxxx: Jingle RTMP Transport (http://xmpp.org/extensions/inbox/jingle-rtmp.html)
 ** XEP-xxxx: Jingle RTMFP Transport
-** gmail-notifiy
+** gmail-notifiy (http://code.google.com/apis/talk/jep_extensions/gmail.html)
 
 
 USAGE
@@ -69,8 +70,8 @@ ACTIONSCRIPT3/MXMLC
 See: https://github.com/tong/hxmpp.examples/tree/master/swc
 
 
-ADOBE AIR2
-----------
+ADOBE AIR
+---------
 HXMPP supports native, secure and unsecure adobe air2 socket connections.
 * Get the required external classes from: http://disktree.spektral.at/git/?a=summary&p=hxair
 * Add 'air' compiler flag.

@@ -22,18 +22,26 @@ import jabber.stream.PacketCollector;
 
 /**
 	Abstract base for jingle session listeners.
+
+	T:Transport The kind of transport this class uses
+	R:SessionResponder<T> The kind of responder this class generates
+
 */
 class SessionListener<T:Transport,R:SessionResponder<T>> {
 	
 	public var stream(default,null) : jabber.Stream;
+	
+	/** The handler/callback a responder get passed to */
 	public var handler(default,setHandler) : R->Void;
+	
+	/** The namespace of this jingle implementation */
 	public var xmlns(default,null) : String;
 	
 	var c : PacketCollector;
 	
 	function new( stream : jabber.Stream, handler : R->Void, xmlns : String ) {
 		if( !stream.features.add( xmlns ) )
-			throw "rtmp listener already added ["+xmlns+"]";
+			throw "jingle listener already added ["+xmlns+"]";
 		this.stream = stream;
 		this.handler = handler;
 		this.xmlns = xmlns;
@@ -65,7 +73,11 @@ class SessionListener<T:Transport,R:SessionResponder<T>> {
 	}
 	
 	function createResponder() : R { // override me
+		#if JABBER_DEBUG
 		return throw 'abstract method';
+		#else
+		return null;
+		#end
 	}
 	
 }

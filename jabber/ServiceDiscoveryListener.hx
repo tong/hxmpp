@@ -22,29 +22,37 @@ import xmpp.IQ;
 import xmpp.filter.IQFilter;
 
 /**
-	<a href="http://www.xmpp.org/extensions/xep-0030.html">XEP 30 - ServiceDiscovery</a><br/>
 	Listens/Answers incoming service discovery requests.
+	<a href="http://www.xmpp.org/extensions/xep-0030.html">XEP 30 - ServiceDiscovery</a>
 */
 class ServiceDiscoveryListener {
 	
 	public static var defaultIdentity = { type : "pc", name : "HXMPP", category : "client" };
 	
 	public var stream(default,null) : Stream;
+	
+	/** */
 	public var identities : Array<xmpp.disco.Identity>;
 	
 	/** Custom info request handler relay */
 	public var onInfoQuery : IQ->IQ;
+	
 	#if JABBER_COMPONENT
 	/** Custom items request handler relay */
 	public var onItemQuery : IQ->IQ;
 	#end
 	
 	public function new( stream : Stream, ?identities : Array<xmpp.disco.Identity> ) {
+		
 		if( !stream.features.add( xmpp.disco.Info.XMLNS )
-			#if JABBER_COMPONENT || !stream.features.add( xmpp.disco.Items.XMLNS ) #end )
+			#if JABBER_COMPONENT
+			|| !stream.features.add( xmpp.disco.Items.XMLNS )
+			#end )
 			throw "service discovery listener already added";
+			
 		this.stream = stream;
 		this.identities = ( identities == null ) ? [defaultIdentity] : identities;
+		
 		stream.collect( [cast new IQFilter( xmpp.disco.Info.XMLNS, xmpp.IQType.get )], handleInfoQuery, true );
 		#if JABBER_COMPONENT
 		stream.collect( [cast new IQFilter( xmpp.disco.Items.XMLNS, xmpp.IQType.get )], handleItemsQuery, true );

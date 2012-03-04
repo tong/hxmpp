@@ -20,8 +20,8 @@ package jabber.client;
 import jabber.util.SHA1;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0078.html">XEP-0078: Non-SASL Authentication</a><br>
 	Obsolete, superseded in favor of SASL authentication (jabber.client.Authentication)!
+	<a href="http://xmpp.org/extensions/xep-0078.html">XEP-0078: Non-SASL Authentication</a>
 */
 class NonSASLAuthentication extends AuthenticationBase {
 	

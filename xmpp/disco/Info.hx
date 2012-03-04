@@ -22,8 +22,13 @@ class Info {
 	public static var XMLNS = xmpp.Packet.PROTOCOL+'/disco#info';
 	
 	public var identities : Array<Identity>; 
+	
+	/** */
 	public var features : Array<String>;
+	
+	/** */
 	public var node : String;
+	
 	/** Dataform */
 	public var x : Xml;
 	

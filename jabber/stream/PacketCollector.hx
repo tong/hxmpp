@@ -20,57 +20,20 @@ package jabber.stream;
 import xmpp.PacketFilter;
 import xmpp.filter.PacketIDFilter;
 
-private class FilterList {
-	
-	var fid : Array<PacketFilter>;
-	var f : Array<PacketFilter>;
-	
-	public function new() {
-		clear();
-	}
-	
-	public function clear( ) {
-		fid = new Array<PacketFilter>();
-		f = new Array<PacketFilter>();
-	}
-	
-	public inline function iterator() : Iterator<PacketFilter> {
-		return fid.concat( f ).iterator();
-	}
-	
-	public inline function addIDFilter( _f : PacketIDFilter ) {
-		fid.push( _f );
-	}
-	
-	public inline function addFilter( _f : PacketFilter ) {
-		f.push( _f );
-	}
-	
-	public inline function push( _f : PacketFilter ) {
-		( Std.is( _f, PacketIDFilter ) ) ? fid.push( _f ) : f.push( _f );
-	}
-	
-	public inline function unshift( _f : PacketFilter ) {
-		( Std.is( _f, PacketIDFilter ) ) ? fid.unshift( _f ) : f.unshift( _f );
-	}
-	
-	public function remove( _f : PacketFilter ) : Bool {
-		if( fid.remove( _f ) || f.remove( _f ) ) return true;
-		return false;
-	}
-}
-
 /**
-	Default XMPP packet collector implementation.<br/> 
+	Default XMPP packet collector implementation.
 */
 class PacketCollector {
 	
-	/** */
+	/** This collectors filters */
 	public var filters(default,null) : FilterList;
+	
 	/** Callbacks to which collected packets get delivered to. */
 	public var handlers : Array<xmpp.Packet->Void>;
+	
 	/** Indicates if the the collector should get removed from the stream after collecting. */
 	public var permanent : Bool;
+	
 	/** Block remaining collectors */
 	public var block : Bool; //remove?
 	
@@ -102,4 +65,58 @@ class PacketCollector {
 		for( h in handlers ) h( p );
 	}
 
+}
+
+private class FilterList {
+	
+	var fid : Array<PacketFilter>;
+	var f : Array<PacketFilter>;
+	
+	public function new() {
+		clear();
+	}
+	
+	/**
+	*/
+	public function clear( ) {
+		fid = new Array<PacketFilter>();
+		f = new Array<PacketFilter>();
+	}
+	
+	/**
+	*/
+	public inline function iterator() : Iterator<PacketFilter> {
+		return fid.concat( f ).iterator();
+	}
+	
+	/**
+	*/
+	public inline function addIDFilter( _f : PacketIDFilter ) {
+		fid.push( _f );
+	}
+	
+	/**
+	*/
+	public inline function addFilter( _f : PacketFilter ) {
+		f.push( _f );
+	}
+	
+	/**
+	*/
+	public inline function push( _f : PacketFilter ) {
+		( Std.is( _f, PacketIDFilter ) ) ? fid.push( _f ) : f.push( _f );
+	}
+	
+	/**
+	*/
+	public inline function unshift( _f : PacketFilter ) {
+		( Std.is( _f, PacketIDFilter ) ) ? fid.unshift( _f ) : f.unshift( _f );
+	}
+	
+	/**
+	*/
+	public function remove( _f : PacketFilter ) : Bool {
+		if( fid.remove( _f ) || f.remove( _f ) ) return true;
+		return false;
+	}
 }

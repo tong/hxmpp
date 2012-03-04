@@ -18,8 +18,9 @@
 package jabber;
 
 /**
-	An XMPP address (JID).<br/>
-	A JID is made up of a node (generally a username), a domain, and a resource.<br/>
+	An XMPP address (JID).
+	
+	A JID is made up of a node (generally a username), a domain, and a resource.
 	<pre>
 jid             = [ node "@" ] domain [ "/" resource ]
 domain          = fqdn / address-literal
@@ -27,22 +28,26 @@ fqdn            = (sub-domain 1*("." sub-domain))
 sub-domain      = (internationalized domain label)
 address-literal = IPv4address / IPv6address
 	</pre>
-	Each allowable portion of a JID (node, domain, and resource) must not be more than 1023 bytes in length,<br>
+
+	Each allowable portion of a JID (node, domain, and resource) must not be more than 1023 bytes in length,
 	resulting in a maximum total size (including the '@' and '/' separators) of 3071 bytes.
 */
 class JID {
 	
 	/***/
 	public var node : String;
+	
 	/***/
 	public var domain : String;
+	
 	/***/
 	public var resource : String;
+	
 	/** JID without resource */
 	public var bare(getBare,null) : String;
-	/** */
+	
+	/** Just a shortcut for toString()  */
 	public var s(toString,null) : String;
-	//public var s(default,null) : String;
 	
 	public function new( t : String ) {
 		if( t != null ) {
@@ -51,7 +56,6 @@ class JID {
 			this.node = JIDUtil.parseNode( t );
 			this.domain = JIDUtil.parseDomain( t );
 			this.resource = JIDUtil.parseResource( t );
-			//s = t;
 		}
 	}
 	

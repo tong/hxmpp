@@ -29,7 +29,7 @@ class Jingle {
 	public static var XMLNS_RTMFP = _XMLNS+"apps:rtmfp";
 	public static var XMLNS_FILETRANSFER = _XMLNS+"apps:file-transfer:1";
 	public static var XMLNS_S5B = _XMLNS+"transports:s5b:1";
-	public static var XMLNS_WEBRTC = "apps:webrtc"; //TODO
+	public static var XMLNS_WEBRTC = "urn:xmpp:jingle:transports:webrtc:1"; // "apps:webrtc"; //TODO
 	
 	public var action : xmpp.jingle.Action;
 	public var initiator : String;
@@ -38,6 +38,7 @@ class Jingle {
 	public var content : Array<xmpp.jingle.Content>;
 	public var reason : { type : xmpp.jingle.Reason, content : Xml };
 	public var other : Array<Xml>;
+	//public var layout : Layout;
 	
 	public function new( action : xmpp.jingle.Action, initiator : String, sid : String, ?responder : String ) {
 		this.action = action;

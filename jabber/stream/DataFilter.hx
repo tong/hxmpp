@@ -23,4 +23,5 @@ typedef DataFilter = {
 		Filter incoming XMPP data before processing
 	*/
 	function filterData( data : haxe.io.Bytes ) : haxe.io.Bytes;
+	
 }

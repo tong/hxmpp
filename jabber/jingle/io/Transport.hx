@@ -17,6 +17,9 @@
 */
 package jabber.jingle.io;
 
+/**
+	Abstract jingle transport base.
+*/
 class Transport {
 	
 	public var __onConnect : Void->Void;

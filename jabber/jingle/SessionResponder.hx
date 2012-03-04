@@ -20,13 +20,17 @@ package jabber.jingle;
 import jabber.jingle.io.Transport;
 import xmpp.IQ;
 
+/**
+	Abstract base for jingle session responders.
+*/
 class SessionResponder<T:Transport> extends Session<T> {
 	
-	public function new( stream : jabber.Stream, xmlns : String ) {
+	function new( stream : jabber.Stream, xmlns : String ) {
 		super( stream, xmlns );
 	}
 	
 	/**
+		Handle initial jingle request packet
 	*/
 	public function handleRequest( iq : IQ ) : Bool {
 		var j = xmpp.Jingle.parse( iq.x.toXml() );
@@ -47,10 +51,14 @@ class SessionResponder<T:Transport> extends Session<T> {
 				}
 			}
 		}
+		//TODO webrtc has no candidates
 		if( candidates.length == 0 ) {
+			trace("NO TRANSPORT CANDIDATES!");
+		/*
 			onFail( "no transport candidates found" );
 			cleanup();
 			return false;
+		*/
 		}
 		request = iq;
 		entity = iq.from;
@@ -99,19 +107,22 @@ class SessionResponder<T:Transport> extends Session<T> {
 		if( description != null ) content.other.push( description );
 		j.content.push( content );
 		iq.x = j;
-		stream.sendIQ( iq, handleSessionAccept );
+		stream.sendIQ( iq, handleSessionAcceptResponse );
 	}
 	
-	function handleSessionAccept( iq : IQ ) {
+	function handleSessionAcceptResponse( iq : IQ ) {
 		switch( iq.type ) {
 		case result :
-			//trace(transport);
-			onInit();
-			transport.init();
+			handleSessionAccept();
 		case error :
 			//TODO
 		default :
 		}
+	}
+	
+	function handleSessionAccept() {
+		onInit();
+		transport.init();//? TODO move into subclass
 	}
 	
 }

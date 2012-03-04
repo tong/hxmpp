@@ -27,7 +27,7 @@ import xmpp.IQType;
 */
 class OutgoingSession<T:Transport> extends Session<T> {
 	
-	/** Offered transports */
+	/** Transports we offer */
 	public var transports(default,null) : Array<T>;
 	
 	function new( stream : jabber.Stream, entity : String, contentName : String, xmlns : String ) {
@@ -49,7 +49,7 @@ class OutgoingSession<T:Transport> extends Session<T> {
 		var iq = new IQ( IQType.set, null, entity );
 		var j = new xmpp.Jingle( xmpp.jingle.Action.session_initiate, stream.jid.toString(), sid, entity );
 		var content = new xmpp.jingle.Content( xmpp.jingle.Creator.initiator, contentName );
-		content.senders = xmpp.jingle.Senders.both; //TODO
+//		content.senders = xmpp.jingle.Senders.both; //TODO
 		if( description != null ) content.other.push( description );
 		content.other.push( createTransportXml() );
 		j.content.push( content );
@@ -61,8 +61,8 @@ class OutgoingSession<T:Transport> extends Session<T> {
 	
 	function handleSessionInitResponse( iq : IQ ) {
 		switch( iq.type ) {
-//		case result :
-//			trace(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		case result :
+			handleSessionInitResult();
 		case error :
 			//onError( new jabber.XMPPError( iq ) );
 			var err = iq.errors[0];
@@ -73,10 +73,18 @@ class OutgoingSession<T:Transport> extends Session<T> {
 		}
 	}
 	
+	function handleSessionInitResult() {
+		// abstract
+	}
+	
 	function createTransportXml() : Xml {
 		var x = xmpp.IQ.createQueryXml( xmlns, 'transport' );
-		for( t in transports )
-			x.addChild( createCandidateXml( t ) );
+		for( t in transports ) {
+			var cx = createCandidateXml( t );
+			if( cx != null ) {
+				x.addChild( cx );
+			}
+		}
 		return x;
 	}
 	

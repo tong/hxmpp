@@ -25,14 +25,20 @@ import jabber.stream.Status;
 import jabber.util.SHA1;
 import xmpp.XMLUtil;
 
+/**
+	JID of a xmpp component.
+*/
 class ComponentJID {
+	
 	public var subdomain(default,null) : String;
 	public var host(default,null) : String;
+	
 	public function new( subdomain : String, host : String ) {
 		this.subdomain = subdomain;
 		this.host = host;
 	}
-	public function toString() : String {
+	
+	public inline function toString() : String {
 		return subdomain+'.'+host;
 	}
 }

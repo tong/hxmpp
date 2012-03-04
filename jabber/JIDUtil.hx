@@ -18,7 +18,7 @@
 package jabber;
 
 /**
-	Static methods for JabberID manipulation/validation.
+	Static methods for JabberID validation/manipulation.
 */	
 class JIDUtil {
 	
@@ -46,7 +46,7 @@ class JIDUtil {
 	#end
 	
 	/**
-		@return True if the given JID is valid formed.
+		@returns True if the given JID is valid formed.
 	*/
 	public static function isValid( t : String ) : Bool {
 		if( t == null || t.length < MIN_LENGTH || t.length > MAX_SIZE )

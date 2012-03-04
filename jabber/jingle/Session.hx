@@ -28,14 +28,26 @@ import xmpp.IQType;
 */
 class Session<T:Transport> {
 	
+	/***/
 	public dynamic function onInit() {}
+	
+	/***/
+	public dynamic function onInfo( info : Xml ) {}
+	
+	/***/
 	public dynamic function onEnd( reason : xmpp.jingle.Reason ) {}
+	
+	/***/
 	public dynamic function onFail( e : String ) {}
+	
+	/***/
 	public dynamic function onError( e : jabber.XMPPError ) {}
 	
 	public var stream(default,null) : jabber.Stream;
-	/** Counterpart station */
+	
+	/** Counterpart entity */
 	public var entity(default,null) : String;
+	
 	/** Used transport */
 	public var transport(default,null) : T;
 	
@@ -55,6 +67,7 @@ class Session<T:Transport> {
 	}
 	
 	/**
+		Terminate the jingle session
 	*/
 	public function terminate( ?reason : xmpp.jingle.Reason, ?content : Xml ) {
 		if( reason == null ) reason = xmpp.jingle.Reason.success;
@@ -103,29 +116,43 @@ class Session<T:Transport> {
 		case session_terminate :
 			onEnd( j.reason.type );
 			stream.sendPacket( IQ.createResult( iq ) );
-		//case whatelse? :
 			cleanup();
+		case session_info :
+			handleSessionInfo( j.other );
 		default :
 			processSessionPacket( iq, j );
 		}
 	}
 	
-	function processSessionPacket( iq : IQ, j : xmpp.Jingle ) {
-		//();
-		// override me
+	function processSessionPacket( iq : IQ, j : xmpp.Jingle ) { // override me
+		#if JABBER_DEBUG
+		trace( "Jingle session packet not processed, not implemented!", "warn" );
+		#end
 	}
 	
+	function handleSessionInfo( x : Array<Xml> ) {
+		for( e in x ) {
+			onInfo( e );
+		}
+	}
+		
 	function addSessionCollector() {
-		collector = stream.collect( [cast new xmpp.filter.PacketFromFilter( entity ),
-									 cast new xmpp.filter.JingleFilter( xmlns, sid )],
-						 			 handleSessionPacket, true );
+		collector = stream.collect( [ cast new xmpp.filter.PacketFromFilter( entity ),
+									  cast new xmpp.filter.JingleFilter( xmlns, sid ) ],
+						 			handleSessionPacket, true );
 	}
 	
 	function connectTransport() {
-		transport = candidates[transportCandidateIndex];
-		transport.__onConnect = handleTransportConnect;
-		transport.__onFail = handleTransportFail;
-		transport.connect();
+		trace( "Connecting jingle transport ..." );
+		if( transport == null )
+			transport = candidates[transportCandidateIndex];
+		if( transport != null ) {
+			transport.__onConnect = handleTransportConnect;
+			transport.__onFail = handleTransportFail;
+			transport.connect();
+		} else {
+			trace("TODO no jingle transport!");
+		}
 	}
 	
 	function handleTransportConnect() {

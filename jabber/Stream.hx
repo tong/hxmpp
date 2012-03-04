@@ -35,33 +35,6 @@ private typedef Server = {
 	var features : Hash<Xml>;
 }
 
-private class StreamFeatures {
-	var l : #if neko List<String> #else Array<String> #end;
-	public function new() {
-		l = #if neko new List() #else new Array<String>() #end;
-	}
-	public inline function iterator() : Iterator<String> {
-		return l.iterator();
-	}
-	public function add( f : String ) : Bool {
-		if( Lambda.has( l, f ) ) return false;
-		#if neko l.add(f) #else l.push(f) #end;
-		return true;
-	}
-	public inline function has( f : String ) : Bool {
-		return Lambda.has( l, f );
-	}
-	public inline function remove( f : String ) : Bool {
-		return l.remove( f );
-	}
-	public inline function clear( f : String ) {
-		l = #if neko new List() #else new Array<String>() #end;
-	}
-	#if JABBER_DEBUG
-	public inline function toString() : String { return l.toString(); }
-	#end
-}
-
 /**
 	Abstract base for XMPP streams to and from another entity.
 */
@@ -564,4 +537,39 @@ public var collectors : Array<PacketCollector>;
 		numPacketsSent = 0;
 	}
 	
+}
+
+private class StreamFeatures {
+
+	var l : #if neko List<String> #else Array<String> #end;
+	
+	public function new() {
+		l = #if neko new List() #else new Array<String>() #end;
+	}
+	
+	public inline function iterator() : Iterator<String> {
+		return l.iterator();
+	}
+	
+	public function add( f : String ) : Bool {
+		if( Lambda.has( l, f ) ) return false;
+		#if neko l.add(f) #else l.push(f) #end;
+		return true;
+	}
+	
+	public inline function has( f : String ) : Bool {
+		return Lambda.has( l, f );
+	}
+	
+	public inline function remove( f : String ) : Bool {
+		return l.remove( f );
+	}
+	
+	public inline function clear( f : String ) {
+		l = #if neko new List() #else new Array<String>() #end;
+	}
+	
+	#if JABBER_DEBUG
+	public inline function toString() : String { return l.toString(); }
+	#end
 }
