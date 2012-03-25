@@ -64,6 +64,7 @@ class MUChat {
 	//public var locked(default,null) : Bool;
 	public var myjid(default,null) : String;
 	public var nick(default,null) : String;
+	public var password(default,null) : String;
 	public var role(default,null) : Role;
 	public var affiliation(default,null) : Affiliation;
 	public var occupants(default,null) : Array<MUCOccupant>;
@@ -128,6 +129,7 @@ class MUChat {
 		stream.addCollector( c_presence );
 		stream.addCollector( c_message );
 		this.nick = nick;
+		this.password = password;
 		myjid = jid+"/"+nick;
 		return ( sendMyPresence() != null );
 	}
@@ -351,9 +353,15 @@ class MUChat {
 	}
 	
 	function sendMyPresence( priority : Int = 5 ) : xmpp.Presence {
+		var x = xmpp.X.create( xmpp.MUC.XMLNS );
+		if( password != null ) {
+			x.addChild( xmpp.XMLUtil.createElement( "password", this.password ) );
+		}
+
 		var p = new xmpp.Presence( null, null, priority );
 		p.to = myjid;
 		p.properties.push( xmpp.X.create( xmpp.MUC.XMLNS ) );
+
 		return stream.sendPacket( p );
 	}
 	
