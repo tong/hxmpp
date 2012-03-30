@@ -43,8 +43,8 @@ class MUCOccupant {
 
 /**
 	Multiuser chatroom.
-	<a href="http://www.xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
-	<a href="http://www.xmpp.org/extensions/xep-0249.html">XEP-0249: Direct MUC Invitations</a>
+	http://www.xmpp.org/extensions/xep-0045.html
+	http://www.xmpp.org/extensions/xep-0249.html
 */
 class MUChat {
 

@@ -22,12 +22,17 @@ package xmpp;
 	for and interest in communication.
 */
 enum PresenceShow {
+	
 	/** Away from device */
 	away;
+	
 	/** Especially socialable */
 	chat;
+	
 	/** Busy */
 	dnd;
+	
 	/** Extended Away */
 	xa;
+	
 }
