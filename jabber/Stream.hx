@@ -62,7 +62,8 @@ class Stream {
 	
 	var buf : StringBuf;
 	var collectors_id : Array<PacketCollector>;
-public var collectors : Array<PacketCollector>;
+	//public var collectors : Array<PacketCollector>;
+	var collectors : Array<PacketCollector>;
 	var interceptors : Array<PacketInterceptor>;
 	var numPacketsSent : Int;
 	

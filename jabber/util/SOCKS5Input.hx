@@ -20,12 +20,8 @@ package jabber.util;
 import haxe.io.Bytes;
 import haxe.io.BytesBuffer;
 
-#if neko
-import neko.net.Socket;
-#elseif cpp
-import cpp.net.Socket;
-#elseif php
-import php.net.Socket;
+#if (neko||php||cpp)
+import sys.net.Socket;
 #end
 
 #if nodejs

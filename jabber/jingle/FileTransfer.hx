@@ -21,10 +21,10 @@ import haxe.io.Bytes;
 import jabber.jingle.io.ByteStreamOutput;
 import jabber.jingle.io.Transport;
 import xmpp.IQ;
-#if neko
-import neko.FileSystem;
-import neko.io.File;
-import neko.io.Path;
+#if (neko||cpp||php)
+import sys.FileSystem;
+import sys.io.File;
+import sys.io.Path;
 #elseif nodejs
 import js.Node;
 import js.FileSystem;

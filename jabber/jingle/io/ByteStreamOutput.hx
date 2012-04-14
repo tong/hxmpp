@@ -20,8 +20,8 @@ package jabber.jingle.io;
 import haxe.io.Bytes;
 import jabber.util.SOCKS5Input;
 #if neko
-import neko.net.Host;
-import neko.net.Socket;
+import sys.net.Host;
+import sys.net.Socket;
 import neko.vm.Thread;
 #end
 

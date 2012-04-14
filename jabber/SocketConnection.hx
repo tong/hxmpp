@@ -21,15 +21,9 @@ import haxe.io.Bytes;
 
 #if (neko||php||cpp||rhino)
 
-#if neko
-import neko.net.Host;
-import neko.net.Socket;
-#elseif php
-import php.net.Host;
-import php.net.Socket;
-#elseif cpp
-import cpp.net.Host;
-import cpp.net.Socket;
+#if (neko||php||cpp)
+import sys.net.Host;
+import sys.net.Socket;
 #elseif rhino
 import js.net.Host;
 import js.net.Socket;

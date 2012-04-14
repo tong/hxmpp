@@ -17,11 +17,10 @@
 */
 package jabber.jingle.io;
 
-#if neko
-import neko.net.Socket;
-#elseif cpp
-import cpp.net.Socket;
-#elseif flash
+#if (neko||cpp)
+import sys.net.Socket;
+#end
+#if flash
 import flash.net.Socket;
 #elseif nodejs
 import js.Node;

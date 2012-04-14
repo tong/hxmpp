@@ -20,16 +20,10 @@ package jabber;
 // Legacy TLS socket connection (port 5223)
 
 #if (neko||php||cpp||rhino)
-
-#if neko
-import neko.net.Host;
-import neko.tls.Socket;
-#elseif php
-import php.net.Host;
-import php.net.Socket;
-#elseif cpp
-import cpp.net.Host;
-import cpp.net.Socket;
+import sys.net.Socket;
+import sys.net.Host;
+#if php
+import php.net.SslSocket;
 #end
 
 class SecureSocketConnection extends jabber.stream.SocketConnectionBase {
@@ -41,7 +35,7 @@ class SecureSocketConnection extends jabber.stream.SocketConnectionBase {
 	}
 	
 	public override function connect() {
-		socket = #if php Socket.newSslSocket(); #else new Socket(); #end
+		socket = #if php new SslSocket(); #else new Socket(); #end
 		buf = haxe.io.Bytes.alloc( bufsize );
 		bufpos = 0;
 		try socket.connect( new Host( host ), port ) catch( e : Dynamic ) {

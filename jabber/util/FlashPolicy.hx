@@ -17,10 +17,8 @@
 */
 package jabber.util;
 
-#if neko
-import neko.net.Socket;
-#elseif cpp
-import cpp.net.Socket;
+#if (neko||cpp||php)
+import sys.net.Socket;
 #elseif nodejs
 import js.Node;
 typedef Socket = Stream;

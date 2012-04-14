@@ -21,13 +21,7 @@ import haxe.io.Bytes;
 
 #if (neko||cpp||php)
 import haxe.io.BytesBuffer;
-#if neko
-import neko.net.Socket;
-#elseif cpp
-import cpp.net.Socket;
-#elseif php
-import php.net.Socket;
-#end
+import sys.net.Socket;
 #elseif nodejs
 import js.Node;
 #elseif flash

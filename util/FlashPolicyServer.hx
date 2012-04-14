@@ -17,16 +17,17 @@
 */
 package;
 
+#if (neko||cpp||php)
+import sys.net.Host;
+import sys.net.Socket;
+#end
+
 #if nodejs
 import js.Node;
 #elseif neko
 import neko.vm.Thread;
-import neko.net.Host;
-import neko.net.Socket;
 #elseif cpp
 import cpp.vm.Thread;
-import cpp.net.Host;
-import cpp.net.Socket;
 #elseif (air&&flash)
 import flash.utils.ByteArray;
 import flash.events.ProgressEvent;

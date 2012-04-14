@@ -19,16 +19,11 @@ package jabber.stream;
 
 import haxe.io.Bytes;
 
-#if neko
-import neko.net.Host;
-import neko.net.Socket;
-#elseif php
-import php.net.Host;
-import php.net.Socket;
-#elseif cpp
-import cpp.net.Host;
-import cpp.net.Socket;
-#elseif rhino
+#if (neko||cpp||php)
+import sys.net.Host;
+import sys.net.Socket;
+#end
+#if rhino
 import js.net.Host;
 import js.net.Socket;
 #elseif nodejs

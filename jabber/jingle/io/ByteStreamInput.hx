@@ -18,8 +18,8 @@
 package jabber.jingle.io;
 
 #if neko
-import neko.net.Host;
-import neko.net.Socket;
+import sys.net.Host;
+import sys.net.Socket;
 import neko.vm.Thread;
 #end
 import haxe.io.Bytes;

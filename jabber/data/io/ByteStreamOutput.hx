@@ -17,15 +17,15 @@
 */
 package jabber.data.io;
 
+#if (neko||cpp)
+import sys.net.Host;
+import sys.net.Socket;
+#end
 import haxe.io.Bytes;
 import jabber.util.SOCKS5Input;
 #if neko
-import neko.net.Host;
-import neko.net.Socket;
 import neko.vm.Thread;
 #elseif cpp
-import cpp.net.Host;
-import cpp.net.Socket;
 import cpp.vm.Thread;
 #elseif nodejs
 import js.Node;
