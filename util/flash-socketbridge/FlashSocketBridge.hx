@@ -134,6 +134,7 @@ class FlashSocketBridge{
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
+		//trace(e);
 		//ExternalInterface.call( ctx+".handleData", e.target.id, e.target.readUTFBytes( e.bytesLoaded ) );
 	//	trace(e.bytesLoaded );
 		/*

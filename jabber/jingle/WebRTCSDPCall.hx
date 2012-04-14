@@ -21,8 +21,10 @@ import jabber.jingle.io.WebRTCSDPOutput;
 import xmpp.IQ;
 
 /**
-	WebRTC SDP jingle session initiator.
+	Experimental! Subject to change!
 	http://community.igniterealtime.org/docs/DOC-2273
+	
+	WebRTC SDP jingle session initiator.
 */
 class WebRTCSDPCall extends OutgoingSession<WebRTCSDPOutput> {
 	

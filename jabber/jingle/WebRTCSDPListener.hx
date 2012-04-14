@@ -19,6 +19,10 @@ package jabber.jingle;
 
 import jabber.jingle.io.WebRTCSDPInput;
 
+/**
+	Experimental! Subject to change!
+	http://community.igniterealtime.org/docs/DOC-2273
+*/
 class WebRTCSDPListener extends SessionListener<WebRTCSDPInput,WebRTCSDPResponder> {
 	
 	public function new( stream : jabber.Stream, handler : WebRTCSDPResponder->Void ) {

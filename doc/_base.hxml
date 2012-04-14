@@ -51,4 +51,5 @@ jabber.remoting.Host
 jabber.sasl.AnonymousMechanism
 jabber.sasl.PlainMechanism
 jabber.sasl.MD5Mechanism
+xmpp.Delayed
 xmpp.XHTML

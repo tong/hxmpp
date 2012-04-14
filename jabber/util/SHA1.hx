@@ -32,18 +32,23 @@ class SHA1 {
 	*/
 	
 	public static inline function encode( s : String ) : String {
+		
 		//TODO
 		//#if neko
 		//return new String( base_encode( make_sha1( untyped t.__s ), untyped hex_chr.__s ) );
 		//#elseif nodejs
+		
 		#if nodejs
 		var h = js.Node.crypto.createHash( "sha1" );
 		h.update( s );
 		return h.digest( js.Node.HEX );
+		
 		#elseif php
 		return untyped __call__( "sha1", s );
+		
 		#else
 		return haxe.SHA1.encode(s);
+		
 		#end
 	}
 	

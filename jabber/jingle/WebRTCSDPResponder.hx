@@ -22,6 +22,9 @@ import jabber.jingle.io.WebRTCSDPInput;
 //private enum State {}
 
 /**
+	Experimental! Subject to change!
+	http://community.igniterealtime.org/docs/DOC-2273
+
 	Responder for incoming jingle/webrtc session requests
 */
 class WebRTCSDPResponder extends SessionResponder<WebRTCSDPInput> {
