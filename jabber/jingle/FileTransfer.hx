@@ -24,7 +24,7 @@ import xmpp.IQ;
 #if (neko||cpp||php)
 import sys.FileSystem;
 import sys.io.File;
-import sys.io.Path;
+import haxe.io.Path;
 #elseif nodejs
 import js.Node;
 import js.FileSystem;
