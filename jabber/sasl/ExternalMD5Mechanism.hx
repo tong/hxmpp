@@ -18,26 +18,31 @@
 package jabber.sasl;
 
 import jabber.util.Base64;
-import jabber.util.MD5;
 
 /**
-	<a href="ftp://ietf.org//rfc/rfc2831.txt">Using Digest Authentication as a SASL Mechanism</a>
-	<a href="http://web.archive.org/web/20050224191820/http://cataclysm.cx/wip/digest-md5-crash.html">SASL and DIGEST-MD5 for XMPP</a>
+	Calculates the MD5 hash on a web server instead of locally.
+	This allows to create xmpp/web based clients without including the (hardcoded) account password in the source code.
 */
-class MD5Mechanism {
+class ExternalMD5Mechanism {
 	
 	public static inline var NAME = 'DIGEST-MD5';
 	
 	public var id(default,null) : String;
 	public var serverType : String;
 	
+	/**
+	 * The base URL of the challenge response calculator
+	 */
+	public var passwordStoreURL : String;
+	
 	var username : String;
 	var host : String;
 	var pass : String;
 	var resource : String;
 	
-	public function new( serverType : String = "xmpp" ) {
+	public function new( passwordStoreURL : String, serverType : String = "xmpp" ) {
 		this.id = NAME;
+		this.passwordStoreURL = passwordStoreURL;
 		this.serverType = serverType;
 	}
 	
@@ -47,12 +52,11 @@ class MD5Mechanism {
 		this.pass = pass;
 		this.resource = resource;
 		return null;
-		
 	}
 	
 	public function createChallengeResponse( challenge : String ) : String {
 		var c = MD5Calculator.parseChallenge( challenge );
-		return MD5Calculator.run( host, serverType, username, c.realm, pass, c.nonce );
+		return haxe.Http.requestUrl( passwordStoreURL+"?host="+host+"&servertype="+serverType+"&username="+username+"&realm="+c.realm+"&nonce="+c.nonce );
 	}
 	
 }
