@@ -40,7 +40,7 @@ class PrivacyLists {
 			throw "privacylists feature already added";
 		this.stream = stream;
 		stream.collect( 
-			[cast new xmpp.filter.IQFilter(xmpp.PrivacyLists.XMLNS,xmpp.IQType.set)],
+			[new xmpp.filter.IQFilter(xmpp.PrivacyLists.XMLNS,xmpp.IQType.set)],
 			handleListPush,
 			true );
 	}

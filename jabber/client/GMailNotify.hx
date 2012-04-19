@@ -54,7 +54,7 @@ class GMailNotify {
 	*/
 	public function request( ?newerThanTime : Int, ?newerThanTid : Int, ?q : String  ) {
 		if( c == null )
-			c = stream.collect( [cast new xmpp.filter.IQFilter(XMLNS,xmpp.IQType.set,"mailbox")], handleNotification, true );
+			c = stream.collect( [new xmpp.filter.IQFilter(XMLNS,xmpp.IQType.set,"mailbox")], handleNotification, true );
 		var iq = new xmpp.IQ();
 		var x = xmpp.IQ.createQueryXml( XMLNS );
 		if( newerThanTime != null ) x.set( "newer-than-time", Std.string( newerThanTime ) );

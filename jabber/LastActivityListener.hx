@@ -33,7 +33,7 @@ class LastActivityListener {
 			throw "last activity listener already added" ;
 		this.stream = stream;
 		this.time = time;
-		c = stream.collect( [ cast new xmpp.filter.IQFilter( xmpp.LastActivity.XMLNS, xmpp.IQType.get, "query" ) ], handleRequest, true );
+		c = stream.collect( [new xmpp.filter.IQFilter( xmpp.LastActivity.XMLNS, xmpp.IQType.get, "query" )], handleRequest, true );
 	}
 	
 	public function dispose() {

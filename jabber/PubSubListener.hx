@@ -45,9 +45,9 @@ class PubSubListener {
 	
 	public function new( stream : Stream, service : String ) {
 		this.stream = stream;
-		c = stream.collect( [ cast new xmpp.filter.PacketFromFilter( service ),
-							  cast new xmpp.filter.MessageFilter( xmpp.MessageType.normal ),
-						 	  cast new xmpp.filter.PacketPropertyFilter( xmpp.PubSubEvent.XMLNS, 'event' ) ],
+		c = stream.collect( [ new xmpp.filter.PacketFromFilter( service ),
+							  new xmpp.filter.MessageFilter( xmpp.MessageType.normal ),
+						 	  new xmpp.filter.PacketPropertyFilter( xmpp.PubSubEvent.XMLNS, 'event' ) ],
 							  handlePubSubEvent, true );
 	}
 	

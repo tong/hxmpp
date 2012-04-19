@@ -42,7 +42,7 @@ class IBInput extends IBIO {
 						 new IQFilter( xmpp.file.IB.XMLNS, IQType.set, "close" )],
 						 handleClose );
 		collector = stream.collect( [fromfilter,
-						 			 cast new IQFilter( xmpp.file.IB.XMLNS, IQType.set, "data" )],
+						 			 new IQFilter( xmpp.file.IB.XMLNS, IQType.set, "data" )],
 						 			 handleChunk, true );
 	}
 	

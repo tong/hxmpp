@@ -34,7 +34,7 @@ class Pong {
 		if( !stream.features.add( xmpp.Ping.XMLNS ) )
 			throw "Ping listener already added";
 		this.stream = stream;
-		c = stream.collect( [ cast new xmpp.filter.IQFilter( xmpp.Ping.XMLNS, xmpp.IQType.get ) ], handlePing, true );
+		c = stream.collect( [new xmpp.filter.IQFilter( xmpp.Ping.XMLNS, xmpp.IQType.get )], handlePing, true );
 	}
 	
 	public function dispose() {

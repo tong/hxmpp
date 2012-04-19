@@ -12,7 +12,7 @@ class Base64 {
 	
 	public static var CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	
-	#if (cpp||flash||js||neko)
+	#if (cpp||flash||js||neko||jvm)
 
 	static var bc = new haxe.BaseCode( Bytes.ofString( CHARS ) );
 	
@@ -25,7 +25,7 @@ class Base64 {
 	 	return r;
 	}
 	
-	static inline function fillNullbits( s : String ) : String {
+	public static inline function fillNullbits( s : String ) : String {
 		return s + getNullbits(s);
 	}
 	
@@ -40,7 +40,7 @@ class Base64 {
 	#end
 	
 	public static
-	#if (nodejs||php) #end
+	//#if (nodejs||php) #end
 	function encode( s : String ) : String {
 		#if nodejs
 		return new Buffer(s).toString( Node.BASE64 );
@@ -52,10 +52,13 @@ class Base64 {
 	        //if( untyped window != null && untyped window.atob != null )
 	        //	return untyped window.atob( s );
 	        #end
-	       	s = removeNullbits( s );
+	        //TODO wtf
+	      	s = removeNullbits( s );
 	        var p = getNullbits(s);
 	        var r = bc.encodeString( s );
 	        return r+p;
+	       // var r = bc.encodeString( s );
+	       // return fillNullbits(r);
 		#end
 	}
 	

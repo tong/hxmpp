@@ -36,7 +36,7 @@ class AttentionListener {
 			throw 'attention listener already added';
 		this.stream = stream;
 		this.onCapture = onCapture;
-		c = stream.collect( [cast new xmpp.filter.MessageFilter(xmpp.MessageType.chat)], handleRequest, true );
+		c = stream.collect( [new xmpp.filter.MessageFilter(xmpp.MessageType.chat)], handleRequest, true );
 	}
 	
 	public function dispose() {

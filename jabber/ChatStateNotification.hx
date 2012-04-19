@@ -39,8 +39,8 @@ class ChatStateNotification {
 		if( !stream.features.add( xmpp.ChatStateNotification.XMLNS ) )
 			throw "chatstate listener already added";
 		this.stream = stream;
-		collector = stream.collect( [cast new MessageFilter(MessageType.chat),
-									 cast new PacketPropertyFilter(xmpp.ChatStateNotification.XMLNS)
+		collector = stream.collect( [new MessageFilter(MessageType.chat),
+									 new PacketPropertyFilter(xmpp.ChatStateNotification.XMLNS)
 									], handleMessage, true );
 		stream.addInterceptor( this );
 	}

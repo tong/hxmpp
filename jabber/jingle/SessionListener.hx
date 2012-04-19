@@ -59,7 +59,7 @@ class SessionListener<T:Transport,R:SessionResponder<T>> {
 				c = null;
 			}
 		} else if( c == null )
-			c = stream.collect( [cast new xmpp.filter.JingleFilter( xmlns )], handleRequest, true );
+			c = stream.collect( [new xmpp.filter.JingleFilter( xmlns )], handleRequest, true );
 		return handler = h;
 	}
 	

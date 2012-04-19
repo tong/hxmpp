@@ -245,7 +245,7 @@ class Stream {
 		These collectors get processed before any other.
 	*/
 	public function addIDCollector( id : String, handler : Dynamic->Void ) : PacketCollector {
-		var c = new PacketCollector( [cast new PacketIDFilter(id)], handler );
+		var c = new PacketCollector( [new PacketIDFilter(id)], handler );
 		collectors_id.push( c );
 		return c;
 	}

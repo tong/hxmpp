@@ -32,7 +32,7 @@ class XSPFListener {
 		if( !stream.features.add( xmpp.XSPF.XMLNS ) )
 			throw "xspf listener already added" ;
 		this.stream = stream;
-		c = stream.collect( [ cast new xmpp.filter.IQFilter( xmpp.XSPF.XMLNS, xmpp.IQType.get, "query" ) ], handleRequest, true );
+		c = stream.collect( [new xmpp.filter.IQFilter( xmpp.XSPF.XMLNS, xmpp.IQType.get, "query" )], handleRequest, true );
 	}
 	
 	function handleRequest( iq : xmpp.IQ ) {

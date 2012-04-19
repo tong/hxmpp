@@ -40,7 +40,7 @@ class SIListener {
 		this.stream = stream;
 		this.handler = handler;
 		methods = new Array();
-		c = stream.collect( [cast new xmpp.filter.IQFilter( xmpp.file.SI.XMLNS, xmpp.IQType.set, "si" )],
+		c = stream.collect( [new xmpp.filter.IQFilter( xmpp.file.SI.XMLNS, xmpp.IQType.set, "si" )],
 						 	 handleRequest, true );
 	}
 	

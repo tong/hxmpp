@@ -43,7 +43,7 @@ class Host {
 		this.stream = stream;
 		this.ctx = ctx;
 		stream.features.add( xmpp.HXR.XMLNS );
-		c = stream.collect( [cast new xmpp.filter.IQFilter( xmpp.HXR.XMLNS, xmpp.IQType.get )], handleIQ, true );
+		c = stream.collect( [new xmpp.filter.IQFilter( xmpp.HXR.XMLNS, xmpp.IQType.get )], handleIQ, true );
 		numActive++;
 	}
 	

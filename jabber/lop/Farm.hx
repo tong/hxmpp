@@ -73,7 +73,7 @@ class Farm {
 		
 		//open_connection = listen_for_connection = accept_connection = perform_multicast = false;
 		species = new Hash();
-		stream.collect( [ cast new xmpp.filter.IQFilter(xmpp.LOP.XMLNS,null) ], handleIQ, true );
+		stream.collect( [ new xmpp.filter.IQFilter(xmpp.LOP.XMLNS,null) ], handleIQ, true );
 	}
 	
 	/**

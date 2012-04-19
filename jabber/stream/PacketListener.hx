@@ -38,7 +38,7 @@ class PacketListener<T:xmpp.Packet> {
 	function new( stream : jabber.Stream, handler : T->Void, packetType : xmpp.PacketType, listen : Bool ) {
 		this.stream = stream;
 		this.onPacket = handler;
-		collector = new PacketCollector( [cast new xmpp.filter.PacketTypeFilter(packetType)], handlePacket, true );
+		collector = new PacketCollector( [new xmpp.filter.PacketTypeFilter(packetType)], handlePacket, true );
 		setListening( listen );
 	}
 	

@@ -82,8 +82,8 @@ class Roster {
 		this.subscriptionMode = subscriptionMode != null ? subscriptionMode : defaultSubscriptionMode;
 		available = false;
 		items = new Array();
-		c_presence = stream.collect( [cast new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence )], handlePresence, true );
-		c_message = stream.collect( [cast new xmpp.filter.IQFilter( xmpp.Roster.XMLNS )], handleIQ, true );
+		c_presence = stream.collect( [new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence )], handlePresence, true );
+		c_message = stream.collect( [new xmpp.filter.IQFilter( xmpp.Roster.XMLNS )], handleIQ, true );
 	}
 	
 	function getGroups() : Array<String> {

@@ -53,9 +53,9 @@ class ServiceDiscoveryListener {
 		this.stream = stream;
 		this.identities = ( identities == null ) ? [defaultIdentity] : identities;
 		
-		stream.collect( [cast new IQFilter( xmpp.disco.Info.XMLNS, xmpp.IQType.get )], handleInfoQuery, true );
+		stream.collect( [new IQFilter( xmpp.disco.Info.XMLNS, xmpp.IQType.get )], handleInfoQuery, true );
 		#if JABBER_COMPONENT
-		stream.collect( [cast new IQFilter( xmpp.disco.Items.XMLNS, xmpp.IQType.get )], handleItemsQuery, true );
+		stream.collect( [new IQFilter( xmpp.disco.Items.XMLNS, xmpp.IQType.get )], handleItemsQuery, true );
 		#end
 	}
 	

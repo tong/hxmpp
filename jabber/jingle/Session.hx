@@ -137,8 +137,8 @@ class Session<T:Transport> {
 	}
 		
 	function addSessionCollector() {
-		collector = stream.collect( [ cast new xmpp.filter.PacketFromFilter( entity ),
-									  cast new xmpp.filter.JingleFilter( xmlns, sid ) ],
+		collector = stream.collect( [ new xmpp.filter.PacketFromFilter( entity ),
+									  new xmpp.filter.JingleFilter( xmlns, sid ) ],
 						 			handleSessionPacket, true );
 	}
 	

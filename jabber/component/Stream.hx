@@ -139,7 +139,7 @@ class Stream extends jabber.Stream {
 		status = jabber.stream.Status.open;
 		#if XMPP_DEBUG jabber.XMPPDebug.i( t ); #end
 		handleStreamOpen();
-		collect( [ cast new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], readyHandler, false );
+		collect( [new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], readyHandler, false );
 		sendData( XMLUtil.createElement( "handshake", Xml.createPCData( SHA1.encode( id+secret ) ).toString() ).toString() );
 		return true;
 	}

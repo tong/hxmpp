@@ -47,8 +47,8 @@ class EntityCapabilities {
 		this.identities = identities;
 		this.ext = ext;
 		cached = new Hash();
-		collector = stream.collect( [cast new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence ),
-						 			 cast new xmpp.filter.PacketPropertyFilter( xmpp.Caps.XMLNS, "c" )],
+		collector = stream.collect( [new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence ),
+						 			 new xmpp.filter.PacketPropertyFilter( xmpp.Caps.XMLNS, "c" )],
 									 handlePresence, true );
 		stream.addInterceptor( this );
 	}

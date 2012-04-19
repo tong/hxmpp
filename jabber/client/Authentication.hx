@@ -91,9 +91,9 @@ class Authentication extends AuthenticationBase {
 			#if JABBER_DEBUG trace( 'no supported SASL mechanism found', 'warn' ); #end
 			return false;
 		}
-		c_fail = stream.collect( [cast new PacketNameFilter( xmpp.SASL.EREG_FAILURE )], handleSASLFailed );
-		c_success = stream.collect( [cast new PacketNameFilter( ~/success/ )], handleSASLSuccess );
-		c_challenge = stream.collect( [cast new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
+		c_fail = stream.collect( [new PacketNameFilter( xmpp.SASL.EREG_FAILURE )], handleSASLFailed );
+		c_success = stream.collect( [new PacketNameFilter( ~/success/ )], handleSASLSuccess );
+		c_challenge = stream.collect( [new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
 		// init auth
 		var t = mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password, stream.jid.resource );
 		if( t != null ) t = Base64.encode( t );

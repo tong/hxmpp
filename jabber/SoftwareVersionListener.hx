@@ -46,7 +46,7 @@ class SoftwareVersionListener {
 		this.name = name;
 		this.version = version;
 		this.os = ( os != null ) ? os : SystemUtil.systemName();
-		c = stream.collect( [ cast new xmpp.filter.IQFilter( xmpp.SoftwareVersion.XMLNS, xmpp.IQType.get ) ], handleQuery, true);
+		c = stream.collect( [new xmpp.filter.IQFilter( xmpp.SoftwareVersion.XMLNS, xmpp.IQType.get )], handleQuery, true);
 	}
 	
 	public function dispose() {

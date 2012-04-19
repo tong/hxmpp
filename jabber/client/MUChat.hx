@@ -88,9 +88,9 @@ class MUChat {
 		
 		// collect all presences and messages from the room
 		var f_from : xmpp.PacketFilter = new PacketFromContainsFilter( jid );
-		c_presence = new PacketCollector( [f_from, cast new PacketTypeFilter( PacketType.presence )], handlePresence, true );
-		c_message = new PacketCollector(  [f_from, cast new MessageFilter()], handleMessage, true );
-		//c_message = new PacketCollector(  [f_from, cast new MessageFilter( MessageType.groupchat )], handleMessage, true );
+		c_presence = new PacketCollector( [f_from, new PacketTypeFilter( PacketType.presence )], handlePresence, true );
+		c_message = new PacketCollector(  [f_from, new MessageFilter()], handleMessage, true );
+		//c_message = new PacketCollector(  [f_from, new MessageFilter( MessageType.groupchat )], handleMessage, true );
 		
 		message = new xmpp.Message( jid, null, null, MessageType.groupchat, null );
 		joined = false;
