@@ -17,44 +17,25 @@
 */
 package jabber.sasl;
 
-import jabber.util.Base64;
-
 /**
 	Calculates the MD5 hash on a web server instead of locally.
 	This allows to create xmpp/web based clients without including the (hardcoded) account password in the source code.
 */
-class ExternalMD5Mechanism {
+class ExternalMD5Mechanism extends MD5Mechanism {
 	
-	public static inline var NAME = 'DIGEST-MD5';
-	
-	public var id(default,null) : String;
-	public var serverType : String;
+	public static inline var NAME = MD5Mechanism.NAME;
 	
 	/**
 	 * The base URL of the challenge response calculator
 	 */
 	public var passwordStoreURL : String;
 	
-	var username : String;
-	var host : String;
-	var pass : String;
-	var resource : String;
-	
 	public function new( passwordStoreURL : String, serverType : String = "xmpp" ) {
-		this.id = NAME;
+		super( serverType );
 		this.passwordStoreURL = passwordStoreURL;
-		this.serverType = serverType;
 	}
 	
-	@:keep public function createAuthenticationText( username : String, host : String, pass : String, resource : String ) : String {
-		this.username = username;
-		this.host = host;
-		this.pass = pass;
-		this.resource = resource;
-		return null;
-	}
-	
-	public function createChallengeResponse( challenge : String ) : String {
+	public override function createChallengeResponse( challenge : String ) : String {
 		var c = MD5Calculator.parseChallenge( challenge );
 		return haxe.Http.requestUrl( passwordStoreURL+"?host="+host+"&servertype="+serverType+"&username="+username+"&realm="+c.realm+"&nonce="+c.nonce );
 	}
