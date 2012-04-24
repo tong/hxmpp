@@ -43,7 +43,7 @@ class MD5Calculator {
 	}
 	
 	/**
-	 * Caluclate the MD5 challenge response
+	 * Caluclate/Create the MD5 challenge response
 	 */
 	public static function run(
 		host : String,

@@ -39,26 +39,27 @@ class MD5 {
 		
 		#elseif cpp
 			//TODO
-			#if hxssl
-			return sys.crypt.MD5.encode( s, raw );
-			#else
+			//#if hxssl
+			//return sys.crypt.MD5.encode( s, raw );
+			//#else
 			return raw ? new MD5().doEncodeRaw(s) : new MD5().doEncode(s);
-			#end
+			//#end
 			
 		#else
-		return raw ? new MD5().doEncodeRaw(s) : new MD5().doEncode(s);
+		return raw ? inst.doEncodeRaw(s) : inst.doEncode(s);
 		
 		#end
 	}
-	
+
 	#if neko
 	static var base_encode = neko.Lib.load( "std", "base_encode", 2 );
 	static var make_md5 = neko.Lib.load( "std", "make_md5", 1 );
-	#end
-	//#elseif php
-	//#else
 	
-	#if (cpp||flash||java||cs||(js&&!nodejs))
+	#elseif (php||nodejs)
+	#else
+	//#if (cpp||flash||java||cs||(js&&!nodejs))
+	
+	static var inst = new MD5();
 	
 	function new() {}
 	
