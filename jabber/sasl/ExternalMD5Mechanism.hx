@@ -19,7 +19,9 @@ package jabber.sasl;
 
 /**
 	Calculates the MD5 hash on a web server instead of locally.
-	This allows to create xmpp/web based clients without including the (hardcoded) account password in the source code.
+	This allows to create xmpp (web based) clients without including the (hardcoded) account password in the source code.
+	
+	Example of a remote calculator: https://gist.github.com/2464432
 */
 class ExternalMD5Mechanism extends MD5Mechanism {
 	

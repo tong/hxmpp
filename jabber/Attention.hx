@@ -24,6 +24,7 @@ package jabber;
 class Attention {
 	
 	/**
+		Sends a message packet to the given entity inluding a property to get attention
 	*/
 	public static function capture( stream : Stream, jid : String, message : String ) {
 		var m = new xmpp.Message( jid, message );

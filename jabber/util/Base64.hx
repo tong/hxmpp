@@ -12,7 +12,7 @@ class Base64 {
 	
 	public static var CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	
-	#if (cpp||flash||js||neko||jvm)
+	#if (cpp||flash||js||neko||java||cs)
 
 	static var bc = new haxe.BaseCode( Bytes.ofString( CHARS ) );
 	

@@ -58,7 +58,7 @@ class MD5 {
 	//#elseif php
 	//#else
 	
-	#if (cpp||flash||jvm||cs||(js&&!nodejs))
+	#if (cpp||flash||java||cs||(js&&!nodejs))
 	
 	function new() {}
 	

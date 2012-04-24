@@ -19,9 +19,9 @@ package jabber;
 
 import haxe.io.Bytes;
 
-#if (neko||php||cpp||rhino)
+#if (neko||php||cpp||java||cs||rhino)
 
-#if (neko||php||cpp)
+#if (neko||php||cpp||java||cs)
 import sys.net.Host;
 import sys.net.Socket;
 #elseif rhino
