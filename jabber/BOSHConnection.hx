@@ -27,30 +27,34 @@ import flash.events.SecurityErrorEvent;
 #end
 	
 /**
-	<a href="http://xmpp.org/extensions/xep-0124.html">Bidirectional-streams Over Synchronous HTTP (BOSH)</a><br/>
-	<a href="http://xmpp.org/extensions/xep-0206.html">XMPP Over BOSH</a>
-	<p>
 	Emulates the semantics of a long-lived, bidirectional TCP connection
 	by efficiently using multiple synchronous HTTP request/response pairs
 	without requiring the use of frequent polling or chunked responses.
-	</p>
+	
+	<a href="http://xmpp.org/extensions/xep-0124.html">Bidirectional-streams Over Synchronous HTTP (BOSH)</a>
+	<a href="http://xmpp.org/extensions/xep-0206.html">XMPP Over BOSH</a>
 */
 class BOSHConnection extends jabber.stream.Connection {
 	
 	static inline var INTERVAL = 0;
 	
 	static inline var BOSH_VERSION = "1.6";
+	
 	static var XMLNS = "http://jabber.org/protocol/httpbind";
 	static var XMLNS_XMPP = "urn:xmpp:xbosh";
 	
-	/** BOSH path */
+	/** BOSH/HTTP path */
 	public var path(default,null) : String;
+	
 	/** Maximum number of requests the connection manager is allowed to keep waiting at any one time during the session. */
 	public var hold(default,null) : Int;
+	
 	/** Longest time (in seconds) that the connection manager is allowed to wait before responding to any request during the session. */
 	public var wait(default,null) : Int;
+	
 	/** BOSH session id */
 	public var sid(default,null) : String;
+	
 	/** */
 	public var maxConcurrentRequests(default,null) : Int;
 	
@@ -67,21 +71,20 @@ class BOSHConnection extends jabber.stream.Connection {
 	var maxPause : Int;
 	var timeoutTimer : Timer;
 	var timeoutOffset : Int;
+	//var requests : Array<Http>;
 	
 	#if BOSH_HTTP_WEBWORKER
-	var worker_http : Dynamic; // = Type.createInstance( untyped Worker, ["../../hxmpp/util/worker_bosh_http.js"] );
+	var worker_http : Dynamic; // TODO = Type.createInstance( untyped Worker, ["../../hxmpp/util/worker_bosh_http.js"] );
 	#end
 
 	/**
-		A new connection to a HTTP gateway of a jabber server.<br/>
+		A new connection to a HTTP gateway of a jabber server.
 		The default wait time for responses is 30 seconds.
 	*/
 	public function new( host : String, path : String,
-						 hold : Int = 1,
-						 wait : Int = 30,
-						 secure : Bool = false,
-						 maxConcurrentRequests : Int = 2,
-						 timeoutOffset = 25 ) {
+						 hold : Int = 1, wait : Int = 30, secure : Bool = false,
+						 maxConcurrentRequests : Int = 2, timeoutOffset = 25 ) {
+		
 		super( host, false, true );
 		this.path = path;
 		this.hold = hold;
@@ -89,14 +92,15 @@ class BOSHConnection extends jabber.stream.Connection {
 		this.secure = secure;
 		this.maxConcurrentRequests = maxConcurrentRequests;
 		this.timeoutOffset = timeoutOffset;
+		
 		initialized = pauseEnabled = false;
 		pollingEnabled = true;
+		
 		#if BOSH_HTTP_WEBWORKER
 		worker_http = Type.createInstance( untyped Worker, ["../../hxmpp/util/worker_bosh_http.js"] );
 		worker_http.onmessage = function(e) {
-			var d = e.data;
-			if( StringTools.startsWith( d, "Http Error #" ) )
-				handleHTTPError( d );
+			if( StringTools.startsWith( e.data, "Http Error #" ) )
+				handleHTTPError( e.data );
 			else
 				handleHTTPData( e.data );
 		}
@@ -152,18 +156,35 @@ class BOSHConnection extends jabber.stream.Connection {
 			sendRequests( r );
 			cleanup();
 			//__onDisconnect(null);
+			//TODO abot pending http requests
 		}
 	}
 	
+	/**
+		Attach to an already created BOSH session.
+		Experrimental!
+	*/
+	public function attach( sid : String, rid : Int, wait : Int, hold : Int ) {
+		this.sid = sid;
+		this.rid = rid;
+		this.wait = wait;
+		this.hold = hold;
+		initialized = true;
+		requestCount = 0;
+		requestQueue = new Array();
+		responseQueue = new Array();
+		connected = true;
+		__onConnect();
+		//restart();
+	}
+	
+	
 	public override function write( t : String ) : Bool {
 		return sendQueuedRequests( t );
-		//sendQueuedRequests( t );
-		//return true;
 	}
 	
 	/**
-		Set the value of the 'secs' attribute to null to force the connection manager
-		to return all the requests it is holding.
+		Set the value of the 'secs' attribute to null to force the connection manager to return all the requests it is holding.
 	*/
 	public function pause( secs : Null<Int> ) : Bool {
 		#if JABBER_DEBUG
@@ -184,17 +205,17 @@ class BOSHConnection extends jabber.stream.Connection {
 	
 	function restart() {
 		var r = createRequest();
-#if flash // haXe 2.06 fuckup
+		#if flash // haXe 2.06 fuckup
 		r.set( '_xmlns_', XMLNS );
 		r.set( "xmpp_restart", "true" );
 		r.set( "xmlns_xmpp", XMLNS_XMPP );
 		r.set( "xml_lang", "en" );
-#else
+		#else
 		r.set( 'xmlns', XMLNS );
 		r.set( "xmpp:restart", "true" );
 		r.set( "xmlns:xmpp", XMLNS_XMPP );
 		r.set( "xml:lang", "en" );
-#end
+		#end
 		r.set( "to", host );
 		#if XMPP_DEBUG XMPPDebug.o( r.toString() ); #end
 		sendRequests( r );
@@ -243,30 +264,31 @@ class BOSHConnection extends jabber.stream.Connection {
 	function createHTTPRequest( data : String ) {
 		
 		#if js
-		#if BOSH_HTTP_WEBWORKER
-		worker_http.postMessage( untyped JSON.stringify( { url : getHTTPPath(), data : data } ) );
-		#else
-		var r = new js.XMLHttpRequest();
-		r.open( "POST", getHTTPPath(), true );
-		r.onreadystatechange = function(){
-			if( r.readyState != 4 )
-				return;
-			var s = r.status;
-			if( s != null && s >= 200 && s < 400 )
-				handleHTTPData( r.responseText );
-			else
-				handleHTTPError( "Http Error #"+r.status );
-		}
-		r.send( data );
-		/*
-		var r = new haxe.Http( getHTTPPath() );
-		//r.setHeader( "Accept-Encoding", "gzip" );
-		//r.onStatus = handleHTTPStatus;
-		r.onError = handleHTTPError;
-		r.onData = handleHTTPData;
-		r.setPostData( data );
-		r.request( true );
-		*/
+			#if BOSH_HTTP_WEBWORKER
+			worker_http.postMessage( untyped JSON.stringify( { url : getHTTPPath(), data : data } ) );
+			
+			#else
+			var r = new js.XMLHttpRequest();
+			r.open( "POST", getHTTPPath(), true );
+			r.onreadystatechange = function(){
+				if( r.readyState != 4 )
+					return;
+				var s = r.status;
+				if( s != null && s >= 200 && s < 400 )
+					handleHTTPData( r.responseText );
+				else
+					handleHTTPError( "Http Error #"+r.status );
+			}
+			r.send( data );
+			/*
+			var r = new haxe.Http( getHTTPPath() );
+			//r.setHeader( "Accept-Encoding", "gzip" );
+			//r.onStatus = handleHTTPStatus;
+			r.onError = handleHTTPError;
+			r.onData = handleHTTPData;
+			r.setPostData( data );
+			r.request( true );
+			*/
 		#end
 		
 		#elseif flash
@@ -274,7 +296,7 @@ class BOSHConnection extends jabber.stream.Connection {
 		r.method = flash.net.URLRequestMethod.POST;
 		r.contentType = "text/xml";
 		r.requestHeaders.push( new flash.net.URLRequestHeader( "Accept", "text/xml" ) );
-		// haXe 2.06 HACK
+		// TODO haXe 2.06 HACK
 		var s = data;
 		s = StringTools.replace( s, "_xmlns_", "xmlns" );
 		s = StringTools.replace( s, "xml_lang", "xml:lang" );
@@ -291,12 +313,14 @@ class BOSHConnection extends jabber.stream.Connection {
 		l.load( r );
 		
 		#else
-		//TODO
 		var r = new haxe.Http( getHTTPPath() );
+		r.setHeader( 'Content-type', 'text/xml' );
+		r.setHeader( 'Accept', 'text/xml' );
+		r.setHeader( 'Content-Length', Std.string( data.length ) );
 		//r.onStatus = handleHTTPStatus;
 		r.onError = handleHTTPError;
 		r.onData = handleHTTPData;
-		r.setPostData( t.toString() );
+		r.setPostData( data );
 		r.request( true );
 		return true;
 		
@@ -322,6 +346,9 @@ class BOSHConnection extends jabber.stream.Connection {
 	}
 	
 	function handleHTTPData( t : String ) {
+		
+		//trace(t);
+		
 		var x : Xml = null;
 		try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
 			#if JABBER_DEBUG trace( 'invalid XML:\n'+t, 'warn' ); #end
@@ -411,7 +438,7 @@ class BOSHConnection extends jabber.stream.Connection {
 	
 	function resetResponseProcessor() {
 		if( responseQueue != null && responseQueue.length > 0 ) {
-			responseTimer.stop();
+			if( responseTimer != null ) responseTimer.stop();
 			responseTimer = new Timer( INTERVAL );
 			responseTimer.run = processResponse;
 		}
@@ -454,8 +481,8 @@ class BOSHConnection extends jabber.stream.Connection {
 	}
 	
 	function cleanup() {
-		timeoutTimer.stop();
-		responseTimer.stop();
+		if( timeoutTimer != null ) timeoutTimer.stop();
+		if( responseTimer != null ) responseTimer.stop();
 		connected = initialized = false;
 		sid = null;
 		requestCount = 0;
