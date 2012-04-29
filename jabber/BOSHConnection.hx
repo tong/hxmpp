@@ -76,8 +76,11 @@ class BOSHConnection extends jabber.stream.Connection {
 	//var requests : Array<Http>;
 	
 	#if BOSH_HTTP_WEBWORKER
-	var worker_http : Dynamic; // TODO = Type.createInstance( untyped Worker, ["../../hxmpp/util/worker_bosh_http.js"] );
+	public var worker_url : String;
+	var worker_http : Dynamic;
 	#end
+
+	var attached : Bool;
 
 	/**
 		A new connection to a HTTP gateway of a jabber server.
@@ -98,51 +101,64 @@ class BOSHConnection extends jabber.stream.Connection {
 		initialized = pauseEnabled = false;
 		pollingEnabled = true;
 		
-		#if BOSH_HTTP_WEBWORKER
-		worker_http = Type.createInstance( untyped Worker, ["../../hxmpp/util/worker_bosh_http.js"] );
-		worker_http.onmessage = function(e) {
-			if( StringTools.startsWith( e.data, "Http Error #" ) )
-				handleHTTPError( e.data );
-			else
-				handleHTTPData( e.data );
-		}
-		#end
+		attached = false;
 	}
 	
 	public override function connect() {
 		if( initialized && connected ) {
 			restart();
 		} else {
+			
+			#if BOSH_HTTP_WEBWORKER
+			var url = ( worker_url == null ) ? "worker_bosh_http.js" : worker_url;
+			try worker_http = Type.createInstance( untyped Worker, [url] ) catch( e : Dynamic ) {
+				#if JABBER_DEBUG
+				trace( e, 'error' );
+				#end
+			}
+			if( worker_http != null ) {
+				worker_http.onmessage = function(e) {
+					if( StringTools.startsWith( e.data, "Http Error #" ) )
+						handleHTTPError( e.data );
+					else
+						handleHTTPData( e.data );
+				}
+			}
+			#end
+			
 			initialized = true;
 			rid = Std.int( Math.random()*10000000 );
 			requestCount = 0;
 			requestQueue = new Array();
 			responseQueue = new Array();
 			responseTimer = new Timer( INTERVAL );
+			
 			var b = Xml.createElement( "body" );
-#if flash //flash 2.06 fukup hack
+			#if flash //flash 2.06 fukup hack
 			b.set( '_xmlns_', XMLNS );
 			b.set( 'xml_lang', 'en' );
 			b.set( 'xmlns_xmpp', XMLNS_XMPP );
 			b.set( 'xmpp_version', '1.0' );
-#else
+			#else
 			b.set( 'xmlns', XMLNS );
 			b.set( 'xml:lang', 'en' );
 			b.set( 'xmlns:xmpp', XMLNS_XMPP );
 			b.set( 'xmpp:version', '1.0' );
-#end
+			#end
 			b.set( 'ver', BOSH_VERSION );
 			b.set( 'hold', Std.string( hold ) );
 			b.set( 'rid', Std.string( rid ) );
 			b.set( 'wait', Std.string( wait ) );
 			b.set( 'to', host );
 			b.set( 'secure', Std.string( secure ) );
+			
 			#if XMPP_DEBUG
 			XMPPDebug.o( b.toString() );
 			#end
+			
 			sendRequests( b );
 			/*
-			#if (neko||php||cpp)
+			#if sys
 			while( connected ) readData();
 			#end
 			*/
@@ -166,6 +182,7 @@ class BOSHConnection extends jabber.stream.Connection {
 		Attach to an already created BOSH session.
 		Experrimental!
 	*/
+	/*
 	public function attach( sid : String, rid : Int, wait : Int, hold : Int ) {
 		this.sid = sid;
 		this.rid = rid;
@@ -175,11 +192,13 @@ class BOSHConnection extends jabber.stream.Connection {
 		requestCount = 0;
 		requestQueue = new Array();
 		responseQueue = new Array();
+	//	responseTimer = new Timer( INTERVAL );
 		connected = true;
-		__onConnect();
+		//__onConnect();
+		//attached = true;
 		//restart();
 	}
-	
+	*/
 	
 	public override function write( t : String ) : Bool {
 		return sendQueuedRequests( t );
@@ -206,6 +225,8 @@ class BOSHConnection extends jabber.stream.Connection {
 	}
 	
 	function restart() {
+		//if( attached )
+		//	return;
 		var r = createRequest();
 		#if flash // haXe 2.06 fuckup
 		r.set( '_xmlns_', XMLNS );
@@ -369,7 +390,8 @@ class BOSHConnection extends jabber.stream.Connection {
 			case "terminate" :
 				cleanup();
 				#if JABBER_DEBUG trace( "BOSH stream terminated by server", "warn" ); #end
-				__onDisconnect(null);
+				trace(x);
+				__onDisconnect( x.get('condition') );
 				return;
 			case "error" :
 				trace("TODO");
@@ -446,7 +468,7 @@ class BOSHConnection extends jabber.stream.Connection {
 		}
 	}
 	
-	function poll() {
+	public function poll() {
 		if( !connected || !pollingEnabled || requestCount > 0 || sendQueuedRequests() )
 			return;
 		sendRequests( null, true );
@@ -473,7 +495,7 @@ class BOSHConnection extends jabber.stream.Connection {
 		#if neko
 		var b = new StringBuf();
 		b.add( "http" );
-		//if( secure ) b.add( "s" );
+		if( secure ) b.add( "s" );
 		b.add( "://" );
 		b.add( path );
 		return b.toString();
