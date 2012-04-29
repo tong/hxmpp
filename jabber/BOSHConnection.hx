@@ -56,10 +56,12 @@ class BOSHConnection extends jabber.stream.Connection {
 	public var sid(default,null) : String;
 	
 	/** */
+	public var rid(default,null) : Int;
+	
+	/** */
 	public var maxConcurrentRequests(default,null) : Int;
 	
 	var initialized : Bool;
-	var rid : Int;
 	var requestCount : Int;
 	var requestQueue : Array<String>;
 	var responseTimer : Timer;
