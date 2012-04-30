@@ -360,7 +360,7 @@ class MUChat {
 
 		var p = new xmpp.Presence( null, null, priority );
 		p.to = myjid;
-		p.properties.push( xmpp.X.create( xmpp.MUC.XMLNS ) );
+		p.properties.push( x );
 
 		return stream.sendPacket( p );
 	}
