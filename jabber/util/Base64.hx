@@ -42,15 +42,19 @@ class Base64 {
 	public static
 	//#if (nodejs||php) #end
 	function encode( s : String ) : String {
+		
 		#if nodejs
 		return new Buffer(s).toString( Node.BASE64 );
 		//return new Buffer( s, Node.BASE64 ).toString( Node.UTF8 );
+		
 		#elseif php
 		return untyped __call__( "base64_encode", s );
+		
 		#else
 			#if js
-	        //if( untyped window != null && untyped window.atob != null )
-	        //	return untyped window.atob( s );
+			if(  untyped window.btoa != null ) {
+				return untyped window.btoa( s );
+			}
 	        #end
 	        //TODO wtf
 	      	s = removeNullbits( s );
@@ -68,7 +72,15 @@ class Base64 {
 		#elseif php
 		return untyped __call__( "base64_decode", s );
 		#else
-		return bc.decodeString( removeNullbits(s) );
+			#if js
+			return if( untyped window.atob != null ) {
+				untyped window.atob( s );
+			} else {
+				bc.decodeString( removeNullbits(s) );
+			}
+			#else
+			return bc.decodeString( removeNullbits(s) );
+			#end
 		#end
 	}
 	
