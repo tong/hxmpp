@@ -25,7 +25,7 @@ import flash.events.IOErrorEvent;
 import flash.events.ProgressEvent;
 import flash.events.SecurityErrorEvent;
 #end
-	
+
 /**
 	Emulates the semantics of a long-lived, bidirectional TCP connection
 	by efficiently using multiple synchronous HTTP request/response pairs
@@ -178,28 +178,6 @@ class BOSHConnection extends jabber.stream.Connection {
 		}
 	}
 	
-	/**
-		Attach to an already created BOSH session.
-		Experrimental!
-	*/
-	/*
-	public function attach( sid : String, rid : Int, wait : Int, hold : Int ) {
-		this.sid = sid;
-		this.rid = rid;
-		this.wait = wait;
-		this.hold = hold;
-		initialized = true;
-		requestCount = 0;
-		requestQueue = new Array();
-		responseQueue = new Array();
-	//	responseTimer = new Timer( INTERVAL );
-		connected = true;
-		//__onConnect();
-		//attached = true;
-		//restart();
-	}
-	*/
-	
 	public override function write( t : String ) : Bool {
 		return sendQueuedRequests( t );
 	}
@@ -222,6 +200,26 @@ class BOSHConnection extends jabber.stream.Connection {
 		pauseTimer = new Timer( secs*1000 );
 		pauseTimer.run = handlePauseTimeout;
 		return true;
+	}
+	
+	/**
+		Attach to an already created BOSH session.
+		Experrimental!
+	*/
+	public function attach( sid : String, rid : Int, wait : Int, hold : Int ) {
+		this.sid = sid;
+		this.rid = rid;
+		this.wait = wait;
+		this.hold = hold;
+		initialized = true;
+		requestCount = 0;
+		requestQueue = new Array();
+		responseQueue = new Array();
+	//	responseTimer = new Timer( INTERVAL );
+		connected = true;
+		//__onConnect();
+		//attached = true;
+		//restart();
 	}
 	
 	function restart() {
@@ -286,12 +284,17 @@ class BOSHConnection extends jabber.stream.Connection {
 	
 	function createHTTPRequest( data : String ) {
 		
-		#if js
+		#if nodejs
+		//TODO
+		#if JABBER_DEBUG trace('BOSH not implementd for nodejs'); #end
+		
+		#elseif js
 			#if BOSH_HTTP_WEBWORKER
 			worker_http.postMessage( untyped JSON.stringify( { url : getHTTPPath(), data : data } ) );
 			
 			#else
 			var r = new js.XMLHttpRequest();
+			//r.withCredentials = true;
 			r.open( "POST", getHTTPPath(), true );
 			r.onreadystatechange = function(){
 				if( r.readyState != 4 )
@@ -303,16 +306,8 @@ class BOSHConnection extends jabber.stream.Connection {
 					handleHTTPError( "Http Error #"+r.status );
 			}
 			r.send( data );
-			/*
-			var r = new haxe.Http( getHTTPPath() );
-			//r.setHeader( "Accept-Encoding", "gzip" );
-			//r.onStatus = handleHTTPStatus;
-			r.onError = handleHTTPError;
-			r.onData = handleHTTPData;
-			r.setPostData( data );
-			r.request( true );
-			*/
-		#end
+			
+			#end
 		
 		#elseif flash
 		var r = new flash.net.URLRequest( getHTTPPath() );
@@ -370,11 +365,19 @@ class BOSHConnection extends jabber.stream.Connection {
 	
 	function handleHTTPData( t : String ) {
 		
-		//trace(t);
+		//trace("#"+t+"#");
+		if( t == null ) {
+			#if JABBER_DEBUG trace("Empty bosh response", "warning" ); #end
+			return;
+		}
 		
 		var x : Xml = null;
 		try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
 			#if JABBER_DEBUG trace( 'invalid XML:\n'+t, 'warn' ); #end
+			return;
+		}
+		if( x == null ) {
+			#if JABBER_DEBUG trace("Empty bosh response ("+t+")", "warning" ); #end
 			return;
 		}
 		if( x.get( 'xmlns' ) != XMLNS ) {
