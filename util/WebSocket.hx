@@ -34,12 +34,17 @@ extern class WebSocket {
 	dynamic function onerror() : Void;
 	
 	var url(default,never) : String;
+	var extensions(default,never) : String;
 	var protocol(default,never) : String;
+	var binaryType : String;
 	
 	function new( url : String, ?protocol : Dynamic ) : Void;
 	
+	@:overload(function( data : Blob ):Void{})
+	@:overload(function( data : ArrayBuffer ):Void{})
 	function send( data : String ) : Bool;
-	function close() : Void;
+	
+	function close( ?code : Int, ?reason : String ) : Void;
 }
 
 
