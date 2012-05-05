@@ -33,11 +33,13 @@ package jabber.jingle.io;
 		connection.processSignalingMessage( sdp );
 	}
 	
+	/*
 	override function signalingCallback( s : String ) {
 		sdp = s;
+		//trace(sdp);
 		__onConnect();
-		
 	}
+	*/
 	
 	override function onRemoteStreamAdded(e) {
 		stream = e.stream;

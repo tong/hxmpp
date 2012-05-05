@@ -55,21 +55,25 @@ class WebSocketConnection extends jabber.stream.Connection {
 	}
 	
 	public override function write( t : String ) : Bool {
-		socket.send( t );
+		//socket.send( t );
+		socket.send("abc");
 		return true;
 	}
 	
 	function onConnect() {
+		trace("onConnect");
 		connected = true;
 		__onConnect();
 	}
 	
 	function onClose() {
+		trace("onClose");
 		connected = false;
 		__onDisconnect(null);
 	}
 	
 	function onError() {
+		trace("onError");
 		connected = false;
 		__onDisconnect( "websocket error" ); // no error message?
 	}

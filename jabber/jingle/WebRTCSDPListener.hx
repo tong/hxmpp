@@ -20,7 +20,9 @@ package jabber.jingle;
 import jabber.jingle.io.WebRTCSDPInput;
 
 /**
-	Experimental! Subject to change!
+	Experimental!
+	This implementation does NOT parse the jingle packet but attaches the transmitted SDP information directly to processSignalingMessage method of the peerconnection.
+	
 	http://community.igniterealtime.org/docs/DOC-2273
 */
 class WebRTCSDPListener extends SessionListener<WebRTCSDPInput,WebRTCSDPResponder> {

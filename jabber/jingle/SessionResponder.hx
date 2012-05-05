@@ -33,11 +33,19 @@ class SessionResponder<T:Transport> extends Session<T> {
 		Handle initial jingle request packet
 	*/
 	public function handleRequest( iq : IQ ) : Bool {
+		
+		trace('handleRequest');
+		
 		var j = xmpp.Jingle.parse( iq.x.toXml() );
-		if( j.action != xmpp.jingle.Action.session_initiate )
+		if( j.action != xmpp.jingle.Action.session_initiate ) {
+			
 			return false;
+		}
 		var content = j.content[0];
 		candidates = new Array();
+		
+		trace('>>>>>>>>>>>>>>');
+		
 		for( e in content.other ) {
 			switch( e.nodeName ) {
 			case "description" :
@@ -51,7 +59,10 @@ class SessionResponder<T:Transport> extends Session<T> {
 				}
 			}
 		}
-		//TODO webrtc has no candidates
+		
+		trace('>>>>>>>>>>>>>>2');
+		
+		//TODO webrtc-sdp has no candidates
 		if( candidates.length == 0 ) {
 			trace("NO TRANSPORT CANDIDATES!");
 		/*
@@ -65,6 +76,8 @@ class SessionResponder<T:Transport> extends Session<T> {
 		initiator = j.initiator;
 		sid = j.sid;
 		contentName = content.name;
+		
+		trace('>>>>>>>>>>>>>>3');
 		
 		addSessionCollector(); // collect session packets
 		

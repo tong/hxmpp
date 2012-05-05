@@ -24,20 +24,19 @@ import xmpp.IQType;
 import xmpp.filter.PacketNameFilter;
 
 /**
-	SASL authentication.
+	SASL client authentication.
 
 	Responsible for:
-	<ol>
-		<li>Authenticating a client account using SASL</li>
-		<li>Binding the resource to the connection</li>
-		<li>Establishing a session with the server</li>
-	</ol>
-	<a href="http://xmpp.org/rfcs/rfc3920.html#sasl">RFC3920-SASL</a><br/>
-	<a href="http://xmpp.org/rfcs/rfc3920.html#bind">RFC3920-BIND</a><br/>
+		* Authenticating a client account using SASL
+		* Binding the resource to the connection
+		* Establishing a session with the server
+
+	<a href="http://xmpp.org/rfcs/rfc3920.html#sasl">RFC3920-SASL</a>
+	<a href="http://xmpp.org/rfcs/rfc3920.html#bind">RFC3920-BIND</a>
 */
 class Authentication extends AuthenticationBase {
 	
-	/** */
+	/** Callback for SASL negotiation complete */
 	public dynamic function onNegotiated() {}
 	
 	/** Clients SASL mechanisms (in prefered order) */
@@ -54,6 +53,8 @@ class Authentication extends AuthenticationBase {
 	var c_fail : PacketCollector;
 	var c_success : PacketCollector;
 	
+	/**
+	*/
 	public function new( stream : Stream, mechanisms : Iterable<jabber.sasl.Mechanism> ) {
 		super( stream );
 		var x = stream.server.features.get( "mechanisms" );
@@ -68,8 +69,8 @@ class Authentication extends AuthenticationBase {
 	}
 	
 	/**
-		Inits SASL authentication.<br/>
-		Returns false if no supported SASL mechanism was offered by the server.
+		Inits SASL authentication.
+		Returns false if no supported SASL mechanism got offered by the server.
 	*/
 	public override function start( password : String, ?resource : String ) : Bool {
 		this.resource = resource;
@@ -118,12 +119,11 @@ class Authentication extends AuthenticationBase {
 //		stream.cnx.reset(); // clear connection buffer
 		removeSASLCollectors(); // remove the collectors
 		onStreamOpenHandler = stream.onOpen; // relay the stream open event
-		stream.onOpen = handleStreamOpen;
+		stream.onOpen = handleStreamOpen; // relay the stream open event
 		onNegotiated();
 		//stream.version = false;
 		//stream.cnx.reset();
 		stream.open( null ); // re-open XMPP stream
-		//return p.toString().length;
 	}
 	
 	function handleStreamOpen() {
@@ -154,7 +154,7 @@ class Authentication extends AuthenticationBase {
 				onSuccess();
 			}
 		case error :
-			trace(iq.errors);
+			//trace(iq.errors);
 			onFail( iq.errors[0].condition ); // TODO condition ?
 //			onFail( new jabber.XMPPError( iq ) );
 		default : //
@@ -163,10 +163,9 @@ class Authentication extends AuthenticationBase {
 	
 	function handleSession( iq : IQ ) {
 		switch( iq.type ) {
-		case result :
-			onSuccess();
+		case result : onSuccess();
 		case error :
-			trace(iq.errors);
+			//trace(iq.errors);
 			onFail( iq.errors[0].condition ); // TODO condition ?
 //			onFail( new jabber.XMPPError( iq ) );
 		default : //#
@@ -181,4 +180,5 @@ class Authentication extends AuthenticationBase {
 		stream.removeCollector( c_success );
 		c_success = null;
 	}
+	
 }

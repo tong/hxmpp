@@ -48,6 +48,7 @@ XEPS SUPPORTED
 USAGE
 -----
 See: http://github.com/tong/hxmpp.examples
+Tip: Prefer to use git instead of haxelib version (!)
 
 
 COMPILER FLAGS

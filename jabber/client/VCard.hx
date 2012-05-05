@@ -19,6 +19,8 @@ package jabber.client;
 
 /**
 	VCard4
+	
+	http://xmpp.org/extensions/xep-0292.html
 */
 class VCard extends VCardBase<xmpp.VCard> {
 	

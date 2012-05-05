@@ -18,12 +18,24 @@
 package jabber.jingle.io;
 
 /**
+	Abstract
 */
 @:require(js) class WebRTCSDPTransport extends Transport {
 	
+	/***/
+	public var stun_url(default,null) : String;
+	
+	/** The transmitted SDP (Session description protocol) string */
 	public var sdp(default,null) : String;
+	
+	/** PeerConnection */
 	public var connection(default,null) : PeerConnection;
-
+	
+	function new( stun_url : String = "STUN stun.l.google.com:19302" ) {
+		super();
+		this.stun_url = stun_url;
+	}
+	
 	public override function toXml() : Xml {
 		var x = xmpp.XMLUtil.createElement( "webrtc", sdp );
 		x.set( "xmlns", xmpp.Jingle.XMLNS_WEBRTC );
@@ -31,7 +43,8 @@ package jabber.jingle.io;
 	}
 	
 	override function connect() {
-		connection = new PeerConnection( "STUN stun.l.google.com:19302", signalingCallback );
+		trace("CCCCCCCCCCCCCC.....CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
+		connection = new PeerConnection( stun_url, signalingCallback );
 		connection.onconnecting = onSessionConnecting;
     	connection.onopen = onSessionOpened;
     	connection.onaddstream = onRemoteStreamAdded;
@@ -39,6 +52,10 @@ package jabber.jingle.io;
 	}
 	
 	function signalingCallback( s : String ) {
+		//trace("signalingCallback");
+		sdp = s;
+		//trace( sdp );
+		__onConnect();
 	}
 	
 	function onSessionConnecting() {

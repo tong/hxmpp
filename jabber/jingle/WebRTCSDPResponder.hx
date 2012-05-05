@@ -22,10 +22,11 @@ import jabber.jingle.io.WebRTCSDPInput;
 //private enum State {}
 
 /**
-	Experimental! Subject to change!
+	Experimental!
+	Responder for incoming jingle/webrtc session requests.
+	This implementation does NOT parse the jingle packet but attaches the transmitted SDP information directly to the processSignalingMessage method of the peerconnection.
+	
 	http://community.igniterealtime.org/docs/DOC-2273
-
-	Responder for incoming jingle/webrtc session requests
 */
 class WebRTCSDPResponder extends SessionResponder<WebRTCSDPInput> {
 	
@@ -33,13 +34,13 @@ class WebRTCSDPResponder extends SessionResponder<WebRTCSDPInput> {
 		super( stream, xmpp.Jingle.XMLNS_WEBRTC );
 	}
 	
-	/*
+	
 	override function addTransportCandidate( x : Xml ) {
 		trace("addTransportCandidateaddTransportCandidateaddTransportCandidateaddTransportCandidateaddTransportCandidateaddTransportCandidateaddTransportCandidate");
 		trace(x);
 		//candidates.push( WebRTCInput.ofCandidate( x ) );
 	}
-	*/
+	
 	
 	override function handleSessionInfo( x : Array<Xml> ) {
 		//trace("---------handleSessionInfo-------");

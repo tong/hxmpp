@@ -31,9 +31,8 @@ package jabber.jingle.io;
 	}
 	*/
 	
-	override function signalingCallback(s:String) {
-		// TODO parse SDP (?)
 		/*
+	override function signalingCallback( s : String ) {
 		SDP
 {
    "messageType" : "OFFER",
@@ -42,9 +41,9 @@ package jabber.jingle.io;
    "seq" : 1,
    "tieBreaker" : 3156754776
 }
-		*/
 		sdp = s;
 		__onConnect();
 	}
+		*/
 	
 }

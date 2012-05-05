@@ -21,10 +21,11 @@ import jabber.jingle.io.WebRTCSDPOutput;
 import xmpp.IQ;
 
 /**
-	Experimental! Subject to change!
-	http://community.igniterealtime.org/docs/DOC-2273
-	
+	Experimental!
 	WebRTC SDP jingle session initiator.
+	This implementation does NOT parse the jingle packet but attaches the transmitted SDP information directly to the processSignalingMessage method of the peerconnection.
+	
+	http://community.igniterealtime.org/docs/DOC-2273
 */
 class WebRTCSDPCall extends OutgoingSession<WebRTCSDPOutput> {
 	
@@ -36,15 +37,28 @@ class WebRTCSDPCall extends OutgoingSession<WebRTCSDPOutput> {
 	}
 	
 	public override function init() {
-		transport = transports[0];
+		trace("initinitinitinitinit");
+		transport = transports[0]; //TODO
+		//connectTransport();
 		super.init();
+		/*
+		//var _init = super.init;
+		transport.__onConnect = function(){
+			trace("TRANSOPORT CONNECTED");
+			_init();
+		}
+		transport.connect();
+		*/
 	}
 	
 	override function handleSessionInitResult() {
+		trace("handleSessionInitResult");
+		/*
 		transport.__onConnect = handleTransportConnect;
 		transport.__onFail = handleTransportFail;
 		transport.connect();
 		onPeerConnection( transport.connection );
+		*/
 	}
 	
 	override function handleSessionInfo( x : Array<Xml> ) {
@@ -63,10 +77,13 @@ class WebRTCSDPCall extends OutgoingSession<WebRTCSDPOutput> {
 		}
 	}
 	
+	
 	override function handleTransportConnect() {
-		var info = xmpp.XMLUtil.createElement( "webrtc", transport.sdp );
-		info.set( "xmlns", xmpp.Jingle.XMLNS_WEBRTC );
-		sendInfo( info );
+		trace('handleTransportConnect');
+		var x = xmpp.XMLUtil.createElement( "webrtc", transport.sdp );
+		x.set( "xmlns", xmpp.Jingle.XMLNS_WEBRTC );
+		sendInfo( x );
 	}
+	
 	
 }
