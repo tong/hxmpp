@@ -18,7 +18,8 @@
 package jabber.data;
 
 import haxe.io.Bytes;
-import jabber.data.io.ByteStreamInput;
+//import jabber.data.io.ByteStreamInput;
+import jabber.io.ByteStreamInput;
 import jabber.util.SHA1;
 import xmpp.IQ;
 
@@ -63,7 +64,7 @@ class ByteStreamReciever extends DataReciever {
 			if( range.length != null ) size = range.length;
 			else if( range.offset != null ) size -= range.offset;
 		}
-		input.connect( digest, size );
+		input.init( digest, size );
 	}
 	
 	function handleTransferConnect() {

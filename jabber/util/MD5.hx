@@ -28,6 +28,10 @@ class MD5 {
 		#if neko
 		var t = make_md5( untyped s.__s );
 		return untyped new String( raw ? t : base_encode( t, "0123456789abcdef".__s ) );
+		//var t = sys.MD5.encode(s);
+		//return t;
+		//return untyped new String( raw ? t : base_encode( t, "0123456789abcdef".__s ) );
+		//return sys.MD5.encode(s);
 		
 		#elseif nodejs
 		var h = js.Node.crypto.createHash( "md5" );
@@ -50,15 +54,13 @@ class MD5 {
 		
 		#end
 	}
-
+	
 	#if neko
 	static var base_encode = neko.Lib.load( "std", "base_encode", 2 );
 	static var make_md5 = neko.Lib.load( "std", "make_md5", 1 );
-	
 	#elseif (php||nodejs)
 	#else
-	//#if (cpp||flash||java||cs||(js&&!nodejs))
-	
+	 
 	static var inst = new MD5();
 	
 	function new() {}

@@ -22,7 +22,7 @@ import jabber.util.SHA1;
 using xmpp.XMLUtil;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0115.html">XEP-0085: Entity Capabilities</a><br/>
+	<a href="http://xmpp.org/extensions/xep-0115.html">XEP-0085: Entity Capabilities</a>
 */
 class Caps {
 	

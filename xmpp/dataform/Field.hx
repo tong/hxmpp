@@ -43,8 +43,8 @@ class Field {
 		if( variable != null ) x.set( "var", variable );
 		if( required ) x.addChild( Xml.createElement( "required" ) );
 		if( desc != null ) x.addChild( XMLUtil.createElement( "desc", desc ) );
-		for( value in values ) x.addChild( XMLUtil.createElement( "value", value ) );
-		for( option in options ) x.addChild( option.toXml() );
+		for( v in values ) x.addChild( XMLUtil.createElement( "value", v ) );
+		for( o in options ) x.addChild( o.toXml() );
 		return x;
 	}
 	

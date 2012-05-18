@@ -28,8 +28,10 @@ class DataTransfer {
 	public dynamic function onFail( info : String  ) {}
 	
 	public var stream(default,null) : jabber.Stream;
+	
 	/** The namespace of this transfer method */
 	public var xmlns(default,null) : String;
+	
 	/** JID of the recieving entity */
 	public var reciever(default,null) : String;
 	public var bufsize(default,null) : Int;
@@ -53,12 +55,13 @@ class DataTransfer {
 	}
 	
 	/*
-		//TODO
+	//TODO
 	public function abort() {
 	}
 	*/
 	
 	function handleTransportFail( info : String ) {
+		//transport.dispose();
 		onFail( info );
 	}
 

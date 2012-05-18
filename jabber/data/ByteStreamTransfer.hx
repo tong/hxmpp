@@ -19,19 +19,23 @@ package jabber.data;
 
 import jabber.util.Base64;
 import jabber.util.SHA1;
-import jabber.data.io.ByteStreamOutput;
+//import jabber.data.io.ByteStreamOutput;
+import jabber.io.ByteStreamOutput;
 import xmpp.IQ;
 import xmpp.IQType;
 import xmpp.file.ByteStreamHost;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a><br/>
 	Outgoing bytestream file transfer.
+	
+	<a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>
 */
 class ByteStreamTransfer extends DataTransfer {
 	
+	/** */
 	public static var defaultBufSize = 1<<12; // 4096
 	
+	/** */
 	public var hosts(default,null) : Array<ByteStreamHost>;
 	
 	var transports : Array<ByteStreamOutput>;
@@ -76,7 +80,9 @@ class ByteStreamTransfer extends DataTransfer {
 		switch( iq.type ) {
 		case result :
 			//onInit();
+			trace("SEND");
 			transport.send( input, file.size, bufsize );
+			//transport.send( input, bufsize );
 		case error :
 			var e = iq.errors[0];
 			onFail( e.condition );

@@ -17,7 +17,8 @@
 */
 package jabber.client;
 
-	//TODO required fields handling, x:data form handling
+//TODO required fields handling, x:data form handling
+	
 /**
 	<a href="http://www.xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a><br/>
 */

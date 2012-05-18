@@ -17,6 +17,7 @@
 */
 package jabber;
 
+import xmpp.XMLBeautify;
 #if neko
 import neko.Lib;
 #elseif php
@@ -30,17 +31,6 @@ import flash.external.ExternalInterface;
 #elseif rhino
 import js.Lib;
 #end
-import xmpp.XMLBeautify;
-
-/*
-#if js
-@:native("xmppsend")
-#end
-class XMPPSend {
-	public static function o() {
-	}
-}
-*/
 
 /**
 	Utility for debugging XMPP transfer.
@@ -117,7 +107,7 @@ class XMPPSend {
 		#end // XMPP_CONSOLE
 	}
 	
-	#if (neko||cpp||php||air||nodejs||rhino)
+	#if (sys||air||nodejs||rhino)
 	
 	public static var color_out = 36;
 	public static var color_inc = 33;

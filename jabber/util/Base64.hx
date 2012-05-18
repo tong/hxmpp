@@ -43,6 +43,10 @@ class Base64 {
 	//#if (nodejs||php) #end
 	function encode( s : String ) : String {
 		
+		//#if neko
+		//return sys.Base64.encode(s);
+		//#end
+		
 		#if nodejs
 		return new Buffer(s).toString( Node.BASE64 );
 		//return new Buffer( s, Node.BASE64 ).toString( Node.UTF8 );

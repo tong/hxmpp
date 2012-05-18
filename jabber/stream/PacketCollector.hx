@@ -76,47 +76,34 @@ private class FilterList {
 		clear();
 	}
 	
-	/**
-	*/
-	public function clear( ) {
+	public inline function clear( ) {
 		fid = new Array<PacketFilter>();
 		f = new Array<PacketFilter>();
 	}
 	
-	/**
-	*/
 	public inline function iterator() : Iterator<PacketFilter> {
 		return fid.concat( f ).iterator();
 	}
 	
-	/**
-	*/
 	public inline function addIDFilter( _f : PacketIDFilter ) {
 		fid.push( _f );
 	}
 	
-	/**
-	*/
 	public inline function addFilter( _f : PacketFilter ) {
 		f.push( _f );
 	}
 	
-	/**
-	*/
 	public inline function push( _f : PacketFilter ) {
 		( Std.is( _f, PacketIDFilter ) ) ? fid.push( _f ) : f.push( _f );
 	}
 	
-	/**
-	*/
 	public inline function unshift( _f : PacketFilter ) {
 		( Std.is( _f, PacketIDFilter ) ) ? fid.unshift( _f ) : f.unshift( _f );
 	}
 	
-	/**
-	*/
-	public function remove( _f : PacketFilter ) : Bool {
+	public inline function remove( _f : PacketFilter ) : Bool {
 		if( fid.remove( _f ) || f.remove( _f ) ) return true;
 		return false;
 	}
+	
 }
