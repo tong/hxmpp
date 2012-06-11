@@ -17,12 +17,11 @@
 */
 package jabber;
 
-// Legacy TLS socket connection (port 5223)
+#if (sys||rhino)
 
-#if (neko||php||cpp||rhino)
-import sys.net.Socket;
-import sys.net.Host;
-#if php
+#if neko
+import neko.tls.Socket;
+#elseif php
 import php.net.SslSocket;
 #end
 
@@ -38,7 +37,7 @@ class SecureSocketConnection extends jabber.stream.SocketConnectionBase {
 		socket = #if php new SslSocket(); #else new Socket(); #end
 		buf = haxe.io.Bytes.alloc( bufsize );
 		bufpos = 0;
-		try socket.connect( new Host( host ), port ) catch( e : Dynamic ) {
+		try socket.connect( new sys.net.Host( host ), port ) catch( e : Dynamic ) {
 			__onDisconnect( e );
 			return;
 		}

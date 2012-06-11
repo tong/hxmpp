@@ -19,10 +19,11 @@ package jabber.stream;
 
 import haxe.io.Bytes;
 
-#if (neko||cpp||php)
+#if sys
 import sys.net.Host;
 import sys.net.Socket;
 #end
+
 #if rhino
 import js.net.Host;
 import js.net.Socket;
@@ -30,14 +31,14 @@ import js.net.Socket;
 import js.Node;
 typedef Socket = Stream;
 #elseif flash
-#if TLS
-import tls.controller.SecureSocket;
-#else
-import flash.net.Socket;
-#end
+	#if TLS
+	import tls.controller.SecureSocket;
+	#else
+	import flash.net.Socket;
+	#end
 #end
 
-#if (neko||php||cpp)
+#if sys
 private typedef AbstractSocket = {
 	var input(default,null) : haxe.io.Input;
 	var output(default,null) : haxe.io.Output;
@@ -51,12 +52,13 @@ private typedef AbstractSocket = {
 #end
 
 
+
 #if droid
 
 import droid.net.Socket;
 
 /**
-	EXPERIMENTAL !!!
+	!!! EXPERIMENTAL !!!
 */
 class SocketConnectionBase extends jabber.stream.Connection {
 	
@@ -126,19 +128,15 @@ class SocketConnectionBase extends Connection {
 	public var timeout(default,null) : Int;
 	//public var timeout(default,setTimeout) : Int;
 	
-	#if (neko||php||cpp||rhino)
+	#if (sys||rhino)
 	public var socket(default,null) : AbstractSocket;
 	public var reading(default,null) : Bool;
-	
 	#elseif nodejs
 //	public var socket(default,null) : Socket;
-	
 	#elseif (js&&air)
 	public var socket(default,null) : air.Socket;
-	
 	#elseif (js&&JABBER_SOCKETBRIDGE)
 	public var socket(default,null) : Socket;
-	
 	#elseif (flash&&air)
 	//#
 	#elseif flash
@@ -171,7 +169,7 @@ class SocketConnectionBase extends Connection {
 	}
 	*/
 	
-	#if (neko||cpp||php||rhino)
+	#if (sys||rhino)
 	
 	public override function disconnect() {
 		if( !connected )
@@ -202,13 +200,6 @@ class SocketConnectionBase extends Connection {
 	*/
 	
 	function readData() {
-		
-		/*
-		var len = try socket.input.readBytes( buf, bufpos, bufsize ) catch( e : Dynamic ) {
-			error( "socket read failed" );
-			return;
-		}
-		*/
 		
 		var len : Int;
 		try {
@@ -294,6 +285,7 @@ class SocketConnectionBase extends Connection {
 }
 
 #end
+
 
 /////////////////////////////////////////////////
 
