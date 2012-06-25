@@ -378,6 +378,8 @@ class BOSHConnection extends jabber.stream.Connection {
 		}
 		if( x == null ) {
 			#if JABBER_DEBUG trace("Empty bosh response ("+t+")", "warning" ); #end
+			//requestCount--; //?????????????????
+			//poll();
 			return;
 		}
 		if( x.get( 'xmlns' ) != XMLNS ) {

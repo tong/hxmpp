@@ -9,13 +9,18 @@ import xmpp.XMLUtil;
 	Be aware! Uses plain text SASL login!
 */
 class BOSHPrebindAccount extends BOSHPrebind {
-
+	
+	/** The JID of the client account */
 	public var jid(default,null) : String;
+	
+	/** The password of the client account */
 	public var password(default,null) : String;
 
-	public function new( serviceUrl : String, jid : String, password : String,
-						 wait : Int = 30, hold : Int = 1 ) {
-		super( serviceUrl, wait, hold );
+	public function new( serviceUrl : String,
+						 jid : String, password : String,
+						 wait : Int = 30, hold : Int = 1,
+						 ?rid : Int ) {
+		super( serviceUrl, wait, hold, rid );
 		this.jid = jid;
 		this.password = password;
 	}

@@ -14,7 +14,6 @@ class BOSHPrebind {
 	public dynamic function onError( info : String ) {}
 
 	public var serviceUrl(default,null) : String;
-
 	public var sid(default,null) : String;
 	//public var authid(default,null) : String;
 	public var rid(default,null) : Int;
@@ -22,18 +21,20 @@ class BOSHPrebind {
 	public var hold(default,null) : Int;
 
 	public function new( serviceUrl : String,
-						 wait : Int = 30, hold : Int = 1 ) {
+						 wait : Int = 30, hold : Int = 1,
+						 ?rid : Null<Int> ) {
 		this.serviceUrl = serviceUrl;
 		this.wait = wait;
 		this.hold = hold;
-		rid = Std.int( Math.random()*10000000 );
+		this.rid = ( rid == null ) ? Std.int( Math.random()*10000000 ) : rid;
 	}
 	
 	/**
-		Init account preinding 
+		Init account pre-binding.
 	*/
-	public function init( cb : BOSHPrebindInfo->Void  ) {
-		this.onComplete = cb;
+	public function init( ?cb : BOSHPrebindInfo->Void  ) {
+		if( cb != null )
+			this.onComplete = cb;
 		var x = buildInitialBody();
 		sendRequest( x.toString(), function(r){
 			//trace(x);
@@ -100,7 +101,7 @@ class BOSHPrebind {
 	}
 	
 	function createAuthText() : Xml {
-		// anonymous
+		// anonymous SASL authentication
 		var x = Xml.createElement( 'auth' );
 		x.set( 'xmlns', 'urn:ietf:params:xml:ns:xmpp-sasl' );
 		x.set( 'mechanism', 'ANONYMOUS' );
@@ -140,27 +141,22 @@ class BOSHPrebind {
 	}
 
 	function sendRequest( t : String, cb : String->Void ) {
-		//trace( ">>>>>>>>>>>>>>" );
-		//trace( t );
 		var r = new haxe.Http( serviceUrl );
 		r.noShutdown = true;
 		r.setHeader( 'Content-type', 'text/xml' );
 		r.setHeader( 'Accept', 'text/xml' );
 		r.setHeader( 'Content-Length', Std.string( t.length ) );
 		r.onData = function(d) {
-			//trace("<<<<<<<<<<<<<");
-			//trace(d);
 			cb(d);
 		};
 		r.onError = function(e){
-			//trace("ERROR: "+e);
-			//TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			onError(e);
 		};
 		r.setPostData( t );
 		r.request( true );
 	}
 
-	inline function isIQResult( body : String ) : Bool {
+	function isIQResult( body : String ) : Bool {
 		return IQ.parse( Xml.parse( body ).firstElement().firstElement() ).type == result;
 	}
 
