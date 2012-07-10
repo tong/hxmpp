@@ -21,7 +21,7 @@
  */
 package jabber.component;
 
-#if JABBER_COMPONENT
+//#if JABBER_COMPONENT
 
 import jabber.ServiceDiscoveryListener;
 import jabber.stream.Connection;
@@ -32,6 +32,7 @@ import xmpp.XMLUtil;
 /**
 	JID of a XMPP component.
 */
+@:require(JABBER_COMPONENT)
 class ComponentJID {
 	
 	public var subdomain(default,null) : String;
@@ -51,6 +52,7 @@ class ComponentJID {
 	XMPP server component stream.
 	<a href="http://www.xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>
 */
+@:require(JABBER_COMPONENT)
 class Stream extends jabber.Stream {
 	
 	public static inline var PORT_STANDARD = 5275;
@@ -163,4 +165,4 @@ class Stream extends jabber.Stream {
 	
 }
 
-#end
+//#end
