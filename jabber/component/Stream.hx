@@ -30,7 +30,7 @@ import jabber.util.SHA1;
 import xmpp.XMLUtil;
 
 /**
-	JID of a xmpp component.
+	JID of a XMPP component.
 */
 class ComponentJID {
 	
@@ -61,14 +61,23 @@ class Stream extends jabber.Stream {
 	
 	/** XMPP server hostname */
 //	public var host(default,null) : String;
+
 	/** The subdomain of the server component */
 //	public var subdomain(default,null) : String;
+
 	/** Full name/address of the server component */
 	public var serviceName(getServiceName,null) : String;
+	
 	/** Shared secret string used to identify legacy components*/
 	public var secret(default,null) : String;
+	
+	/***/
 	public var connected(default,null) : Bool;
+	
+	/***/
 	public var items(getItems,null) : xmpp.disco.Items;
+	
+	/***/
 	public var discoListener(default,null) : ServiceDiscoveryListener;
 	
 	public function new( cnx : Connection, ?maxBufSize : Int ) {
@@ -85,7 +94,7 @@ class Stream extends jabber.Stream {
 		if( subdomain == null || subdomain == "" )
 			throw "invalid stream subdomain";
 		if( secret == null )
-			throw "invalid stream secret (null)";
+			throw "invalid server component secret (null)";
 		this.jid = new ComponentJID( subdomain, host );
 		this.secret = secret;
 		items = new xmpp.disco.Items();
@@ -110,7 +119,6 @@ class Stream extends jabber.Stream {
 	
 	/*
 	override function handleDisconnect( ?e : String ) {
-		trace("hanaaaaaaaaaaaaaaaaaaaaaaadleDisconnect();");
 		trace(status );
 		connected = false;
 		if( status != Status.closed ) {
