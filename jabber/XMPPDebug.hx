@@ -21,12 +21,12 @@
  */
 package jabber;
 
-import xmpp.XMLBeautify;
 #if (flash&&!air)
 import flash.external.ExternalInterface;
 #elseif rhino
 import js.Lib;
 #end
+import jabber.util.XMLBeautify;
 
 /**
 	Utility for debugging XMPP transfer.

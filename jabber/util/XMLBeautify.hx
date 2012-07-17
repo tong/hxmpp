@@ -19,14 +19,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package xmpp;
+package jabber.util;
 
 using Lambda;
 
 /**
 	Utility to 'beautify' a xml string for debugging.
 */
-class XMLBeautify {
+@:require(XMPP_DEBUG) class XMLBeautify {
 	
 	//#if (sys||nodejs||rhino)
 	
