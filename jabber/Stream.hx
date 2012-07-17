@@ -184,10 +184,11 @@ class Stream {
 	/**
 		Intercept/Send/Return XMPP packet.
 	*/
-	public function sendPacket<T>( p : T, intercept : Bool = true ) : T {
+	public function sendPacket<T:xmpp.Packet>( p : T, intercept : Bool = true ) : T {
 		if( !cnx.connected )
 			return null;
-		if( intercept ) interceptPacket( untyped p );
+		if( intercept )
+			interceptPacket( untyped p );
 		return ( sendData( untyped p.toString() ) != null ) ? p : null;
 	}
 	
