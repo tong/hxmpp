@@ -22,15 +22,7 @@
 package jabber;
 
 import xmpp.XMLBeautify;
-#if neko
-import neko.Lib;
-#elseif php
-import php.Lib;
-#elseif cpp
-import cpp.Lib;
-#elseif nodejs
-import js.Lib;
-#elseif (flash&&!air)
+#if (flash&&!air)
 import flash.external.ExternalInterface;
 #elseif rhino
 import js.Lib;
@@ -44,7 +36,8 @@ import js.Lib;
 	* Browser targets: Printed to the default debug console
 	* Adobe air: Printed to fdb 'trace'
 */
-@:require(XMPP_DEBUG) class XMPPDebug {
+@:require(XMPP_DEBUG)
+class XMPPDebug {
 	
 	static function __init__() {
 		//numPrinted = numPrintedIncoming = numPrintedOutgoing = 0;
@@ -125,7 +118,7 @@ import js.Lib;
 			#elseif (air&&js)
 			untyped air.trace(t);
 			#else
-			Lib.print( t );
+			Sys.print( t );
 			#end
 			return;
 		}
@@ -145,7 +138,7 @@ import js.Lib;
 			untyped air.trace( b.toString() );
 			#end
 		#else
-		Lib.print( b.toString() );
+		Sys.print( b.toString() );
 		#end
 	}
 	
