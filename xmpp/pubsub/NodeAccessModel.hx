@@ -22,7 +22,7 @@
 package xmpp.pubsub;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0060.html#accessmodels">http://xmpp.org/extensions/xep-0060.html#accessmodels</a>
+	http://xmpp.org/extensions/xep-0060.html#accessmodels
 */
 enum NodeAccessModel {
 	
