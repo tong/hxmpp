@@ -26,10 +26,12 @@ using Lambda;
 /**
 	Utility to 'beautify' a xml string for debugging.
 */
-@:require(XMPP_DEBUG) class XMLBeautify {
+class XMLBeautify {
 	
 	//#if (sys||nodejs||rhino)
 	
+	/**
+	*/
 	public static function it( t : String ) : String  {
 		var x : Xml = null;
 		try { x = Xml.parse(t).firstElement(); } catch(e:Dynamic) { return t+'\n'; }
