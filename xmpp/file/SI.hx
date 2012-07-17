@@ -23,7 +23,7 @@ package xmpp.file;
 
 class SI {
 	
-	public static var XMLNS = "http://jabber.org/protocol/si";
+	public static var XMLNS(default,null) : String = "http://jabber.org/protocol/si";
 	
 	public var id : String;
 	public var mime : String;

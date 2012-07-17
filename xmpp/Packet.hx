@@ -26,7 +26,7 @@ package xmpp;
 */
 class Packet {
 	
-	public static var PROTOCOL = "http://jabber.org/protocol";
+	public static var PROTOCOL(default,null) : String = "http://jabber.org/protocol";
 	
 	/** The top level type of the XMPP packet */
 	public var _type(default,null) : PacketType;

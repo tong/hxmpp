@@ -23,7 +23,7 @@ package xmpp;
 
 class Attention {
 	
-	public static var XMLNS = 'urn:xmpp:attention:0';
+	public static var XMLNS(default,null) : String = 'urn:xmpp:attention:0';
 	
 	public static inline function createXml() : Xml {
 		return IQ.createQueryXml( XMLNS, 'attention' );

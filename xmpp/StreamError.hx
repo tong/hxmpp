@@ -27,7 +27,7 @@ import xmpp.ErrorPacket;
 */
 class StreamError extends ErrorPacket {
 	
-	public static var XMLNS = "urn:ietf:params:xml:ns:xmpp-streams";
+	public static var XMLNS(default,null) : String = "urn:ietf:params:xml:ns:xmpp-streams";
 	
 	public function new( condition : String,  ?text : String, ?lang : String, ?app : ApplicationErrorCondition) {
 		super( condition, text, lang, app );

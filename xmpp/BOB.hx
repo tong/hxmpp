@@ -28,7 +28,7 @@ using xmpp.XMLUtil;
 */
 class BOB {
 	
-	public static var XMLNS = 'urn:xmpp:bob';
+	public static var XMLNS(default,null) : String = 'urn:xmpp:bob';
 	
 	/** Content ID */
 	public var cid : String;

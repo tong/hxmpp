@@ -25,6 +25,6 @@ package xmpp;
 	<a href="http://www.xmpp.org/extensions/xep-0199.html">XEP 199 - XMPP Ping</a>
 */
 class Ping {
-	public static var XMLNS = 'urn:xmpp:ping';
+	public static var XMLNS(default,null) : String = 'urn:xmpp:ping';
 	public static var xml = IQ.createQueryXml( XMLNS, 'ping' );
 }

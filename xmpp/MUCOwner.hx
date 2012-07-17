@@ -23,7 +23,7 @@ package xmpp;
 
 class MUCOwner {
 	
-	public static var XMLNS = xmpp.MUC.XMLNS+"#owner";
+	public static var XMLNS(default,null) : String = xmpp.MUC.XMLNS+"#owner";
 	
 	public var items : List<xmpp.muc.Item>;
 	//public var destroy : xmpp.muc.Destroy;

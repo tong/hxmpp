@@ -25,7 +25,7 @@ using xmpp.XMLUtil;
 
 class PubSub {
 	
-	public static var XMLNS = xmpp.Packet.PROTOCOL+"/pubsub";
+	public static var XMLNS(default,null) : String = xmpp.Packet.PROTOCOL+"/pubsub";
 	
 	public var subscribe : { node : String, jid : String };
 	public var options : xmpp.pubsub.Options;

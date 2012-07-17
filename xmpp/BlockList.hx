@@ -25,7 +25,7 @@ using xmpp.XMLUtil;
 
 class BlockList {
 	
-	public static var XMLNS = 'urn:xmpp:blocking';
+	public static var XMLNS(default,null) : String = 'urn:xmpp:blocking';
 	
 	public var items : Array<String>;
 	public var unblock : Bool;

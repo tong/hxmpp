@@ -23,7 +23,7 @@ package xmpp;
 
 class XSPF extends xspf.Playlist {
 	
-	public static var XMLNS = xspf.Playlist.NAMESPACE;
+	public static var XMLNS(default,null) : String = xspf.Playlist.NAMESPACE;
 	
 	public function new() {
 		super();

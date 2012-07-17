@@ -28,7 +28,7 @@ using xmpp.XMLUtil;
 */
 class Compression {
 	
-	public static var XMLNS = Packet.PROTOCOL+'/compress';
+	public static var XMLNS(default,null) : String = Packet.PROTOCOL+'/compress';
 	
 	/**
 	*/

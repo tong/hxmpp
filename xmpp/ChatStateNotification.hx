@@ -28,7 +28,7 @@ using xmpp.XMLUtil;
 */
 class ChatStateNotification {
 	
-	public static var XMLNS = xmpp.Packet.PROTOCOL+"/chatstates";
+	public static var XMLNS(default,null) : String = xmpp.Packet.PROTOCOL+"/chatstates";
 	
 	/**
 		Adds (or changes if already has) the chat state property of the givent message packet.

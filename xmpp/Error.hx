@@ -27,7 +27,7 @@ import xmpp.ErrorPacket;
 */
 class Error extends xmpp.ErrorPacket {
 	
-	public static var XMLNS = "urn:ietf:params:xml:ns:xmpp-stanzas";
+	public static var XMLNS(default,null) : String = "urn:ietf:params:xml:ns:xmpp-stanzas";
 	
 	public var type : ErrorType;
 	public var code : Null<Int>;

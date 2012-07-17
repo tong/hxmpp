@@ -50,7 +50,7 @@ typedef Photo = {
 */
 class VCard extends VCardBase {
 	
-	public static var XMLNS = "urn:ietf:params:xml:ns:vcard-4.0";
+	public static var XMLNS(default,null) : String = "urn:ietf:params:xml:ns:vcard-4.0";
 	
 	public var fn : String;
 	public var n : Name;

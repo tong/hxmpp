@@ -23,7 +23,7 @@ package xmpp;
 
 class MUCAdmin {
 	
-	public static var XMLNS = xmpp.MUC.XMLNS+"#admin";
+	public static var XMLNS(default,null) : String = xmpp.MUC.XMLNS+"#admin";
 	
 	public var items : Array<xmpp.muc.Item>;
 	

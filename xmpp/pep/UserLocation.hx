@@ -27,7 +27,7 @@ package xmpp.pep;
 */
 class UserLocation extends xmpp.PersonalEvent {
 
-	public static var XMLNS = xmpp.Packet.PROTOCOL+"/geoloc";
+	public static var XMLNS(default,null) : String = xmpp.Packet.PROTOCOL+"/geoloc";
 	
 	/** Horizontal GPS error in meters; this element obsoletes the <error/> element */
 	public var accuracy : Int;

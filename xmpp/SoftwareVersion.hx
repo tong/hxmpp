@@ -28,7 +28,7 @@ using xmpp.XMLUtil;
 */
 class SoftwareVersion {
 	
-	public static var XMLNS = "jabber:iq:version";
+	public static var XMLNS(default,null) : String = "jabber:iq:version";
 	
 	public var name : String;
 	public var version : String;

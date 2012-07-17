@@ -39,7 +39,7 @@ private typedef URL = {
 
 class Bookmark {
 	
-	public static var XMLNS = 'storage:bookmarks';
+	public static var XMLNS(default,null) : String = 'storage:bookmarks';
 	
 	public var conferences : Array<Conference>;
 	public var urls : Array<URL>;

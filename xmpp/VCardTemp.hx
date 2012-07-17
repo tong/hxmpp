@@ -39,9 +39,9 @@ import xmpp.vcard.Geo;
 */
 class VCardTemp {
 	
-	public static var XMLNS = "vcard-temp";
-	public static var PROD_ID = "-//HandGen//NONSGML vGen v1.0//EN";
-	public static var VERSION = "2.0";
+	public static var XMLNS(default,null) : String = "vcard-temp";
+	public static var PROD_ID(default,null) : String = "-//HandGen//NONSGML vGen v1.0//EN";
+	public static var VERSION(default,null) : String = "2.0";
 	
 	public var fn : String;
 	public var n : Name;

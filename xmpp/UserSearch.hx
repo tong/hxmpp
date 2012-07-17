@@ -25,7 +25,7 @@ using xmpp.XMLUtil;
 
 class UserSearch {
 	
-	public static var XMLNS = "jabber:iq:search";
+	public static var XMLNS(default,null) : String = "jabber:iq:search";
 	
 	public var instructions : String;
 	public var first : String;

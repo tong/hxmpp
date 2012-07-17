@@ -25,7 +25,7 @@ package xmpp;
 */
 class PrivacyLists {
 	
-	public static var XMLNS = "jabber:iq:privacy";
+	public static var XMLNS(default,null) : String = "jabber:iq:privacy";
 	
 	public var active : String;
 	public var _default : String;

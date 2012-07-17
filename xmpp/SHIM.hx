@@ -28,7 +28,7 @@ private typedef Header = {
 
 class SHIM {
 	
-	public static var XMLNS = "http://jabber.org/protocol/shim";
+	public static var XMLNS(default,null) : String = "http://jabber.org/protocol/shim";
 	
 	public var headers : Array<Header>;
 	

@@ -22,5 +22,5 @@
 package xmpp;
 
 class LOP {
-	public static var XMLNS = "http://linkedprocess.org/2009/06/Farm#";
+	public static var XMLNS(default,null) : String = "http://linkedprocess.org/2009/06/Farm#";
 }

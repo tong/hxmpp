@@ -26,14 +26,6 @@ package xmpp;
 */
 class XMLUtil {
 	
-	// Misc XML utilities.
-	/* Misc XML utilities. */
-	static var test : Array<String>;
-	static function testit( a : Null<Array<XMLUtil>> ) : String {
-		return null;
-	}
-	
-	
 	/**
 		@param n Name of xml element to create
 		@param t Node content
@@ -113,17 +105,5 @@ class XMLUtil {
 		x.set( 'xmlns', s );
 		#end
 	}
-	
-	/*
-	public static function setField( x : Xml, n : String, v : String ) : String {
-	}
-	*/
-	
-	/*
-	public static function reflectElementValues<T>( x : Xml, o : T ) : T {
-		for( e in x.elements() ) {
-		}
-	}
-	*/
 	
 }

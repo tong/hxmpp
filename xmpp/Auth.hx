@@ -28,7 +28,7 @@ using xmpp.XMLUtil;
 */
 class Auth {
 	
-	public static var XMLNS = "jabber:iq:auth";
+	public static var XMLNS(default,null) : String = "jabber:iq:auth";
 	
 	public var username : String;
 	public var password : String;

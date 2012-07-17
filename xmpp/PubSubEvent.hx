@@ -23,7 +23,7 @@ package xmpp;
 
 class PubSubEvent {
 	
-	public static var XMLNS = PubSub.XMLNS+"#event";
+	public static var XMLNS(default,null) : String = PubSub.XMLNS+"#event";
 	
 	public var items : xmpp.pubsub.Items;
 	public var configuration : { form : xmpp.DataForm, node : String };

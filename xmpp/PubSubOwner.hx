@@ -23,7 +23,7 @@ package xmpp;
 
 class PubSubOwner {
 	
-	public static var XMLNS = PubSub.XMLNS+"#owner";
+	public static var XMLNS(default,null) : String = PubSub.XMLNS+"#owner";
 	
 	/** Set to "" (empty string) to add a empty delete element */
 	public var delete : String;

@@ -25,7 +25,7 @@ using xmpp.XMLUtil;
 
 class PrivateStorage {
 	
-	public static var XMLNS = "jabber:iq:private";
+	public static var XMLNS(default,null) : String = "jabber:iq:private";
 	
 	public var name : String;
 	public var namespace : String;

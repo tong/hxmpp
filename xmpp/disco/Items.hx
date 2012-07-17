@@ -23,7 +23,7 @@ package xmpp.disco;
 
 class Items extends List<xmpp.disco.Item> {
 
-	public static var XMLNS = xmpp.Packet.PROTOCOL+'/disco#items';
+	public static var XMLNS(default,null) : String = xmpp.Packet.PROTOCOL+'/disco#items';
 	
 	public var node : String;
 	
