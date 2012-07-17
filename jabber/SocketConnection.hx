@@ -389,12 +389,12 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 
 import js.Node;
 
-private typedef Socket = js.Stream;
+private typedef Socket = js.NodeNetSocket;
 
 class SocketConnection extends jabber.stream.SocketConnectionBase {
 	
 	public var socket(default,null) : Socket;
-	public var credentials : Credentials;
+	public var credentials : NodeCredDetails;
 	
 	var cleartext : Dynamic;
 	
@@ -406,9 +406,10 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 	
 	public override function connect() {
 		createConnection();
-		socket.on( Node.STREAM_END, sockDisconnectHandler );
-		socket.on( Node.STREAM_ERROR, sockErrorHandler );
-		socket.on( Node.STREAM_DATA, sockDataHandler );
+		
+		socket.on( NodeC.EVENT_STREAM_END, sockDisconnectHandler );
+		socket.on( NodeC.EVENT_STREAM_ERROR, sockErrorHandler );
+		socket.on( NodeC.EVENT_STREAM_DATA, sockDataHandler );
 	}
 	
 	public override function disconnect() {
@@ -460,15 +461,17 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 	
 	public override function read( ?yes : Bool = true ) : Bool {
 		if( !yes )
-			socket.removeListener( Node.STREAM_DATA, sockDataHandler );
+			socket.removeListener( NodeC.EVENT_STREAM_DATA, sockDataHandler );
 		return true;
 	}
 	
 	function createConnection() {
 		//if( credentials == null ) credentials = cast {};
 		//socket = Node.tls.connect( port, host, credentials, sockConnectHandler );
-		socket = Node.net.connect( port, host, sockConnectHandler );
-		socket.setEncoding( Node.UTF8 );
+		//socket = Node.net.connect( port, host, sockConnectHandler );
+		socket = Node.net.connect( port, host );
+		socket.setEncoding( NodeC.UTF8 );
+		socket.on( NodeC.EVENT_STREAM_CONNECT, sockConnectHandler );
 		/*
 		socket = Node.net.createConnection( port, host );
 		socket.setEncoding( Node.UTF8 );

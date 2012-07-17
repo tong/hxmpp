@@ -21,6 +21,10 @@
  */
 package jabber.util;
 
+#if nodejs
+import js.Node;
+#end
+
 /**
 	Creates a MD5 of a String.
 	Modified version from the haXe std lib to provide raw encoding.
@@ -40,7 +44,7 @@ class MD5 {
 		#elseif nodejs
 		var h = js.Node.crypto.createHash( "md5" );
 		h.update( s );
-		return h.digest( raw ? js.Node.BINARY : js.Node.HEX );
+		return h.digest( raw ? NodeC.BINARY : NodeC.HEX );
 		
 		#elseif php
 		return untyped __call__( "md5", s, raw );

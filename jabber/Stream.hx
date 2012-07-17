@@ -188,7 +188,7 @@ class Stream {
 		if( !cnx.connected )
 			return null;
 		if( intercept )
-			interceptPacket( p );
+			interceptPacket( #if (java||cs) untyped #end p );
 		return ( sendData( untyped p.toString() ) != null ) ? p : null;
 	}
 	

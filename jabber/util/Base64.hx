@@ -69,7 +69,7 @@ class Base64 {
 		//#end
 		
 		#if nodejs
-		return new Buffer(s).toString( Node.BASE64 );
+		return new NodeBuffer(s).toString( NodeC.BASE64 );
 		//return new Buffer( s, Node.BASE64 ).toString( Node.UTF8 );
 		
 		#elseif php
@@ -93,7 +93,7 @@ class Base64 {
 	
 	public static inline function decode( s : String ) : String {
 		#if nodejs
-		return new Buffer( s, Node.BASE64 ).toString( Node.ASCII );
+		return new NodeBuffer( s, NodeC.BASE64 ).toString( NodeC.ASCII );
 		#elseif php
 		return untyped __call__( "base64_decode", s );
 		#else
@@ -113,7 +113,8 @@ class Base64 {
 		#if php
 		return untyped __call__( "base64_encode", b.getData() );
 		#elseif nodejs
-		return b.getData().toString( Node.BASE64 );
+		return new NodeBuffer( b.getData().toString(), NodeC.BASE64 ).toString( NodeC.ASCII );
+		//return b.getData().toString( NodeC.BASE64 );
 		#else
 		return fillNullbits( bc.encodeBytes( b ).toString() );
 		#end
@@ -123,7 +124,7 @@ class Base64 {
 		#if php
 		return Bytes.ofString( untyped __call__( "base64_decode", s ) );
 		#elseif nodejs
-		return Bytes.ofData( new Buffer( s, Node.BASE64 ) );
+		return Bytes.ofString( new NodeBuffer( s ).toString( NodeC.BASE64 ) );
 		#else
 		return bc.decodeBytes( Bytes.ofString( removeNullbits( s ) ) );
 		#end

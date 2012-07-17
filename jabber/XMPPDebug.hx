@@ -23,6 +23,8 @@ package jabber;
 
 #if (flash&&!air)
 import flash.external.ExternalInterface;
+#elseif nodejs
+import js.Node;
 #elseif rhino
 import js.Lib;
 #end
@@ -117,7 +119,9 @@ class XMPPDebug {
 			untyped __global__['trace']( t );
 			#elseif (air&&js)
 			untyped air.trace(t);
-			#else
+			#elseif nodejs
+			Node.console.log( t );
+			#elseif
 			Sys.print( t );
 			#end
 			return;
@@ -137,6 +141,8 @@ class XMPPDebug {
 			#else
 			untyped air.trace( b.toString() );
 			#end
+		#elseif nodejs
+		Node.console.log( b.toString() );
 		#else
 		Sys.print( b.toString() );
 		#end
