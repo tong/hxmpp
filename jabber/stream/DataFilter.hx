@@ -24,7 +24,7 @@ package jabber.stream;
 typedef DataFilter = {
 
 	/**
-		Filter incoming XMPP data before processing
+		Filter raw incoming data before processing
 	*/
 	function filterData( data : haxe.io.Bytes ) : haxe.io.Bytes;
 	

@@ -31,7 +31,7 @@ import jabber.stream.PacketCollector;
 */
 class GMailNotify {
 	
-	public static var XMLNS = "google:mail:notify";
+	public static var XMLNS(default,null) : String = "google:mail:notify";
 	
 	public dynamic function onMail( m : Xml ) {}
 	

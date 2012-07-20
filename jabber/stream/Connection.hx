@@ -24,7 +24,7 @@ package jabber.stream;
 import haxe.io.Bytes;
 
 /**
-	Abstract base class for stream connections.
+	Abstract base class for XMPP stream connections.
 */
 class Connection {
 	
@@ -49,7 +49,7 @@ class Connection {
 	/** Indicates if connected and ready to read and write. */
 	public var connected(default,null) : Bool;
 	
-	/** Indicates if this is a secure connection */
+	/** Indicates if this is a secure connection (TLS negotiation complete) */
 	public var secure(default,null) : Bool;
 	
 	/** Indicates if TLS is negotiation is complete and data transfered is encrypted */
@@ -98,7 +98,7 @@ class Connection {
 	}
 	
 	/**
-		Sends a string, returns true on succeess
+		Send a string, returns true on succeess
 	*/
 	public function write( t : String ) : Bool {
 		#if JABBER_DEBUG trace( 'abstract method', 'error' ); #end
@@ -106,7 +106,7 @@ class Connection {
 	}
 	
 	/**
-		Send raw bytes
+		Send raw bytes, returns true on succeess
 	*/
 	public function writeBytes( t : Bytes ) : Bool {
 		#if JABBER_DEBUG trace( 'abstract method', 'error' ); #end

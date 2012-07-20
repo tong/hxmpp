@@ -21,6 +21,9 @@
  */
 package jabber.sasl;
 
+/**
+	SASL mechanism.
+*/
 typedef Mechanism = {
 	
 	/** */

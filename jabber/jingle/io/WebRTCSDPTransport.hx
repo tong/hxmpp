@@ -21,12 +21,14 @@
  */
 package jabber.jingle.io;
 
+import webrtc.PeerConnection;
+
 /**
 	Abstract
 */
 @:require(js) class WebRTCSDPTransport extends Transport {
 	
-	/***/
+	/** STUN server to use */
 	public var stun_url(default,null) : String;
 	
 	/** The transmitted SDP (Session description protocol) string */

@@ -21,8 +21,11 @@
  */
 package jabber.jingle;
 
+import webrtc.PeerConnection;
 import jabber.jingle.io.WebRTCSDPOutput;
 import xmpp.IQ;
+
+//TODO: WebRTCInitializer (?)
 
 /**
 	Experimental!
@@ -57,12 +60,12 @@ class WebRTCSDPCall extends OutgoingSession<WebRTCSDPOutput> {
 	
 	override function handleSessionInitResult() {
 		trace("handleSessionInitResult");
-		/*
+		
 		transport.__onConnect = handleTransportConnect;
 		transport.__onFail = handleTransportFail;
 		transport.connect();
 		onPeerConnection( transport.connection );
-		*/
+		
 	}
 	
 	override function handleSessionInfo( x : Array<Xml> ) {

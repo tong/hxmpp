@@ -45,7 +45,7 @@ class SHA1 {
 		#if nodejs
 		var h = js.Node.crypto.createHash( "sha1" );
 		h.update( s );
-		return h.digest( js.Node.HEX );
+		return h.digest( NodeC.HEX );
 		
 		#elseif php
 		return untyped __call__( "sha1", s );

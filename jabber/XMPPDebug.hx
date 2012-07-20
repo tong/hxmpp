@@ -43,7 +43,6 @@ class XMPPDebug {
 	
 	static function __init__() {
 		//numPrinted = numPrintedIncoming = numPrintedOutgoing = 0;
-		lastPrintWasOutgoing = false;
 		#if (flash||js)
 			#if (air||nodejs||rhino)
 			#else
@@ -65,7 +64,7 @@ class XMPPDebug {
 	//public static var numPrintedOutgoing(default,null) : Int;
 	
 	/** */
-	public static var lastPrintWasOutgoing(default,null) : Bool; //= false;
+	public static var lastPrintWasOutgoing(default,null) : Bool = false;
 	
 	/**
 		Indicates if the XMPP debug output should get formatted/beautified.

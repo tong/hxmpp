@@ -42,11 +42,11 @@ class AnonymousMechanism {
 	}
 	
 	@:keep public function createAuthenticationText( user : String, host : String, pass : String, resource : String ) : String {
-		return null; // Nothing to send in the <auth> body.
+		return null; // Nothing to send in the <auth> body
 	}
 	
 	public function createChallengeResponse( c : String ) : String {
-		return challengeResponse; // not required
+		return challengeResponse; // Not required
 	}
 	
 }

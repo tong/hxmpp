@@ -24,7 +24,7 @@ package jabber.stream;
 typedef DataInterceptor = {
 
 	/**
-		Modify outgoing XMPP data before sending
+		Modify raw outgoing XMPP data before sending
 	*/
 	function interceptData( data : haxe.io.Bytes ) : haxe.io.Bytes;
 }

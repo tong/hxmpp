@@ -27,7 +27,7 @@ package jabber.stream;
 typedef PacketInterceptor = {
 	
 	/**
-		Intercepts outgoing XMPP packet.
+		Intercepts outgoing XMPP packet before sending.
 	*/
 	function interceptPacket( p : xmpp.Packet ) : xmpp.Packet;
 	
