@@ -85,10 +85,12 @@ class Register {
 		return x;
 	}
 	
-	function createElement( x : Xml, id : String ) {
-		if( Reflect.hasField( this, id ) )
-			return x.addChild( XMLUtil.createElement( id, Reflect.field( this, id ) ) );
-		else return null;
+	function createElement( x : Xml, id : String ) : Xml {
+		if( Reflect.hasField( this, id ) ) {
+			x.addChild( XMLUtil.createElement( id, Reflect.field( this, id ) ) );
+			return x;
+		}
+		return null;
 	}
 	
 	public static function parse( x : Xml ) : xmpp.Register {

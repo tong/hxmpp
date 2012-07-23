@@ -27,7 +27,11 @@ enum FieldType {
 		The field enables an entity to gather or provide an either-or choice between two options.
 		The default value is "false".
 	*/
+	#if java
+	_boolean; //TODO: hxjava bug, should be prefixed
+	#else
 	boolean;
+	#end
 	
 	/**
 		The field is intended for data description (e.g., human-readable text such as "section" headers) rather than data gathering or provision.
