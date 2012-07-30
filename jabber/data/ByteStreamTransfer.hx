@@ -23,8 +23,8 @@ package jabber.data;
 
 import jabber.util.Base64;
 import jabber.util.SHA1;
-//import jabber.data.io.ByteStreamOutput;
-import jabber.io.ByteStreamOutput;
+import jabber.data.io.ByteStreamOutput;
+//import jabber.io.ByteStreamOutput;
 import xmpp.IQ;
 import xmpp.IQType;
 import xmpp.file.ByteStreamHost;
