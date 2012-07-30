@@ -27,7 +27,6 @@ package jabber;
 class XMPPError extends xmpp.Error {
 	
 	public var from(default,null) : String;
-	//TODO reference to the packet (?)
 	
 	public function new( p : xmpp.Packet ) {
 		var e = p.errors[0];

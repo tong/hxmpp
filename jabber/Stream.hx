@@ -126,7 +126,7 @@ class Stream {
 			setConnection( c );
 			 // re-open XMPP stream
 			#if JABBER_COMPONENT
-			//trace("TODO");
+			// ?????
 			#else
 			open( jid );
 			#end
@@ -195,7 +195,6 @@ class Stream {
 	/**
 		Send raw string.
 	*/
-	//TODO public function send( t : String ) : String {
 	public function sendData( t : String ) : String {
 		if( !cnx.connected )
 			return null;

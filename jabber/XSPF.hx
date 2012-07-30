@@ -54,7 +54,7 @@ class XSPF {
 				try {
 					pl = xspf.Playlist.parse( x );
 				} catch( e : Dynamic ) {
-					trace(e); //TODO
+					onError( new XMPPError( iq ) );
 					return;
 				}
 				onLoad( iq.from, pl );

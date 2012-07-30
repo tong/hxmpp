@@ -61,7 +61,7 @@ COMPILER FLAGS
 
 NODE.JS
 -------
-To compile for nodejs you have to use the type definitions from: https://github.com/tong/node.hx
+To compile for nodejs use the 'nodejs' haxelib
 Set compiler flag: -D nodejs
 
 
