@@ -16,6 +16,7 @@ jabber.jingle.FileTransferResponder
 ### JAVASCRIPT
 --next
 _base.hxml
+-lib html5
 -cp ../util
 -js temp.js
 -xml js.xml
@@ -56,22 +57,24 @@ jabber.SecureSocketConnection
 #-xml cpp.xml 
 #-main Main.hx
 #-cmd rm Main.hx
-#--macro exclude('haxe.Int32')
+#--macro exclude('haxe.Int32')#
+#--macro exclude('haxe.remoting.Context')
+
 #-cmd rm -r cpp
 
 ### NODE
---next
-_base.hxml
--js temp.js
--xml node.xml
--D nodejs
--cp ../../node.hx
-jabber.SecureSocketConnection
-jabber.data.ByteStreamTransfer
-jabber.data.ByteStreamReciever
-jabber.jingle.FileTransfer
-jabber.jingle.FileTransferListener
-jabber.jingle.FileTransferResponder
+#--next
+#_base.hxml
+#-js temp.js
+#-xml node.xml
+#-D nodejs
+#-cp ../../node.hx
+#jabber.SecureSocketConnection
+#jabber.data.ByteStreamTransfer
+#jabber.data.ByteStreamReciever
+#jabber.jingle.FileTransfer
+#jabber.jingle.FileTransferListener
+#jabber.jingle.FileTransferResponder
 
 ### XMPP SERVER COMPONENTS
 --next
@@ -83,9 +86,9 @@ jabber.component.Stream
 -cmd rm temp.n
 
 
-############### Run chxdoc
--cmd chxdoc -o hxmpp-apidoc --ignoreRoot=true neko.xml,neko js.xml,js flash.xml,flash php.xml,php node.xml,node component.xml,component -f neko -f js -f flash -f php -f cpp -f haxe
+##### Run chxdoc
+-cmd chxdoc -o hxmpp-apidoc --ignoreRoot=true neko.xml,neko js.xml,js flash.xml,flash php.xml,php component.xml,component -f neko -f js -f flash -f php -f cpp -f sys -f haxe
+#--developer=true neko.xml
 -cmd rm -f *.xml temp.*
 #-cmd rm -rf lib cpp
-
 #-cmd zip -r hxmpp-apidoc-0.4.7.zip hxmpp-apidoc-0.4.7/
