@@ -38,7 +38,7 @@ class SystemUtil {
 	*/
 	public static #if !js inline #end function systemName() : String {
 		
-		#if (neko||cpp||php||nodejs||rhino)
+		#if (sys||nodejs||rhino)
 		return Sys.systemName();
 		
 		#elseif flash
