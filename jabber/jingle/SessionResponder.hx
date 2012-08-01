@@ -22,6 +22,7 @@
 package jabber.jingle;
 
 import jabber.jingle.io.Transport;
+//import jabber.io.Transport;
 import xmpp.IQ;
 
 /**

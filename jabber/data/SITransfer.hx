@@ -47,8 +47,9 @@ import air.ByteArray;
 #end
 
 /**
-	Outgoing file transfer negotiator
-	<a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a><br/>
+	Outgoing file transfer negotiator.
+
+	<a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a>
 */
 class SITransfer {
 	

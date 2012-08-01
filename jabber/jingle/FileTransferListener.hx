@@ -22,6 +22,7 @@
 package jabber.jingle;
 
 import jabber.jingle.io.ByteStreamInput;
+//import jabber.io.ByteStreamInput;
 
 /**
 	EXPERIMENTAL!

@@ -59,15 +59,29 @@ jabber.SecureSocketConnection
 #-cmd rm Main.hx
 #--macro exclude('haxe.Int32')#
 #--macro exclude('haxe.remoting.Context')
-
 #-cmd rm -r cpp
 
-### NODE
+### JAVA
 #--next
 #_base.hxml
-#-js temp.js
-#-xml node.xml
-#-D nodejs
+#-java java
+#-xml java.xml
+#jabber.SecureSocketConnection
+
+### CS
+#--next
+#_base.hxml
+#-cs cs
+#-xml java.xml
+#jabber.SecureSocketConnection
+
+### NODE
+--next
+_base.hxml
+-js temp.js
+-xml node.xml
+-D nodejs
+-lib nodejs
 #-cp ../../node.hx
 #jabber.SecureSocketConnection
 #jabber.data.ByteStreamTransfer
@@ -75,6 +89,7 @@ jabber.SecureSocketConnection
 #jabber.jingle.FileTransfer
 #jabber.jingle.FileTransferListener
 #jabber.jingle.FileTransferResponder
+
 
 ### XMPP SERVER COMPONENTS
 --next
@@ -91,4 +106,4 @@ jabber.component.Stream
 #--developer=true neko.xml
 -cmd rm -f *.xml temp.*
 #-cmd rm -rf lib cpp
-#-cmd zip -r hxmpp-apidoc-0.4.7.zip hxmpp-apidoc-0.4.7/
+#-cmd zip -r hxmpp-apidoc-0.4.11.zip hxmpp-apidoc

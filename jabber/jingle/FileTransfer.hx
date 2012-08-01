@@ -24,8 +24,10 @@ package jabber.jingle;
 import haxe.io.Bytes;
 import jabber.jingle.io.ByteStreamOutput;
 import jabber.jingle.io.Transport;
+//import jabber.io.Transport;
+//import jabber.io.ByteStreamOutput;
 import xmpp.IQ;
-#if (neko||cpp||php)
+#if sys
 import sys.FileSystem;
 import sys.io.File;
 import haxe.io.Path;
@@ -41,7 +43,7 @@ import js.io.Path;
 */
 class FileTransfer extends OutgoingSession<ByteStreamOutput> {
 	
-	//public dynamic function onProgress( bytes : Bytes ) {}
+	public dynamic function onProgress( bytes : Int ) {}
 	public dynamic function onComplete() {}
 	
 	var input : haxe.io.Input;
@@ -72,6 +74,7 @@ class FileTransfer extends OutgoingSession<ByteStreamOutput> {
 		for( t in transports ) {
 			//t.__onConnect = handleTransportConnect;
 			t.__onClientConnect = handleClientConnect;
+			t.__onProgress = onTransportProgress;
 			t.__onFail = onTransportFail;
 			try t.init() catch( e : Dynamic ) {
 				trace(e);
@@ -103,14 +106,18 @@ class FileTransfer extends OutgoingSession<ByteStreamOutput> {
 		transport.__onComplete = onTransportComplete;
 	}
 	
+	function onTransportProgress( bytes : Int ) {
+		onProgress( bytes );
+	}
+	
 	function onTransportComplete() {
-		trace("onTransportComplete");
+		//trace("onTransportComplete");
 		onComplete();
 		//
 	}
 	
 	function onTransportFail( e : String ) {
-		trace("onTransportFail");
+		//trace("onTransportFail");
 		onFail(e);
 		//TODO
 	}

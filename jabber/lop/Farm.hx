@@ -28,8 +28,11 @@ import xmpp.lop.SpawnVM;
 import xmpp.lop.Submit;
 
 /**
-	Manages the spawning of virtual machines. <a href="http://xmpp.org/extensions/inbox/lop.html">Linked Process Protocol</a> <a href="http://linkedprocess.org">Linked Process Website</a>
+	Manages the spawning of virtual machines.
 	The disco 'identity' of a farm MUST be of category="client" and type="bot" (name is up to the implementation).
+	
+	<a href="http://xmpp.org/extensions/inbox/lop.html">Linked Process Protocol</a>
+	<a href="http://linkedprocess.org">Linked Process Website</a>
 */
 class Farm {
 	
