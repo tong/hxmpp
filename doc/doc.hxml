@@ -76,12 +76,12 @@ jabber.SecureSocketConnection
 #jabber.SecureSocketConnection
 
 ### NODE
---next
-_base.hxml
--js temp.js
--xml node.xml
--D nodejs
--lib nodejs
+#--next
+#_base.hxml
+#-js temp.js
+#-xml node.xml
+#-D nodejs
+#-lib nodejs
 #-cp ../../node.hx
 #jabber.SecureSocketConnection
 #jabber.data.ByteStreamTransfer
