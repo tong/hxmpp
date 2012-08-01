@@ -21,13 +21,7 @@
  */
 package jabber.util;
 
-#if neko
-import neko.Sys;
-#elseif cpp
-import cpp.Sys;
-#elseif php
-import php.Sys;
-#elseif (nodejs||rhino)
+#if rhino
 import js.Sys;
 #end
 
@@ -36,9 +30,14 @@ class SystemUtil {
 	/**
 		Returns the name of the OS used (crossplatform).
 	*/
-	public static #if !js inline #end function systemName() : String {
+	public static
+	#if (nodejs||!js) inline #end
+	function systemName() : String {
 		
-		#if (sys||nodejs||rhino)
+		#if nodejs
+		return Node.process.platform;
+		
+		#elseif (sys||rhino)
 		return Sys.systemName();
 		
 		#elseif flash
