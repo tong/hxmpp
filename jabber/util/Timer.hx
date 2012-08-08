@@ -21,16 +21,14 @@
  */
 package jabber.util;
 
-#if !(neko||cpp)
+#if (!neko&&!cpp)
 typedef Timer = haxe.Timer;
 #else
 
 #if neko
 import neko.vm.Thread;
-import neko.Sys;
 #elseif cpp
 import cpp.vm.Thread;
-import cpp.Sys;
 #end
 
 /**
