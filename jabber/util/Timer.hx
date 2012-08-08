@@ -32,12 +32,11 @@ import cpp.vm.Thread;
 #end
 
 /**
-	Patched version of haxe.Timer supporting neko too.
-	!! This approach is NOT safe, but seems to work so far.
+	Patched version of haxe.Timer supporting neko and cpp target.
 */
 class Timer {
 	
-	#if (php)
+	#if php
 	#else
 
 	var id : Null<Int>;
@@ -110,12 +109,13 @@ class Timer {
 	}
 	#end
 
-	public static function delay( f : Void -> Void, time_ms : Int ) {
+	public static function delay( f : Void -> Void, time_ms : Int ) : Timer {
 		var t = new Timer(time_ms);
 		t.run = function() {
 			t.stop();
 			f();
 		};
+		return t;
 	}
 
 	#end
@@ -126,10 +126,8 @@ class Timer {
 	public static inline function stamp() : Float {
 		#if flash
 		return flash.Lib.getTimer() / 1000;
-		#elseif (neko||cpp)
+		#elseif sys
 		return Sys.time();
-		#elseif php
-		return php.Sys.time();
 		#elseif js
 		return Date.now().getTime() / 1000;
 		#else
