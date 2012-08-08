@@ -1,0 +1,5 @@
+#!/bin/bash
+
+haxe doc.hxml
+chxdoc --config="hxmpp.chxdoc"
+rm *.xml
