@@ -33,6 +33,18 @@ jabber.jingle.RTMPResponder
 jabber.jingle.RTMFPCall
 jabber.jingle.RTMFPListener
 jabber.jingle.RTMFPResponder
+<<<<<<< HEAD
+=======
+-cmd rm temp.swf
+
+### PHP
+--next
+_base.hxml
+-php .
+-xml php.xml
+jabber.SecureSocketConnection
+-cmd rm -r lib
+>>>>>>> c7fd6b8131c286414a5c987d0e1d355fe4c3197a
 
 
 ### JAVA
@@ -72,6 +84,15 @@ jabber.jingle.FileTransfer
 jabber.jingle.FileTransferListener
 jabber.jingle.FileTransferResponder
 
+<<<<<<< HEAD
+=======
+### CS
+#--next
+#_base.hxml
+#-cs cs
+#-xml cs.xml
+#jabber.SecureSocketConnection
+>>>>>>> c7fd6b8131c286414a5c987d0e1d355fe4c3197a
 
 ### NODE
 #--next
@@ -108,3 +129,20 @@ sys.hxml
 --no-output
 -D JABBER_COMPONENT
 jabber.component.Stream
+<<<<<<< HEAD
+=======
+-cmd rm temp.n
+
+
+##### Run chxdoc
+-cmd chxdoc --config="hxmpp.chxdoc" -o hxmpp-api -f flash.xml,flash -f js.xml,js -f neko.xml,neko -f php.xml,php --deny=cpp.* --deny=flash.* --deny=haxe.* --deny=js.* --deny=neko.* --deny=php.* --deny=sys.*
+#-f component.xml,component
+
+#--developer=true
+#-cmd chxdoc -o hxmpp-apidoc --ignoreRoot=true neko.xml,neko js.xml,js flash.xml,flash php.xml,php component.xml,component -f neko -f js -f flash -f php -f cpp -f sys -f haxe
+#-cmd chxdoc -o hxmpp-apidoc2 neko.xml,neko
+#--developer=true neko.xml
+#-cmd rm -f *.xml temp.*
+#-cmd rm -rf lib cpp
+#-cmd zip -r hxmpp-apidoc-0.4.11.zip hxmpp-apidoc
+>>>>>>> c7fd6b8131c286414a5c987d0e1d355fe4c3197a
