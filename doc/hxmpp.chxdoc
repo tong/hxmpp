@@ -1,0 +1,85 @@
+<xml>
+
+  <!--Title, subtitle, headers and footers on pages-->
+  <title value="HXMPP" />
+  <subtitle value="<a href='http://hxmpp.disktree.net/' target='new'>http://hxmpp.disktree.net/</a>" />
+  <headerText value="" />
+  <footerText value="" />
+
+  <!--Files to read in as header or footer text-->
+  <headerTextFile value="" />
+  <footerTextFile value="" />
+
+  <!--Xml files to parse. List of <file name="" platform="" [remap=""]>-->
+  <files>
+  <!--
+    <file name="flash9.xml" remap="flash9" platform="flash" />
+    <file name="neko.xml" platform="neko" />
+  -->
+  </files>
+
+  <!--Format for dates-->
+  <dateShort value="%Y-%m-%d" />
+  <dateLong value="%a %b %d %H:%M:%S %Z %Y" />
+
+  <!--Turns on all show* values, regardless of their value. Should come before any show* entries-->
+  <developer value="false" />
+
+  <!--Show @author values in docs-->
+  <showAuthorTags value="false" />
+  <showMeta value="true" />
+
+  <!--Output items marked private-->
+  <showPrivateClasses value="false" />
+  <showPrivateTypedefs value="false" />
+  <showPrivateEnums value="false" />
+  <showPrivateMethods value="false" />
+  <showPrivateVars value="false" />
+  <showTodoTags value="false" />
+
+  <!--Turn on todo generation. and file to output todo list to-->
+  <generateTodo value="false" />
+
+  <!--Output directory-->
+  <output value="." />
+
+  <!--Excluded packages or classes in <exclude value='my.pkg.*'> elements-->
+  <filters policy="allow">
+  <!--
+	<exclude value='sys.*'/>
+	<filter path="haxe.*" policy="deny" />
+	<filter path="flash.*" policy="deny" />
+	<filter path="neko.*" policy="deny" />
+	<filter path="sys.*" policy="deny" />
+    <filter path="haxe.io.Bytes" policy="deny" />
+    <filter path="sys.db.*" policy="allow" />
+  -->
+  </filters>
+
+  <!--Template name, templates base directory and macros file name of main macros-->
+  <template value="default" />
+  <templatesDir value="%HAXELIB%/chxdoc/%HAXELIBVER%/templates/" />
+  <macros value="macros.mtt" />
+
+  <!--File extension for html documentation files-->
+  <htmlFileExtension value="html" />
+
+  <!--The stylesheet to use-->
+  <stylesheet value="stylesheet.css" />
+
+  <!--Merge metadata with same names as @doc tags with the @doc tags-->
+  <mergeMeta value="true" />
+
+  <!--Copy the images or css from template to output directory-->
+  <installImagesDir value="true" />
+  <installCssFile value="true" />
+
+  <!--Turn on verbose mode-->
+  <verbose value="false" />
+
+  <!--Temporary directory name for template compilation-->
+  <tmpDir value="./__chxdoctmp/" />
+
+  <!--Password for mod_neko integration-->
+  <webPassword value="" />
+</xml>

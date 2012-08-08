@@ -48,7 +48,6 @@ XEPS SUPPORTED
 USAGE
 -----
 See: http://github.com/tong/hxmpp.examples
-Tip: Prefer to use git instead of haxelib version (!)
 
 
 COMPILER FLAGS
@@ -63,18 +62,6 @@ NODE.JS
 -------
 To compile for nodejs use the 'nodejs' haxelib
 Set compiler flag: -D nodejs
-
-
-ACTIONSCRIPT3/MXMLC
--------------------
-See: https://github.com/tong/hxmpp.examples/tree/master/swc
-
-
-ADOBE AIR
----------
-HXMPP supports native, secure and unsecure adobe air2 socket connections.
-* Get the required external classes from: http://disktree.spektral.at/git/?a=summary&p=hxair
-* Add 'air' compiler flag.
 
 
 BOSH
