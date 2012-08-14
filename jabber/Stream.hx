@@ -254,14 +254,14 @@ class Stream {
 		return cast sendPacket( new xmpp.Presence( show, status, priority, type ) );
 	}
 	
-	/*
-	public function sendDirectedPresence( jid : String ) : xmpp.Presence {
+	/**
+		Send directed presence
+	*/
+	public inline function sendPresenceTo( jid : String, ?show : xmpp.PresenceShow, ?status : String, ?priority : Int, ?type : xmpp.PresenceType ) : xmpp.Presence {
 		var p = new xmpp.Presence();
 		p.to = jid;
-		var s : xmpp.Presence = sendPacket(p);
-		return s;
+		return  sendPacket(p);
 	}
-	*/
 	
 	/**
 		Runs the XMPP packet interceptor on the given packet.
