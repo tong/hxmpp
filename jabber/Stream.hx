@@ -188,7 +188,7 @@ class Stream {
 		if( !cnx.connected )
 			return null;
 		if( intercept )
-			interceptPacket( #if (java||cs) untyped #end p );
+			interceptPacket( #if (java||cs) cast #end p ); //TODO still throws error on java
 		return ( sendData( untyped p.toString() ) != null ) ? p : null;
 	}
 	
