@@ -1,19 +1,17 @@
 
 ### CPP
 base.hxml
-sys.hxml
 -cpp cpp
 -xml cpp.xml
 --no-output
 
 
 ### CS
-#--next
-#_base.hxml
-#-cs cs
-#-xml cs.xml
-#jabber.SecureSocketConnection
-#--no-output
+--next
+base.hxml
+-cs cs
+-xml cs.xml
+--no-output
 
 
 ### FLASH
@@ -33,20 +31,13 @@ jabber.jingle.RTMFPCall
 jabber.jingle.RTMFPListener
 jabber.jingle.RTMFPResponder
 
-### PHP
---next
-_base.hxml
--php .
--xml php.xml
-jabber.SecureSocketConnection
-
 
 ### JAVA
-#--next
-#_base.hxml
-#-java java
-#-xml java.xml
-#--no-output
+--next
+base.hxml
+-java java
+-xml java.xml
+--no-output
 
 
 ### JAVASCRIPT
@@ -60,16 +51,20 @@ base.hxml
 jabber.BOSHConnection
 jabber.Ping
 jabber.WebSocketConnection
-
+jabber.jingle.WebRTCSDPCall
+jabber.jingle.WebRTCSDPListener
+jabber.jingle.WebRTCSDPResponder
 
 ### NEKO
 --next
 base.hxml
-sys.hxml
 -lib hxssl
 -neko temp.n
 -xml neko.xml
 --no-output
+jabber.BOSHPrebind
+jabber.BOSHPrebindAccount
+jabber.BOSHPrebindInfo
 jabber.SecureSocketConnection
 jabber.data.ByteStreamTransfer
 jabber.data.ByteStreamReciever
@@ -78,15 +73,7 @@ jabber.jingle.FileTransferListener
 jabber.jingle.FileTransferResponder
 
 
-### CS
-#--next
-#_base.hxml
-#-cs cs
-#-xml cs.xml
-#jabber.SecureSocketConnection
-
-
-### NODE
+### NODEJS
 #--next
 #base.hxml
 #-js temp.js
@@ -106,11 +93,13 @@ jabber.jingle.FileTransferResponder
 ### PHP
 --next
 base.hxml
-sys.hxml
 -php .
 -xml php.xml
 --no-output
-#jabber.SecureSocketConnection
+jabber.SecureSocketConnection
+jabber.BOSHPrebind
+jabber.BOSHPrebindAccount
+jabber.BOSHPrebindInfo
 
 
 ### XMPP-SERVER-COMPONENTS

@@ -1,6 +1,5 @@
 <xml>
 
-<<<<<<< HEAD
 	<!--Title, subtitle, headers and footers on pages -->
 	<title value="HXMPP" />
 	<subtitle
@@ -14,9 +13,10 @@
 
 	<!--Xml files to parse. List of <file name="" platform="" [remap=""]> -->
 	<files>
-		<!-- <file name="flash9.xml" remap="flash9" platform="flash" /> -->
 		<file name="cpp.xml" platform="cpp" />
+		<file name="cs.xml" platform="cs" />
 		<file name="flash.xml" platform="flash" />
+		<file name="java.xml" platform="java" />
 		<file name="js.xml" platform="js" />
 		<file name="neko.xml" platform="neko" />
 		<file name="php.xml" platform="php" />
@@ -47,7 +47,7 @@
 	<generateTodo value="false" />
 
 	<!--Output directory -->
-	<output value="hxmpp" />
+	<output value="./hxmpp" />
 
 	<!--Excluded packages or classes in <exclude value='my.pkg.*'> elements -->
 	<filters policy="allow">
@@ -90,88 +90,84 @@
 
 	<!--Password for mod_neko integration -->
 	<webPassword value="" />
-=======
-  <!--Title, subtitle, headers and footers on pages-->
-  <title value="HXMPP" />
-  <subtitle value="<a href='http://hxmpp.disktree.net/' target='new'>http://hxmpp.disktree.net/</a>" />
-  <headerText value="" />
-  <footerText value="" />
 
-  <!--Files to read in as header or footer text-->
-  <headerTextFile value="" />
-  <footerTextFile value="" />
+	<!--Title, subtitle, headers and footers on pages -->
+	<title value="HXMPP" />
+	<subtitle
+		value="<a href='http://hxmpp.disktree.net/' target='new'>http://hxmpp.disktree.net/</a>" />
+	<headerText value="" />
+	<footerText value="" />
 
-  <!--Xml files to parse. List of <file name="" platform="" [remap=""]>-->
-  <files>
-  <!--
-    <file name="flash9.xml" remap="flash9" platform="flash" />
-    <file name="neko.xml" platform="neko" />
-  -->
-  </files>
+	<!--Files to read in as header or footer text -->
+	<headerTextFile value="" />
+	<footerTextFile value="" />
 
-  <!--Format for dates-->
-  <dateShort value="%Y-%m-%d" />
-  <dateLong value="%a %b %d %H:%M:%S %Z %Y" />
+	<!--Xml files to parse. List of <file name="" platform="" [remap=""]> -->
+	<files>
+		<!-- <file name="flash9.xml" remap="flash9" platform="flash" /> <file name="neko.xml" 
+			platform="neko" /> -->
+	</files>
 
-  <!--Turns on all show* values, regardless of their value. Should come before any show* entries-->
-  <developer value="false" />
+	<!--Format for dates -->
+	<dateShort value="%Y-%m-%d" />
+	<dateLong value="%a %b %d %H:%M:%S %Z %Y" />
 
-  <!--Show @author values in docs-->
-  <showAuthorTags value="false" />
-  <showMeta value="true" />
+	<!--Turns on all show* values, regardless of their value. Should come before 
+		any show* entries -->
+	<developer value="false" />
 
-  <!--Output items marked private-->
-  <showPrivateClasses value="false" />
-  <showPrivateTypedefs value="false" />
-  <showPrivateEnums value="false" />
-  <showPrivateMethods value="false" />
-  <showPrivateVars value="false" />
-  <showTodoTags value="false" />
+	<!--Show @author values in docs -->
+	<showAuthorTags value="false" />
+	<showMeta value="true" />
 
-  <!--Turn on todo generation. and file to output todo list to-->
-  <generateTodo value="false" />
+	<!--Output items marked private -->
+	<showPrivateClasses value="false" />
+	<showPrivateTypedefs value="false" />
+	<showPrivateEnums value="false" />
+	<showPrivateMethods value="false" />
+	<showPrivateVars value="false" />
+	<showTodoTags value="false" />
 
-  <!--Output directory-->
-  <output value="." />
+	<!--Turn on todo generation. and file to output todo list to -->
+	<generateTodo value="false" />
 
-  <!--Excluded packages or classes in <exclude value='my.pkg.*'> elements-->
-  <filters policy="allow">
-  <!--
-	<exclude value='sys.*'/>
-	<filter path="haxe.*" policy="deny" />
-	<filter path="flash.*" policy="deny" />
-	<filter path="neko.*" policy="deny" />
-	<filter path="sys.*" policy="deny" />
-    <filter path="haxe.io.Bytes" policy="deny" />
-    <filter path="sys.db.*" policy="allow" />
-  -->
-  </filters>
+	<!--Output directory -->
+	<output value="." />
 
-  <!--Template name, templates base directory and macros file name of main macros-->
-  <template value="default" />
-  <templatesDir value="%HAXELIB%/chxdoc/%HAXELIBVER%/templates/" />
-  <macros value="macros.mtt" />
+	<!--Excluded packages or classes in <exclude value='my.pkg.*'> elements -->
+	<filters policy="allow">
+		<!-- <exclude value='sys.*'/> <filter path="haxe.*" policy="deny" /> <filter 
+			path="flash.*" policy="deny" /> <filter path="neko.*" policy="deny" /> <filter 
+			path="sys.*" policy="deny" /> <filter path="haxe.io.Bytes" policy="deny" 
+			/> <filter path="sys.db.*" policy="allow" /> -->
+	</filters>
 
-  <!--File extension for html documentation files-->
-  <htmlFileExtension value="html" />
+	<!--Template name, templates base directory and macros file name of main 
+		macros -->
+	<template value="default" />
+	<templatesDir value="%HAXELIB%/chxdoc/%HAXELIBVER%/templates/" />
+	<macros value="macros.mtt" />
 
-  <!--The stylesheet to use-->
-  <stylesheet value="stylesheet.css" />
+	<!--File extension for html documentation files -->
+	<htmlFileExtension value="html" />
 
-  <!--Merge metadata with same names as @doc tags with the @doc tags-->
-  <mergeMeta value="true" />
+	<!--The stylesheet to use -->
+	<stylesheet value="stylesheet.css" />
 
-  <!--Copy the images or css from template to output directory-->
-  <installImagesDir value="true" />
-  <installCssFile value="true" />
+	<!--Merge metadata with same names as @doc tags with the @doc tags -->
+	<mergeMeta value="true" />
 
-  <!--Turn on verbose mode-->
-  <verbose value="false" />
+	<!--Copy the images or css from template to output directory -->
+	<installImagesDir value="true" />
+	<installCssFile value="true" />
 
-  <!--Temporary directory name for template compilation-->
-  <tmpDir value="./__chxdoctmp/" />
+	<!--Turn on verbose mode -->
+	<verbose value="false" />
 
-  <!--Password for mod_neko integration-->
-  <webPassword value="" />
->>>>>>> c7fd6b8131c286414a5c987d0e1d355fe4c3197a
+	<!--Temporary directory name for template compilation -->
+	<tmpDir value="./__chxdoctmp/" />
+
+	<!--Password for mod_neko integration -->
+	<webPassword value="" />
+
 </xml>
