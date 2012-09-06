@@ -17,6 +17,7 @@ jabber.JIDUtil
 jabber.LastActivity
 jabber.LastActivityListener
 jabber.MessageListener
+jabber.Ping
 jabber.Pong
 jabber.PrivacyLists
 jabber.PrivateStorage

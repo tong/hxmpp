@@ -21,7 +21,6 @@ base.hxml
 -xml flash.xml 
 --no-output
 jabber.BOSHConnection
-jabber.Ping
 jabber.data.ByteStreamReciever
 jabber.jingle.FileTransferListener
 jabber.jingle.RTMPCall
@@ -49,11 +48,11 @@ base.hxml
 -xml js.xml
 --no-output
 jabber.BOSHConnection
-jabber.Ping
 jabber.WebSocketConnection
 jabber.jingle.WebRTCSDPCall
 jabber.jingle.WebRTCSDPListener
 jabber.jingle.WebRTCSDPResponder
+
 
 ### NEKO
 --next
@@ -96,10 +95,10 @@ base.hxml
 -php .
 -xml php.xml
 --no-output
-jabber.SecureSocketConnection
 jabber.BOSHPrebind
 jabber.BOSHPrebindAccount
 jabber.BOSHPrebindInfo
+jabber.SecureSocketConnection
 
 
 ### XMPP-SERVER-COMPONENTS
