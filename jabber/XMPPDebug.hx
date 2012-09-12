@@ -151,26 +151,29 @@ class XMPPDebug {
 	
 	/** Indicates if the XMPP transfer should get printed to the browser console */
 	public static var useConsole : Bool;
+	public static var prefixClient = "client";
+	public static var prefixServer = "server";
 
 	static var currentGroup : String;
 	
 	public static function __print( t : String, out : Bool = true, level : String = "log" ) {
 		//var num = out ? numPrintedOutgoing++ : numPrintedIncoming++;
-		var info = out ? ">>> xmpp >>>" : "<<< xmpp <<< "; // )+" ("+num+":"+(++numPrinted)+")";
 		#if air
+		var info = out ? ">>> xmpp >>>" : "<<< xmpp <<< "; // )+" ("+num+":"+(++numPrinted)+")";
 		haxe.Log.trace( t, { className : "", methodName : "", fileName : info, lineNumber : t.length, customParams : [] } );
 		#else
 		if( useConsole ) {
 			if( currentGroup == null ) {
-				__console( "group", currentGroup = "xmpp "+(out?">>>":"<<<") );
+				__console( "group", currentGroup = "xmpp "+(out?prefixClient:prefixServer) );
 			} else {
 				if( out && !lastPrintWasOutgoing || !out && lastPrintWasOutgoing ) {
 					__console( "groupEnd" );
-					__console( "group", currentGroup = "xmpp "+(out?">>>":"<<<") );
+					__console( "group", currentGroup = "xmpp "+(out?prefixClient:prefixServer) );
 				}
 			}
 			__console( level, t );
 		} else {
+			var info = out ? ">>> xmpp >>>" : "<<< xmpp <<< ";
 			haxe.Log.trace( t, { className : "", methodName : "", fileName : info, lineNumber : t.length, customParams : [] } );
 		}
 		#end
