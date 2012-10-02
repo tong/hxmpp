@@ -62,6 +62,11 @@ class XMPPDebug {
 	//public static var numPrinted(default,null) : Int;
 	//public static var numPrintedIncoming(default,null) : Int;
 	//public static var numPrintedOutgoing(default,null) : Int;
+
+	/**
+		Activate/Deactivate printing
+	*/
+	public static var active = true;
 	
 	/** */
 	public static var lastPrintWasOutgoing(default,null) : Bool = false;
@@ -73,6 +78,7 @@ class XMPPDebug {
 		Currently only supported in terminal targets.
 	*/
 	public static var beautify = true;
+	
 	
 	/**
 		Print incoming XMPP data
@@ -93,7 +99,9 @@ class XMPPDebug {
 	
 	/**
 	*/
-	public static inline function print( t : String, out : Bool, level : String = "log" ) {
+	public static function print( t : String, out : Bool, level : String = "log" ) {
+		if( !active )
+			return;
 		#if XMPP_CONSOLE
 		XMPPConsole.printXMPP( t, out );
 		#else
