@@ -22,7 +22,7 @@
 package jabber;
 
 /**
-	Static methods for JabberID validation/manipulation.
+	Static methods for jabber-id validation and manipulation.
 */	
 class JIDUtil {
 	
@@ -33,6 +33,13 @@ class JIDUtil {
 	/**
 		Regular expression matching a valid JID
 	*/
+	public static var EREG = 
+		#if JABBER_DEBUG
+		~/([A-Z0-9._%-]+)@([A-Z0-9\.-]+)/i;
+		#else
+		~/([A-Z0-9._%-]+)@([A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?)(\/([A-Z0-9._%-]+))?/i;
+		#end
+	/*
 	#if macro //TODO temp,macro bug
 	public static var EREG = 
 		#if JABBER_DEBUG
@@ -41,19 +48,17 @@ class JIDUtil {
 		~/([A-Z0-9._%-]+)@([A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?)(\/([A-Z0-9._%-]+))?/;
 		#end
 	#else
-	public static var EREG = 
-		#if JABBER_DEBUG
-		~/([A-Z0-9._%-]+)@([A-Z0-9.-]+(\.[A-Z][A-Z][A-Z]?)?)(\/([A-Z0-9._%-]+))?/i;
-		#else
-		~/([A-Z0-9._%-]+)@([A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?)(\/([A-Z0-9._%-]+))?/i;
-		#end
-	#end
+	//#end
+	*/
 	
 	/**
 		@returns True if the given JID is valid formed.
 	*/
 	public static function isValid( t : String ) : Bool {
-		if( t == null || t.length < MIN_LENGTH || t.length > MAX_SIZE )
+		if( t == null 
+			#if !JABBER_DEBUG
+			|| t.length < MIN_LENGTH || t.length > MAX_SIZE
+			#end )
 			return false;
 		if( !EREG.match( t ) )
 			return false;
