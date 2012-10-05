@@ -47,7 +47,7 @@ class BOSHConnection extends jabber.stream.Connection {
 	static var XMLNS = "http://jabber.org/protocol/httpbind";
 	static var XMLNS_XMPP = "urn:xmpp:xbosh";
 	
-	/** BOSH/HTTP path */
+	/** HTTP path */
 	public var path(default,null) : String;
 	
 	/** Maximum number of requests the connection manager is allowed to keep waiting at any one time during the session. */
@@ -56,7 +56,7 @@ class BOSHConnection extends jabber.stream.Connection {
 	/** Longest time (in seconds) that the connection manager is allowed to wait before responding to any request during the session. */
 	public var wait(default,null) : Int;
 	
-	/** BOSH session id */
+	/** Session id */
 	public var sid(default,null) : String;
 	
 	/** */
@@ -91,10 +91,10 @@ class BOSHConnection extends jabber.stream.Connection {
 		The default wait time for responses is 30 seconds.
 	*/
 	public function new( host : String, path : String,
-						 hold : Int = 1, wait : Int = 30, secure : Bool = false,
-						 maxConcurrentRequests : Int = 2, timeoutOffset = 25 ) {
+						   hold : Null<Int> = 1, wait : Null<Int> = 30, secure : Bool = false,
+						   maxConcurrentRequests : Null<Int> = 2, timeoutOffset : Null<Int> = 25 ) {
 		
-		super( host, false, true );
+		super( host, secure, true );
 		this.path = path;
 		this.hold = hold;
 		this.wait = wait;
@@ -501,16 +501,12 @@ class BOSHConnection extends jabber.stream.Connection {
 	}
 	
 	function getHTTPPath() : String {
-		#if neko
 		var b = new StringBuf();
 		b.add( "http" );
 		if( secure ) b.add( "s" );
 		b.add( "://" );
 		b.add( path );
 		return b.toString();
-		#else
-		return "http://"+path;
-		#end
 	}
 	
 	function cleanup() {
