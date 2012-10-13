@@ -25,8 +25,9 @@ import xmpp.dataform.FormType;
 using xmpp.XMLUtil;
 
 /**
-	DataForm packet extension (for IQ and message packets).
-	<a href="http://xmpp.org/extensions/xep-0004.html">XEP-0004: Data Forms</a><br/>
+	DataForm packet extension (for iq and message packets).
+
+	XEP-0004: Data Forms: http://xmpp.org/extensions/xep-0004.html
 */
 class DataForm {
 	
@@ -39,8 +40,8 @@ class DataForm {
 	public var reported : xmpp.dataform.Reported;
 	public var items : Array<xmpp.dataform.Item>;
 	
-	public function new( type : FormType ) {
-		this.type = type;
+	public function new( ?type : FormType ) {
+		this.type = ( type == null ) ? xmpp.dataform.FormType.result : type;
 		fields = new Array();
 		items = new Array();
 	}
