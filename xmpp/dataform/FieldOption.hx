@@ -35,7 +35,7 @@ class FieldOption {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "option" );
-		x.addField( this, "label" );
+		x.set( "label", label );
 		x.addField( this, "value" );
 		return x;
 	}
