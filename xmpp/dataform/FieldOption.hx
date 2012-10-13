@@ -41,9 +41,7 @@ class FieldOption {
 	}
 	
 	public static function parse( x : Xml ) : FieldOption {
-		var o = new FieldOption( x.get( "label" ), x.elements().next().firstChild().nodeValue );
-		o.value = x.elements().next().firstChild().nodeValue;
-		return o;
+		return new FieldOption( x.get( "label" ), x.elements().next().firstChild().nodeValue );
 	}
 	
 }
