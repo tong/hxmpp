@@ -41,26 +41,19 @@ class ServiceDiscoveryListener {
 	/** Custom info request handler relay */
 	public var onInfoQuery : IQ->IQ;
 	
-	#if JABBER_COMPONENT
 	/** Custom items request handler relay */
 	public var onItemQuery : IQ->IQ;
-	#end
 	
 	public function new( stream : Stream, ?identities : Array<xmpp.disco.Identity> ) {
 		
-		if( !stream.features.add( xmpp.disco.Info.XMLNS )
-			#if JABBER_COMPONENT
-			|| !stream.features.add( xmpp.disco.Items.XMLNS )
-			#end )
+		if( !stream.features.add( xmpp.disco.Info.XMLNS ) || !stream.features.add( xmpp.disco.Items.XMLNS ) )
 			throw "service discovery listener already added";
 			
 		this.stream = stream;
 		this.identities = ( identities == null ) ? [defaultIdentity] : identities;
 		
 		stream.collect( [new IQFilter( xmpp.disco.Info.XMLNS, xmpp.IQType.get )], handleInfoQuery, true );
-		#if JABBER_COMPONENT
 		stream.collect( [new IQFilter( xmpp.disco.Items.XMLNS, xmpp.IQType.get )], handleItemsQuery, true );
-		#end
 	}
 	
 	function handleInfoQuery( iq : IQ ) {
@@ -85,7 +78,6 @@ class ServiceDiscoveryListener {
 		stream.sendData( r.toString() );
 	}
 	
-	#if JABBER_COMPONENT
 	function handleItemsQuery( iq : IQ ) {
 		if( onItemQuery != null ) { // redirect to custom handler
 			var r = onItemQuery( iq );
@@ -94,11 +86,13 @@ class ServiceDiscoveryListener {
 				return;
 			}
 		}
-		var s : jabber.component.Stream = cast stream;
 		var r = IQ.createResult( iq );
+		#if JABBER_COMPONENT
+		var s : jabber.component.Stream = cast stream;
 		r.x = s.items;
+		#else
+		var s = stream;
+		#end
 		s.sendPacket( r );
 	}
-	#end
-	
 }
