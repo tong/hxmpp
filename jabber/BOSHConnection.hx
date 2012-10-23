@@ -362,7 +362,7 @@ class BOSHConnection extends jabber.stream.Connection {
 	*/
 	
 	function handleHTTPError( e : String ) {
-		#if JABBER_DEBUG trace( e , "error" ); #end
+		#if JABBER_DEBUG trace( e , "warn" ); #end
 		cleanup();
 		__onDisconnect( e );
 	}
