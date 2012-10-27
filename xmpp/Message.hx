@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,18 +22,24 @@
 package xmpp;
 
 /**
-	XMPP message packet.<br/>
+	XMPP message packet.
 */
 class Message extends xmpp.Packet {
 	
+	/***/
 	public var type : MessageType;
+	/***/
 	public var body : String;
+	/***/
 	public var subject : String;
+	/***/
     public var thread : String;
 	
     public function new( ?to : String, ?body : String, ?subject : String,
     					 ?type : MessageType, ?thread : String, ?from : String ) {
+		
 		_type = xmpp.PacketType.message;
+		
 		super( to, from );
 		this.type = if ( type != null ) type else xmpp.MessageType.chat;
 		this.body = body;

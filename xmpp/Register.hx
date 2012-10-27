@@ -22,7 +22,7 @@
 package xmpp;
 
 /**
-	<a href="http://www.xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a>
+	XEP-0077: In-Band Registration
 */
 class Register {
 	
@@ -50,7 +50,7 @@ class Register {
 	public var remove : Bool;
 	public var form : xmpp.DataForm;
 	
-	public function new( ?username:	String, ?password : String, ?email : String, ?name : String ) {
+	public function new( ?username : String, ?password : String, ?email : String, ?name : String ) {
 		this.username = username;
 		this.password = password;
 		this.email = email;

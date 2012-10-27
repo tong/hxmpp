@@ -34,7 +34,7 @@ class Field {
 	public var options : Array<FieldOption>;
 	
 	public function new( ?type : FieldType ) {
-		this.type = type;
+		this.type = ( type == null ) ? FieldType.text_single : type;
 		values = new Array();
 		options = new Array();
 		required = false;
