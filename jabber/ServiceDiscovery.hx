@@ -63,7 +63,7 @@ class ServiceDiscovery {
 	/**
 		Query entity for items.
 	*/
-	public function items( jid : String, ?node : String ) {
+	public function items( ?jid : String, ?node : String ) {
 		if( jid == null )
 			jid = stream.jid.domain;
 		var r = new IQ( IQType.get, null, jid );
