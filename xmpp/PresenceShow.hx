@@ -25,18 +25,18 @@ package xmpp;
 	Four elements, which provide insights into a human users availbility
 	for and interest in communication.
 */
-enum PresenceShow {
-	
-	/** Away from device */
-	away;
+@:fakeEnum(String) enum PresenceShow {
 	
 	/** Especially socialable */
 	chat;
 	
-	/** Busy */
-	dnd;
+	/** Away from device */
+	away;
 	
 	/** Extended Away */
 	xa;
+
+	/** Busy */
+	dnd;
 	
 }
