@@ -25,15 +25,15 @@ import haxe.io.Bytes;
 import jabber.util.Base64;
 import xmpp.IQ;
 import xmpp.IQType;
-#if (neko||cpp||php)
+#if sys
 import sys.FileSystem;
 import sys.io.File;
 import haxe.io.Path;
 #elseif nodejs
 import js.Node;
-import js.FileSystem;
-import js.io.File;
-import js.io.Path;
+//import js.FileSystem;
+//import js.io.File;
+//import js.io.Path;
 #elseif (air&&flash)
 import flash.filesystem.File;
 import flash.filesystem.FileMode;
@@ -83,7 +83,7 @@ class SITransfer {
 		#if flash bytes.getData().position = 0; #end
 	}
 	
-	#if (neko||cpp||php||air||nodejs)
+	#if (sys||air||nodejs)
 	
 	/**
 	*/
@@ -106,6 +106,8 @@ class SITransfer {
 		#else
 		if( !FileSystem.exists( filepath ) )
 			throw "file not found ["+filepath+"]";
+		//if( !fileExists( filepath ) )
+		//	throw "file not found ["+filepath+"]";
 		this.filepath = filepath;
 		var fstat = FileSystem.stat( filepath );
 		var fname = Path.withoutDirectory( filepath );
@@ -117,6 +119,18 @@ class SITransfer {
 		
 		sendRequest( fname, fsize, fdate, hash, desc, range, mime );
 	}
+	
+	/*
+	inline function fileExists( path : String ) : Bool {
+		#if nodejs
+		return Node.path.exists( path );
+		#elseif sys
+		return FileSystem.exists( path );
+		#elseif air
+		return File.applicationDirectory.resolvePath( filepath ).exists; //TODO 
+		#end
+	}
+	*/
 	
 	#end
 	

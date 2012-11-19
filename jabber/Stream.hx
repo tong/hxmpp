@@ -338,7 +338,6 @@ class Stream {
 	*/
 	public function handleString( t : String ) : Bool {
 		
-		
 		if( status == Status.closed ) {
 			#if JABBER_DEBUG trace( "cannot process incoming data, xmpp stream not connected", "debug" ); #end
 			throw "stream is closed";
@@ -353,7 +352,6 @@ class Stream {
 			trace("Invalid XMPP data recieved","error");
 		}
 		*/
-
 		
 		if( StringTools.startsWith( t, '</stream:stream' ) ) {
 			#if XMPP_DEBUG XMPPDebug.i( t ); #end
@@ -366,7 +364,6 @@ class Stream {
 			return true;
 		}
 		
-		
 		buffer( t );
 		if( bufSize > maxBufSize ) {
 			#if JABBER_DEBUG
@@ -374,13 +371,10 @@ class Stream {
 			#end
 			close( false );
 		}
-
 		
 		switch( status ) {
-		
 		case Status.closed :
 			return false;
-		
 		case Status.pending :
 			if( processStreamInit( buf.toString() ) ) {
 				resetBuffer();
@@ -388,7 +382,6 @@ class Stream {
 			} else {
 				return false;
 			}
-		
 		#if !JABBER_COMPONENT
 		case Status.starttls :
 			var x : Xml = null;
@@ -413,7 +406,6 @@ class Stream {
 			cnx.setSecure();
 			return true;
 		#end //!JABBER_COMPONENT
-			
 		case Status.open :
 			var x : Xml = null;
 			try x = Xml.parse( buf.toString() ) catch( e : Dynamic ) {

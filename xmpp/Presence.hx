@@ -22,10 +22,12 @@
 package xmpp;
 
 /**
-	<a href="http://xmpp.org/rfcs/rfc3921.html">RFC-3921 - Instant Messaging and Presence</a></br>
-	<a href="http://www.xmpp.org/rfcs/rfc3921.html#presence">Exchanging Presence Information</a>
+	RFC-3921 - Instant Messaging and Presence: http://xmpp.org/rfcs/rfc3921.html
+	Exchanging Presence Information: http://www.xmpp.org/rfcs/rfc3921.html#presence
 */
 class Presence extends xmpp.Packet {
+	
+	public static inline var MAX_STATUS_SIZE = 1023;
 	
 	public var type : PresenceType;
    	public var show : PresenceShow;
@@ -42,7 +44,9 @@ class Presence extends xmpp.Packet {
 	}
 	
 	function setStatus( s : String ) : String {
-		return status = ( ( s == null || s == "" ) ? null : ( s.length > 1023 ) ? s.substr( 0, 1023 ) : s );
+		return status = ( ( s == null || s == "" ) ?
+			null :
+			( s.length > MAX_STATUS_SIZE ) ? s.substr( 0, MAX_STATUS_SIZE ) : s );
 	}
 	
 	public override function toXml() : Xml {
@@ -76,5 +80,7 @@ class Presence extends xmpp.Packet {
 		}
 		return p;
 	}
+	
+	//public static function showOfString() : PresenceShow {
 	
 }

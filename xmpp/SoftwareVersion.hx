@@ -24,14 +24,19 @@ package xmpp;
 using xmpp.XMLUtil;
 
 /**
-	<a href="http://www.xmpp.org/extensions/xep-0092.html">XEP 0092 - Software Version</a>
+	XEP 0092 - Software Version: http://www.xmpp.org/extensions/xep-0092.html
 */
 class SoftwareVersion {
 	
 	public static var XMLNS(default,null) : String = "jabber:iq:version";
 	
+	/** The natural-language name of the software */
 	public var name : String;
+	
+	/** The specific version of the software */
 	public var version : String;
+	
+	/** The operating system of the queried entity */
 	public var os : String;
 	
 	public function new( ?name : String, ?version : String, ?os : String ) {
@@ -48,7 +53,7 @@ class SoftwareVersion {
 		return x;
 	}
 	
-	public static inline function parse( x : Xml ) : xmpp.SoftwareVersion {
+	public static inline function parse( x : Xml ) : SoftwareVersion {
 		return new SoftwareVersion().reflectElements( x );
 		/*
 		for( e in x.elements() ) {

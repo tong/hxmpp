@@ -27,7 +27,7 @@ package jabber.client;
 class VCardBase<T> {
 	
 	/** VCard loaded callback*/
-	public dynamic function onLoad( jid : String, data : xmpp.VCardTemp ) {}
+	public dynamic function onLoad( jid : String, data : T ) {}
 	/** Own vcard updated callback */
 	public dynamic function onUpdate() {}
 	/** */

@@ -24,13 +24,13 @@ package jabber.util;
 using Lambda;
 
 /**
-	Utility to 'beautify' a xml string for debugging.
+	Utility to 'beautify' XML strings for debugging.
 */
 class XMLBeautify {
 	
-	//#if (sys||nodejs||rhino)
-	
 	/**
+		Format given string to something readable.
+		Only for debugging, do NOT use in production.
 	*/
 	public static function it( t : String ) : String  {
 		var x : Xml = null;
@@ -75,16 +75,4 @@ class XMLBeautify {
 	}
 	
 	static inline function indent( b : StringBuf, n : Int ) for( i in 0...n ) b.add( '\t' )
-	
-	/* 
-	#else
-	
-	//TODO
-	public static inline function it( t : String ) : String  {
-		return t;
-	}
-	
-	#end
-	*/
-	
 }

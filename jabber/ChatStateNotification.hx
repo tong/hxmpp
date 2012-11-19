@@ -28,20 +28,32 @@ import xmpp.filter.PacketPropertyFilter;
 
 /**
 	Extension for communicating the status of a user in a chat session.
-	<a href="http://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a>
+	XEP-0085: Chat State Notifications: http://xmpp.org/extensions/xep-0085.html
+
+	                o (start)
+	                |
+	                |
+	INACTIVE <--> ACTIVE <--> COMPOSING <--> PAUSED
+	    |                                       |
+	    |                                       |
+	    +---<---<---<---<---<---<---<---<---<---+
 */
 class ChatStateNotification {
 	
 	public dynamic function onState( jid : String, state : xmpp.ChatState ) {}
 	
-	public var stream(default,null) : Stream;
+	/** The chat state to intercept message packets with */
 	public var state : xmpp.ChatState;
+	public var stream(default,null) : Stream;
 	
 	var collector : PacketCollector;
 	
 	public function new( stream : jabber.Stream ) {
-		if( !stream.features.add( xmpp.ChatStateNotification.XMLNS ) )
-			throw "chatstate listener already added";
+		
+		//if( !stream.features.add( xmpp.ChatStateNotification.XMLNS ) )
+		//	throw "chatstate listener already added";
+		stream.features.add( xmpp.ChatStateNotification.XMLNS );
+		
 		this.stream = stream;
 		collector = stream.collect( [new MessageFilter(MessageType.chat),
 									 new PacketPropertyFilter(xmpp.ChatStateNotification.XMLNS)

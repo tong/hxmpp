@@ -25,12 +25,12 @@ import jabber.util.Base64;
 
 /**
 	Listens for 'Bits Of Binary' requests.
-	<a href="http://xmpp.org/extensions/xep-0231.html">XEP-0231: Bits of Binary</a>
+	XEP-0231: Bits of Binary: http://xmpp.org/extensions/xep-0231.html
 */
 class BOBListener {
 	
 	/**
-		Callback handler for BOB requests.
+		Callback handler for BOB requests: JID->CID->BOB
 	*/
 	public var onRequest : String->String->xmpp.BOB;
 	
@@ -60,7 +60,8 @@ class BOBListener {
 			//TODO check XEP for updates
 			//.??
 		} else {
-			var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
+			//var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
+			var r = xmpp.IQ.createResult( iq );
 			// encode here?
 			bob.data =  new haxe.BaseCode( haxe.io.Bytes.ofString( Base64.CHARS ) ).encodeString( bob.data );
 			r.x = bob;

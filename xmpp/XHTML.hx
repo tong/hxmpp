@@ -22,7 +22,7 @@
 package xmpp;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0071.html">XEP 0071 - XHTML-IM</a>
+	XEP 0071 - XHTML-IM: http://xmpp.org/extensions/xep-0071.html
 */
 class XHTML {
 	
@@ -54,13 +54,10 @@ class XHTML {
 		Extracts/Returns the HTML body from a message packet.
 	*/
 	public static function fromMessage( m : xmpp.Message ) : String {
-		for( p in m.properties ) {
-			if( p.nodeName == "html" && p.get( "xmlns" ) == XMLNS ) {
-				for( e in p.elementsNamed( "body" ) ) {
+		for( p in m.properties )
+			if( p.nodeName == "html" && p.get( "xmlns" ) == XMLNS )
+				for( e in p.elementsNamed( "body" ) )
 					return parseBody( e );
-				}
-			}
-		}
 		return null;
 	}	
 	

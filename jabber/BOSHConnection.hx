@@ -35,8 +35,8 @@ import flash.events.SecurityErrorEvent;
 	by efficiently using multiple synchronous HTTP request/response pairs
 	without requiring the use of frequent polling or chunked responses.
 	
-	<a href="http://xmpp.org/extensions/xep-0124.html">Bidirectional-streams Over Synchronous HTTP (BOSH)</a>
-	<a href="http://xmpp.org/extensions/xep-0206.html">XMPP Over BOSH</a>
+	Bidirectional-streams Over Synchronous HTTP (BOSH): http://xmpp.org/extensions/xep-0124.html
+	XMPP Over BOSH: http://xmpp.org/extensions/xep-0206.html
 */
 class BOSHConnection extends jabber.stream.Connection {
 	
@@ -258,7 +258,7 @@ class BOSHConnection extends jabber.stream.Connection {
 		
 		if( requestCount >= maxConcurrentRequests ) {
 			#if JABBER_DEBUG
-			trace( "max concurrent request limit reached ("+requestCount+","+maxConcurrentRequests+")", "info" );
+//			trace( "max concurrent request limit reached ("+requestCount+","+maxConcurrentRequests+")", "info" );
 			#end
 			return false;
 		}

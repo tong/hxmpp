@@ -26,15 +26,16 @@ package jabber;
 */
 class MUCUtil {
 	
-	/** Regular expression matching a MUC address */
+	/** Regular expression matching a valid MUC address */
 	public static var EREG = ~/([A-Z0-9._%-]+)@([A-Z0-9.-]+)(\/([A-Z0-9._%-]+))?/i;
 
 	/**
-		Returns true if the given string is a valid muchat address.<br/>
+		Returns true if the given string is a valid muchat address.
 		The 'nick' parameter indicates if a full adress (including nickname) is expected.
 	*/
 	public static function isValid( t : String, nick : Bool = false ) : Bool {
-		if( !EREG.match( t ) ) return false;
+		if( !EREG.match( t ) )
+			return false;
 		return nick ? ( EREG.matched( 4 ) != null ) : true;
 	}
 	
@@ -66,8 +67,10 @@ class MUCUtil {
 	public static function getParts( t : String ) : Array<String> {
 		var i1 = t.indexOf( "@" );
 		var i2 = t.indexOf( "/" );
-		return if( i2 == -1 ) [ t.substr( 0, i1 ), t.substr( i1+1 ) ];
-		else [ t.substr( 0, i1 ), t.substr( i1+1, i2-i1-1 ), t.substr( i2+1 ) ];
+		return if( i2 == -1 )
+			[ t.substr( 0, i1 ), t.substr( i1+1 ) ];
+		else
+			[ t.substr( 0, i1 ), t.substr( i1+1, i2-i1-1 ), t.substr( i2+1 ) ];
 	}
 		
 }

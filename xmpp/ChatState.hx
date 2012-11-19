@@ -22,7 +22,7 @@
 package xmpp;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a><br/>
+	XEP-0085: Chat State Notifications: http://xmpp.org/extensions/xep-0085.html
 */
 enum ChatState {
 	

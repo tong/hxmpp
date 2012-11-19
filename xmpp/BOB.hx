@@ -24,7 +24,7 @@ package xmpp;
 using xmpp.XMLUtil;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0231.html">XEP-0231: Bits of Binary</a><br/>
+	XEP-0231: Bits of Binary: http://xmpp.org/extensions/xep-0231.html
 */
 class BOB {
 	
@@ -32,10 +32,13 @@ class BOB {
 	
 	/** Content ID */
 	public var cid : String;
+	
 	/** Content type. fe: image/png */
 	public var type : String;
+	
 	/** Suggested period for caching time of data, 0 for 'no cache' */
 	public var max_age : Int;
+	
 	/** File type */
 	public var data : String;
 	
@@ -79,18 +82,37 @@ class BOB {
 	}
 	
 	/**
+		Finds all CIDs in given string
+	*/
+	/*
+	public static function findCIDs( t : String ) : Array<{cid:String,pos:Int}> {
+		// cid:sha1+8f35fef110ffc5df08d579a50083ff9308fb6242@bob.xmpp.org
+		var a = new Array<{cid:String,pos:Int}>();
+		var reg = ~/cid:([a-z0-9]+)\+([a-z0-9]+)@bob\.xmpp\.org/g; //gm
+		reg.customReplace( t, function(r){
+			a.push( { cid : createCID( r.matched(1), r.matched(2) ), pos : r.matchedPos().pos } );
+			//a.push( { cid : l.substr( pos.pos, pos.len ), pos : pos.pos } );
+			//trace( r.matched( 1 ) +" : "+ r.matched( 2 ) );
+			//trace( r.matchedPos() );
+			return null;
+		});
+		return a;
+	}
+	*/
+	
+	/**
+		Splits a CID into its parts
 	*/
 	public static function getCIDParts( cid : String ) : Array<String> {
-		var i1 = cid.indexOf( "+" );
-		var i2 = cid.lastIndexOf( "@bob.xmpp.org" );
-		return if( i1 == -1 || i2 == -1 ) null;
-		else [ cid.substr( 0, i1 ), cid.substr( i1+1, i2-i1-1 ) ];
+		var a = cid.indexOf( "+" );
+		var b = cid.lastIndexOf( "@bob.xmpp.org" );
+		return if( a == -1 || b == -1 ) null else [ cid.substr(0,a), cid.substr(a+1,b-a-1) ];
 	}
 	
 	/**
 	*/
 	public static function createCID( algo : String, hash : String ) : String {
-		#if (neko||cpp)
+		#if sys
 		var b = new StringBuf();
 		b.add( algo );
 		b.add( "+" );
@@ -101,14 +123,5 @@ class BOB {
 		return algo+"+"+hash+"@bob.xmpp.org";
 		#end
 	}
-	
-	/*
-		Create BOB data elements to use for direct messages.
-	
-	public function createElement( bytes : haxe.io.Bytes, type : String, maxage : Int, data : String ) {
-		var hash : String = crypt.SHA1.encode( bytes.toString() );
-		return new xmpp.BOB( xmpp.BOB.createCID( "sha1", hash ), type, maxage, data );
-	}
-	*/
 	
 }

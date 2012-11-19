@@ -22,8 +22,8 @@
 package jabber;
 
 /**
-	Request entity for 'Bits Of Binary'.<br>
-	<a href="http://xmpp.org/extensions/xep-0231.html">XEP-0231: Bits Of Binary.</a>
+	Request entity for 'Bits Of Binary'.
+	XEP-0231: Bits Of Binary: http://xmpp.org/extensions/xep-0231.html
 */
 class BOB {
 	
@@ -39,8 +39,8 @@ class BOB {
 	/**
 		Load BOB from entity.
 	*/
-	public function load( from : String, cid : String ) {
-		var iq = new xmpp.IQ( null, null, from );
+	public function load( jid : String, cid : String ) {
+		var iq = new xmpp.IQ( null, null, jid );
 		iq.x = new xmpp.BOB( cid );
 		stream.sendIQ( iq, handleResponse );
 	}

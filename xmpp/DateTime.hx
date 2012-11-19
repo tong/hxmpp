@@ -22,8 +22,9 @@
 package xmpp;
 
 /**
-	Standardization of ISO 8601 profiles and their lexical representation.<br/>
-	<a href="http://xmpp.org/extensions/xep-0082.html">XMPP Date and Time Profiles</a>
+	Standardization of ISO 8601 profiles and their lexical representation.
+
+	XMPP Date and Time Profiles: http://xmpp.org/extensions/xep-0082.html
 */
 class DateTime {
 	
