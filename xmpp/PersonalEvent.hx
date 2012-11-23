@@ -23,7 +23,7 @@ package xmpp;
 
 /**
 	Abstract base for personal event classes.
-	The implementing class HAS TO HAVE a static XMLNS field (required by the jabber.PersonalEventListener)!
+	The implementing class HAS TO HAVE a static XMLNS field (required by jabber.PersonalEventListener)!
 */
 class PersonalEvent {
 	

@@ -42,6 +42,7 @@ class XMLUtil {
 		@param t Node content
 	*/
 	public static inline function addElement( x : Xml, name : String, content : String ) : Xml {
+		//if( name != null && content != null )
 		x.addChild( createElement( name, content ) );
 		return x;
 	}

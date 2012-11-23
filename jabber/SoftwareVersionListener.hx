@@ -25,25 +25,25 @@ import jabber.stream.PacketCollector;
 import jabber.util.SystemUtil;
 
 /**
-	<a href="http://www.xmpp.org/extensions/xep-0092.html">XEP 0092 - Software Version</a>
 	Extension for retrieving information about the software application associated with an XMPP entity
+	XEP 0092 - Software Version: http://www.xmpp.org/extensions/xep-0092.html
 */
 class SoftwareVersionListener {
 	
-	//public dynamic function onLoad( jid : String, sv : xmpp.SoftwareVersion ) {}
-	
 	public var stream(default,null) : Stream;
+	
 	/** The natural-language name of the software */
 	public var name : String;
+	
 	/** The specific version of the software*/
 	public var version : String;
+	
 	/** The operating system of the queried entity (optional) */
 	public var os : String;
 	
 	var c : PacketCollector;
 	
-	public function new( stream : Stream,
-						 name : String, version : String, ?os : String ) {
+	public function new( stream : Stream, name : String, version : String, ?os : String ) {
 		if( !stream.features.add( xmpp.SoftwareVersion.XMLNS ) )
 			throw "softwareversion feature already added";
 		this.stream = stream;

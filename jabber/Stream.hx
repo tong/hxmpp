@@ -30,6 +30,7 @@ import jabber.stream.PacketCollector;
 import jabber.stream.Status;
 import jabber.util.Base64;
 import xmpp.filter.PacketIDFilter;
+
 #if JABBER_COMPONENT
 import jabber.component.Stream;
 private typedef JID = ComponentJID;
@@ -75,14 +76,17 @@ private class StreamFeatures {
 }
 
 /**
-	Abstract base for XMPP streams to and from another entity.
+	Abstract base for handling a XMPP stream with another entity.
 */
 class Stream {
 	
 	public static var defaultPacketIdLength = 5;
 	public static var defaultMaxBufSize = 524288;
 	
+	/** Callback if the XMPP stream got opened */
 	public dynamic function onOpen() {}
+	
+	/** Callback if the XMPP stream got closed */
 	public dynamic function onClose( ?error : String ) {}
 	
 	public var status : Status;
@@ -144,10 +148,10 @@ class Stream {
 	}
 	
 	/**
-		Get the next unique id for a XMPP packet.
+		Create/Returns the next unique id for this XMPP stream
 	*/
 	public function nextID() : String {
-		return Base64.random( defaultPacketIdLength ) #if JABBER_DEBUG+"_"+numPacketsSent#end;
+		return Base64.random( defaultPacketIdLength ) #if JABBER_DEBUG+"_"+numPacketsSent #end;
 	}
 	
 	/**
@@ -159,14 +163,15 @@ class Stream {
 	}
 	#else
 	public function open( jid : JID ) {
-		if( jid != null ) this.jid = jid
-		else if( this.jid == null ) this.jid = new JID( null );
+		if( jid != null )
+			this.jid = jid
+		else if( this.jid == null )
+			this.jid = new JID( null );
 		if( cnx == null )
 			throw 'no stream connection set';
 		//status = Status.pending;
 		cnx.connected ? handleConnect() : cnx.connect();
 	}
-	
 	#end
 	
 	/**

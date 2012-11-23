@@ -24,7 +24,7 @@ package jabber;
 /**
 	Send personal updates or "events" to other users, who are typically contacts in the user's roster.
 	
-	<a href="http://xmpp.org/extensions/xep-0163.html">XEP-0163: Personal Eventing Protocol</a>
+	XEP-0163: Personal Eventing Protocol: http://xmpp.org/extensions/xep-0163.html
 */
 class PersonalEvent {
 	

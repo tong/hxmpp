@@ -27,7 +27,7 @@ import xmpp.filter.IQFilter;
 
 /**
 	Listens/Answers incoming service discovery requests.
-	<a href="http://www.xmpp.org/extensions/xep-0030.html">XEP 30 - ServiceDiscovery</a>
+	XEP 30 - ServiceDiscovery: http://www.xmpp.org/extensions/xep-0030.html
 */
 class ServiceDiscoveryListener {
 	
@@ -35,7 +35,7 @@ class ServiceDiscoveryListener {
 	
 	public var stream(default,null) : Stream;
 	
-	/** */
+	/** */ //TODO hmmm here? not in stream?
 	public var identities : Array<xmpp.disco.Identity>;
 	
 	/** Custom info request handler relay */

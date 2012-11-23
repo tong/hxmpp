@@ -48,7 +48,6 @@ class EntityTimeListener {
 	function handleRequest( iq : xmpp.IQ ) {
 		var r = xmpp.IQ.createResult( iq );
 		time.utc = xmpp.DateTime.now();
-		trace(time.tzo);
 		r.x = time;
 		stream.sendPacket( r );	
 	}

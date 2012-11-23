@@ -26,7 +26,7 @@ import jabber.util.SHA1;
 using xmpp.XMLUtil;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0115.html">XEP-0085: Entity Capabilities</a>
+	XEP-0085: Entity Capabilities: http://xmpp.org/extensions/xep-0115.html
 */
 class Caps {
 	
@@ -78,10 +78,11 @@ class Caps {
 	}
 	
 	/**
+		Extracts the caps information from given presence packet
 	*/
 	//TODO
 	//public static function ofPacket( p : xmpp.Packet ) : xmpp.Caps {
-	public static function fromPresence( p : xmpp.Presence ) : xmpp.Caps {
+	public static function fromPresence( p : xmpp.Packet ) : xmpp.Caps {
 		for( p in p.properties )
 			if( p.nodeName == "c" && p.get( "xmlns" ) == XMLNS )
 				return parse( p );
@@ -89,7 +90,7 @@ class Caps {
 	}
 	
 	/**
-		<a href="http://xmpp.org/extensions/xep-0115.html#ver">Verification String</a><br/>
+		http://xmpp.org/extensions/xep-0115.html#ver
 	*/
 	public static function createVerfificationString( identities : Iterable<xmpp.disco.Identity>, features : Iterable<String>,
 													  ?dataform : xmpp.DataForm ) : String {
@@ -106,11 +107,13 @@ class Caps {
 			b.add( i.name );
 			b.add( "<" );
 		}
+		
 		// sort/add features
 		var _f = Lambda.array( features );
-		_f.sort( sort );
+		_f.sort( sortString );
 		b.add( _f.join( "<" ) );
 		b.add( "<" );
+		
 		// sort/add dataform
 		if( dataform != null ) {
 			//TODO xmpp.X FORM_TYPE
@@ -144,7 +147,7 @@ class Caps {
 		return ( a.variable == b.variable ) ? 0 : ( a.variable > b.variable ) ? 1 : -1;
 	}
 	
-	static function sort( a : String, b : String ) : Int {
+	static function sortString( a : String, b : String ) : Int {
 		return ( a == b ) ? 0 : ( a > b ) ? 1 : -1;
 	}
 	

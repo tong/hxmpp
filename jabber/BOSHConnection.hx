@@ -387,8 +387,12 @@ class BOSHConnection extends jabber.stream.Connection {
 			return;
 		}
 		if( x.get( 'xmlns' ) != XMLNS ) {
-			#if JABBER_DEBUG trace( 'invalid BOSH body ('+x+')', 'warn' ); #end
+			#if JABBER_DEBUG
+			trace( 'invalid BOSH body ('+x+')', 'error' );
+			#end
+			cleanup();
 			//TODO disconnect
+			__onDisconnect( 'invalid BOSH body ('+x+')' );
 			return;
 		}
 		requestCount--;
@@ -398,7 +402,9 @@ class BOSHConnection extends jabber.stream.Connection {
 			switch( x.get( "type" ) ) {
 			case "terminate" :
 				cleanup();
-				#if JABBER_DEBUG trace( "BOSH stream terminated by server", "warn" ); #end
+				#if JABBER_DEBUG
+				trace( "BOSH stream terminated by server", "warn" );
+				#end
 				trace(x);
 				__onDisconnect( x.get('condition') );
 				return;

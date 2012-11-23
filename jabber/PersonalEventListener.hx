@@ -29,8 +29,8 @@ private typedef Listener = {
 }
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0163.html">XEP-0163: Personal Eventing Protocol</a><br/>
 	Listener for incoming personal events from other entities.
+	XEP-0163: Personal Eventing Protocol: http://xmpp.org/extensions/xep-0163.html
 */
 class PersonalEventListener {
 	
