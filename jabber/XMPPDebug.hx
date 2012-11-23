@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,7 @@
  */
 package jabber;
 
+import jabber.util.DateUtil;
 #if (flash&&!air)
 import flash.external.ExternalInterface;
 #elseif nodejs
@@ -73,12 +74,21 @@ class XMPPDebug {
 	
 	/**
 		Indicates if the XMPP debug output should get formatted/beautified.
-		If active, it is not ensured that the shown string matches the sent/recieved ones.
+		Mind: If active, it is not ensured that the formatted string matches exactly the sent/recieved ones!
 		Default value is false.
 		Currently only supported in terminal targets.
 	*/
-	public static var beautify = true;
+	public static var beautify : Bool = true;
 	
+	/**
+		Toggle print the current date in meta information
+	*/
+	public static var showDate : Bool = false;
+	
+	/**
+		Toggle print the current time in meta information
+	*/
+	public static var showTime : Bool = true;
 	
 	/**
 		Print incoming XMPP data
@@ -94,8 +104,9 @@ class XMPPDebug {
 		print( t, true );
 	}
 	
-	//public static inline function ox( x : Xml )
-	//public static inline function op( p : xmpp.Packet )
+	//public static inline function printXml( x : Xml )
+	//public static inline function printXMPPPacket( p : xmpp.Packet )
+	//public static inline function printInfoString( p : xmpp.Packet )
 	
 	/**
 	*/
@@ -105,19 +116,21 @@ class XMPPDebug {
 		#if XMPP_CONSOLE
 		XMPPConsole.printXMPP( t, out );
 		#else
-			#if (air||cpp||neko||nodejs||php||rhino)
+			#if (sys||nodejs||air||rhino)
 			__print( beautify ? XMLBeautify.it(t) : t+"\n", out ? color_out : color_inc );
-			#elseif (flash||js)
+			#elseif (js||flash)
 			__print( beautify ? XMLBeautify.it(t) : t, out, level );
 			#end
-		#end // XMPP_CONSOLE
+		#end
 	}
 	
-	#if (sys||air||nodejs||rhino)
+	#if (sys||nodejs||air||rhino)
 	
 	public static var color_out = 36;
 	public static var color_inc = 33;
 	
+	/**
+	*/
 	public static function __print( t : String, color : Int = -1 ) {
 		if( color == -1 ) {
 			#if rhino
@@ -155,10 +168,11 @@ class XMPPDebug {
 		#end
 	}
 	
-	#elseif (flash||js)
+	#elseif (js||flash)
 	
 	/** Indicates if the XMPP transfer should get printed to the browser console */
 	public static var useConsole : Bool;
+	
 	public static var prefixClient = "client";
 	public static var prefixServer = "server";
 
@@ -166,17 +180,20 @@ class XMPPDebug {
 	
 	public static function __print( t : String, out : Bool = true, level : String = "log" ) {
 		//var num = out ? numPrintedOutgoing++ : numPrintedIncoming++;
+		
 		#if air
 		var info = out ? ">>> xmpp >>>" : "<<< xmpp <<< "; // )+" ("+num+":"+(++numPrinted)+")";
 		haxe.Log.trace( t, { className : "", methodName : "", fileName : info, lineNumber : t.length, customParams : [] } );
+		
 		#else
 		if( useConsole ) {
 			if( currentGroup == null ) {
-				__console( "group", currentGroup = "xmpp "+(out?prefixClient:prefixServer) );
+				__console( "group", currentGroup = createMetaInformationString( out ) );
 			} else {
 				if( out && !lastPrintWasOutgoing || !out && lastPrintWasOutgoing ) {
 					__console( "groupEnd" );
-					__console( "group", currentGroup = "xmpp "+(out?prefixClient:prefixServer) );
+					//__console( "group", currentGroup = "xmpp "+(out?prefixClient:prefixServer) );
+					__console( "group", currentGroup = createMetaInformationString( out ) );
 				}
 			}
 			__console( level, t );
@@ -185,7 +202,28 @@ class XMPPDebug {
 			haxe.Log.trace( t, { className : "", methodName : "", fileName : info, lineNumber : t.length, customParams : [] } );
 		}
 		#end
+		
 		lastPrintWasOutgoing = out;
+	}
+	
+	static function createMetaInformationString( out : Bool ) : String {
+		var t = "xmpp "+( out ? prefixClient : prefixServer );
+		var n = Date.now();
+		if( showDate ) {
+			var s = DateUtil.formatTimePartValue( n.getDate() )
+				+"-"+DateUtil.formatTimePartValue( n.getMonth()+1 );
+			t += " ("+s;
+			if( !showTime ) t += ")";
+		}
+		if( showTime ) {
+			var s = DateUtil.formatTimePartValue( n.getHours() )
+				+":"+DateUtil.formatTimePartValue( n.getMinutes() )
+				+":"+DateUtil.formatTimePartValue( n.getSeconds() );
+			t += " ";
+			if( !showDate ) t += "(";
+			t += s+")";
+		}
+		return t;
 	}
 	
 	/*
