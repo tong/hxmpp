@@ -22,68 +22,73 @@
 package jabber;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0115.html">XEP-0085: Entity Capabilities</a><br/>
 	Extension for broadcasting and dynamically discovering client, device, or generic entity capabilities.
+	XEP-0085: Entity Capabilities: http://xmpp.org/extensions/xep-0115.html
 */
 class EntityCapabilities {
-	
-	//public dynamic function onCaps( jid : String, caps : xmpp.Caps ) {}
-	/** Fired if a new entity capability got discovered */
+
+	/** Callback to application for checking if caps already exist (in cache) */
+	public dynamic function onCaps( jid : String, caps : xmpp.Caps ) : Bool { return false; }
+	/** Fired when a new entity capability got discovered */
 	public dynamic function onInfo( jid : String, info : xmpp.disco.Info, ?ver : String ) {}
 	public dynamic function onError( e : jabber.XMPPError ) {}
 	
 	public var stream(default,null) : Stream;
-	public var cached(default,null) : Hash<xmpp.disco.Info>;
-	public var node : String;
-	public var ext : String;
-	public var identities : Array<xmpp.disco.Identity>;
-	public var dataform : xmpp.DataForm;//TODO
+	
+	/**
+		A URI that uniquely identifies a software application,
+		typically a URL at the website of the project or company that produces the software
+	*/
+	public var node(default,null) : String;
+	
+	//public var dataform : xmpp.DataForm;
+	
+	/** My own verification string */
 	public var ver(default,null) : String;
 	
 	var collector : jabber.stream.PacketCollector;
 	
 	public function new( stream : Stream, node : String, identities : Array<xmpp.disco.Identity>,
 						 ?ext : String ) {
+		
 		if( !stream.features.has( xmpp.disco.Info.XMLNS ) )
-			throw "Disco-info is a required stream feature for entity capabilities";
+			throw "disco-info is a required stream feature for entity capabilities";
+		
 		this.stream = stream;
 		this.node = node;
-		this.identities = identities;
-		this.ext = ext;
-		cached = new Hash();
+		
+		//ver = xmpp.Caps.createVerfificationString( identities, stream.features, dataform );
+		createVerificationString( identities, stream.features );
+		stream.addInterceptor( this );
 		collector = stream.collect( [new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence ),
 						 			 new xmpp.filter.PacketPropertyFilter( xmpp.Caps.XMLNS, "c" )],
 									 handlePresence, true );
-		stream.addInterceptor( this );
+	}
+	
+	/**
+		Create/Recreate the verification string
+		Call if your stream changes features
+	*/
+	public function createVerificationString( identities : Array<xmpp.disco.Identity>, features : Iterable<String>, ?dataform : xmpp.DataForm  ) {
+		ver = xmpp.Caps.createVerfificationString( identities, features, dataform );
 	}
 	
 	public function interceptPacket( p : xmpp.Packet ) : xmpp.Packet {
-		if( !Std.is( p, xmpp.Presence ) )
+		if( p._type != xmpp.PacketType.presence )
 			return p;
-		//TODO cache it (?)
-		ver = xmpp.Caps.createVerfificationString( identities, stream.features, dataform );
-		p.properties.push( new xmpp.Caps( "sha-1", node, ver, ext ).toXml() );
+		p.properties.push( new xmpp.Caps( "sha-1", node, ver ).toXml() );
 		return p;
 	}
 	
 	public function dispose() {
 		stream.removeInterceptor( this );
 		stream.removeCollector( collector );
-		cached = new Hash();
 	}
 	
 	function handlePresence( p : xmpp.Presence ) {
 		var c = xmpp.Caps.fromPresence( p );
-		if( c.hash != "sha-1" ) {
-			requestDiscoInfo( p.from );
-		} else {
-			if( cached.exists( c.ver ) ) {
-				onInfo( p.from, cached.get( c.ver ), c.ver );
-			} else {
-				cached.set( c.ver, null );
-				requestDiscoInfo( p.from, c.node+"#"+c.ver );
-			}
-		}
+		if( !onCaps( p.from, c ) )
+			requestDiscoInfo( p.from, c.node+"#"+c.ver );	
 	}
 	
 	function handleInfoResponse( iq : xmpp.IQ ) {
@@ -92,11 +97,9 @@ class EntityCapabilities {
 			var i = xmpp.disco.Info.parse( iq.x.toXml() );
 			var ver : String = null;
 			if( i.node != null ) {
-				var idx = i.node.indexOf( "#" );
-				if( idx != -1 ) {
-					ver = i.node.substr( idx+1 );
-					cached.set( ver, i );
-				}
+				var j = i.node.indexOf( "#" );
+				if( j != -1 )
+					ver = i.node.substr( j+1 );
 			}
 			onInfo( iq.from, i, ver );
 		case error :
