@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,13 +35,14 @@ class XMPPError extends xmpp.Error {
 	}
 	
 	#if JABBER_DEBUG
-	
 	public function toString() : String {
-		var t = "XMPPError[ "+from+", "+condition+", "+code;
-		if( text != null ) t += ", "+text;
-		return t+" ]";
+		var t = "XMPPError ";
+		if( from != null ) t += "["+from+"]";
+		if( condition != null ) t += "["+condition+"]";
+		if( code != null ) t += "["+code+"]";
+		if( text != null ) t += "["+text+"]";
+		return t;
 	}
-	
 	#end
 	
 }
