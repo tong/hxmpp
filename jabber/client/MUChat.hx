@@ -292,8 +292,8 @@ class MUChat {
 						if( x_user.item.affiliation != null ) affiliation = x_user.item.affiliation;
 					}
 					// unlock room if required
-					//if( x_user.item != null ) {
-					if( x_user.item.role == Role.moderator && x_user.status != null && x_user.status.code == xmpp.muc.Status.WAITS_FOR_UNLOCK ) {
+					if( x_user.item != null && x_user.item.role == Role.moderator &&
+						x_user.status != null && x_user.status.code == xmpp.muc.Status.WAITS_FOR_UNLOCK ) {
 						var iq = new xmpp.IQ( xmpp.IQType.set, null, jid );
 						var q = new xmpp.MUCOwner().toXml();
 						q.addChild( new xmpp.DataForm( xmpp.dataform.FormType.submit ).toXml() );
