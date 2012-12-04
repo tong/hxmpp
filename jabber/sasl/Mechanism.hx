@@ -22,12 +22,17 @@
 package jabber.sasl;
 
 /**
-	SASL mechanism.
+	SASL mechanism type.
 */
 typedef Mechanism = {
 	
-	/** */
+	/**
+		The id of this mechanism, for example PLAIN, DIGEST-MD5, ...
+	*/
 	var id(default,null) : String;
+	
+	/** */
+	//function createAuthenticationRequest( text : String ) : Xml;
 	
 	/** */
 	function createAuthenticationText( user : String, host : String, password : String, resource : String ) : String;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,19 @@ package jabber.client;
 //TODO required fields handling, x:data form handling
 	
 /**
-	<a href="http://www.xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a><br/>
+	XEP-0077: In-Band Registration: http://www.xmpp.org/extensions/xep-0077.html
 */
 class Account {
 	
+	/** Callback for recieved registration fields */
 	public dynamic function onFields( fields : Array<String> ) {}
+	/** Callback for account registering success */
 	public dynamic function onRegister( node : String ) {}
+	/** Callback for account remove success  */
 	public dynamic function onRemove() {}
+	/** Callback for password change success */
 	public dynamic function onPasswordChange( pass : String ) {}
+	/** */
 	public dynamic function onError( e : jabber.XMPPError ) {}
 	
 	public var stream(default,null) : Stream;
@@ -41,6 +46,7 @@ class Account {
 	}
 	
 	/**
+		Request required registration fields from server
 	*/
 	public function requestRegistrationFields( jid : String ) {
 		var iq = new xmpp.IQ( null, null, jid );
@@ -71,10 +77,10 @@ class Account {
 	}
 	
 	/**
-		Requests to register a new account.
+		Register new account.
 	*/
 	//public function register( username : String, password : String, email : String, name : String ) : Bool {
-	public function register( reg : xmpp.Register ) : Bool {				  	
+	public function register( reg : xmpp.Register ) : Bool {
 		var self = this;
 		var iq = new xmpp.IQ();
 		iq.x = new xmpp.Register();
@@ -107,7 +113,7 @@ class Account {
 	}
 	
 	/**
-		Requests to delete account from server.
+		Delete account from server.
 	*/	
 	public function remove() {
 		var iq = new xmpp.IQ( xmpp.IQType.set );
@@ -130,7 +136,7 @@ class Account {
 	}
 	
 	/**
-		Requests to change accounts password.
+		Change account password.
 	*/
 	public function changePassword( node : String, pass : String ) {
 		var iq = new xmpp.IQ( xmpp.IQType.set );
@@ -150,7 +156,5 @@ class Account {
 			}
 		} );
 	}
-	
-	//function getRequiredFields()
 	
 }

@@ -44,6 +44,9 @@ class ServiceDiscoveryListener {
 	/** Custom items request handler relay */
 	public var onItemQuery : IQ->IQ;
 	
+	var c_info : PacketCollector;
+	var c_items : PacketCollector;
+	
 	public function new( stream : Stream, ?identities : Array<xmpp.disco.Identity> ) {
 		
 		if( !stream.features.add( xmpp.disco.Info.XMLNS ) || !stream.features.add( xmpp.disco.Items.XMLNS ) )
@@ -52,8 +55,13 @@ class ServiceDiscoveryListener {
 		this.stream = stream;
 		this.identities = ( identities == null ) ? [defaultIdentity] : identities;
 		
-		stream.collect( [new IQFilter( xmpp.disco.Info.XMLNS, xmpp.IQType.get )], handleInfoQuery, true );
-		stream.collect( [new IQFilter( xmpp.disco.Items.XMLNS, xmpp.IQType.get )], handleItemsQuery, true );
+		c_info = stream.collect( [new IQFilter( xmpp.disco.Info.XMLNS, xmpp.IQType.get )], handleInfoQuery, true );
+		c_items = stream.collect( [new IQFilter( xmpp.disco.Items.XMLNS, xmpp.IQType.get )], handleItemsQuery, true );
+	}
+	
+	public function dispose() {
+		stream.removeCollector( c_info );
+		stream.removeCollector( c_items );
 	}
 	
 	function handleInfoQuery( iq : IQ ) {

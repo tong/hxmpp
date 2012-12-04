@@ -215,6 +215,7 @@ class XMPPDebug {
 			t += " ("+s;
 			if( !showTime ) t += ")";
 		}
+		//TODO show ms
 		if( showTime ) {
 			var s = DateUtil.formatTimePartValue( n.getHours() )
 				+":"+DateUtil.formatTimePartValue( n.getMinutes() )
