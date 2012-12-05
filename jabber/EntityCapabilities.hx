@@ -28,7 +28,7 @@ package jabber;
 class EntityCapabilities {
 
 	/** Callback to application for checking if caps already exist (in cache) */
-	public dynamic function onCaps( jid : String, caps : xmpp.Caps ) : Bool { return false; }
+	public dynamic function onCaps( jid : String, caps : xmpp.Caps, cb : Bool->Void ) {}
 	/** Fired when a new entity capability got discovered */
 	public dynamic function onInfo( jid : String, info : xmpp.disco.Info, ?ver : String ) {}
 	public dynamic function onError( e : jabber.XMPPError ) {}
@@ -47,6 +47,7 @@ class EntityCapabilities {
 	public var ver(default,null) : String;
 	
 	var collector : jabber.stream.PacketCollector;
+	var x : Xml;
 	
 	public function new( stream : Stream, node : String, identities : Array<xmpp.disco.Identity>,
 						 ?ext : String ) {
@@ -57,8 +58,11 @@ class EntityCapabilities {
 		this.stream = stream;
 		this.node = node;
 		
-		//ver = xmpp.Caps.createVerfificationString( identities, stream.features, dataform );
 		createVerificationString( identities, stream.features );
+		
+		x = new xmpp.Caps( "sha-1", node, ver ).toXml();
+		
+		//ver = xmpp.Caps.createVerfificationString( identities, stream.features, dataform );
 		stream.addInterceptor( this );
 		collector = stream.collect( [new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence ),
 						 			 new xmpp.filter.PacketPropertyFilter( xmpp.Caps.XMLNS, "c" )],
@@ -76,7 +80,8 @@ class EntityCapabilities {
 	public function interceptPacket( p : xmpp.Packet ) : xmpp.Packet {
 		if( p._type != xmpp.PacketType.presence )
 			return p;
-		p.properties.push( new xmpp.Caps( "sha-1", node, ver ).toXml() );
+		//p.properties.push( new xmpp.Caps( "sha-1", node, ver ).toXml() );
+		p.properties.push( x );
 		return p;
 	}
 	
@@ -87,8 +92,11 @@ class EntityCapabilities {
 	
 	function handlePresence( p : xmpp.Presence ) {
 		var c = xmpp.Caps.fromPresence( p );
-		if( !onCaps( p.from, c ) )
-			requestDiscoInfo( p.from, c.node+"#"+c.ver );	
+		onCaps( p.from, c, function(h){
+			if( !h ) requestDiscoInfo( p.from, c.node+"#"+c.ver );
+		});
+		//if( !onCaps( p.from, c ) )
+		//	requestDiscoInfo( p.from, c.node+"#"+c.ver );	
 	}
 	
 	function handleInfoResponse( iq : xmpp.IQ ) {

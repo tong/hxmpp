@@ -78,6 +78,22 @@ class Caps {
 	}
 	
 	/**
+		Returns true if the given xmpp packet has a caps property
+	*/
+	public static function has( p : xmpp.Packet ) : Bool {
+		if( p.properties.length == null )
+			return false;
+		for( pr in p.properties ) {
+			var x = pr;
+			if( x.get( "xmlns" ) == XMLNS ) {
+				//trace("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
 		Extracts the caps information from given presence packet
 	*/
 	//TODO

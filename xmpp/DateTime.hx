@@ -71,22 +71,43 @@ class DateTime {
 	
 	/**
 		Create a Date object from a UTC time string
+
+		//TODO this offset thing will fail!
+		// TODO 24+ -> 0
+		//untested!
 	*/
-	public static function toDate( utc : String, offset : Int = 0 ) : Date {
-		var p = getParts( utc );
-		return new Date( p[0], p[1], p[2], p[3], p[4], p[5] );
-		//return new Date( p[0], p[1], p[2], p[3]+offset, p[4], p[5] );
+	public static function toDate( utc : String, ?tzo : String ) : Date {
+		
+		var spd = utc.substr( 0, 10 ).split("-");
+		var spt = utc.substr( 11, 8 ).split(":");
+		
+		var pd = new Array<Int>();
+		for( s in spd ) pd.push( getTimeValue(s) );
+		var pt = new Array<Int>();
+		for( s in spt ) pt.push( getTimeValue(s) );
+		
+		var hours = pt[0];
+		if( tzo != null ) {
+			var sign = ( tzo.charAt(0) == "+" ) ? true : false;
+			var v = getTimeValue( tzo.substr( 1, 2 ) );
+			if( sign ) hours += v;
+			else hours -= v;
+		}
+		
+		return new Date( pd[0], pd[1], pd[2]-1, hours, pt[1], pt[2] );
 	}
 	
 	/**   
-		Formats a (regular) date string to a XMPP compatible UTC date string (CCYY-MM-DDThh:mm:ss[.sss]TZD)<br/>
-		For example: 2008-11-01 18:45:47 gets 2008-11-01T18:45:47Z<br/>
-		Optionally a timezone offset could be attached.<br/>
+		Formats a (regular) date string to a XMPP compatible UTC date string (CCYY-MM-DDThh:mm:ss[.sss]TZD)
+		For example: 2008-11-01 18:45:47 gets 2008-11-01T18:45:47Z
+		Optionally a timezone offset could be attached.
 	*/
 	public static function utc( t : String, ?offset : Null<Int> ) : String {
+		
 		var k = t.split( " " );
 		if( k.length == 1 )
 			return t;
+		
 		#if (flash||php)
 		var b = k[0]+"T"+k[1];
 		if( offset == null )
@@ -101,6 +122,7 @@ class DateTime {
 			b += ":00";
 		}
 		return b;
+		
 		#else
 		var b = new StringBuf();
 		b.add( k[0] );
@@ -119,6 +141,7 @@ class DateTime {
 			b.add( ":00" );
 		}
 		return b.toString();
+		
 		#end
 	}
 	
@@ -148,8 +171,13 @@ class DateTime {
 		var h = Std.parseInt( tzo.substr( 1, 2 ) );
 		//if( tzo.substr( 0, 1 ) == '+' ) h = -h;
 		//return h;
-		
 		return if( tzo.substr( 0, 1 ) == '+' ) h else -h;
+	}
+	
+	public static function getTimeValue( t : String ) : Int {
+		return if( t.length == 1 ) Std.parseInt(t);
+		else if( t.charAt(0) == "0" ) Std.parseInt( t.charAt(1) );
+		else Std.parseInt( t );
 	}
 	
 }

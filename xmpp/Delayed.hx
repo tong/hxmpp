@@ -43,7 +43,7 @@ typedef PacketDelay = {
 }
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0203.html">XEP-0203: Delayed Delivery</a><br/>
+	XEP-0203: Delayed Delivery: http://xmpp.org/extensions/xep-0203.html
 */
 class Delayed {
 	

@@ -26,8 +26,8 @@ import jabber.stream.PacketCollector;
 /**
 	A custom google extension to XMPP to enable users to query their Gmail account for emails,
 	and receive notifications when a new message arrives.
-	
-	<a href="http://code.google.com/apis/talk/jep_extensions/gmail.html">http://code.google.com/apis/talk/jep_extensions/gmail.html</a>
+
+	https://developers.google.com/talk/jep_extensions/gmail
 */
 class GMailNotify {
 	

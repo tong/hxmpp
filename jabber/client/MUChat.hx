@@ -58,7 +58,7 @@ class MUChat {
 	public dynamic function onMessage( o : MUCOccupant, m : xmpp.Message ) {}
 	//public dynamic function onRoomMessage( m : xmpp.Message ) {}
 	public dynamic function onPresence( o : MUCOccupant ) {}
-	public dynamic function onSubject( t : String ) {}
+	public dynamic function onSubject( o : String, t : String ) {}
 	public dynamic function onKick( nick : String ) {}
 	public dynamic function onError( e : jabber.XMPPError ) {}
 	
@@ -93,7 +93,7 @@ class MUChat {
 		// collect all presences and messages from the room
 		var f_from : xmpp.PacketFilter = new PacketFromContainsFilter( jid );
 		c_presence = new PacketCollector( [f_from, new PacketTypeFilter( PacketType.presence )], handlePresence, true );
-		c_message = new PacketCollector(  [f_from, new MessageFilter()], handleMessage, true );
+		c_message = new PacketCollector(  [f_from, new MessageFilter()], handleMessage, true, true );
 		//c_message = new PacketCollector(  [f_from, new MessageFilter( MessageType.groupchat )], handleMessage, true );
 		
 		message = new xmpp.Message( jid, null, null, MessageType.groupchat, null );
@@ -253,18 +253,19 @@ class MUChat {
 			if( m.subject != null ) {
 				if( m.subject == subject )
 					return;
-				onSubject( subject = m.subject );
+				onSubject( from, subject = m.subject );
 				return;
 			}
-			var occupant = getOccupant( from );
-			if( occupant == null && from != jid && from != nick ) {
+			var occ = getOccupant( from );
+			if( occ == null && from != jid && from != nick ) {
 				onMessage( null, m );
 				return;
 			}
-			if( occupant == null && from == nick  ) occupant = me;
-			onMessage( occupant, m );
+			if( occ == null && from == nick  )
+				occ = me;
+			onMessage( occ, m );
 		case MessageType.error :
-			trace("TODO handle muc error");
+			trace( "TODO handle muc error" );
 		default :
 		}
 	}
@@ -314,8 +315,10 @@ class MUChat {
 					}
 				} else {
 					// changed my nick
-					role = x_user.item.role;
-					affiliation = x_user.item.affiliation;
+					if( x_user.item != null ) {
+						role = x_user.item.role;
+						affiliation = x_user.item.affiliation;
+					}
 					presence = p;
 					this.onPresence( me );
 				}
@@ -325,7 +328,7 @@ class MUChat {
 			case xmpp.PresenceType.unavailable : 
 				joined = false;
 				destroy();
-				//onLeave( this );
+				onLeave();
 			//case null :
 			default :
 				trace("##############");
@@ -382,8 +385,9 @@ class MUChat {
 		presence = null;
 		myjid = null;
 		room = null;
+		joined = false;
 		// TODO remove
-		onLeave();
+		//onLeave();
 	}
 	
 }
