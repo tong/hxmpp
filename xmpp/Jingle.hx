@@ -25,7 +25,7 @@ using xmpp.XMLUtil;
 
 class Jingle {
 	
-	static var _XMLNS = "urn:xmpp:jingle:";
+	static inline var _XMLNS = "urn:xmpp:jingle:";
 	
 	public static var XMLNS = _XMLNS+"1";
 	public static var XMLNS_RTP = _XMLNS+"apps:rtp:1";
@@ -33,7 +33,9 @@ class Jingle {
 	public static var XMLNS_RTMFP = _XMLNS+"apps:rtmfp";
 	public static var XMLNS_FILETRANSFER = _XMLNS+"apps:file-transfer:1";
 	public static var XMLNS_S5B = _XMLNS+"transports:s5b:1";
-	public static var XMLNS_WEBRTC = "urn:xmpp:jingle:transports:webrtc:1"; // "apps:webrtc"; //TODO
+	
+	//public static var XMLNS_WEBRTC = "urn:xmpp:jingle:transports:webrtc:1"; // "apps:webrtc"; //TODO
+	public static var XMLNS_RTC = XMLNS+"apps:rtc:1";
 	
 	public var action : xmpp.jingle.Action;
 	public var initiator : String;

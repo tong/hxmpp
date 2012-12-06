@@ -21,6 +21,9 @@
  */
 package jabber.client;
 
+import xmpp.IQ;
+import xmpp.IQType;
+
 /**
 	Abstract base for vcard classes (jabber.client.VCard and jabber.client.VCardTemp)
 */
@@ -52,18 +55,18 @@ class VCardBase<T> {
 		Update own vcard.
 	*/
 	public function update( vc : T ) {
-		var iq = new xmpp.IQ( xmpp.IQType.set, null, stream.jid.domain );
+		var iq = new IQ( set, null, stream.jid.domain );
 		iq.x = cast vc;
 		stream.sendIQ( iq, handleUpdate );
 	}
 	
 	function _load( x : Xml, jid : String ) {
-		var iq = new xmpp.IQ( null, null, jid );
+		var iq = new IQ( null, null, jid );
 		iq.properties.push( x );
 		stream.sendIQ( iq, handleLoad );
 	}
 	
-	function handleLoad( iq : xmpp.IQ ) {
+	function handleLoad( iq : IQ ) {
 		switch( iq.type ) {
 		case result :
 			_handleLoad( iq );
@@ -74,13 +77,13 @@ class VCardBase<T> {
 		}
 	}
 	
-	function _handleLoad( iq : xmpp.IQ ) {
+	function _handleLoad( iq : IQ ) {
 		#if JABBER_DEBUG
 		throw "abstract method";
 		#end
 	}
 	
-	function handleUpdate( iq : xmpp.IQ ) {
+	function handleUpdate( iq : IQ ) {
 		switch( iq.type ) {
 		case result : onUpdate();
 		case error : onError( new jabber.XMPPError( iq ) );

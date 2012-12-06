@@ -21,7 +21,7 @@
  */
 package xmpp.pep;
 
-enum Mood {
+@:fakeEnum(String) enum Mood {
 	afraid;
 	amazed;
 	angry;

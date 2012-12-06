@@ -22,8 +22,8 @@
 package xmpp.pep;
 
 /**
-	Extended information about user moods, such as whether a person is currently happy, sad, angy, or annoyed.
-	<a href="http://xmpp.org/extensions/xep-0107.html">XEP-0107: User Mood</a><br/>
+	Extended information about user moods, such as whether a person is currently happy, sad, angy, annoyed ...
+	XEP-0107: User Mood: http://xmpp.org/extensions/xep-0107.html
 */
 class UserMood extends xmpp.PersonalEvent {
 	

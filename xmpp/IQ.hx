@@ -22,14 +22,14 @@
 package xmpp;
 
 /**
-	InfoQuery XMPP packet.
+	Info-Query XMPP packet.
 */
 class IQ extends Packet {
 	
 	/** Either: get/set/result/error */
 	public var type : IQType;
 	
-	/** The exclusiv child of the IQ packet. */
+	/** The exclusive child of the IQ packet. */
 	public var x : PacketElement;
 	
 	public function new( ?type : IQType, ?id : String, ?to : String, ?from ) {

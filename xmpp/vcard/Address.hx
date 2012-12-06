@@ -22,17 +22,17 @@
 package xmpp.vcard;
 
 typedef Address = {
-	var home : String;
-	var work : String;
-	var postal : String;
-	var parcel : String;
-	//var DOM/INTL : String;
-	var pref : String;
-	var pobox : String;
-	var extadd : String;
-	var street : String;
-	var locality : String;
-	var region : String;
-	var pcode : String;
-	var ctry : String;
+	?home : String,
+	?work : String,
+	?postal : String,
+	?parcel : String,
+	//?DOM/INTL : String,
+	?pref : String,
+	?pobox : String,
+	?extadd : String,
+	?street : String,
+	?locality : String,
+	?region : String,
+	?pcode : String,
+	?ctry : String
 }
