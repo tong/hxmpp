@@ -22,6 +22,7 @@
 package jabber.client;
 
 import jabber.XMPPError;
+import jabber.client.RosterSubscriptionMode;
 import jabber.stream.PacketCollector;
 import xmpp.IQ;
 import xmpp.IQType;
@@ -30,19 +31,6 @@ import xmpp.PresenceType;
 import xmpp.roster.Item;
 import xmpp.roster.AskType;
 import xmpp.roster.Subscription;
-
-/**
-	Configuration how to handle recieved presence subscriptions
-*/
-enum RosterSubscriptionMode {
-	/** Reject all subscription requests. */
-	rejectAll;
-	/** Ask how to proceed. */
-	manual;
-	//manual(cb:RosterItem->Bool);
-	/** Accept all subscription and unsubscription requests. */
-	acceptAll( subscribe : Bool );
-}
 
 /**
 	Client roster (serverside saved contact list)
@@ -107,6 +95,8 @@ class Roster {
 		return r;
 	}
 	
+	/**
+	*/
 	public function dispose() {
 		stream.removeCollector( c_presence );
 		stream.removeCollector( c_message );
@@ -114,11 +104,15 @@ class Roster {
 		items = new Array();
 	}
 	
+	/**
+	*/
 	public function getItem( jid : String ) : Item {
 		for( i in items ) { if( i.jid == jid ) return i; }
 		return null;
 	}
 	
+	/**
+	*/
 	public function hasItem( jid : String ) : Bool {
 		return ( getItem( jabber.JIDUtil.bare( jid ) ) != null );
 	}
@@ -152,7 +146,7 @@ class Roster {
 	}
 	
 	/**
-		Remove entry from your roster
+		Remove entry from remote roster
 	*/
 	public function removeItem( jid : String ) : Bool {
 		var i = getItem( jid );
