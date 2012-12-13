@@ -113,16 +113,11 @@ class Roster {
 	
 	/**
 	*/
-	public function hasItem( jid : String ) : Bool {
-		return ( getItem( jabber.JIDUtil.bare( jid ) ) != null );
+	public inline function hasItem( jid : String ) : Bool {
+		return getItem( jabber.JIDUtil.bare( jid ) ) != null;
 	}
 	
-	/*
-	public function load() {
-		var iq = new IQ();
-		iq.x = new xmpp.Roster();
-		stream.sendIQ( iq );
-	}
+	/**
 	*/
 	public function load() {
 		var iq = new IQ();
@@ -228,7 +223,7 @@ class Roster {
 		sendPresence( jid, ( allow ) ? PresenceType.subscribed : PresenceType.unsubscribed );
 		var _jid = JIDUtil.bare( jid );
 		onSubscription( _jid );
-		if( subscribe ) {
+		if( allow && subscribe ) {
 			this.subscribe( _jid );
 		}
 	}
@@ -311,24 +306,24 @@ class Roster {
 		var i = getItem( jid.bare );
 		if( p.type != null ) {
 			switch( p.type ) {
-			case PresenceType.subscribe :
+			case subscribe :
 				switch( subscriptionMode ) {
 				case acceptAll(s) :
 					confirmSubscription( p.from, true, s );
 				case rejectAll :
-					sendPresence( p.from, xmpp.PresenceType.unsubscribed );
+					sendPresence( p.from, PresenceType.unsubscribed );
 				case manual :
 					onAsk( new Item( p.from ) );
 				}
-			case PresenceType.subscribed :
+			case subscribed :
 				onSubscribed( i );
-			case PresenceType.unsubscribe :
+			case unsubscribe :
 				onUnsubscribed( i );
-			case PresenceType.unsubscribed :
+			case unsubscribed :
 				items.remove( i );
 				onUnsubscribed( i );
 			default : //
-				//trace("?????????????");
+				//trace( "TODO ????????????? "+p.type );
 			}
 		}
 	}

@@ -81,7 +81,7 @@ private class StreamFeatures {
 class Stream {
 	
 	public static var defaultPacketIdLength = 5;
-	public static var defaultMaxBufSize = 524288;
+	public static var defaultMaxBufSize = 1048576; // 524288;
 	
 	/** Callback if the XMPP stream got opened */
 	public dynamic function onOpen() {}
@@ -125,7 +125,7 @@ class Stream {
 	
 	function setConnection( c : Connection ) : Connection {
 		switch( status ) {
-		case Status.open, Status.pending #if !JABBER_COMPONENT, Status.starttls #end :
+		case open, pending #if !JABBER_COMPONENT, starttls #end :
 			close( true );
 			setConnection( c );
 			 // re-open XMPP stream
@@ -134,7 +134,7 @@ class Stream {
 			#else
 			open( jid );
 			#end
-		case Status.closed :
+		case closed :
 			if( cnx != null && cnx.connected )
 				cnx.disconnect();
 			resetBuffer();
@@ -373,14 +373,15 @@ class Stream {
 		if( bufSize > maxBufSize ) {
 			#if JABBER_DEBUG
 			trace( "max buffer size reached ("+bufSize+":"+maxBufSize+")", "error" );
+			trace(t);
 			#end
 			close( false );
 		}
 		
 		switch( status ) {
-		case Status.closed :
+		case closed :
 			return false;
-		case Status.pending :
+		case pending :
 			if( processStreamInit( buf.toString() ) ) {
 				resetBuffer();
 				return true;
@@ -388,7 +389,7 @@ class Stream {
 				return false;
 			}
 		#if !JABBER_COMPONENT
-		case Status.starttls :
+		case starttls :
 			var x : Xml = null;
 			try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
 				#if XMPP_DEBUG XMPPDebug.i( t ); #end
@@ -411,7 +412,7 @@ class Stream {
 			cnx.setSecure();
 			return true;
 		#end //!JABBER_COMPONENT
-		case Status.open :
+		case open :
 			var x : Xml = null;
 			try x = Xml.parse( buf.toString() ) catch( e : Dynamic ) {
 				//#if JABBER_DEBUG trace( "Packet incomplete, waiting for more data ..", "info" ); #end
@@ -488,6 +489,7 @@ class Stream {
 		if( !collected ) {
 			#if JABBER_DEBUG
 			trace( "Incoming '"+Type.enumConstructor( p._type )+"' packet not handled ( "+p.from+" -> "+p.to+" )( "+p.id+" )", "warn" );
+			//trace(p);
 			#end
 			if( p._type == xmpp.PacketType.iq ) { // 'feature not implemented' response
 				#if as3
