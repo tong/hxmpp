@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,13 +37,12 @@ class Base64 {
 
 	static var bc = new haxe.BaseCode( Bytes.ofString( CHARS ) );
 	
-	static function getNullbits( s : String ) : String {
-	 	var n = s.length%3;
-	 	if( n == 0 )
-	 		return "";
-	 	var r = "";
-	 	for( i in n...3 ) r += "=";
-	 	return r;
+	public static function getNullbits( s : String ) : String {
+	 	return switch( s.length % 3 )  {
+			case 2 : "=";
+			case 1 : "==";
+			default : "";
+		}
 	}
 	
 	public static inline function fillNullbits( s : String ) : String {
