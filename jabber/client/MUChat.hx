@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,6 +47,7 @@ class MUCOccupant {
 
 /**
 	Multiuser chatroom.
+
 	http://www.xmpp.org/extensions/xep-0045.html
 	http://www.xmpp.org/extensions/xep-0249.html
 */
@@ -248,7 +249,7 @@ class MUChat {
 	
 	function handleMessage( m : xmpp.Message ) {
 		switch( m.type ) {
-		case MessageType.groupchat :
+		case groupchat :
 			var from = getOccupantName( m.from );
 			if( m.subject != null ) {
 				if( m.subject == subject )
@@ -264,25 +265,96 @@ class MUChat {
 			if( occ == null && from == nick  )
 				occ = me;
 			onMessage( occ, m );
-		case MessageType.error :
+		case error :
 			trace( "TODO handle muc error" );
 		default :
 		}
 	}
 	
 	function handlePresence( p : xmpp.Presence ) {
-		if( p.type == xmpp.PresenceType.error ) {
+		if( p.type == error ) {
 			onError( new jabber.XMPPError( p ) );
 			return;
 		}
 		var x_user : xmpp.MUCUser = null;
-		for( property in p.properties ) {
-			if( property.nodeName == "x" && property.get( "xmlns" ) == xmpp.MUCUser.XMLNS ) {
+		for( prop in p.properties ) {
+			if( prop.nodeName == "x" && prop.get( "xmlns" ) == xmpp.MUCUser.XMLNS ) {
 				x_user = xmpp.MUCUser.parse( p.properties[0] );
 			}
 		}
 		if( x_user == null )
 			return;
+		if( p.from == myjid ) {
+			if( p.type == null ) {
+				if( !joined ) {
+					if( x_user.item != null ) {
+						if( x_user.item.role != null ) role = x_user.item.role;
+						if( x_user.item.affiliation != null ) affiliation = x_user.item.affiliation;
+					}
+					// unlock room if required
+					if( x_user.item != null && x_user.item.role == Role.moderator &&
+						x_user.status != null && x_user.status.code == xmpp.muc.Status.WAITS_FOR_UNLOCK ) {
+						var iq = new xmpp.IQ( xmpp.IQType.set, null, jid );
+						var q = new xmpp.MUCOwner().toXml();
+						q.addChild( new xmpp.DataForm( xmpp.dataform.FormType.submit ).toXml() );
+						iq.properties.push( q );
+						var self = this;
+						stream.sendIQ( iq, function(r:xmpp.IQ) {
+							if( r.type == xmpp.IQType.result ) {
+								#if JABBER_DEBUG trace( "Unlocked MUC room: "+self.room, "info" ); #end
+								//unlocked = true; //TODO
+								//self.onUnlock();
+								self.joined = true;
+								self.onJoin();
+							}
+						} );
+					} else {
+						joined = true;
+						this.onJoin();
+					}
+				} else {
+					// changed my nick
+					if( x_user.item != null ) {
+						role = x_user.item.role;
+						affiliation = x_user.item.affiliation;
+					}
+					presence = p;
+					this.onPresence( me );
+				}
+				return;
+			}
+			switch( p.type ) {
+			case unavailable : 
+				joined = false;
+				destroy();
+				onLeave();
+			//case null :
+			default :
+				trace("##############?");
+			}
+		} else if( p.from == jid ) {
+			trace( "??? process presence from MUC room ???" );
+		} else { // process occupant presence
+			var from = getOccupantName( p.from );
+			var occupant = getOccupant( from );
+			if( occupant != null ) { // update existing occupant
+				if( p.type == xmpp.PresenceType.unavailable ) {
+					occupants.remove( occupant );
+				}
+				//..
+			} else { // process new occupant
+				occupant = new MUCOccupant();
+				occupant.nick = from;
+				occupants.push( occupant );
+			}
+			occupant.presence = p;
+			if( x_user.item != null ) {
+				if( x_user.item.role != null ) occupant.role = x_user.item.role;
+				if( x_user.item.affiliation != null ) occupant.affiliation = x_user.item.affiliation;
+			}
+			this.onPresence( occupant );
+		}
+		/* 
 		switch( p.from ) {
 		case myjid :
 			if( p.type == null ) {
@@ -325,7 +397,7 @@ class MUChat {
 				return;
 			}
 			switch( p.type ) {
-			case xmpp.PresenceType.unavailable : 
+			case unavailable : 
 				joined = false;
 				destroy();
 				onLeave();
@@ -357,6 +429,7 @@ class MUChat {
 			}
 			this.onPresence( occupant );
 		}
+		*/
 	}
 	
 	function sendMyPresence( priority : Int = 5 ) : xmpp.Presence {
@@ -382,9 +455,8 @@ class MUChat {
 		occupants = new Array();
 		role = null;
 		affiliation = null;
+		myjid = room = null;
 		presence = null;
-		myjid = null;
-		room = null;
 		joined = false;
 		// TODO remove
 		//onLeave();
