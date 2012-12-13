@@ -22,7 +22,7 @@
 package jabber;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0055.html">XEP-0055: Search</a><br/>
+	XEP-0055: Search: http://xmpp.org/extensions/xep-0055.html
 */
 class UserSearch {
 	
