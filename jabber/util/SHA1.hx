@@ -51,7 +51,11 @@ class SHA1 {
 		return untyped __call__( "sha1", s );
 		
 		#else
-		return haxe.SHA1.encode(s);
+			#if haxe3
+			return haxe.crypto.Sha1.encode(s);
+			#else
+			return haxe.SHA1.encode(s);
+			#end
 		
 		#end
 	}
