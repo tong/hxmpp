@@ -44,7 +44,7 @@ class SystemUtil {
 		return flash.system.Capabilities.os;
 		
 		#elseif js
-		var t  = js.Lib.window.navigator.appVersion;
+		var t : String  = untyped window.navigator.appVersion;
 		t = t.substr( t.indexOf("(")+1, t.indexOf(")")-3 );
 		return if( t.indexOf( "Linux" ) != -1 ) "Linux";
 		else if( t.indexOf( "Macintosh" ) != -1 ) "Macintosh";
