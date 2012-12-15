@@ -22,16 +22,15 @@
 package jabber;
 
 /**
-	An XMPP address (JID).
-	
+	Unique Jabber-ID.
+
 	A JID is made up of a node (generally a username), a domain, and a resource.
-	<pre>
-jid             = [ node "@" ] domain [ "/" resource ]
-domain          = fqdn / address-literal
-fqdn            = (sub-domain 1*("." sub-domain))
-sub-domain      = (internationalized domain label)
-address-literal = IPv4address / IPv6address
-	</pre>
+
+		jid             = [ node "@" ] domain [ "/" resource ]
+		domain          = fqdn / address-literal
+		fqdn            = (sub-domain 1*("." sub-domain))
+		sub-domain      = (internationalized domain label)
+		address-literal = IPv4address / IPv6address
 
 	Each allowable portion of a JID (node, domain, and resource) must not be more than 1023 bytes in length,
 	resulting in a maximum total size (including the '@' and '/' separators) of 3071 bytes.
@@ -44,7 +43,7 @@ class JID {
 	/***/
 	public var domain : String;
 	
-	/***/
+	/** Resourcepart, uniquely identifies a specific connection (e.g., a device or location) */
 	public var resource : String;
 	
 	/** JID without resource */
@@ -53,10 +52,10 @@ class JID {
 	/** Just a shortcut for toString()  */
 	public var s(toString,null) : String;
 	
-	public function new( t : String ) {
+	public function new( ?t : String ) {
 		if( t != null ) {
 			if( !JIDUtil.isValid( t ) )
-				throw "invalid JID ["+t+"]"; 
+				throw "invalid jid ["+t+"]"; 
 			this.node = JIDUtil.node( t );
 			this.domain = JIDUtil.domain( t );
 			this.resource = JIDUtil.resource( t );
@@ -67,7 +66,15 @@ class JID {
 		return ( node == null || domain == null ) ? null : node+"@"+domain;
 	}
 	
-	@:keep public function toString() : String {
+	public function copy() : JID {
+		var j = new JID();
+		j.node = node;
+		j.domain = domain;
+		j.resource = resource;
+		return j;
+	}
+	
+	public function toString() : String {
 		var j = getBare();
 		return ( j == null ) ? null : ( resource == null ) ? j : j+"/"+resource;
 	}
