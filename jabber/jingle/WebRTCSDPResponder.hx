@@ -47,15 +47,15 @@ class WebRTCSDPResponder extends SessionResponder<WebRTCSDPInput> {
 	
 	
 	override function handleSessionInfo( x : Array<Xml> ) {
-		//trace("---------handleSessionInfo-------");
+		trace("---------handleSessionInfo-------");
 		var sdp = x[0].firstChild().nodeValue;
 		if( transport == null ) {
 			transport = new WebRTCSDPInput( sdp );
 			transport.__onConnect = handleTransportConnect;
 			transport.connect();
 		} else {
-			//trace("processSignalingMessage");
-			transport.connection.processSignalingMessage( sdp );
+			trace("TODO processSignalingMessage");
+			//transport.connection.processSignalingMessage( sdp );
 			sendSessionAccept();
 		}
 	}

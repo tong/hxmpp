@@ -21,6 +21,8 @@
  */
 package jabber;
 
+import xmpp.PresenceType;
+
 /**
 	Extension for broadcasting and dynamically discovering client, device, or generic entity capabilities.
 	XEP-0085: Entity Capabilities: http://xmpp.org/extensions/xep-0115.html
@@ -64,9 +66,8 @@ class EntityCapabilities {
 		
 		//ver = xmpp.Caps.createVerfificationString( identities, stream.features, dataform );
 		stream.addInterceptor( this );
-		collector = stream.collect( [new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence ),
-						 			 new xmpp.filter.PacketPropertyFilter( xmpp.Caps.XMLNS, "c" )],
-									 handlePresence, true );
+		var filters : Array<xmpp.PacketFilter> = [new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence ), new xmpp.filter.PacketPropertyFilter( xmpp.Caps.XMLNS, "c" )];
+		collector = stream.collect( filters, handlePresence, true );
 	}
 	
 	/**
@@ -80,7 +81,15 @@ class EntityCapabilities {
 	public function interceptPacket( p : xmpp.Packet ) : xmpp.Packet {
 		if( p._type != xmpp.PacketType.presence )
 			return p;
-		//p.properties.push( new xmpp.Caps( "sha-1", node, ver ).toXml() );
+			
+		//TODO do not send caps with every presence (not to groupchats fe)
+		if( cast( p, xmpp.Presence ).type == subscribe )
+			return p;
+			
+		//trace("INTERCEPT CAPS "+p.to+" : "+JIDUtil.isValid( p.to )  );
+		//if( p.to != null && !JIDUtil.isValid( p.to ) )
+		//	return p;
+		
 		p.properties.push( x );
 		return p;
 	}

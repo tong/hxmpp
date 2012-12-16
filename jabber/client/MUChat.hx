@@ -142,14 +142,16 @@ class MUChat {
 	/**
 		Sends unavailable presence to the room, exits room.
 	*/
-	public function leave( ?message : String, ?forceEvent : Bool = true ) : xmpp.Presence {
+	//public function leave( ?message : String, ?forceEvent : Bool = true ) : xmpp.Presence {
+	public function leave( ?message : String ) : xmpp.Presence {
 		if( !joined ) return null;
-		var p = new xmpp.Presence( null, message, null, xmpp.PresenceType.unavailable );
+		var p = new xmpp.Presence( null, message, null, unavailable );
 		p.to = myjid;
 		presence = p;
 		stream.sendPacket( p );
-		if( forceEvent )
-			destroy();
+	//	if( forceEvent )
+	//		destroy();
+		//destroy();
 		return p;
 	}
 	

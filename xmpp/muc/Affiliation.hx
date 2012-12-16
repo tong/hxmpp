@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,8 @@
 package xmpp.muc;
 
 /**
-	Long-lived association or connection with a room.<br/>
-	<a href="http://xmpp.org/extensions/xep-0045.html#connections">Roles and Affiliations</a>
+	Long-lived association or connection with a room.
+	Roles and Affiliations: http://xmpp.org/extensions/xep-0045.html#connections
 */
 enum Affiliation {
 	none;

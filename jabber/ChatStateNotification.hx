@@ -55,9 +55,8 @@ class ChatStateNotification {
 		stream.features.add( xmpp.ChatStateNotification.XMLNS );
 		
 		this.stream = stream;
-		collector = stream.collect( [new MessageFilter(MessageType.chat),
-									 new PacketPropertyFilter(xmpp.ChatStateNotification.XMLNS)
-									], handleMessage, true );
+		var filters : Array<xmpp.PacketFilter> = [new MessageFilter(MessageType.chat),new PacketPropertyFilter(xmpp.ChatStateNotification.XMLNS)];
+		collector = stream.collect( filters, handleMessage, true );
 		stream.addInterceptor( this );
 	}
 	

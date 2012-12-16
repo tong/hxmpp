@@ -21,8 +21,10 @@
  */
 package jabber.jingle;
 
-import jabber.jingle.io.Transport;
-//import jabber.io.Transport;
+//TODO
+//import jabber.jingle.io.Transport;
+import jabber.io.Transport;
+
 import jabber.stream.PacketCollector;
 
 /**

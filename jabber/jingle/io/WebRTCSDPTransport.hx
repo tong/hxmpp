@@ -21,7 +21,7 @@
  */
 package jabber.jingle.io;
 
-import webrtc.PeerConnection;
+import webrtc.RTCPeerConnection;
 
 /**
 	Abstract
@@ -35,7 +35,7 @@ import webrtc.PeerConnection;
 	public var sdp(default,null) : String;
 	
 	/** PeerConnection */
-	public var connection(default,null) : PeerConnection;
+	public var connection(default,null) : RTCPeerConnection;
 	
 	function new( stun_url : String = "STUN stun.l.google.com:19302" ) {
 		super();
@@ -44,19 +44,67 @@ import webrtc.PeerConnection;
 	
 	public override function toXml() : Xml {
 		var x = xmpp.XMLUtil.createElement( "webrtc", sdp );
+		trace("TODO CREATZER XML");
 		x.set( "xmlns", xmpp.Jingle.XMLNS_WEBRTC );
 		return x;
 	}
 	
 	override function connect() {
-		trace("CCCCCCCCCCCCCC.....CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
-		connection = new PeerConnection( stun_url, signalingCallback );
+		
+		trace("TODO ....CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
+		
+		var config = { "iceServers" : [{"url":"stun:stun.l.google.com:19302"}] };
+		try {
+			connection = new RTCPeerConnection( null );
+		} catch( e : Dynamic ) {
+			trace(e);
+			//TODO
+			return;
+		}
+		connection.onicecandidate = onIceCandidate;
+		//connection.onconnecting = onSessionConnecting;
+		connection.onopen = onSessionOpened;
+		connection.onaddstream = onRemoteStreamAdded;
+		connection.onremovestream = onRemoteStreamRemoved;
+		//connection.startIce();
+		
+		trace("................");
+		
+		//connection = new RTCPeerConnection( null, null );
+		//var offer = connection.createOffer( null );
+		//connection.setLocalDescription( connection.SDP_OFFER, offer );
+		//connection.startIce(); // start connection process
+		//trace();
+		/*
+		connection = new RTCPeerConnection( stun_url, signalingCallback );
 		connection.onconnecting = onSessionConnecting;
     	connection.onopen = onSessionOpened;
     	connection.onaddstream = onRemoteStreamAdded;
 		connection.onremovestream = onRemoteStreamRemoved;
+		*/
 	}
 	
+	function onIceCandidate() {
+		trace("onIceCandidate");
+	}
+	
+	function onSessionConnecting() {
+		trace("onSessionConnecting");
+	}
+	
+	function onSessionOpened() {
+		trace("onSessionOpened");
+	}
+	
+	function onRemoteStreamAdded() {
+		trace("onRemoteStreamAdded");
+	}
+	
+	function onRemoteStreamRemoved() {
+		trace("onRemoteStreamRemoved");
+	}
+	
+	/*
 	function signalingCallback( s : String ) {
 		//trace("signalingCallback");
 		sdp = s;
@@ -79,5 +127,19 @@ import webrtc.PeerConnection;
 	function onRemoteStreamRemoved() {
 		trace("onRemoteStreamRemoved");
 	}
-
+	*/
+	
+	/*
+	public static function createPeerConnection() : webrtc.PeerConnection {
+		return if( untyped window.PeerConnection != null )
+			untyped window.PeerConnection;
+		else if( untyped window.webkitRTCPeerConnection )
+			untyped window.webkitRTCPeerConnection;
+		else if( untyped window.mozRTCPeerConnection )
+			untyped window.mozRTCPeerConnection;
+		else if( untyped window.RTCPeerConnection )
+			untyped window.RTCPeerConnection;
+	}
+	*/
+	
 }

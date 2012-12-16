@@ -52,9 +52,11 @@ class FlashSocketBridgeTLS {
 	}
 	
 	public function init() {
+		
 		if( !ExternalInterface.available )
 			throw "External interface not available";
 		sockets = new IntHash();
+		
 		ExternalInterface.addCallback( "createSocket", createSocket );
 		ExternalInterface.addCallback( "destroySocket", destroySocket );
 		ExternalInterface.addCallback( "connect", connect );
@@ -63,6 +65,7 @@ class FlashSocketBridgeTLS {
 		ExternalInterface.addCallback( "send", send );
 		//ExternalInterface.addCallback( "destroy", destroy );
 		ExternalInterface.addCallback( "destroyAll", destroyAll );
+		
 		queue = new Array();
 		timer = new haxe.Timer( outputInterval );
 		timer.run = onTimer;
@@ -173,6 +176,11 @@ class FlashSocketBridgeTLS {
 		if( queue.length > 0 ) {
 			var n = queue.shift();
 			ExternalInterface.call( ctx+".handleData", n.id, n.data );
+			/* 
+			for( n in queue ) {
+				ExternalInterface.call( ctx+".handleData", n.id, n.data );
+			}
+			*/
 		}
 	}
 	

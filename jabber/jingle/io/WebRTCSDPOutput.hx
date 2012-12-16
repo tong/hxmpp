@@ -21,6 +21,8 @@
  */
 package jabber.jingle.io;
 
+import webrtc.RTCPeerConnection;
+
 /**
 */
 @:require(js) class WebRTCSDPOutput extends WebRTCSDPTransport {
@@ -29,11 +31,13 @@ package jabber.jingle.io;
 		super();
 	}
 	
-	/*
 	public override function connect() {
 		super.connect();
+		connection.createOffer(function(r:RTCSessionDescription){
+			trace("OK OFFER CREATED "+r );
+			__onConnect();
+		});
 	}
-	*/
 	
 		/*
 	override function signalingCallback( s : String ) {

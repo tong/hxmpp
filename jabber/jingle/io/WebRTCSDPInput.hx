@@ -34,7 +34,8 @@ package jabber.jingle.io;
 	
 	public override function connect() {
 		super.connect();
-		connection.processSignalingMessage( sdp );
+		//TODO
+		//connection.processSignalingMessage( sdp );
 	}
 	
 	/*
@@ -45,9 +46,11 @@ package jabber.jingle.io;
 	}
 	*/
 	
+	/*
 	override function onRemoteStreamAdded(e) {
 		stream = e.stream;
 	}
+	*/
 	
 	/* 
 	public static inline function ofCandidate( x : Xml ) : WebRTCInput {

@@ -31,11 +31,11 @@ import xmpp.vcard.Tel;
 import xmpp.vcard.Geo;
 
 /**
-	<a href="http://www.xmpp.org/extensions/xep-0054.html">XEP-0054: vcard-temp</a>
-	<a href="http://tools.ietf.org/html/rfc2426">RFC2426</a>
+	XEP-0054: vcard-temp: http://www.xmpp.org/extensions/xep-0054.html
+	RFC2426: http://tools.ietf.org/html/rfc2426
 
-	Depricated XEP! Replaced by XEP0292.
-	This is just a subset of RFC2426.
+	Depricated! Replaced by XEP0292 (see xmpp.VCard).
+	This is just a subset of RFC2426!
 */
 class VCardTemp {
 	
@@ -190,7 +190,7 @@ class VCardTemp {
 				if( e.firstChild() != null ) vc.nickname = e.firstChild().nodeValue;
 			case "PHOTO" :
 				vc.photo = parsePhoto( e );
-			case "BDAY" :
+			case "BDAY","BIRTHDAY" :
 				if( e.firstChild() != null ) vc.birthday = e.firstChild().nodeValue;
 			case "ADR" :
 				var a : Address = untyped {};

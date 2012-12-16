@@ -21,7 +21,7 @@
  */
 package jabber.jingle;
 
-import webrtc.PeerConnection;
+import webrtc.RTCPeerConnection;
 import jabber.jingle.io.WebRTCSDPOutput;
 import xmpp.IQ;
 
@@ -37,15 +37,16 @@ import xmpp.IQ;
 class WebRTCSDPCall extends OutgoingSession<WebRTCSDPOutput> {
 	
 	/** Callback if the peerconnection of the transport is ready to use */
-	public dynamic function onPeerConnection( pc : PeerConnection ) {}
+	public dynamic function onPeerConnection( pc : RTCPeerConnection ) {}
 	
 	public function new( stream : jabber.Stream, entity : String, contentName : String = "av" ) {
 		super( stream, entity, contentName, xmpp.Jingle.XMLNS_WEBRTC );
 	}
 	
 	public override function init() {
-		trace("initinitinitinitinit");
+		trace( "init webrtc jingle session ..." );
 		transport = transports[0]; //TODO
+		trace(transport);
 		//connectTransport();
 		super.init();
 		/*
@@ -59,6 +60,7 @@ class WebRTCSDPCall extends OutgoingSession<WebRTCSDPOutput> {
 	}
 	
 	override function handleSessionInitResult() {
+	
 		trace("handleSessionInitResult");
 		
 		transport.__onConnect = handleTransportConnect;
@@ -71,7 +73,9 @@ class WebRTCSDPCall extends OutgoingSession<WebRTCSDPOutput> {
 	override function handleSessionInfo( x : Array<Xml> ) {
 		//TODO check state
 		var sdp = x[0].firstChild().nodeValue;
-		transport.connection.processSignalingMessage( sdp );
+		//TODO
+		trace("handleSessionInfo: transport connect" );
+		//transport.connection.processSignalingMessage( sdp );
 	}
 	
 	override function processSessionPacket( iq : IQ, j : xmpp.Jingle ) {

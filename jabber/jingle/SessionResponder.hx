@@ -21,8 +21,9 @@
  */
 package jabber.jingle;
 
-import jabber.jingle.io.Transport;
-//import jabber.io.Transport;
+//TODO
+//import jabber.jingle.io.Transport;
+import jabber.io.Transport;
 import xmpp.IQ;
 
 /**
@@ -30,27 +31,31 @@ import xmpp.IQ;
 */
 class SessionResponder<T:Transport> extends Session<T> {
 	
+	/*
 	function new( stream : jabber.Stream, xmlns : String ) {
 		super( stream, xmlns );
 	}
+	*/
 	
 	/**
 		Handle initial jingle request packet
 	*/
 	public function handleRequest( iq : IQ ) : Bool {
 		
-		trace('handleRequest');
+		//trace('handleRequest');
 		
 		var j = xmpp.Jingle.parse( iq.x.toXml() );
 		if( j.action != xmpp.jingle.Action.session_initiate ) {
-			
+			#if JABBER_DEBUG
+			trace( "invalid jingle request ("+iq.from+")(expecting session initiate)", "warn" );
+			#end
 			return false;
 		}
-		var content = j.content[0];
+		
 		candidates = new Array();
 		
-		trace('>>>>>>>>>>>>>>');
-		
+		var content = j.content[0]; //TODO iterate all
+		//trace('>>>>>>>>>>>>>>');
 		for( e in content.other ) {
 			switch( e.nodeName ) {
 			case "description" :
@@ -58,6 +63,7 @@ class SessionResponder<T:Transport> extends Session<T> {
 			case "transport" :
 				//TODO check/process arguments
 				for( e in e.elements() ) {
+					trace(e);
 					if( e.nodeName == "candidate") {
 						addTransportCandidate( e );
 					}
@@ -65,11 +71,12 @@ class SessionResponder<T:Transport> extends Session<T> {
 			}
 		}
 		
-		trace('>>>>>>>>>>>>>>2');
-		
 		//TODO webrtc-sdp has no candidates
+		
 		if( candidates.length == 0 ) {
-			trace("NO TRANSPORT CANDIDATES!");
+			#if JABBER_DEBUG
+			trace( "no transport candidates", "warn" );
+			#end
 		/*
 			onFail( "no transport candidates found" );
 			cleanup();
@@ -81,8 +88,6 @@ class SessionResponder<T:Transport> extends Session<T> {
 		initiator = j.initiator;
 		sid = j.sid;
 		contentName = content.name;
-		
-		trace('>>>>>>>>>>>>>>3');
 		
 		addSessionCollector(); // collect session packets
 		

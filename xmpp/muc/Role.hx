@@ -22,7 +22,7 @@
 package xmpp.muc;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0045.html#connections">Roles and Affiliations</a>
+	Roles and Affiliations: http://xmpp.org/extensions/xep-0045.html#connections
 */
 enum Role {
 	none;

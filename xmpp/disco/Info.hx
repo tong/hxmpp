@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,12 +25,13 @@ class Info {
 	
 	public static var XMLNS(default,null) : String = xmpp.Packet.PROTOCOL+'/disco#info';
 	
+	/***/
 	public var identities : Array<Identity>; 
 	
-	/** */
+	/** List of features/namespaces */
 	public var features : Array<String>;
 	
-	/** */
+	/** Specific node */
 	public var node : String;
 	
 	/** Dataform */

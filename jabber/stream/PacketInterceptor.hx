@@ -22,7 +22,7 @@
 package jabber.stream;
 
 /**
-	Modifies XMPP packets and/or runs additional processes before sending them.
+	Modifies XMPP packets and/or runs additional processes before sending.
 */
 typedef PacketInterceptor = {
 	

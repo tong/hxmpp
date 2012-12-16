@@ -34,18 +34,18 @@ private class Socket extends flash.net.Socket {
 	}
 }
 
-class FlashSocketBridge{
+class FlashSocketBridge {
 	
 	var ctx : String;
 	var sockets : IntHash<Socket>;
 	
-	var outputInterval : Int;
-	var queue : Array<{id:Int,data:String}>;
-	var timer : haxe.Timer;
+	//var outputInterval : Int;
+	//var queue : Array<{id:Int,data:String}>;
+	//var timer : haxe.Timer;
 	
 	public function new( ?ctx : String, outputInterval : Int = 1 ) {
 		this.ctx = ( ctx != null ) ? ctx : "jabber.SocketConnection";
-		this.outputInterval = outputInterval;
+		//this.outputInterval = outputInterval;
 	}
 	
 	public function init() {
@@ -59,9 +59,10 @@ class FlashSocketBridge{
 		ExternalInterface.addCallback( "send", send );
 		//ExternalInterface.addCallback( "destroy", destroy );
 		ExternalInterface.addCallback( "destroyAll", destroyAll );
-		queue = new Array();
-		timer = new haxe.Timer( outputInterval );
-		timer.run = onTimer;
+		
+		//queue = new Array();
+		//timer = new haxe.Timer( outputInterval );
+		//timer.run = onTimer;
 	}
 	
 	function createSocket( ___secure : Bool, __legacy__ : Bool, timeout : Int = -1 ) : Int {
@@ -173,11 +174,14 @@ class FlashSocketBridge{
 		//queue.push( { id : e.target.id, data : e.target.readUTFBytes( e.bytesLoaded ) } );
 	}
 	
+	/* 
 	function onTimer() {
 		if( queue.length > 0 ) {
 			var n = queue.shift();
 			ExternalInterface.call( ctx+".handleData", n.id, n.data );
 		}
 	}
+	*/
+
 
 }

@@ -45,9 +45,8 @@ class PersonalEventListener {
 		//TODO! add to stream features
 		this.stream = stream;
 		listeners = new List();
-		stream.collect( [ new xmpp.filter.MessageFilter(),
-						  new xmpp.filter.PacketPropertyFilter( xmpp.PubSubEvent.XMLNS, 'event' ) ],
-						handlePersonalEvent, true );
+		var filters : Array<xmpp.PacketFilter> = [ new xmpp.filter.MessageFilter(), new xmpp.filter.PacketPropertyFilter( xmpp.PubSubEvent.XMLNS, 'event' ) ];
+		stream.collect( filters, handlePersonalEvent, true );
 	}
 	
 	public inline function iterator() : Iterator<Listener> {

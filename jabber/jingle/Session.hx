@@ -21,8 +21,10 @@
  */
 package jabber.jingle;
 
-import jabber.jingle.io.Transport;
-//import jabber.io.Transport;
+//TODO
+//import jabber.jingle.io.Transport;
+import jabber.io.Transport;
+
 import jabber.stream.PacketCollector;
 import jabber.util.Base64;
 import xmpp.IQ;
@@ -131,7 +133,7 @@ class Session<T:Transport> {
 	
 	function processSessionPacket( iq : IQ, j : xmpp.Jingle ) { // override me
 		#if JABBER_DEBUG
-		trace( "Jingle session packet not processed, not implemented", "warn" );
+		trace( "jingle session packet not processed (not implemented)", "warn" );
 		#end
 	}
 	
@@ -148,7 +150,7 @@ class Session<T:Transport> {
 	}
 	
 	function connectTransport() {
-		trace( "Connecting jingle transport ..." );
+		trace( "connecting jingle transport ..." );
 		if( transport == null )
 			transport = candidates[transportCandidateIndex];
 		if( transport != null ) {
@@ -156,6 +158,7 @@ class Session<T:Transport> {
 			transport.__onFail = handleTransportFail;
 			transport.connect();
 		} else {
+			//TODO
 			trace("TODO no jingle transport!");
 		}
 	}

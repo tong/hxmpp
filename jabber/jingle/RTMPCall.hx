@@ -25,7 +25,7 @@ import jabber.jingle.io.RTMPOutput;
 import xmpp.IQ;
 
 /**
-	Outgoing RTMP connection.
+	Outgoing RTMP session.
 */
 class RTMPCall extends OutgoingSession<RTMPOutput> {
 	

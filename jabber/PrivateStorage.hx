@@ -22,8 +22,8 @@
 package jabber;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0049.html">XEP-0049: Private XML Storage</a><br/>
-	Extension to store any arbitrary XML on the server side.<br/>
+	Extension to store any arbitrary XML on the server side.
+	XEP-0049: Private XML Storage: http://xmpp.org/extensions/xep-0049.html
 */
 class PrivateStorage {
 	

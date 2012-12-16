@@ -42,8 +42,8 @@ class IB {
 		xmpp.XMLUtil.setNamespace( x, XMLNS );
 		x.set( "sid", sid );
 		switch( type ) {
-		case IBType.open : x.set( "block-size", Std.string( blockSize ) );
-		case IBType.data : x.set( "seq", Std.string( seq ) );
+		case open : x.set( "block-size", Std.string( blockSize ) );
+		case data : x.set( "seq", Std.string( seq ) );
 		default : //
 		}
 		return x;
