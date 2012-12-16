@@ -9,14 +9,14 @@
 --no-traces
 
 ### Flash SSL socketbridge
---next
--cp ../../
--cp ../../../hxssl.fl
--swf-lib ../../../hxssl.fl/ssl.swf
--swf-version 10
--swf-header 100:100:60:eeeeee
--swf socketbridge_tls.swf
--main Standalone
---flash-strict
--D TLS
---no-traces
+#--next
+#-cp ../../
+#-cp ../../../hxssl.fl
+#-swf-lib ../../../hxssl.fl/ssl.swf
+#-swf-version 10
+#-swf-header 100:100:60:eeeeee
+#-swf socketbridge_tls.swf
+#-main Standalone
+#--flash-strict
+#-D TLS
+#--no-traces
