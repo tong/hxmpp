@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,6 +42,7 @@ typedef Socket = Stream;
 	#end
 #end
 
+
 #if sys
 private typedef AbstractSocket = {
 	var input(default,null) : haxe.io.Input;
@@ -56,71 +57,12 @@ private typedef AbstractSocket = {
 #end
 
 
-
-#if droid
-
-import droid.net.Socket;
-
-/**
-	!!! EXPERIMENTAL !!!
-*/
-class SocketConnectionBase extends jabber.stream.Connection {
-	
-	public var port(default,null) : Int;
-	
-	var s : Socket;
-	
-	public function new( host : String, port : Int = 5222, secure : Bool ) {
-		super( host, secure );
-		this.port = port;
-	}
-	
-	public override function connect() {
-		s = new Socket( secure );
-		s.onopen = onConnect;
-		s.onclose = onClose;
-		s.onerror = onError;
-		//s.onmessage = onData;
-		s.connect( host, port );
-	}
-	
-	public override function disconnect() {
-		s.close();
-	}
-	
-	public override function write( t : String ) : Bool {
-		s.send( t );
-		return true;
-	}
-	
-	public override function read( ?yes : Bool = true ) : Bool {
-		s.onmessage = yes ? onData : null;
-		return true;
-	}
-	
-	function onConnect() {
-		connected = true;
-		__onConnect();
-	}
-	
-	function onClose() {
-		connected = false;
-		__onDisconnect(null);
-	}
-	
-	function onError() {
-		connected = false;
-		__onDisconnect( "socket error" ); // no error message?
-	}
-	
-	function onData( m : String ) {
-		__onString( m );
-	}
-}
-
-
+#if droid error // deprecated
 #else
 
+/**
+	Abstract base class for socket connections
+*/
 class SocketConnectionBase extends Connection {
 	
 	public static var defaultBufSize = #if php 65536 #else 256 #end; //TODO php buf
@@ -139,7 +81,7 @@ class SocketConnectionBase extends Connection {
 //	public var socket(default,null) : Socket;
 	#elseif (js&&air)
 	public var socket(default,null) : air.Socket;
-	#elseif (js&&JABBER_SOCKETBRIDGE)
+	#elseif (js&&JABBER_FLASHSOCKETBRIDGE)
 	public var socket(default,null) : Socket;
 	#elseif (flash&&air)
 	//#
@@ -285,15 +227,12 @@ class SocketConnectionBase extends Connection {
 	}
 
 	#end
-	
 }
 
 #end
 
 
-/////////////////////////////////////////////////
-
-#if JABBER_SOCKETBRIDGE
+#if JABBER_FLASHSOCKETBRIDGE
 
 class Socket {
 	
@@ -301,7 +240,7 @@ class Socket {
 	public dynamic function onDisconnect( ?e : String ) {}
 	public dynamic function onData( d : String ) {}
 	public dynamic function onSecured() {}
-	//public dynamic function onError( e : String ) {}
+	//public dynamic function onError( e : String ) {} //TODO
 	
 	public var id(default,null) : Int;
 	
@@ -328,4 +267,4 @@ class Socket {
 	}
 }
 
-#end
+#end // JABBER_FLASHSOCKETBRIDGE

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,9 @@ import js.net.Host;
 import js.net.Socket;
 #end
 
+/**
+	Sys
+*/
 class SocketConnection extends jabber.stream.SocketConnectionBase {
 		
 	public function new( host : String = "localhost",
@@ -42,9 +45,10 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 						 timeout : Int = 10 ) {
 		
 		super( host, port, secure, bufsize, maxbufsize, timeout );
+		
 		#if (JABBER_DEBUG && (neko||cpp||air) )
 		if( secure ) {
-			trace( "StartTLS not implemented, use jabber.SecureSocketConnection for legacy TLS on port 5223", "warn" );
+			trace( "startTLS not implemented, use jabber.SecureSocketConnection for legacy TLS on port 5223", "warn" );
 			this.secure = false;
 		}
 		#end
@@ -96,6 +100,7 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 	}
 }
 
+
 #elseif ( flash && TLS )
 
 import flash.utils.ByteArray;
@@ -103,6 +108,9 @@ import tls.controller.SecureSocket;
 import tls.event.SecureSocketEvent;
 import tls.valueobject.SecurityOptionsVO;
 
+/**
+	Flash + TLS
+*/
 class SocketConnection extends jabber.stream.SocketConnectionBase {
 	
 	public function new( host : String = "localhost", port : Int = 5222, secure : Bool = true,
@@ -186,6 +194,9 @@ import flash.events.SecurityErrorEvent;
 import flash.events.ProgressEvent;
 import flash.utils.ByteArray;
 
+/**
+	Flash
+*/
 class SocketConnection extends jabber.stream.SocketConnectionBase {
 	
 	#if air
@@ -274,15 +285,21 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 		*/
 	}
 }
-#elseif (js&&droid)
 
+
+#elseif (js&&droid) error // deprecated
+
+/*
 class SocketConnection extends jabber.stream.SocketConnectionBase {
 	public function new( host : String = "localhost", port : Int = 5222 ) {
 		super( host, port, false );
 	}
 }
+*/
+
 
 #elseif (js&&air)
+
 import air.Socket;
 import air.ByteArray;
 import air.Event;
@@ -290,6 +307,9 @@ import air.IOErrorEvent;
 import air.ProgressEvent;
 import air.SecurityErrorEvent;
 
+/**
+	JS + Air
+*/
 class SocketConnection extends jabber.stream.SocketConnectionBase {
 	
 	public function new( host : String = "localhost", port : Int = 5222, secure : Bool = false,
@@ -353,7 +373,6 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 		return true;
 	}
 	
-	//??
 	/*
 	public override function reset() {
 		#if JABBER_DEBUG trace('clearing socket buffer','info'); #end
@@ -385,12 +404,16 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 	}
 }
 
+
 #elseif (js&&nodejs)
 
 import js.Node;
 
 private typedef Socket = js.NodeNetSocket;
 
+/**
+	Node.js
+*/
 class SocketConnection extends jabber.stream.SocketConnectionBase {
 	
 	public var socket(default,null) : Socket;
@@ -514,10 +537,14 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 	
 }
 
-#elseif (js&&JABBER_SOCKETBRIDGE)
+
+#elseif (js&&JABBER_FLASHSOCKETBRIDGE)
 
 import jabber.stream.SocketConnectionBase;
 
+/**
+	JS + FlashSocketBridge
+*/
 class SocketConnection extends jabber.stream.SocketConnectionBase {
 
 	public function new( host : String = "localhost", ?port : Int = 5222, secure = true, timeout : Int = 10 ) {
@@ -578,16 +605,16 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 		__onString( t );
 	}
 	
-	///// Flash socketbridge connection(s) ->
-		
 	static function __init__() {
 		initialized = false;
 	}
 	
 	/** The id of the html element holding the swf */
 	public static var id(default,null) : String;
+	
 	/** Reference to the swf itself */
 	public static var swf(default,null) : Dynamic;
+	
 	/** Indicates if the socketbridge stuff is initialized */
 	public static var initialized(default,null) : Bool;
 	
@@ -602,6 +629,7 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 		var _init = function(){
 			swf = js.Lib.document.getElementById( id );
 			if( swf == null ) {
+				#if JABBER_DEBUG trace( 'socketbridge swf not found ['+id+']', 'warn' ); #end
 				cb( 'socketbridge swf not found ['+id+']' );
 				return;
 			}
@@ -609,13 +637,13 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 			initialized = true;
 			cb(null);
 		}
-		if( delay > 0 ) haxe.Timer.delay( _init, delay ) else _init();
+		( delay > 0 ) ? haxe.Timer.delay( _init, delay ) : _init();
 	}
 	
 	public static function createSocket( s : Socket, secure : Bool, timeout : Int ) {
 		var id : Int = -1;
 		try id = swf.createSocket( secure, false, timeout ) catch( e : Dynamic ) {
-			#if JABBER_DEBUG trace(e,"error"); #end
+			#if JABBER_DEBUG trace( e, "error" ); #end
 			return -1;
 		}
 		sockets.set( id, s );
@@ -639,4 +667,4 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 	}
 }
 
-#end
+#end // js && JABBER_FLASHSOCKETBRIDGE
