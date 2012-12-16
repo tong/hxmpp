@@ -38,15 +38,14 @@ XEPS SUPPORTED
 * 0203 DelayedDelivery
 * 0206 BOSH
 *** 0232 Bits of Binary
-
 ** XEP-xxxx: Linked Process Protocol (http://xmpp.org/extensions/inbox/lop.html)
 ** XEP-xxxx: Jingle RTMP Transport (http://xmpp.org/extensions/inbox/jingle-rtmp.html)
 ** XEP-xxxx: Jingle RTMFP Transport
 ** gmail-notifiy (http://code.google.com/apis/talk/jep_extensions/gmail.html)
 
 
-USAGE
------
+USAGE EXAMPLES
+--------------
 See: http://github.com/tong/hxmpp.examples
 
 
@@ -54,14 +53,8 @@ COMPILER FLAGS
 --------------
 * XMPP_DEBUG	Print XMPP transfer
 * JABBER_DEBUG	Print verbose debug information
-* JABBER_SOCKETBRIDGE	Use a flash socket bridge as stream connection for the javascript target
-* JABBER_COMPONENT	Required when building server components
-
-
-NODE.JS
--------
-To compile for nodejs use the 'nodejs' haxelib
-Set compiler flag: -D nodejs
+* JABBER_COMPONENT	Enable building server components (instead of clients)
+* JABBER_FLASHSOCKETBRIDGE	Enables to use a flash socket bridge as stream connection for the javascript target (see: hxmpp/util/flash-socketbridge)
 
 
 BOSH
@@ -89,6 +82,12 @@ sudo /etc/init.d/apache2 restart
 
 # Now you can pass in the path to the constructor of the jabber.BOSHConection class:
 var cnx = new BOSHConnection( "domain.net", "127.0.0.1/xmpp/" );
+
+
+NODE.JS
+-------
+To compile for nodejs use the 'nodejs' haxelib
+Set compiler flag: -D nodejs
 
 
 SOURCE
