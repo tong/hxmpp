@@ -22,7 +22,7 @@
 package jabber;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a>
+	XEP-0012: Last Activity: http://xmpp.org/extensions/xep-0012.html
 */
 class LastActivityListener {
 	

@@ -64,7 +64,7 @@ class Roster {
 	public var subscriptionMode : RosterSubscriptionMode;
 	public var available(default,null) : Bool;
 	public var items(default,null) : Array<Item>;
-	public var groups(getGroups,null) : Array<String>;
+	public var groups(get_groups,null) : Array<String>;
 	
 	var c_presence : PacketCollector;
 	var c_message : PacketCollector;
@@ -78,7 +78,7 @@ class Roster {
 		c_message = stream.collect( [new xmpp.filter.IQFilter( xmpp.Roster.XMLNS )], handleIQ, true );
 	}
 	
-	function getGroups() : Array<String> {
+	function get_groups() : Array<String> {
 		var r = new Array<String>();
 		for( i in items ) {
 			for( g in i.groups ) {

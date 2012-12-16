@@ -47,10 +47,10 @@ class JID {
 	public var resource : String;
 	
 	/** JID without resource */
-	public var bare(getBare,null) : String;
+	public var bare(get_bare,null) : String;
 	
 	/** Just a shortcut for toString()  */
-	public var s(toString,null) : String;
+	public var s(get_s,null) : String;
 	
 	public function new( ?t : String ) {
 		if( t != null ) {
@@ -62,9 +62,11 @@ class JID {
 		}
 	}
 	
-	function getBare() : String {
+	function get_bare() : String {
 		return ( node == null || domain == null ) ? null : node+"@"+domain;
 	}
+	
+	inline function get_s() : String return toString()
 	
 	public function copy() : JID {
 		var j = new JID();
@@ -75,7 +77,7 @@ class JID {
 	}
 	
 	public function toString() : String {
-		var j = getBare();
+		var j = get_bare();
 		return ( j == null ) ? null : ( resource == null ) ? j : j+"/"+resource;
 	}
 	

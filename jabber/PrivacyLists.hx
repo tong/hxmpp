@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,9 +22,10 @@
 package jabber;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a><br>
-	Extension for blocking communication with unknown or undesirable entities.<br>
-	Oooold extension, use jabber.ComBlock instead.
+	Extension for blocking communication with unknown or undesirable entities.
+	Depricated! Use jabber.ComBlock instead.
+
+	XEP-0016: Privacy Lists: http://xmpp.org/extensions/xep-0016.html
 */
 class PrivacyLists {
 	

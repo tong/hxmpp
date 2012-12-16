@@ -31,7 +31,7 @@ class Presence extends xmpp.Packet {
 	
 	public var type : PresenceType;
    	public var show : PresenceShow;
-    public var status(default,setStatus) : String;
+    public var status(default,set_status) : String;
     public var priority : Null<Int>;
     
 	public function new( ?show : PresenceShow, ?status : String, ?priority : Int, ?type : PresenceType ) {
@@ -43,7 +43,7 @@ class Presence extends xmpp.Packet {
 		this.type = type;
 	}
 	
-	function setStatus( s : String ) : String {
+	function set_status( s : String ) : String {
 		return status = ( ( s == null || s == "" ) ?
 			null :
 			( s.length > MAX_STATUS_SIZE ) ? s.substr( 0, MAX_STATUS_SIZE ) : s );

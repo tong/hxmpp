@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,10 @@ package jabber;
 import jabber.util.Timer;
 
 /**
-	<p>flash,js,neko</p>
-	<a href="http://www.xmpp.org/extensions/xep-0199.html">XEP 199 - XMPP Ping</a><br/>
-	Sends application-level pings over XML streams.<br/>
-	Such pings can be sent from a client to a server, from one server to another, or end-to-end.<br/>
+	XEP 199 - XMPP Ping: http://www.xmpp.org/extensions/xep-0199.html
+
+	Sends application-level pings over XML streams.
+	Such pings can be sent from a client to a server, from one server to another, or end-to-end.
 */
 class Ping {
 	

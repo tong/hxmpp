@@ -32,7 +32,7 @@ class PacketListener<T:xmpp.Packet> {
 	public dynamic function onPacket( p : T ) {}
 	
 	/** Activates/Deactivates packet collecting */
-	public var listen(default,setListening) : Bool;
+	public var listen(default,set_listen) : Bool;
 	
 	/** The collector for this listener */
 	public var collector(default,null) : PacketCollector;
@@ -43,10 +43,10 @@ class PacketListener<T:xmpp.Packet> {
 		this.stream = stream;
 		this.onPacket = handler;
 		collector = new PacketCollector( [new xmpp.filter.PacketTypeFilter(packetType)], handlePacket, true );
-		setListening( listen );
+		set_listen( listen );
 	}
 	
-	function setListening( v : Bool ) : Bool {
+	function set_listen( v : Bool ) : Bool {
 		return ( listen = v ) ?
 			stream.addCollector( collector ) :
 			stream.removeCollector( collector );

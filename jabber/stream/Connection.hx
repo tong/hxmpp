@@ -44,7 +44,7 @@ class Connection {
 	@:keep public var __onSecured : String->Void;
 	
 	/** Hostname or IP address of the XMPP server. */
-	public var host(default,setHost) : String;
+	public var host(default,set_host) : String;
 	
 	/** Indicates if connected and ready to read and write. */
 	public var connected(default,null) : Bool;
@@ -65,7 +65,7 @@ class Connection {
 		connected = secured = false;
 	}
 	
-	function setHost( t : String ) : String {
+	function set_host( t : String ) : String {
 		if( connected )
 			throw "cannot change hostname on active connection" ;
 		return host = t;

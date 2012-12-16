@@ -90,12 +90,12 @@ class Stream {
 	public dynamic function onClose( ?error : String ) {}
 	
 	public var status : Status;
-	public var cnx(default,setConnection) : Connection;
+	public var cnx(default,set_cnx) : Connection;
 	public var features(default,null) : StreamFeatures;
 	public var server(default,null) : Server;
 	public var id(default,null) : String;
 	public var lang(default,null) : String;
-	public var jid(default,setJID) : JID;
+	public var jid(default,set_jid) : JID;
 
 	public var dataFilters(default,null) : Array<DataFilter>;
 	public var dataInterceptors(default,null) : Array<DataInterceptor>;
@@ -114,20 +114,20 @@ class Stream {
 		this.maxBufSize = ( maxBufSize == null || maxBufSize < 1 ) ? defaultMaxBufSize : maxBufSize;
 		cleanup();
 		if( cnx != null )
-			setConnection( cnx );
+			set_cnx( cnx );
 	}
 	
-	function setJID( j : JID ) : JID {
+	function set_jid( j : JID ) : JID {
 		if( status != Status.closed )
 			throw "cannot change jid on open xmpp stream";
 		return jid = j;
 	}
 	
-	function setConnection( c : Connection ) : Connection {
+	function set_cnx( c : Connection ) : Connection {
 		switch( status ) {
 		case open, pending #if !JABBER_COMPONENT, starttls #end :
 			close( true );
-			setConnection( c );
+			set_cnx( c );
 			 // re-open XMPP stream
 			#if JABBER_COMPONENT
 			// ?????
