@@ -26,15 +26,15 @@ package xmpp.filter;
 */
 class PacketFromContainsFilter {
 	
-	public var contains(default,setContains) : String;
+	public var contains(default,set_contains) : String;
 	
 	var ereg : EReg;
 	
 	public function new( contains : String ) {
-		setContains( contains );
+		set_contains( contains );
 	}
 	
-	function setContains( t : String ) : String {
+	function set_contains( t : String ) : String {
 		ereg = new EReg( t, "" );
 		return this.contains = t;
 	}

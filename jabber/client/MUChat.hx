@@ -74,7 +74,7 @@ class MUChat {
 	public var affiliation(default,null) : Affiliation;
 	public var occupants(default,null) : Array<MUCOccupant>;
 	public var subject(default,null) : String;
-	public var me(getMe,null) : MUCOccupant;
+	public var me(get_me,null) : MUCOccupant;
 	public var stream(default,null) : Stream;
 	
 	var presence : xmpp.Presence;
@@ -102,7 +102,7 @@ class MUChat {
 		occupants = new Array();
 	}
 	
-	function getMe() : MUCOccupant {
+	function get_me() : MUCOccupant {
 		var o = new MUCOccupant();
 		o.role = role;
 		o.presence = presence;
