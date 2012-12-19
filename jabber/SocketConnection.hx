@@ -175,6 +175,8 @@ class SocketConnection extends jabber.stream.Connection {
 
 #elseif ( js && !JABBER_FLASHSOCKETBRIDGE && !node && !rhino )
 
+import js.html.WebSocket;
+
 /**
 	WebSocket connection.
 	http://tools.ietf.org/html/draft-moffitt-xmpp-over-websocket-00
@@ -208,7 +210,9 @@ class SocketConnection extends jabber.stream.Connection {
 	}
 	
 	public override function read( ?yes : Bool = true ) : Bool {
-		socket.onmessage = yes ? onData : null;
+		socket.onmessage = onData;
+		//if( yes ) socket.onmessage = onData;
+		//socket.onmessage = yes ? onData : null;
 		return true;
 	}
 	
@@ -217,22 +221,22 @@ class SocketConnection extends jabber.stream.Connection {
 		return true;
 	}
 	
-	function onConnect() {
+	function onConnect(e) {
 		connected = true;
 		__onConnect();
 	}
 	
-	function onClose() {
+	function onClose(e) {
 		connected = false;
 		__onDisconnect(null);
 	}
 	
-	function onError() {
+	function onError(e) {
 		connected = false;
 		__onDisconnect( "websocket error" ); // no error message?
 	}
 	
-	function onData( m ) {
+	function onData( m : Dynamic ) {
 		__onString( m.data );
 	}
 	
@@ -767,8 +771,8 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 			cb( 'socketbridge already initialized ['+id+']' );
 			return;
 		}
-		var _init = function(){
-			swf = js.Lib.document.getElementById( id );
+		var _init : Void->Void = function(){
+			swf = untyped document.getElementById( id );
 			if( swf == null ) {
 				#if JABBER_DEBUG trace( 'socketbridge swf not found ['+id+']', 'warn' ); #end
 				cb( 'socketbridge swf not found ['+id+']' );
@@ -778,7 +782,7 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 			initialized = true;
 			cb(null);
 		}
-		( delay > 0 ) ? haxe.Timer.delay( _init, delay ) : _init();
+		if( delay > 0 ) haxe.Timer.delay( _init, delay ) else _init();
 	}
 	
 	public static function createSocket( s : Socket, secure : Bool, timeout : Int ) {

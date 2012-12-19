@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,14 +27,30 @@ package jabber;
 */
 class PrivateStorage {
 	
-	public dynamic function onStored( s : xmpp.PrivateStorage ) {}
 	public dynamic function onLoad( s : xmpp.PrivateStorage ) {}
+	public dynamic function onStored( s : xmpp.PrivateStorage ) {}
 	public dynamic function onError( e : jabber.XMPPError ) {}
 	
 	public var stream(default,null) : jabber.Stream;
 
 	public function new( stream : jabber.client.Stream ) {
 		this.stream = stream;
+	}
+	
+	/**
+		Load private data.
+	*/
+	public function load( name : String, namespace : String ) {
+		var iq = new xmpp.IQ( xmpp.IQType.get );
+		iq.x = new xmpp.PrivateStorage( name, namespace );
+		var me = this;
+		stream.sendIQ( iq, function(r:xmpp.IQ) {
+			switch( r.type ) {
+			case result : me.onLoad( xmpp.PrivateStorage.parse( r.x.toXml() ) );
+			case error : me.onError( new jabber.XMPPError( iq ) );
+			default://#
+			}
+		} );
 	}
 	
 	/**
@@ -48,22 +64,6 @@ class PrivateStorage {
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			switch( r.type ) {
 			case result : me.onStored( xt );
-			case error : me.onError( new jabber.XMPPError( iq ) );
-			default://#
-			}
-		} );
-	}
-	
-	/**
-		Load private data.
-	*/
-	public function load( name : String, namespace : String ) {
-		var iq = new xmpp.IQ( xmpp.IQType.get );
-		iq.x = new xmpp.PrivateStorage( name, namespace );
-		var me = this;
-		stream.sendIQ( iq, function(r:xmpp.IQ) {
-			switch( r.type ) {
-			case result : me.onLoad( xmpp.PrivateStorage.parse( r.x.toXml() ) );
 			case error : me.onError( new jabber.XMPPError( iq ) );
 			default://#
 			}
