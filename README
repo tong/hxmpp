@@ -3,9 +3,12 @@
 |---|   +   | + | |---  |---  
 |   |  / \  |   | |     |     
 
-                                          
-Haxe library for creating XMPP clients and services.
-http://hxmpp.disktree.net/
+Haxe XMPP library | http://hxmpp.disktree.net
+
+
+API-DOC
+-------
+http://hxmpp.disktree.net/doc/api/
 
 
 XEPS SUPPORTED
@@ -37,23 +40,24 @@ XEPS SUPPORTED
 ** 0202 EntityTime
 * 0203 DelayedDelivery
 * 0206 BOSH
-*** 0232 Bits of Binary
+*** 0231 Bits of Binary
+* 0224 Attention
 ** XEP-xxxx: Linked Process Protocol (http://xmpp.org/extensions/inbox/lop.html)
 ** XEP-xxxx: Jingle RTMP Transport (http://xmpp.org/extensions/inbox/jingle-rtmp.html)
 ** XEP-xxxx: Jingle RTMFP Transport
 ** gmail-notifiy (http://code.google.com/apis/talk/jep_extensions/gmail.html)
 
 
-USAGE EXAMPLES
---------------
+USAGE
+-----
 See: http://github.com/tong/hxmpp.examples
 
 
 COMPILER FLAGS
 --------------
-* XMPP_DEBUG	Print XMPP transfer
+* XMPP_DEBUG	Print XMPP transfer (see jabber.XMPPDebug for options)
 * JABBER_DEBUG	Print verbose debug information
-* JABBER_COMPONENT	Enable building server components (instead of clients)
+* JABBER_COMPONENT	Enable building xmpp server components
 * JABBER_FLASHSOCKETBRIDGE	Enables to use a flash socket bridge as stream connection for the javascript target (see: hxmpp/util/flash-socketbridge)
 
 
@@ -61,7 +65,7 @@ BOSH
 ----
 BOSH essentially provides a "drop-in" alternative to a long-lived, bidirectional TCP connection using a request-response mechansim over HTTP.
 To use it you have to connect your client to the BOSH adress of your jabber server.
-Your webserver doesn’t know about your jabber server .. you have to setup a proxy to forward requests: 
+Apache, for example, doesn’t know about your jabber server therefore you have to forward requests.
 
 # Activate mod_proxy apache module
 sudo ln -s /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled/
@@ -78,16 +82,10 @@ LoadModule proxy_http_module /usr/lib/apache2/modules/mod_proxy_http.so
 </VirtualHost>
 
 # Restart apache
-sudo /etc/init.d/apache2 restart
+sudo service apache2 restart
 
-# Now you can pass in the path to the constructor of the jabber.BOSHConection class:
-var cnx = new BOSHConnection( "domain.net", "127.0.0.1/xmpp/" );
-
-
-NODE.JS
--------
-To compile for nodejs use the 'nodejs' haxelib
-Set compiler flag: -D nodejs
+# Now you can pass in the path to the constructor of the jabber.BOSHConnection class:
+var cnx = new jabber.BOSHConnection( "example.com", "127.0.0.1/xmpp/" );
 
 
 SOURCE
@@ -96,12 +94,14 @@ git://github.com/tong/hxmpp.git
 https://github.com/tong/hxmpp
 
 
-HACKERS
+LICENSE
 -------
-This project accepts and *encourages* contributions.
+HXMPP is licensed under MIT
 
 
 AUTHOR
 ------
 http://disktree.net
 xmpp://tong.disktree@gmail.com
+
+This project accepts and *encourages* contributions.
