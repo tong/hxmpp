@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,7 +50,7 @@ class ComponentJID {
 
 /**
 	XMPP server component stream.
-	<a href="http://www.xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>
+	XEP-0114: Jabber Component Protocol, http://www.xmpp.org/extensions/xep-0114.html
 */
 @:require(JABBER_COMPONENT)
 class Stream extends jabber.Stream {
@@ -68,7 +68,7 @@ class Stream extends jabber.Stream {
 //	public var subdomain(default,null) : String;
 
 	/** Full name/address of the server component */
-	public var serviceName(getServiceName,null) : String;
+	public var serviceName(get_serviceName,null) : String;
 	
 	/** Shared secret string used to identify legacy components*/
 	public var secret(default,null) : String;
@@ -77,7 +77,7 @@ class Stream extends jabber.Stream {
 	public var connected(default,null) : Bool;
 	
 	/***/
-	public var items(getItems,null) : xmpp.disco.Items;
+	public var items(get_items,null) : xmpp.disco.Items;
 	
 	/***/
 	public var discoListener(default,null) : ServiceDiscoveryListener;
@@ -104,12 +104,12 @@ class Stream extends jabber.Stream {
 		cnx.connected ? handleConnect() : cnx.connect();
 	}
 	
-	function getServiceName() : String {
+	function get_serviceName() : String {
 		if( jid.subdomain == null || jid.host == null ) return null;
 		return jid.toString();
 	}
 	
-	function getItems() : xmpp.disco.Items {
+	function get_items() : xmpp.disco.Items {
 		return items;
 	}
 	

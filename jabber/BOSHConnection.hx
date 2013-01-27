@@ -22,7 +22,13 @@
 package jabber;
 
 import jabber.util.Timer;
-#if flash
+#if js
+	#if haxe3
+	import js.html.XMLHttpRequest;
+	#else
+	import js.XMLHttpRequest;
+	#end
+#elseif flash
 import flash.events.Event;
 import flash.events.HTTPStatusEvent;
 import flash.events.IOErrorEvent;
@@ -293,14 +299,15 @@ class BOSHConnection extends jabber.stream.Connection {
 		#if JABBER_DEBUG trace('BOSH not implementd for nodejs'); #end
 		
 		#elseif js
+		
 			#if BOSH_HTTP_WEBWORKER
 			worker_http.postMessage( untyped JSON.stringify( { url : getHTTPPath(), data : data } ) );
 			
 			#else
-			var r = new js.XMLHttpRequest();
+			var r = new XMLHttpRequest();
 			//r.withCredentials = true;
 			r.open( "POST", getHTTPPath(), true );
-			r.onreadystatechange = function(){
+			r.onreadystatechange = function(e){
 				if( r.readyState != 4 )
 					return;
 				var s = r.status;
