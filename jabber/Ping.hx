@@ -40,12 +40,15 @@ class Ping {
 	public dynamic function onError( e : XMPPError ) {}
 	
 	public var stream(default,null) : Stream;
+	
 	/** Indicates if this instance is currently sending pings */
 	public var active(default,never) : Bool;
+
 	/** JID of the target entity (server if null) */
 	public var target : String;
+	
 	/** Ping interval in ms */
-	public var ms(default,setInterval) : Int;
+	public var ms(default,set_ms) : Int;
 	
 	var iq : xmpp.IQ;
 	var timer : Timer;
@@ -57,7 +60,7 @@ class Ping {
 		this.ms = ms;
 	}
 	
-	function setInterval( i : Int ) : Int  {
+	function set_ms( i : Int ) : Int  {
 		if( i < 1 )
 			return throw "invalid ping interval ["+i+"]";
 		return ms = i;
