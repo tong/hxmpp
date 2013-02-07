@@ -37,7 +37,11 @@ private typedef JID = ComponentJID;
 #end
 
 private typedef Server = {
+	#if haxe3
+	var features : Map<String,Xml>;
+	#else
 	var features : Hash<Xml>;
+	#end
 }
 
 private class StreamFeatures {
@@ -563,7 +567,11 @@ class Stream {
 	function cleanup() {
 		
 		status = Status.closed;
+		#if haxe3
+		server = { features : new Map<String,Xml>() };
+		#else
 		server = { features : new Hash() };
+		#end
 		features = new StreamFeatures();
 		
 		collectors = new Array();
