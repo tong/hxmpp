@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -85,13 +85,13 @@ private class StreamFeatures {
 class Stream {
 	
 	public static var defaultPacketIdLength = 5;
-	public static var defaultMaxBufSize = 1048576; // 524288;
+	public static var defaultMaxBufSize = 1048576; // 524288; //TODO hmmmmmm
 	
-	/** Callback if the XMPP stream got opened */
+	/** */
 	public dynamic function onOpen() {}
 	
-	/** Callback if the XMPP stream got closed */
-	public dynamic function onClose( ?error : String ) {}
+	/** */
+	public dynamic function onClose( ?e : String ) {}
 	
 	public var status : Status;
 	public var cnx(default,set_cnx) : Connection;
@@ -109,7 +109,6 @@ class Stream {
 	
 	var buf : StringBuf;
 	var collectors_id : Array<PacketCollector>;
-	//public var collectors : Array<PacketCollector>;
 	var collectors : Array<PacketCollector>;
 	var interceptors : Array<PacketInterceptor>;
 	var numPacketsSent : Int;
@@ -183,10 +182,14 @@ class Stream {
 		Passed argument indicates if the data connection to the server should also get disconnected.
 	*/
 	public function close( ?disconnect = false ) {
-		if( status == Status.closed )
+		if( status == Status.closed ) {
+			#if JABBER_DEBUG trace( "cannot close xmpp stream, status is 'closed'" ); #end
 			return;
-		if( !cnx.http ) sendData( "</stream:stream>" );
-		if( disconnect || cnx.http ) cnx.disconnect();
+		}
+		if( !cnx.http )
+			sendData( "</stream:stream>" );
+		if( disconnect || cnx.http )
+			cnx.disconnect();
 		handleDisconnect( null );
 	}
 	

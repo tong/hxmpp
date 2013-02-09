@@ -81,7 +81,7 @@ class Caps {
 		Returns true if the given xmpp packet has a caps property
 	*/
 	public static function has( p : xmpp.Packet ) : Bool {
-		if( p.properties.length == null )
+		if( p.properties.length == 0 )
 			return false;
 		for( pr in p.properties ) {
 			var x = pr;

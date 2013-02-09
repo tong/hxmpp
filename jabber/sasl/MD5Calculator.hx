@@ -32,7 +32,11 @@ class MD5Calculator {
 	public static function parseChallenge( challenge : String ) : { realm : String, nonce : String } {
 		var c = Base64.decode( challenge );
 		var s = c.split( "," );
+		#if haxe3
+		var elements = new Map<String,String>();
+		#else
 		var elements = new Hash<String>();
+		#end
 		for( e in s ) {
 			var s = e.split( "=" );
 			elements.set( s[0], s[1] );

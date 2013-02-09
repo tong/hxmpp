@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +42,7 @@ class ServiceDiscoveryListener {
 	public var onInfoQuery : IQ->IQ;
 	
 	/** Custom items request handler relay */
-	public var onItemQuery : IQ->IQ;
+	public var onItemsQuery : IQ->IQ;
 	
 	var c_info : PacketCollector;
 	var c_items : PacketCollector;
@@ -87,8 +87,8 @@ class ServiceDiscoveryListener {
 	}
 	
 	function handleItemsQuery( iq : IQ ) {
-		if( onItemQuery != null ) { // redirect to custom handler
-			var r = onItemQuery( iq );
+		if( onItemsQuery != null ) { // redirect to custom handler
+			var r = onItemsQuery( iq );
 			if( r != null ) {
 				stream.sendPacket( r );
 				return;

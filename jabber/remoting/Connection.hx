@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,11 +28,12 @@ import xmpp.IQType;
 // needed ..? the jid is already a data context (?)
 
 /**
-	HaXe remoting connection to an XMPP entity.<br/>
-	User ServiceDiscovery to determine if an entity supports haXe-remoting.<br>
-	<a href="http://haxe.org/doc/remoting">http://haxe.org/doc/remoting</a>
+	Haxe remoting connection to an XMPP entity.
+	User ServiceDiscovery to determine if an entity supports haxe-remoting (hxr).
+
+	http://haxe.org/doc/remoting
 */
-class Connection implements AsyncConnection, implements Dynamic<AsyncConnection> {
+class Connection implements AsyncConnection implements Dynamic<AsyncConnection> {
 	
 	//static var connections = new Hash<Connection>();
 	
@@ -81,7 +82,7 @@ class Connection implements AsyncConnection, implements Dynamic<AsyncConnection>
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
 			//trace("RESSUUUUUUUUUUULT");
 			switch( r.type ) {
-			case IQType.result :
+			case result :
 				var v = xmpp.HXR.getData( r.x.toXml() );
 				var ok = true;
 				var ret;
@@ -100,11 +101,11 @@ class Connection implements AsyncConnection, implements Dynamic<AsyncConnection>
 				if( ok && onResult != null )
 					onResult( ret );
 					
-			case IQType.error :
+			case error :
 				//TODO check
 				//var err = xmpp.Error.parse( r.x.toXml() );
-				var err = r.errors[0];
-				error( err );
+				var e = r.errors[0];
+				error( e );
 			default :
 				#if JABBER DEBUG
 				trace( "Invalid remoting response type "+r.type );

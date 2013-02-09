@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
 package jabber.sasl;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0175.html">XEP-0175: Best Practices for Use of SASL ANONYMOUS</a><br/>
+	XEP-0175: Best Practices for Use of SASL ANONYMOUS: http://xmpp.org/extensions/xep-0175.html
 */
 class AnonymousMechanism {
 	
@@ -31,7 +31,7 @@ class AnonymousMechanism {
 	public var id(default,null) : String;
 	
 	/**
-		Some servers may send a challenge to gather more information such as email address.<br/>
+		Some servers may send a challenge to gather more information such as email address.
 		Return any string value.
 	*/
 	public var challengeResponse : String;

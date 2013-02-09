@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -178,5 +178,14 @@ class JIDUtil {
 		n = StringTools.replace( n, "\\5c", "\\" );
 		return n;
 	}
+	
+	//TODO
+		
+	/*
+	/**
+		Build a jid string from constact parts at compile time
+	macro public static function create( node : String, domain : String, resource : String ) {
+	}
+	*/
 	
 }

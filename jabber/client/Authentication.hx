@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,8 +35,8 @@ import xmpp.filter.PacketNameFilter;
 		* Binding the resource to the connection
 		* Establishing a session with the server
 
-	<a href="http://xmpp.org/rfcs/rfc3920.html#sasl">RFC3920-SASL</a>
-	<a href="http://xmpp.org/rfcs/rfc3920.html#bind">RFC3920-BIND</a>
+	RFC3920-SASL http://xmpp.org/rfcs/rfc3920.html#sasl
+	RFC3920-BIND http://xmpp.org/rfcs/rfc3920.html#bind
 */
 class Authentication extends AuthenticationBase {
 	

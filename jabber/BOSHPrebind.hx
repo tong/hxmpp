@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ import xmpp.IQType;
 /**
 	Base for BOSH clients doing account pre-binding.
 	Prebinds a anonymous session for default.
+	Use jabber.BOSHPrebindAccount to use a 'real' account.
 */
 class BOSHPrebind {
 

@@ -77,7 +77,7 @@ class Stream extends jabber.Stream {
 	public var connected(default,null) : Bool;
 	
 	/***/
-	public var items(get_items,null) : xmpp.disco.Items;
+	@:isVar public var items(get_items,null) : xmpp.disco.Items;
 	
 	/***/
 	public var discoListener(default,null) : ServiceDiscoveryListener;

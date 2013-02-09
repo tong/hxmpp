@@ -299,15 +299,22 @@ class BOSHConnection extends jabber.stream.Connection {
 		#if JABBER_DEBUG trace('BOSH not implementd for nodejs'); #end
 		
 		#elseif js
-		
-			#if BOSH_HTTP_WEBWORKER
-			worker_http.postMessage( untyped JSON.stringify( { url : getHTTPPath(), data : data } ) );
 			
-			#else
+			//TODO remove !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			//WTF!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			data = StringTools.replace( data, "&lt;", "<" );
+			data = StringTools.replace( data, "&gt;", ">" );
+			///////////////////////////////////////////////////////////////////////////////
+		
+			//#if BOSH_HTTP_WEBWORKER
+			//worker_http.postMessage( untyped JSON.stringify( { url : getHTTPPath(), data : data } ) );
+			//#else
+			
 			var r = new XMLHttpRequest();
 			//r.withCredentials = true;
 			r.open( "POST", getHTTPPath(), true );
 			r.onreadystatechange = function(e){
+				//trace(e+":"+r.readyState);
 				if( r.readyState != 4 )
 					return;
 				var s = r.status;
@@ -316,9 +323,10 @@ class BOSHConnection extends jabber.stream.Connection {
 				else
 					handleHTTPError( "Http Error #"+r.status );
 			}
+			//trace("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSNDING: "+data );
 			r.send( data );
 			
-			#end
+			//#end
 		
 		#elseif flash
 		var r = new flash.net.URLRequest( getHTTPPath() );
