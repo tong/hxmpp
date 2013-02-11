@@ -763,7 +763,7 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 	/** Indicates if the socketbridge stuff is initialized */
 	public static var initialized(default,null) : Bool;
 	
-	static var sockets : IntHash<Socket>;
+	static var sockets : Map<Int,Socket>;
 	
 	public static function init( id : String = "localhost", cb : String->Void, ?delay : Int = 0 ) {
 		if( initialized ) {
@@ -778,7 +778,7 @@ class SocketConnection extends jabber.stream.SocketConnectionBase {
 				cb( 'socketbridge swf not found ['+id+']' );
 				return;
 			}
-			sockets = new IntHash();
+			sockets = new Map();
 			initialized = true;
 			cb(null);
 		}
