@@ -84,12 +84,6 @@ class BOSHConnection extends jabber.stream.Connection {
 	var timeoutTimer : Timer;
 	var timeoutOffset : Int;
 	//var requests : Array<Http>;
-	
-	#if BOSH_HTTP_WEBWORKER
-	public var worker_url : String;
-	var worker_http : Dynamic;
-	#end
-
 	var attached : Bool;
 
 	/**
@@ -118,23 +112,6 @@ class BOSHConnection extends jabber.stream.Connection {
 		if( initialized && connected ) {
 			restart();
 		} else {
-			
-			#if BOSH_HTTP_WEBWORKER
-			var url = ( worker_url == null ) ? "worker_bosh_http.js" : worker_url;
-			try worker_http = Type.createInstance( untyped Worker, [url] ) catch( e : Dynamic ) {
-				#if JABBER_DEBUG
-				trace( e, 'error' );
-				#end
-			}
-			if( worker_http != null ) {
-				worker_http.onmessage = function(e) {
-					if( StringTools.startsWith( e.data, "Http Error #" ) )
-						handleHTTPError( e.data );
-					else
-						handleHTTPData( e.data );
-				}
-			}
-			#end
 			
 			initialized = true;
 			rid = Std.int( Math.random()*10000000 );
@@ -197,7 +174,7 @@ class BOSHConnection extends jabber.stream.Connection {
 	*/
 	public function pause( secs : Null<Int> ) : Bool {
 		#if JABBER_DEBUG
-		trace( "Pausing BOSH session for "+secs+" seconds" );
+		trace( "pausing bosh session for "+secs+" seconds" );
 		#end
 		if( secs == null )
 			secs = inactivity;
@@ -306,10 +283,6 @@ class BOSHConnection extends jabber.stream.Connection {
 			data = StringTools.replace( data, "&gt;", ">" );
 			///////////////////////////////////////////////////////////////////////////////
 		
-			//#if BOSH_HTTP_WEBWORKER
-			//worker_http.postMessage( untyped JSON.stringify( { url : getHTTPPath(), data : data } ) );
-			//#else
-			
 			var r = new XMLHttpRequest();
 			//r.withCredentials = true;
 			r.open( "POST", getHTTPPath(), true );
@@ -367,7 +340,7 @@ class BOSHConnection extends jabber.stream.Connection {
 	function handleTimeout() {
 		timeoutTimer.stop();
 		cleanup();
-		__onDisconnect( "BOSH timeout" );
+		__onDisconnect( "bosh timeout" );
 	}
 	
 	/*
@@ -403,11 +376,11 @@ class BOSHConnection extends jabber.stream.Connection {
 		}
 		if( x.get( 'xmlns' ) != XMLNS ) {
 			#if JABBER_DEBUG
-			trace( 'invalid BOSH body ('+x+')', 'error' );
+			trace( 'invalid bosh body ('+x+')', 'error' );
 			#end
 			cleanup();
 			//TODO disconnect
-			__onDisconnect( 'invalid BOSH body ('+x+')' );
+			__onDisconnect( 'invalid bosh body ('+x+')' );
 			return;
 		}
 		requestCount--;
@@ -418,7 +391,7 @@ class BOSHConnection extends jabber.stream.Connection {
 			case "terminate" :
 				cleanup();
 				#if JABBER_DEBUG
-				trace( "BOSH stream terminated by server", "warn" );
+				trace( "bosh stream terminated by server", "warn" );
 				#end
 				trace(x);
 				__onDisconnect( x.get('condition') );
