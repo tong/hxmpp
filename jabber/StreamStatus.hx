@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,22 +19,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jabber.stream;
+package jabber;
 
-enum Status {
+enum StreamStatus {
 	
-	/** XMPP stream is inactive. */
+	/**
+		XMPP stream is inactive.
+	*/
 	closed;
 	
-	/** Request to open XMPP stream sent but no response so far. */
+	/**
+		Request to open XMPP stream sent but no response so far.
+	*/
 	pending; //pending( ?info : String );
 	
 	#if !JABBER_COMPONENT
-	/** TLS negotiation in progress. */
+	
+	/**
+		TLS negotiation in progress.
+	*/
 	starttls;
+	
 	#end
 	
-	/** XMPP stream is open and ready to exchange data. */
+	/**
+		XMPP stream is open and ready to exchange data.
+	*/
 	open; //open( ?info : String );
 	
 }
