@@ -66,7 +66,7 @@ class JID {
 		return ( node == null || domain == null ) ? null : node+"@"+domain;
 	}
 	
-	inline function get_s() : String return toString()
+	inline function get_s() : String return toString();
 	
 	public function copy() : JID {
 		var j = new JID();

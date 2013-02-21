@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -74,5 +74,5 @@ class XMLBeautify {
 		}
 	}
 	
-	static inline function indent( b : StringBuf, n : Int ) for( i in 0...n ) b.add( '\t' )
+	static inline function indent( b : StringBuf, n : Int ) for( i in 0...n ) b.add( '\t' );
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,9 @@ package jabber.sasl;
 import jabber.util.Base64;
 import jabber.util.MD5;
 
+/**
+	Static methods for computing sasl-md5 credentials.
+*/
 class MD5Calculator {
 	
 	/**
@@ -33,9 +36,7 @@ class MD5Calculator {
 		var c = Base64.decode( challenge );
 		var s = c.split( "," );
 		#if haxe3
-		var elements = new Map<String,String>();
-		#else
-		var elements = new Hash<String>();
+		var elements = #if haxe3 new Map<String,String>() #else new Hash<String>() #end;
 		#end
 		for( e in s ) {
 			var s = e.split( "=" );
@@ -85,9 +86,9 @@ class MD5Calculator {
 		return b.toString();
 	}
 	
-	static inline function h( t : String)  return MD5.encode( t, true )
-	static inline function hh( t : String ) : String return MD5.encode( t )
-	static inline function quote( t : String ) : String return '"'+t+'"'
-	static inline function unquote( t : String ) : String return t.substr( 1, t.length-2 )
+	static inline function h( t : String)  return MD5.encode( t, true );
+	static inline function hh( t : String ) : String return MD5.encode( t );
+	static inline function quote( t : String ) : String return '"'+t+'"';
+	static inline function unquote( t : String ) : String return t.substr( 1, t.length-2 );
 	
 }
