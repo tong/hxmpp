@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,8 @@
 package jabber.sasl;
 
 /**
-	<a href="ftp://ietf.org//rfc/rfc2831.txt">Using Digest Authentication as a SASL Mechanism</a>
-	<a href="http://web.archive.org/web/20050224191820/http://cataclysm.cx/wip/digest-md5-crash.html">SASL and DIGEST-MD5 for XMPP</a>
+	Using Digest Authentication as a SASL Mechanism: ftp://ietf.org//rfc/rfc2831.txt
+	SASL and DIGEST-MD5 for XMPP: http://web.archive.org/web/20050224191820/http://cataclysm.cx/wip/digest-md5-crash.html
 */
 class MD5Mechanism {
 	
@@ -42,7 +42,7 @@ class MD5Mechanism {
 		this.serverType = serverType;
 	}
 	
-	@:keep public function createAuthenticationText( username : String, host : String, pass : String, resource : String ) : String {
+	public function createAuthenticationText( username : String, host : String, pass : String, resource : String ) : String {
 		this.username = username;
 		this.host = host;
 		this.pass = pass;

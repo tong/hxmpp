@@ -26,6 +26,7 @@ import haxe.io.Bytes;
 /**
 	Abstract base class for XMPP stream connections.
 */
+//@:multiType
 class Connection {
 	
 	/** Succesfully connected callback */

@@ -30,12 +30,16 @@ class Account {
 	
 	/** Callback for recieved registration fields */
 	public dynamic function onFields( fields : Array<String> ) {}
+	
 	/** Callback for account registering success */
 	public dynamic function onRegister( node : String ) {}
+	
 	/** Callback for account remove success  */
 	public dynamic function onRemove() {}
+	
 	/** Callback for password change success */
 	public dynamic function onPasswordChange( pass : String ) {}
+	
 	/** */
 	public dynamic function onError( e : jabber.XMPPError ) {}
 	

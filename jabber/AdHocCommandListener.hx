@@ -26,8 +26,7 @@ import xmpp.IQ;
 import xmpp.command.Action;
 
 /**
-	Advertising and executing of application-specific commands,
-	such as those related to a configuration workflow.
+	Advertising and executing of application-specific commands, such as those related to a configuration workflow.
 
 	http://xmpp.org/extensions/xep-0050.html
 */

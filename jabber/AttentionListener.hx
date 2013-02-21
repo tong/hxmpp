@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,9 @@ package jabber;
 import jabber.stream.PacketCollector;
 
 /**
-	<a href="http://www.xmpp.org/extensions/xep-0224.html">XEP 224 - Attention</a><br/>
-	Listens/Reports attention request.
+	Listens/Reports (user) attention requests.
+
+	XEP 224 - Attention: http://www.xmpp.org/extensions/xep-0224.html
 */
 class AttentionListener {
 	

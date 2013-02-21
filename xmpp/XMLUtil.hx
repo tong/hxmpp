@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -97,7 +97,7 @@ class XMLUtil {
 	}
 	
 	/**
-		Hack because flash is unable to set xml namespace (since haxe 2.06)
+		Hack because flash is unable to set xml namespace (since haxe 2.06) //TODO
 	*/
 	public static inline function setNamespace( x : Xml, s : String ) {
 		#if flash

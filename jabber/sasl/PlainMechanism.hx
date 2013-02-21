@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ class PlainMechanism {
 		id = NAME;
 	}
 	
-	@:keep public function createAuthenticationText( username : String, host : String, password : String, resource : String ) : String {
+	public function createAuthenticationText( username : String, host : String, password : String, resource : String ) : String {
 		var b = new StringBuf();
 		b.add( String.fromCharCode( 0 ) );
 		b.add( username );

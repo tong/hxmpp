@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@ package jabber;
 
 /**
 	Listens/Answers entity time requests.
+
 	XEP 202 - EntityTime http://www.xmpp.org/extensions/xep-0202.html
 */
 class EntityTimeListener {

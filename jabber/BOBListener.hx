@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ import jabber.util.Base64;
 
 /**
 	Listens for 'Bits Of Binary' requests.
+
 	XEP-0231: Bits of Binary: http://xmpp.org/extensions/xep-0231.html
 */
 class BOBListener {

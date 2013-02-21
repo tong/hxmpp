@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,11 @@ package jabber;
 
 /**
 	Utility (shortcut) to listen/report incoming message packets.
+
+	Usage:
+	var l = new MessageListener( stream, function(m){
+		trace("Received message: "+m);
+	});
 */
 class MessageListener extends jabber.stream.PacketListener<xmpp.Message> {
 	

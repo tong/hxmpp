@@ -35,7 +35,7 @@ class Base64 {
 	
 	#if (cpp||flash||js||neko||java||cs)
 
-	static var bc = new haxe.BaseCode( Bytes.ofString( CHARS ) );
+	static var bc = new haxe.crypto.BaseCode( Bytes.ofString( CHARS ) );
 	
 	public static function getNullbits( s : String ) : String {
 	 	return switch( s.length % 3 )  {

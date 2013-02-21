@@ -22,7 +22,7 @@
 package jabber;
 
 /**
-	The info passed to the client aplication for attaching the BOSH connection.
+	The info passed to the client application for attaching a BOSH connection.
 */
 typedef BOSHPrebindInfo = {
 	

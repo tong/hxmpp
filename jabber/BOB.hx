@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@ package jabber;
 
 /**
 	Request entity for 'Bits Of Binary'.
+
 	XEP-0231: Bits Of Binary: http://xmpp.org/extensions/xep-0231.html
 */
 class BOB {

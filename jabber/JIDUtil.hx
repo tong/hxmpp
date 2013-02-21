@@ -134,9 +134,9 @@ class JIDUtil {
 	}
 	
 	/**
-	    Escapes the node portion of a JID according to "JID Escaping" (XEP-0106).<br/>
+	    Escapes the node portion of a JID according to "JID Escaping" (XEP-0106).
 	    Escaping replaces characters prohibited by node-prep with escape sequences.
-	    <br/>
+
 	    Typically, escaping is performed only by a client that is processing information
 	    provided by a human user in unescaped form, or by a gateway to some external system
 	    (e.g., email or LDAP) that needs to generate a JID.
@@ -157,9 +157,9 @@ class JIDUtil {
 	}
 
     /**
-     	Un-escapes the node portion of a JID according to "JID Escaping" (<a href="http://www.xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>).<br/>
+     	Un-escapes the node portion of a JID according to XEP-0106:JID Escaping (http://www.xmpp.org/extensions/xep-0106.html).
      	Escaping replaces characters prohibited by node-prep with escape sequences.
-     	<br/>
+
      	Typically, unescaping is performed only by a client that wants to display JIDs
      	containing escaped characters to a human user, or by a gateway to some
      	external system (e.g., email or LDAP) that needs to generate identifiers

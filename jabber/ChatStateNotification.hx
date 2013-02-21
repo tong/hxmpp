@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,6 @@ import xmpp.filter.PacketPropertyFilter;
 
 /**
 	Extension for communicating the status of a user in a chat session.
-	XEP-0085: Chat State Notifications: http://xmpp.org/extensions/xep-0085.html
 
 	                o (start)
 	                |
@@ -37,6 +36,8 @@ import xmpp.filter.PacketPropertyFilter;
 	    |                                       |
 	    |                                       |
 	    +---<---<---<---<---<---<---<---<---<---+
+
+	XEP-0085: Chat State Notifications: http://xmpp.org/extensions/xep-0085.html
 */
 class ChatStateNotification {
 	

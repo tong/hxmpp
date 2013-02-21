@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ import xmpp.PresenceType;
 
 /**
 	Extension for broadcasting and dynamically discovering client, device, or generic entity capabilities.
+
 	XEP-0085: Entity Capabilities: http://xmpp.org/extensions/xep-0115.html
 */
 class EntityCapabilities {

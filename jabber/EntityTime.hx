@@ -23,6 +23,7 @@ package jabber;
 
 /**
 	Extension for requesting the local time of an entity.
+
 	XEP 202 - EntityTime: http://www.xmpp.org/extensions/xep-0202.html
 */
 class EntityTime {
