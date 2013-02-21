@@ -43,7 +43,7 @@ class Farm {
 	public dynamic function onGetBindings( bindings : Bindings ) : Bindings { return null; }
 	
 	public var stream(default,null) : jabber.Stream;
-	public var species(default,null) : Hash<jabber.JID->SpawnVM->String>;
+	public var species(default,null) : Map<String,jabber.JID->SpawnVM->String>;
 	public var password(default,null) : String;
 	
 	public var ip : String;
@@ -79,7 +79,7 @@ class Farm {
 		this.delete_file = new Array();
 		
 		//open_connection = listen_for_connection = accept_connection = perform_multicast = false;
-		species = new Hash();
+		species = new Map();
 		stream.collect( [ new xmpp.filter.IQFilter(xmpp.LOP.XMLNS,null) ], handleIQ, true );
 	}
 	
