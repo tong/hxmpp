@@ -24,7 +24,7 @@ package jabber.stream;
 import jabber.stream.PacketCollector;
 
 /**
-	Abstract base for top level packet listeners ( jabber.PresenceListener, jabber.MessageListener ).
+	Abstract base for top level packet listeners (jabber.PresenceListener,jabber.MessageListener).
 */
 class PacketListener<T:xmpp.Packet> {
 	
@@ -33,21 +33,21 @@ class PacketListener<T:xmpp.Packet> {
 	
 	/** Activates/Deactivates packet collecting */
 	public var listen(default,set_listen) : Bool;
-	
-	/** The collector for this listener */
-	public var collector(default,null) : PacketCollector;
-	
 	public var stream(default,null) : jabber.Stream;
 	
-	function new( stream : jabber.Stream, handler : T->Void, packetType : xmpp.PacketType, listen : Bool ) {
+	var collector : PacketCollector;
+	
+	function new( stream : jabber.Stream, handler : T->Void, type : xmpp.PacketType, listen : Bool ) {
+		
 		this.stream = stream;
 		this.onPacket = handler;
-		collector = new PacketCollector( [new xmpp.filter.PacketTypeFilter(packetType)], handlePacket, true );
+		
+		collector = new PacketCollector( [new xmpp.filter.PacketTypeFilter(type)], handlePacket, true );
 		set_listen( listen );
 	}
 	
 	function set_listen( v : Bool ) : Bool {
-		return ( listen = v ) ?
+		return listen = v ?
 			stream.addCollector( collector ) :
 			stream.removeCollector( collector );
 	}
