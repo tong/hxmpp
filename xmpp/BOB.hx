@@ -28,7 +28,7 @@ using xmpp.XMLUtil;
 */
 class BOB {
 	
-	public static var XMLNS(default,null) : String = 'urn:xmpp:bob';
+	public static inline var XMLNS = 'urn:xmpp:bob';
 	
 	/** Content ID */
 	public var cid : String;
@@ -73,7 +73,7 @@ class BOB {
 		//TODO return : Array<{algo:String,hash:String}>
 		var algo : String = null;
 		var hash : String = null;
-		~/cid:(.*?)\+(.*?)@bob\.xmpp\.org/.customReplace( t, function(r) {
+		~/cid:(.*?)\+(.*?)@bob\.xmpp\.org/.map( t, function(r) {
 			algo = r.matched( 1 );
 			hash = r.matched( 2 );
 			return null;
