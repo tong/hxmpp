@@ -21,8 +21,6 @@
  */
 package jabber.client;
 
-import jabber.stream.PacketCollector;
-
 /**
 	A custom google extension to XMPP to enable users to query their Gmail account for emails,
 	and receive notifications when a new message arrives.

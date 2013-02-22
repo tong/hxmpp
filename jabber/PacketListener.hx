@@ -19,9 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jabber.stream;
-
-import jabber.stream.PacketCollector;
+package jabber;
 
 /**
 	Abstract base for top level packet listeners (jabber.PresenceListener,jabber.MessageListener).

@@ -36,7 +36,7 @@ import js.net.Socket;
 /**
 	Sys
 */
-class SocketConnection extends jabber.stream.SocketConnectionBase {
+class SocketConnection extends SocketConnectionBase {
 		
 	public function new( host : String = "localhost",
 						 port : Int = #if JABBER_COMPONENT 5275 #else 5222 #end,
@@ -256,7 +256,7 @@ import tls.valueobject.SecurityOptionsVO;
 /**
 	Flash + TLS
 */
-class SocketConnection extends jabber.stream.SocketConnectionBase {
+class SocketConnection extends SocketConnectionBase {
 	
 	public function new( host : String = "localhost", port : Int = 5222, secure : Bool = true,
 						 ?bufSize : Int, ?maxBufSize : Int,
@@ -342,7 +342,7 @@ import flash.utils.ByteArray;
 /**
 	Flash
 */
-class SocketConnection extends jabber.stream.SocketConnectionBase {
+class SocketConnection extends SocketConnectionBase {
 	
 	#if air
 	public var socket(default,null) : Socket;
@@ -455,7 +455,7 @@ import air.SecurityErrorEvent;
 /**
 	Air/Javascript
 */
-class SocketConnection extends jabber.stream.SocketConnectionBase {
+class SocketConnection extends SocketConnectionBase {
 	
 	public function new( host : String = "localhost", port : Int = 5222, secure : Bool = false,
 						 ?bufSize : Int, ?maxBufSize : Int,
@@ -559,7 +559,7 @@ private typedef Socket = js.NodeNetSocket;
 /**
 	Node.js
 */
-class SocketConnection extends jabber.stream.SocketConnectionBase {
+class SocketConnection extends SocketConnectionBase {
 	
 	public var socket(default,null) : Socket;
 	public var credentials : NodeCredDetails;
@@ -690,7 +690,7 @@ import jabber.stream.SocketConnectionBase;
 /**
 	JS + FlashSocketBridge
 */
-class SocketConnection extends jabber.stream.SocketConnectionBase {
+class SocketConnection extends SocketConnectionBase {
 
 	public function new( host : String = "localhost", ?port : Int = 5222, secure = true, timeout : Int = 10 ) {
 		super( host, port, secure, null, null, timeout );

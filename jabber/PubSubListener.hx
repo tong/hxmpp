@@ -22,8 +22,8 @@
 package jabber;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a><br/>
 	Listens for incoming pubsub events from a given service.
+	XEP-0060: Publish-Subscribe: http://xmpp.org/extensions/xep-0060.html
 */
 class PubSubListener {
 	
@@ -45,14 +45,14 @@ class PubSubListener {
 	
 	public var stream(default,null) : Stream;
 	
-	var c : jabber.stream.PacketCollector;
+	var c : PacketCollector;
 	
 	public function new( stream : Stream, service : String ) {
 		this.stream = stream;
-		c = stream.collect( [ new xmpp.filter.PacketFromFilter( service ),
+		var filters : Array<xmpp.PacketFilter> = [ new xmpp.filter.PacketFromFilter( service ),
 							  new xmpp.filter.MessageFilter( xmpp.MessageType.normal ),
-						 	  new xmpp.filter.PacketPropertyFilter( xmpp.PubSubEvent.XMLNS, 'event' ) ],
-							  handlePubSubEvent, true );
+						 	  new xmpp.filter.PacketPropertyFilter( xmpp.PubSubEvent.XMLNS, 'event' ) ];
+		c = stream.collect( filters, handlePubSubEvent, true );
 	}
 	
 	public function dispose() {

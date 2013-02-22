@@ -30,7 +30,7 @@ class LastActivityListener {
 	public var time : Int;
 	public var stream(default,null) : Stream;
 	
-	var c : jabber.stream.PacketCollector;
+	var c : PacketCollector;
 	
 	public function new( stream : Stream, time : Int = 0 ) {
 		if( !stream.features.add( xmpp.LastActivity.XMLNS ) )

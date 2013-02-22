@@ -21,7 +21,6 @@
  */
 package jabber;
 
-import jabber.stream.PacketCollector;
 import jabber.util.SystemUtil;
 
 /**

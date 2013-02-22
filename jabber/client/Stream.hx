@@ -23,11 +23,9 @@ package jabber.client;
 
 import jabber.JID;
 import jabber.Stream;
-import jabber.stream.Status;
-import jabber.stream.Connection;
 
 /**
-	Client <-> Server XMPP stream.
+	Client 2 server XMPP stream.
 */
 class Stream extends jabber.Stream {
 	
@@ -38,15 +36,15 @@ class Stream extends jabber.Stream {
 	
 	var version : Bool;
 	
-	public function new( cnx : Connection, ?maxBufSize : Int ) {
+	public function new( cnx : StreamConnection, ?maxBufSize : Int ) {
 		super( cnx, maxBufSize );
 		this.jid = jid;
 		version = true;
 	}
 	
 	override function handleConnect() {
-		var wasOpen = status == Status.open;
-		status = Status.pending;
+		var wasOpen = status == StreamStatus.open;
+		status = pending;
 		if( !cnx.http ) {
 			sendData( xmpp.Stream.createOpenXml( xmpp.Stream.CLIENT, jid.domain, version, lang ) );
 			if( !wasOpen ) {
@@ -68,7 +66,7 @@ class Stream extends jabber.Stream {
 				return false;
 			}
 			parseServerStreamFeatures( ( x.nodeName == "body" ) ? x.firstElement() : x );
-			status = Status.open;
+			status = StreamStatus.open;
 			handleStreamOpen();
 			return true;
 		} else {
@@ -82,7 +80,7 @@ class Stream extends jabber.Stream {
 				var sx = Xml.parse( s ).firstElement();
 				id = sx.get( "id" );
 				if( !version ) {
-					status = Status.open;
+					status = StreamStatus.open;
 					//cnx.reset();
 					handleStreamOpen();
 					return true;
@@ -95,7 +93,7 @@ class Stream extends jabber.Stream {
 				return false;
 			}
 			if( !version ) {
-				status = Status.open;
+				status = StreamStatus.open;
 				handleStreamOpen();
 				return true;
 			}
@@ -113,10 +111,10 @@ class Stream extends jabber.Stream {
 			parseServerStreamFeatures( x );
 			#if XMPP_DEBUG jabber.XMPPDebug.i( t ); #end
 			if( cnx.secure && !cnx.secured && server.features.get( "starttls" ) != null ) {
-				status = Status.starttls;
+				status = starttls;
 				sendData( '<starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls"/>' );
 			} else {
-				status = Status.open;
+				status = StreamStatus.open;
 				handleStreamOpen();
 			}
 			return true;

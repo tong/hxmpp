@@ -21,7 +21,6 @@
  */
 package jabber.client;
 
-import jabber.stream.PacketCollector;
 import jabber.util.Base64;
 import xmpp.IQ;
 import xmpp.IQType;

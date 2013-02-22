@@ -36,7 +36,7 @@ class SIListener {
 	/** Available file transfer methods */
 	public var methods(default,null) : Array<DataReciever>;
 	
-	var c : jabber.stream.PacketCollector;
+	var c : PacketCollector;
 	
 	public function new( stream : jabber.Stream, handler : DataReciever->Void ) {
 		if( !stream.features.add( xmpp.file.File.XMLNS ) )

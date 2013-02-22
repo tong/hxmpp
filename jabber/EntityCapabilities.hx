@@ -32,8 +32,10 @@ class EntityCapabilities {
 
 	/** Callback to application for checking if caps already exist (in cache) */
 	public dynamic function onCaps( jid : String, caps : xmpp.Caps, cb : Bool->Void ) {}
+	
 	/** Fired when a new entity capability got discovered */
 	public dynamic function onInfo( jid : String, info : xmpp.disco.Info, ?ver : String ) {}
+	
 	public dynamic function onError( e : jabber.XMPPError ) {}
 	
 	public var stream(default,null) : Stream;
@@ -49,7 +51,7 @@ class EntityCapabilities {
 	/** My own verification string */
 	public var ver(default,null) : String;
 	
-	var collector : jabber.stream.PacketCollector;
+	var collector : PacketCollector;
 	var x : Xml;
 	
 	public function new( stream : Stream, node : String, identities : Array<xmpp.disco.Identity>,

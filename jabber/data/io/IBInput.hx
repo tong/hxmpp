@@ -23,7 +23,6 @@ package jabber.data.io;
 
 import haxe.io.Bytes;
 import jabber.util.Base64;
-import jabber.stream.PacketCollector;
 import xmpp.filter.IQFilter;
 import xmpp.IQ;
 import xmpp.IQType;

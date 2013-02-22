@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jabber.stream;
+package jabber;
 
 import haxe.io.Bytes;
 
@@ -61,9 +61,9 @@ private typedef AbstractSocket = {
 #else
 
 /**
-	Abstract base class for socket connections
+	Abstract base class for socket connection implementations
 */
-class SocketConnectionBase extends Connection {
+class SocketConnectionBase extends StreamConnection {
 	
 	public static var defaultBufSize = #if php 65536 #else 256 #end; //TODO php buf
 	public static var defaultMaxBufSize = 1<<20; // 1MB

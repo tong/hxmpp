@@ -37,7 +37,7 @@ class BOBListener {
 	
 	public var stream(default,null) : jabber.Stream;
 
-	var c : jabber.stream.PacketCollector;
+	var c : PacketCollector;
 
 	public function new( stream : jabber.Stream, onRequest : String->String->xmpp.BOB ) {
 		if( !stream.features.add( xmpp.BOB.XMLNS ) )

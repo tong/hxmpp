@@ -21,7 +21,6 @@
  */
 package jabber;
 
-import jabber.stream.PacketCollector;
 import xmpp.MessageType;
 import xmpp.filter.MessageFilter;
 import xmpp.filter.PacketPropertyFilter;

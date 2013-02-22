@@ -89,7 +89,7 @@ class BOB {
 		// cid:sha1+8f35fef110ffc5df08d579a50083ff9308fb6242@bob.xmpp.org
 		var a = new Array<{cid:String,pos:Int}>();
 		var reg = ~/cid:([a-z0-9]+)\+([a-z0-9]+)@bob\.xmpp\.org/g; //gm
-		reg.customReplace( t, function(r){
+		reg.map( t, function(r){
 			a.push( { cid : createCID( r.matched(1), r.matched(2) ), pos : r.matchedPos().pos } );
 			//a.push( { cid : l.substr( pos.pos, pos.len ), pos : pos.pos } );
 			//trace( r.matched( 1 ) +" : "+ r.matched( 2 ) );

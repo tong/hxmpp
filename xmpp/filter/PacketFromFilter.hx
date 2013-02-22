@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ class PacketFromFilter {
 		this.jid = jid;
 	}
 	
-	@:keep public inline function accept( p : xmpp.Packet ) : Bool {
+	public inline function accept( p : xmpp.Packet ) : Bool {
 		return p.from == jid;
 	}
 	

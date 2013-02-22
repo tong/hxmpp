@@ -29,10 +29,9 @@ package jabber;
 		trace("Received message: "+m);
 	});
 */
-class MessageListener extends jabber.stream.PacketListener<xmpp.Message> {
+class MessageListener extends PacketListener<xmpp.Message> {
 	
-	public function new( stream : Stream, handler : xmpp.Message->Void,
-						 ?listen : Bool = true ) {
+	public function new( stream : Stream, handler : xmpp.Message->Void, ?listen : Bool = true ) {
 		super( stream, handler, xmpp.PacketType.message, listen );
 	}
 	

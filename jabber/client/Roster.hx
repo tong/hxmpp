@@ -23,7 +23,6 @@ package jabber.client;
 
 import jabber.XMPPError;
 import jabber.client.RosterSubscriptionMode;
-import jabber.stream.PacketCollector;
 import xmpp.IQ;
 import xmpp.IQType;
 import xmpp.Presence;

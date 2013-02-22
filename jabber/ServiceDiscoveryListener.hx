@@ -21,7 +21,6 @@
  */
 package jabber;
 
-import jabber.stream.PacketCollector;
 import xmpp.IQ;
 import xmpp.filter.IQFilter;
 

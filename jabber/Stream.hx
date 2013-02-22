@@ -22,12 +22,6 @@
 package jabber;
 
 import haxe.io.Bytes;
-import jabber.stream.Connection;
-import jabber.stream.DataInterceptor;
-import jabber.stream.DataFilter;
-import jabber.stream.PacketInterceptor;
-import jabber.stream.PacketCollector;
-import jabber.stream.Status;
 import jabber.util.Base64;
 import xmpp.filter.PacketIDFilter;
 
@@ -37,11 +31,7 @@ private typedef JID = ComponentJID;
 #end
 
 private typedef Server = {
-	#if haxe3
-	var features : Map<String,Xml>;
-	#else
-	var features : Hash<Xml>;
-	#end
+	var features : #if haxe3 Map<String,Xml> #else Hash<Xml> #end;
 }
 
 private class StreamFeatures {
@@ -80,29 +70,49 @@ private class StreamFeatures {
 }
 
 /**
-	Abstract base for handling a XMPP stream with another entity.
+	Abstract base class for handling a XMPP data stream with another entity.
+	Implementations using this class are:
+		* jabber.client.Stream
+		* jabber.component.Stream
 */
 class Stream {
 	
 	public static var defaultPacketIdLength = 5;
 	public static var defaultMaxBufSize = 1048576; // 524288; //TODO hmmmmmm
 	
-	/** */
+	/**
+		Called when the XMPP stream is opened and ready to exchange XMPP data
+	*/
 	public dynamic function onOpen() {}
 	
-	/** */
+	/**
+		Called when the XMPP stream closes, optionally reporting stream errors
+	*/
 	public dynamic function onClose( ?e : String ) {}
 	
-	public var status : Status;
-	public var cnx(default,set_cnx) : Connection;
+	/** */
+	public var status : StreamStatus;
+	
+	/** */
+	public var cnx(default,set_cnx) : StreamConnection;
+	
+	/** */
 	public var features(default,null) : StreamFeatures;
+	
+	/** */
 	public var server(default,null) : Server;
+	
+	/** */
 	public var id(default,null) : String;
+	
+	/** */
 	public var lang(default,null) : String;
+	
+	/** */
 	public var jid(default,set_jid) : JID;
 
-	public var dataFilters(default,null) : Array<DataFilter>;
-	public var dataInterceptors(default,null) : Array<DataInterceptor>;
+	public var dataFilters(default,null) : Array<StreamDataFilter>;
+	public var dataInterceptors(default,null) : Array<StreamDataInterceptor>;
 
 	public var bufSize(default,null) : Int;
 	public var maxBufSize : Int;
@@ -113,7 +123,7 @@ class Stream {
 	var interceptors : Array<PacketInterceptor>;
 	var numPacketsSent : Int;
 	
-	function new( cnx : Connection, ?maxBufSize : Int ) {
+	function new( cnx : StreamConnection, ?maxBufSize : Int ) {
 		this.maxBufSize = ( maxBufSize == null || maxBufSize < 1 ) ? defaultMaxBufSize : maxBufSize;
 		cleanup();
 		if( cnx != null )
@@ -121,12 +131,12 @@ class Stream {
 	}
 	
 	function set_jid( j : JID ) : JID {
-		if( status != Status.closed )
+		if( status != StreamStatus.closed )
 			throw "cannot change jid on open xmpp stream";
 		return jid = j;
 	}
 	
-	function set_cnx( c : Connection ) : Connection {
+	function set_cnx( c : StreamConnection ) : StreamConnection {
 		switch( status ) {
 		case open, pending #if !JABBER_COMPONENT, starttls #end :
 			close( true );
@@ -182,7 +192,7 @@ class Stream {
 		Passed argument indicates if the data connection to the server should also get disconnected.
 	*/
 	public function close( ?disconnect = false ) {
-		if( status == Status.closed ) {
+		if( status == closed ) {
 			#if JABBER_DEBUG trace( "cannot close xmpp stream, status is 'closed'" ); #end
 			return;
 		}
@@ -338,7 +348,7 @@ class Stream {
 	/**
 	*/
 	public function handleData( bytes : Bytes ) : Bool {
-		if( status == Status.closed )
+		if( status == closed )
 			return false;
 		for( f in dataFilters ) {
 			bytes = f.filterData( bytes );
@@ -350,7 +360,7 @@ class Stream {
 	*/
 	public function handleString( t : String ) : Bool {
 		
-		if( status == Status.closed ) {
+		if( status == closed ) {
 			#if JABBER_DEBUG trace( "cannot process incoming data, xmpp stream not connected", "debug" ); #end
 			throw "stream is closed";
 		}
@@ -569,12 +579,8 @@ class Stream {
 	
 	function cleanup() {
 		
-		status = Status.closed;
-		#if haxe3
-		server = { features : new Map<String,Xml>() };
-		#else
-		server = { features : new Hash() };
-		#end
+		status = closed;
+		server = { features : new Map() };
 		features = new StreamFeatures();
 		
 		collectors = new Array();

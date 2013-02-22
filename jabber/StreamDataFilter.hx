@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,12 +19,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jabber.stream;
+package jabber;
 
-typedef DataInterceptor = {
+import haxe.io.Bytes;
+
+typedef StreamDataFilter = {
 
 	/**
-		Modify raw outgoing XMPP data before sending
+		Filter raw incoming data before processing
 	*/
-	function interceptData( data : haxe.io.Bytes ) : haxe.io.Bytes;
+	function filterData( data : Bytes ) : Bytes;
+	
 }

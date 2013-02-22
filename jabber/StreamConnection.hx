@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jabber.stream;
+package jabber;
 
 import haxe.io.Bytes;
 
@@ -27,7 +27,7 @@ import haxe.io.Bytes;
 	Abstract base class for XMPP stream connections.
 */
 //@:multiType
-class Connection {
+class StreamConnection {
 	
 	/** Succesfully connected callback */
 	public var __onConnect : Void->Void;
@@ -42,7 +42,7 @@ class Connection {
 	public var __onString : String->Bool;
 
 	/** TLS negotiation complete callback */
-	@:keep public var __onSecured : String->Void;
+	public var __onSecured : String->Void;
 	
 	/** Hostname or IP address of the XMPP server. */
 	public var host(default,set_host) : String;
@@ -68,7 +68,7 @@ class Connection {
 	
 	function set_host( t : String ) : String {
 		if( connected )
-			throw "cannot change hostname on active connection" ;
+			throw "cannot change hostname on active xmpp connection" ;
 		return host = t;
 	}
 	
@@ -86,7 +86,7 @@ class Connection {
 	
 	/**
 	*/
-	@:keep public function setSecure() {
+	public function setSecure() {
 		#if JABBER_DEBUG trace( 'Connection.setSecure not implemented', 'error' ); #end
 	}
 	

@@ -21,8 +21,6 @@
  */
 package jabber;
 
-import jabber.stream.PacketCollector;
-
 /**
 	Listens/Reports (user) attention requests.
 

@@ -44,7 +44,7 @@ import flash.events.SecurityErrorEvent;
 	Bidirectional-streams Over Synchronous HTTP (BOSH): http://xmpp.org/extensions/xep-0124.html
 	XMPP Over BOSH: http://xmpp.org/extensions/xep-0206.html
 */
-class BOSHConnection extends jabber.stream.Connection {
+class BOSHConnection extends jabber.StreamConnection {
 	
 	static inline var INTERVAL = 0;
 	

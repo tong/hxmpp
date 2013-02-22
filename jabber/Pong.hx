@@ -22,8 +22,8 @@
 package jabber;
 
 /**
-	Listens for incoming ping messages and automaticly responds with a pong.<br/>
-	<a href="http://www.xmpp.org/extensions/xep-0199.html">XEP 199 - XMPP Ping</a>
+	Listens for incoming ping messages and automaticly responds with a pong.
+	XEP 199 - XMPP Ping: http://www.xmpp.org/extensions/xep-0199.html
 */
 class Pong {
 	
@@ -32,7 +32,7 @@ class Pong {
 
 	public var stream(default,null) : Stream;
 	
-	var c : jabber.stream.PacketCollector;
+	var c : PacketCollector;
 	
 	public function new( stream : Stream ) {
 		if( !stream.features.add( xmpp.Ping.XMLNS ) )
