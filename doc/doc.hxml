@@ -1,22 +1,80 @@
 
+-cp ../
+#--no-output
+-D XMPP_DEBUG
+jabber.Attention
+jabber.AttentionListener
+jabber.BlockList
+jabber.BOB
+jabber.BOBListener
+jabber.ChatStateNotification
+jabber.EntityCapabilities
+jabber.EntityTime
+jabber.EntityTimeListener
+jabber.JID
+jabber.JIDUtil
+jabber.LastActivity
+jabber.LastActivityListener
+jabber.MessageListener
+jabber.Ping
+jabber.Pong
+jabber.PrivacyLists
+jabber.PrivateStorage
+jabber.PubSub
+jabber.PubSubListener
+jabber.PersonalEvent
+jabber.PersonalEventListener
+jabber.ServiceDiscovery
+jabber.ServiceDiscoveryListener
+jabber.SocketConnection
+jabber.SoftwareVersion
+jabber.SoftwareVersionListener
+jabber.UserSearch
+jabber.XMPPDebug
+jabber.XMPPError
+jabber.client.Account
+jabber.client.GMailNotify
+jabber.client.MUChat
+jabber.client.NonSASLAuthentication
+jabber.client.Roster
+jabber.client.Authentication
+jabber.client.Stream
+jabber.client.VCardTemp
+jabber.data.IBReciever
+jabber.data.IBTransfer
+jabber.data.SIListener
+jabber.data.SITransfer
+jabber.lop.Farm
+jabber.lop.Villein
+jabber.remoting.Connection
+jabber.remoting.Host
+jabber.sasl.AnonymousMechanism
+jabber.sasl.PlainMechanism
+jabber.sasl.MD5Mechanism
+xmpp.Delayed
+xmpp.XHTML
+
+--each
+
+
 ### CPP
-base.hxml
+#base.hxml
 -cpp cpp
 -xml cpp.xml
 --no-output
 
 
 ### CS
---next
-base.hxml
--cs cs
--xml cs.xml
---no-output
+#--next
+#base.hxml
+#-cs cs
+#-xml cs.xml
+#--no-output
 
 
 ### FLASH
 --next
-base.hxml
+#base.hxml
 -swf temp.swf
 -xml flash.xml 
 --no-output
@@ -32,16 +90,16 @@ jabber.jingle.RTMFPResponder
 
 
 ### JAVA
---next
-base.hxml
--java java
--xml java.xml
---no-output
+#--next
+#base.hxml
+#-java java
+#-xml java.xml
+#--no-output
 
 
 ### JAVASCRIPT
 --next
-base.hxml
+#base.hxml
 -lib html5
 -cp ../util
 -js temp.js
@@ -56,7 +114,7 @@ jabber.jingle.WebRTCSDPResponder
 
 ### NEKO
 --next
-base.hxml
+#base.hxml
 -lib hxssl
 -neko temp.n
 -xml neko.xml
@@ -91,7 +149,7 @@ jabber.jingle.FileTransferResponder
 
 ### PHP
 --next
-base.hxml
+#base.hxml
 -php .
 -xml php.xml
 --no-output
