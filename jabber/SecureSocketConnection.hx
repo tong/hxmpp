@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ import neko.tls.Socket;
 import php.net.SslSocket;
 #end
 
-class SecureSocketConnection extends jabber.stream.SocketConnectionBase {
+class SecureSocketConnection extends jabber.SocketConnectionBase {
 		
 	public function new( host : String, port : Int = 5223, secure : Bool = true,
 						 ?bufsize : Int, ?maxbufsize : Int,
@@ -69,7 +69,7 @@ import flash.events.ProgressEvent;
 import flash.net.SecureSocket;
 import flash.utils.ByteArray;
 
-class SecureSocketConnection extends jabber.stream.SocketConnectionBase {
+class SecureSocketConnection extends jabber.SocketConnectionBase {
 	
 	public var socket(default,null) : SecureSocket;
 	
@@ -178,7 +178,7 @@ import air.IOErrorEvent;
 import air.SecurityErrorEvent;
 import air.ProgressEvent;
 
-class SecureSocketConnection extends jabber.stream.SocketConnectionBase {
+class SecureSocketConnection extends jabber.SocketConnectionBase {
 	
 	public function new( host : String, port : Int = 5223,
 						 ?bufSize : Int, ?maxBufSize : Int,
