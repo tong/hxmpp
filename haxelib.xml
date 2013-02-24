@@ -1,5 +1,11 @@
 <project name="hxmpp" url="http://hxmpp.disktree.net" license="MIT">
 	<user name="tong"/>
-	<description>XMPP/Jabber client/component library</description>
+	<tag v="xmpp"/>
+	<tag v="jabber"/>
+	<tag v="jingle"/>
+	<tag v="remoting"/>
+	<tag v="network"/>
+	<tag v="chat"/>
+	<description>XMPP/Jabber library</description>
 	<version name="0.4.11">Misc</version>
 </project>
