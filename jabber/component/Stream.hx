@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,11 +21,6 @@
  */
 package jabber.component;
 
-//#if JABBER_COMPONENT
-
-import jabber.ServiceDiscoveryListener;
-import jabber.stream.Connection;
-import jabber.stream.Status;
 import jabber.util.SHA1;
 import xmpp.XMLUtil;
 
@@ -82,7 +77,7 @@ class Stream extends jabber.Stream {
 	/***/
 	public var discoListener(default,null) : ServiceDiscoveryListener;
 	
-	public function new( cnx : Connection, ?maxBufSize : Int ) {
+	public function new( cnx : StreamConnection, ?maxBufSize : Int ) {
 		super( cnx, maxBufSize );
 		connected = false;
 	}
@@ -115,7 +110,7 @@ class Stream extends jabber.Stream {
 	
 	override function handleConnect() {
 		sendData( xmpp.Stream.createOpenXml( xmpp.Stream.COMPONENT, jid.toString() ) );
-		status = jabber.stream.Status.pending;
+		status = StreamStatus.pending;
 		cnx.read( true );
 	}
 	
@@ -150,7 +145,7 @@ class Stream extends jabber.Stream {
 			return false;
 		}
 		id = x.get('id');
-		status = jabber.stream.Status.open;
+		status = StreamStatus.open;
 		#if XMPP_DEBUG jabber.XMPPDebug.i( t ); #end
 		handleStreamOpen();
 		collect( [new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], readyHandler, false );
@@ -164,5 +159,3 @@ class Stream extends jabber.Stream {
 	}
 	
 }
-
-//#end
