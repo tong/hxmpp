@@ -1,19 +1,10 @@
-HXMPP
-=====
 
+![alt text](http://hxmpp.disktree.net/img/hxmpp.png "Haxe XMPP/Jabber library")
+===
 Haxe XMPP/Jabber library | [Documentation](http://hxmpp.disktree.net/doc/api/ "hxmpp api documentation") | [Examples](https://github.com/tong/hxmpp.examples "hxmpp examples and test projects") | [Test](http://hxmpp.disktree.net/test/ "hxmpp examples and test projects")
 
 
-
-### COMPILER FLAGS ###
-* XMPP_DEBUG    Print XMPP transfer (see [jabber.XMPPDebug](http://hxmpp.disktree.net/doc/api/types/jabber/XMPPDebug.html) for options)
-* JABBER_DEBUG    Print verbose debug information
-* JABBER_COMPONENT    Set to build xmpp server components (use [jabber.component.*](http://hxmpp.disktree.net/doc/api/packages/jabber/component/package.html) instead of [jabber.client.*](http://hxmpp.disktree.net/doc/api/packages/jabber/client/package.html))
-* JABBER_FLASHSOCKETBRIDGE  Enables to use a flash socket bridge as stream connection for the javascript target (see [hxmpp/util/flash-socketbridge](https://github.com/tong/hxmpp/tree/master/util/flash-socketbridge))
-
-
-
-### XEPS SUPPORTED ###
+### XEPS SUPPORTED
 * [XEP-0004 DataForms](http://xmpp.org/extensions/xep-0004.html)
 * [XEP-0012 LastActivity](http://xmpp.org/extensions/xep-0004.html)
 * [XEP-0016 PrivacyLists](http://xmpp.org/extensions/xep-0004.html)
@@ -50,7 +41,15 @@ Haxe XMPP/Jabber library | [Documentation](http://hxmpp.disktree.net/doc/api/ "h
 
 
 
-### BOSH/HTTP ###
+### COMPILER FLAGS
+* XMPP_DEBUG    Print XMPP transfer (see [jabber.XMPPDebug](http://hxmpp.disktree.net/doc/api/types/jabber/XMPPDebug.html) for options)
+* JABBER_DEBUG    Print verbose debug information
+* JABBER_COMPONENT    Set to build xmpp server components (use [jabber.component.*](http://hxmpp.disktree.net/doc/api/packages/jabber/component/package.html) instead of [jabber.client.*](http://hxmpp.disktree.net/doc/api/packages/jabber/client/package.html))
+* JABBER_FLASHSOCKETBRIDGE  Enables to use a flash socket bridge as stream connection for the javascript target (see [hxmpp/util/flash-socketbridge](https://github.com/tong/hxmpp/tree/master/util/flash-socketbridge))
+
+
+
+### BOSH/HTTP
 BOSH essentially provides a "drop-in" alternative to a long-lived, bidirectional TCP connection using a request-response mechansim over HTTP.
 To use it you have to connect your client to the BOSH adress of your XMPP server.
 
@@ -58,12 +57,12 @@ Apache, for example, doesn’t know about your XMPP server, therefore you have t
 
 * Activate [mod_proxy apache module](http://httpd.apache.org/docs/2.2/mod/mod_proxy.html)
 ```shell
-ln -s /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled/`
+ln -s /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled/
 ```
 
 * Add following line to proxy.load to activate the module
 ```shell
-`LoadModule proxy_http_module /usr/lib/apache2/modules/mod_proxy_http.so`
+LoadModule proxy_http_module /usr/lib/apache2/modules/mod_proxy_http.so
 ```
 
 * Add a directive to your host settings to proxy requests from *http://localhost/httpbind* to *http://localhost:7070/http-bind/* 
@@ -78,16 +77,19 @@ ln -s /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled/`
 ```
 
 * Restart apache
-`service apache2 restart`
+```shell
+service apache2 restart
+```
 
 * You can now use this URL to connect to your server
-`var cnx = new jabber.BOSHConnection( "server.org", "127.0.0.1/httpbind/" );`
+```javascript
+var cnx = new jabber.BOSHConnection( "server.org", "127.0.0.1/httpbind/" );
+```
 
 
+### SOURCE
+HXMPP is open source and licensed under MIT | https://github.com/tong/hxmpp | git://github.com/tong/hxmpp.git
 
-### SOURCE ###
-https://github.com/tong/hxmpp | git://github.com/tong/hxmpp.git
-HXMPP is open source and licensed under MIT
 
 ---
 
