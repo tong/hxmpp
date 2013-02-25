@@ -1,0 +1,65 @@
+
+# --- HXMPP Unit Test
+
+-cp ../
+#-D macro-times
+#-debug
+#--no-opt
+-dce full
+--each
+
+--next
+-cmd mkdir -p out
+
+--next
+-swf out/test.swf
+-swf-version 11
+-swf-header 0:0:60:D11A1F
+-main Run
+
+--next
+-js out/test.js
+-main Run
+--macro Run.writePlatformHTML('js','#0000ff')
+
+--next
+-neko out/test.n
+-main Run
+-cmd neko out/test.n
+
+--next
+-php out
+--php-front test.php
+-main Run
+-cmd php out/test.php
+
+#--next
+#-cs out/cs
+##-cs out/cs_unsafe
+##-D unsafe
+#-main Run
+#-cmd cd out/java/src && javac
+
+#--next
+#-java out/java
+#-main Run
+#-cmd cd out/java/src && javac
+
+--next
+-cpp out/cpp
+-main Run
+-cmd mv ./out/cpp/Run ./out/test_cpp
+-cmd ./out/test_cpp
+
+--next
+-js out/test_node.js
+#-lib nodejs
+-cp ../../../hx-node/
+-D nodejs
+-main Run
+-cmd node out/test_node.js
+
+#--next
+#-as3 out/as3
+#-main Run
+#-cmd mxmlc -static-link-runtime-shared-libraries=true -debug as3/__main__.as --output test-as3.swf

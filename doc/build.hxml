@@ -3,7 +3,6 @@
 -cp ../
 --no-output
 -D doc-gen
--D doc_gen
  #TODO remove, use: --macro ImportAll.run()
 jabber.SocketConnection
 --each
