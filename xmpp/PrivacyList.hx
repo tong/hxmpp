@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,8 @@ class PrivacyList {
 	public function toXml() : Xml {
 		var x = Xml.createElement( "list" );
 		x.set( "name", name );
-		for( i in items ) x.addChild( i.toXml() );
+		for( i in items )
+			x.addChild( i.toXml() );
 		return x;	
 	}
 	

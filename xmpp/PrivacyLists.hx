@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,30 +29,31 @@ class PrivacyLists {
 	
 	public var active : String;
 	public var _default : String;
-	public var list : Array<xmpp.PrivacyList>;
+	public var lists : Array<xmpp.PrivacyList>;
 
 	public function new() {
-		list = new Array();
+		lists = new Array();
 	}
 	
 	public function toXml() : Xml {
-		var q = xmpp.IQ.createQueryXml( XMLNS );
+		var x = xmpp.IQ.createQueryXml( XMLNS );
 		if( active != null ) {
 			var e = Xml.createElement( "active" );
 			if( active != "" ) e.set( "name", active );
-			q.addChild( e );
+			x.addChild( e );
 		}
 		if( _default != null ) {
 			var e = Xml.createElement( "default" );
 			e.set( "name", _default );
-			q.addChild( e );
+			x.addChild( e );
 		}
-		for( l in list ) q.addChild( l.toXml() );
-		return q;
+		for( l in lists )
+			x.addChild( l.toXml() );
+		return x;
 	}
 	
-	public function iterator() : Iterator<PrivacyList> {
-		return list.iterator();
+	public inline function iterator() : Iterator<PrivacyList> {
+		return lists.iterator();
 	}
 	
 	public static function parse( x : Xml ) : xmpp.PrivacyLists {
@@ -61,7 +62,7 @@ class PrivacyLists {
 			switch( e.nodeName ) {
 				case "active" : p.active = e.get( "name" );
 				case "default" : p._default = e.get( "name" );
-				case "list" : p.list.push( xmpp.PrivacyList.parse( e ) );
+				case "list" : p.lists.push( xmpp.PrivacyList.parse( e ) );
 			}
 		}
 		return p;
