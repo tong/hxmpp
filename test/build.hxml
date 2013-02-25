@@ -1,5 +1,5 @@
 
-# --- HXMPP Unit Test
+# --- HXMPP Unit Tests
 
 -cp ../
 #-D macro-times
@@ -7,6 +7,7 @@
 #--no-opt
 -dce full
 --each
+
 
 --next
 -cmd mkdir -p out
@@ -51,15 +52,21 @@
 -cmd mv ./out/cpp/Run ./out/test_cpp
 -cmd ./out/test_cpp
 
---next
--js out/test_node.js
-#-lib nodejs
--cp ../../../hx-node/
--D nodejs
--main Run
--cmd node out/test_node.js
-
 #--next
-#-as3 out/as3
+#-js out/test_node.js
+#-lib nodejs
+#-cp ../../../hx-node/
+#-D nodejs
 #-main Run
+#-cmd node out/test_node.js
+
+--next
+-as3 out/as3
+-main Run
 #-cmd mxmlc -static-link-runtime-shared-libraries=true -debug as3/__main__.as --output test-as3.swf
+
+--next
+-neko out/test-component.n
+-main Run
+-D JABBER_COMPONENT
+-cmd neko out/test-component.n
