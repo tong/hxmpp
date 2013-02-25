@@ -45,7 +45,7 @@ class ByteStreamOutput extends ByteStreamTransport {
 	
 	public override function init() {
 		
-		#if JABBER_DEBUG
+		#if jabber_debug
 		trace( "Starting file transfer server ["+host+":"+port+"]" );
 		#end
 		
@@ -69,7 +69,7 @@ class ByteStreamOutput extends ByteStreamTransport {
 	
 	public function send( input : haxe.io.Input, size : Int ) {
 		
-		#if JABBER_DEBUG
+		#if jabber_debug
 		trace( "Transfering file [size:"+size+",bufsize:"+bufsize+"]" );
 		#end
 		
@@ -145,8 +145,8 @@ class ByteStreamOutput extends ByteStreamTransport {
 	}
 	
 	function cleanup() {
-		if( socket != null ) try socket.close() catch(e:Dynamic) { #if JABBER_DEBUG trace(e); #end }
-		if( server != null ) try server.close() catch(e:Dynamic) { #if JABBER_DEBUG trace(e); #end }
+		if( socket != null ) try socket.close() catch(e:Dynamic) { #if jabber_debug trace(e); #end }
+		if( server != null ) try server.close() catch(e:Dynamic) { #if jabber_debug trace(e); #end }
 	}
 	
 	#end

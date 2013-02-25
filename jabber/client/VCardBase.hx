@@ -46,9 +46,7 @@ class VCardBase<T> {
 		Requests to load the vcard from the given entity or own no jid is given.
 	*/
 	public function load( ?jid : String  ) {
-		#if JABBER_DEBUG
-		throw "abstract method";
-		#end
+		#if jabber_debug throw "abstract method"; #end
 	}
 	
 	/**
@@ -78,7 +76,7 @@ class VCardBase<T> {
 	}
 	
 	function _handleLoad( iq : IQ ) {
-		#if JABBER_DEBUG
+		#if jabber_debug
 		throw "abstract method";
 		#end
 	}

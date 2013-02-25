@@ -92,7 +92,7 @@ class Authentication extends AuthenticationBase {
 			}
 		}
 		if( mechanism == null ) {
-			#if JABBER_DEBUG trace( 'no supported SASL mechanism found', 'warn' ); #end
+			#if jabber_debug trace( 'no supported SASL mechanism found', 'warn' ); #end
 			return false;
 		}
 		c_fail = stream.collect( [new PacketNameFilter( xmpp.SASL.EREG_FAILURE )], handleSASLFailed );

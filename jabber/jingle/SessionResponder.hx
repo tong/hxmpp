@@ -46,7 +46,7 @@ class SessionResponder<T:Transport> extends Session<T> {
 		
 		var j = xmpp.Jingle.parse( iq.x.toXml() );
 		if( j.action != xmpp.jingle.Action.session_initiate ) {
-			#if JABBER_DEBUG
+			#if jabber_debug
 			trace( "invalid jingle request ("+iq.from+")(expecting session initiate)", "warn" );
 			#end
 			return false;
@@ -74,7 +74,7 @@ class SessionResponder<T:Transport> extends Session<T> {
 		//TODO webrtc-sdp has no candidates
 		
 		if( candidates.length == 0 ) {
-			#if JABBER_DEBUG
+			#if jabber_debug
 			trace( "no transport candidates", "warn" );
 			#end
 		/*
@@ -107,7 +107,7 @@ class SessionResponder<T:Transport> extends Session<T> {
 	}
 	
 	function parseDescription( x : Xml ) {
-		//#if JABBER_DEBUG trace("not implemented","warn"); #end
+		//#if jabber_debug trace("not implemented","warn"); #end
 	}
 	
 	// override me

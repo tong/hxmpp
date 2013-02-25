@@ -75,26 +75,26 @@ class StreamConnection {
 	/**
 	*/
 	public function connect() {
-		#if JABBER_DEBUG trace( 'abstract method', 'error' ); #end
+		#if jabber_debug trace( 'abstract method', 'error' ); #end
 	}
 	
 	/**
 	*/
 	public function disconnect() {
-		#if JABBER_DEBUG trace( 'abstract method', 'error' ); #end
+		#if jabber_debug trace( 'abstract method', 'error' ); #end
 	}
 	
 	/**
 	*/
 	public function setSecure() {
-		#if JABBER_DEBUG trace( 'Connection.setSecure not implemented', 'error' ); #end
+		#if jabber_debug trace( 'Connection.setSecure not implemented', 'error' ); #end
 	}
 	
 	/**
 		Starts/Stops reading data input, returns true if successfully started
 	*/
 	public function read( ?yes : Bool = true ) : Bool {
-		#if JABBER_DEBUG trace( 'abstract method', 'error' ); #end
+		#if jabber_debug trace( 'abstract method', 'error' ); #end
 		return false;
 	}
 	
@@ -102,7 +102,7 @@ class StreamConnection {
 		Send a string, returns true on succeess
 	*/
 	public function write( t : String ) : Bool {
-		#if JABBER_DEBUG trace( 'abstract method', 'error' ); #end
+		#if jabber_debug trace( 'abstract method', 'error' ); #end
 		return false;
 	}
 	
@@ -110,7 +110,7 @@ class StreamConnection {
 		Send raw bytes, returns true on succeess
 	*/
 	public function writeBytes( t : Bytes ) : Bool {
-		#if JABBER_DEBUG trace( 'abstract method', 'error' ); #end
+		#if jabber_debug trace( 'abstract method', 'error' ); #end
 		return false;
 	}
 	

@@ -74,7 +74,7 @@ class ByteStreamReciever extends DataReciever {
 	}
 	
 	function handleTransferConnect() {
-		#if JABBER_DEBUG trace( "Bytestream connected ["+host.host+":"+host.port+"]" ); #end
+		#if jabber_debug trace( "Bytestream connected ["+host.host+":"+host.port+"]" ); #end
 		var r = IQ.createResult( iq );
 		var bs = new xmpp.file.ByteStream( sid );
 		bs.streamhost_used = host.jid;

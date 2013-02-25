@@ -94,7 +94,7 @@ class ServiceDiscoveryListener {
 			}
 		}
 		var r = IQ.createResult( iq );
-		#if JABBER_COMPONENT
+		#if jabber_component
 		var s : jabber.component.Stream = cast stream;
 		r.x = s.items;
 		#else

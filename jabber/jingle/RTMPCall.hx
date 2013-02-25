@@ -53,7 +53,7 @@ class RTMPCall extends OutgoingSession<RTMPOutput> {
 			request = iq;
 			connectTransport();
 		default :
-			#if JABBER_DEBUG
+			#if jabber_debug
 			trace( "Jingle session packet ("+j.action+") not handled", "warn" );
 			#end
 		}

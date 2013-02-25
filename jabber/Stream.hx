@@ -25,7 +25,7 @@ import haxe.io.Bytes;
 import jabber.util.Base64;
 import xmpp.filter.PacketIDFilter;
 
-#if JABBER_COMPONENT
+#if jabber_component
 import jabber.component.Stream;
 private typedef JID = ComponentJID;
 #end
@@ -64,7 +64,7 @@ private class StreamFeatures {
 		l = #if neko new List() #else new Array<String>() #end;
 	}
 	
-	#if JABBER_DEBUG
+	#if jabber_debug
 	public inline function toString() : String { return l.toString(); }
 	#end
 }
@@ -138,11 +138,11 @@ class Stream {
 	
 	function set_cnx( c : StreamConnection ) : StreamConnection {
 		switch( status ) {
-		case open, pending #if !JABBER_COMPONENT, starttls #end :
+		case open, pending #if !jabber_component, starttls #end :
 			close( true );
 			set_cnx( c );
 			 // re-open XMPP stream
-			#if JABBER_COMPONENT
+			#if jabber_component
 			// ?????
 			#else
 			open( jid );
@@ -164,15 +164,15 @@ class Stream {
 		Create/Returns the next unique id for this XMPP stream
 	*/
 	public function nextID() : String {
-		return Base64.random( defaultPacketIdLength ) #if JABBER_DEBUG+"_"+numPacketsSent #end;
+		return Base64.random( defaultPacketIdLength ) #if jabber_debug+"_"+numPacketsSent #end;
 	}
 	
 	/**
 		Open the XMPP stream.
 	*/
-	#if JABBER_COMPONENT
+	#if jabber_component
 	public function open( host : String, subdomain : String, secret : String, ?identities : Array<xmpp.disco.Identity> ) {
-		#if JABBER_DEBUG throw 'abstract method "open", use "connect" for components'; #end
+		#if jabber_debug throw 'abstract method "open", use "connect" for components'; #end
 	}
 	#else
 	public function open( jid : JID ) {
@@ -193,7 +193,7 @@ class Stream {
 	*/
 	public function close( ?disconnect = false ) {
 		if( status == closed ) {
-			#if JABBER_DEBUG trace( "cannot close xmpp stream, status is 'closed'" ); #end
+			#if jabber_debug trace( "cannot close xmpp stream, status is 'closed'" ); #end
 			return;
 		}
 		if( !cnx.http )
@@ -231,7 +231,7 @@ class Stream {
 				return null;
 		}
 		numPacketsSent++;
-		#if XMPP_DEBUG XMPPDebug.o( t ); #end
+		#if xmpp_debug XMPPDebug.o( t ); #end
 		return t;
 	}
 	
@@ -361,7 +361,7 @@ class Stream {
 	public function handleString( t : String ) : Bool {
 		
 		if( status == closed ) {
-			#if JABBER_DEBUG trace( "cannot process incoming data, xmpp stream not connected", "debug" ); #end
+			#if jabber_debug trace( "cannot process incoming data, xmpp stream not connected", "debug" ); #end
 			throw "stream is closed";
 		}
 
@@ -376,19 +376,19 @@ class Stream {
 		*/
 		
 		if( StringTools.startsWith( t, '</stream:stream' ) ) {
-			#if XMPP_DEBUG XMPPDebug.i( t ); #end
+			#if xmpp_debug XMPPDebug.i( t ); #end
 			close( cnx.connected );
 			return true;
 		} else if( StringTools.startsWith( t, '</stream:error' ) ) {
 			// TODO report error info (?)
-			#if XMPP_DEBUG XMPPDebug.i( t ); #end
+			#if xmpp_debug XMPPDebug.i( t ); #end
 			close( cnx.connected );
 			return true;
 		}
 		
 		buffer( t );
 		if( bufSize > maxBufSize ) {
-			#if JABBER_DEBUG
+			#if jabber_debug
 			trace( "max buffer size reached ("+bufSize+":"+maxBufSize+")", "error" );
 			trace(t);
 			#end
@@ -405,16 +405,16 @@ class Stream {
 			} else {
 				return false;
 			}
-		#if !JABBER_COMPONENT
+		#if !jabber_component
 		case starttls :
 			var x : Xml = null;
 			try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
-				#if XMPP_DEBUG XMPPDebug.i( t ); #end
-				#if JABBER_DEBUG trace( "StartTLS failed", "warn" ); #end
+				#if xmpp_debug XMPPDebug.i( t ); #end
+				#if jabber_debug trace( "StartTLS failed", "warn" ); #end
 				cnx.disconnect();
 				return true;
 			}
-			#if XMPP_DEBUG XMPPDebug.i( t ); #end
+			#if xmpp_debug XMPPDebug.i( t ); #end
 			if( x.nodeName != "proceed" || x.get( "xmlns" ) != "urn:ietf:params:xml:ns:xmpp-tls" ) {
 				cnx.disconnect();
 				return true;
@@ -428,11 +428,11 @@ class Stream {
 			}
 			cnx.setSecure();
 			return true;
-		#end //!JABBER_COMPONENT
+		#end //!jabber_component
 		case open :
 			var x : Xml = null;
 			try x = Xml.parse( buf.toString() ) catch( e : Dynamic ) {
-				//#if JABBER_DEBUG trace( "Packet incomplete, waiting for more data ..", "info" ); #end
+				//#if jabber_debug trace( "Packet incomplete, waiting for more data ..", "info" ); #end
 				return false; // wait for more data
 			}
 			resetBuffer();
@@ -461,7 +461,7 @@ class Stream {
 		Returns true if the packet got handled.
 	*/
 	public function handlePacket( p : xmpp.Packet ) : Bool {
-		#if XMPP_DEBUG
+		#if xmpp_debug
 		XMPPDebug.i( p.toString() );
 		#end
 		var i = -1;
@@ -504,7 +504,7 @@ class Stream {
 			}
 		}
 		if( !collected ) {
-			#if JABBER_DEBUG
+			#if jabber_debug
 			trace( "Incoming '"+Type.enumConstructor( p._type )+"' packet not handled ( "+p.from+" -> "+p.to+" )( "+p.id+" )", "warn" );
 			//trace(p);
 			#end
@@ -539,7 +539,7 @@ class Stream {
 	public function replaceConnection( n : Connection ) {
 		if( !n.connected )
 			throw 'not connected';
-		#if JABBER_DEBUG
+		#if jabber_debug
 		if( n.http )
 			throw 'cannot replace with http connection';
 		trace( 'replacing stream connection', 'debug' );
@@ -553,12 +553,12 @@ class Stream {
 	*/
 	
 	function processStreamInit( t : String ) : Bool {
-		return #if JABBER_DEBUG throw 'abstract method' #else false #end;
+		return #if jabber_debug throw 'abstract method' #else false #end;
 	}
 	
 	function handleConnect() {
 		trace( 'connected', 'info' );
-		#if JABBER_DEBUG
+		#if jabber_debug
 		#end
 	}
 

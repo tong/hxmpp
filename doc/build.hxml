@@ -43,14 +43,14 @@ jabber.SecureSocketConnection
 
 --next
 -js temp.js
--xml node.xml 
+-xml nodejs.xml 
 -D nodejs
 -lib nodejs
 
 --next
 -neko temp.n
 -xml component.xml
--D JABBER_COMPONENT
+-D jabber_component
 jabber.component.Stream
 
 #TODO chxdoc is broken, haxe3

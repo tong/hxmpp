@@ -50,7 +50,7 @@ class Packet {
 		Creates/Returns the XML representation of this XMPP packet.
 	*/
 	public function toXml() : Xml {
-		return #if JABBER_DEBUG throw 'abstract method' #else null #end;
+		return null; //#if jabber_debug throw 'abstract method' #else null #end;
 	}
 	
 	/**

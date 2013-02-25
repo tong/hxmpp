@@ -74,7 +74,7 @@ class RTMFPCall extends OutgoingSession<RTMFPOutput> {
 			stream.sendPacket( IQ.createResult( iq ) );
 			
 		default :
-			#if JABBER_DEBUG
+			#if jabber_debug
 			trace( "jingle session packet not handled", "warn" );
 			#end
 		}

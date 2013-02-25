@@ -39,14 +39,14 @@ import js.net.Socket;
 class SocketConnection extends SocketConnectionBase {
 		
 	public function new( host : String = "localhost",
-						 port : Int = #if JABBER_COMPONENT 5275 #else 5222 #end,
+						 port : Int = #if jabber_component 5275 #else 5222 #end,
 						 secure : Bool = #if (neko||cpp||air) false #else true #end,
 						 ?bufsize : Int, ?maxbufsize : Int,
 						 timeout : Int = 10 ) {
 		
 		super( host, port, secure, bufsize, maxbufsize, timeout );
 		
-		#if (JABBER_DEBUG && (neko||cpp||air) )
+		#if (jabber_debug && (neko||cpp||air) )
 		if( secure ) {
 			trace( "startTLS not implemented, use jabber.SecureSocketConnection for legacy TLS on port 5223", "warn" );
 			this.secure = false;
@@ -109,7 +109,7 @@ import jabber.util.ArrayBufferUtil;
 /**
 	Chrome (experimental!)
 */
-class SocketConnection extends jabber.stream.Connection {
+class SocketConnection extends StreamConnection {
 	
 	/** Port number */
 	public var port(default,null) : Int;
@@ -167,13 +167,13 @@ class SocketConnection extends jabber.stream.Connection {
 			__onConnect();
 		} else {
 			//TODO (what?)
-			#if JABBER_DEBUG trace("TODO"); #end
+			#if jabber_debug trace("TODO"); #end
 		}
 	}
 }
 
 
-#elseif ( js && !JABBER_FLASHSOCKETBRIDGE && !node && !rhino )
+#elseif ( js && !jabber_flashsocketbridge && !node && !rhino )
 
 import js.html.WebSocket;
 
@@ -420,7 +420,7 @@ class SocketConnection extends SocketConnectionBase {
 		/*
 		var d = new ByteArray();
 		try socket.readBytes( d, 0, Std.int(e.bytesLoaded) ) catch( e : Dynamic ) {
-			#if JABBER_DEBUG trace( e, "error" ); #end
+			#if jabber_debug trace( e, "error" ); #end
 			return;
 		}
 		trace(d.length);
@@ -497,7 +497,7 @@ class SocketConnection extends SocketConnectionBase {
 			socket.writeUTFBytes( t );
 			socket.flush();
 		} catch(e:Dynamic) {
-			#if JABBER_DEBUG trace( e, "error" ); #end
+			#if jabber_debug trace( e, "error" ); #end
 			return false;
 		}
 		return true;
@@ -510,7 +510,7 @@ class SocketConnection extends SocketConnectionBase {
 			socket.writeBytes( t.getData() ); 
 			socket.flush();
 		} catch(e:Dynamic) {
-			#if JABBER_DEBUG trace( e, "error" ); #end
+			#if jabber_debug trace( e, "error" ); #end
 			return false;
 		}
 		return true;
@@ -518,7 +518,7 @@ class SocketConnection extends SocketConnectionBase {
 	
 	/*
 	public override function reset() {
-		#if JABBER_DEBUG trace('clearing socket buffer','info'); #end
+		#if jabber_debug trace('clearing socket buffer','info'); #end
 	}
 	*/
 	
@@ -540,7 +540,7 @@ class SocketConnection extends SocketConnectionBase {
 	function sockDataHandler( e : ProgressEvent ) {
 		var d = new ByteArray();
 		try socket.readBytes( d, 0, Std.int(e.bytesLoaded) ) catch( e : Dynamic ) {
-			#if JABBER_DEBUG trace(e,"error"); #end
+			#if jabber_debug trace(e,"error"); #end
 			return;
 		}
 		__onData(  haxe.io.Bytes.ofData( d )  );
@@ -681,9 +681,9 @@ class SocketConnection extends SocketConnectionBase {
 }
 
 
-#elseif (js&&JABBER_FLASHSOCKETBRIDGE)
+#elseif (js&&jabber_flashsocketbridge)
 
-import jabber.stream.SocketConnectionBase;
+import jabber.SocketConnectionBase;
 
 /**
 	JS + FlashSocketBridge
@@ -765,14 +765,14 @@ class SocketConnection extends SocketConnectionBase {
 	
 	public static function init( id : String = "localhost", cb : String->Void, ?delay : Int = 0 ) {
 		if( initialized ) {
-			#if JABBER_DEBUG trace( 'socketbridge already initialized ['+id+']', 'warn' ); #end
+			#if jabber_debug trace( 'socketbridge already initialized ['+id+']', 'warn' ); #end
 			cb( 'socketbridge already initialized ['+id+']' );
 			return;
 		}
 		var _init : Void->Void = function(){
 			swf = untyped document.getElementById( id );
 			if( swf == null ) {
-				#if JABBER_DEBUG trace( 'socketbridge swf not found ['+id+']', 'warn' ); #end
+				#if jabber_debug trace( 'socketbridge swf not found ['+id+']', 'warn' ); #end
 				cb( 'socketbridge swf not found ['+id+']' );
 				return;
 			}
@@ -786,7 +786,7 @@ class SocketConnection extends SocketConnectionBase {
 	public static function createSocket( s : Socket, secure : Bool, timeout : Int ) {
 		var id : Int = -1;
 		try id = swf.createSocket( secure, false, timeout ) catch( e : Dynamic ) {
-			#if JABBER_DEBUG trace( e, "error" ); #end
+			#if jabber_debug trace( e, "error" ); #end
 			return -1;
 		}
 		sockets.set( id, s );
@@ -810,4 +810,4 @@ class SocketConnection extends SocketConnectionBase {
 	}
 }
 
-#end // js && JABBER_FLASHSOCKETBRIDGE
+#end // js && jabber_flashsocketbridge

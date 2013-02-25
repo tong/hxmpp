@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -75,7 +75,7 @@ class ByteStreamOutput extends ByteStreamIO  {
 	
 	public function init( digest : String ) {
 		
-		#if JABBER_DEBUG
+		#if jabber_debug
 		trace( "Starting file transfer server ["+host+":"+port+"]" );
 		#end
 		
@@ -112,7 +112,7 @@ class ByteStreamOutput extends ByteStreamIO  {
 	
 	public function send( input : haxe.io.Input, size : Int, bufsize : Int ) {
 
-		#if JABBER_DEBUG
+		#if jabber_debug
 		trace( "Transfering file [size:"+size+",bufsize:"+bufsize+"]" );
 		#end
 		
@@ -257,8 +257,8 @@ class ByteStreamOutput extends ByteStreamIO  {
 	}
 	
 	function cleanup() {
-		if( socket != null ) try socket.close() catch( e : Dynamic ) { #if JABBER_DEBUG trace(e); #end }
-		if( server != null ) try server.close() catch( e : Dynamic ) { #if JABBER_DEBUG trace(e); #end }
+		if( socket != null ) try socket.close() catch( e : Dynamic ) { #if jabber_debug trace(e); #end }
+		if( server != null ) try server.close() catch( e : Dynamic ) { #if jabber_debug trace(e); #end }
 	}
 	
 	
@@ -316,7 +316,7 @@ class ByteStreamOutput extends ByteStreamIO  {
 		try {
 			if( socket != null && socket.connected ) socket.close();
 			if( server != null ) server.close();
-		} catch( e : Dynamic ) { #if JABBER_DEBUG trace(e); #end }
+		} catch( e : Dynamic ) { #if jabber_debug trace(e); #end }
 	}
 	
 	#end

@@ -46,7 +46,7 @@ class AuthenticationBase {
 		Start the authentication process.
 	*/
 	public function start( password : String, ?resource : String ) : Bool {
-		return #if JABBER_DEBUG throw 'abstract method' #else false #end;
+		return #if jabber_debug throw 'abstract method' #else false #end;
 	}
 	
 }

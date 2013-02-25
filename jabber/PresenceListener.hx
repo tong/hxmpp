@@ -24,7 +24,7 @@ package jabber;
 /**
 	Utility (shortcut) to listen/report incoming presence packets.
 */
-class PresenceListener extends jabber.stream.PacketListener<xmpp.Presence> {
+class PresenceListener extends PacketListener<xmpp.Presence> {
 	
 	public function new( stream : Stream, handler : xmpp.Presence->Void,
 						 ?listen : Bool = true ) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,14 +50,13 @@ class Error extends xmpp.ErrorPacket {
 		var p = new Error( null, null );
 		if( !ErrorPacket.parseInto( p, x, XMLNS ) )
 			return null;
+		//TODO remove try/catch here
 		try {
 			p.type = Type.createEnum( ErrorType, x.get( "type" ).toLowerCase() );
 			var v = x.get( "code" );
 			if( v != null ) p.code = Std.parseInt( v );
 		} catch(e:Dynamic) {
-			#if JABBER_DEBUG
-			trace(e,"error");
-			#end
+			#if jabber_debug trace(e,"error"); #end
 			return null;
 		}
 		return p;

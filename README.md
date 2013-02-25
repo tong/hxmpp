@@ -42,10 +42,10 @@ Haxe XMPP/Jabber library | [Documentation](http://hxmpp.disktree.net/doc/api/ "h
 
 
 ### COMPILER FLAGS
-* XMPP_DEBUG    Print XMPP transfer (see [jabber.XMPPDebug](http://hxmpp.disktree.net/doc/api/types/jabber/XMPPDebug.html) for options)
-* JABBER_DEBUG    Print verbose debug information
-* JABBER_COMPONENT    Set to build xmpp server components (use [jabber.component.*](http://hxmpp.disktree.net/doc/api/packages/jabber/component/package.html) instead of [jabber.client.*](http://hxmpp.disktree.net/doc/api/packages/jabber/client/package.html))
-* JABBER_FLASHSOCKETBRIDGE  Enables to use a flash socket bridge as stream connection for the javascript target (see [hxmpp/util/flash-socketbridge](https://github.com/tong/hxmpp/tree/master/util/flash-socketbridge))
+* -D xmpp_debug    Print XMPP transfer (see [jabber.XMPPDebug](http://hxmpp.disktree.net/doc/api/types/jabber/XMPPDebug.html) for options)
+* -D jabber_debug    Print verbose debug information
+* -D jabber_component    Set to build xmpp server components (use [jabber.component.*](http://hxmpp.disktree.net/doc/api/packages/jabber/component/package.html) instead of [jabber.client.*](http://hxmpp.disktree.net/doc/api/packages/jabber/client/package.html))
+* -D jabber_flashsocketbridge  Enables to use a flash socket bridge as stream connection for the javascript target (see [hxmpp/util/flash-socketbridge](https://github.com/tong/hxmpp/tree/master/util/flash-socketbridge))
 
 
 

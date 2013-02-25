@@ -78,7 +78,7 @@ class SessionListener<T:Transport,R:SessionResponder<T>> {
 	}
 	
 	function createResponder() : R { // override me
-		#if JABBER_DEBUG
+		#if jabber_debug
 		return throw 'abstract method';
 		#else
 		return null;

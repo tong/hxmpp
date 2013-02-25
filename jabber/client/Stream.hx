@@ -60,7 +60,7 @@ class Stream extends jabber.Stream {
 	
 	override function processStreamInit( t : String ) : Bool {
 		if( cnx.http ) {
-			#if XMPP_DEBUG jabber.XMPPDebug.i( t ); #end
+			#if xmpp_debug jabber.XMPPDebug.i( t ); #end
 			var x : Xml = null;
 			try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
 				return false;
@@ -87,7 +87,7 @@ class Stream extends jabber.Stream {
 				}
 			}
 			if( id == null ) {
-				#if JABBER_DEBUG trace( "Invalid XMPP stream, missing ID" ); #end
+				#if jabber_debug trace( "invalid xmpp stream, missing id" ); #end
 				close( true );
 				onClose( "invalid stream id" );
 				return false;
@@ -109,7 +109,7 @@ class Stream extends jabber.Stream {
 				return false;
 			}
 			parseServerStreamFeatures( x );
-			#if XMPP_DEBUG jabber.XMPPDebug.i( t ); #end
+			#if xmpp_debug jabber.XMPPDebug.i( t ); #end
 			if( cnx.secure && !cnx.secured && server.features.get( "starttls" ) != null ) {
 				status = starttls;
 				sendData( '<starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls"/>' );

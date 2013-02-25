@@ -5,8 +5,7 @@ import jabber.JIDUtil;
 class TestJID extends TestCase {
 	
 	public function testValidation() {
-		
-		#if JABBER_DEBUG
+		#if jabber_debug
 		af( JIDUtil.isValid( "aaa" ) );
 		af( JIDUtil.isValid( "nodedomain.net" ) );
 		af( JIDUtil.isValid( "nodedomain.at" ) );
@@ -16,7 +15,6 @@ class TestJID extends TestCase {
 		at( JIDUtil.isValid( "node@domain.net" ) );
 		at( JIDUtil.isValid( "node@sub.domain.com" ) );
 		at( JIDUtil.isValid( "node@sub.domain.com/Resource" ) );
-		
 		#else
 		af( JIDUtil.isValid( "aaa" ) );
 		af( JIDUtil.isValid( "nodedomain.net" ) );
@@ -27,7 +25,6 @@ class TestJID extends TestCase {
 		at( JIDUtil.isValid( "node@sub.domain.com" ) );
 		at( JIDUtil.isValid( "node@sub.domain.com/Resource" ) );
 		at( JIDUtil.isValid( "node@dd.net" ) );
-		
 		#end
 	}
 		
@@ -51,13 +48,13 @@ class TestJID extends TestCase {
 		eq( "sub.domain.net", parts[1] );
 		eq( "Resource", parts[2] );
 		
-		#if JABBER_DEBUG
+		#if jabber_debug
 		var t = "node@domain/Resource";
 		eq( "node", JIDUtil.node( t ) );
 		eq( "domain", JIDUtil.domain( t ) );
 		eq( "Resource", JIDUtil.resource( t ) );
 		
-		var parts = JIDUtil.getParts( t );
+		var parts = JIDUtil.parts( t );
 		eq( "node", parts[0] );
 		eq( "domain", parts[1] );
 		eq( "Resource", parts[2] );

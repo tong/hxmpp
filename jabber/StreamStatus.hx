@@ -33,7 +33,7 @@ enum StreamStatus {
 	*/
 	pending; //pending( ?info : String );
 	
-	#if !JABBER_COMPONENT
+	#if !jabber_component
 	
 	/**
 		TLS negotiation in progress.

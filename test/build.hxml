@@ -5,7 +5,9 @@
 #-D macro-times
 #-debug
 #--no-opt
--dce full
+#-dce full
+-D xmpp_debug
+-D jabber_debug
 --each
 
 
@@ -46,11 +48,11 @@
 #-main Run
 #-cmd cd out/java/src && javac
 
---next
--cpp out/cpp
--main Run
--cmd mv ./out/cpp/Run ./out/test_cpp
--cmd ./out/test_cpp
+#--next
+#-cpp out/cpp
+#-main Run
+#-cmd mv ./out/cpp/Run ./out/test_cpp
+#-cmd ./out/test_cpp
 
 #--next
 #-js out/test_node.js
@@ -68,5 +70,5 @@
 --next
 -neko out/test-component.n
 -main Run
--D JABBER_COMPONENT
+-D jabber_component
 -cmd neko out/test-component.n

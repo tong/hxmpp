@@ -119,7 +119,7 @@ class SOCKS5Input {
 	}
 	
 	function onData( e : ProgressEvent ) {
-		#if JABBER_DEBUG trace( 'SOCKS5 '+state, 'debug' ); #end
+		#if jabber_debug trace( 'SOCKS5 '+state, 'debug' ); #end
 		switch( state ) {
 		case WaitInit :
 			i.readByte(); // 0x05

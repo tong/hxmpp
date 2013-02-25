@@ -27,7 +27,7 @@ import xmpp.XMLUtil;
 /**
 	JID of a XMPP component.
 */
-@:require(JABBER_COMPONENT)
+@:require(jabber_component)
 class ComponentJID {
 	
 	public var subdomain(default,null) : String;
@@ -47,7 +47,7 @@ class ComponentJID {
 	XMPP server component stream.
 	XEP-0114: Jabber Component Protocol, http://www.xmpp.org/extensions/xep-0114.html
 */
-@:require(JABBER_COMPONENT)
+@:require(jabber_component)
 class Stream extends jabber.Stream {
 	
 	public static inline var PORT_STANDARD = 5275;
@@ -146,7 +146,7 @@ class Stream extends jabber.Stream {
 		}
 		id = x.get('id');
 		status = StreamStatus.open;
-		#if XMPP_DEBUG jabber.XMPPDebug.i( t ); #end
+		#if xmpp_debug jabber.XMPPDebug.i( t ); #end
 		handleStreamOpen();
 		collect( [new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], readyHandler, false );
 		sendData( XMLUtil.createElement( "handshake", Xml.createPCData( SHA1.encode( id+secret ) ).toString() ).toString() );

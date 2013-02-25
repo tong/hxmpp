@@ -296,7 +296,7 @@ class Roster {
 		case error :
 			onError( new XMPPError( iq ) );
 		default :
-			#if JABBER_DEBUG trace( "Unhandled roster IQ" ); #end
+			#if jabber_debug trace( "unhandled roster iq" ); #end
 		}
 	}
 	

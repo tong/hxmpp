@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -83,7 +83,7 @@ class ByteStreamInput extends ByteStreamIO {
 	
 	public function connect( digest : String, size : Int, ?range : xmpp.file.Range, bufsize : Int = 4096 ) {
 		
-		#if JABBER_DEBUG
+		#if jabber_debug
 		trace( "Connecting to filetransfer streamhost ["+host+":"+port+"]" );
 		#end
 		
@@ -181,7 +181,7 @@ class ByteStreamInput extends ByteStreamIO {
 	}
 	
 	function cleanup() {
-		if( socket != null ) try socket.close() catch( e : Dynamic ) { #if JABBER_DEBUG trace(e); #end }
+		if( socket != null ) try socket.close() catch( e : Dynamic ) { #if jabber_debug trace(e); #end }
 	}
 	
 	/*
@@ -203,7 +203,7 @@ class ByteStreamInput extends ByteStreamIO {
 	#elseif flash
 	
 	function onSocketConnect( e : Event ) {
-		#if JABBER_DEBUG trace( "Filetransfer socket connected ["+host+":"+port+"]", "info" ); #end
+		#if jabber_debug trace( "Filetransfer socket connected ["+host+":"+port+"]", "info" ); #end
 		try {
 			new SOCKS5Output().run( socket, digest, onSOCKS5Complete );
 		} catch( e : Dynamic ) {
@@ -214,11 +214,11 @@ class ByteStreamInput extends ByteStreamIO {
 	
 	function onSOCKS5Complete( err : String ) {
 		if( err != null ) {
-			#if JABBER_DEBUG trace( "SOCKS5 negotiation failed: "+err ); #end
+			#if jabber_debug trace( "SOCKS5 negotiation failed: "+err ); #end
 			cleanup();
 			__onFail( err );
 		} else {
-			#if JABBER_DEBUG trace( "SOCKS5 negotiation complete" ); #end
+			#if jabber_debug trace( "SOCKS5 negotiation complete" ); #end
 			buf = new ByteArray();
 			bufpos = 0;
 			socket.addEventListener( ProgressEvent.SOCKET_DATA, onSocketData );
@@ -260,7 +260,7 @@ class ByteStreamInput extends ByteStreamIO {
 	#elseif nodejs
 	
 	function sockConnectHandler() {
-		#if JABBER_DEBUG trace( "Filetransfer socket connected ["+host+":"+port+"]" ); #end
+		#if jabber_debug trace( "Filetransfer socket connected ["+host+":"+port+"]" ); #end
 		new SOCKS5Output().run( socket, digest, onSOCKS5Complete );
 	}
 
@@ -286,7 +286,7 @@ class ByteStreamInput extends ByteStreamIO {
 			cleanup();
 			__onFail( err );
 		} else {
-			#if JABBER_DEBUG trace( "SOCKS5 negotiation complete " ); #end
+			#if jabber_debug trace( "SOCKS5 negotiation complete " ); #end
 			bufpos = 0;
 			socket.on( Node.STREAM_DATA, sockDataHandler );
 			__onConnect();

@@ -203,7 +203,7 @@ class MUChat {
 		// TODO check role
 		var occupant = getOccupant( nick );
 		if( occupant == null ) {
-			#if JABBER_DEBUG trace("MUC occupant to kick not found","warn"); #end
+			#if jabber_debug trace("MUC occupant to kick not found","warn"); #end
 			return false;
 		}
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, myjid );
@@ -302,7 +302,7 @@ class MUChat {
 						var self = this;
 						stream.sendIQ( iq, function(r:xmpp.IQ) {
 							if( r.type == xmpp.IQType.result ) {
-								#if JABBER_DEBUG trace( "Unlocked MUC room: "+self.room, "info" ); #end
+								#if jabber_debug trace( "Unlocked MUC room: "+self.room, "info" ); #end
 								//unlocked = true; //TODO
 								//self.onUnlock();
 								self.joined = true;
@@ -375,7 +375,7 @@ class MUChat {
 						var self = this;
 						stream.sendIQ( iq, function(r:xmpp.IQ) {
 							if( r.type == xmpp.IQType.result ) {
-								#if JABBER_DEBUG trace( "Unlocked MUC room: "+self.room, "info" ); #end
+								#if jabber_debug trace( "Unlocked MUC room: "+self.room, "info" ); #end
 								//unlocked = true; //TODO
 								//self.onUnlock();
 								self.joined = true;

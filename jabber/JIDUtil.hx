@@ -34,7 +34,7 @@ class JIDUtil {
 		Regular expression matching a valid JID
 	*/
 	public static var EREG = 
-		#if JABBER_DEBUG
+		#if jabber_debug
 		~/([A-Z0-9._%-]+)@([A-Z0-9\.-]+)/i;
 		#else
 		~/([A-Z0-9._%-]+)@([A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?)(\/([A-Z0-9._%-]+))?/i;
@@ -42,7 +42,7 @@ class JIDUtil {
 	/*
 	#if macro //TODO temp,macro bug
 	public static var EREG = 
-		#if JABBER_DEBUG
+		#if jabber_debug
 		~/([A-Z0-9._%-]+)@([A-Z0-9.-]+(\.[A-Z][A-Z][A-Z]?)?)(\/([A-Z0-9._%-]+))?/;
 		#else
 		~/([A-Z0-9._%-]+)@([A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?)(\/([A-Z0-9._%-]+))?/;
@@ -56,7 +56,7 @@ class JIDUtil {
 	*/
 	public static function isValid( t : String ) : Bool {
 		if( t == null 
-			#if !JABBER_DEBUG
+			#if !jabber_debug
 			|| t.length < MIN_LENGTH || t.length > MAX_SIZE
 			#end )
 			return false;

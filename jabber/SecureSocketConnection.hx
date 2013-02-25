@@ -243,7 +243,7 @@ class SecureSocketConnection extends jabber.SocketConnectionBase {
 }
 
 /*
-#elseif JABBER_FLASHSOCKETBRIDGE
+#elseif jabber_flashsocketbridge
 
 class SecureSocketConnection extends jabber.SocketConnection {
 	public function new( host : String, ?port : Int = 5223, secure = true, ?bufSize : Int, ?maxBufSize : Int, timeout : Int = 10) {
@@ -267,7 +267,7 @@ class SecureSocketConnection extends jabber.SocketConnection {
 	
 	override function createConnection() {
 		if( credentials == null ) {
-			#if JABBER_DEBUG
+			#if jabber_debug
 			trace( "No TLS credenntials set!", "warn" );
 			#end
 			credentials = cast {};

@@ -53,7 +53,7 @@ import flash.net.NetStream;
 	}
 	
 	override function netConnectionHandler( e : NetStatusEvent ) {
-		#if JABBER_DEBUG trace( e.info.code, 'debug' ); #end
+		#if jabber_debug trace( e.info.code, 'debug' ); #end
 		switch( e.info.code ) {
 		case "NetConnection.Connect.Success" :
 			id = nc.nearID;

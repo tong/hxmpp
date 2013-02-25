@@ -81,7 +81,7 @@ class SocketConnectionBase extends StreamConnection {
 //	public var socket(default,null) : Socket;
 	#elseif (js&&air)
 	public var socket(default,null) : air.Socket;
-	#elseif (js&&JABBER_FLASHSOCKETBRIDGE)
+	#elseif (js&&jabber_flashsocketbridge)
 	public var socket(default,null) : Socket;
 	#elseif (flash&&air)
 	//#
@@ -222,7 +222,7 @@ class SocketConnectionBase extends StreamConnection {
 	
 	function error( info : String ) {
 		reading = connected = false;
-		try socket.close() catch(e:Dynamic) { #if JABBER_DEBUG trace(e,"error"); #end }
+		try socket.close() catch(e:Dynamic) { #if jabber_debug trace(e,"error"); #end }
 		__onDisconnect( info );
 	}
 
@@ -232,7 +232,7 @@ class SocketConnectionBase extends StreamConnection {
 #end
 
 
-#if JABBER_FLASHSOCKETBRIDGE
+#if jabber_flashsocketbridge
 
 class Socket {
 	
@@ -267,4 +267,4 @@ class Socket {
 	}
 }
 
-#end // JABBER_FLASHSOCKETBRIDGE
+#end // jabber_flashsocketbridge

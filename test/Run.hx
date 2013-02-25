@@ -56,7 +56,7 @@ class Run {
 	
 	static function main() {
 		
-		#if JABBER_COMPONENT
+		#if jabber_component
 		platform.name = platform.name+"-component";
 		platform.color = "#666";
 		#end

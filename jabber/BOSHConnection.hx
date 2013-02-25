@@ -139,7 +139,7 @@ class BOSHConnection extends jabber.StreamConnection {
 			b.set( 'to', host );
 			b.set( 'secure', Std.string( secure ) );
 			
-			#if XMPP_DEBUG
+			#if xmpp_debug
 			XMPPDebug.o( b.toString() );
 			#end
 			
@@ -173,7 +173,7 @@ class BOSHConnection extends jabber.StreamConnection {
 		Set the value of the 'secs' attribute to null to force the connection manager to return all the requests it is holding.
 	*/
 	public function pause( secs : Null<Int> ) : Bool {
-		#if JABBER_DEBUG
+		#if jabber_debug
 		trace( "pausing bosh session for "+secs+" seconds" );
 		#end
 		if( secs == null )
@@ -225,7 +225,7 @@ class BOSHConnection extends jabber.StreamConnection {
 		r.set( "xml:lang", "en" );
 		#end
 		r.set( "to", host );
-		#if XMPP_DEBUG XMPPDebug.o( r.toString() ); #end
+		#if xmpp_debug XMPPDebug.o( r.toString() ); #end
 		sendRequests( r );
 	}
 	
@@ -240,7 +240,7 @@ class BOSHConnection extends jabber.StreamConnection {
 	function sendRequests( ?t : Xml, poll : Bool = false ) : Bool {
 		
 		if( requestCount >= maxConcurrentRequests ) {
-			#if JABBER_DEBUG
+			#if jabber_debug
 //			trace( "max concurrent request limit reached ("+requestCount+","+maxConcurrentRequests+")", "info" );
 			#end
 			return false;
@@ -273,7 +273,7 @@ class BOSHConnection extends jabber.StreamConnection {
 		
 		#if nodejs
 		//TODO
-		#if JABBER_DEBUG trace('BOSH not implementd for nodejs'); #end
+		#if jabber_debug trace('BOSH not implementd for nodejs'); #end
 		
 		#elseif js
 			
@@ -350,7 +350,7 @@ class BOSHConnection extends jabber.StreamConnection {
 	*/
 	
 	function handleHTTPError( e : String ) {
-		#if JABBER_DEBUG trace( e , "warn" ); #end
+		#if jabber_debug trace( e , "warn" ); #end
 		cleanup();
 		__onDisconnect( e );
 	}
@@ -359,23 +359,23 @@ class BOSHConnection extends jabber.StreamConnection {
 		
 		//trace("#"+t+"#");
 		if( t == null ) {
-			#if JABBER_DEBUG trace("Empty bosh response", "warning" ); #end
+			#if jabber_debug trace("Empty bosh response", "warning" ); #end
 			return;
 		}
 		
 		var x : Xml = null;
 		try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
-			#if JABBER_DEBUG trace( 'invalid XML:\n'+t, 'warn' ); #end
+			#if jabber_debug trace( 'invalid XML:\n'+t, 'warn' ); #end
 			return;
 		}
 		if( x == null ) {
-			#if JABBER_DEBUG trace("Empty bosh response ("+t+")", "warning" ); #end
+			#if jabber_debug trace("Empty bosh response ("+t+")", "warning" ); #end
 			//requestCount--; //?????????????????
 			//poll();
 			return;
 		}
 		if( x.get( 'xmlns' ) != XMLNS ) {
-			#if JABBER_DEBUG
+			#if jabber_debug
 			trace( 'invalid bosh body ('+x+')', 'error' );
 			#end
 			cleanup();
@@ -390,7 +390,7 @@ class BOSHConnection extends jabber.StreamConnection {
 			switch( x.get( "type" ) ) {
 			case "terminate" :
 				cleanup();
-				#if JABBER_DEBUG
+				#if jabber_debug
 				trace( "bosh stream terminated by server", "warn" );
 				#end
 				trace(x);
@@ -444,7 +444,7 @@ class BOSHConnection extends jabber.StreamConnection {
 			t = null;
 			t = x.get( "inactivity" );
 			if( t != null ) inactivity = Std.parseInt( t );
-		//	#if XMPP_DEBUG XMPPDebug.i( t ); #end
+		//	#if xmpp_debug XMPPDebug.i( t ); #end
 			__onConnect();
 			connected = true;
 			__onString( x.toString() );

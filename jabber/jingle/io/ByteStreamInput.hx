@@ -44,7 +44,7 @@ class ByteStreamInput extends ByteStreamTransport {
 	}
 	
 	public override function connect() {
-		#if JABBER_DEBUG
+		#if jabber_debug
 		trace( "Connecting to filetransfer streamhost ["+host+":"+port+"]" );
 		#end
 		#if (neko||cpp)
@@ -113,7 +113,7 @@ class ByteStreamInput extends ByteStreamTransport {
 	
 	function cleanup() {
 		if( socket != null )
-			try socket.close() catch( e : Dynamic ) { #if JABBER_DEBUG trace(e); #end }
+			try socket.close() catch( e : Dynamic ) { #if jabber_debug trace(e); #end }
 	}
 	
 	#end

@@ -33,13 +33,13 @@ import jabber.util.XMLBeautify;
 
 /**
 	Utility for debugging XMPP transfer.
-	Set the haXe compiler flag: -D XMPP_DEBUG to activate it.
+	Set the haXe compiler flag: -D xmpp_debug to activate it.
 	
 	* Terminal targets: Color highlighted
 	* Browser targets: Printed to the default debug console
 	* Adobe air: Printed to fdb 'trace'
 */
-@:require(XMPP_DEBUG)
+@:require(xmpp_debug)
 class XMPPDebug {
 	
 	static function __init__() {
@@ -113,7 +113,7 @@ class XMPPDebug {
 	public static function print( t : String, out : Bool, level : String = "log" ) {
 		if( !active )
 			return;
-		#if XMPP_CONSOLE
+		#if xmpp_console
 		XMPPConsole.printXMPP( t, out );
 		#else
 			#if (sys||nodejs||air||rhino)

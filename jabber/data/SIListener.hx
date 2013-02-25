@@ -55,7 +55,7 @@ class SIListener {
 	
 	function handleRequest( iq : IQ ) {
 		if( this.methods.length == 0 ) {
-			#if JABBER_DEBUG trace( "No file tranfer methods registerd with the SI listener", "warn" ); #end
+			#if jabber_debug trace( "No file tranfer methods registerd with the SI listener", "warn" ); #end
 			return;
 		}
 		var si = xmpp.file.SI.parse( iq.x.toXml() );

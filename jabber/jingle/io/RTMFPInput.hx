@@ -43,7 +43,7 @@ class RTMFPInput extends RTMFPTransport {
 	}
 	
 	override function netConnectionHandler( e : NetStatusEvent ) {
-		#if JABBER_DEBUG trace( e.info.code ); #end
+		#if jabber_debug trace( e.info.code ); #end
 		switch( e.info.code ) {
 		case "NetConnection.Connect.Failed" :
 			if( __onFail != null ) __onFail( e.info.code );

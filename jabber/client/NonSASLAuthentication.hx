@@ -35,7 +35,7 @@ class NonSASLAuthentication extends AuthenticationBase {
 	public var password(default,null) : String;
 
 	public function new( stream : Stream, ?usePlainText : Bool = false ) {
-		#if JABBER_DEBUG
+		#if jabber_debug
 		if( stream.cnx.http )
 			throw "non SASL authentication is not supported on HTTP/BOSH connections";
 		#end
