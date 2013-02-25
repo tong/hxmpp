@@ -30,7 +30,7 @@ class XSPFListener {
 	
 	public var stream(default,null) : Stream;
 	
-	var c : jabber.stream.PacketCollector;
+	var c : PacketCollector;
 	
 	public function new( stream : Stream ) {
 		if( !stream.features.add( xmpp.XSPF.XMLNS ) )
