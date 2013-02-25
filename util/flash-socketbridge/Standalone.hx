@@ -32,7 +32,8 @@ class Standalone {
 		
 		var ctx = flash.Lib.current.loaderInfo.parameters.ctx;
 		#if TLS
-		var sb = new FlashSocketBridgeTLS( ctx );
+		throw "tls not implemented";
+		//var sb = new FlashSocketBridgeTLS( ctx );
 		#else
 		var sb = new FlashSocketBridge( ctx );
 		#end
