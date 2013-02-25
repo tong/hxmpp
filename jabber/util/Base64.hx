@@ -112,7 +112,9 @@ class Base64 {
 		#if php
 		return untyped __call__( "base64_encode", b.getData() );
 		#elseif nodejs
-		return new NodeBuffer( b.getData().toString(), NodeC.BASE64 ).toString( NodeC.ASCII );
+		return  b.getData().toString( NodeC.BASE64 );
+		//return new NodeBuffer( b.getData().toString( NodeC.ASCII ) );
+		//return new NodeBuffer( b.getData().toString(), NodeC.BASE64 ).toString( NodeC.ASCII );
 		//return b.getData().toString( NodeC.BASE64 );
 		#else
 		return fillNullbits( bc.encodeBytes( b ).toString() );

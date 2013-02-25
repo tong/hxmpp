@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,19 +27,19 @@ class PacketToContainsFilter {
 	
 	public var contains(default,set) : String;
 	
-	var ereg : EReg;
+	var r : EReg;
 	
 	public function new( contains : String ) {
 		set_contains( contains );
 	}
 	
 	function set_contains( t : String ) : String {
-		ereg = new EReg( t, "" );
+		r = new EReg( t, "" );
 		return this.contains = t;
 	}
 	
 	public function accept( p : xmpp.Packet ) : Bool {
-		return ( p.to == null ) ? false : ereg.match( p.to );
+		return ( p.to == null ) ? false : r.match( p.to );
 	}
 	
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) tong, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,8 @@ package jabber.jingle.io;
 import flash.events.NetStatusEvent;
 import flash.net.NetStream;
 
-@:require(flash10) class RTMFPInput extends RTMFPTransport {
+@:require(flash10)
+class RTMFPInput extends RTMFPTransport {
 	
 	public var pubid(default,null) : String;
 	

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) tong, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@ package xmpp.pep;
 
 /**
 	Extension for communicating information about music to which a user is currently listening.
-	<a href="http://xmpp.org/extensions/xep-0118.html">XEP-0118: User Tune</a><br/>
+	XEP-0118: User Tune: http://xmpp.org/extensions/xep-0118.html
 */
 class UserTune extends xmpp.PersonalEvent {
 
@@ -34,7 +34,7 @@ class UserTune extends xmpp.PersonalEvent {
 	/** The duration of the song or piece in seconds */
 	public var length : Int;
 	/** The user's rating of the song or piece, from 1 (lowest) to 10 (highest). */
-	public var rating(default,setRating) : Int;
+	public var rating(default,set) : Int;
 	/** The collection (e.g., album) or other source (e.g., a band website that hosts streams or audio files) */
 	public var source : String;
 	/** The title of the song or piece */
@@ -55,7 +55,7 @@ class UserTune extends xmpp.PersonalEvent {
 		this.uri = uri;
 	}
 	
-	function setRating( v : Int ) : Int {
+	function set_rating( v : Int ) : Int {
 		return rating = ( v < 1 ) ? 1 : ( v > 10 ) ? 10 : v;
 	}
 	

@@ -63,7 +63,8 @@ class XHTML {
 	
 	static function parseBody( x : Xml ) : String {
 		var s = new StringBuf();
-		for( x in x ) s.add( x.toString() );
+		for( e in x )
+			s.add( e.toString() );
 		return s.toString();
 	}
 	

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,6 @@ package jabber.jingle;
 //TODO
 //import jabber.jingle.io.Transport;
 import jabber.io.Transport;
-
-import jabber.stream.PacketCollector;
 
 /**
 	Abstract base for jingle session listeners.

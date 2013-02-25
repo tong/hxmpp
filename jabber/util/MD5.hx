@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, tong, disktree.net
+ * Copyright (c) 2012, disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,19 +27,17 @@ import js.Node;
 
 /**
 	Creates a MD5 of a String.
-	Modified version from the haXe std lib to provide raw encoding.
+	Modified version from the haxe std lib to provide raw encoding as well as support for non official compiler targets.
 **/
 class MD5 {
 	
+	/**
+	*/
 	public static inline function encode( s : String, raw : Bool = false ) : String {
 		
 		#if neko
 		var t = make_md5( untyped s.__s );
 		return untyped new String( raw ? t : base_encode( t, "0123456789abcdef".__s ) );
-		//var t = sys.MD5.encode(s);
-		//return t;
-		//return untyped new String( raw ? t : base_encode( t, "0123456789abcdef".__s ) );
-		//return sys.MD5.encode(s);
 		
 		#elseif nodejs
 		var h = js.Node.crypto.createHash( "md5" );

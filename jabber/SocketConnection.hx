@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -183,7 +183,7 @@ import js.html.WebSocket;
 	
 	For flash you have to add some javascript glue code to your website
 */
-class SocketConnection extends jabber.stream.Connection {
+class SocketConnection extends StreamConnection {
 	
 	public var url(default,null) : String;
 	public var port(default,null) : Int;
@@ -330,6 +330,7 @@ class SocketConnection extends SocketConnectionBase {
 	}
 }
 
+
 #elseif flash
 
 import flash.net.Socket;
@@ -339,9 +340,6 @@ import flash.events.SecurityErrorEvent;
 import flash.events.ProgressEvent;
 import flash.utils.ByteArray;
 
-/**
-	Flash
-*/
 class SocketConnection extends SocketConnectionBase {
 	
 	#if air

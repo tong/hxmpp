@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -64,7 +64,7 @@ class BOBListener {
 			//var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
 			var r = xmpp.IQ.createResult( iq );
 			// encode here?
-			bob.data =  new haxe.BaseCode( haxe.io.Bytes.ofString( Base64.CHARS ) ).encodeString( bob.data );
+			bob.data =  new haxe.crypto.BaseCode( haxe.io.Bytes.ofString( Base64.CHARS ) ).encodeString( bob.data );
 			r.x = bob;
 			stream.sendPacket( r );
 		}
