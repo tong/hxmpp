@@ -32,11 +32,14 @@ class ComponentJID {
 	
 	public var subdomain(default,null) : String;
 	public var host(default,null) : String;
+	public var s(get,null) : String;
 	
 	public function new( subdomain : String, host : String ) {
 		this.subdomain = subdomain;
 		this.host = host;
 	}
+	
+	inline function get_s() : String return toString();
 	
 	public inline function toString() : String {
 		return subdomain+'.'+host;
