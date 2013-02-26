@@ -18,5 +18,4 @@
 #-swf socketbridge_tls.swf
 #-main Standalone
 #--flash-strict
-#-D TLS
 #--no-traces

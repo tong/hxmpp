@@ -410,7 +410,7 @@ class Stream {
 			var x : Xml = null;
 			try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
 				#if xmpp_debug XMPPDebug.i( t ); #end
-				#if jabber_debug trace( "StartTLS failed", "warn" ); #end
+				#if jabber_debug trace( "startTLS failed", "warn" ); #end
 				cnx.disconnect();
 				return true;
 			}
@@ -422,7 +422,7 @@ class Stream {
 			var me = this;
 			cnx.__onSecured = function(err:String) {
 				if( err != null ) {
-					me.handleStreamClose( "TLS failed ["+err+"]" );
+					me.handleStreamClose( "tls failed ["+err+"]" );
 				}
 				me.open( null );
 			}

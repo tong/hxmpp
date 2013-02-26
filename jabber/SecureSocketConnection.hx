@@ -135,29 +135,7 @@ class SecureSocketConnection extends jabber.SocketConnectionBase {
 }
 
 
-#elseif TLS
-
-import tls.event.SecureSocketEvent;
-import tls.valueobject.SecurityOptionsVO;
-
-class SecureSocketConnection extends jabber.SocketConnection {
-	
-	public function new( host : String, port : Int = 5223,
-						 ?bufSize : Int, ?maxBufSize : Int,
-						 timeout : Int = 10 ) {
-		super( host, port, true, bufSize, maxBufSize, timeout );
-	}
-	
-	override function sockConnectHandler( e : SecureSocketEvent ) {
-		socket.startSecureSupport( SecurityOptionsVO.getDefaultOptions( SecurityOptionsVO.SECURITY_TYPE_TLS ) );
-	}
-	
-	override function secureChannelEstablished( e : SecureSocketEvent ) {
-		connected = true;
-		__onConnect();
-	}
-}
-#end // TLS
+#end
 
 #elseif js
 
@@ -268,7 +246,7 @@ class SecureSocketConnection extends jabber.SocketConnection {
 	override function createConnection() {
 		if( credentials == null ) {
 			#if jabber_debug
-			trace( "No TLS credenntials set!", "warn" );
+			trace( "no tls credenntials set!", "warn" );
 			#end
 			credentials = cast {};
 		}

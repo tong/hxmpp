@@ -35,11 +35,7 @@ import js.net.Socket;
 import js.Node;
 typedef Socket = Stream;
 #elseif flash
-	#if TLS
-	import tls.controller.SecureSocket;
-	#else
-	import flash.net.Socket;
-	#end
+import flash.net.Socket;
 #end
 
 
@@ -86,7 +82,7 @@ class SocketConnectionBase extends StreamConnection {
 	#elseif (flash&&air)
 	//#
 	#elseif flash
-	public var socket(default,null) : #if TLS SecureSocket #else Socket #end;
+	public var socket(default,null) : Socket;
 	#end
 	
 	var buf : Bytes;
