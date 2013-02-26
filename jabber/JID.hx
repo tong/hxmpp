@@ -47,10 +47,10 @@ class JID {
 	public var resource : String;
 	
 	/** JID without resource */
-	public var bare(get_bare,null) : String;
+	public var bare(get,null) : String;
 	
 	/** Just a shortcut for toString()  */
-	public var s(get_s,null) : String;
+	public var s(get,null) : String;
 	
 	public function new( ?t : String ) {
 		if( t != null ) {
