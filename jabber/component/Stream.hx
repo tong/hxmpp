@@ -44,7 +44,7 @@ class ComponentJID {
 }
 
 /**
-	XMPP server component stream.
+	XMPP server-component stream.
 	XEP-0114: Jabber Component Protocol, http://www.xmpp.org/extensions/xep-0114.html
 */
 @:require(jabber_component)
@@ -72,7 +72,8 @@ class Stream extends jabber.Stream {
 	public var connected(default,null) : Bool;
 	
 	/***/
-	@:isVar public var items(get_items,null) : xmpp.disco.Items;
+	@:isVar
+	public var items(get_items,null) : xmpp.disco.Items;
 	
 	/***/
 	public var discoListener(default,null) : ServiceDiscoveryListener;
@@ -89,9 +90,9 @@ class Stream extends jabber.Stream {
 		if( cnx == null )
 			throw "no stream connection set";
 		if( subdomain == null || subdomain == "" )
-			throw "invalid stream subdomain";
+			throw "invalid subdomain: "+subdomain;
 		if( secret == null )
-			throw "invalid server component secret (null)";
+			throw "invalid shared server component secret (null)";
 		this.jid = new ComponentJID( subdomain, host );
 		this.secret = secret;
 		items = new xmpp.disco.Items();
@@ -100,11 +101,10 @@ class Stream extends jabber.Stream {
 	}
 	
 	function get_serviceName() : String {
-		if( jid.subdomain == null || jid.host == null ) return null;
-		return jid.toString();
+		return ( jid.subdomain == null || jid.host == null ) ? null : jid.toString();
 	}
 	
-	function get_items() : xmpp.disco.Items {
+	inline function get_items() : xmpp.disco.Items {
 		return items;
 	}
 	
