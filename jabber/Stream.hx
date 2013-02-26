@@ -389,8 +389,8 @@ class Stream {
 		buffer( t );
 		if( bufSize > maxBufSize ) {
 			#if jabber_debug
-			trace( "max buffer size reached ("+bufSize+":"+maxBufSize+")", "error" );
-			trace(t);
+			trace( 'max buffer size reached ($bufSize:$maxBufSize)', 'error' );
+			trace( t );
 			#end
 			close( false );
 		}
@@ -422,7 +422,7 @@ class Stream {
 			var me = this;
 			cnx.__onSecured = function(err:String) {
 				if( err != null ) {
-					me.handleStreamClose( "tls failed ["+err+"]" );
+					me.handleStreamClose( 'tls failed [$err]' );
 				}
 				me.open( null );
 			}
@@ -505,7 +505,7 @@ class Stream {
 		}
 		if( !collected ) {
 			#if jabber_debug
-			trace( "Incoming '"+Type.enumConstructor( p._type )+"' packet not handled ( "+p.from+" -> "+p.to+" )( "+p.id+" )", "warn" );
+			trace( 'incoming "${Type.enumConstructor(p._type)}" packet not handled ( ${p.from} -> ${p.to} )( ${p.id} )', 'warn' );
 			//trace(p);
 			#end
 			if( p._type == xmpp.PacketType.iq ) { // 'feature not implemented' response

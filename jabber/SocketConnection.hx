@@ -180,8 +180,6 @@ import js.html.WebSocket;
 /**
 	WebSocket connection.
 	http://tools.ietf.org/html/draft-moffitt-xmpp-over-websocket-00
-	
-	For flash you have to add some javascript glue code to your website
 */
 class SocketConnection extends StreamConnection {
 	
@@ -195,7 +193,7 @@ class SocketConnection extends StreamConnection {
 		this.port = port;
 		this.secure = secure;
 		
-		url = "ws"+(secure?"s":"")+"://"+host+":"+port; // unofficial specs do not support secure websocket connections (?)
+		url = 'ws'+(secure?'s':'')+'://$host:$port'; // unofficial specs do not support secure websocket connections (?)
 	}
 	
 	public override function connect() {

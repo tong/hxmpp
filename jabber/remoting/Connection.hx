@@ -89,7 +89,7 @@ class Connection implements AsyncConnection implements Dynamic<AsyncConnection> 
 				//trace("RESSUlT2 "+v);
 				try {
 					if( v.substr(0,3) != "hxr" )
-						throw "invalid response : '"+v+"'";
+						throw 'invalid response ($v)';
 					var s = new haxe.Unserializer( v.substr( 3 ) );
 					ret = s.unserialize();
 				} catch( err : Dynamic ) {

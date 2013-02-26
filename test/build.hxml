@@ -3,11 +3,12 @@
 
 -cp ../
 #-D macro-times
-#-debug
 #--no-opt
-#-dce full
--D xmpp_debug
--D jabber_debug
+#-debug
+-dce full
+#-D xmpp_debug
+#-D jabber_debug
+#-D format-warning
 --each
 
 
@@ -41,26 +42,25 @@
 ##-cs out/cs_unsafe
 ##-D unsafe
 #-main Run
-#-cmd cd out/java/src && javac
 
 #--next
 #-java out/java
 #-main Run
 #-cmd cd out/java/src && javac
 
-#--next
-#-cpp out/cpp
-#-main Run
-#-cmd mv ./out/cpp/Run ./out/test_cpp
-#-cmd ./out/test_cpp
+--next
+-cpp out/cpp
+-main Run
+-cmd mv ./out/cpp/Run ./out/test_cpp
+-cmd ./out/test_cpp
 
-#--next
-#-js out/test_node.js
-#-lib nodejs
-#-cp ../../../hx-node/
-#-D nodejs
-#-main Run
-#-cmd node out/test_node.js
+--next
+-js out/test_node.js
+-lib nodejs
+-cp ../../../hx-node/
+-D nodejs
+-main Run
+-cmd node out/test_node.js
 
 --next
 -as3 out/as3

@@ -159,7 +159,7 @@ class SocketConnectionBase extends StreamConnection {
 		} else {
 			var nsize = buf.length + bufsize;
 			if( nsize > maxbufsize ) {
-				error( "max buffer size site reached ("+maxbufsize+")" );
+				error( 'max buffer size site reached ($maxbufsize)' );
 				return;
 			}
 			var nbuf = Bytes.alloc( nsize );

@@ -3,17 +3,18 @@
 
 class TestCase extends haxe.unit.TestCase {
 	
-	function eq<T>( a : T, b : T ) {
+	inline function eq<T>( a : T, b : T, ?pos ) {
 		assertEquals( a, b );
 	}
 
-	function at( v : Bool ) {
+	inline function at( v : Bool ) {
 		assertTrue( v );
 	}
 	
-	function af( v : Bool ) {
+	inline function af( v : Bool ) {
 		assertFalse( v );
 	}
 	
+	//function report( s : String, ?pos : haxe.PosInfos ) {
 	
 }

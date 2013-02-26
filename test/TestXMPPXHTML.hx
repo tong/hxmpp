@@ -35,8 +35,7 @@ class TestXMPPXHTML extends TestCase {
 		
 		//TODO !!!!!!!!!!!!!!!!!!!!! fails on ccpp, neko, js
 		
-	//eq( "<p>As Emerson said in his essay <cite>Self-Reliance</cite>:</p><blockquote>&quot;A foolish consistency is the hobgoblin of little minds.&quot;</blockquote>", body );
-		/* 
+		eq( "<p>As Emerson said in his essay <cite>Self-Reliance</cite>:</p><blockquote>&quot;A foolish consistency is the hobgoblin of little minds.&quot;</blockquote>", body );
 		for( p in m.properties ) {
 			if( p.nodeName == "html" && p.get( "xmlns" ) == xmpp.XHTML.XMLNS ) {
 				xhtml = xmpp.XHTML.parse( p );
@@ -44,7 +43,6 @@ class TestXMPPXHTML extends TestCase {
 			}
 		}
 		eq( "<p>As Emerson said in his essay <cite>Self-Reliance</cite>:</p><blockquote>&quot;A foolish consistency is the hobgoblin of little minds.&quot;</blockquote>", xhtml.body );
-		*/
 	}
 	
 	public function testBuild() {

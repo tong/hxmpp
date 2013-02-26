@@ -36,10 +36,10 @@ class XMPPError extends xmpp.Error {
 	
 	public function toString() : String {
 		var t = "XMPPError ";
-		if( from != null ) t += "["+from+"]";
-		if( condition != null ) t += "["+condition+"]";
-		if( code != null ) t += "["+code+"]";
-		if( text != null ) t += "["+text+"]";
+		if( from != null ) t += '[$from]';
+		if( condition != null ) t += '[$condition]';
+		if( code != null ) t += '[$code]';
+		if( text != null ) t += '[$text]';
 		return t;
 	}
 	

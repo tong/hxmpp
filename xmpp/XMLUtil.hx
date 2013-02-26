@@ -57,7 +57,7 @@ class XMLUtil {
 		var v = Reflect.field( o, n );
 		if( v != null ) addElement( x, n, Std.string(v) );
 		else if( required )
-			throw "required field "+n+" is missing";
+			throw 'required field ($n) is missing';
 		return x;
 	}
 	

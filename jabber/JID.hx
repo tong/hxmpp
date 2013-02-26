@@ -55,7 +55,7 @@ class JID {
 	public function new( ?t : String ) {
 		if( t != null ) {
 			if( !JIDUtil.isValid( t ) )
-				throw "invalid jid ["+t+"]"; 
+				throw "invalid jid [$t]"; 
 			this.node = JIDUtil.node( t );
 			this.domain = JIDUtil.domain( t );
 			this.resource = JIDUtil.resource( t );

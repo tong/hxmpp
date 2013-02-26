@@ -174,7 +174,7 @@ class BOSHConnection extends jabber.StreamConnection {
 	*/
 	public function pause( secs : Null<Int> ) : Bool {
 		#if jabber_debug
-		trace( "pausing bosh session for "+secs+" seconds" );
+		trace( 'pausing bosh session for $secs seconds' );
 		#end
 		if( secs == null )
 			secs = inactivity;
@@ -369,18 +369,20 @@ class BOSHConnection extends jabber.StreamConnection {
 			return;
 		}
 		if( x == null ) {
-			#if jabber_debug trace("Empty bosh response ("+t+")", "warning" ); #end
+			#if jabber_debug
+			trace( 'empty bosh response ($t)', 'warning' );
+			#end
 			//requestCount--; //?????????????????
 			//poll();
 			return;
 		}
 		if( x.get( 'xmlns' ) != XMLNS ) {
 			#if jabber_debug
-			trace( 'invalid bosh body ('+x+')', 'error' );
+			trace( 'invalid bosh body ($x)', 'error' );
 			#end
 			cleanup();
 			//TODO disconnect
-			__onDisconnect( 'invalid bosh body ('+x+')' );
+			__onDisconnect( 'invalid bosh body ($x)' );
 			return;
 		}
 		requestCount--;
@@ -428,7 +430,7 @@ class BOSHConnection extends jabber.StreamConnection {
 			var t = x.get( "ver" );
 			if( t != null &&  t != BOSH_VERSION ) {
 				cleanup();
-				__onError( "Invalid BOSH version ("+t+")" );
+				__onError( 'invalid BOSH version ($t)' );
 				return;
 			}
 			*/

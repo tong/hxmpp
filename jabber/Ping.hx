@@ -61,8 +61,10 @@ class Ping {
 	}
 	
 	function set_ms( i : Int ) : Int  {
+		#if jabber_debug
 		if( i < 1 )
-			return throw "invalid ping interval ["+i+"]";
+			throw "invalid ping interval [$i]";
+		#end
 		return ms = i;
 	}
 	

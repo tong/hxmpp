@@ -62,7 +62,7 @@ class MD5Calculator {
 		
 		var digest_uri = serverType+"/"+host;
 		var cnonce = hh( Date.now().toString() );
-		var a1 = h( username+":"+realm+":"+pass )+":"+nonce+":"+cnonce;
+		var a1 = h( '$username:$realm:$pass' )+':$nonce:$cnonce';
 		var a2 = "AUTHENTICATE:"+digest_uri;
 		
 		var b = new StringBuf();
@@ -77,7 +77,8 @@ class MD5Calculator {
 		b.add( ",nc=00000001,qop=auth,digest-uri=" );
 		b.add( quote( digest_uri ) );
 		b.add( ",response=" );
-		b.add( hh( hh( a1 )+":"+nonce+":00000001:"+cnonce+":"+"auth"+":"+hh( a2 ) ) );
+		b.add( hh( hh( a1 )+':$nonce:00000001:$cnonce:auth:'+hh( a2 ) ) );
+		
 		b.add( ",charset=utf-8" );
 		//b.add( ",authzid=" );
 		//b.add( quote(authzid) );
