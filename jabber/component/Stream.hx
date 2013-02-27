@@ -66,19 +66,19 @@ class Stream extends jabber.Stream {
 //	public var subdomain(default,null) : String;
 
 	/** Full name/address of the server component */
-	public var serviceName(get_serviceName,null) : String;
+	public var serviceName(get,null) : String;
 	
 	/** Shared secret string used to identify legacy components*/
 	public var secret(default,null) : String;
 	
-	/***/
+	/** Indicates if the stream is ready to use */
 	public var connected(default,null) : Bool;
 	
-	/***/
+	/** The service discovery items of the client stream */
 	@:isVar
-	public var items(get_items,null) : xmpp.disco.Items;
+	public var items(get,null) : xmpp.disco.Items;
 	
-	/***/
+	/** The service discovery listener of this stream */
 	public var discoListener(default,null) : ServiceDiscoveryListener;
 	
 	public function new( cnx : StreamConnection, ?maxBufSize : Int ) {
