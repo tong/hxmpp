@@ -173,7 +173,7 @@ class SocketConnection extends StreamConnection {
 }
 
 
-#elseif ( js && !jabber_flashsocketbridge && !node && !rhino )
+#elseif ( js && !jabber_flashsocketbridge && !nodejs && !rhino )
 
 import js.html.WebSocket;
 
