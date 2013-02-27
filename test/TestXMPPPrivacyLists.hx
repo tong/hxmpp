@@ -1,5 +1,5 @@
 
-class TestXMPPPrivacyLists extends TestCase {
+class TestXMPPPrivacyLists extends haxe.unit.TestCase {
 	
 	public function testParse() {
 		
@@ -26,28 +26,28 @@ class TestXMPPPrivacyLists extends TestCase {
 		var lists = xmpp.PrivacyLists.parse( query );
 		var list = lists.lists[0];
 		
-		eq( "special", list.name );
-		eq( 4, list.items.length );
+		assertEquals( "special", list.name );
+		assertEquals( 4, list.items.length );
 		
-		eq( xmpp.privacylist.ItemType.jid, list.items[0].type );
-		eq( 'juliet@example.com', list.items[0].value );
-		eq( xmpp.privacylist.Action.allow, list.items[0].action );
-		eq( 6, list.items[0].order );
+		assertEquals( xmpp.privacylist.ItemType.jid, list.items[0].type );
+		assertEquals( 'juliet@example.com', list.items[0].value );
+		assertEquals( xmpp.privacylist.Action.allow, list.items[0].action );
+		assertEquals( 6, list.items[0].order );
 	
-		eq( xmpp.privacylist.ItemType.jid, list.items[1].type );
-		eq( 'benvolio@example.org', list.items[1].value );
-		eq( xmpp.privacylist.Action.allow, list.items[1].action );
-		eq( 7, list.items[1].order );
+		assertEquals( xmpp.privacylist.ItemType.jid, list.items[1].type );
+		assertEquals( 'benvolio@example.org', list.items[1].value );
+		assertEquals( xmpp.privacylist.Action.allow, list.items[1].action );
+		assertEquals( 7, list.items[1].order );
 		
-		eq( xmpp.privacylist.ItemType.jid, list.items[2].type );
-		eq( 'mercutio@example.org', list.items[2].value );
-		eq( xmpp.privacylist.Action.deny, list.items[2].action );
-		eq( 42, list.items[2].order );
+		assertEquals( xmpp.privacylist.ItemType.jid, list.items[2].type );
+		assertEquals( 'mercutio@example.org', list.items[2].value );
+		assertEquals( xmpp.privacylist.Action.deny, list.items[2].action );
+		assertEquals( 42, list.items[2].order );
 		
-		eq( null, list.items[3].type );
-		eq( null, list.items[3].value );
-		eq( xmpp.privacylist.Action.deny, list.items[3].action );
-		eq( 666, list.items[3].order );
+		assertEquals( null, list.items[3].type );
+		assertEquals( null, list.items[3].value );
+		assertEquals( xmpp.privacylist.Action.deny, list.items[3].action );
+		assertEquals( 666, list.items[3].order );
 	}
 	
 	public function testBuild() {
@@ -61,10 +61,10 @@ class TestXMPPPrivacyLists extends TestCase {
 		var x = lists.toXml();
 		for( l in lists ) {
 			if( l.name == "mylist" ) {
-				eq( xmpp.privacylist.Action.deny, l.items[0].action );
-				eq( xmpp.privacylist.ItemType.jid, l.items[0].type );
-				eq( "account@disktree", l.items[0].value );
-				eq( 77, l.items[0].order );
+				assertEquals( xmpp.privacylist.Action.deny, l.items[0].action );
+				assertEquals( xmpp.privacylist.ItemType.jid, l.items[0].type );
+				assertEquals( "account@disktree", l.items[0].value );
+				assertEquals( 77, l.items[0].order );
 			}
 		}
 	}

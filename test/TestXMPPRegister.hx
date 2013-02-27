@@ -1,5 +1,5 @@
 
-class TestXMPPRegister extends TestCase {
+class TestXMPPRegister extends haxe.unit.TestCase {
 	
 	public function testParse() {
 		var iq = xmpp.IQ.parse( Xml.parse(
@@ -12,10 +12,10 @@ class TestXMPPRegister extends TestCase {
 			</query>
 		</iq>" ).firstElement() );
 		var r = xmpp.Register.parse( iq.x.toXml() );
-		eq( r.username, 'juliet' );
-		eq( r.password, 'R0m30' );
-		eq( r.email, 'juliet@capulet.com' );
-		eq( r.name, null );
+		assertEquals( r.username, 'juliet' );
+		assertEquals( r.password, 'R0m30' );
+		assertEquals( r.email, 'juliet@capulet.com' );
+		assertEquals( r.name, null );
 	}
 	
 	public function testBuild() {
@@ -33,30 +33,30 @@ class TestXMPPRegister extends TestCase {
 		r.misc = "misc";
 		r.text = "sometext";
 		r.key = "123";
-		eq( r.username, "tong" );
-		eq( r.password, "test" );
-		eq( r.email, "mail@domain.com" );
-		eq( r.name, "myname" );
+		assertEquals( r.username, "tong" );
+		assertEquals( r.password, "test" );
+		assertEquals( r.email, "mail@domain.com" );
+		assertEquals( r.name, "myname" );
 		var x = r.toXml();
 		for( e in x.elements() ) {
 			switch( e.nodeName ) {
-			case "username" : eq( e.firstChild().nodeValue, "tong" );
-			case "password" : eq( e.firstChild().nodeValue, "test" );
-			case "email" : eq( e.firstChild().nodeValue, "mail@domain.com" );
-			case "name" : eq( e.firstChild().nodeValue, "myname" );
-			case "nick" : eq( e.firstChild().nodeValue, "t0ng" );
-			case "first" : eq( e.firstChild().nodeValue, "roman" );
-			case "last" : eq( e.firstChild().nodeValue, "polanski" );
-			case "address" : eq( e.firstChild().nodeValue, "earth 293" );
-			case "city" : eq( e.firstChild().nodeValue, "tokio" );
-			case "state" : eq( e.firstChild().nodeValue, "iraq" );
-			case "zip" : eq( e.firstChild().nodeValue, "1223" );
-			case "phone" : eq( e.firstChild().nodeValue, "1234567" );
-			case "url" : eq( e.firstChild().nodeValue, "http://disktree.net" );
-			case "date" : eq( e.firstChild().nodeValue, "2012-23-23" );
-			case "misc" : eq( e.firstChild().nodeValue, "misc" );
-			case "text" : eq( e.firstChild().nodeValue, "sometext" );
-			case "key" : eq( e.firstChild().nodeValue, "123" );
+			case "username" : assertEquals( e.firstChild().nodeValue, "tong" );
+			case "password" : assertEquals( e.firstChild().nodeValue, "test" );
+			case "email" : assertEquals( e.firstChild().nodeValue, "mail@domain.com" );
+			case "name" : assertEquals( e.firstChild().nodeValue, "myname" );
+			case "nick" : assertEquals( e.firstChild().nodeValue, "t0ng" );
+			case "first" : assertEquals( e.firstChild().nodeValue, "roman" );
+			case "last" : assertEquals( e.firstChild().nodeValue, "polanski" );
+			case "address" : assertEquals( e.firstChild().nodeValue, "earth 293" );
+			case "city" : assertEquals( e.firstChild().nodeValue, "tokio" );
+			case "state" : assertEquals( e.firstChild().nodeValue, "iraq" );
+			case "zip" : assertEquals( e.firstChild().nodeValue, "1223" );
+			case "phone" : assertEquals( e.firstChild().nodeValue, "1234567" );
+			case "url" : assertEquals( e.firstChild().nodeValue, "http://disktree.net" );
+			case "date" : assertEquals( e.firstChild().nodeValue, "2012-23-23" );
+			case "misc" : assertEquals( e.firstChild().nodeValue, "misc" );
+			case "text" : assertEquals( e.firstChild().nodeValue, "sometext" );
+			case "key" : assertEquals( e.firstChild().nodeValue, "123" );
 			}
 		}
 	}

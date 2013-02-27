@@ -1,5 +1,5 @@
 
-class TestXMPPPersonalEvent extends TestCase {
+class TestXMPPPersonalEvent extends haxe.unit.TestCase {
 	
 	public function testUserTune() {
 		var x = Xml.parse( "
@@ -13,17 +13,17 @@ class TestXMPPPersonalEvent extends TestCase {
 	<uri>http://www.yesworld.com/lyrics/Fragile.html#9</uri>
 </tune>" ).firstElement();
 		var xt = xmpp.pep.UserTune.parse( x );
-		eq( "Yes", xt.artist );
-		eq( 686, xt.length );
-		eq( 8, xt.rating );
-		eq( "Yessongs", xt.source );
-		eq( "Heart of the Sunrise", xt.title );
-		eq( "3", xt.track );
-		eq( "http://www.yesworld.com/lyrics/Fragile.html#9", xt.uri );
+		assertEquals( "Yes", xt.artist );
+		assertEquals( 686, xt.length );
+		assertEquals( 8, xt.rating );
+		assertEquals( "Yessongs", xt.source );
+		assertEquals( "Heart of the Sunrise", xt.title );
+		assertEquals( "3", xt.track );
+		assertEquals( "http://www.yesworld.com/lyrics/Fragile.html#9", xt.uri );
 		// test empty
 		var empty = xt.empty();
-		eq( "tune", empty.nodeName );
-		eq( xmpp.pep.UserTune.XMLNS, empty.get( "xmlns" ) );
+		assertEquals( "tune", empty.nodeName );
+		assertEquals( xmpp.pep.UserTune.XMLNS, empty.get( "xmlns" ) );
 	}
 	
 	public function testUserMood() {
@@ -35,14 +35,14 @@ class TestXMPPPersonalEvent extends TestCase {
 	<text>Yay, the mood spec has been approved!</text>
 </mood>" ).firstElement();
 		var xt = xmpp.pep.UserMood.parse( x );
-		eq( xmpp.pep.Mood.happy, xt.type );
-		eq( "Yay, the mood spec has been approved!", xt.text );
-		eq( "ecstatic", xt.extended.mood );
-		eq( "http://ik.nu/ralphm", xt.extended.xmlns );
+		assertEquals( xmpp.pep.Mood.happy, xt.type );
+		assertEquals( "Yay, the mood spec has been approved!", xt.text );
+		assertEquals( "ecstatic", xt.extended.mood );
+		assertEquals( "http://ik.nu/ralphm", xt.extended.xmlns );
 		// test empty
 		var empty = xt.empty();
-		eq( "mood", empty.nodeName );
-		eq( xmpp.pep.UserMood.XMLNS, empty.get( "xmlns" ) );
+		assertEquals( "mood", empty.nodeName );
+		assertEquals( xmpp.pep.UserMood.XMLNS, empty.get( "xmlns" ) );
 	}
 	
 	public function testParseUserActivity() {
@@ -56,23 +56,23 @@ class TestXMPPPersonalEvent extends TestCase {
 	<text xml:lang='en'>My birthday!</text>
 </activity>" ).firstElement();
 		var xt = xmpp.pep.UserActivity.parse( x );
-		eq( xmpp.pep.Activity.inactive, xt.activity );
-		eq( "My birthday!", xt.text );
-		eq( "sleeping", xt.extended.activity );
-		eq( null, xt.extended.xmlns );
-		eq( "hibernating", xt.extended.detail.activity );
-		eq( "http://www.ursus.info/states", xt.extended.detail.xmlns );
+		assertEquals( xmpp.pep.Activity.inactive, xt.activity );
+		assertEquals( "My birthday!", xt.text );
+		assertEquals( "sleeping", xt.extended.activity );
+		assertEquals( null, xt.extended.xmlns );
+		assertEquals( "hibernating", xt.extended.detail.activity );
+		assertEquals( "http://www.ursus.info/states", xt.extended.detail.xmlns );
 		// test simple
 		x = Xml.parse( "
 <activity xmlns='http://jabber.org/protocol/activity'>
 	<inactive/>
 </activity>" ).firstElement();
 		xt = xmpp.pep.UserActivity.parse( x );
-		eq( xmpp.pep.Activity.inactive, xt.activity );
+		assertEquals( xmpp.pep.Activity.inactive, xt.activity );
 		// test empty
 		var empty = xt.empty();
-		eq( "activity", empty.nodeName );
-		eq( xmpp.pep.UserActivity.XMLNS, empty.get( "xmlns" ) );
+		assertEquals( "activity", empty.nodeName );
+		assertEquals( xmpp.pep.UserActivity.XMLNS, empty.get( "xmlns" ) );
 	}
 	
 	public function testUserGeolocation() {
@@ -85,15 +85,15 @@ class TestXMPPPersonalEvent extends TestCase {
 	<accuracy>20</accuracy>
 </geoloc>" ).firstElement();
 		var xt = xmpp.pep.UserLocation.parse( x );
-		eq( "Italy", xt.country );
-		eq( 45.44, xt.lat );
-		eq( "Venice", xt.locality );
-		eq( 12.33, xt.lon );
-		eq( 20, xt.accuracy );
+		assertEquals( "Italy", xt.country );
+		assertEquals( 45.44, xt.lat );
+		assertEquals( "Venice", xt.locality );
+		assertEquals( 12.33, xt.lon );
+		assertEquals( 20, xt.accuracy );
 		// test empty
 		var empty = xt.empty();
-		eq( "geoloc", empty.nodeName );
-		eq( xmpp.pep.UserLocation.XMLNS, empty.get( "xmlns" ) );
+		assertEquals( "geoloc", empty.nodeName );
+		assertEquals( xmpp.pep.UserLocation.XMLNS, empty.get( "xmlns" ) );
 	}
 	
 }

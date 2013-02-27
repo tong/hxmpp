@@ -1,5 +1,5 @@
 
-class TestXMPPVCard extends TestCase {
+class TestXMPPVCard extends haxe.unit.TestCase {
 	
 	public function testParse() {
 		var x = Xml.parse('<vcard xmlns="urn:ietf:params:xml:ns:vcard-4.0">
@@ -112,49 +112,47 @@ class TestXMPPVCard extends TestCase {
 
 		var vc = xmpp.VCard.parse( x );
 		
-		eq( "Peter Saint-Andre", vc.fn );
+		assertEquals( "Peter Saint-Andre", vc.fn );
 		
-		eq( "Saint-Andre", vc.n.surname );
-		eq( "Peter", vc.n.given );
-		eq( null, vc.n.middle );
+		assertEquals( "Saint-Andre", vc.n.surname );
+		assertEquals( "Peter", vc.n.given );
+		assertEquals( null, vc.n.middle );
 		
-		eq( 2, vc.nickname.length );
-		eq( "stpeter", vc.nickname[0] );
-		eq( "psa", vc.nickname[1] );
+		assertEquals( 2, vc.nickname.length );
+		assertEquals( "stpeter", vc.nickname[0] );
+		assertEquals( "psa", vc.nickname[1] );
 	
 		//TODO photo
 		
-		eq( "1966-08-06", vc.bday );
+		assertEquals( "1966-08-06", vc.bday );
 		
 		//.....
 		
-		eq( 1, vc.title.length );
-		eq( "Executive Director", vc.title[0] );
+		assertEquals( 1, vc.title.length );
+		assertEquals( "Executive Director", vc.title[0] );
 		
-		eq( 1, vc.role.length );
-		eq( "Patron Saint", vc.role[0] );
+		assertEquals( 1, vc.role.length );
+		assertEquals( "Patron Saint", vc.role[0] );
 		
-		eq( 2, vc.url.length );
-		eq( "https://stpeter.im/", vc.url[0] );
-		eq( "http://www.saint-andre.com/", vc.url[1] );
+		assertEquals( 2, vc.url.length );
+		assertEquals( "https://stpeter.im/", vc.url[0] );
+		assertEquals( "http://www.saint-andre.com/", vc.url[1] );
 		
-		eq( 1, vc.note.length );
-		eq( "More information about me is located on my personal website: https://stpeter.im/", vc.note[0] );
+		assertEquals( 1, vc.note.length );
+		assertEquals( "More information about me is located on my personal website: https://stpeter.im/", vc.note[0] );
 		
-		eq( null, vc.prodid );
+		assertEquals( null, vc.prodid );
 		
-		eq( "xmpp:stpeter@jabber.org", vc.impp );
+		assertEquals( "xmpp:stpeter@jabber.org", vc.impp );
 		
-		eq( 1, vc.key.length );
-		eq( "--- KEY BLOCK HERE ---", vc.key[0] );
+		assertEquals( 1, vc.key.length );
+		assertEquals( "--- KEY BLOCK HERE ---", vc.key[0] );
 		
-		eq( 1, vc.org.length );
-		eq( "XMPP Standards Foundation", vc.org[0] );
+		assertEquals( 1, vc.org.length );
+		assertEquals( "XMPP Standards Foundation", vc.org[0] );
 		
-		eq( 1, vc.logo.length );
-		eq( "data:image/jpeg;gAXQ3JlYXRlZCB3aXRoIFRoZSBHSU=", vc.logo[0] );
-		
-		
+		assertEquals( 1, vc.logo.length );
+		assertEquals( "data:image/jpeg;gAXQ3JlYXRlZCB3aXRoIFRoZSBHSU=", vc.logo[0] );
 		
 		
 		//trace( vc.toXml() );

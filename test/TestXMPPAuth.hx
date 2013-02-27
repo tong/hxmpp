@@ -2,15 +2,15 @@
 /**
 	Testunit for xmpp.Auth
 */
-class TestXMPPAuth extends TestCase {
+class TestXMPPAuth extends haxe.unit.TestCase {
 	
 	public function testParse() {
 		var iq = xmpp.IQ.parse( Xml.parse( '<iq id="A8Q8u1" type="get"><query xmlns="jabber:iq:auth"><username>hxmpp</username></query></iq>' ).firstElement() );
 		var auth = xmpp.Auth.parse( iq.x.toXml() );
-		eq( auth.username, 'hxmpp' );
-		eq( auth.password, null );
-		eq( auth.resource, null );
-		eq( auth.digest, null );
+		assertEquals( auth.username, 'hxmpp' );
+		assertEquals( auth.password, null );
+		assertEquals( auth.resource, null );
+		assertEquals( auth.digest, null );
 		iq = xmpp.IQ.parse( Xml.parse(
 		'<iq type="set" id="66ceE3">
 			<query xmlns="jabber:iq:auth">
@@ -21,19 +21,19 @@ class TestXMPPAuth extends TestCase {
 			</query>
 		</iq>' ).firstElement() );
 		auth = xmpp.Auth.parse( iq.x.toXml() );
-		eq( auth.username, 'tong' );
-		eq( auth.password, 'test' );
-		eq( auth.resource, 'norc' );
-		eq( auth.digest, "123" );
+		assertEquals( auth.username, 'tong' );
+		assertEquals( auth.password, 'test' );
+		assertEquals( auth.resource, 'norc' );
+		assertEquals( auth.digest, "123" );
 	}
 	
 	public function testBuild() {
 		
 		var a = new xmpp.Auth( "tong", "test", "123", "hxmpp" );
-		eq( "tong", a.username );
-		eq( "test",  a.password );
-		eq( "123",a.digest );
-		eq( "hxmpp", a.resource );
+		assertEquals( "tong", a.username );
+		assertEquals( "test",  a.password );
+		assertEquals( "123",a.digest );
+		assertEquals( "hxmpp", a.resource );
 		
 		/*
 		var s = haxe.Timer.stamp();
@@ -45,13 +45,13 @@ class TestXMPPAuth extends TestCase {
 		*/
 		var x = a.toXml();
 		
-		eq( 4, Lambda.count( x ) );
+		assertEquals( 4, Lambda.count( x ) );
 		for( e in x.elements() ) {
 			switch( e.nodeName ) {
-			case "username" : eq( "tong", e.firstChild().nodeValue );
-			case "password" : eq( "test", e.firstChild().nodeValue );
-			case "digest" : eq( "123", e.firstChild().nodeValue );
-			case "resource" : eq( "hxmpp", e.firstChild().nodeValue );
+			case "username" : assertEquals( "tong", e.firstChild().nodeValue );
+			case "password" : assertEquals( "test", e.firstChild().nodeValue );
+			case "digest" : assertEquals( "123", e.firstChild().nodeValue );
+			case "resource" : assertEquals( "hxmpp", e.firstChild().nodeValue );
 			default : assertTrue(false);
 			}
 		}

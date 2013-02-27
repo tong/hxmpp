@@ -1,5 +1,5 @@
 
-class TestXMPPXHTML extends TestCase {
+class TestXMPPXHTML extends haxe.unit.TestCase {
 	
 	public function testParse() {
 		
@@ -14,14 +14,14 @@ class TestXMPPXHTML extends TestCase {
 </message>" ).firstElement();
 		var m = xmpp.Message.parse( x );
 		var body = xmpp.XHTML.fromMessage( m );
-		eq( "<strong>envy</strong>!", body );
+		assertEquals( "<strong>envy</strong>!", body );
 		for( p in m.properties ) {
 			if( p.nodeName == "html" && p.get( "xmlns" ) == xmpp.XHTML.XMLNS ) {
 				xhtml = xmpp.XHTML.parse( p );
 				break;
 			}
 		}
-		eq( "<strong>envy</strong>!", xhtml.body );
+		assertEquals( "<strong>envy</strong>!", xhtml.body );
 		
 		var x = Xml.parse(
 "<message>
@@ -35,24 +35,24 @@ class TestXMPPXHTML extends TestCase {
 		
 		//TODO !!!!!!!!!!!!!!!!!!!!! fails on ccpp, neko, js
 		
-		eq( "<p>As Emerson said in his essay <cite>Self-Reliance</cite>:</p><blockquote>&quot;A foolish consistency is the hobgoblin of little minds.&quot;</blockquote>", body );
+		assertEquals( "<p>As Emerson said in his essay <cite>Self-Reliance</cite>:</p><blockquote>&quot;A foolish consistency is the hobgoblin of little minds.&quot;</blockquote>", body );
 		for( p in m.properties ) {
 			if( p.nodeName == "html" && p.get( "xmlns" ) == xmpp.XHTML.XMLNS ) {
 				xhtml = xmpp.XHTML.parse( p );
 				break;
 			}
 		}
-		eq( "<p>As Emerson said in his essay <cite>Self-Reliance</cite>:</p><blockquote>&quot;A foolish consistency is the hobgoblin of little minds.&quot;</blockquote>", xhtml.body );
+		assertEquals( "<p>As Emerson said in his essay <cite>Self-Reliance</cite>:</p><blockquote>&quot;A foolish consistency is the hobgoblin of little minds.&quot;</blockquote>", xhtml.body );
 	}
 	
 	public function testBuild() {
 		var xhtml = new xmpp.XHTML( "test" );
-		eq( '<html xmlns="http://jabber.org/protocol/xhtml-im"><body xmlns="http://www.w3.org/1999/xhtml">test</body></html>', xhtml.toXml().toString() );
-		eq( 'test', xhtml.body );
+		assertEquals( '<html xmlns="http://jabber.org/protocol/xhtml-im"><body xmlns="http://www.w3.org/1999/xhtml">test</body></html>', xhtml.toXml().toString() );
+		assertEquals( 'test', xhtml.body );
 		var m = new xmpp.Message();
 		xmpp.XHTML.attach( m, "<strong>mybody</strong>" );
 		var body = xmpp.XHTML.fromMessage( m );
-		eq( "<strong>mybody</strong>", body );
+		assertEquals( "<strong>mybody</strong>", body );
 	}
 	
 }

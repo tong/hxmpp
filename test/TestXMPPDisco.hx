@@ -1,5 +1,5 @@
 
-class TestXMPPDisco extends TestCase {
+class TestXMPPDisco extends haxe.unit.TestCase {
 	
 	public function testParseInfo() {
 		var iq = xmpp.IQ.parse( Xml.parse( '
@@ -11,25 +11,26 @@ class TestXMPPDisco extends TestCase {
 				</query>
 			</iq>').firstElement() );
 		var info = xmpp.disco.Info.parse( iq.x.toXml() );
-		eq( "registered", info.identities[0].type );
-		eq( "account", info.identities[0].category );
-		eq( null, info.identities[0].name );
-		eq( "pep", info.identities[1].type );
-		eq( "pubsub", info.identities[1].category );
-		eq( null, info.identities[1].name );
-		eq( "http://jabber.org/protocol/disco#info", info.features[0] );
+		assertEquals( "registered", info.identities[0].type );
+		assertEquals( "account", info.identities[0].category );
+		assertEquals( null, info.identities[0].name );
+		assertEquals( "pep", info.identities[1].type );
+		assertEquals( "pubsub", info.identities[1].category );
+		assertEquals( null, info.identities[1].name );
+		assertEquals( "http://jabber.org/protocol/disco#info", info.features[0] );
 	}
 	
 	public function testBuildInfo() {
 		var x = new xmpp.disco.Info().toXml();
-		eq( xmpp.disco.Info.XMLNS, x.get( "xmlns" ) );
+		assertEquals( xmpp.disco.Info.XMLNS, x.get( "xmlns" ) );
 		//..TODO
 	}
 		
 	public function testParseItems() {
+	
 		var x = new xmpp.disco.Item( "node@disktree.net" ).toXml();
-		eq( "item", x.nodeName );
-		eq( "node@disktree.net", x.get("jid") );
+		assertEquals( "item", x.nodeName );
+		assertEquals( "node@disktree.net", x.get("jid") );
 		
 		var iq = xmpp.IQ.parse( Xml.parse('
 			<iq from="disktree.net" type="result" id="eHJGKzYz" to="tong@disktree/norc">
@@ -46,16 +47,16 @@ class TestXMPPDisco extends TestCase {
 		var results_node = [null,null,null,null];
 		var i = 0;
 		for( item in items ) {
-			eq( results_name[i], item.name );
-			eq( results_jid[i], item.jid );
-			eq( results_node[i], item.node );
+			assertEquals( results_name[i], item.name );
+			assertEquals( results_jid[i], item.jid );
+			assertEquals( results_node[i], item.node );
 			i++;
 		}
 	}
 	
 	public function testBuildItems() {
 		var x = new xmpp.disco.Info().toXml();
-		eq( xmpp.disco.Info.XMLNS, x.get( "xmlns" ) );
+		assertEquals( xmpp.disco.Info.XMLNS, x.get( "xmlns" ) );
 		//..TODO
 	}
 	

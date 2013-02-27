@@ -1,5 +1,5 @@
 
-class TestXMPPPubSub extends TestCase {
+class TestXMPPPubSub extends haxe.unit.TestCase {
 	
 	/*
 	public function testBuildPubSub() {
@@ -21,8 +21,8 @@ class TestXMPPPubSub extends TestCase {
         jid='francisco@denmark.lit'/>
 </pubsub>" ).firstElement();
 		var xt = xmpp.PubSub.parse( x );
-		eq( 'princely_musings', xt.subscribe.node );
-		eq( 'francisco@denmark.lit', xt.subscribe.jid );
+		assertEquals( 'princely_musings', xt.subscribe.node );
+		assertEquals( 'francisco@denmark.lit', xt.subscribe.jid );
 		
 		// test unsubscribe
 		x = Xml.parse( "
@@ -30,9 +30,9 @@ class TestXMPPPubSub extends TestCase {
 	<unsubscribe node='princely_musings' jid='francisco@denmark.lit' subid='ba49252aaa4f5d320c24d3766f0bdcade78c78d3'/>
  </pubsub>" ).firstElement();
 		xt = xmpp.PubSub.parse( x );
-		eq( "princely_musings", xt.unsubscribe.node );
-		eq( "francisco@denmark.lit", xt.unsubscribe.jid );
-		eq( "ba49252aaa4f5d320c24d3766f0bdcade78c78d3", xt.unsubscribe.subid );
+		assertEquals( "princely_musings", xt.unsubscribe.node );
+		assertEquals( "francisco@denmark.lit", xt.unsubscribe.jid );
+		assertEquals( "ba49252aaa4f5d320c24d3766f0bdcade78c78d3", xt.unsubscribe.subid );
 		
 		// test create
 		x = Xml.parse( "
@@ -40,7 +40,7 @@ class TestXMPPPubSub extends TestCase {
 	<create node='princely_musings'/>
 </pubsub>" ).firstElement();
 		xt = xmpp.PubSub.parse( x );
-		eq( "princely_musings", xt.create );
+		assertEquals( "princely_musings", xt.create );
 		
 		// test configure
 		//TODO
@@ -57,8 +57,8 @@ class TestXMPPPubSub extends TestCase {
 	</configure>
 </pubsub>" ).firstElement();
 		xt = xmpp.PubSub.parse( x );
-		eq( "princely_musings", xt.create );
-		eq( xmpp.dataform.FormType.submit, xt.configure.type );
+		assertEquals( "princely_musings", xt.create );
+		assertEquals( xmpp.dataform.FormType.submit, xt.configure.type );
 		
 		// test subscription
 		x = Xml.parse( "
@@ -70,10 +70,10 @@ class TestXMPPPubSub extends TestCase {
         subscription='subscribed'/>
 </pubsub>" ).firstElement();
   		xt = xmpp.PubSub.parse( x );
-		eq( 'princely_musings', xt.subscription.node );
-		eq( 'francisco@denmark.lit', xt.subscription.jid );
-		eq( 'ba49252aaa4f5d320c24d3766f0bdcade78c78d3', xt.subscription.subid );
-		eq( xmpp.pubsub.SubscriptionState.subscribed, xt.subscription.subscription );
+		assertEquals( 'princely_musings', xt.subscription.node );
+		assertEquals( 'francisco@denmark.lit', xt.subscription.jid );
+		assertEquals( 'ba49252aaa4f5d320c24d3766f0bdcade78c78d3', xt.subscription.subid );
+		assertEquals( xmpp.pubsub.SubscriptionState.subscribed, xt.subscription.subscription );
 		//TODO subscribe_options (see xsd)
 		
 		// test subscriptions
@@ -87,20 +87,20 @@ class TestXMPPPubSub extends TestCase {
     </subscriptions>
 </pubsub>" ).firstElement();
 		xt = xmpp.PubSub.parse( x );
-		eq( 4, xt.subscriptions.length );
+		assertEquals( 4, xt.subscriptions.length );
 		var subscriptions = Lambda.array( xt.subscriptions );
-		eq( "node1", subscriptions[0].node );
-		eq( "francisco@denmark.lit", subscriptions[0].jid );
-		eq( xmpp.pubsub.SubscriptionState.subscribed, subscriptions[0].subscription );
-		eq( "node2", subscriptions[1].node );
-		eq( "francisco@denmark.lit", subscriptions[1].jid );
-		eq( xmpp.pubsub.SubscriptionState.subscribed, subscriptions[1].subscription );
-		eq( "node5", subscriptions[2].node );
-		eq( "francisco@denmark.lit", subscriptions[2].jid );
-		eq( xmpp.pubsub.SubscriptionState.unconfigured, subscriptions[2].subscription );
-		eq( "node6", subscriptions[3].node );
-		eq( "francisco@denmark.lit", subscriptions[3].jid );
-		eq( xmpp.pubsub.SubscriptionState.pending, subscriptions[3].subscription );
+		assertEquals( "node1", subscriptions[0].node );
+		assertEquals( "francisco@denmark.lit", subscriptions[0].jid );
+		assertEquals( xmpp.pubsub.SubscriptionState.subscribed, subscriptions[0].subscription );
+		assertEquals( "node2", subscriptions[1].node );
+		assertEquals( "francisco@denmark.lit", subscriptions[1].jid );
+		assertEquals( xmpp.pubsub.SubscriptionState.subscribed, subscriptions[1].subscription );
+		assertEquals( "node5", subscriptions[2].node );
+		assertEquals( "francisco@denmark.lit", subscriptions[2].jid );
+		assertEquals( xmpp.pubsub.SubscriptionState.unconfigured, subscriptions[2].subscription );
+		assertEquals( "node6", subscriptions[3].node );
+		assertEquals( "francisco@denmark.lit", subscriptions[3].jid );
+		assertEquals( xmpp.pubsub.SubscriptionState.pending, subscriptions[3].subscription );
 		
 		// test retract
 		x = Xml.parse( "
@@ -110,11 +110,11 @@ class TestXMPPPubSub extends TestCase {
     </retract>
 </pubsub>" ).firstElement();
     	xt = xmpp.PubSub.parse( x );
-		eq( "princely_musings", xt.retract.node );
-		af( xt.retract.notify );
+		assertEquals( "princely_musings", xt.retract.node );
+		assertFalse( xt.retract.notify );
 		var items = Lambda.array( xt.retract );
-		eq( "ae890ac52d0df67ed7cfdf51b644e901", items[0].id );
-		// TODO eq( "ae890ac52d0df67ed7cfdf51b644e901", xt.retract.item.id );
+		assertEquals( "ae890ac52d0df67ed7cfdf51b644e901", items[0].id );
+		// TODO assertEquals( "ae890ac52d0df67ed7cfdf51b644e901", xt.retract.item.id );
 		
 		// test publish
 		x = Xml.parse( "
@@ -139,8 +139,8 @@ And by opposing end them?
 	</publish>
 </pubsub>" ).firstElement();
 		xt = xmpp.PubSub.parse( x );
-		eq( "princely_musings", xt.publish.node );
-		eq( 1, Lambda.count( xt.publish ) );
+		assertEquals( "princely_musings", xt.publish.node );
+		assertEquals( 1, Lambda.count( xt.publish ) );
 		
 		// test affiliation
 		x = Xml.parse( "
@@ -153,16 +153,16 @@ And by opposing end them?
     </affiliations>
 </pubsub>" ).firstElement();
 		xt = xmpp.PubSub.parse( x );
-		eq( 4, xt.affiliations.length );
+		assertEquals( 4, xt.affiliations.length );
 		var affiliations = Lambda.array( xt.affiliations );
-		eq( "node1", affiliations[0].node );
-		eq( xmpp.pubsub.AffiliationState.owner, affiliations[0].affiliation );
-		eq( "node2", affiliations[1].node );
-		eq( xmpp.pubsub.AffiliationState.publisher, affiliations[1].affiliation );
-		eq( "node5", affiliations[2].node );
-		eq( xmpp.pubsub.AffiliationState.outcast, affiliations[2].affiliation );
-		eq( "node6", affiliations[3].node );
-		eq( xmpp.pubsub.AffiliationState.owner, affiliations[3].affiliation );
+		assertEquals( "node1", affiliations[0].node );
+		assertEquals( xmpp.pubsub.AffiliationState.owner, affiliations[0].affiliation );
+		assertEquals( "node2", affiliations[1].node );
+		assertEquals( xmpp.pubsub.AffiliationState.publisher, affiliations[1].affiliation );
+		assertEquals( "node5", affiliations[2].node );
+		assertEquals( xmpp.pubsub.AffiliationState.outcast, affiliations[2].affiliation );
+		assertEquals( "node6", affiliations[3].node );
+		assertEquals( xmpp.pubsub.AffiliationState.owner, affiliations[3].affiliation );
 		
 		// test options
 		x = Xml.parse( "
@@ -177,10 +177,10 @@ And by opposing end them?
 	</options>
 </pubsub>" ).firstElement();
 		xt = xmpp.PubSub.parse( x );
-		eq( "francisco@denmark.lit", xt.options.jid );
-		eq( "princely_musings", xt.options.node );
-		eq( null, xt.options.subid );
-		eq( xmpp.dataform.FormType.submit, xt.options.form.type );
+		assertEquals( "francisco@denmark.lit", xt.options.jid );
+		assertEquals( "princely_musings", xt.options.node );
+		assertEquals( null, xt.options.subid );
+		assertEquals( xmpp.dataform.FormType.submit, xt.options.form.type );
 	}
 	
 	
@@ -196,10 +196,10 @@ And by opposing end them?
     </items>
 </event>" ).firstElement();
 		var xt = xmpp.PubSubEvent.parse( x );
-		eq( "princely_musings", xt.items.node );
-		eq( 1, xt.items.length );
-		eq( "ae890ac52d0df67ed7cfdf51b644e901", xt.items.first().id );
-		eq( "<any>data</any>", xt.items.first().payload.toString() );
+		assertEquals( "princely_musings", xt.items.node );
+		assertEquals( 1, xt.items.length );
+		assertEquals( "ae890ac52d0df67ed7cfdf51b644e901", xt.items.first().id );
+		assertEquals( "<any>data</any>", xt.items.first().payload.toString() );
 		
 		// test configuration
 		x = Xml.parse( "
@@ -207,8 +207,8 @@ And by opposing end them?
 	<configuration node='princely_musings'/>
 </event>" ).firstElement();
 		xt = xmpp.PubSubEvent.parse( x );
-		eq( "princely_musings", xt.configuration.node );
-		eq( null, xt.configuration.form );
+		assertEquals( "princely_musings", xt.configuration.node );
+		assertEquals( null, xt.configuration.form );
 		// test configuration(with form)
 		x = Xml.parse( "
   <event xmlns='http://jabber.org/protocol/pubsub#event'>
@@ -219,8 +219,8 @@ And by opposing end them?
     </configuration>
   </event>" ).firstElement();
 		xt = xmpp.PubSubEvent.parse( x );
-		eq( "princely_musings", xt.configuration.node );
-		eq( xmpp.dataform.FormType.result, xt.configuration.form.type );
+		assertEquals( "princely_musings", xt.configuration.node );
+		assertEquals( xmpp.dataform.FormType.result, xt.configuration.form.type );
 		
 		// test delete
 		x = Xml.parse( "
@@ -228,7 +228,7 @@ And by opposing end them?
 	<delete node='princely_musings'/>
 </event>" ).firstElement();
 		xt = xmpp.PubSubEvent.parse( x );
-		eq( "princely_musings", xt.delete );
+		assertEquals( "princely_musings", xt.delete );
 		
 		// test purge
 		x = Xml.parse( "
@@ -236,7 +236,7 @@ And by opposing end them?
 	<purge node='princely_musings'/>
 </event>" ).firstElement();
 		xt = xmpp.PubSubEvent.parse( x );
-		eq( "princely_musings", xt.purge );
+		assertEquals( "princely_musings", xt.purge );
 		
 		// test subscription
 		x = Xml.parse( "
@@ -244,9 +244,9 @@ And by opposing end them?
 	<subscription node='princely_musings' jid='horatio@denmark.lit' subscription='subscribed'/>
 </event>" ).firstElement();
 		xt = xmpp.PubSubEvent.parse( x );
-		eq( "princely_musings", xt.subscription.node );
-		eq( "horatio@denmark.lit", xt.subscription.jid );
-		eq( xmpp.pubsub.SubscriptionState.subscribed, xt.subscription.subscription );
+		assertEquals( "princely_musings", xt.subscription.node );
+		assertEquals( "horatio@denmark.lit", xt.subscription.jid );
+		assertEquals( xmpp.pubsub.SubscriptionState.subscribed, xt.subscription.subscription );
 	}
 	
 	
@@ -258,7 +258,7 @@ And by opposing end them?
     <configure node='princely_musings'/>
 </pubsub>" ).firstElement();
 		var xt = xmpp.PubSubOwner.parse( x );
-		eq( "princely_musings", xt.configure.node );
+		assertEquals( "princely_musings", xt.configure.node );
 		
 		// test delete
 		x = Xml.parse( "
@@ -266,7 +266,7 @@ And by opposing end them?
 	<delete node='princely_musings'/>
 </event>" ).firstElement();
 		xt = xmpp.PubSubOwner.parse( x );
-		eq( "princely_musings", xt.delete );
+		assertEquals( "princely_musings", xt.delete );
 		
 		// test subscriptions
 		x = Xml.parse( "
@@ -279,7 +279,7 @@ And by opposing end them?
     </subscriptions>
 </pubsub>" ).firstElement();
 		xt = xmpp.PubSubOwner.parse( x );
-		eq( "princely_musings", xt.subscriptions.node );
+		assertEquals( "princely_musings", xt.subscriptions.node );
 		
 		// test affiliation
 		x = Xml.parse( "
@@ -292,7 +292,7 @@ And by opposing end them?
     </affiliations>
 </pubsub>" ).firstElement();
 		xt = xmpp.PubSubOwner.parse( x );
-		eq( 4, xt.affiliations.length );
+		assertEquals( 4, xt.affiliations.length );
 		
 		// test default
 		x = Xml.parse( "
@@ -300,8 +300,8 @@ And by opposing end them?
     <default/>
 </pubsub>" ).firstElement();
 		xt = xmpp.PubSubOwner.parse( x );
-		at( xt._default.empty );
-		eq( null, xt._default.form );
+		assertTrue( xt._default.empty );
+		assertEquals( null, xt._default.form );
 	}
 	
 }

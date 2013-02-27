@@ -1,5 +1,5 @@
 
-class TestXMPPPrivateStorage extends TestCase {
+class TestXMPPPrivateStorage extends haxe.unit.TestCase {
 	
 	public function testParse() {
 		var s = xmpp.PrivateStorage.parse( Xml.parse( '<query xmlns="jabber:iq:private">
@@ -7,16 +7,16 @@ class TestXMPPPrivateStorage extends TestCase {
 		<defaultnick>Macbeth</defaultnick>
 	</exodus>
 </query>' ).firstElement() );
-		eq( "exodus", s.name );
-		eq( "exodus:prefs", s.namespace );
-		eq( "<defaultnick>Macbeth</defaultnick>", s.data.toString() );
+		assertEquals( "exodus", s.name );
+		assertEquals( "exodus:prefs", s.namespace );
+		assertEquals( "<defaultnick>Macbeth</defaultnick>", s.data.toString() );
 	}
 	
 	public function testBuild() {
 		var x = new xmpp.PrivateStorage( "exodus", "exodus:prefs", Xml.parse( "<defaultnick>Macbeth</defaultnick>" ).firstElement() ).toXml().firstElement();
-		eq( "exodus", x.nodeName );
-		eq( "exodus:prefs", x.get("xmlns") );
-		eq( "<defaultnick>Macbeth</defaultnick>", x.firstElement().toString() );
+		assertEquals( "exodus", x.nodeName );
+		assertEquals( "exodus:prefs", x.get("xmlns") );
+		assertEquals( "<defaultnick>Macbeth</defaultnick>", x.firstElement().toString() );
 	}
 	
 }

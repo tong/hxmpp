@@ -2,7 +2,7 @@
 /**
 	Testunit for xmpp.BlockList
 */
-class TestXMPPBlockList extends TestCase {
+class TestXMPPBlockList extends haxe.unit.TestCase {
 	
 	public function testParse() {
 		var x =Xml.parse( "
@@ -11,9 +11,9 @@ class TestXMPPBlockList extends TestCase {
     <item jid='iago@shakespeare.lit'/>
 </blocklist>" ).firstElement();
 		var l = xmpp.BlockList.parse( x );
-		eq( l.items.length, 2 );
-		eq( l.items[0], "romeo@montague.net" );
-		eq( l.items[1], "iago@shakespeare.lit" );
+		assertEquals( l.items.length, 2 );
+		assertEquals( l.items[0], "romeo@montague.net" );
+		assertEquals( l.items[1], "iago@shakespeare.lit" );
 	}
 	
 	public function testBuild() {
@@ -21,8 +21,8 @@ class TestXMPPBlockList extends TestCase {
 		var _items = new Array<String>();
 		for( e in x.elements() )
 			_items.push( e.get("jid") );
-		eq( "romeo@montague.net", _items[0] );
-		eq( "iago@shakespeare.lit", _items[1] );
+		assertEquals( "romeo@montague.net", _items[0] );
+		assertEquals( "iago@shakespeare.lit", _items[1] );
 	}
 	
 }

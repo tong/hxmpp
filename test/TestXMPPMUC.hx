@@ -1,5 +1,5 @@
 
-class TestXMPPMUC extends TestCase   {
+class TestXMPPMUC extends haxe.unit.TestCase {
 		
 	public function testParse() {
 		

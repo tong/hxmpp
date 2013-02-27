@@ -1,5 +1,5 @@
 
-class TestXMPPUserSearch extends TestCase {
+class TestXMPPUserSearch extends haxe.unit.TestCase {
 
 	public function testParsing() {
 		
@@ -11,23 +11,23 @@ class TestXMPPUserSearch extends TestCase {
     <email/>
 </query>" ).firstElement();
 		var s = xmpp.UserSearch.parse( x );
-		eq( 'Fill in one or more fields to search for any matching Jabber users.', s.instructions );
-		eq( '', s.first );
-		eq( '', s.last );
-		eq( '', s.nick );
-		eq( '', s.email );
+		assertEquals( 'Fill in one or more fields to search for any matching Jabber users.', s.instructions );
+		assertEquals( '', s.first );
+		assertEquals( '', s.last );
+		assertEquals( '', s.nick );
+		assertEquals( '', s.email );
 		
 		x = Xml.parse( "<query xmlns='jabber:iq:search'>
     <last>Capulet</last>
 </query>" ).firstElement();
 		s = xmpp.UserSearch.parse( x );
-		eq( null, s.instructions );
-		eq( null, s.first );
-		eq( 'Capulet', s.last );
-		eq( null, s.nick );
-		eq( null, s.email );
-		eq( 0, Lambda.count(s.items) );
-		eq( null, s.form );
+		assertEquals( null, s.instructions );
+		assertEquals( null, s.first );
+		assertEquals( 'Capulet', s.last );
+		assertEquals( null, s.nick );
+		assertEquals( null, s.email );
+		assertEquals( 0, Lambda.count(s.items) );
+		assertEquals( null, s.form );
 		
 		x = Xml.parse( "<query xmlns='jabber:iq:search'>
     <item jid='juliet@capulet.com'>
@@ -44,25 +44,25 @@ class TestXMPPUserSearch extends TestCase {
     </item>
 </query>" ).firstElement();
 		s = xmpp.UserSearch.parse( x );
-		eq( null, s.instructions );
-		eq( null, s.first );
-		eq( null, s.last );
-		eq( null, s.nick );
-		eq( null, s.email );
-		eq( 2, Lambda.count(s.items) );
-		eq( null, s.form );
+		assertEquals( null, s.instructions );
+		assertEquals( null, s.first );
+		assertEquals( null, s.last );
+		assertEquals( null, s.nick );
+		assertEquals( null, s.email );
+		assertEquals( 2, Lambda.count(s.items) );
+		assertEquals( null, s.form );
 		var i = s.items[0];
-		eq( "juliet@capulet.com", i.jid );
-		eq( "Juliet", i.first );
-		eq( "Capulet", i.last );
-		eq( "JuliC", i.nick );
-		eq( "juliet@shakespeare.lit", i.email );
+		assertEquals( "juliet@capulet.com", i.jid );
+		assertEquals( "Juliet", i.first );
+		assertEquals( "Capulet", i.last );
+		assertEquals( "JuliC", i.nick );
+		assertEquals( "juliet@shakespeare.lit", i.email );
 		i = s.items[1];
-		eq( "tybalt@shakespeare.lit", i.jid );
-		eq( "Tybalt", i.first );
-		eq( "Capulet", i.last );
-		eq( "ty", i.nick );
-		eq( "tybalt@shakespeare.lit", i.email );
+		assertEquals( "tybalt@shakespeare.lit", i.jid );
+		assertEquals( "Tybalt", i.first );
+		assertEquals( "Capulet", i.last );
+		assertEquals( "ty", i.nick );
+		assertEquals( "tybalt@shakespeare.lit", i.email );
 		
 		x = Xml.parse( "<query xmlns='jabber:iq:search'>
     <instructions>Use the enclosed form to search</instructions>
@@ -91,13 +91,13 @@ class TestXMPPUserSearch extends TestCase {
     </x>
 </query>" ).firstElement();
 		s = xmpp.UserSearch.parse( x );
-		eq( "Use the enclosed form to search", s.instructions );
-		eq( null, s.first );
-		eq( null, s.last );
-		eq( null, s.nick );
-		eq( null, s.email );
-		eq( 0, Lambda.count(s.items) );
-		af( s.form == null );
+		assertEquals( "Use the enclosed form to search", s.instructions );
+		assertEquals( null, s.first );
+		assertEquals( null, s.last );
+		assertEquals( null, s.nick );
+		assertEquals( null, s.email );
+		assertEquals( 0, Lambda.count(s.items) );
+		assertFalse( s.form == null );
 	}
 	
 }

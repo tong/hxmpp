@@ -1,5 +1,5 @@
 
-class TestXMPPJingle extends TestCase   {
+class TestXMPPJingle extends haxe.unit.TestCase {
 	
 	public function testParse() {
 		
@@ -14,18 +14,18 @@ class TestXMPPJingle extends TestCase   {
 </jingle>" ).firstElement();
   		var j = xmpp.Jingle.parse( x );
   		
-		eq( 'romeo@montague.lit/orchard', j.initiator );
-		eq( xmpp.jingle.Action.session_initiate, j.action );
-		eq( 'a73sjjvkla37jfea', j.sid );
+		assertEquals( 'romeo@montague.lit/orchard', j.initiator );
+		assertEquals( xmpp.jingle.Action.session_initiate, j.action );
+		assertEquals( 'a73sjjvkla37jfea', j.sid );
 		var content = j.content[0];
-		eq( xmpp.jingle.Creator.initiator, content.creator );
-		eq( 'this-is-a-stub', content.name );
+		assertEquals( xmpp.jingle.Creator.initiator, content.creator );
+		assertEquals( 'this-is-a-stub', content.name );
 		//TODO
-//		eq( 'urn:xmpp:jingle:transports:stub:0', content.transport.xmlns );
+//		assertEquals( 'urn:xmpp:jingle:transports:stub:0', content.transport.xmlns );
   		/*
 		*/
 		/*
-		eq( 'urn:xmpp:jingle:apps:stub:0', content.description.xmlns );
+		assertEquals( 'urn:xmpp:jingle:apps:stub:0', content.description.xmlns );
 		*/
 	}
 	
@@ -53,15 +53,15 @@ var x = Xml.parse( "<jingle xmlns='urn:xmpp:jingle:1'
 	</content>
 </jingle>" ).firstElement();
 	  	var j = xmpp.Jingle.parse( x );
-		eq( xmpp.jingle.Action.session_initiate, j.action );
-		eq( "romeo@montague.net/orchard", j.initiator );
-		eq( "a73sjjvkla37jfea", j.sid );
+		assertEquals( xmpp.jingle.Action.session_initiate, j.action );
+		assertEquals( "romeo@montague.net/orchard", j.initiator );
+		assertEquals( "a73sjjvkla37jfea", j.sid );
 		var content = j.content[0];
-		eq( "romeo@montague.net", content.creator );
-		eq( "this-is-the-audio-content", content.name );
-		eq( xmpp.jingle.RTMP.XMLNS, content.transport.xmlns);
-		eq( 3, content.transport.elements.length );
-		eq( "Red5", content.transport.elements[0].get("name") );
+		assertEquals( "romeo@montague.net", content.creator );
+		assertEquals( "this-is-the-audio-content", content.name );
+		assertEquals( xmpp.jingle.RTMP.XMLNS, content.transport.xmlns);
+		assertEquals( 3, content.transport.elements.length );
+		assertEquals( "Red5", content.transport.elements[0].get("name") );
 	}
 */
 	/*

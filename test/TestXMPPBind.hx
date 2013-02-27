@@ -1,17 +1,17 @@
 
-class TestXMPPBind extends TestCase {
+class TestXMPPBind extends haxe.unit.TestCase {
 	
 	public function testBuild() {
 		
 		var p = new xmpp.Bind( "MyResource" );
-		eq( "MyResource", p.resource );
-		eq( null, p.jid );
+		assertEquals( "MyResource", p.resource );
+		assertEquals( null, p.jid );
 		var x = p.toXml();
 		#if !flash //TODO
-		eq( 'urn:ietf:params:xml:ns:xmpp-bind', x.get("xmlns"));
+		assertEquals( 'urn:ietf:params:xml:ns:xmpp-bind', x.get("xmlns"));
 		#end
-		eq( 'resource', x.firstChild().nodeName );
-		eq( 'MyResource', x.firstChild().firstChild().nodeValue );
+		assertEquals( 'resource', x.firstChild().nodeName );
+		assertEquals( 'MyResource', x.firstChild().firstChild().nodeValue );
 	}
 	
 	public function testParse() {
@@ -20,8 +20,8 @@ class TestXMPPBind extends TestCase {
 	<resource>HXMPPConsoleDemo</resource>
 </bind>' ).firstElement();
 		var b = xmpp.Bind.parse(x);
-		eq( 'HXMPPConsoleDemo', b.resource );
-		eq( null, b.jid );
+		assertEquals( 'HXMPPConsoleDemo', b.resource );
+		assertEquals( null, b.jid );
 	}
 	
 }

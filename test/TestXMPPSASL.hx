@@ -1,13 +1,13 @@
 
-class TestXMPPSASL extends TestCase {
+class TestXMPPSASL extends haxe.unit.TestCase {
 	
 		#if !flash //TODO flash
 	public function testParse() {
 		
 		var x = xmpp.SASL.createAuth( "MD5-DIGEST"  );
-		eq( 'auth', x.nodeName );
-		eq( 'urn:ietf:params:xml:ns:xmpp-sasl', x.get('xmlns') );
-		eq( 'MD5-DIGEST', x.get('mechanism') );
+		assertEquals( 'auth', x.nodeName );
+		assertEquals( 'urn:ietf:params:xml:ns:xmpp-sasl', x.get('xmlns') );
+		assertEquals( 'MD5-DIGEST', x.get('mechanism') );
 
 		//TODO
 		

@@ -1,5 +1,5 @@
 
-class TestXMPPSoftwareVersion extends TestCase {
+class TestXMPPSoftwareVersion extends haxe.unit.TestCase {
 	
 	public function testParse() {
 		var x = Xml.parse("
@@ -13,24 +13,24 @@ class TestXMPPSoftwareVersion extends TestCase {
 </iq>" ).firstElement();
 		var iq = xmpp.IQ.parse( x );
 		var sv = xmpp.SoftwareVersion.parse( iq.x.toXml() );
-		eq( "NORC", sv.name );
-		eq( "0.7.0.4", sv.version );
-		eq( "Windows-XP 5.01.2600", sv.os );
+		assertEquals( "NORC", sv.name );
+		assertEquals( "0.7.0.4", sv.version );
+		assertEquals( "Windows-XP 5.01.2600", sv.os );
 	}
 	
 	public function testBuild() {
 		
 		var sv = new xmpp.SoftwareVersion( "NORC", "1.0", "Linux" );
-		eq( "NORC", sv.name );
-		eq( "1.0", sv.version );
-		eq( "Linux", sv.os );
+		assertEquals( "NORC", sv.name );
+		assertEquals( "1.0", sv.version );
+		assertEquals( "Linux", sv.os );
 		
 		var x = sv.toXml();
 		for( e in x.elements() ) {
 			switch( e.nodeName ) {
-			case "name" : eq( "NORC", e.firstChild().nodeValue );
-			case "version" : eq( "1.0", e.firstChild().nodeValue );
-			case "os" : eq( "Linux", e.firstChild().nodeValue );
+			case "name" : assertEquals( "NORC", e.firstChild().nodeValue );
+			case "version" : assertEquals( "1.0", e.firstChild().nodeValue );
+			case "os" : assertEquals( "Linux", e.firstChild().nodeValue );
 			}
 		}
 	}

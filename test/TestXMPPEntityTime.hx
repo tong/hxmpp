@@ -1,5 +1,5 @@
 
-class TestXMPPEntityTime extends TestCase {
+class TestXMPPEntityTime extends haxe.unit.TestCase {
 	
 	public function testParse() {
 		var x = Xml.parse( "
@@ -8,8 +8,8 @@ class TestXMPPEntityTime extends TestCase {
 			    <utc>2006-12-19T17:58:35Z</utc>
 			</time>" ).firstElement();
 		var t = xmpp.EntityTime.parse( x );
-		eq( "-06:00", t.tzo );
-		eq( "2006-12-19T17:58:35Z", t.utc );
+		assertEquals( "-06:00", t.tzo );
+		assertEquals( "2006-12-19T17:58:35Z", t.utc );
 	}
 	
 	public function testBuild() {
@@ -17,8 +17,8 @@ class TestXMPPEntityTime extends TestCase {
 		var x = p.toXml();
 		for( e in x.elements() ) {
 			switch( e.nodeName ) {
-			case "utc" : eq( e.firstChild().nodeValue, p.utc );
-			case "tzo" : eq( null, p.tzo );
+			case "utc" : assertEquals( e.firstChild().nodeValue, p.utc );
+			case "tzo" : assertEquals( null, p.tzo );
 			}
 		}
 	}

@@ -1,5 +1,5 @@
 
-class TestXMPPSHIM extends TestCase {
+class TestXMPPSHIM extends haxe.unit.TestCase {
 
 	public function testParse() {
 	
@@ -10,17 +10,17 @@ class TestXMPPSHIM extends TestCase {
 
 		var shim = xmpp.SHIM.parse( x );
 		
-		eq( 2, shim.headers.length );
+		assertEquals( 2, shim.headers.length );
 		var h1 = shim.headers[0];
-		eq( 'In-Reply-To', h1.name );
-		eq( '123456789@capulet.com', h1.value );
+		assertEquals( 'In-Reply-To', h1.name );
+		assertEquals( '123456789@capulet.com', h1.value );
 		var h2 = shim.headers[1];
-		eq( 'Keywords', h2.name );
+		assertEquals( 'Keywords', h2.name );
 		
 		//TODO
 		/*
 		//trace( h2.value );
-		eq( 'shakespeare,&lt;xmpp/&gt;', h2.value ); // TODO PHP ERROR!!
+		assertEquals( 'shakespeare,&lt;xmpp/&gt;', h2.value ); // TODO PHP ERROR!!
 		*/
 		
 		
