@@ -57,7 +57,7 @@ class Stream extends jabber.Stream {
 	public static var defaultPort = PORT_STANDARD;
 	
 	/** Called if stream got authenticated and is ready to use */
-	public dynamic function onConnect() {}
+	public dynamic function onReady() {}
 	
 	/** XMPP server hostname */
 //	public var host(default,null) : String;
@@ -75,8 +75,7 @@ class Stream extends jabber.Stream {
 	public var connected(default,null) : Bool;
 	
 	/** The service discovery items of the client stream */
-	@:isVar
-	public var items(get,null) : xmpp.disco.Items;
+	@:isVar public var items(get,null) : xmpp.disco.Items;
 	
 	/** The service discovery listener of this stream */
 	public var discoListener(default,null) : ServiceDiscoveryListener;
@@ -158,7 +157,7 @@ class Stream extends jabber.Stream {
 	
 	function readyHandler( p : xmpp.Packet ) {
 		connected = true;
-		onConnect();
+		onReady();
 	}
 	
 }
