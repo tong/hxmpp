@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@ private typedef JID = ComponentJID;
 #end
 
 private typedef Server = {
-	var features : #if haxe3 Map<String,Xml> #else Hash<Xml> #end;
+	var features :Map<String,Xml>;
 }
 
 private class StreamFeatures {
@@ -90,26 +90,26 @@ class Stream {
 	*/
 	public dynamic function onClose( ?e : String ) {}
 	
-	/** */
+	/** Current status of the XMPP stream */
 	public var status : StreamStatus;
 	
-	/** */
-	public var cnx(default,set_cnx) : StreamConnection;
+	/** The connection used to transport xmpp data */
+	public var cnx(default,set) : StreamConnection;
 	
-	/** */
+	/** Clients stream features */
 	public var features(default,null) : StreamFeatures;
 	
 	/** */
 	public var server(default,null) : Server;
 	
-	/** */
+	/** Stream id */
 	public var id(default,null) : String;
 	
 	/** */
 	public var lang(default,null) : String;
 	
-	/** */
-	public var jid(default,set_jid) : JID;
+	/** Jabber-id */
+	public var jid(default,set) : JID;
 
 	public var dataFilters(default,null) : Array<StreamDataFilter>;
 	public var dataInterceptors(default,null) : Array<StreamDataInterceptor>;
@@ -231,7 +231,9 @@ class Stream {
 				return null;
 		}
 		numPacketsSent++;
-		#if xmpp_debug XMPPDebug.o( t ); #end
+		#if xmpp_debug
+		XMPPDebug.o( t );
+		#end
 		return t;
 	}
 	
@@ -443,7 +445,7 @@ class Stream {
 	}
 	
 	/**
-		Inject incoming XML data.<br/>
+		Inject incoming XML data.
 		Returns array of handled XMPP packets.
 	*/
 	public function handleXml( x : Xml ) : Array<xmpp.Packet> {
@@ -457,7 +459,7 @@ class Stream {
 	}
 	
 	/**
-		Handles incoming XMPP packets.<br/>
+		Handles incoming XMPP packets.
 		Returns true if the packet got handled.
 	*/
 	public function handlePacket( p : xmpp.Packet ) : Bool {
