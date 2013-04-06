@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,6 @@
  */
 package jabber.util;
 
-//#if (!cpp&&!cs&&!java&&!neko)
 #if (!cpp&&!neko)
 typedef Timer = haxe.Timer;
 #else

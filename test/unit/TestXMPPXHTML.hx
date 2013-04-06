@@ -3,6 +3,12 @@ class TestXMPPXHTML extends haxe.unit.TestCase {
 	
 	public function testParse() {
 		
+		/*
+		var x = Xml.parse('<blockquote>&quot;A foolish consistency is the hobgoblin of little minds.&quot;</blockquote>');
+		trace(x);
+		assertTrue(true);
+		*/
+		
 		var xhtml : xmpp.XHTML = null;
 		
 		var x = Xml.parse(
@@ -30,11 +36,11 @@ class TestXMPPXHTML extends haxe.unit.TestCase {
     <body xmlns='http://www.w3.org/1999/xhtml'><p>As Emerson said in his essay <cite>Self-Reliance</cite>:</p><blockquote>&quot;A foolish consistency is the hobgoblin of little minds.&quot;</blockquote></body>
   </html>
 </message>" ).firstElement();
-		var m = xmpp.Message.parse( x );
-		var body = xmpp.XHTML.fromMessage( m );
 		
 		//TODO !!!!!!!!!!!!!!!!!!!!! fails on ccpp, neko, js
 		
+		m = xmpp.Message.parse( x );
+		body = xmpp.XHTML.fromMessage( m );
 		assertEquals( "<p>As Emerson said in his essay <cite>Self-Reliance</cite>:</p><blockquote>&quot;A foolish consistency is the hobgoblin of little minds.&quot;</blockquote>", body );
 		for( p in m.properties ) {
 			if( p.nodeName == "html" && p.get( "xmlns" ) == xmpp.XHTML.XMLNS ) {
@@ -43,6 +49,7 @@ class TestXMPPXHTML extends haxe.unit.TestCase {
 			}
 		}
 		assertEquals( "<p>As Emerson said in his essay <cite>Self-Reliance</cite>:</p><blockquote>&quot;A foolish consistency is the hobgoblin of little minds.&quot;</blockquote>", xhtml.body );
+	
 	}
 	
 	public function testBuild() {

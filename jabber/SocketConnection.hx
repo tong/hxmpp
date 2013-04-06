@@ -193,7 +193,7 @@ class SocketConnection extends StreamConnection {
 		this.port = port;
 		this.secure = secure;
 		
-		url = 'ws'+(secure?'s':'')+'://$host:$port'; // unofficial specs do not support secure websocket connections (?)
+		url = 'ws'+(secure?'s':'')+'://$host:$port'; // (unofficial) specs do not support secure websocket connections
 	}
 	
 	public override function connect() {
@@ -242,6 +242,7 @@ class SocketConnection extends StreamConnection {
 		return untyped window.WebSocket != null;
 	}
 }
+
 
 #elseif flash
 

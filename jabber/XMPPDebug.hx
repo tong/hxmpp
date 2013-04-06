@@ -31,9 +31,11 @@ import js.Lib;
 #end
 import jabber.util.XMLBeautify;
 
+import haxe.macro.Context; //TODO rem
+
 /**
 	Utility for debugging XMPP transfer.
-	Set the haXe compiler flag: -D xmpp_debug to activate it.
+	Set the compiler flag: -D xmpp_debug to activate it.
 	
 	* Terminal targets: Color highlighted
 	* Browser targets: Printed to the default debug console
@@ -59,13 +61,21 @@ class XMPPDebug {
 		#end
 	}
 	
+	// TODO use macro for output calls
+	/*
+	macro public static function debug( t : String ) {
+		//return Context.makeExpr( f, Context.currentPos() );
+	}
+	*/
+	
 	//public static var numPrinted(getNumPrinted,null) : Int;
 	//public static var numPrinted(default,null) : Int;
 	//public static var numPrintedIncoming(default,null) : Int;
 	//public static var numPrintedOutgoing(default,null) : Int;
 
 	/**
-		Activate/Deactivate printing
+		Activate/Deactivate output.
+		Default is true.
 	*/
 	public static var active = true;
 	
@@ -109,12 +119,15 @@ class XMPPDebug {
 	//public static inline function printInfoString( p : xmpp.Packet )
 	
 	/**
+		Print manually to console
 	*/
 	public static function print( t : String, out : Bool, level : String = "log" ) {
 		if( !active )
 			return;
+			
 		#if xmpp_console
 		XMPPConsole.printXMPP( t, out );
+		
 		#else
 			#if (sys||nodejs||air||rhino)
 			__print( beautify ? XMLBeautify.it(t) : t+"\n", out ? color_out : color_inc );
@@ -167,6 +180,7 @@ class XMPPDebug {
 		Sys.print( b.toString() );
 		#end
 	}
+	
 	
 	#elseif (js||flash)
 	

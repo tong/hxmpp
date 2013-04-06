@@ -22,12 +22,10 @@
 package jabber;
 
 import jabber.util.Timer;
-#if js
-	#if haxe3
-	import js.html.XMLHttpRequest;
-	#else
-	import js.XMLHttpRequest;
-	#end
+#if nodejs
+//#
+#elseif js
+import js.html.XMLHttpRequest;
 #elseif flash
 import flash.events.Event;
 import flash.events.HTTPStatusEvent;
@@ -102,10 +100,12 @@ class BOSHConnection extends jabber.StreamConnection {
 		this.maxConcurrentRequests = maxConcurrentRequests;
 		this.timeoutOffset = timeoutOffset;
 		
-		initialized = pauseEnabled = false;
+		initialized = pauseEnabled = attached = false;
 		pollingEnabled = true;
 		
-		attached = false;
+		#if (nodejs && jabber_debug)
+		throw 'bosh not implementd for nodejs';
+		#end
 	}
 	
 	public override function connect() {
@@ -121,7 +121,7 @@ class BOSHConnection extends jabber.StreamConnection {
 			responseTimer = new Timer( INTERVAL );
 			
 			var b = Xml.createElement( "body" );
-			#if flash //flash 2.06 fukup hack
+			#if flash // TODO flash 2.06 fukup hack
 			b.set( '_xmlns_', XMLNS );
 			b.set( 'xml_lang', 'en' );
 			b.set( 'xmlns_xmpp', XMLNS_XMPP );
@@ -241,11 +241,12 @@ class BOSHConnection extends jabber.StreamConnection {
 		
 		if( requestCount >= maxConcurrentRequests ) {
 			#if jabber_debug
-//			trace( "max concurrent request limit reached ("+requestCount+","+maxConcurrentRequests+")", "info" );
+			trace( "max concurrent request limit reached ("+requestCount+","+maxConcurrentRequests+")", "info" );
 			#end
 			return false;
 		}
 		requestCount++;
+		
 		
 		if( t == null ) {
 			if( poll ) {
@@ -271,35 +272,43 @@ class BOSHConnection extends jabber.StreamConnection {
 	
 	function createHTTPRequest( data : String ) {
 		
-		#if nodejs
-		//TODO
-		#if jabber_debug trace('BOSH not implementd for nodejs'); #end
+		//#if nodejs
+		//TODO use nodejs's native http thingys
+		/*
+		var r = new haxe.Http( getHTTPPath() );
+		r.setPostData( data );
+		r.onData = function(d) { trace(d); }
+		r.onError = function(d) { trace(d); }
+		r.request( true );
+		*/
 		
-		#elseif js
 			
-			//TODO remove !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			//WTF!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			data = StringTools.replace( data, "&lt;", "<" );
-			data = StringTools.replace( data, "&gt;", ">" );
-			///////////////////////////////////////////////////////////////////////////////
+		#if js
+		//trace(">###############################");
+		//trace(data);
+		//TODO remove !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		//WTF!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		//data = StringTools.replace( data, "&lt;", "<" );
+		//data = StringTools.replace( data, "&gt;", ">" );
+		///////////////////////////////////////////////////////////////////////////////
+	
+		var r = new XMLHttpRequest();
+		//r.withCredentials = true;
+		r.open( "POST", getHTTPPath(), true );
+		r.onreadystatechange = function(e){
+			//trace(e+":"+r.readyState);
+			if( r.readyState != 4 )
+				return;
+			var s = r.status;
+			if( s != null && s >= 200 && s < 400 )
+				handleHTTPData( r.responseText );
+			else
+				handleHTTPError( "Http Error #"+r.status );
+		}
+		//trace("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSNDING: "+data );
+		r.send( data );
 		
-			var r = new XMLHttpRequest();
-			//r.withCredentials = true;
-			r.open( "POST", getHTTPPath(), true );
-			r.onreadystatechange = function(e){
-				//trace(e+":"+r.readyState);
-				if( r.readyState != 4 )
-					return;
-				var s = r.status;
-				if( s != null && s >= 200 && s < 400 )
-					handleHTTPData( r.responseText );
-				else
-					handleHTTPError( "Http Error #"+r.status );
-			}
-			//trace("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSNDING: "+data );
-			r.send( data );
-			
-			//#end
+		//#end
 		
 		#elseif flash
 		var r = new flash.net.URLRequest( getHTTPPath() );
@@ -491,7 +500,10 @@ class BOSHConnection extends jabber.StreamConnection {
 		x.set( "rid", Std.string( ++rid ) );
 		x.set( "sid", sid );
 		if( t != null ) {
-			for( e in t ) { x.addChild( Xml.createPCData(e) ); }
+			for( e in t ) {
+				//x.addChild( Xml.createElement(e) );
+				x.addChild( Xml.createPCData(e) );
+			}
 		}
 		return x;
 	}

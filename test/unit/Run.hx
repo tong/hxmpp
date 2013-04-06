@@ -135,7 +135,6 @@ class Run {
 		var time = Std.parseInt( stime );
 		
 		#if flash
-		// do nothing
 		tf.htmlText = '<b>FLASH</b> <span>'+time+'ms</span><br><div>'+result+'</div>';
 		
 		#elseif nodejs

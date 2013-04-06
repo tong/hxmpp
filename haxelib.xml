@@ -1,4 +1,4 @@
-<project name="hxmpp" url="http://hxmpp.disktree.net" license="MIT">
+<project name="hxmpp" url="https://github.com/tong/hxmpp" license="MIT">
 	<user name="tong"/>
 	<tag v="xmpp"/>
 	<tag v="jabber"/>
@@ -8,4 +8,5 @@
 	<tag v="chat"/>
 	<description>XMPP/Jabber library</description>
 	<version name="0.4.12">Misc</version>
+	<depends name="hxssl"/>
 </project>

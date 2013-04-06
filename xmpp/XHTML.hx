@@ -43,10 +43,9 @@ class XHTML {
 	}
 	
 	public static function parse( x : Xml ) : XHTML {
-		for( e in x.elementsNamed( "body" ) ) {
+		for( e in x.elementsNamed( "body" ) )
 			if( e.get( "xmlns" ) == W3NS )
 				return new XHTML( parseBody( e ) );
-		}
 		return null;
 	}
 	
@@ -56,8 +55,8 @@ class XHTML {
 	public static function fromMessage( m : xmpp.Message ) : String {
 		for( p in m.properties )
 			if( p.nodeName == "html" && p.get( "xmlns" ) == XMLNS )
-				for( e in p.elementsNamed( "body" ) )
-					return parseBody( e );
+				for( x in p.elementsNamed( "body" ) )
+					return parseBody( x );
 		return null;
 	}	
 	

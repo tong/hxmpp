@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,9 +51,7 @@ class Base64 {
 	
 	public static function removeNullbits( s : String ) : String {
 		var p = s.length-1;
-		while( s.charAt( p ) == "=" ) {
-			p--;
-		}
+		while( s.charAt( p ) == "=" ) p--;
 		return s.substr( 0, p+1 );
 	}
 	
@@ -109,15 +107,21 @@ class Base64 {
 	}
 	
 	public static inline function encodeBytes( b : Bytes ) : String {
+		
 		#if php
 		return untyped __call__( "base64_encode", b.getData() );
+		
 		#elseif nodejs
-		return  b.getData().toString( NodeC.BASE64 );
+		//TODO
+		var d : Dynamic = b.getData();
+		return d.toString( NodeC.BASE64 );
 		//return new NodeBuffer( b.getData().toString( NodeC.ASCII ) );
 		//return new NodeBuffer( b.getData().toString(), NodeC.BASE64 ).toString( NodeC.ASCII );
 		//return b.getData().toString( NodeC.BASE64 );
+	
 		#else
 		return fillNullbits( bc.encodeBytes( b ).toString() );
+		
 		#end
 	}
 	
@@ -133,6 +137,7 @@ class Base64 {
 	
 	/**
 		Create a random (base64 compatible) string of given length.
+//TODO remove
 	*/
 	public static function random( len : Int = 1, ?chars : String ) : String {
 		var n : Null<Int> = null;

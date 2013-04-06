@@ -45,12 +45,10 @@ class Auth {
 	public function toXml() : Xml {
 		var x = xmpp.IQ.createQueryXml( XMLNS );
 		x.addFields( this );
-		/*
-		if( username != null ) x.addElement( "username", username );
-		if( password != null ) x.addElement( "password", password );
-		if( digest != null ) x.addElement( "digest", digest );
-		if( resource != null ) x.addElement( "resource", resource );
-		*/
+		//if( username != null ) x.addElement( "username", username );
+		//if( password != null ) x.addElement( "password", password );
+		//if( digest != null ) x.addElement( "digest", digest );
+		//if( resource != null ) x.addElement( "resource", resource );
 		/*
 		x.addField( this, "username" );
 		x.addField( this, "password" );

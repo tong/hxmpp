@@ -42,6 +42,7 @@ class MD5Mechanism {
 		this.serverType = serverType;
 	}
 	
+	@:keep
 	public function createAuthenticationText( username : String, host : String, pass : String, resource : String ) : String {
 		this.username = username;
 		this.host = host;

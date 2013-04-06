@@ -1,5 +1,4 @@
 
-#--macro exclude('haxe')
 -cp ../
 --no-output
 -D doc-gen
@@ -41,11 +40,11 @@ jabber.BOSHPrebindAccount
 jabber.BOSHPrebindInfo
 jabber.SecureSocketConnection
 
---next
--js temp.js
--xml nodejs.xml 
--D nodejs
--lib nodejs
+#--next
+#-js temp.js
+#-xml nodejs.xml 
+#-D nodejs
+#-lib nodejs
 
 --next
 -neko temp.n

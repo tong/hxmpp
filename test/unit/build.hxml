@@ -39,20 +39,20 @@
 
 #--next
 #-cs out/cs
-##-cs out/cs_unsafe
-##-D unsafe
+#-cs out/cs_unsafe
+#-D unsafe
 #-main Run
-
-#--next
-#-java out/java
-#-main Run
-#-cmd cd out/java/src && javac
 
 --next
--cpp out/cpp
+-java out/java
 -main Run
--cmd mv ./out/cpp/Run ./out/test_cpp
--cmd ./out/test_cpp
+#-cmd cd out/java/src && javac
+
+#--next
+#-cpp out/cpp
+#-main Run
+#-cmd mv ./out/cpp/Run ./out/test_cpp
+#-cmd ./out/test_cpp
 
 --next
 -js out/test_node.js

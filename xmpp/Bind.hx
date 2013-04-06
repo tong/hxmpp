@@ -41,9 +41,9 @@ class Bind {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( 'bind' );
+		x.ns( XMLNS );
 		//if( resource != null ) x.addChild( XMLUtil.createElement( "resource", resource ) );
 		//if( jid != null ) x.addChild( XMLUtil.createElement( "jid", jid ) );
-		x.ns( XMLNS );
 		x.addField( this, 'jid' );
 		x.addField( this, 'resource' );
 		return x;
