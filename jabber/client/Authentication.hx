@@ -99,9 +99,6 @@ class Authentication extends AuthenticationBase {
 		c_success = stream.collect( [new PacketNameFilter( ~/success/ )], handleSASLSuccess );
 		c_challenge = stream.collect( [new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
 		// --- init auth
-		trace( stream.jid );
-		trace( password );
-		trace( stream.jid.resource );
 		var t = mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password, stream.jid.resource );
 		if( t != null ) t = Base64.encode( t );
 		return stream.sendData( xmpp.SASL.createAuth( mechanism.id, t ).toString() ) != null;
