@@ -23,6 +23,8 @@ package jabber;
 
 import haxe.io.Bytes;
 
+#if droid error #end // deprecated
+
 #if sys
 import sys.net.Host;
 import sys.net.Socket;
@@ -38,7 +40,6 @@ typedef Socket = Stream;
 import flash.net.Socket;
 #end
 
-
 #if sys
 private typedef AbstractSocket = {
 	var input(default,null) : haxe.io.Input;
@@ -52,10 +53,6 @@ private typedef AbstractSocket = {
 }
 #end
 
-
-#if droid error // deprecated
-#else
-
 /**
 	Abstract base class for socket connection implementations
 */
@@ -63,24 +60,28 @@ class SocketConnectionBase extends StreamConnection {
 	
 	public static var defaultBufSize = #if php 65536 #else 256 #end; //TODO php buf
 	public static var defaultMaxBufSize = 1<<20; // 1MB
-	public static var defaultTimeout = 10; // secs
+	public static var defaultTimeout = 10;
 	
 	public var port(default,null) : Int;
 	public var maxbufsize(default,null) : Int;
 	public var timeout(default,null) : Int;
-	//public var timeout(default,setTimeout) : Int;
 	
 	#if (sys||rhino)
 	public var socket(default,null) : AbstractSocket;
 	public var reading(default,null) : Bool;
+	
 	#elseif nodejs
 //	public var socket(default,null) : Socket;
+	
 	#elseif (js&&air)
 	public var socket(default,null) : air.Socket;
+	
 	#elseif (js&&jabber_flashsocketbridge)
 	public var socket(default,null) : Socket;
+	
 	#elseif (flash&&air)
-	//#
+	// #
+	
 	#elseif flash
 	public var socket(default,null) : Socket;
 	#end
@@ -142,7 +143,6 @@ class SocketConnectionBase extends StreamConnection {
 	*/
 	
 	function readData() {
-		
 		var len : Int;
 		try {
 			len = try socket.input.readBytes( buf, bufpos, bufsize );
@@ -150,7 +150,6 @@ class SocketConnectionBase extends StreamConnection {
 			error( "socket read failed" );
 			return;
 		}
-		
 		bufpos += len;
 		if( len < bufsize ) {
 			__onData( buf.sub( 0, bufpos ) );
@@ -166,66 +165,20 @@ class SocketConnectionBase extends StreamConnection {
 			nbuf.blit( 0, buf, 0, buf.length );
 			buf = nbuf;
 		}
-		
-		/*
-		var len = 0;
-		try len = socket.input.readBytes( buf, 0, bufsize ) catch( e : Dynamic ) {
-			reading = connected = false;
-			__onDisconnect( e );
-			return;
-		}
-		__onData( buf.sub( 0, len ) );
-		buf = Bytes.alloc( bufsize );
-		*/
-		
-		/*
-		var buflen = buf.length;
-		if( bufbytes == buflen ) {
-			var nsize = buflen*2;
-			if( nsize > maxBufSize ) {
-				nsize = maxBufSize;
-				trace(buflen +":"+ maxBufSize);
-				if( buflen == maxBufSize  )
-					throw "max buffer size reached ["+maxBufSize+"]";
-			}
-			var buf2 = Bytes.alloc( nsize );
-			buf2.blit( 0, buf, 0, buflen );
-			buflen = nsize;
-			buf = buf2;
-		}
-		var nbytes = 0;
-		try nbytes = socket.input.readBytes( buf, bufbytes, buflen-bufbytes ) catch( e : Dynamic ) {
-			reading = connected = false;
-			__onDisconnect( e );
-			return;
-		}
-		bufbytes += nbytes;
-		var pos = 0;
-		//TODO move buffering into jabber.Stream class
-		while( bufbytes > 0 ) {
-			var nbytes = __onData( buf, pos, bufbytes );
-			if( nbytes == 0 ) {
-				return;
-			}
-			pos += nbytes;
-			bufbytes -= nbytes;
-		}
-		if( reading && pos > 0 )
-			buf = Bytes.alloc( bufSize );
-		//buf.blit( 0, buf, pos, bufbytes );
-		*/
 	}
 	
 	function error( info : String ) {
 		reading = connected = false;
-		try socket.close() catch(e:Dynamic) { #if jabber_debug trace(e,"error"); #end }
+		try {
+			socket.close();
+		} catch( e : Dynamic ) {
+			#if jabber_debug trace(e,"error"); #end
+		}
 		__onDisconnect( info );
 	}
 
-	#end
+	#end // sys||rhino
 }
-
-#end
 
 
 #if jabber_flashsocketbridge
