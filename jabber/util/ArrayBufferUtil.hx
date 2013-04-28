@@ -21,6 +21,9 @@
  */
 package jabber.util;
 
+import js.html.ArrayBuffer;
+import js.html.Uint8Array;
+
 @:require(js)
 class ArrayBufferUtil {
 	
@@ -31,7 +34,7 @@ class ArrayBufferUtil {
 		//var b = new ArrayBuffer( t.length*2 ); // 2 bytes for each char
 		//var v = new Uint16Array( b );
 		var b = new ArrayBuffer( t.length );
-		var v = new js.html.Uint8Array( untyped b );
+		var v = new Uint8Array( untyped b );
 		for( i in 0...t.length )
 			v[i] = t.charCodeAt( i );
 		return b;
@@ -42,7 +45,7 @@ class ArrayBufferUtil {
 	*/
 	public static function toString( buf : ArrayBuffer ) : String {
 		//return untyped __js__( 'String.fromCharCode.apply(null,new Uint8Array(buf))' );
-		var v = new js.html.Uint8Array( untyped buf );
+		var v = new Uint8Array( untyped buf );
 		var s = "";
 		for( i in 0...v.length )
 			s += String.fromCharCode( v[i] );
