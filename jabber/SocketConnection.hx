@@ -33,9 +33,6 @@ import js.net.Host;
 import js.net.Socket;
 #end
 
-/**
-	Sys
-*/
 class SocketConnection extends SocketConnectionBase {
 		
 	public function new( host : String = "localhost",
@@ -111,10 +108,7 @@ import jabber.util.ArrayBufferUtil;
 */
 class SocketConnection extends StreamConnection {
 	
-	/** Port number */
 	public var port(default,null) : Int;
-	
-	/** Chrome socketId */
 	public var socketId(default,null): Int;
 	
 	public function new( host : String = "localhost", port : Int = 5222 ) {

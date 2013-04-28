@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@ import haxe.io.Bytes;
 /**
 	Abstract base class for XMPP stream connections.
 */
-//@:multiType
 class StreamConnection {
 	
 	/** Succesfully connected callback */
@@ -109,7 +108,7 @@ class StreamConnection {
 	/**
 		Send raw bytes, returns true on succeess
 	*/
-	public function writeBytes( t : Bytes ) : Bool {
+	public function writeBytes( b : Bytes ) : Bool {
 		#if jabber_debug trace( 'abstract method', 'error' ); #end
 		return false;
 	}
