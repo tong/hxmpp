@@ -40,22 +40,31 @@ class Roster {
 	
 	/** Roster got loaded */
 	public dynamic function onLoad() {}
+	
 	/** Item got added to the roster */
 	public dynamic function onAdd( i : Item ) {}
+	
 	/** Item got removed from your roster */
 	public dynamic function onRemove( i : Item ) {}
+	
 	/** Item got updated */
 	public dynamic function onUpdate( i : Item ) {}
+	
 	/** Subscribed to the presence of the contact */
 	public dynamic function onSubscribed( i : Item ) {}
+	
 	/** Unsubscribed presence of the contact */
 	public dynamic function onUnsubscribed( i : Item ) {}
+	
 	/** Incoming presence subscription request */
 	public dynamic function onAsk( i : Item  ) {}
+	
 	/** Contact subscribed to your presence */
 	public dynamic function onSubscription( jid : String  ) {}
+	
 	/** Contact unsubscribed from your presence */
 	public dynamic function onUnsubscription( i : Item ) {}
+	
 	/** A roster manipulation error occured */
 	public dynamic function onError( e : XMPPError ) {}
 	
@@ -69,8 +78,10 @@ class Roster {
 	var c_message : PacketCollector;
 
 	public function new( stream : Stream, ?subscriptionMode : RosterSubscriptionMode ) {
+		
 		this.stream = stream;
-		this.subscriptionMode = subscriptionMode != null ? subscriptionMode : defaultSubscriptionMode;
+		this.subscriptionMode = ( subscriptionMode != null ) ? subscriptionMode : defaultSubscriptionMode;
+		
 		available = false;
 		items = new Array();
 		c_presence = stream.collect( [new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence )], handlePresence, true );
@@ -236,7 +247,9 @@ class Roster {
 	function sendAddItemRequest( jid : String, ?groups : Iterable<String> ) {
 		var iq = new xmpp.IQ( IQType.set );
 		var i = new Item( jid );
-		if( groups != null ) for( g in groups ) i.groups.push( g );
+		if( groups != null )
+			for( g in groups )
+				i.groups.push( g );
 		iq.x = new xmpp.Roster( [i] );
 		var me = this;
 		stream.sendIQ( iq, function(r) {
