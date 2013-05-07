@@ -24,31 +24,24 @@ package jabber.remoting;
 import haxe.remoting.AsyncConnection;
 import xmpp.IQType;
 
-//TODO data context (name) ??
-// needed ..? the jid is already a data context (?)
-
 /**
-	Haxe remoting connection to an XMPP entity.
+	Haxe remoting connection to another XMPP entity.
 	User ServiceDiscovery to determine if an entity supports haxe-remoting (hxr).
 
 	http://haxe.org/doc/remoting
 */
 class Connection implements AsyncConnection implements Dynamic<AsyncConnection> {
 	
-	//static var connections = new Hash<Connection>();
-	
-	/** JID of current active entity */
+	/** Jid of opposite */
 	public var target : String;
 	public var stream(default,null) : jabber.Stream;
 	
-	//var __data : { name : String, ctx : Context, #if js flash : String #end };//TODO data context
 	var __error : Dynamic->Void;
 	var __path : Array<String>;
 	
 	function new( stream : jabber.Stream, target : String, path : Array<String>, error : Dynamic->Void ) {
 		this.stream = stream;
 		this.target = target;
-		//__data = data;
 		__path = path;
 		__error = error;
 	}
@@ -59,18 +52,17 @@ class Connection implements AsyncConnection implements Dynamic<AsyncConnection> 
 		return c;
 	}
 	
-	/*TODO
+	/*
+	TODO
 	public function close() {
 		connections.remove( __data.name );
 	}
 	*/
 	
-	public function setErrorHandler( h : Dynamic->Void ) {
+	public inline function setErrorHandler( h : Dynamic->Void ) {
 		__error = h;
 	}
 	
-	/**
-	*/
 	public function call( params : Array<Dynamic>, ?onResult : Dynamic->Void ) {
 		var s = new haxe.Serializer();
 		s.serialize( __path );
@@ -78,15 +70,12 @@ class Connection implements AsyncConnection implements Dynamic<AsyncConnection> 
 		var iq = new xmpp.IQ( null, null, target, stream.jid.toString() );
 		iq.properties.push( xmpp.HXR.create( s.toString() ) );
 		var error = __error;
-		//trace("REMOTEOTE-OUT:::"+iq.id );
 		stream.sendIQ( iq, function(r:xmpp.IQ) {
-			//trace("RESSUUUUUUUUUUULT");
 			switch( r.type ) {
 			case result :
 				var v = xmpp.HXR.getData( r.x.toXml() );
 				var ok = true;
 				var ret;
-				//trace("RESSUlT2 "+v);
 				try {
 					if( v.substr(0,3) != "hxr" )
 						throw 'invalid response ($v)';
@@ -97,13 +86,10 @@ class Connection implements AsyncConnection implements Dynamic<AsyncConnection> 
 					ok = false;
 					error( err );
 				}
-				//trace("REPORTED "+ret);
 				if( ok && onResult != null )
 					onResult( ret );
-					
 			case error :
-				//TODO check
-				//var err = xmpp.Error.parse( r.x.toXml() );
+				//var err = xmpp.Error.parse( r.x.toXml() ); // check
 				var e = r.errors[0];
 				error( e );
 			default :
@@ -114,9 +100,7 @@ class Connection implements AsyncConnection implements Dynamic<AsyncConnection> 
 		} );
 	}
 	
-	/**
-	*/
-	public static function create( stream : jabber.Stream, target : String ) {
+	public static inline function create( stream : jabber.Stream, target : String ) {
 		return new Connection( stream, target, [], function(e) throw e );
 	}
 	
