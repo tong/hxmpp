@@ -97,15 +97,12 @@ class SocketConnection extends SocketConnectionBase {
 	}
 }
 
-#elseif (chromeapp||chromeext||chrome)
+#elseif (chrome_app)
 
 import chrome.Socket;
 import haxe.io.Bytes;
 import jabber.util.ArrayBufferUtil;
 
-/**
-	Chrome (experimental!)
-*/
 class SocketConnection extends StreamConnection {
 	
 	public var port(default,null) : Int;
