@@ -2,49 +2,21 @@
 ===
 Haxe XMPP/Jabber library | [Documentation](http://hxmpp.disktree.net/doc/api/ "API documentation") | [Examples](https://github.com/tong/hxmpp.examples "Examples and test projects") | [Test](http://hxmpp.disktree.net/test/ "Unit test results")
 
-
-### XEPS SUPPORTED
-* [XEP-0004 DataForms](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0012 LastActivity](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0016 PrivacyLists](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0030 ServiceDiscovery](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0045 MUChat](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0047 In-Band Bytestreams](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0049 Private XML Storage](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0054 VCardTemp](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0055 Search](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0060 PubSub](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0065 SOCKS5 Bytestreams](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0071 XHTML-IM](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0077 In-Band Registration](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0082 XMPP Date and Time Profiles](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0085 ChatStateNotification](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0092 SoftwareVersion](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0096 SI File Transfer](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0106 JID Escaping](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0114 Jabber Component Protocol](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0115 Entity Capabilities](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0124 BOSH](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0163 PersonalEvent ](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0191 Simple Communications Blocking](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0199 Ping ](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0202 EntityTime](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0203 DelayedDelivery](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0206 BOSH](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0231 Bits of Binary](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0224 Attention](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-XXXX Linked Process Protocol](http://xmpp.org/extensions/inbox/lop.html)
-* [XEP-XXXX GMail Notifiy](http://code.google.com/apis/talk/jep_extensions/gmail.html)
-* [XEP-XXXX Jingle RTMP Transport](http://xmpp.org/extensions/inbox/jingle-rtmp.html)
-* XEP-XXXX Jingle RTMFP Transport
-
+Requires: Haxe 3.0.0-RC2
 
 
 ### COMPILER FLAGS
 * -D xmpp_debug    Print XMPP transfer (see [jabber.XMPPDebug](http://hxmpp.disktree.net/doc/api/types/jabber/XMPPDebug.html) for options)
 * -D jabber_debug    Print verbose debug information
 * -D jabber_component    Set to build xmpp server components (use [jabber.component.*](http://hxmpp.disktree.net/doc/api/packages/jabber/component/package.html) instead of [jabber.client.*](http://hxmpp.disktree.net/doc/api/packages/jabber/client/package.html))
-* -D jabber_flashsocketbridge  Enables to use a flash socket bridge as stream connection for the javascript target (see [hxmpp/util/flash-socketbridge](https://github.com/tong/hxmpp/tree/master/util/flash-socketbridge))
+* -D jabber_flashsocketbridge  Enable to use a flash socket bridge as stream connection for the js/browser target (see [hxmpp/util/flash-socketbridge](https://github.com/tong/hxmpp/tree/master/util/flash-socketbridge))
+* -D nodejs    Set to build for nodejs
+
+
+
+### NODE.JS
+To build for nodejs use type definitions from here: https://github.com/dionjwa/nodejs-std
+Set compiler flag: -D nodejs
 
 
 
@@ -84,6 +56,43 @@ service apache2 restart
 ```javascript
 var cnx = new jabber.BOSHConnection( "server.org", "127.0.0.1/httpbind/" );
 ```
+
+
+
+### XEPS SUPPORTED
+* [XEP-0004 DataForms](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0012 LastActivity](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0016 PrivacyLists](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0030 ServiceDiscovery](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0045 MUChat](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0047 In-Band Bytestreams](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0049 Private XML Storage](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0054 VCardTemp](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0055 Search](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0060 PubSub](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0065 SOCKS5 Bytestreams](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0071 XHTML-IM](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0077 In-Band Registration](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0082 XMPP Date and Time Profiles](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0085 ChatStateNotification](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0092 SoftwareVersion](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0096 SI File Transfer](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0106 JID Escaping](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0114 Jabber Component Protocol](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0115 Entity Capabilities](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0124 BOSH](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0163 PersonalEvent ](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0191 Simple Communications Blocking](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0199 Ping ](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0202 EntityTime](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0203 DelayedDelivery](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0206 BOSH](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0231 Bits of Binary](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-0224 Attention](http://xmpp.org/extensions/xep-0004.html)
+* [XEP-XXXX Linked Process Protocol](http://xmpp.org/extensions/inbox/lop.html)
+* [XEP-XXXX GMail Notifiy](http://code.google.com/apis/talk/jep_extensions/gmail.html)
+* [XEP-XXXX Jingle RTMP Transport](http://xmpp.org/extensions/inbox/jingle-rtmp.html)
+* XEP-XXXX Jingle RTMFP Transport
 
 
 ---
