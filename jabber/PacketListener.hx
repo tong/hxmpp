@@ -22,7 +22,7 @@
 package jabber;
 
 /**
-	Abstract base for top level packet listeners (jabber.PresenceListener,jabber.MessageListener).
+	Abstract base for top level packet listeners (jabber.PresenceListener, jabber.MessageListener).
 */
 class PacketListener<T:xmpp.Packet> {
 	
@@ -30,7 +30,7 @@ class PacketListener<T:xmpp.Packet> {
 	public dynamic function onPacket( p : T ) {}
 	
 	/** Activates/Deactivates packet collecting */
-	public var listen(default,set_listen) : Bool;
+	public var listen(default,set) : Bool;
 	public var stream(default,null) : jabber.Stream;
 	
 	var collector : PacketCollector;
@@ -50,9 +50,8 @@ class PacketListener<T:xmpp.Packet> {
 			stream.removeCollector( collector );
 	}
 	
-	// override me if you want
 	function handlePacket( p : T ) {
-		this.onPacket( p );
+		onPacket( p );
 	}
 	
 }

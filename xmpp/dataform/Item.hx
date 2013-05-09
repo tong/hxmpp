@@ -35,7 +35,8 @@ class Item {
 	
 	function createXml( n : String ) : Xml {
 		var x = Xml.createElement( n );
-		for( f in fields ) x.addChild( f.toXml() );
+		for( f in fields )
+			x.addChild( f.toXml() );
 		return x;
 	}
 	

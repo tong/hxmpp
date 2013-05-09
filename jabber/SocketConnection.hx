@@ -23,15 +23,10 @@ package jabber;
 
 import haxe.io.Bytes;
 
-#if (neko||php||cpp||java||cs||rhino)
+#if sys
 
-#if (neko||php||cpp||java||cs)
 import sys.net.Host;
 import sys.net.Socket;
-#elseif rhino
-import js.net.Host;
-import js.net.Socket;
-#end
 
 class SocketConnection extends SocketConnectionBase {
 		
@@ -45,7 +40,7 @@ class SocketConnection extends SocketConnectionBase {
 		
 		#if (jabber_debug && (neko||cpp||air) )
 		if( secure ) {
-			trace( "startTLS not implemented, use jabber.SecureSocketConnection for legacy TLS on port 5223", "warn" );
+			trace( "start-tls not implemented, use jabber.SecureSocketConnection for legacy tls on port 5223", "warn" );
 			this.secure = false;
 		}
 		#end
@@ -64,7 +59,7 @@ class SocketConnection extends SocketConnectionBase {
 	}
 	
 	public override function setSecure() {
-		#if (neko||cpp)
+		#if (neko||cpp||cs||java)
 		throw "startTLS not implemented";
 		#elseif php
 		try {
@@ -96,6 +91,7 @@ class SocketConnection extends SocketConnectionBase {
 		return true;
 	}
 }
+
 
 #elseif (chrome_app)
 

@@ -22,7 +22,7 @@
 package xmpp;
 
 /**
-	Misc XML utilities.
+	XML utilities.
 */
 class XMLUtil {
 	
@@ -90,10 +90,8 @@ class XMLUtil {
 	public static function ns( x : Xml, ?ns : String ) : String {
 		if( ns == null )
 			return x.get( 'xmlns' );
-		else {
-			setNamespace( x, ns );
-			return ns;
-		}
+		setNamespace( x, ns );
+		return ns;
 	}
 	
 	/**

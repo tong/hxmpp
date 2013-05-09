@@ -23,7 +23,6 @@ package jabber;
 
 /**
 	Request entity for 'Bits Of Binary'.
-
 	XEP-0231: Bits Of Binary: http://xmpp.org/extensions/xep-0231.html
 */
 class BOB {

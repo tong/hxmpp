@@ -62,7 +62,7 @@ class PrivacyLists {
 		var me = this;
 		sendRequest( xmpp.IQType.get, function(r) {
 			var l = xmpp.PrivacyLists.parse( r.x.toXml() );
-			me.onInfo( l.list[0] );
+			me.onInfo( l.lists[0] );
 		}, null, null, new xmpp.PrivacyList( name ) );
 	}
 	
@@ -110,7 +110,7 @@ class PrivacyLists {
 		var me = this;
 		sendRequest( xmpp.IQType.set, function(r) {
 			var l = xmpp.PrivacyLists.parse( r.x.toXml() );
-			me.onRemoved( l.list[0] );
+			me.onRemoved( l.lists[0] );
 		}, null, null, new xmpp.PrivacyList( name ) );
 	}
 	
@@ -119,7 +119,7 @@ class PrivacyLists {
 		var me = this;
 		sendRequest( xmpp.IQType.set, function(r) {
 			var l = xmpp.PrivacyLists.parse( r.x.toXml() );
-			me.onUpdate( l.list[0] );
+			me.onUpdate( l.lists[0] );
 		}, null, null, list );
 	}
 	
@@ -129,7 +129,7 @@ class PrivacyLists {
 		var xt = new xmpp.PrivacyLists();
 		if( active != null ) xt.active = active;
 		else if( _default != null ) xt._default = _default; 
-		else if( list != null ) xt.list.push( list );
+		else if( list != null ) xt.lists.push( list );
 		iq.x = xt;
 		var me = this;
 		stream.sendIQ( iq, function(r:xmpp.IQ) {

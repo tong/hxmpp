@@ -26,13 +26,13 @@ import xmpp.command.Action;
 
 /**
 	Advertising and executing of application-specific commands, such as those related to a configuration workflow.
-
 	http://xmpp.org/extensions/xep-0050.html
 */
 class AdHocCommandListener {
 	
 	/** */
 	public dynamic function onRequest( jid : String, cmd : xmpp.AdHocCommand ) : xmpp.AdHocCommand { return null; }
+	
 	/** */
 	public dynamic function onCancel( jid : String, cmd : xmpp.AdHocCommand ) {}
 	
@@ -55,7 +55,7 @@ class AdHocCommandListener {
 	}
 	
 	/**
-		Announce available commands to entity.
+		Announce available commands to given entity.
 		http://xmpp.org/extensions/xep-0050.html#announce
 	*/
 	public function announce( jid : String, subject : String, items : xmpp.disco.Items ) {
@@ -82,7 +82,9 @@ class AdHocCommandListener {
 			stream.sendPacket( r );
 			onCancel( iq.from, cmd );
 		default :
-			//trace("action ??? "+action );
+			#if jabber_debug
+			trace( "unknown command action : "+action );
+			#end
 		}
 	}
 }
