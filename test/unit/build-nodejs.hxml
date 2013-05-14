@@ -1,0 +1,8 @@
+
+config.hxml
+-js out/test.nodejs
+-lib nodejs
+-lib nodejs-std
+-D nodejs
+-main Run
+-cmd node out/test.nodejs

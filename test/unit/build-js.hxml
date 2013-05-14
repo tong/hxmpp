@@ -1,0 +1,5 @@
+
+config.hxml
+-js out/test.js
+-main Run
+--macro Run.writePlatformHTML('js','#0000ff')

@@ -1,0 +1,5 @@
+
+config.hxml
+-java out/java
+-main Run
+-cmd mv out/java/java.jar out/test.jar && java -jar out/test.jar

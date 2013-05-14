@@ -1,0 +1,5 @@
+
+config.hxml
+-cs out/cs
+-main Run
+-cmd mv out/cs/bin/cs.exe out/test.cs && chmod +x out/test.cs && ./out/test.cs

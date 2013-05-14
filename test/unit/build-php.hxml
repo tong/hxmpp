@@ -1,0 +1,6 @@
+
+config.hxml
+-php out
+--php-front test.php
+-main Run
+-cmd php out/test.php

@@ -1,0 +1,5 @@
+
+config.hxml
+-swf out/test.swf
+-swf-header 0:0:60:D11A1F
+-main Run

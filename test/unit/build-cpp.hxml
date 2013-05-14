@@ -1,0 +1,6 @@
+
+config.hxml
+-cpp out/cpp
+-main Run
+-cmd mv ./out/cpp/Run ./out/test.cpp
+-cmd ./out/test.cpp

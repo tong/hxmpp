@@ -1,74 +1,25 @@
 
 # --- HXMPP Unit Tests
 
--cp ../
-#-D macro-times
-#--no-opt
-#-debug
--dce full
-#-D xmpp_debug
-#-D jabber_debug
-#-D format-warning
---each
-
+build-cpp.hxml
 
 --next
--cmd mkdir -p out
+build-cs.hxml
 
 --next
--swf out/test.swf
--swf-version 11
--swf-header 0:0:60:D11A1F
--main Run
+build-flash.hxml
 
 --next
--js out/test.js
--main Run
---macro Run.writePlatformHTML('js','#0000ff')
+build-java.hxml
 
 --next
--neko out/test.n
--main Run
--cmd neko out/test.n
+build-js.hxml
 
 --next
--php out
---php-front test.php
--main Run
--cmd php out/test.php
+build-neko.hxml
 
 #--next
-#-cs out/cs
-#-cs out/cs_unsafe
-#-D unsafe
-#-main Run
+#build-nodejs.hxml
 
 --next
--java out/java
--main Run
-#-cmd cd out/java/src && javac
-
-#--next
-#-cpp out/cpp
-#-main Run
-#-cmd mv ./out/cpp/Run ./out/test_cpp
-#-cmd ./out/test_cpp
-
---next
--js out/test_node.js
--lib nodejs
--cp ../../../hx-node/
--D nodejs
--main Run
--cmd node out/test_node.js
-
---next
--as3 out/as3
--main Run
-#-cmd mxmlc -static-link-runtime-shared-libraries=true -debug as3/__main__.as --output test-as3.swf
-
---next
--neko out/test-component.n
--main Run
--D jabber_component
--cmd neko out/test-component.n
+build-php.hxml

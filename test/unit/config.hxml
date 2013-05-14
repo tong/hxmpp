@@ -1,0 +1,9 @@
+
+#-D xmpp_debug
+#-D jabber_debug
+#-D format-warning
+#-D macro-times
+#--no-opt
+#-debug
+-dce no
+-cp ../../
