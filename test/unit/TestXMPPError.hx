@@ -23,13 +23,17 @@ class TestXMPPError extends haxe.unit.TestCase {
 	
 	public function testBuild() {
 		
-		var e = new xmpp.Error( xmpp.ErrorType.cancel, "bad-rassertEqualsuest" );
-		#if !flash //TODO flash
-		assertEquals( '<error type="cancel"><bad-rassertEqualsuest xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>', e.toXml().toString() );
-		#end
-		assertEquals( e.type, xmpp.ErrorType.cancel );
-		assertEquals( e.condition, "bad-rassertEqualsuest" );
+		var e = new xmpp.Error( xmpp.ErrorType.cancel, "bad-request" );
 		
+		#if !flash //TODO flash
+		//trace( e.toXml() );
+		assertEquals( '<error type="cancel"><bad-request xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>', e.toXml().toString() );
+		#end
+
+		assertEquals( e.type, xmpp.ErrorType.cancel );
+		assertEquals( e.condition, "bad-request" );
+		assertEquals( e.code, null );
+
 		var e = new xmpp.Error( xmpp.ErrorType.cancel, "conflict", 123 );
 		e.lang = "en";
 		e.app = { xmlns : "http://disktree.net", condition : "app-specific-error" };
@@ -37,6 +41,7 @@ class TestXMPPError extends haxe.unit.TestCase {
 		assertEquals( 'cancel', x.get("type") );
 		assertEquals( '123', x.get("code") );
 		assertEquals( 'conflict', x.firstElement().nodeName );
+		
 		#if !flash //TODO flash
 		assertEquals( 'urn:ietf:params:xml:ns:xmpp-stanzas', x.firstElement().get("xmlns") );
 		#end

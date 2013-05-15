@@ -39,13 +39,13 @@ import xmpp.filter.PacketNameFilter;
 */
 class Authentication extends AuthenticationBase {
 	
-	/** Callback for SASL negotiation complete */
+	/** Callback on SASL negotiation completed */
 	public dynamic function onNegotiated() {}
 	
 	/** Clients SASL mechanisms (in prefered order) */
 	public var mechanisms(default,null) : Array<jabber.sasl.Mechanism>;
 	
-	/** Available mechanisms offered by server */
+	/** Available SASL mechanisms offered by server */
 	public var serverMechanisms(default,null) : Array<String>;
 	
 	/** Used SASL method */
@@ -56,8 +56,6 @@ class Authentication extends AuthenticationBase {
 	var c_fail : PacketCollector;
 	var c_success : PacketCollector;
 	
-	/**
-	*/
 	public function new( stream : Stream, mechanisms : Iterable<jabber.sasl.Mechanism> ) {
 		super( stream );
 		var x = stream.server.features.get( "mechanisms" );

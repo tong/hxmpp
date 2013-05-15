@@ -61,10 +61,6 @@ class Base64 {
 	//#if (nodejs||php) #end
 	function encode( s : String ) : String {
 		
-		//#if neko
-		//return sys.Base64.encode(s);
-		//#end
-		
 		#if nodejs
 		return new NodeBuffer(s).toString( NodeC.BASE64 );
 		//return new Buffer( s, Node.BASE64 ).toString( Node.UTF8 );
@@ -73,11 +69,13 @@ class Base64 {
 		return untyped __call__( "base64_encode", s );
 		
 		#else
+			
 			#if js
 			if(  untyped window.btoa != null ) {
 				return untyped window.btoa( s );
 			}
 	        #end
+
 	        //TODO wtf
 	      	s = removeNullbits( s );
 	        var p = getNullbits(s);
@@ -85,23 +83,30 @@ class Base64 {
 	        return r+p;
 	       // var r = bc.encodeString( s );
 	       // return fillNullbits(r);
+	       
 		#end
 	}
 	
 	public static inline function decode( s : String ) : String {
+		
 		#if nodejs
 		return new NodeBuffer( s, NodeC.BASE64 ).toString( NodeC.ASCII );
+		
 		#elseif php
 		return untyped __call__( "base64_decode", s );
+		
 		#else
+			
 			#if js
 			return if( untyped window.atob != null ) {
 				untyped window.atob( s );
 			} else {
 				bc.decodeString( removeNullbits(s) );
 			}
+
 			#else
 			return bc.decodeString( removeNullbits(s) );
+
 			#end
 		#end
 	}

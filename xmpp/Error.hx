@@ -33,7 +33,7 @@ class Error extends xmpp.ErrorPacket {
 	public var code : Null<Int>;
 	
 	public function new( type : ErrorType, condition : String,
-				  		 ?code : Null<Int>, ?text : String, ?lang : String, ?app : ApplicationErrorCondition) {
+				  		 ?code : Null<Int>, ?text : String, ?lang : String, ?app : ApplicationErrorCondition ) {
 		super( condition, text, lang, app );
 		this.type = type;
 		this.code = code;
@@ -51,14 +51,15 @@ class Error extends xmpp.ErrorPacket {
 		if( !ErrorPacket.parseInto( p, x, XMLNS ) )
 			return null;
 		//TODO remove try/catch here
-		try {
+	//	try {
 			p.type = Type.createEnum( ErrorType, x.get( "type" ).toLowerCase() );
 			var v = x.get( "code" );
-			if( v != null ) p.code = Std.parseInt( v );
-		} catch(e:Dynamic) {
-			#if jabber_debug trace(e,"error"); #end
-			return null;
-		}
+			if( v != null )
+				p.code = Std.parseInt( v );
+	//	} catch(e:Dynamic) {
+	//		#if jabber_debug trace(e,"error"); #end
+	//		return null;
+	//	}
 		return p;
 	}
 	

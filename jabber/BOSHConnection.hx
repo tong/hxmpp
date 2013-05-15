@@ -144,11 +144,6 @@ class BOSHConnection extends jabber.StreamConnection {
 			#end
 			
 			sendRequests( b );
-			/*
-			#if sys
-			while( connected ) readData();
-			#end
-			*/
 		}
 	}
 	
@@ -247,7 +242,6 @@ class BOSHConnection extends jabber.StreamConnection {
 		}
 		requestCount++;
 		
-		
 		if( t == null ) {
 			if( poll ) {
 				t = createRequest();
@@ -281,16 +275,12 @@ class BOSHConnection extends jabber.StreamConnection {
 		r.onError = function(d) { trace(d); }
 		r.request( true );
 		*/
-		
 			
 		#if js
 		//trace(">###############################");
 		//trace(data);
-		//TODO remove !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		//WTF!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		//data = StringTools.replace( data, "&lt;", "<" );
-		//data = StringTools.replace( data, "&gt;", ">" );
-		///////////////////////////////////////////////////////////////////////////////
+		data = StringTools.replace( data, "&lt;", "<" );
+		data = StringTools.replace( data, "&gt;", ">" );
 	
 		var r = new XMLHttpRequest();
 		//r.withCredentials = true;
@@ -305,7 +295,6 @@ class BOSHConnection extends jabber.StreamConnection {
 			else
 				handleHTTPError( "Http Error #"+r.status );
 		}
-		//trace("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSNDING: "+data );
 		r.send( data );
 		
 		//#end

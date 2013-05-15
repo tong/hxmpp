@@ -21,10 +21,11 @@
  */
 package jabber.util;
 
+#if js
+
 import js.html.ArrayBuffer;
 import js.html.Uint8Array;
 
-@:require(js)
 class ArrayBufferUtil {
 	
 	/**
@@ -75,3 +76,5 @@ class ArrayBufferUtil {
 	*/
 	
 }
+
+#end

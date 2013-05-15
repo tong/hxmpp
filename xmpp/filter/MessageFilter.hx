@@ -21,8 +21,10 @@
  */
 package xmpp.filter;
 
+//import haxe.EnumTools;
+
 /** 
-	Filters message packets, optional with given xmpp.MessageType.
+	Filters message packets, optional including xmpp.MessageType.
 */
 class MessageFilter {
 		
@@ -32,9 +34,16 @@ class MessageFilter {
 		this.type = type;
 	}
 	
-	@:keep public function accept( p : xmpp.Packet ) : Bool {
+	@:keep
+	public function accept( p : xmpp.Packet ) : Bool {
 		if( p._type != xmpp.PacketType.message )
 			return false;
+		//if( type != null )
+		//	return EnumValueTools.equals( type, untyped p.type );
+		/*
+		if( p._type != xmpp.PacketType.message )
+			return false;
+		*/
 		return ( type == null ) ? true : ( type == untyped p.type );
 	}
 	

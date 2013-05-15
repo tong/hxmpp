@@ -6,8 +6,8 @@ import sys.FileSystem;
 import sys.io.File;
 #elseif nodejs
 import js.Node;
-import js.FileSystem;
-import js.io.File;
+//import sys.FileSystem;
+//import sys.io.File;
 #end
 
 #if macro
@@ -26,6 +26,8 @@ private typedef HTMLContext = { > Platform,
 }
 
 class Run {
+
+	static inline var HTML_TPL = 'test.tpl.html';
 	
 	static var platform : Platform =
 		#if cpp
@@ -74,7 +76,7 @@ class Run {
 		tf.text = "FLASH\n";
 		flash.Lib.current.addChild( tf );
 		#end
-		
+
 		result = "";
 		haxe.unit.TestRunner.print = addResult;
 		
@@ -138,16 +140,27 @@ class Run {
 		tf.htmlText = '<b>FLASH</b> <span>'+time+'ms</span><br><div>'+result+'</div>';
 		
 		#elseif nodejs
-		Node.fs.writeFileSync( 'out/run_${platform.name}.html', new Template( Node.fs.readFileSync( "platform.tpl", NodeC.ASCII ) ).execute( createHTMLContext( time ) ) );
+		Node.fs.writeFileSync( 'out/run_${platform.name}.html', new Template( Node.fs.readFileSync( HTML_TPL, NodeC.ASCII ) ).execute( createHTMLContext( time ) ) );
 		
 		#elseif js
 		js.Browser.document.getElementById( "time" ).innerHTML = time+"ms";
 		js.Browser.document.getElementById( "result" ).innerHTML = result;
 		
+		//#elseif cs
+		//trace("TODO");
+
+		//#elseif java
+		//createHTMLContext( time );
+		//var content = new Template( File.getContent( HTML_TPL ) ).execute( createHTMLContext( time ) );
+		//trace(content);
+		//File.saveContent( 'out/run_${platform.name}.html', 'RRR' );
+
 		#elseif sys
-		File.saveContent( 'out/run_${platform.name}.html', new Template( File.getContent( "platform.tpl" ) ).execute( createHTMLContext( time ) ) );
+		File.saveContent( 'out/run_${platform.name}.html', new Template( File.getContent( HTML_TPL ) ).execute( createHTMLContext( time ) ) );
 		
 		#end
+
+		//trace( 'ok' );
 	}
 	
 	static function createHTMLContext( ?time : Int ) {
@@ -162,7 +175,7 @@ class Run {
 	
 	#if macro
 	static function writePlatformHTML( platform : String, color : String ) {
-		File.saveContent( 'out/run_$platform.html', new Template( File.getContent( "platform.tpl" ) ).execute( {
+		File.saveContent( 'out/run_$platform.html', new Template( File.getContent( HTML_TPL ) ).execute( {
 			platform : platform,
 			color : color,
 			time : 0,
