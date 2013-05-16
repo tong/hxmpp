@@ -1,0 +1,11 @@
+
+../example.hxml
+-main App
+--each
+
+--next
+-js app.js
+
+--next
+-swf app.swf
+-swf-header 1400:600:60:dddddd

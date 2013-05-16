@@ -1,0 +1,47 @@
+
+
+../example.hxml
+-main App
+--each
+
+#../src/include.hxml
+#-swf test.swf
+#-swf-version 10
+#-swf-header 600:600:60:cccccc
+#-main Test
+#-D TLS
+#-cp ../../hxmpp/util/tls_flash
+#-swf-lib ../../hxssl.fl/ssl.swf
+
+--next
+-neko app.n
+-lib hxssl
+-cp ../../../hxssl
+
+--next
+-php .
+--php-front app.php
+
+
+#--next
+#../src/include.hxml
+#-js test.node.js
+#-cp ../../node.hx
+#-D nodejs 
+#-main Test
+
+#--next
+#../src/include.hxml
+#-cp ../../hxair
+#-swf air/test.swf
+#-swf-version 10
+#-swf-header 600:600:60:cccccc
+#-main Test
+#-D air
+
+#--next
+#../src/include.hxml
+#-cp ../../hxair
+#-js air/test.js
+#-main Test
+#-D air

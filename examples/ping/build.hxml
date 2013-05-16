@@ -1,0 +1,11 @@
+
+../example.hxml
+--each
+
+--next
+-neko app_ping.n
+-main AppPing
+
+--next
+-neko app_pong.n
+-main AppPong

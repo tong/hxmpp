@@ -1,0 +1,6 @@
+-cp ../
+-cp ../../
+-D jabber_debug
+-D xmpp_debug
+-debug
+-dce full

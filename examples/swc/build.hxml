@@ -1,0 +1,15 @@
+
+-swf hxmpp.swc
+-D jabber_debug
+-D xmpp_debug
+-cp ../../../hxmpp
+
+jabber.SocketConnection
+jabber.ServiceDiscovery
+jabber.client.Stream
+jabber.client.Authentication
+jabber.client.Roster
+jabber.client.VCardTemp
+jabber.sasl.MD5Mechanism
+
+#-cmd mxmlc Test.as -include-libraries hxmpp.swc -output test.swf

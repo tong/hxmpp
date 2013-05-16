@@ -1,0 +1,13 @@
+
+../example.hxml
+-main App
+--each
+
+--next
+-neko app.n
+
+--next
+-js app.js
+
+--next
+-swf app.swf

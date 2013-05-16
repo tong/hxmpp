@@ -1,0 +1,12 @@
+
+-lib xspf
+../example.hxml
+--each
+
+--next
+-neko app_a.n
+-main AppRomeo
+
+--next
+-neko app_b.n
+-main AppJulia

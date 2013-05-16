@@ -1,0 +1,11 @@
+
+../example.hxml
+--each
+
+--next
+-main Api
+-neko api.n
+
+--next
+-main App
+-neko app.n

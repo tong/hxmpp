@@ -1,0 +1,19 @@
+
+-cp ../../../hxmpp/
+-D jabber_debug
+-D xmpp_debug
+-main App
+--each
+
+--next
+-neko app.n
+
+--next
+-js app.js
+
+--next
+-swf app.swf
+
+--next
+-php .
+--php-front app.php

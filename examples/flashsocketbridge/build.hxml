@@ -1,0 +1,7 @@
+
+-js app.js
+App
+-cp ../../../hxmpp
+-D jabber_flashsocketbridge
+-D jabber_debug
+-D xmpp_debug

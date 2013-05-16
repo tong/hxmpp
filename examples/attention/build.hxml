@@ -1,0 +1,11 @@
+
+../example.hxml
+--each
+
+--next
+-neko app_romeo.n
+-main AppRomeo
+
+--next
+-neko app_julia.n
+-main AppJulia

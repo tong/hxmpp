@@ -1,0 +1,11 @@
+
+../example.hxml
+-main App
+--each
+
+--next
+-neko app.n
+
+--next
+-php .
+--php-front app.php

@@ -1,0 +1,27 @@
+
+../example.hxml
+-main App
+--each
+
+--next
+-php .
+--php-front test.php
+
+#--next
+#-swf app.swf
+
+--next
+-js app.js
+-D jabber_flashsocketbridge
+
+#--next
+#-cp ../../hxssl
+#-neko test.n
+#-lib hxssl
+
+#--next
+#-js test.node.js
+#-D nodejs
+#-lib nodejs
+#-lib nodejs-std
+#-cp ../../hxnodejs
