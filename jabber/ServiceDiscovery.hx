@@ -50,8 +50,10 @@ class ServiceDiscovery {
 		Query entity for information.
 	*/
 	public function info( ?jid : String, ?node : String ) {
+		#if !jabber_component
 		if( jid == null )
 			jid = stream.jid.domain;
+		#end
 		var r = new IQ( IQType.get, null, jid );
 		r.x = new Info( null, null, node );
 		stream.sendIQ( r, handleInfo );
@@ -61,8 +63,10 @@ class ServiceDiscovery {
 		Query entity for items.
 	*/
 	public function items( ?jid : String, ?node : String ) {
+		#if !jabber_component
 		if( jid == null )
 			jid = stream.jid.domain;
+		#end
 		var r = new IQ( IQType.get, null, jid );
 		r.x = new Items( node );
 		stream.sendIQ( r, handleItems );
