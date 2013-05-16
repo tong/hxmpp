@@ -2,12 +2,9 @@
 	"name": "hxmpp",
 	"url": "https://github.com/tong/hxmpp",
 	"license": "MIT",
-	"tags": ["xmpp","jabber","jingle","chat","cross","net"],
+	"tags": ["xmpp","jabber","jingle","chat","net"],
 	"description": "XMPP/Jabber library",
 	"version": "0.4.12",
 	"releasenote": "Misc",
-	"contributors": ["tong"],
-	"dependencies": {
-		"hxssl": ""
-	}
+	"contributors": ["tong"]
 }
