@@ -41,10 +41,12 @@ class AnonymousMechanism {
 		this.challengeResponse = challengeResponse;
 	}
 	
-	@:keep public function createAuthenticationText( user : String, host : String, pass : String, resource : String ) : String {
+	@:keep
+	public function createAuthenticationText( user : String, host : String, pass : String, resource : String ) : String {
 		return null; // Nothing to send in the <auth> body
 	}
 	
+	@:keep
 	public function createChallengeResponse( c : String ) : String {
 		return challengeResponse; // Not required
 	}

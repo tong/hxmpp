@@ -44,6 +44,7 @@ class LOGINMechanism {
 		id = NAME;
 	}
 	
+	@:keep
 	public function createAuthenticationText( username : String, host : String, password : String, resource : String ) : String {
 		this.password = password;
 		this.username = username;
@@ -51,6 +52,7 @@ class LOGINMechanism {
 		return null;
 	}
 	
+	@:keep
 	public function createChallengeResponse( c : String ) : String {
 		return ( ++nChallenges == 1 ) ? username : password;
 	}
