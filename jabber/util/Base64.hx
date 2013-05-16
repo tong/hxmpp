@@ -22,6 +22,11 @@
 package jabber.util;
 
 import haxe.io.Bytes;
+
+#if (!php&&!nodejs)
+import haxe.crypto.BaseCode;
+#end
+
 #if nodejs
 import js.Node;
 #end
@@ -29,6 +34,86 @@ import js.Node;
 /**
 	Base64 encoding/decoding utility.
 */
+class Base64 {
+
+	public static var CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+	/**
+	*/
+	public static
+	#if (nodejs||php) inline #end
+	function encode( s : String ) : String {
+
+		#if php
+		return untyped __call__( "base64_encode", s );
+
+		#elseif nodejs
+		return new NodeBuffer(s).toString( NodeC.BASE64 );
+		
+		#else
+
+			#if js
+			if( untyped window.btoa != null )
+				return untyped window.btoa( s );
+			#end
+			
+			var suf = switch( s.length % 3 )  {
+			case 2 : "=";
+			case 1 : "==";
+			default : "";
+			};
+			return BaseCode.encode( s, CHARS ) + suf;
+
+		#end
+	}
+
+	/**
+	*/
+	public static
+	#if (nodejs||php) inline #end
+	function decode( s : String ) : String {
+		
+		#if php
+		return untyped __call__( "base64_decode", s );
+
+		#elseif nodejs
+		return new NodeBuffer( s, NodeC.BASE64 ).toString( NodeC.ASCII );
+		
+		#else
+
+			#if js
+			if( untyped window.atob != null )
+				untyped window.atob( s );
+			#end
+
+			while( s.charAt( s.length-1 ) == '=' )
+				s = s.substr( 0, s.length-1 );
+			
+			return BaseCode.decode( s, CHARS );
+
+		#end
+	}
+
+	//TODO remove
+	/**
+		Create a random (base64 compatible) string of given length.
+	*/
+	public static function random( len : Int = 1, ?chars : String ) : String {
+		var n : Null<Int> = null;
+		if( chars == null ) {
+			chars = CHARS;
+			n = CHARS.length-2;
+		} else
+			n = chars.length;
+		var s = "";
+		for( i in 0...len )
+			s += chars.charAt( Std.random( n ) );
+		return s;
+	}
+}
+
+
+/*
 class Base64 {
 	
 	public static var CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -58,7 +143,7 @@ class Base64 {
 	#end
 	
 	public static
-	//#if (nodejs||php) #end
+	#if (nodejs||php) inline #end
 	function encode( s : String ) : String {
 		
 		#if nodejs
@@ -143,7 +228,7 @@ class Base64 {
 	/**
 		Create a random (base64 compatible) string of given length.
 //TODO remove
-	*/
+	* /
 	public static function random( len : Int = 1, ?chars : String ) : String {
 		var n : Null<Int> = null;
 		if( chars == null ) {
@@ -158,3 +243,4 @@ class Base64 {
 	}
 	
 }
+*/

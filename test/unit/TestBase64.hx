@@ -45,16 +45,10 @@ class TestBase64 extends haxe.unit.TestCase {
 		assertEquals( te, Base64.encode( t ) );
 		assertEquals( t, Base64.decode(te) );
 		assertEquals( t, Base64.decode(Base64.encode(t)) );
-		
-		//---------------------------+
-		
-		/*
-		t = "Polyfon zwitschernd aßen Mäxchens Vögel Rüben, Joghurt und Quark";
-		te = "UG9seWZvbiB6d2l0c2NoZXJuZCBhw59lbiBNw6R4Y2hlbnMgVsO2Z2VsIFLDvGJlbiwgSm9naHVydCB1bmQgUXVhcms=";
-		assertEquals( te, Base64.encode( t ) );
-		assertEquals( t, Base64.decode(te) );
-		assertEquals( t, Base64.decode(Base64.encode(t)) );
-		*/
+
+		t = 'Haxe is a crossplatform open source programming language';
+		//TODO fails? assertEquals( 'UG9IYXhlIGlzIGEgY3Jvc3NwbGF0Zm9ybSBvcGVuIHNvdXJjZSBwcm9ncmFtbWluZyBsYW5ndWFnZQ==', Base64.encode( t ) );
+		assertEquals( t, Base64.decode( Base64.encode( t ) ) );
 	}
 	
 }
