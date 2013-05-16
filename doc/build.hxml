@@ -1,0 +1,84 @@
+
+--no-output
+#--macro ImportAll.run()
+-cp ../
+-D doc_gen
+-D jabber_debug
+-D xmpp_debug
+#-lib xspf
+jabber.Attention
+jabber.EntityCapabilities
+jabber.EntityTime
+jabber.EntityTimeListener
+jabber.MUCUtil
+jabber.LastActivity
+jabber.LastActivityListener
+jabber.MessageListener
+jabber.PersonalEvent
+jabber.PersonalEventListener
+#jabber.Ping
+jabber.Pong
+jabber.PrivacyLists
+jabber.PrivateStorage
+jabber.PubSub
+jabber.PubSubListener
+jabber.ServiceDiscovery
+jabber.ServiceDiscoveryListener
+jabber.SoftwareVersion
+jabber.SoftwareVersionListener
+#jabber.SecureSocketConnection
+jabber.SocketConnection
+jabber.UserSearch
+jabber.lop.Farm
+jabber.lop.Villein
+jabber.remoting.Connection
+jabber.remoting.Host
+jabber.sasl.LOGINMechanism
+jabber.sasl.MD5Mechanism
+jabber.sasl.PlainMechanism
+--each
+
+--next
+client-classes.hxml
+-cpp cpp
+-xml cpp.xml
+
+--next
+client-classes.hxml
+-cs cs
+-xml cs.xml
+-D unsafe
+
+--next
+client-classes.hxml
+-java java
+-xml java.xml
+
+--next
+client-classes.hxml
+-swf all.swf
+-xml flash.xml
+
+--next
+client-classes.hxml
+-js all.js
+-xml js.xml
+jabber.BOSHConnection
+
+--next
+client-classes.hxml
+-neko all.n
+-xml neko.xml
+
+--next
+client-classes.hxml
+-php php
+-xml php.xml
+
+--next
+-xml component.xml
+jabber.component.Stream
+-D jabber_component
+
+--next
+-xml cross.xml
