@@ -47,7 +47,7 @@ class Items extends List<Item> {
 		var max = x.get( "maxItems" );
 		var i = new Items( x.get( "node" ),
 						   x.get( "subid" ),
-						   if( max != null ) Std.parseInt( max ) );
+						   ( max != null ) ? Std.parseInt( max ) : null );
 		for( e in x.elementsNamed( "item" ) )
 			i.add( Item.parse( e ) );
 		return i;

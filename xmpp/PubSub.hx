@@ -44,37 +44,35 @@ class PubSub {
 	
 	public function toXml() : Xml {
 		var x = IQ.createQueryXml( XMLNS, "pubsub" );
-		var c =	if( subscribe != null ) {
-			var e = Xml.createElement( "subscribe" );
-			e.set( "jid", subscribe.jid );
-			if( subscribe.node != null ) e.set( "node", subscribe.node );
-			e;
+		var c : Xml = null;
+		if( subscribe != null ) {
+			c = Xml.createElement( "subscribe" );
+			c.set( "jid", subscribe.jid );
+			if( subscribe.node != null ) c.set( "node", subscribe.node );
 		} else if( unsubscribe != null ) {
-			var e = Xml.createElement( "unsubscribe" );
-			e.set( "jid", unsubscribe.jid );
-			if( unsubscribe.node != null ) e.set( "node", unsubscribe.node );
-			if( unsubscribe.subid != null ) e.set( "subid", unsubscribe.subid );
-			e;
+			c = Xml.createElement( "unsubscribe" );
+			c.set( "jid", unsubscribe.jid );
+			if( unsubscribe.node != null ) c.set( "node", unsubscribe.node );
+			if( unsubscribe.subid != null ) c.set( "subid", unsubscribe.subid );
 		} else if( create != null ) {
-			var e = Xml.createElement( "create" );
-			e.set( "node", create );
+			c = Xml.createElement( "create" );
+			c.set( "node", create );
 //			var conf = Xml.createElement( "configure" );
 //			if( configure != null ) conf.addChild( configure.toXml() );
-//			e.addChild( conf );
-			e;
-		} else if( subscription != null ) {
-			subscription.toXml();
-		} else if( subscriptions != null ) {
+//			c.addChild( conf );
+		} else if( subscription != null )
+			c = subscription.toXml();
+		else if( subscriptions != null )
 			subscriptions.toXml();
-		} else if( publish != null ) {
+		else if( publish != null )
 			publish.toXml();
-		} else if( items != null ) {
+		else if( items != null )
 			items.toXml();
-		} else if( retract != null ) {
+		else if( retract != null )
 			retract.toXml();
-		} else if( affiliations != null ) {
+		else if( affiliations != null )
 			affiliations.toXml();
-		}
+
 		if( options != null )
 			x.addChild( options.toXml() );
 		if( c != null )
