@@ -6,10 +6,9 @@ import sys.FileSystem;
 import sys.io.File;
 #elseif nodejs
 import js.Node;
-//import sys.FileSystem;
-//import sys.io.File;
+#elseif js
+import js.Browser.document;
 #end
-
 #if macro
 import haxe.macro.Context;
 #end
@@ -28,7 +27,13 @@ private typedef HTMLContext = { > Platform,
 class Run {
 
 	static inline var HTML_TPL = 'test.tpl.html';
+
+	#if flash
+	static var tf : flash.text.TextField;
+	#end
 	
+	static var r : haxe.unit.TestRunner;
+	static var result : String;
 	static var platform : Platform =
 		#if cpp
 		{ name : "cpp", color : "#ffffff" }
@@ -47,49 +52,25 @@ class Run {
 		#elseif php
 		{ name : "php", color : "#9999CC" }
 		#end;
-	static var result : String;
-	#if flash
-	static var tf : flash.text.TextField;
-	#end
-	
+		
 	static inline function addResult( v : Dynamic ) {
+		//trace(v);
 		result += StringTools.htmlEscape( Std.string(v) ).split( "\n" ).join( "<br/>" );
 	}
-	
-	static function main() {
-		
-		#if jabber_component
-		platform.name = platform.name+"-component";
-		platform.color = "#666";
-		#end
-		
-		#if flash
-		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
-		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
-		tf = new flash.text.TextField();
-		tf.width = flash.Lib.current.stage.stageWidth;
-		tf.height = flash.Lib.current.stage.stageHeight-1;
-		tf.multiline = true;
-		var format = new flash.text.TextFormat( "sans", 9 );
-		format.leading = -1;
-		tf.defaultTextFormat = format;
-		tf.text = "FLASH\n";
-		flash.Lib.current.addChild( tf );
-		#end
 
-		result = "";
-		haxe.unit.TestRunner.print = addResult;
-		
-		var r = new haxe.unit.TestRunner();
-		
+	static function addTests_core() {
 		r.add( new TestBase64() );
 		r.add( new TestJID() );
 		r.add( new TestMD5() );
 		r.add( new TestMUCUtil() );
 		r.add( new TestSHA1() );
-		
+	}
+
+	static function addTests_util() {
 		r.add( new TestXMLUtil() );
-		
+	}
+
+	static function addTests_xmpp() {
 		r.add( new TestXMPPAuth() );
 		r.add( new TestXMPPBind() );
 		r.add( new TestXMPPBlockList() );
@@ -128,6 +109,37 @@ class Run {
 		r.add( new TestXMPPVCard() );
 		r.add( new TestXMPPVCardTemp() );
 		r.add( new TestXMPPXHTML() );
+	}
+
+	static function main() {
+		
+		#if jabber_component
+		platform.name = platform.name+"-component";
+		platform.color = "#666";
+		#end
+		
+		#if flash
+		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
+		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
+		tf = new flash.text.TextField();
+		tf.width = flash.Lib.current.stage.stageWidth;
+		tf.height = flash.Lib.current.stage.stageHeight-1;
+		tf.multiline = true;
+		var format = new flash.text.TextFormat( "sans", 9 );
+		format.leading = -1;
+		tf.defaultTextFormat = format;
+		tf.text = "FLASH\n";
+		flash.Lib.current.addChild( tf );
+		#end
+
+		result = "";
+		haxe.unit.TestRunner.print = addResult;
+		
+		r = new haxe.unit.TestRunner();
+		
+		addTests_core();
+		addTests_util();
+		addTests_xmpp();
 		
 		var ts = Timer.stamp();
 		r.run();
@@ -143,24 +155,13 @@ class Run {
 		Node.fs.writeFileSync( 'out/run_${platform.name}.html', new Template( Node.fs.readFileSync( HTML_TPL, NodeC.ASCII ) ).execute( createHTMLContext( time ) ) );
 		
 		#elseif js
-		js.Browser.document.getElementById( "time" ).innerHTML = time+"ms";
-		js.Browser.document.getElementById( "result" ).innerHTML = result;
+		document.getElementById( "time" ).innerHTML = time+"ms";
+		document.getElementById( "result" ).innerHTML = result;
 		
-		//#elseif cs
-		//trace("TODO");
-
-		//#elseif java
-		//createHTMLContext( time );
-		//var content = new Template( File.getContent( HTML_TPL ) ).execute( createHTMLContext( time ) );
-		//trace(content);
-		//File.saveContent( 'out/run_${platform.name}.html', 'RRR' );
-
 		#elseif sys
 		File.saveContent( 'out/run_${platform.name}.html', new Template( File.getContent( HTML_TPL ) ).execute( createHTMLContext( time ) ) );
 		
 		#end
-
-		//trace( 'ok' );
 	}
 	
 	static function createHTMLContext( ?time : Int ) {
