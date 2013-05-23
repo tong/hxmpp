@@ -32,7 +32,6 @@ class Run {
 	static var tf : flash.text.TextField;
 	#end
 	
-	static var r : haxe.unit.TestRunner;
 	static var result : String;
 	static var platform : Platform =
 		#if cpp
@@ -53,24 +52,68 @@ class Run {
 		{ name : "php", color : "#9999CC" }
 		#end;
 		
-	static inline function addResult( v : Dynamic ) {
-		//trace(v);
-		result += StringTools.htmlEscape( Std.string(v) ).split( "\n" ).join( "<br/>" );
+	static function addResult( v : Dynamic ) {
+		result += StringTools.htmlEscape( Std.string(v) ).split( "\n" ).join( "<br>" );
 	}
 
-	static function addTests_core() {
+	static function createHTMLContext( ?time : Int ) {
+		return {
+			platform : platform.name,
+			color : platform.color,
+			time : time,
+			result : result,
+			js : platform.name == "js"
+		};
+	}
+	
+	#if macro
+
+	static function writePlatformHTML( platform : String, color : String ) {
+		File.saveContent( 'out/run_$platform.html', new Template( File.getContent( HTML_TPL ) ).execute( {
+			platform : platform,
+			color : color,
+			time : 0,
+			result : "",
+			js : platform == "js"
+		} ) );
+	}
+	
+	#end
+
+	static function main() {
+		
+		#if jabber_component
+		platform.name = platform.name+"-component";
+		platform.color = "#666";
+		#end
+		
+		#if flash
+		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
+		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
+		tf = new flash.text.TextField();
+		tf.width = flash.Lib.current.stage.stageWidth;
+		tf.height = flash.Lib.current.stage.stageHeight-1;
+		tf.multiline = true;
+		var format = new flash.text.TextFormat( "sans", 9 );
+		format.leading = -1;
+		tf.defaultTextFormat = format;
+		tf.text = "FLASH\n";
+		flash.Lib.current.addChild( tf );
+		#end
+
+		result = "";
+		haxe.unit.TestRunner.print = addResult;
+		
+		var r = new haxe.unit.TestRunner();
+		
 		r.add( new TestBase64() );
 		r.add( new TestJID() );
 		r.add( new TestMD5() );
 		r.add( new TestMUCUtil() );
 		r.add( new TestSHA1() );
-	}
 
-	static function addTests_util() {
 		r.add( new TestXMLUtil() );
-	}
 
-	static function addTests_xmpp() {
 		r.add( new TestXMPPAuth() );
 		r.add( new TestXMPPBind() );
 		r.add( new TestXMPPBlockList() );
@@ -109,37 +152,6 @@ class Run {
 		r.add( new TestXMPPVCard() );
 		r.add( new TestXMPPVCardTemp() );
 		r.add( new TestXMPPXHTML() );
-	}
-
-	static function main() {
-		
-		#if jabber_component
-		platform.name = platform.name+"-component";
-		platform.color = "#666";
-		#end
-		
-		#if flash
-		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
-		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
-		tf = new flash.text.TextField();
-		tf.width = flash.Lib.current.stage.stageWidth;
-		tf.height = flash.Lib.current.stage.stageHeight-1;
-		tf.multiline = true;
-		var format = new flash.text.TextFormat( "sans", 9 );
-		format.leading = -1;
-		tf.defaultTextFormat = format;
-		tf.text = "FLASH\n";
-		flash.Lib.current.addChild( tf );
-		#end
-
-		result = "";
-		haxe.unit.TestRunner.print = addResult;
-		
-		r = new haxe.unit.TestRunner();
-		
-		addTests_core();
-		addTests_util();
-		addTests_xmpp();
 		
 		var ts = Timer.stamp();
 		r.run();
@@ -163,27 +175,5 @@ class Run {
 		
 		#end
 	}
-	
-	static function createHTMLContext( ?time : Int ) {
-		return {
-			platform : platform.name,
-			color : platform.color,
-			time : time,
-			result : result,
-			js : platform.name == "js"
-		};
-	}
-	
-	#if macro
-	static function writePlatformHTML( platform : String, color : String ) {
-		File.saveContent( 'out/run_$platform.html', new Template( File.getContent( HTML_TPL ) ).execute( {
-			platform : platform,
-			color : color,
-			time : 0,
-			result : "",
-			js : platform == "js"
-		} ) );
-	}
-	#end
 	
 }
