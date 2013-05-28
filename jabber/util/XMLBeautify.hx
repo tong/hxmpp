@@ -24,7 +24,7 @@ package jabber.util;
 using Lambda;
 
 /**
-	Utility to 'beautify' XML strings for debugging.
+	Utility to 'beautify' XML strings (for debugging).
 */
 class XMLBeautify {
 	

@@ -25,7 +25,8 @@ import xmpp.IQ;
 import xmpp.IQType;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a><br/>
+	PubSub client.
+	http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe
 */
 class PubSub {
 	
@@ -46,16 +47,13 @@ class PubSub {
 	public var service(default,null) : String;
 	public var stream(default,null) : Stream;
 	
-	//TODO add disco funtions related to pubsub to this client (an entity which supports pubsub MUST support disco anyway)
-	//var disco : ServiceDicovery;
-	
 	public function new( stream : Stream, service : String ) {
 		this.stream = stream;
 		this.service = service;
 	}
 	
 	/**
-		Create a pubsub node with the given name (<a href="http://xmpp.org/extensions/xep-0060.html#owner-create">XEP</a>).
+		Create a pubsub node with the given name (http://xmpp.org/extensions/xep-0060.html#owner-create).
 	*/
 	public function createNode( name : String, ?config : xmpp.DataForm ) : IQ {
 		var iq = new IQ( IQType.set );
@@ -69,7 +67,7 @@ class PubSub {
 	}
 	
 	/**
-		Delete pubsub node with the given name (<a href="http://xmpp.org/extensions/xep-0060.html#owner-delete">XEP</a>).
+		Delete pubsub node with given name (http://xmpp.org/extensions/xep-0060.html#owner-delete")
 	*/
 	public function deleteNode( name : String ) : IQ {
 		var iq = new IQ( IQType.set );
@@ -100,7 +98,7 @@ class PubSub {
 	*/
 	
 	/**
-		Subscribe to the given pubsub node.
+		Subscribe to given pubsub node.
 	*/
 	public function subscribe( node : String, ?jid : String ) : IQ {
 		var iq = new IQ( IQType.set );
@@ -116,7 +114,7 @@ class PubSub {
 	}
 	
 	/**
-		Unsubscribe from the given pubsub node.
+		Unsubscribe from given pubsub node.
 	*/
 	public function unsubscribe( node : String, ?jid : String, ?subid : String ) : IQ {
 		var iq = new IQ( IQType.set );

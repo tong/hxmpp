@@ -38,7 +38,7 @@ class PlainMechanism {
 	}
 	
 	@:keep
-	public function createAuthenticationText( username : String, host : String, password : String, resource : String ) : String {
+	public inline function createAuthenticationText( username : String, host : String, password : String, resource : String ) : String {
 		var b = new StringBuf();
 		b.add( String.fromCharCode( 0 ) );
 		b.add( username );
@@ -48,7 +48,7 @@ class PlainMechanism {
 	}
 	
 	@:keep
-	public function createChallengeResponse( c : String ) : String {
+	public inline function createChallengeResponse( c : String ) : String {
 		return null; // This mechanism will never get a challenge from the server.
 	}
 	

@@ -59,7 +59,7 @@ private typedef AbstractSocket = {
 class SocketConnectionBase extends StreamConnection {
 	
 	public static var defaultBufSize = #if php 65536 #else 256 #end; //TODO php buf
-	public static var defaultMaxBufSize = 1<<20; // 1MB
+	public static var defaultMaxBufSize = 1<<22; // 4MB
 	public static var defaultTimeout = 10;
 	
 	public var port(default,null) : Int;

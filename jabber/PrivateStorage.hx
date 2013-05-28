@@ -33,7 +33,7 @@ class PrivateStorage {
 	
 	public var stream(default,null) : jabber.Stream;
 
-	public function new( stream : jabber.client.Stream ) {
+	public function new( stream : jabber.Stream ) {
 		this.stream = stream;
 	}
 	

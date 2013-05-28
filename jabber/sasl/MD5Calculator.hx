@@ -87,7 +87,7 @@ class MD5Calculator {
 	
 	static inline function h( t : String)  return MD5.encode( t, true );
 	static inline function hh( t : String ) : String return MD5.encode( t );
-	static inline function quote( t : String ) : String return '"'+t+'"';
+	static inline function quote( t : String ) : String return '"$t"';
 	static inline function unquote( t : String ) : String return t.substr( 1, t.length-2 );
 	
 }

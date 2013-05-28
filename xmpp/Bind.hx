@@ -24,8 +24,8 @@ package xmpp;
 using xmpp.XMLUtil;
 
 /**
-	IQ extension used to bind a resource to a stream.<br/>
-	<a href="http://xmpp.org/rfcs/rfc3920.html#bind">RFC3920#bind</a>
+	IQ extension used to bind a resource to a stream.
+	http://xmpp.org/rfcs/rfc3920.html#bind">RFC3920#bind
 */
 class Bind {
 	

@@ -277,11 +277,9 @@ class BOSHConnection extends jabber.StreamConnection {
 		*/
 			
 		#if js
-		//trace(">###############################");
-		//trace(data);
+		//TODO why this ?
 		data = StringTools.replace( data, "&lt;", "<" );
 		data = StringTools.replace( data, "&gt;", ">" );
-	
 		var r = new XMLHttpRequest();
 		//r.withCredentials = true;
 		r.open( "POST", getHTTPPath(), true );
@@ -296,8 +294,6 @@ class BOSHConnection extends jabber.StreamConnection {
 				handleHTTPError( "Http Error #"+r.status );
 		}
 		r.send( data );
-		
-		//#end
 		
 		#elseif flash
 		var r = new flash.net.URLRequest( getHTTPPath() );

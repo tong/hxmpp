@@ -28,9 +28,10 @@ import jabber.Stream;
 	Client 2 server XMPP stream.
 */
 class Stream extends jabber.Stream {
-	
+
 	public static inline var PORT = 5222;
 	public static inline var PORT_SECURE = 5223;
+
 	public static var defaultPort = PORT;
 	public static var defaultPortSecure = PORT_SECURE;
 	
