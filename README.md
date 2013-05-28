@@ -5,6 +5,7 @@ Haxe XMPP/Jabber library | [Documentation](http://hxmpp.disktree.net/doc/api/ "A
 Requires: Haxe 3.0.0-RC2
 
 
+
 ### COMPILER FLAGS
 * -D xmpp_debug    Print XMPP transfer (see [jabber.XMPPDebug](http://hxmpp.disktree.net/doc/api/types/jabber/XMPPDebug.html) for options)
 * -D jabber_debug    Print verbose debug information
@@ -14,9 +15,9 @@ Requires: Haxe 3.0.0-RC2
 
 
 
-### NODE.JS
-To build for nodejs use type definitions from here: https://github.com/dionjwa/nodejs-std
-Set compiler flag: -D nodejs
+
+### EXAMPLES
+See: hxmpp/examples
 
 
 
@@ -41,8 +42,8 @@ LoadModule proxy_http_module /usr/lib/apache2/modules/mod_proxy_http.so
 <VirtualHost *:80>
     ...
 	ProxyRequests Off
-	ProxyPass /httpbind http://localhost/http-bind/
-    ProxyPassReverse /httpbind http://localhost:7070/http-bind/
+	ProxyPass /http-bind http://localhost:7070/http-bind/
+	ProxyPassReverse /http-bind http://localhost:7070/http-bind/
 ...
 </VirtualHost>
 ```
@@ -56,6 +57,14 @@ service apache2 restart
 ```javascript
 var cnx = new jabber.BOSHConnection( "server.org", "127.0.0.1/httpbind/" );
 ```
+
+
+
+
+### NODE.JS
+To build for nodejs use type definitions from here: https://github.com/dionjwa/nodejs-std
+Set compiler flag: -D nodejs
+
 
 
 
@@ -93,6 +102,7 @@ var cnx = new jabber.BOSHConnection( "server.org", "127.0.0.1/httpbind/" );
 * [XEP-XXXX GMail Notifiy](http://code.google.com/apis/talk/jep_extensions/gmail.html)
 * [XEP-XXXX Jingle RTMP Transport](http://xmpp.org/extensions/inbox/jingle-rtmp.html)
 * XEP-XXXX Jingle RTMFP Transport
+
 
 
 ---
