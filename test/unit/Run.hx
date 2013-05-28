@@ -9,12 +9,13 @@ import js.Node;
 #elseif js
 import js.Browser.document;
 #end
+
 #if macro
 import haxe.macro.Context;
 #end
 
 private typedef Platform = {
-	var name : String;
+	var platform : String;
 	var color : String;
 }
 
@@ -22,47 +23,49 @@ private typedef HTMLContext = { > Platform,
 	var time : Int;
 	var result : String;
 	var js : Bool;
+	var content : String;
 }
 
 class Run {
 
 	static inline var HTML_TPL = 'test.tpl.html';
-
-	#if flash
-	static var tf : flash.text.TextField;
-	#end
 	
 	static var result : String;
 	static var platform : Platform =
 		#if cpp
-		{ name : "cpp", color : "#ffffff" }
+		{ platform : "cpp", color : "#ffffff" }
 		#elseif cs
-		{ name : "cs", color : "#2E96D5" }
+		{ platform : "cs", color : "#2E96D5" }
 		#elseif flash
-		{ name : "flash", color : "#CC181D" }
+		{ platform : "flash", color : "#CC181D" }
 		#elseif java
-		{ name : "java", color : "#F00000" }
+		{ platform : "java", color : "#F00000" }
 		#elseif neko
-		{ name : "neko", color : "#FFA157" }
+		{ platform : "neko", color : "#FFA157" }
 		#elseif nodejs
-		{ name : "nodejs", color : "#8BC84B" }
+		{ platform : "nodejs", color : "#8BC84B" }
 		#elseif js
-		{ name : "js", color : "#ff5000" }
+		{ platform : "js", color : "#ff5000" }
 		#elseif php
-		{ name : "php", color : "#9999CC" }
+		{ platform : "php", color : "#9999CC" }
 		#end;
+
+	#if flash
+	static var tf : flash.text.TextField;
+	#end
 		
 	static function addResult( v : Dynamic ) {
 		result += StringTools.htmlEscape( Std.string(v) ).split( "\n" ).join( "<br>" );
 	}
 
-	static function createHTMLContext( ?time : Int ) {
+	static function createHTMLContext( ?time : Int ) : HTMLContext {
 		return {
-			platform : platform.name,
+			platform : platform.platform,
 			color : platform.color,
 			time : time,
 			result : result,
-			js : platform.name == "js"
+			js : platform.platform == "js",
+			content : null
 		};
 	}
 	
@@ -74,7 +77,8 @@ class Run {
 			color : color,
 			time : 0,
 			result : "",
-			js : platform == "js"
+			js : platform == "js",
+			content : '<script src="test.js"></script>'
 		} ) );
 	}
 	
@@ -83,7 +87,7 @@ class Run {
 	static function main() {
 		
 		#if jabber_component
-		platform.name = platform.name+"-component";
+		platform.platform = platform.platform+"-component";
 		platform.color = "#666";
 		#end
 		
@@ -161,17 +165,17 @@ class Run {
 		var time = Std.parseInt( stime );
 		
 		#if flash
-		tf.htmlText = '<b>FLASH</b> <span>'+time+'ms</span><br><div>'+result+'</div>';
+		tf.htmlText = '<b>FLASH</b> <span>$time ms</span><br><div>$result</div>';
 		
 		#elseif nodejs
-		Node.fs.writeFileSync( 'out/run_${platform.name}.html', new Template( Node.fs.readFileSync( HTML_TPL, NodeC.ASCII ) ).execute( createHTMLContext( time ) ) );
+		Node.fs.writeFileSync( 'out/run_${platform.platform}.html', new Template( Node.fs.readFileSync( HTML_TPL, NodeC.ASCII ) ).execute( createHTMLContext( time ) ) );
 		
 		#elseif js
 		document.getElementById( "time" ).innerHTML = time+"ms";
 		document.getElementById( "result" ).innerHTML = result;
 		
 		#elseif sys
-		File.saveContent( 'out/run_${platform.name}.html', new Template( File.getContent( HTML_TPL ) ).execute( createHTMLContext( time ) ) );
+		File.saveContent( 'out/run_${platform.platform}.html', new Template( File.getContent( HTML_TPL ) ).execute( createHTMLContext( time ) ) );
 		
 		#end
 	}

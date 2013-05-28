@@ -3,14 +3,14 @@
 
 build-cpp.hxml
 
-#--next
-#build-cs.hxml
+--next
+build-cs.hxml
 
 --next
 build-flash.hxml
 
-#--next
-#build-java.hxml
+--next
+build-java.hxml
 
 --next
 build-js.hxml
@@ -18,8 +18,8 @@ build-js.hxml
 --next
 build-neko.hxml
 
-#--next
-#build-nodejs.hxml
+--next
+build-nodejs.hxml
 
 --next
 build-php.hxml
