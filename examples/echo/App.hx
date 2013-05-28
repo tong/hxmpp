@@ -3,22 +3,12 @@ import jabber.client.Stream;
 import jabber.client.Authentication;
 
 /**
-	Echo client
+	XMPP echo client
 */
 class App {
 
-	//static var JID = "tong@om";
-	//static var PASSWORD = "test";
-	//static var IP = "localhost";
-	
-	/*
 	static var JID = "hxmpp@jabber.org";
 	static var PASSWORD = "mypassword";
-	static var IP = null;
-	static var RESOURCE = "abz-hxmpp";
-	*/
-	static var JID = "hxmpp@jabber.spektral.at";
-	static var PASSWORD = "test77";
 	static var IP = null;
 	static var RESOURCE = "abz-hxmpp";
 
@@ -26,14 +16,16 @@ class App {
 
 	static function onMessage( m : xmpp.Message ) {
 
+		// avoid processing of offline sent messages
 		if( xmpp.Delayed.fromPacket( m ) != null )
-			return; // avoid processing of offline sent messages
+			return;
 
-		var jid = new jabber.JID( m.from ); // get jid of 'from' field
+		// get occupant jid from 'from' field
+		var jid = new jabber.JID( m.from );
 		
 		trace( "Recieved message from "+jid.bare+" at resource: "+jid.resource );
 		
-		// --- send response message
+		// send response message
 		stream.sendPacket( new xmpp.Message( m.from, "Hello darling aka "+jid.node ) );
 	}
 
@@ -43,9 +35,8 @@ class App {
 		if( IP == null )
 			IP = jid.domain;
 		
-		//var cnx = new jabber.SecureSocketConnection( IP, 5222, false );
 		var cnx = new jabber.SocketConnection( IP, 5222, false );
-		
+		//var cnx = new jabber.SecureSocketConnection( IP, 5222, false );
 		stream = new Stream( cnx );
 		stream.onOpen = function() {
 			var auth = new Authentication( stream, [
@@ -71,7 +62,6 @@ class App {
 				trace( 'XMPP stream error : $e', 'error' );
 			cnx.disconnect();
 		}
-
 		stream.open( jid );
 	}
 
