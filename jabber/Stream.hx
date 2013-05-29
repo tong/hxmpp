@@ -23,6 +23,7 @@ package jabber;
 
 import haxe.io.Bytes;
 import jabber.util.Base64;
+import xmpp.IQ;
 import xmpp.filter.PacketIDFilter;
 
 #if jabber_component
@@ -71,6 +72,7 @@ private class StreamFeatures {
 
 /**
 	Abstract base class for handling a XMPP data stream with another entity.
+	
 	Implementations using this class are:
 		* jabber.client.Stream
 		* jabber.component.Stream
@@ -114,7 +116,10 @@ class Stream {
 	public var dataFilters(default,null) : Array<StreamDataFilter>;
 	public var dataInterceptors(default,null) : Array<StreamDataInterceptor>;
 
+	/***/
 	public var bufSize(default,null) : Int;
+
+	/***/
 	public var maxBufSize : Int;
 	
 	var buf : StringBuf;
@@ -249,11 +254,11 @@ class Stream {
 	/**
 		Send an IQ packet and forwards the response to the given handler function.
 	*/
-	public function sendIQ( iq : xmpp.IQ, ?handler : xmpp.IQ->Void ) : xmpp.IQ {
+	public function sendIQ( iq : IQ, ?handler : IQ->Void ) : IQ {
 		if( iq.id == null ) iq.id = nextID();
 		var c : PacketCollector = null;
 		if( handler != null ) c = addIDCollector( iq.id, handler );
-		var s : xmpp.IQ = sendPacket( iq );
+		var s : IQ = sendPacket( iq );
 		// TODO wtf, is this needed ?
 		if( s == null && handler != null ) {
 			collectors.remove( c );
@@ -262,6 +267,13 @@ class Stream {
 		}
 		//return { iq : s, collector : c };
 		return iq;
+	}
+
+	/**
+		Create and send the resulting iq for given request
+	*/
+	public inline function sendIQResult( iq : IQ ) {
+		sendPacket( IQ.createResult( iq ) );
 	}
 
 	/**
