@@ -22,20 +22,53 @@
 package xmpp;
 
 /**
-	Info-Query XMPP packet.
+	InfoQuery XMPP packet
+
+	Info/Query, or IQ, is a "request-response" mechanism, similar in some ways to the Hypertext Transfer Protocol [HTTP].
+	The semantics of IQ enable an entity to make a request of, and receive a response from, another entity.
+	The data content of the request and response is defined by the schema or other structural definition associated with the XML namespace that qualifies the direct child element of the IQ element,
+	and the interaction is tracked by the requesting entity through use of the 'id' attribute. Thus, IQ interactions follow a common pattern of structured data exchange such as get/result or set/result (although an error can be returned in reply to a request if appropriate)
+
+	Requesting                  Responding
+	  Entity                      Entity
+	----------                  ----------
+	    |                            |
+	    | <iq id='1' type='get'>     |
+	    |   [ ... payload ... ]      |
+	    | </iq>                      |
+	    | -------------------------> |
+	    |                            |
+	    | <iq id='1' type='result'>  |
+	    |   [ ... payload ... ]      |
+	    | </iq>                      |
+	    | <------------------------- |
+	    |                            |
+	    | <iq id='2' type='set'>     |
+	    |   [ ... payload ... ]      |
+	    | </iq>                      |
+	    | -------------------------> |
+	    |                            |
+	    | <iq id='2' type='error'>   |
+	    |   [ ... condition ... ]    |
+	    | </iq>                      |
+	    | <------------------------- |
+	    |                            |
+
 */
 class IQ extends Packet {
 	
 	/** Either: get/set/result/error */
 	public var type : IQType;
 	
-	/** The exclusive child of the IQ packet. */
+	/** The exclusive child of the IQ packet */
 	public var x : PacketElement;
 	
-	public function new( ?type : IQType, ?id : String, ?to : String, ?from ) {
+	public function new( ?type : IQType, ?id : String, ?to : String, ?from : String ) {
+		
 		super( to, from, id );
-		_type = xmpp.PacketType.iq;
 		this.type = ( type != null ) ? type : xmpp.IQType.get;
+
+		_type = xmpp.PacketType.iq;
 	}
 	
 	public override function toXml(): Xml {
@@ -67,7 +100,7 @@ class IQ extends Packet {
 	}
 	
 	/**
-		Creates a '<query xmlns="namspace"/>' XML tag.
+		Creates a '<query xmlns="namspace"/>' XML tag
 	*/
     public static function createQueryXml( ns : String, name : String = "query" ) : Xml {
 		var x = Xml.createElement( name );
@@ -76,7 +109,7 @@ class IQ extends Packet {
 	}
 	
 	/**
-		Creates a result type IQ from the given request.
+		Creates a result type IQ from the given request
 	*/
 	public static inline function createResult( iq : IQ ) : IQ {
 		//return new IQ( IQType.result, iq.id, iq.from, iq.to );
@@ -84,10 +117,10 @@ class IQ extends Packet {
 	}
 	
 	/**
-		Creates a error type IQ from the given request.
+		Creates a error type IQ packet from given request
 	*/
-	public static function createError( iq : IQ, ?errors : Array<xmpp.Error> ) : IQ {
-		var r = new IQ( IQType.error, iq.id, iq.from );
+	public static function createError( iq : IQ, ?errors : Array<xmpp.Error>, ?from : String ) : IQ {
+		var r = new IQ( IQType.error, iq.id, iq.from, from );
 		if( errors != null ) r.errors = errors;
 		return r;
 	}
