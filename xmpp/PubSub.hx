@@ -43,7 +43,9 @@ class PubSub {
 	public function new() {}
 	
 	public function toXml() : Xml {
+		
 		var x = IQ.createQueryXml( XMLNS, "pubsub" );
+		
 		var c : Xml = null;
 		if( subscribe != null ) {
 			c = Xml.createElement( "subscribe" );
@@ -63,15 +65,15 @@ class PubSub {
 		} else if( subscription != null )
 			c = subscription.toXml();
 		else if( subscriptions != null )
-			subscriptions.toXml();
+			c = subscriptions.toXml();
 		else if( publish != null )
-			publish.toXml();
+			c = publish.toXml();
 		else if( items != null )
-			items.toXml();
+			c = items.toXml();
 		else if( retract != null )
-			retract.toXml();
+			c = retract.toXml();
 		else if( affiliations != null )
-			affiliations.toXml();
+			c = affiliations.toXml();
 
 		if( options != null )
 			x.addChild( options.toXml() );
@@ -116,10 +118,5 @@ class PubSub {
 		}
 		return p;
 	}
-	
-	/*
-	public static function fromPacket( p : xmpp.Packet ) : Caps {
-	}
-	*/
 	
 }
