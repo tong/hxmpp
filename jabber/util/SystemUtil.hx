@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,24 +21,20 @@
  */
 package jabber.util;
 
-#if rhino
-import js.Sys;
-#end
-
 class SystemUtil {
 	
 	/**
-		Returns the name of the OS used (crossplatform).
+		Returns the name of the operating system used (crossplatform).
 	*/
 	public static
 	#if (nodejs||!js) inline #end
 	function systemName() : String {
 		
-		#if nodejs
-		return Node.process.platform;
-		
-		#elseif (sys||rhino)
+		#if sys
 		return Sys.systemName();
+
+		#elseif nodejs
+		return Node.process.platform;
 		
 		#elseif flash
 		return flash.system.Capabilities.os;
