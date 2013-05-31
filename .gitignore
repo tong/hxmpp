@@ -1,0 +1,8 @@
+*.o
+*.pyc
+*.cache
+*.sublime-project
+*.sublime-workspace
+.project
+_*
+doc/*.xml
