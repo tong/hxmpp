@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@ package jabber.util;
 
 import haxe.io.Bytes;
 
-#if (neko||cpp||php)
+#if sys
 import haxe.io.BytesBuffer;
 import sys.net.Socket;
 #elseif nodejs
@@ -45,16 +45,18 @@ private enum State {
 #end
 
 /**
-	SOCKS5 negotiation for outgoing socket connections (incoming filetransfers).<br/>
+	SOCKS5 negotiation for outgoing socket connections (incoming filetransfers).
+
 	This is not a complete implementation of the SOCKS5 protocol, 
-	just a subset for requirements in context of XMPP (datatransfers).<br/>
-	<a href="http://www.faqs.org/rfcs/rfc1928.html">RFC 1928</a>
+	just a subset for requirements in context of XMPP (datatransfers).
+
+	http://www.faqs.org/rfcs/rfc1928.html">RFC 1928
 */
 class SOCKS5Output {
 	
 	public function new() {}
 	
-	#if (neko||cpp||php)
+	#if sys
 	
 	public function run( socket : Socket, digest : String ) {
 		
@@ -88,15 +90,18 @@ class SOCKS5Output {
 	var i : flash.utils.IDataInput;
 	
 	public function run( socket : Socket, digest : String, cb : String->Void ) {
+		
 		this.socket = socket;
 		this.digest = digest;
 		this.cb = cb;
 		i = socket;
+
 		state = WaitResponse;
 		socket.addEventListener( ProgressEvent.SOCKET_DATA, onData );
 		socket.addEventListener( Event.CLOSE, onError );
 		socket.addEventListener( IOErrorEvent.IO_ERROR, onError );
 		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onError );
+		
 		var b = new ByteArray();
 		b.writeByte( 0x05 );
 		b.writeByte( 0x01 );
@@ -145,9 +150,11 @@ class SOCKS5Output {
 	var state : State;
 	
 	public function run( socket : Stream, digest : String, cb : String->Void ) {
+		
 		this.socket = socket;
 		this.digest = digest;
 		this.cb = cb;
+		
 		state = WaitResponse;
 		socket.on( Node.STREAM_END, onError );
 		socket.on( Node.STREAM_ERROR, onError );

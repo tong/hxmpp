@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@ package jabber.util;
 import haxe.io.Bytes;
 import haxe.io.BytesBuffer;
 
-#if (neko||php||cpp)
+#if sys
 import sys.net.Socket;
 #end
 
@@ -56,16 +56,18 @@ private enum State {
 }
 
 /**
-	SOCKS5 negotiation for incoming socket connections (outgoing datatransfers).<br/>
+	SOCKS5 negotiation for incoming socket connections (outgoing datatransfers).
+	
 	This is not a complete implementation of the SOCKS5 protocol, 
-	just a subset for requirements in context of XMPP (datatransfers).<br/>
-	<a href="http://www.faqs.org/rfcs/rfc1928.html">RFC 1928</a>
+	just a subset for requirements in context of XMPP (datatransfers).
+	
+	http://www.faqs.org/rfcs/rfc1928.html">RFC 1928
 */
 class SOCKS5Input {
 	
 	public function new() {}
 	
-	#if (neko||cpp||php)
+	#if sys
 	
 	/**
 		SOCKS5 negotiation for incoming socket connections (outgoing datatransfers).
@@ -107,10 +109,12 @@ class SOCKS5Input {
 	var i : IDataInput;
 	
 	public function run( socket : Socket, digest : String, cb : String->Void ) {
+		
 		this.socket = socket;
 		this.digest = digest;
 		this.cb = cb;
 		i = socket;
+		
 		state = WaitInit;
 		socket.addEventListener( ProgressEvent.SOCKET_DATA, onData );
 		socket.addEventListener( Event.CLOSE, onError );
@@ -167,9 +171,11 @@ class SOCKS5Input {
 	var state : State;
 	
 	public function run( socket : Stream, digest : String, cb : String->Void ) {
+		
 		this.socket = socket;
 		this.digest = digest;
 		this.cb = cb;
+		
 		state = WaitInit;
 		socket.on( Node.STREAM_END, onError );
 		socket.on( Node.STREAM_ERROR, onError );
@@ -196,9 +202,7 @@ class SOCKS5Input {
 				return;
 			}
 			i.readInt16();
-			
 			socket.write( SOCKS5.createOutgoingMessage( 0, digest ).getData() );
-			
 			removeSocketListeners();
 			cb( null );
 		}
