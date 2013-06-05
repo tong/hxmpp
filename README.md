@@ -1,8 +1,6 @@
 ![alt text](http://hxmpp.disktree.net/img/hxmpp.png "Haxe XMPP/Jabber library")
 ===
-Haxe XMPP/Jabber library | [Documentation](http://hxmpp.disktree.net/doc/api/ "API documentation") | [Examples](https://github.com/tong/hxmpp.examples "Examples and test projects") | [Test](http://hxmpp.disktree.net/test/ "Unit test results")
-
-Requires: Haxe 3.0.0-RC2
+Haxe XMPP/Jabber library | [Documentation](http://hxmpp.disktree.net/doc/api/ "API documentation") | [Test](http://hxmpp.disktree.net/test/ "Unit test results")
 
 
 
@@ -19,12 +17,18 @@ Requires: Haxe 3.0.0-RC2
 To build all examples goto hxmpp/examples and run the build.hxml file.
 This may take some time as some examples build for all haxe compiler targets.
 
-Most of the examples extend a basic XMPPClient class in hxmpp/examples/XMPPClient.hx
-This client uses the account credentials provided in hxmpp/examples/account_1 and hxmpp/examples/account_2 in the form of [jid] [password] [?ip] [?http]
+Most of the examples extend a basic XMPPClient class in [hxmpp/examples/XMPPClient.hx](https://github.com/tong/hxmpp/blob/master/examples/XMPPClient.hx)  
+This client uses the account credentials provided in [hxmpp/examples/account_1](https://github.com/tong/hxmpp/blob/master/examples/account_1) and [hxmpp/examples/account_2](https://github.com/tong/hxmpp/blob/master/examples/account_2) in the form of:  
+```
+[jid] [password] [?ip] [?http] 
+```
 For default these are:
-romeo@disktree test localhost http://localhost:7070
-julia@disktree test localhost http://localhost:7070
-
+```
+romeo@disktree test localhost http://localhost:7070  
+```
+```
+julia@disktree test localhost http://localhost:7070  
+```
 
 
 ### BOSH/HTTP
@@ -68,7 +72,7 @@ var cnx = new jabber.BOSHConnection( "server.org", "127.0.0.1/httpbind/" );
 
 
 ### NODE.JS
-To build for nodejs use type definitions from here: https://github.com/dionjwa/nodejs-std
+To build for nodejs use type definitions from: https://github.com/dionjwa/nodejs-std  
 Set compiler flag: -D nodejs
 
 
