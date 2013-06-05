@@ -15,9 +15,15 @@ Requires: Haxe 3.0.0-RC2
 
 
 
-
 ### EXAMPLES
-See: hxmpp/examples
+To build all examples goto hxmpp/examples and run the build.hxml file.
+This may take some time as some examples build for all haxe compiler targets.
+
+Most of the examples extend a basic XMPPClient class in hxmpp/examples/XMPPClient.hx
+This client uses the account credentials provided in hxmpp/examples/account_1 and hxmpp/examples/account_2 in the form of [jid] [password] [?ip] [?http]
+For default these are:
+romeo@disktree test localhost http://localhost:7070
+julia@disktree test localhost http://localhost:7070
 
 
 
