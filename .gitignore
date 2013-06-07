@@ -5,4 +5,8 @@
 *.sublime-workspace
 .project
 _*
-doc/*.xml
+doc/*
+doc/api/*.xml
+util/libhxmpp*
+util/xmpp-*/
+util/*.*
