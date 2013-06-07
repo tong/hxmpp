@@ -35,6 +35,7 @@ private typedef Server = {
 	var features :Map<String,Xml>;
 }
 
+//TODO get rid of this
 private class StreamFeatures {
 
 	var l : #if neko List<String> #else Array<String> #end;
@@ -71,16 +72,14 @@ private class StreamFeatures {
 }
 
 /**
-	Abstract base class for handling a XMPP data stream with another entity.
+	Abstract base class for handling a XMPP data stream to and from another entity.
 	
-	Implementations using this class are:
-		* jabber.client.Stream
-		* jabber.component.Stream
+	See: http://xmpp.org/rfcs/rfc6120.html#streams
 */
 class Stream {
 	
 	public static var defaultPacketIdLength = 5;
-	public static var defaultMaxBufSize = 1048576; // 524288; //TODO hmmmmmm
+	public static var defaultMaxBufSize = 1048576; // 524288; //TODO
 	
 	/**
 		Called when the XMPP stream is opened and ready to exchange XMPP data
@@ -88,7 +87,7 @@ class Stream {
 	public dynamic function onOpen() {}
 	
 	/**
-		Called when the XMPP stream closes, optionally reporting stream errors
+		Called when the XMPP stream closes, optionally reporting stream errors if occured 
 	*/
 	public dynamic function onClose( ?e : String ) {}
 	
@@ -104,19 +103,22 @@ class Stream {
 	/** */
 	public var server(default,null) : Server;
 	
-	/** Stream id */
+	/** Stream-id */
 	public var id(default,null) : String;
 	
 	/** */
 	public var lang(default,null) : String;
 	
-	/** Jabber-id */
+	/** Jabber-id of this entity */
 	public var jid(default,set) : JID;
 
+	/** */
 	public var dataFilters(default,null) : Array<StreamDataFilter>;
+
+	/** */
 	public var dataInterceptors(default,null) : Array<StreamDataInterceptor>;
 
-	/***/
+	/** Incoming data buffer size */
 	public var bufSize(default,null) : Int;
 
 	/***/
@@ -207,7 +209,55 @@ class Stream {
 			cnx.disconnect();
 		handleDisconnect( null );
 	}
+
+	/**
+		Send a message packet (default type is 'chat').
+	*/
+	public function sendMessage( to : String, body : String, ?subject : String, ?type : xmpp.MessageType, ?thread : String, ?from : String ) : xmpp.Message {
+		return cast sendPacket( new xmpp.Message( to, body, subject, type, thread, from ) );
+	}
 	
+	/**
+		Send a presence packet.
+	*/
+	public function sendPresence( ?show : xmpp.PresenceShow, ?status : String, ?priority : Int, ?type : xmpp.PresenceType ) : xmpp.Presence {
+		return cast sendPacket( new xmpp.Presence( show, status, priority, type ) );
+	}
+	
+	/**
+		Send directed presence
+	*/
+	public inline function sendPresenceTo( jid : String, ?show : xmpp.PresenceShow, ?status : String, ?priority : Int, ?type : xmpp.PresenceType ) : xmpp.Presence {
+		var p = new xmpp.Presence();
+		p.to = jid;
+		return  sendPacket(p);
+	}
+
+	/**
+		Send an IQ packet and forwards the response to the given handler function.
+	*/
+	public function sendIQ( iq : IQ, ?handler : IQ->Void ) : IQ {
+		if( iq.id == null ) iq.id = nextID();
+		var c : PacketCollector = null;
+		if( handler != null ) c = addIDCollector( iq.id, handler );
+		var s : IQ = sendPacket( iq );
+		// TODO wtf, is this needed ?
+		if( s == null && handler != null ) {
+			collectors.remove( c );
+			c = null;
+			return null;
+		}
+		//return { iq : s, collector : c };
+		return iq;
+	}
+
+	/**
+		Create and send the resulting iq for given request
+	*/
+	public inline function sendIQResult( iq : IQ ) {
+		sendPacket( IQ.createResult( iq ) );
+	}
+
 	/**
 		Intercept/Send/Return XMPP packet.
 	*/
@@ -249,54 +299,6 @@ class Stream {
 		if( !cnx.writeBytes( bytes ) )
 			return null;
 		return bytes;
-	}
-	
-	/**
-		Send an IQ packet and forwards the response to the given handler function.
-	*/
-	public function sendIQ( iq : IQ, ?handler : IQ->Void ) : IQ {
-		if( iq.id == null ) iq.id = nextID();
-		var c : PacketCollector = null;
-		if( handler != null ) c = addIDCollector( iq.id, handler );
-		var s : IQ = sendPacket( iq );
-		// TODO wtf, is this needed ?
-		if( s == null && handler != null ) {
-			collectors.remove( c );
-			c = null;
-			return null;
-		}
-		//return { iq : s, collector : c };
-		return iq;
-	}
-
-	/**
-		Create and send the resulting iq for given request
-	*/
-	public inline function sendIQResult( iq : IQ ) {
-		sendPacket( IQ.createResult( iq ) );
-	}
-
-	/**
-		Send a message packet (default type is 'chat').
-	*/
-	public function sendMessage( to : String, body : String, ?subject : String, ?type : xmpp.MessageType, ?thread : String, ?from : String ) : xmpp.Message {
-		return cast sendPacket( new xmpp.Message( to, body, subject, type, thread, from ) );
-	}
-	
-	/**
-		Send a presence packet.
-	*/
-	public function sendPresence( ?show : xmpp.PresenceShow, ?status : String, ?priority : Int, ?type : xmpp.PresenceType ) : xmpp.Presence {
-		return cast sendPacket( new xmpp.Presence( show, status, priority, type ) );
-	}
-	
-	/**
-		Send directed presence
-	*/
-	public inline function sendPresenceTo( jid : String, ?show : xmpp.PresenceShow, ?status : String, ?priority : Int, ?type : xmpp.PresenceType ) : xmpp.Presence {
-		var p = new xmpp.Presence();
-		p.to = jid;
-		return  sendPacket(p);
 	}
 	
 	/**

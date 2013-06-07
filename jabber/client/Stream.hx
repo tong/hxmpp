@@ -25,21 +25,31 @@ import jabber.JID;
 import jabber.Stream;
 
 /**
-	Client 2 server XMPP stream.
+	Client-Server XMPP stream.
+
+	See: http://xmpp.org/rfcs/rfc6120.html#examples-c2s
 */
 class Stream extends jabber.Stream {
 
+	/* IANA registered "xmpp-client" */
 	public static inline var PORT = 5222;
+
+	/**/
 	public static inline var PORT_SECURE = 5223;
 
+	/** The default port for socket connections */
 	public static var defaultPort = PORT;
+
+	/** The default port for secure socket connections */
 	public static var defaultPortSecure = PORT_SECURE;
 	
 	var version : Bool;
 	
 	public function new( cnx : StreamConnection, ?maxBufSize : Int ) {
+		
 		super( cnx, maxBufSize );
 		this.jid = jid;
+
 		version = true;
 	}
 	

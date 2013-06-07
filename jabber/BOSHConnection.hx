@@ -24,15 +24,20 @@ package jabber;
 import jabber.util.Timer;
 #if nodejs
 //#
+
 #elseif js
 import js.html.XMLHttpRequest;
+
 #elseif flash
 import flash.events.Event;
 import flash.events.HTTPStatusEvent;
 import flash.events.IOErrorEvent;
 import flash.events.ProgressEvent;
 import flash.events.SecurityErrorEvent;
+
 #end
+
+using StringTools;
 
 /**
 	Emulates the semantics of a long-lived, bidirectional TCP connection
@@ -89,9 +94,14 @@ class BOSHConnection extends jabber.StreamConnection {
 		The default wait time for responses is 30 seconds.
 	*/
 	public function new( host : String, path : String,
-						   hold : Null<Int> = 1, wait : Null<Int> = 30, secure : Bool = false,
-						   maxConcurrentRequests : Null<Int> = 2, timeoutOffset : Null<Int> = 25 ) {
+						 hold : Null<Int> = 1, wait : Null<Int> = 30, secure : Bool = false,
+						 maxConcurrentRequests : Null<Int> = 2, timeoutOffset : Null<Int> = 25 ) {
 		
+		if( path.startsWith('http://') )
+			path = path.substr(7);
+		else if( path.startsWith('https://') )
+			path = path.substr(8);
+
 		super( host, secure, true );
 		this.path = path;
 		this.hold = hold;

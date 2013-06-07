@@ -30,7 +30,7 @@ enum ErrorType {
 	cancel;
 	
 	/** Proceed (the condition was only a warning)  */
-	continue_;
+	continue_; //TODO unprefix
 	
 	/** Retry after changing the data sent */
 	modify;
