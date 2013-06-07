@@ -6,11 +6,8 @@
 class App {
 	
 	static function main() {
-
-		var account = XMPPClient.getAccountFromFile(1);
-
-		var cnx = new jabber.SocketConnection( account.ip, 5222 );
-
+		var creds = XMPPClient.getAccountFromFile();
+		var cnx = new jabber.SocketConnection( creds.ip, 5222 );
 		var stream = new jabber.client.Stream( cnx );
 		stream.onOpen = function() {
 			trace("XMPP stream opened");
@@ -26,6 +23,6 @@ class App {
 		stream.onClose = function(?e) {
 			trace("XMPP stream  closed "+e );
 		}
-		stream.open( new jabber.JID( account.jid ) );
+		stream.open( new jabber.JID( creds.user+'@'+creds.host ) );
 	}
 }

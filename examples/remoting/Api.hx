@@ -15,7 +15,7 @@ class Api extends XMPPClient {
 	}
 	
 	static function main() {
-		new Api( XMPPClient.getAccountFromFile(2) ).login();
+		new Api( XMPPClient.getAccountFromFile("b") ).login();
 	}
 	
 }

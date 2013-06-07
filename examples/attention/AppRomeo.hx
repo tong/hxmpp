@@ -1,6 +1,7 @@
 
 /**
-	Romeo listens for 'attention' requests
+	Example usage of: http://xmpp.org/extensions/xep-0224.html
+	Listens/Answers 'attention' requests
 */
 class AppRomeo extends XMPPClient {
 	
@@ -14,7 +15,7 @@ class AppRomeo extends XMPPClient {
 		if( xmpp.Delayed.fromPacket( m ) != null )
 			return;
 		trace( m.from+" wants your attention", "info" );
-		stream.sendMessage( m.from, 'You now have my full attention' );
+		stream.sendMessage( m.from, 'You have my full attention' );
 	}
 	
 	static function main() {

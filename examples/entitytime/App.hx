@@ -1,8 +1,12 @@
 
+using jabber.JIDUtil;
+
 class App extends XMPPClient {
 	
 	var entity : String;
-	
+
+	override inline function getResource() : String return "hxmpp";
+
 	override function onLogin() {
 		new jabber.EntityTimeListener( stream );
 		new jabber.PresenceListener( stream, onPresence );
@@ -11,11 +15,11 @@ class App extends XMPPClient {
 	
 	function onPresence( p : xmpp.Presence ) {
 		if( p.from == entity && p.type == null ) {
-			var etime = new jabber.EntityTime( stream );
-			etime.onLoad = function(jid:String,t:xmpp.EntityTime) {
+			var time = new jabber.EntityTime( stream );
+			time.onLoad = function(jid:String,t:xmpp.EntityTime) {
 				trace( "Entity time: "+jid+": "+t.utc+" ("+t.tzo+")" );
 			}
-			etime.load( entity );
+			time.load( entity );
 		}
 	}
 	

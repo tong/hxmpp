@@ -1,3 +1,4 @@
+# Build parameters for every example
 -cp ../
 -cp ../../
 -D jabber_debug

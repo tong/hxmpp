@@ -21,7 +21,7 @@ class AppPing extends XMPPClient {
 	}
 	
 	static function main() {
-		new AppPing( XMPPClient.getAccountFromFile(1) ).login();
+		new AppPing().login();
 	}
 	
 }

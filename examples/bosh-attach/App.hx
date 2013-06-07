@@ -5,6 +5,8 @@ import jabber.BOSHConnection;
 import jabber.StreamStatus;
 import jabber.client.Stream;
 import js.Browser;
+import js.Browser.document;
+import js.Browser.window;
 
 private typedef SessionState = {
 	ts : Float,
@@ -15,7 +17,7 @@ private typedef SessionState = {
 }
 
 /**
- *	Stores a BOSH session into localStorage for load and re-attach on another website.
+	Stores a BOSH session into localStorage for re-load and re-attach on another website.
 	The timeout for re-attaching is the BOSH connection timeout.
  */
 class App {
@@ -24,70 +26,31 @@ class App {
 	
 	static var storage = Browser.window.localStorage;
 
-	static var jid = "romeo@disktree/hxmpp";
-	static var password = "test";
+	static var creds = XMPPClient.getAccountFromFile();
 	static var cnx : BOSHConnection;
 	static var stream : Stream;
 	
-	static function main() {
-		
-		var cache = storage.getItem( LOCAL_STORAGE_ID );
-		if( cache == null ) {
-			createXMPPStream();
-			
-		} else {
-			
-			var d = Json.parse( cache );
-			if( ( Date.now().getTime() - d.ts ) > 30000 ) {
-				trace( "TIMEOUT "+(Date.now().getTime() - d.ts));
-				createXMPPStream();
-				return;
-			}
-			
-			trace( "Attaching active BOSH session ...");
-			trace( d );
-			
-			var jid = new JID( d.jid );
-			cnx = new BOSHConnection( jid.domain, "localhost/httpbind" );
-			stream = new Stream( cnx );
-			stream.onClose = onStreamClose;
-			stream.jid = jid;
-			stream.status = StreamStatus.open;
-			cnx.attach( d.sid, d.rid, d.wait, d.hold );
-		
-			stream.sendPresence( null, untyped document.title );
-			
-			new jabber.PresenceListener( stream, function(p) {
-				stream.sendMessage("julia@disktree","Kiss!");
-			});
-			
-			storage.clear(); // clear previously saved session
-		}
-		
-		untyped window.onbeforeunload = onBeforeUnload;
-	}
-	
 	static function createXMPPStream() {
+		
 		trace( "Initializing XMPP stream ..." );
-		cnx = new BOSHConnection( "disktree", "localhost/httpbind", 1 );
+
+		cnx = new BOSHConnection( creds.host, creds.http );
 		stream = new jabber.client.Stream( cnx );
 		stream.onOpen = function(){
 			trace("XMPP stream opened");
 			var auth = new jabber.client.Authentication( stream, [new jabber.sasl.PlainMechanism()] );
 			auth.onSuccess = function(){
-				
 				trace( "Authenticated as: "+stream.jid.s );
-				
-				stream.sendPresence( null, untyped ocument.title );
+				stream.sendPresence( null, document.title );
 				saveState();
 			}
 			auth.onFail = function(e){
-				trace( "Authentication failed! ("+stream.jid.s+")("+password+")" );
+				trace( "Authentication failed! ("+stream.jid.s+")" );
 			}
-			auth.start( password, "HXMPP" );
+			auth.start( creds.password, "hxmpp" );
 		}
 		stream.onClose = onStreamClose;
-		stream.open( new jabber.JID( jid ) );
+		stream.open( new jabber.JID( creds.user+"@"+creds.host ) );
 	}
 	
 	static function onStreamClose( ?e ) {
@@ -112,6 +75,35 @@ class App {
 		} else {
 			storage.clear();
 		}
+	}
+
+	static function main() {
+		var cache = storage.getItem( LOCAL_STORAGE_ID );
+		if( cache == null ) {
+			createXMPPStream();
+		} else {
+			var d = Json.parse( cache );
+			if( ( Date.now().getTime() - d.ts ) > 30000 ) {
+				trace( "TIMEOUT "+(Date.now().getTime() - d.ts));
+				createXMPPStream();
+				return;
+			}
+			trace( "Attaching active BOSH session ..." );
+			trace( d );
+			var jid = new JID( creds.user+"@"+creds.host );
+			cnx = new BOSHConnection( creds.host, creds.http );
+			stream = new Stream( cnx );
+			stream.onClose = onStreamClose;
+			stream.jid = jid;
+			stream.status = StreamStatus.open;
+			cnx.attach( d.sid, d.rid, d.wait, d.hold );
+			new jabber.PresenceListener( stream, function(p) {
+				stream.sendMessage( "julia@disktree.local", "Kiss!" );
+			});
+			storage.clear(); // clear previously saved session
+			stream.sendPresence( null, document.title );
+		}
+		window.onbeforeunload = onBeforeUnload;
 	}
 	
 }		

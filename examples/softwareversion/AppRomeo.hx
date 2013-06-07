@@ -2,21 +2,21 @@
 /**
 	Requests another entity for the 'SoftwareVersion'
 */
-class AppRomeo extends XMPPClient {
+class AppRomeo extends App {
 	
 	override function onLogin() {
 		
-		stream.sendPresence();
+		super.onLogin();
 		
-		var swv = new jabber.SoftwareVersion( stream );
-		swv.onLoad = function( jid : String, swv : xmpp.SoftwareVersion ) {
+		var sv = new jabber.SoftwareVersion( stream );
+		sv.onLoad = function( jid : String, swv : xmpp.SoftwareVersion ) {
 			trace( "SoftwareVersion of "+jid+": "+swv.name+" "+swv.version+", Operating system: "+swv.os, "info" );
 		};
-		swv.load( "julia@disktree/hxmpp" );
+		sv.load( "julia@"+stream.jid.domain+"/hxmpp" );
 	}
 	
 	static function main() {
-		new AppRomeo( XMPPClient.getAccountFromFile(1) ).login();
+		new AppRomeo().login();
 	}
 	
 }

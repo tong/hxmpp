@@ -1,11 +1,9 @@
 
 /**
-	Anonymous xmpp client login.
+	Anonymous client login
 */
 class App {
 
-	static var DOMAIN = "om";
-	
 	static function main() {
 		var cnx = new jabber.SocketConnection( "localhost" );
 		var stream = new jabber.client.Stream( cnx );
@@ -31,11 +29,9 @@ class App {
 				stream.sendPresence();
 				trace( "Anonymous session connected as: "+stream.jid.toString() );
 			}
-			auth.start( null, null ); // pass null for anon login
+			auth.start( null, null ); // all null when anonymous
 		}
-		var jid = new jabber.JID( null );
-		jid.domain = DOMAIN;
-		stream.open( jid );
+		stream.open( null );
 	}
 	
 }

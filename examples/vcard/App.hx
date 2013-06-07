@@ -55,18 +55,16 @@ class App extends XMPPClient {
 		#elseif flash
 		var t = d.photo.binval.split("\n").join("");
 		var l = new flash.display.Loader();
-		l.loadBytes( Base64.decodeBytes( t ).getData() );
+		l.loadBytes( Base64.decodeBytes( Bytes.ofString(t) ).getData() );
 		flash.Lib.current.addChild( l );
-		
-		trace("----------------------");
-		
-		#elseif neko
+
+		#elseif sys
 		var t = d.photo.binval.split("\n").join("");
 		var type =  d.photo.type;
-		type = type.substr( type.indexOf("/")+1 );
-		var pic = Base64.decodeBytes( t );
+		type = type.substr( type.indexOf( "/" )+1 );
+		var pic = Base64.decode( t );
 		var fo = sys.io.File.write( "recieved."+type );
-		fo.write( pic );
+		fo.writeString( pic );
 		fo.flush();
 		fo.close();
 		

@@ -3,9 +3,9 @@
 --each
 
 --next
--neko app_romeo.n
+-neko app_a.n
 -main AppRomeo
 
 --next
--neko app_julia.n
+-neko app_b.n
 -main AppJulia

@@ -1,9 +1,13 @@
 
+-cp ../
 -cp ../../../hxmpp/
 -D jabber_debug
 -D xmpp_debug
 -main App
 --each
+
+#--next
+#-java java
 
 --next
 -neko app.n

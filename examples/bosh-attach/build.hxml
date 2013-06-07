@@ -1,4 +1,4 @@
 
 ../example.hxml
 -js app.js
-App
+-main App

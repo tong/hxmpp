@@ -3,15 +3,17 @@ import sys.FileSystem;
 import sys.io.File;
 import sys.io.Process;
 
+using Lambda;
 using StringTools;
 
 /**
-	Builds all hxmpp examples
+	Builds/Cleans all HXMPP examples
 */
 class Build {
 
 	static var PATH = ".";
 	static var AUTOCLEAN_FILETYPES = ['exe','jar','js','map','n','nodejs','php','swf'];
+	static var AUTOCLEAN_DIRTYPES = ['cpp','cs','java','lib','res'];
 
 	static function build() {
 
@@ -78,13 +80,10 @@ class Build {
 			if( f.startsWith( "_" ) ||  !FileSystem.isDirectory( p ) || !FileSystem.exists( p+"/build.hxml" ) )
 				continue;
 			for( f in FileSystem.readDirectory( p ) ) {
-				//TODO
 				var fpath = p+"/"+f;
-				if( FileSystem.isDirectory(  fpath ) ) {
-					if( f == 'lib' ) {
-						//TODO remove dirs
-						//println( "\t"+fpath );
-						//FileSystem.deleteDirectory( fpath );
+				if( FileSystem.isDirectory( fpath ) ) {
+					if( AUTOCLEAN_DIRTYPES.has(f) ) {
+						n += deleteDirectory( fpath );
 					}
 				} else {
 					if( isFileType( f, AUTOCLEAN_FILETYPES ) ) {
@@ -92,11 +91,25 @@ class Build {
 						FileSystem.deleteFile( fpath );
 						n++;
 					}
-
 				}
 			}
 		}
 		println( n+' files removed' );
+	}
+
+	static function deleteDirectory( path : String, n : Int = 0 ) : Int {
+		for( f in FileSystem.readDirectory( path ) ) {
+			var p = path+"/"+f;
+			if( FileSystem.isDirectory( p ) ) {
+				deleteDirectory( p );
+				FileSystem.deleteDirectory( p );
+			} else {
+				FileSystem.deleteFile( p );
+				n++;
+			}
+		}
+		FileSystem.deleteDirectory( path );
+		return n;
 	}
 
 	static function isFileType( s : String, types : Array<String> ) : Bool {

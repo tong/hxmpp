@@ -40,12 +40,16 @@ class App extends XMPPClient {
 	*/
 	
 	function onCapsInfo( jid : String, info : xmpp.disco.Info, ?ver : String ) {
+		
 		trace( "Entity capabilities infos "+jid+":", "info" );
+		
 		if( ver != null )
 			trace( "( Capabilities got cached with verification string: "+ver+" )" );
+		
 		trace( "Identities:", "info" );
 		for( i in info.identities )
 			trace( "\t\tname: "+i.name+" , type: "+i.type+" , category: "+i.category, "info" );
+		
 		trace( "Features:", "info" );
 		for( f in info.features )
 			trace( "\t\t"+f, "info" );

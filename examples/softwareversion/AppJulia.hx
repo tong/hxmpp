@@ -2,17 +2,15 @@
 /**
 	Listens for and responses to 'SoftwareVersion' requests
 */
-class AppJulia extends XMPPClient {
+class AppJulia extends App {
 	
 	override function onLogin() {
-	
-		stream.sendPresence();
-		
-		var listener = new jabber.SoftwareVersionListener( stream, "HXMPP", "0.4.8" );
+		super.onLogin();
+		var listener = new jabber.SoftwareVersionListener( stream, "HXMPP", "0.4.13" );
 	}
 	
 	static function main() {
-		new AppJulia( XMPPClient.getAccountFromFile(1) ).login();
+		new AppJulia( XMPPClient.getAccountFromFile("b")).login();
 	}
 	
 }

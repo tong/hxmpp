@@ -10,43 +10,56 @@ import sys.io.File;
 import sys.FileSystem;
 #end
 
-private typedef ExampleAccount = {
-	var jid : String;
+typedef AccountCredentials = {
+	/*
+	var user : String;
+	var host : String;
 	var password : String;
 	var ip : String;
 	var port : Int;
 	var http : String;
+	*/
+	user : String,
+	host : String,
+	password : String,
+	?ip : String,
+	?port : Int,
+	?http : String,
 }
 
 /**
-* Simple xmpp client base
+	XMPP client base class for most of the examples
 */
 class XMPPClient {
 
-	macro public static function getAccountFromFile( id : Int ) {
+	macro public static function getAccountFromFile( id : String = "a" ) {
 		var path = '../account_$id';
 		if( !FileSystem.exists( path ) )
-			throw 'account file not found [$path]';
-		var p = File.getContent( path ).split(' ');
-		var a : ExampleAccount = {
-			jid : p[0],
-			password : p[1],
-			ip : p[2],
-			port : ( p[3] != null ) ? Std.parseInt( p[3] ) : null,
-			http : p[4]
+			throw 'account file not found : $path';
+		var p = File.getContent( path ).split( ' ' );
+		var a : AccountCredentials = {
+			user : p[0],
+			host : p[1],
+			password : p[2],
+			ip : p[3],
+			port : ( p[4] != null ) ? Std.parseInt( p[4] ) : null,
+			http : null
 		};
+		a.http = ( a.port == null ) ? p[4] : p[5];
 		return Context.makeExpr( a, Context.currentPos() );
 	}
 
-	public static var DEFAULT_ACCOUNT : ExampleAccount = {
-		jid : 'romeo@om',
+	public static var defaultCredentials : AccountCredentials = {
+		user : 'romeo',
+		host : 'disktree.local',
 		password : 'test',
 		ip : 'localhost',
-		port : 5222,
-		http : 'http://localhost/jabber',
+		port : jabber.client.Stream.PORT,
+		http : 'localhost/http-bind'
 	};
 
-	var jid : String;
+	var user : String;
+	var host : String;
 	var password : String;
 	var ip : String;
 	var port : Null<Int>;
@@ -54,21 +67,20 @@ class XMPPClient {
 
 	var stream : Stream;
 
-	function new( ?account : ExampleAccount ) {
+	function new( ?creds : AccountCredentials ) {
 
-		if( account == null )
-			account = DEFAULT_ACCOUNT;
+		if( creds == null )
+			creds = defaultCredentials;
 
-		jid = account.jid;
-		password = account.password;
-		ip = account.ip;
-		port = account.port;
-		http = account.http;
+		user = creds.user;
+		host = creds.host;
+		password = creds.password;
+		ip = creds.ip;
+		port = creds.port;
+		http = creds.http;
 
-		if( ip == null ) ip = JIDUtil.domain( jid );
+		if( ip == null ) ip = host;
 		if( port == null ) port = Stream.defaultPort;
-
-		//TODO relax config even more (default passwor: 'test', ..)
 
 		#if flash
 		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
@@ -78,22 +90,17 @@ class XMPPClient {
 
 	function login() {
 
-		trace( 'Connecting $jid ...' );
-		
 		#if js
 		var cnx = if( http == null ) new jabber.SocketConnection( ip, port, false );
-		else new jabber.BOSHConnection(  JIDUtil.domain( jid ), http );
+		else new jabber.BOSHConnection( host, http );
 		#else
 		var cnx = new jabber.SocketConnection( ip, port, false );
 		#end
 
-		trace(http);
-		trace(cnx);
-
 		stream = new Stream( cnx );
 		stream.onOpen = onStreamOpen;
 		stream.onClose = onStreamClose;
-		stream.open( new jabber.JID( jid ) );
+		stream.open( new jabber.JID( user+'@'+host ) );
 	}
 
 	function logout() {
@@ -129,10 +136,15 @@ class XMPPClient {
 		return [
 			new jabber.sasl.MD5Mechanism(),
 			new jabber.sasl.PlainMechanism()
+			//new jabber.sasl.LOGINMechanism()
 		];
 	}
 
-	function getResource() : String {
+	public function getResource() : String {
+		return getPlatformResource();
+	}
+
+	public static function getPlatformResource() : String {
 		return
 			#if cpp 'hxmpp-cpp'
 			#elseif cs 'hxmpp-cs'
@@ -144,7 +156,7 @@ class XMPPClient {
 			#end;
 	}
 
-	static inline function get_platform() : String {
+	public static inline function get_platform() : String {
 		return #if cpp "cpp"
 		#elseif cs "cs"
 		#elseif flash "flash"
