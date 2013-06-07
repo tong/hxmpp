@@ -1,11 +1,10 @@
 
 --no-output
 #--macro ImportAll.run()
--cp ../
+-cp ../../
 -D doc_gen
 -D jabber_debug
 -D xmpp_debug
-#-lib xspf
 jabber.Attention
 jabber.EntityCapabilities
 jabber.EntityTime
