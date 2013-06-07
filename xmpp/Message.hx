@@ -36,7 +36,7 @@ class Message extends xmpp.Packet {
     public var thread : String;
 	
     public function new( ?to : String, ?body : String, ?subject : String,
-    					 ?type : MessageType, ?thread : String, ?from : String ) {
+    					 ?type : Null<MessageType>, ?thread : String, ?from : String ) {
 		
 		_type = xmpp.PacketType.message;
 		
@@ -58,7 +58,8 @@ class Message extends xmpp.Packet {
     }
     
     public static function parse( x : Xml ) : xmpp.Message {
-    	var m = new Message( null, null, null, x.exists( "type" ) ? Type.createEnum( xmpp.MessageType, x.get( "type" ) ) : null );
+    	var type : MessageType = x.exists( "type" ) ? Type.createEnum( xmpp.MessageType, x.get( "type" ) ) : null;
+    	var m = new Message( null, null, null, type );
    		xmpp.Packet.parseAttributes( m, x );
    		for( c in x.elements() ) {
 			switch( c.nodeName ) {
