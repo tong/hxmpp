@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ import jabber.util.Base64;
 import jabber.util.MD5;
 
 /**
-	Static methods for computing sasl-md5 credentials.
+	Static methods for computing SASL-MD5 credentials.
 */
 class MD5Calculator {
 	
@@ -35,17 +35,17 @@ class MD5Calculator {
 	public static function parseChallenge( challenge : String ) : { realm : String, nonce : String } {
 		var c = Base64.decode( challenge );
 		var s = c.split( "," );
-		var elements = #if haxe3 new Map<String,String>() #else new Hash<String>() #end;
+		var el = new Map<String,String>();
 		for( e in s ) {
 			var s = e.split( "=" );
-			elements.set( s[0], s[1] );
+			el.set( s[0], s[1] );
 		}
-		if( Lambda.count( elements ) == 1 && elements.exists( "rspauth" ) )
+		if( Lambda.count( el ) == 1 && el.exists( "rspauth" ) )
 			return null;
 			//return ''; // negotiation complete //TODO hmmmmmmm should be '' (??)
 		return {
-			realm : if( elements.exists( "realm" ) ) unquote( elements.get( "realm" ) ) else "",
-			nonce : unquote( elements.get( "nonce" ) )
+			realm : if( el.exists( "realm" ) ) unquote( el.get( "realm" ) ) else "",
+			nonce : unquote( el.get( "nonce" ) )
 		};
 	}
 	
