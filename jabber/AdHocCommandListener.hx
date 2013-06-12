@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,9 +31,10 @@ import xmpp.command.Action;
 class AdHocCommandListener {
 	
 	/** */
-	public dynamic function onRequest( jid : String, cmd : xmpp.AdHocCommand ) : xmpp.AdHocCommand { return null; }
+	public dynamic function onRequest( jid : String, cmd : xmpp.AdHocCommand, f : xmpp.AdHocCommand->Void ) {}
+	//public dynamic function onRequest( jid : String, cmd : xmpp.AdHocCommand ) : xmpp.AdHocCommand { return null; }
 	
-	/** */
+	/** Informational callback when a command got canceled */
 	public dynamic function onCancel( jid : String, cmd : xmpp.AdHocCommand ) {}
 	
 	public var stream(default,null) : Stream;
@@ -47,7 +48,7 @@ class AdHocCommandListener {
 	}
 	
 	/**
-		Dispose command listener on this stream
+		Dispose command listener service for this stream
 	*/
 	public function dispose() {
 		stream.removeCollector( c );
@@ -70,17 +71,21 @@ class AdHocCommandListener {
 		if( action == null )
 			action = execute;
 		switch( action ) {
-		case execute :
-			var r = IQ.createResult( iq );
-			r.x = onRequest( iq.from, cmd );
-			stream.sendPacket( r );
-		case cancel :
+		case execute, complete:
+			onRequest( iq.from, cmd, function(result){
+				trace(result);
+				var r = IQ.createResult( iq );
+				r.x = result;
+				stream.sendPacket( r );
+			});
+		case cancel:
 			var r = IQ.createResult( iq );
 			cmd.action = null;
 			cmd.status = canceled;
 			r.x = cmd;
 			stream.sendPacket( r );
 			onCancel( iq.from, cmd );
+		//case next : trace("TODO");
 		default :
 			#if jabber_debug
 			trace( "unknown command action : "+action );
