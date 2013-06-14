@@ -41,10 +41,11 @@ class MD5Calculator {
 			el.set( s[0], s[1] );
 		}
 		if( Lambda.count( el ) == 1 && el.exists( "rspauth" ) )
-			return null;
-			//return ''; // negotiation complete //TODO hmmmmmmm should be '' (??)
+			return { realm : null, nonce : null }; // negotiation complete
+			//TODO hmmmmmmm should be '' (??)
+			//return null;
 		return {
-			realm : if( el.exists( "realm" ) ) unquote( el.get( "realm" ) ) else "",
+			realm : el.exists( "realm" ) ? unquote( el.get( "realm" ) ) : "",
 			nonce : unquote( el.get( "nonce" ) )
 		};
 	}
