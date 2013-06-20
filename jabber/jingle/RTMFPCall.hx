@@ -75,7 +75,7 @@ class RTMFPCall extends OutgoingSession<RTMFPOutput> {
 			
 		default :
 			#if jabber_debug
-			trace( "jingle session packet not handled", "warn" );
+			trace( "jingle session packet not handled" );
 			#end
 		}
 	}

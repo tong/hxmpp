@@ -4,11 +4,6 @@ class App extends XMPPClient {
 	var disco : jabber.ServiceDiscovery;
 	var target : String; // discovered entity
 	
-	function new( target : String ) {
-		super();
-		this.target = target;
-	}
-	
 	override function onLogin() {
 		
 		super.onLogin();
@@ -69,10 +64,11 @@ class App extends XMPPClient {
 		var target = "om"; //jabber.org";
 		#if sys
 		var args = Sys.args();
-		if( args.length > 0 )
-			target = args[0];
+		if( args.length > 0 ) target = args[0];
 		#end
-		new App( target ).login();
+		var app = new App( XMPPClient.getAccountFromFile("a") );
+		app.target = target;
+		app.login();
 	}
 
 }

@@ -7,10 +7,10 @@ import jabber.client.Authentication;
 */
 class App {
 
-	static var JID = "hxmpp@jabber.org";
+	static var JID = "user@example.com";
 	static var PASSWORD = "mypassword";
 	static var IP = null;
-	static var RESOURCE = "abz-hxmpp";
+	static var RESOURCE = "hxmpp";
 
 	static var stream : Stream;
 
@@ -30,13 +30,10 @@ class App {
 	}
 
 	static function main() {
-		
 		var jid = new jabber.JID( JID );
 		if( IP == null )
 			IP = jid.domain;
-		
 		var cnx = new jabber.SocketConnection( IP, 5222, false );
-		//var cnx = new jabber.SecureSocketConnection( IP, 5222, false );
 		stream = new Stream( cnx );
 		stream.onOpen = function() {
 			var auth = new Authentication( stream, [
@@ -45,7 +42,7 @@ class App {
 				new jabber.sasl.PlainMechanism()
 			] );
 			auth.onFail = function(e) {
-				trace( "Authentication failed ("+stream.jid+")", "warn" );
+				trace( "Authentication failed ("+stream.jid+")" );
 				stream.close( true );
 			}
 			auth.onSuccess = function() {
@@ -57,9 +54,9 @@ class App {
 		}
 		stream.onClose = function(?e) {
 			if( e == null )
-				trace( 'XMPP stream closed', 'warn' );
+				trace( 'XMPP stream closed' );
 			else
-				trace( 'XMPP stream error : $e', 'error' );
+				trace( 'XMPP stream error : $e' );
 			cnx.disconnect();
 		}
 		stream.open( jid );

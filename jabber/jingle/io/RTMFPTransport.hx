@@ -76,7 +76,7 @@ import flash.net.NetStream;
 	
 	public override function close() {
 		if( nc != null && nc.connected ) try nc.close() catch(e:Dynamic){
-			trace(e,"warn");
+			trace(e);
 		}
 	}
 	

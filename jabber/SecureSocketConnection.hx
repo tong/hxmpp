@@ -21,12 +21,12 @@
  */
 package jabber;
 
-#if (sys||rhino)
+#if sys
 
-#if neko
-import neko.tls.Socket;
-#elseif php
+#if php
 import php.net.SslSocket;
+#else
+import sys.ssl.Socket;
 #end
 
 class SecureSocketConnection extends jabber.SocketConnectionBase {
@@ -35,10 +35,10 @@ class SecureSocketConnection extends jabber.SocketConnectionBase {
 						 ?bufsize : Int, ?maxbufsize : Int,
 						 timeout : Int = 10 ) {
 		super( host, port, secure, bufsize, maxbufsize, timeout );
+		socket = #if php new SslSocket(); #else new Socket(); #end
 	}
 	
 	public override function connect() {
-		socket = #if php new SslSocket(); #else new Socket(); #end
 		buf = haxe.io.Bytes.alloc( bufsize );
 		bufpos = 0;
 		try socket.connect( new sys.net.Host( host ), port ) catch( e : Dynamic ) {
@@ -246,7 +246,7 @@ class SecureSocketConnection extends jabber.SocketConnection {
 	override function createConnection() {
 		if( credentials == null ) {
 			#if jabber_debug
-			trace( "no tls credenntials set!", "warn" );
+			trace( "no tls credenntials set!" );
 			#end
 			credentials = cast {};
 		}

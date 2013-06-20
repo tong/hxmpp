@@ -131,7 +131,7 @@ class Session<T:Transport> {
 	
 	function processSessionPacket( iq : IQ, j : xmpp.Jingle ) { // override me
 		#if jabber_debug
-		trace( "jingle session packet not processed (not implemented)", "warn" );
+		trace( "jingle session packet not processed (not implemented)" );
 		#end
 	}
 	

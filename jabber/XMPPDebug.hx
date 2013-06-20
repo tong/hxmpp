@@ -53,7 +53,7 @@ class XMPPDebug {
 				useConsole = ExternalInterface.available; // && ExternalInterface.call( "console.error.toString" ) != null );
 				#elseif js
 				try useConsole = untyped console != null && console.error != null catch( e : Dynamic ) {
-					trace(e,"warn");
+					trace(e);
 					useConsole = false;
 				}
 				#end
