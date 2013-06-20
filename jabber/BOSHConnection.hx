@@ -354,7 +354,7 @@ class BOSHConnection extends jabber.StreamConnection {
 	*/
 	
 	function handleHTTPError( e : String ) {
-		#if jabber_debug trace( e , "warn" ); #end
+		#if jabber_debug trace( e ); #end
 		cleanup();
 		__onDisconnect( e );
 	}
@@ -363,18 +363,18 @@ class BOSHConnection extends jabber.StreamConnection {
 		
 		//trace("#"+t+"#");
 		if( t == null ) {
-			#if jabber_debug trace("Empty bosh response", "warning" ); #end
+			#if jabber_debug trace("Empty bosh response" ); #end
 			return;
 		}
 		
 		var x : Xml = null;
 		try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
-			#if jabber_debug trace( 'invalid XML:\n'+t, 'warn' ); #end
+			#if jabber_debug trace( 'invalid XML:\n'+t ); #end
 			return;
 		}
 		if( x == null ) {
 			#if jabber_debug
-			trace( 'empty bosh response ($t)', 'warning' );
+			trace( 'empty bosh response ($t)' );
 			#end
 			//requestCount--; //?????????????????
 			//poll();
@@ -382,7 +382,7 @@ class BOSHConnection extends jabber.StreamConnection {
 		}
 		if( x.get( 'xmlns' ) != XMLNS ) {
 			#if jabber_debug
-			trace( 'invalid bosh body ($x)', 'error' );
+			trace( 'invalid bosh body ($x)' );
 			#end
 			cleanup();
 			//TODO disconnect
@@ -397,7 +397,7 @@ class BOSHConnection extends jabber.StreamConnection {
 			case "terminate" :
 				cleanup();
 				#if jabber_debug
-				trace( "bosh stream terminated by server", "warn" );
+				trace( "bosh stream terminated by server");
 				#end
 				trace(x);
 				__onDisconnect( x.get('condition') );

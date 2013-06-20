@@ -203,7 +203,7 @@ class MUChat {
 		// TODO check role
 		var occupant = getOccupant( nick );
 		if( occupant == null ) {
-			#if jabber_debug trace("MUC occupant to kick not found","warn"); #end
+			#if jabber_debug trace( "muc occupant to kick not found" ); #end
 			return false;
 		}
 		var iq = new xmpp.IQ( xmpp.IQType.set, null, myjid );

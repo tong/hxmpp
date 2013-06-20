@@ -426,7 +426,7 @@ class Stream {
 			var x : Xml = null;
 			try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
 				#if xmpp_debug XMPPDebug.i( t ); #end
-				#if jabber_debug trace( "startTLS failed", "warn" ); #end
+				#if jabber_debug trace( "startTLS failed" ); #end
 				cnx.disconnect();
 				return true;
 			}
@@ -521,7 +521,7 @@ class Stream {
 		}
 		if( !collected ) {
 			#if jabber_debug
-			trace( 'incoming "${Type.enumConstructor(p._type)}" packet not handled ( ${p.from} -> ${p.to} )( ${p.id} )', 'warn' );
+			trace( 'incoming "${Type.enumConstructor(p._type)}" packet not handled ( ${p.from} -> ${p.to} )( ${p.id} )' );
 			//trace(p);
 			#end
 			if( p._type == xmpp.PacketType.iq ) { // 'feature not implemented' response
