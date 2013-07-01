@@ -23,7 +23,7 @@ package jabber;
 
 import jabber.util.Timer;
 #if nodejs
-//#
+import js.Node;
 #elseif js
 import js.html.XMLHttpRequest;
 #elseif flash
@@ -32,6 +32,10 @@ import flash.events.HTTPStatusEvent;
 import flash.events.IOErrorEvent;
 import flash.events.ProgressEvent;
 import flash.events.SecurityErrorEvent;
+#elseif (cpp||neko)
+import jabber.net.BOSHRequest;
+#elseif php
+throw Not implemented
 #end
 
 using StringTools;
@@ -65,6 +69,11 @@ class BOSHConnection extends jabber.StreamConnection {
 	
 	/** Request id */
 	public var rid(default,null) : Int;
+
+	#if (cpp||neko||nodejs)
+	public var ip : String;
+	public var port : Int;
+	#end
 	
 	/** */
 	public var maxConcurrentRequests(default,null) : Int;
@@ -107,10 +116,6 @@ class BOSHConnection extends jabber.StreamConnection {
 		
 		initialized = pauseEnabled = attached = false;
 		pollingEnabled = true;
-		
-		#if (nodejs&&jabber_debug)
-		throw 'BOSH not implementd for nodejs';
-		#end
 	}
 	
 	public override function connect() {
@@ -270,20 +275,37 @@ class BOSHConnection extends jabber.StreamConnection {
 	
 	function createHTTPRequest( data : String ) {
 		
-		//#if nodejs
-		//TODO use nodejs's native http thingys
-		/*
-		var r = new haxe.Http( getHTTPPath() );
-		r.setPostData( data );
-		r.onData = function(d) { trace(d); }
-		r.onError = function(d) { trace(d); }
-		r.request( true );
-		*/
+		#if (js&&nodejs)
+		var _path = path.substr( path.lastIndexOf( '/' ) );
+		if( _path.charAt( _path.length ) != '/' ) _path += '/';
+		var opts : Dynamic = { //TODO NodeHttpsReqOpt
+			host : ip, port : port, path : _path, method : 'POST',
+			//requestCert: false,
+			rejectUnauthorized:  false,
+			headers: {
+				'Content-Type' : 'text/xml',
+				'Content-Length' : data.length
+			}
+		};
+		var h = function(res:NodeHttpClientResp) {
+			switch( res.statusCode ) {
+			case 200:
+				res.setEncoding( NodeC.UTF8 );
+				res.on( NodeC.EVENT_STREAM_DATA, handleHTTPData );
+			default:
+				//TODO
+				trace("TODO....");
+				handleHTTPError( "ERROR" );
+			}
+		}
+		var r : NodeHttpClientReq = secure ? Node.https.request( opts, h ): Node.http.request( opts, h );
+		r.on( NodeC.EVENT_STREAM_ERROR, handleHTTPError );
+		r.write( data );
+		r.end();
 			
-		#if js
+		#elseif js
 		var r = new XMLHttpRequest();
-		//if( crossOrigin )
-		r.withCredentials = true;
+		//TODO if( crossOrigin ) r.withCredentials = true;
 		r.open( "POST", getHTTPPath(), true );
 		r.onreadystatechange = function(e){
 			//trace(e+":"+r.readyState);
@@ -317,18 +339,15 @@ class BOSHConnection extends jabber.StreamConnection {
 		l.addEventListener( SecurityErrorEvent.SECURITY_ERROR, handleHTTPError );
 		l.load( r );
 		
-		#else
-		var r = new haxe.Http( getHTTPPath() );
-		r.setHeader( 'Content-type', 'text/xml' );
-		r.setHeader( 'Accept', 'text/xml' );
-		r.setHeader( 'Content-Length', Std.string( data.length ) );
-		//r.onStatus = handleHTTPStatus;
-		r.onError = handleHTTPError;
-		r.onData = handleHTTPData;
-		r.setPostData( data );
-		r.request( true );
-		return true;
-		
+		#elseif sys
+		/*
+		var _path = path.substr( path.lastIndexOf('/') );
+		if( _path.charAt( _path.length ) != '/' ) _path += '/';
+		var r = new BOSHRequest();
+		r.request( ip, port, _path, data, handleHTTPData, handleHTTPError );
+		//Sys.sleep(1);
+		*/
+
 		#end
 	}
 	
@@ -345,13 +364,12 @@ class BOSHConnection extends jabber.StreamConnection {
 	*/
 	
 	function handleHTTPError( e : String ) {
-		#if jabber_debug trace( e ); #end
+		#if jabber_debug trace(e); #end
 		cleanup();
 		onDisconnect( e );
 	}
 	
 	function handleHTTPData( t : String ) {
-		//trace( 'handleHTTPData #$t#' );
 		if( t == null ) {
 			#if jabber_debug trace( "Received empty bosh response" ); #end
 			return;

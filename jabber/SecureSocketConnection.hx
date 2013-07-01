@@ -21,6 +21,14 @@
  */
 package jabber;
 
+typedef SecureSocketConnection =
+	#if sys
+	jabber.net.SecureSocketConnection_sys;
+	#elseif nodejs
+	jabber.net.SecureSocketConnection_nodejs;
+	#end
+
+/*
 #if sys
 
 #if php
@@ -228,7 +236,7 @@ class SecureSocketConnection extends jabber.SocketConnection {
 		super( host, port, true );
 	}
 }
-*/
+* /
 
 #elseif nodejs
 
@@ -257,3 +265,4 @@ class SecureSocketConnection extends jabber.SocketConnection {
 
 #end //js
 #end
+*/

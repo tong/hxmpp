@@ -156,12 +156,12 @@ class XMPPClient {
 			#elseif cs "cs"
 			#elseif flash "flash"
 			#elseif java "java"
-			#elseif js
-				#if nodejs "nodejs"
-				#elseif rhino "rhino"
-				#else "js" #end
+			#elseif nodejs "nodejs"
+			#elseif rhino "rhino"
+			#elseif js "js"
 			#elseif neko "neko"
 			#elseif php "php"
+			#else "unknown"
 			#end;
 	}
 

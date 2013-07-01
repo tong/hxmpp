@@ -9,3 +9,16 @@
 --next
 -swf app.swf
 -swf-header 800:600:60:dddddd
+
+--next
+-js app.nodejs
+#-lib nodejs
+-D nodejs
+-cp ../../../nodejs-std/src/
+
+#--next
+#-neko app.n
+
+#--next
+#-cpp cpp
+#-cmd mv cpp/App* ./app

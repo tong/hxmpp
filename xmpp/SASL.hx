@@ -32,17 +32,31 @@ class SASL {
 	public static var EREG_FAILURE = ~/(^failure$)|(^not-authorized$)|(^aborted$)|(^incorrect-encoding$)|(^invalid-authzid$)|(^invalid-mechanism$)|(^mechanism-too-weak$)|(^temporary-auth-failure$)/;
 	
 	/**
+		Creates a sasl authentication request packet
+
+		Example: <auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">AHJvbWVvAHRlc3Q=</auth>
 	*/
 	public static function createAuth( mech : String, ?text : String ) : Xml {
+		if( mech == null )
+			return null;
+		var x = Xml.createElement( 'auth' );
+		if( text != null )
+			x.addChild( Xml.createPCData( text ) );
+		x.setNamespace( XMLNS );
+		x.set( 'mechanism', mech );
+		return x;
+		/*
 		if( mech == null )
 			return null;
 		var x = ( text != null ) ? XMLUtil.createElement( "auth", text ) : Xml.createElement( "auth" );
 		x.setNamespace( XMLNS );
 		x.set( "mechanism", mech );
 		return x;
+		*/
 	}
 	
 	/**
+		Creates a sasl authentication response packet
 	*/
 	public static function createResponse( t : String ) : Xml {
 		if( t == null )

@@ -22,26 +22,18 @@
 package jabber;
 
 typedef SocketConnection = 
-
 	#if flash
 	jabber.net.SocketConnection_fl;
-
-	#elseif nodejs
+	#elseif (js&&nodejs)
 	jabber.net.SocketConnection_nodejs;
-
 	#elseif js
 		#if (cra||chrome_app)
 		jabber.net.SocketConnection_cra;
-		
 		#elseif jabber_flashsocketbridge
 		jabber.net.SocketConnection_flashsocketbridge;
-		
 		#else
 		jabber.net.SocketConnection_js;
-		
 		#end
-
 	#elseif sys
 	jabber.net.SocketConnection_sys;
-
 	#end

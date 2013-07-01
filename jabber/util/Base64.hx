@@ -22,11 +22,10 @@
 package jabber.util;
 
 import haxe.io.Bytes;
-#if (!php&&!nodejs)
-import haxe.crypto.BaseCode;
-#end
-#if nodejs
+#if (js&&nodejs)
 import js.Node;
+#elseif !php
+import haxe.crypto.BaseCode;
 #end
 
 /**
@@ -36,15 +35,17 @@ class Base64 {
 
 	public static var CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
+	/*
 	public static inline function fillNullbits( s : String ) : String {
 		while( s.length % 3 != 0 ) s += "=";
 		return s;
 	}
-
+	
 	public static inline function removeNullbits( s : String ) : String {
 		while( s.charAt( s.length-1 ) == "=" ) s = s.substr( 0, s.length-1 );
 		return s;
 	}
+	*/
 
 	/**
 	*/
@@ -55,30 +56,21 @@ class Base64 {
 		#if php
 		return untyped __call__( "base64_encode", s );
 
-		#elseif nodejs
-		return new NodeBuffer(s).toString( NodeC.BASE64 );
+		#elseif (js&&nodejs)
+		return new js.NodeBuffer(s).toString( NodeC.BASE64 );
 
 		#else
 			#if js
 			if( untyped window.btoa != null )
 				return untyped window.btoa( s );
 			#end
-			
+			//return fillNullbits( BaseCode.encode( s, CHARS ) );
 			var suf = switch( s.length % 3 )  {
-			case 2 : "=";
-			case 1 : "==";
-			default : "";
+				case 2 : "=";
+				case 1 : "==";
+				default : "";
 			};
 			return BaseCode.encode( s, CHARS ) + suf;
-			
-			/*
-			#if (ssl)
-				var r2 = sys.crypto.Base64.encode( s );
-				trace(r2);
-				return r2;
-			#end
-			*/
-			//return fillNullbits( BaseCode.encode( s, CHARS ) );
 		#end
 	}
 
@@ -91,7 +83,7 @@ class Base64 {
 		#if php
 		return untyped __call__( "base64_decode", s );
 
-		#elseif nodejs
+		#elseif (js&&nodejs)
 		return new NodeBuffer( s, NodeC.BASE64 ).toString( NodeC.ASCII );
 		
 		#else
@@ -99,7 +91,8 @@ class Base64 {
 			if( untyped window.atob != null )
 				untyped window.atob( s );
 			#end
-			return BaseCode.decode( removeNullbits(s), CHARS );
+			while( s.charAt( s.length-1 ) == "=" ) s = s.substr( 0, s.length-1 );
+			return BaseCode.decode( s, CHARS );
 			
 		#end
 	}
@@ -113,7 +106,7 @@ class Base64 {
 		#if php
 		return untyped __call__( "base64_encode", b.getData() );
 		
-		#elseif nodejs
+		#elseif (js&&nodejs)
 		return Bytes.ofString( new NodeBuffer( b.toString() ).toString( NodeC.BASE64 ) );
 
 		#else
@@ -132,7 +125,7 @@ class Base64 {
 		#if php
 		return Bytes.ofData( untyped __call__( "base64_decode", b.getData() ) );
 		
-		#elseif nodejs
+		#elseif (js&&nodejs)
 		return Bytes.ofString( new NodeBuffer( b.toString(), NodeC.BASE64 ).toString( NodeC.ASCII ) );
 		
 		#else

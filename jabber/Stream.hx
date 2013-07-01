@@ -152,7 +152,7 @@ class Stream {
 			#if jabber_component
 			// ?????
 			#else
-			open( jid );
+			open( null );
 			#end
 		case closed :
 			if( cnx != null && cnx.connected )
@@ -182,9 +182,10 @@ class Stream {
 		#if jabber_debug throw 'abstract method "open", use "connect" for components'; #end
 	}
 	#else
-	public function open( jid : JID ) {
+	public function open( jid : String ) {
+	//public function open( jid : JID ) {
 		if( jid != null )
-			this.jid = jid
+			this.jid = new JID( jid );
 		else if( this.jid == null )
 			this.jid = new JID( null );
 		if( cnx == null )
@@ -259,18 +260,28 @@ class Stream {
 	}
 
 	/**
-		Intercept/Send/Return XMPP packet.
+		Intercept/Send/Return XMPP packet
 	*/
 	public function sendPacket<T:xmpp.Packet>( p : T, intercept : Bool = true ) : T {
 		if( !cnx.connected )
 			return null;
 		if( intercept )
 			interceptPacket( #if (java||cs) cast #end p ); //TODO still throws error on java
+		//if( cnx.http ) {
+			//return if( cnx.writeXml( p.toXml() ) != null ) p else null;
 		return ( sendData( untyped p.toString() ) != null ) ? p : null;
 	}
+
+	/*
+	public function sendXml( x : Xml ) : Bool {
+		if( cnx.sendXml( x ) )
+			return true;
+		return sendData( x.toString() ) != null;
+	}
+	*/
 	
 	/**
-		Send raw string.
+		Send string
 	*/
 	public function sendData( t : String ) : String {
 		if( !cnx.connected )
@@ -279,20 +290,20 @@ class Stream {
 		t = StringTools.replace( t, "_xmlns_=", "xmlns=" );
 		#end
 		if( dataInterceptors.length > 0 ) {
-			if( sendBytes( haxe.io.Bytes.ofString(t+"\n") ) == null )
+			if( sendBytes( Bytes.ofString( t+"\n" ) ) == null )
 				return null;
 		} else {
 			if( !cnx.write( t ) )
 				return null;
 		}
 		numPacketsSent++;
-		#if xmpp_debug
-		XMPPDebug.o( t );
-		#end
+		#if xmpp_debug XMPPDebug.o( t ); #end
 		return t;
 	}
 	
-	//TODO public function sendBytes( bytes : Bytes ) : Bytes {
+	/**
+		Send raw bytes
+	*/
 	public function sendBytes( bytes : Bytes ) : Bytes {
 		for( i in dataInterceptors )
 			bytes = i.interceptData( bytes );
@@ -302,10 +313,11 @@ class Stream {
 	}
 	
 	/**
-		Runs the XMPP packet interceptor on the given packet.
+		Runs this stream XMPP packet interceptors on the given packet.
 	*/
 	public function interceptPacket( p : xmpp.Packet ) : xmpp.Packet {
-		for( i in interceptors ) i.interceptPacket( p );
+		for( i in interceptors )
+			i.interceptPacket( p );
 		return p;
 	}
 	
@@ -375,6 +387,7 @@ class Stream {
 	/**
 	*/
 	public function handleString( t : String ) : Bool {
+
 		
 		if( status == closed ) {
 			#if jabber_debug trace( "cannot process incoming data, xmpp stream not connected", "debug" ); #end
@@ -390,6 +403,7 @@ class Stream {
 			trace("Invalid XMPP data recieved","error");
 		}
 		*/
+
 		
 		if( StringTools.startsWith( t, '</stream:stream' ) ) {
 			#if xmpp_debug XMPPDebug.i( t ); #end

@@ -21,43 +21,45 @@
  */
 package jabber.net;
 
+#if (js&&nodejs)
+
 import js.Node;
-//typedef Socket = Stream;
-private typedef Socket = js.NodeNetSocket;
+import haxe.io.Bytes;
 
-class SocketConnection_nodejs extends jabber.StreamConnection {
+class SocketConnection_nodejs extends SocketConnectionBase_js {
 
-	public var socket(default,null) : Socket;
-	public var credentials : NodeCredDetails;
+	public var bufSize(default,null) : Int;
+	public var maxBufSize(default,null) : Int;
+	public var timeout(default,null) : Int;
+	//public var credentials : NodeCredDetails;
 
-	var cleartext : Dynamic;
+	//var cleartext : Dynamic;
 
-	public function new( host : String = "localhost", port : Int = 5222, secure : Bool = true,
-						 ?bufSize : Int, ?maxBufSize : Int,
-						 timeout : Int = 10 ) {
-		super( host, port, secure, bufSize, maxBufSize, timeout );
+	public function new( host : String = "localhost", port : Int = 5222, secure : Bool = false,
+						 ?bufSize : Int, ?maxBufSize : Int, timeout : Int = 10 ) {
+		super( host, secure );
+		this.port = port;
+		this.bufSize = bufSize;
+		this.maxBufSize = maxBufSize;
+		this.timeout = timeout;
 	}
 
 	public override function connect() {
 		createConnection();
-
-		socket.on( NodeC.EVENT_STREAM_END, sockDisconnectHandler );
-		socket.on( NodeC.EVENT_STREAM_ERROR, sockErrorHandler );
-		socket.on( NodeC.EVENT_STREAM_DATA, sockDataHandler );
+		socket.on( NodeC.EVENT_STREAM_END, handleClose );
+		socket.on( NodeC.EVENT_STREAM_ERROR, handleError );
+		socket.on( NodeC.EVENT_STREAM_DATA, handleData ); // here? not in read ?
 	}
 
 	public override function disconnect() {
-		if( !connected )
-			return;
 		try socket.end() catch( e : Dynamic ) {
-			__onDisconnect( e );
+			onDisconnect( e );
 		}
 	}
 
 	public override function setSecure() {
 		//TODO 'setSecure' got removed from nodejs 0.4+
 		trace("_____SET SECURE__________TODO");
-
 		/*
 		socket.removeAllListeners( 'data' );
 		socket.removeAllListeners( 'drain' );
@@ -70,13 +72,12 @@ class SocketConnection_nodejs extends jabber.StreamConnection {
 			trace(">>>>>>>>>>>>>");
 		});
 		*/
-
 		//secured = true;
 		//__onSecured( null );
 		// hmm? TypeError: Object #<a Stream> has no method 'setSecure' ??????????
 		//socket.on( Node.STREAM_SECURE, sockSecureHandler );
 		//trace( socket.getPeerCertificate() );
-//		socket.setSecure(  );
+		//socket.setSecure(  );
 	}
 
 	public override function write( t : String ) : Bool {
@@ -95,7 +96,7 @@ class SocketConnection_nodejs extends jabber.StreamConnection {
 
 	public override function read( ?yes : Bool = true ) : Bool {
 		if( !yes )
-			socket.removeListener( NodeC.EVENT_STREAM_DATA, sockDataHandler );
+			socket.removeListener( NodeC.EVENT_STREAM_DATA, handleData );
 		return true;
 	}
 
@@ -105,7 +106,7 @@ class SocketConnection_nodejs extends jabber.StreamConnection {
 		//socket = Node.net.connect( port, host, sockConnectHandler );
 		socket = Node.net.connect( port, host );
 		socket.setEncoding( NodeC.UTF8 );
-		socket.on( NodeC.EVENT_STREAM_CONNECT, sockConnectHandler );
+		socket.on( NodeC.EVENT_STREAM_CONNECT, handleConnect );
 		/*
 		socket = Node.net.createConnection( port, host );
 		socket.setEncoding( Node.UTF8 );
@@ -114,28 +115,31 @@ class SocketConnection_nodejs extends jabber.StreamConnection {
 		*/
 	}
 
-	function sockConnectHandler() {
+	/*
+	function handleConnect() {
 		connected = true;
-		__onConnect();
+		onConnect();
 	}
 
-	function sockDisconnectHandler() {
+	function handleClose() {
 		connected = false;
-		__onDisconnect(null);
+		onDisconnect(null);
 	}
+	*/
 
-	function sockErrorHandler( e : String ) {
+	function handleError( e : String ) {
 		connected = false;
-		__onDisconnect( e );
+		onDisconnect( e );
 	}
 
-	function sockSecureHandler() {
+	/*
+	function handleSecure() {
 		secured = true;
-		__onSecured( null );
+		onSecured( null );
 	}
+	*/
 
-	//TODO use raw bytes
-	function sockDataHandler( t : String ) {
+	function handleData( t : String ) {
 		/*
 		var s = buf+t;
 		if( s.length > maxBufSize )
@@ -143,7 +147,9 @@ class SocketConnection_nodejs extends jabber.StreamConnection {
 		var r = __onData( Bytes.ofString( s ), 0, s.length );
 		buf = ( r == 0 ) ? s : "";
 		*/
-		__onString( t );
+		onString( t );
 	}
 
 }
+
+#end

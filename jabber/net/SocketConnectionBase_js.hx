@@ -21,6 +21,27 @@
  */
 package jabber.net;
 
+#if nodejs
+import js.Node;
+private typedef Socket = js.NodeNetSocket;
+#else
+private typedef Socket = js.html.WebSocket;
+#end
+
 class SocketConnectionBase_js extends StreamConnection {
+	
 	//TODO remove?
+
+	public var port(default,null) : Int;
+	public var socket(default,null) : Socket;
+
+	function handleConnect(e) {
+		connected = true;
+		onConnect();
+	}
+
+	function handleClose(e) {
+		connected = false;
+		onDisconnect(null);
+	}
 }

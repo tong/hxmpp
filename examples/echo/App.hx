@@ -7,10 +7,10 @@ import jabber.client.Authentication;
 */
 class App {
 
-	static var JID = "user@example.com";
-	static var PASSWORD = "mypassword";
-	static var IP = null;
-	static var RESOURCE = "hxmpp";
+	static var JID = 'romeo@jabber.disktree.net';
+	static var PASSWORD = 'test';
+	static var IP = 'localhost';
+	static var RESOURCE = 'hxmpp';
 
 	static var stream : Stream;
 
@@ -30,15 +30,17 @@ class App {
 	}
 
 	static function main() {
+		
 		var jid = new jabber.JID( JID );
 		if( IP == null )
 			IP = jid.domain;
+		
 		var cnx = new jabber.SocketConnection( IP, 5222, false );
+		
 		stream = new Stream( cnx );
 		stream.onOpen = function() {
 			var auth = new Authentication( stream, [
-				//new jabber.sasl.LOGINMechanism()
-				//new jabber.sasl.MD5Mechanism()
+				new jabber.sasl.MD5Mechanism(),
 				new jabber.sasl.PlainMechanism()
 			] );
 			auth.onFail = function(e) {
@@ -50,7 +52,7 @@ class App {
 				new jabber.MessageListener( stream, onMessage ); // --- listen for messages
 				stream.sendPresence(); // --- send initial presence 
 			}
-			auth.start( PASSWORD );
+			auth.start( PASSWORD, RESOURCE );
 		}
 		stream.onClose = function(?e) {
 			if( e == null )

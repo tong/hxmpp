@@ -100,6 +100,17 @@ class Build {
 	static function deleteDirectory( path : String, n : Int = 0 ) : Int {
 		for( f in FileSystem.readDirectory( path ) ) {
 			var p = path+"/"+f;
+			trace(p);
+			if( FileSystem.isDirectory( p ) ) {
+				deleteDirectory( p );
+				//FileSystem.deleteDirectory( p );
+			} else {
+				FileSystem.deleteFile( p );
+				n++;
+			}
+			/*
+			//if( !FileSystem.exists( p ) )
+			//	continue;
 			if( FileSystem.isDirectory( p ) ) {
 				deleteDirectory( p );
 				FileSystem.deleteDirectory( p );
@@ -107,6 +118,7 @@ class Build {
 				FileSystem.deleteFile( p );
 				n++;
 			}
+			*/
 		}
 		FileSystem.deleteDirectory( path );
 		return n;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +24,12 @@ package jabber.util;
 using Lambda;
 
 /**
-	Utility to 'beautify' XML strings (for debugging).
+	Utility to 'beautify' XML strings for better readability.
 */
 class XMLBeautify {
 	
 	/**
 		Format given string to something readable.
-		Only for debugging, do NOT use in production.
 	*/
 	public static function it( t : String ) : String  {
 		var x : Xml = null;
@@ -41,6 +40,8 @@ class XMLBeautify {
 	}
 	
 	static function createNode( x : Xml, b : StringBuf, depth : Int ) {
+		if( x == null )
+			return;
 		indent( b, depth );
 		b.add( '<' );
 		b.add( x.nodeName );
@@ -75,4 +76,5 @@ class XMLBeautify {
 	}
 	
 	static inline function indent( b : StringBuf, n : Int ) for( i in 0...n ) b.add( '\t' );
+
 }

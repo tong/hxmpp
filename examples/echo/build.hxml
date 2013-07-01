@@ -1,9 +1,8 @@
 
--cp ../../../hxmpp
+-cp ../../
 -main App
 -D jabber_debug
 -D xmpp_debug
--dce full
 --each
 
 --next
@@ -24,15 +23,14 @@
 #-cmd mv cs/bin/cs.exe app.cs && chmod +x app.cs
 
 --next
--php php
+-php ./
 --php-front app.php
 
 --next
 -cpp cpp
 -cmd mv cpp/App ./app
 
-#--next
-#-js app.nodejs
-#-lib nodejs
-#-lib nodejs-std
-#-D nodejs
+--next
+-js app.nodejs
+-lib nodejs
+-D nodejs

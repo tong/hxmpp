@@ -103,6 +103,7 @@ class StreamConnection {
 		#if jabber_debug trace( 'StreamConnection.read not implemented' ); #end
 		return false;
 	}
+
 	
 	/**
 		Send string
@@ -112,6 +113,13 @@ class StreamConnection {
 		return false;
 	}
 	
+	/**
+	public function writeXml( x : Xml ) : Bool {
+		#if jabber_debug trace( 'StreamConnection.writeXml not implemented' ); #end
+		return false;
+	}
+	*/
+
 	/**
 		Send raw bytes
 	*/

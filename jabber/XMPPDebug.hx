@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@ package jabber;
 import jabber.util.DateUtil;
 #if (flash&&!air)
 import flash.external.ExternalInterface;
-#elseif nodejs
+#elseif (js&&nodejs)
 import js.Node;
 #elseif rhino
 import js.Lib;
@@ -152,7 +152,7 @@ class XMPPDebug {
 			untyped __global__['trace']( t );
 			#elseif (air&&js)
 			untyped air.trace(t);
-			#elseif nodejs
+			#elseif (js&&nodejs)
 			Node.console.log( t );
 			#elseif
 			Sys.print( t );
@@ -174,7 +174,7 @@ class XMPPDebug {
 			#else
 			untyped air.trace( b.toString() );
 			#end
-		#elseif nodejs
+		#elseif (js&&nodejs)
 		Node.console.log( b.toString() );
 		#else
 		Sys.print( b.toString() );

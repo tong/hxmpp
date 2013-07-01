@@ -5,13 +5,27 @@ import jabber.client.Authentication;
 class App {
 
 	static function main() {
+
+		#if flash
+		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
+		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
+		#end
+		
 		var creds = XMPPClient.getAccountFromFile( 'a' );
-		var jid = creds.user+'@'+creds.host;
-		var cnx = new jabber.BOSHConnection( creds.host, creds.http );
+		trace( creds );
+
+		var cnx = new jabber.BOSHConnection( creds.host, creds.http, 1, 30, false );
+		#if (cpp||neko||nodejs)
+		cnx.ip = creds.ip;
+		cnx.port = 7070;
+		#end
+
 		var stream = new Stream( cnx );
 		stream.onOpen = function() {
+			trace( 'XMPP stream opened' );
 			var auth = new Authentication( stream, [
-				new jabber.sasl.MD5Mechanism()
+				new jabber.sasl.PlainMechanism()
+				//new jabber.sasl.MD5Mechanism()
 			] );
 			auth.onFail = function(e) {
 				trace( "Authentication failed ("+stream.jid+")" );
@@ -30,7 +44,7 @@ class App {
 				trace( 'XMPP stream error : $e' );
 			cnx.disconnect();
 		}
-		stream.open( jid );
+		stream.open( creds.user+'@'+creds.host );
 	}
 
 }

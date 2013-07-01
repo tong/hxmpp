@@ -23,11 +23,11 @@ package jabber.net;
 
 import js.html.WebSocket;
 
+//TODO timeout
+//TODO rename to SocketConnection_web
 class SocketConnection_js extends SocketConnectionBase_js {
 	
 	public var url(default,null) : String;
-	public var port(default,null) : Int;
-	public var socket(default,null) : WebSocket;
 	
 	public function new( host : String = "localhost", port : Int = 5222, secure : Bool = false ) {
 		
@@ -61,6 +61,7 @@ class SocketConnection_js extends SocketConnectionBase_js {
 		return true;
 	}
 	
+	/*
 	function handleConnect(e) {
 		connected = true;
 		onConnect();
@@ -70,6 +71,7 @@ class SocketConnection_js extends SocketConnectionBase_js {
 		connected = false;
 		onDisconnect(null);
 	}
+	*/
 	
 	function handleError(e) {
 		connected = false;
