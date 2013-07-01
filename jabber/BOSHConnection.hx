@@ -165,7 +165,7 @@ class BOSHConnection extends jabber.StreamConnection {
 			//sendQueuedRequests( r.toString() );
 			sendRequests( r );
 			cleanup();
-			//__onDisconnect(null);
+			//onDisconnect(null);
 			//TODO abot pending http requests
 		}
 	}
@@ -209,7 +209,7 @@ class BOSHConnection extends jabber.StreamConnection {
 		responseQueue = new Array();
 	//	responseTimer = new Timer( INTERVAL );
 		connected = true;
-		//__onConnect();
+		//onConnect();
 		//attached = true;
 		//restart();
 	}
@@ -344,7 +344,7 @@ class BOSHConnection extends jabber.StreamConnection {
 	function handleTimeout() {
 		timeoutTimer.stop();
 		cleanup();
-		__onDisconnect( "bosh timeout" );
+		onDisconnect( "bosh timeout" );
 	}
 	
 	/*
@@ -356,7 +356,7 @@ class BOSHConnection extends jabber.StreamConnection {
 	function handleHTTPError( e : String ) {
 		#if jabber_debug trace( e ); #end
 		cleanup();
-		__onDisconnect( e );
+		onDisconnect( e );
 	}
 	
 	function handleHTTPData( t : String ) {
@@ -386,7 +386,7 @@ class BOSHConnection extends jabber.StreamConnection {
 			#end
 			cleanup();
 			//TODO disconnect
-			__onDisconnect( 'invalid bosh body ($x)' );
+			onDisconnect( 'invalid bosh body ($x)' );
 			return;
 		}
 		requestCount--;
@@ -400,7 +400,7 @@ class BOSHConnection extends jabber.StreamConnection {
 				trace( "bosh stream terminated by server");
 				#end
 				trace(x);
-				__onDisconnect( x.get('condition') );
+				onDisconnect( x.get('condition') );
 				return;
 			case "error" :
 				trace("TODO");
@@ -426,7 +426,7 @@ class BOSHConnection extends jabber.StreamConnection {
 			sid = x.get( "sid" );
 			if( sid == null ) {
 				cleanup();
-				__onDisconnect( "invalid sid" );
+				onDisconnect( "invalid sid" );
 				return;
 			}
 			wait = Std.parseInt( x.get( "wait" ) );
@@ -434,7 +434,7 @@ class BOSHConnection extends jabber.StreamConnection {
 			var t = x.get( "ver" );
 			if( t != null &&  t != BOSH_VERSION ) {
 				cleanup();
-				__onError( 'invalid BOSH version ($t)' );
+				onError( 'invalid BOSH version ($t)' );
 				return;
 			}
 			*/
@@ -451,9 +451,9 @@ class BOSHConnection extends jabber.StreamConnection {
 			t = x.get( "inactivity" );
 			if( t != null ) inactivity = Std.parseInt( t );
 		//	#if xmpp_debug XMPPDebug.i( t ); #end
-			__onConnect();
+			onConnect();
 			connected = true;
-			__onString( x.toString() );
+			onString( x.toString() );
 		}
 	}
 	
@@ -465,7 +465,7 @@ class BOSHConnection extends jabber.StreamConnection {
 	
 	function processResponse() {
 		responseTimer.stop();
-		__onString( responseQueue.shift().toString() );
+		onString( responseQueue.shift().toString() );
 		resetResponseProcessor();
 	}
 	

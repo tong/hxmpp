@@ -21,14 +21,27 @@
  */
 package jabber;
 
-#if flash
-typedef SocketConnection = jabber.net.SocketConnection_fl;
-#elseif nodejs
-typedef SocketConnection = jabber.net.SocketConnection_nodejs;
-#elseif chrome_app
-typedef SocketConnection = jabber.net.SocketConnection_cra;
-#elseif js
-typedef SocketConnection = jabber.net.SocketConnection_js;
-#elseif sys
-typedef SocketConnection = jabber.net.SocketConnection_sys;
-#end
+typedef SocketConnection = 
+
+	#if flash
+	jabber.net.SocketConnection_fl;
+
+	#elseif nodejs
+	jabber.net.SocketConnection_nodejs;
+
+	#elseif js
+		#if (cra||chrome_app)
+		jabber.net.SocketConnection_cra;
+		
+		#elseif jabber_flashsocketbridge
+		jabber.net.SocketConnection_flashsocketbridge;
+		
+		#else
+		jabber.net.SocketConnection_js;
+		
+		#end
+
+	#elseif sys
+	jabber.net.SocketConnection_sys;
+
+	#end

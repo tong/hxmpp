@@ -4,35 +4,34 @@ import jabber.SocketConnection;
 /**
 	Connect to a XMPP server from javascript using a flash socketbridge.
 */
-class Test {
+class App {
 	
 	static function main() {
+
+		trace( 'Initializing flashsocketbridge ...' );
 		
-		var useTSL = false; // make sure to use the correct socketbridge.swf when using SSL encryption (socketbridge_tls.swf)
-		
-		SocketConnection.init( 'socketbridge', function(e:String) {
+		SocketConnection.init( 'flashsocketbridge', function(e:String) {
 			
 			if( e != null ) {
-				trace( e, 'error' );
+				trace( e );
 				return;
 			}
 
-			trace( 'socketbridge initialized', 'info' );
+			trace( 'flashsocketbridge ready' );
 			
-			var cnx = new SocketConnection( "127.0.0.1", 5222, useTSL );
+			var cnx = new SocketConnection( "localhost", 5222 );
 			var stream = new jabber.client.Stream( cnx );
 			stream.onOpen = function(){
-				trace( 'XMPP stream opened', 'info' );
+				trace( 'XMPP stream opened' );
 				var auth = new jabber.client.Authentication( stream, [new jabber.sasl.PlainMechanism()] );
 				auth.onSuccess = function() {
-					trace( 'Authenticated ['+stream.jid.toString()+']', 'info' );
+					trace( 'Authenticated ['+stream.jid.toString()+']' );
 					stream.sendPresence();
 				}
 				auth.start( "test", "HXMPP" );
 			}
-			stream.open( new jabber.JID( "romeo@disktree" ) );
+			stream.open( new jabber.JID( "romeo@jabber.disktree.net" ) );
 		}, 200 );
-		
 		
 	}
 }

@@ -1,6 +1,6 @@
 
 -js app.js
-App
+-main App
 -cp ../../../hxmpp
 -D jabber_flashsocketbridge
 -D jabber_debug

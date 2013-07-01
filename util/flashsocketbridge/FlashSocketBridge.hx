@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,24 +34,39 @@ private class Socket extends flash.net.Socket {
 	}
 }
 
+@:require(flash)
+@:keep
 class FlashSocketBridge {
-	
+
+	#if jabber_flashsocketbridge_standalone
+	static function main() {
+		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
+		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
+		var cm = new flash.ui.ContextMenu();
+		cm.hideBuiltInItems();
+		flash.Lib.current.contextMenu = cm;
+		var ctx = flash.Lib.current.loaderInfo.parameters.ctx;
+		var fsb = new FlashSocketBridge( ctx );
+		fsb.init();
+	}
+	#end
+
 	var ctx : String;
-	var sockets : IntHash<Socket>;
+	var sockets : Map<Int,Socket>;
 	
 	//var outputInterval : Int;
 	//var queue : Array<{id:Int,data:String}>;
 	//var timer : haxe.Timer;
 	
 	public function new( ?ctx : String, outputInterval : Int = 1 ) {
-		this.ctx = ( ctx != null ) ? ctx : "jabber.SocketConnection";
+		this.ctx = ( ctx != null ) ? ctx : "jabber.net.SocketConnection_flashsocketbridge";
 		//this.outputInterval = outputInterval;
 	}
 	
 	public function init() {
 		if( !ExternalInterface.available )
 			throw "External interface not available";
-		sockets = new IntHash();
+		sockets = new Map();
 		ExternalInterface.addCallback( "createSocket", createSocket );
 		ExternalInterface.addCallback( "destroySocket", destroySocket );
 		ExternalInterface.addCallback( "connect", connect );
@@ -59,7 +74,6 @@ class FlashSocketBridge {
 		ExternalInterface.addCallback( "send", send );
 		//ExternalInterface.addCallback( "destroy", destroy );
 		ExternalInterface.addCallback( "destroyAll", destroyAll );
-		
 		//queue = new Array();
 		//timer = new haxe.Timer( outputInterval );
 		//timer.run = onTimer;
@@ -95,16 +109,15 @@ class FlashSocketBridge {
 			s.close();
 			s = null;
 		}
-		sockets = new IntHash();
+		sockets = new Map();
 	}
 	
 	function connect( id : Int, host : String, port : Int, ?timeout : Int = -1 ) : Bool {
 		if( !sockets.exists( id ) )
 			return false;
 		var s = sockets.get( id );
-		#if flash10
-		if( timeout > 0 ) s.timeout = timeout;
-		#end
+		if( timeout > 0 )
+			s.timeout = timeout;
 		s.connect( host, port );
 		return true;
 	}
@@ -127,21 +140,24 @@ class FlashSocketBridge {
 	}
 	
 	function sockConnectHandler( e : Event ) {
+		//trace(e);
 		ExternalInterface.call( ctx+".handleConnect", e.target.id );
 	}
 
 	function sockDisconnectHandler( e : Event ) {
+		//trace(e);
 		ExternalInterface.call( ctx+".handleDisconnect", e.target.id, null );
 	}
 	
 	function sockErrorHandler( e : Event ) {
+		//trace(e);
 		ExternalInterface.call( ctx+".handleDisconnect", e.target.id, e.type );
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
 		//trace(e);
 		//ExternalInterface.call( ctx+".handleData", e.target.id, e.target.readUTFBytes( e.bytesLoaded ) );
-	//	trace(e.bytesLoaded );
+		//trace(e.bytesLoaded );
 		/*
 		var s : Socket = e.target;
 		var pos = 0;
@@ -173,6 +189,12 @@ class FlashSocketBridge {
 		ExternalInterface.call( ctx+".handleData", e.target.id, e.target.readUTFBytes( e.bytesLoaded ) );
 		//queue.push( { id : e.target.id, data : e.target.readUTFBytes( e.bytesLoaded ) } );
 	}
+
+	/*
+	function fl( f : String, p0 : Dynamic, p1 : Dynamic, p2 : Dynamic ) {
+		ExternalInterface.call( ctx+"."+f, e.target.id );
+	}
+	*/
 	
 	/* 
 	function onTimer() {
@@ -182,6 +204,5 @@ class FlashSocketBridge {
 		}
 	}
 	*/
-
 
 }
