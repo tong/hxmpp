@@ -48,11 +48,11 @@ class SocketConnection_sys extends SocketConnectionBase_sys {
 		buf = Bytes.alloc( bufsize );
 		bufpos = 0;
 		try socket.connect( new Host( host ), port ) catch( e : Dynamic ) {
-			__onDisconnect( e );
+			onDisconnect( e );
 			return;
 		}
 		connected = true;
-		__onConnect();
+		onConnect();
 	}
 
 	public override function setSecure() {
@@ -60,10 +60,10 @@ class SocketConnection_sys extends SocketConnectionBase_sys {
 		try {
 			secured = untyped __call__( 'stream_socket_enable_crypto', socket.__s, true, 1 );
 		} catch( e : Dynamic ) {
-			__onSecured( e );
+			onSecured( e );
 			return;
 		}
-		__onSecured( null );
+		onSecured( null );
 		#else
 		throw "Start-TLS not implemented";
 		#end

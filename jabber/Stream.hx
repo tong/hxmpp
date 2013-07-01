@@ -159,10 +159,10 @@ class Stream {
 				cnx.disconnect();
 			resetBuffer();
 			cnx = c;
-			cnx.__onConnect = handleConnect;
-			cnx.__onDisconnect = handleDisconnect;
-			cnx.__onString = handleString;
-			cnx.__onData = handleData;
+			cnx.onConnect = handleConnect;
+			cnx.onDisconnect = handleDisconnect;
+			cnx.onString = handleString;
+			cnx.onData = handleData;
 		}
 		return cnx;
 	}
@@ -436,7 +436,7 @@ class Stream {
 				return true;
 			}
 			var me = this;
-			cnx.__onSecured = function(err:String) {
+			cnx.onSecured = function(err:String) {
 				if( err != null ) {
 					me.handleStreamClose( 'tls failed [$err]' );
 				}
@@ -560,10 +560,10 @@ class Stream {
 			throw 'cannot replace with http connection';
 		trace( 'replacing stream connection', 'debug' );
 		#end
-		n.__onConnect = handleConnect;
-		n.__onDisconnect = handleDisconnect;
-		n.__onString = handleString;
-		n.__onData = handleData;
+		n.onConnect = handleConnect;
+		n.onDisconnect = handleDisconnect;
+		n.onString = handleString;
+		n.onData = handleData;
 		cnx = n;
 	}
 	*/

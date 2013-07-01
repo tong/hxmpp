@@ -26,7 +26,7 @@ import haxe.io.Bytes;
 import jabber.util.ArrayBufferUtil;
 
 /**
-	Google chrome socket connection.
+	Chrome-app socket connection.
 */
 class SocketConnection_cra extends jabber.StreamConnection {
 	
@@ -44,7 +44,7 @@ class SocketConnection_cra extends jabber.StreamConnection {
 				socketId = i.socketId;
 				Socket.connect( i.socketId, host, port, handleConnect );
 			} else {
-				__onDisconnect( 'unable to create socket' );
+				onDisconnect( 'unable to create socket' );
 			}
 		});
 	}
@@ -70,7 +70,7 @@ class SocketConnection_cra extends jabber.StreamConnection {
 	function _read() {
 		Socket.read( socketId, null, function(i:ReadInfo) {
 			if( i.resultCode > 0 ) {
-				__onData( Bytes.ofString( ArrayBufferUtil.toString( i.data ) ) ); //TODO
+				onData( Bytes.ofString( ArrayBufferUtil.toString( i.data ) ) ); //TODO
 				_read();
 			}
 		});
@@ -80,7 +80,7 @@ class SocketConnection_cra extends jabber.StreamConnection {
 		//trace( "socket status "+status, "debug" );
 		if( status == 0 ) {
 			connected = true;
-			__onConnect();
+			onConnect();
 		} else {
 			//TODO (what?)
 			#if jabber_debug trace("TODO"); #end

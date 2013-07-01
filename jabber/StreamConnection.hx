@@ -31,19 +31,23 @@ import haxe.io.Bytes;
 class StreamConnection {
 	
 	/** Succesfully connected callback */
-	public var __onConnect : Void->Void;
+	@:allow(jabber.Stream)
+	public var onConnect : Void->Void;
 	
 	/** Disconnected callback. Parameter is an optional error message  */
-	public var __onDisconnect : String->Void;
+	@:allow(jabber.Stream)
+	public var onDisconnect : String->Void;
 	
 	/** Bytes recieved callback */
-	public var __onData : Bytes->Bool;
+	@:allow(jabber.Stream)
+	public var onData : Bytes->Bool;
 	
 	/** String recieved callback */
-	public var __onString : String->Bool;
+	@:allow(jabber.Stream)
+	public var onString : String->Bool;
 
 	/** SSL negotiation complete callback */
-	public var __onSecured : String->Void;
+	public var onSecured : String->Void;
 	
 	/** Hostname or IP address of the XMPP server. */
 	public var host(default,set_host) : String;

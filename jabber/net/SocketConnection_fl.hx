@@ -52,7 +52,7 @@ class SocketConnection_fl extends SocketConnectionBase_fl {
 			return;
 		connected = false;
 		try socket.close() catch( e : Dynamic ) {
-			__onDisconnect( e );
+			onDisconnect( e );
 		}
 	}
 	
@@ -83,23 +83,23 @@ class SocketConnection_fl extends SocketConnectionBase_fl {
 	
 	function sockConnectHandler( e : Event ) {
 		connected = true;
-		__onConnect();
+		onConnect();
 	}
 	
 	function sockDisconnectHandler( e : Event ) {
 		connected = false;
-		__onDisconnect(null);
+		onDisconnect(null);
 	}
 	
 	function sockErrorHandler( e : Event ) {
 		connected = false;
-		__onDisconnect( e.type );
+		onDisconnect( e.type );
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
 		var d = new ByteArray();
 		socket.readBytes( d, 0, Std.int( e.bytesLoaded ) );
-		__onData( haxe.io.Bytes.ofData( d )  );
+		onData( haxe.io.Bytes.ofData( d )  );
 		/*
 		var d = new ByteArray();
 		try socket.readBytes( d, 0, Std.int(e.bytesLoaded) ) catch( e : Dynamic ) {

@@ -40,9 +40,9 @@ class SocketConnection_js extends SocketConnectionBase_js {
 	
 	public override function connect() {
 		socket = new WebSocket( url );
-		socket.onopen = onConnect;
-		socket.onclose = onClose;
-		socket.onerror = onError;
+		socket.onopen = handleConnect;
+		socket.onclose = handleClose;
+		socket.onerror = handleError;
 	}
 	
 	public override function disconnect() {
@@ -50,7 +50,7 @@ class SocketConnection_js extends SocketConnectionBase_js {
 	}
 	
 	public override function read( ?yes : Bool = true ) : Bool {
-		socket.onmessage = onData;
+		socket.onmessage = handleData;
 		//if( yes ) socket.onmessage = onData;
 		//socket.onmessage = yes ? onData : null;
 		return true;
@@ -61,23 +61,23 @@ class SocketConnection_js extends SocketConnectionBase_js {
 		return true;
 	}
 	
-	function onConnect(e) {
+	function handleConnect(e) {
 		connected = true;
-		__onConnect();
+		onConnect();
 	}
 	
-	function onClose(e) {
+	function handleClose(e) {
 		connected = false;
-		__onDisconnect(null);
+		onDisconnect(null);
 	}
 	
-	function onError(e) {
+	function handleError(e) {
 		connected = false;
-		__onDisconnect( "websocket error" ); // no error message?
+		onDisconnect( "websocket error" ); // no error message?
 	}
 	
-	function onData( m : Dynamic ) {
-		__onString( m.data );
+	function handleData( m : Dynamic ) {
+		onString( m.data );
 	}
 	
 	public static inline function isSupported() : Bool {

@@ -29,6 +29,10 @@ import flash.events.ProgressEvent;
 import flash.utils.ByteArray;
 import haxe.io.Bytes;
 
+/**
+	Abstract base class for flash socket connections
+*/
+@:require(flash)
 class SocketConnectionBase_fl extends jabber.StreamConnection {
 
 	public static var defaultBufSize = #if php 65536 #else 256 #end; //TODO php buf

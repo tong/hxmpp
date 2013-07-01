@@ -71,7 +71,7 @@ class SocketConnectionBase_sys extends jabber.StreamConnection {
 			return;
 		reading = connected = false;
 		try socket.close() catch( e : Dynamic ) {
-			__onDisconnect( e );
+			onDisconnect( e );
 			return;
 		}
 	}
@@ -98,7 +98,7 @@ class SocketConnectionBase_sys extends jabber.StreamConnection {
 		}
 		bufpos += len;
 		if( len < bufsize ) {
-			__onData( buf.sub( 0, bufpos ) );
+			onData( buf.sub( 0, bufpos ) );
 			bufpos = 0;
 			buf = Bytes.alloc( bufsize = defaultBufSize );
 		} else {
@@ -120,7 +120,7 @@ class SocketConnectionBase_sys extends jabber.StreamConnection {
 		} catch( e : Dynamic ) {
 			#if jabber_debug trace(e,"error"); #end
 		}
-		__onDisconnect( info );
+		onDisconnect( info );
 	}
 	
 }

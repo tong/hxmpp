@@ -10,15 +10,9 @@ import sys.io.File;
 import sys.FileSystem;
 #end
 
+using StringTools;
+
 typedef AccountCredentials = {
-	/*
-	var user : String;
-	var host : String;
-	var password : String;
-	var ip : String;
-	var port : Int;
-	var http : String;
-	*/
 	user : String,
 	host : String,
 	password : String,
@@ -33,25 +27,32 @@ typedef AccountCredentials = {
 class XMPPClient {
 
 	macro public static function getAccountFromFile( id : String = "a" ) {
+		//TODO use json
 		var path = '../account_$id';
 		if( !FileSystem.exists( path ) )
 			throw 'account file not found : $path';
-		var p = File.getContent( path ).split( ' ' );
-		var a : AccountCredentials = {
-			user : p[0],
-			host : p[1],
-			password : p[2],
-			ip : p[3],
-			port : ( p[4] != null ) ? Std.parseInt( p[4] ) : null,
-			http : null
-		};
-		a.http = ( a.port == null ) ? p[4] : p[5];
-		return Context.makeExpr( a, Context.currentPos() );
+		for( line in File.getContent( path ).split( '\n' ) ) {
+			line = line.trim();
+			if( line.startsWith('#') )
+				continue;
+			var p = line.split( ' ' );
+			var a : AccountCredentials = {
+				user : p[0],
+				host : p[1],
+				password : p[2],
+				ip : p[3],
+				port : ( p[4] != null ) ? Std.parseInt( p[4] ) : null,
+				http : null
+			};
+			a.http = ( a.port == null ) ? p[4] : p[5];
+			return Context.makeExpr( a, Context.currentPos() );
+		}
+		return null;
 	}
 
 	public static var defaultCredentials : AccountCredentials = {
 		user : 'romeo',
-		host : 'disktree.local',
+		host : 'jabber.disktree.net',
 		password : 'test',
 		ip : 'localhost',
 		port : jabber.client.Stream.PORT,
@@ -68,9 +69,11 @@ class XMPPClient {
 	var stream : Stream;
 
 	function new( ?creds : AccountCredentials ) {
+		trace(creds);
 
 		if( creds == null )
 			creds = defaultCredentials;
+
 
 		user = creds.user;
 		host = creds.host;
@@ -134,9 +137,8 @@ class XMPPClient {
 
 	function getSASLMechanisms() : Array<jabber.sasl.Mechanism> {
 		return [
-			new jabber.sasl.MD5Mechanism(),
 			new jabber.sasl.PlainMechanism()
-			//new jabber.sasl.LOGINMechanism()
+			//new jabber.sasl.MD5Mechanism()
 		];
 	}
 
@@ -144,28 +146,23 @@ class XMPPClient {
 		return getPlatformResource();
 	}
 
-	public static function getPlatformResource() : String {
-		return
-			#if cpp 'hxmpp-cpp'
-			#elseif cs 'hxmpp-cs'
-			#elseif flash 'hxmpp-flash'
-			#elseif java 'hxmpp-java'
-			#elseif js 'hxmpp-js'
-			#elseif neko 'hxmpp-neko'
-			#elseif php 'hxmpp-php'
-			#end;
+	public static inline function getPlatformResource() : String {
+		return 'hxmpp-'+get_platform();
 	}
 
 	public static inline function get_platform() : String {
-		return #if cpp "cpp"
-		#elseif cs "cs"
-		#elseif flash "flash"
-		#elseif java "java"
-		#elseif js
-			#if nodejs "nodejs" #elseif rhino "rhino" #else "js" #end
-		#elseif neko "neko"
-		#elseif php "php"
-		#end;
+		return
+			#if cpp "cpp"
+			#elseif cs "cs"
+			#elseif flash "flash"
+			#elseif java "java"
+			#elseif js
+				#if nodejs "nodejs"
+				#elseif rhino "rhino"
+				#else "js" #end
+			#elseif neko "neko"
+			#elseif php "php"
+			#end;
 	}
 
 }
