@@ -59,7 +59,7 @@ class App {
 				trace( "XMPP stream error: "+e );
 			}
 		}
-		stream.open( new jabber.JID( node+'@disktree' ) );
+		stream.open(  node+'@jabber.disktree.net' );
 	}
 	
 }

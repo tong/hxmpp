@@ -8,7 +8,6 @@
 
 --next
 -neko app.n
-#-lib hxssl
 
 --next
 -js app.js
@@ -32,8 +31,8 @@
 -cpp cpp
 -cmd mv cpp/App ./app
 
---next
--js app.nodejs
--lib nodejs
--lib nodejs-std
--D nodejs
+#--next
+#-js app.nodejs
+#-lib nodejs
+#-lib nodejs-std
+#-D nodejs

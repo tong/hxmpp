@@ -30,7 +30,7 @@ class App {
 				}
 				auth.start( "test", "HXMPP" );
 			}
-			stream.open( new jabber.JID( "romeo@jabber.disktree.net" ) );
+			stream.open( "romeo@jabber.disktree.net" );
 		}, 200 );
 		
 	}

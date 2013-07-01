@@ -23,6 +23,6 @@ class App {
 		stream.onClose = function(?e) {
 			trace("XMPP stream  closed "+e );
 		}
-		stream.open( new jabber.JID( creds.user+'@'+creds.host ) );
+		stream.open( creds.user+'@'+creds.host );
 	}
 }

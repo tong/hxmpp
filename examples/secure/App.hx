@@ -1,33 +1,50 @@
 
 /**
-	Legacy TLS (port 5223)
+	Legacy SSL (port 5223)
 */
 class App {
-	
+
 	static function main() {
+
+		//trace( sys.crypto.Base64.encode('tongtest') ); return;
+		//trace( sys.crypto.Base64.encode('a') );
+
+
+		var creds = XMPPClient.getAccountFromFile();
+		trace(creds);
+
+		//var cnx = new jabber.SocketConnection( creds.ip, 5222 );
+		var cnx = new jabber.SecureSocketConnection( creds.ip, 5223 );
+
+		#if !php
+		//var s : sys.ssl.Socket = cnx.socket;
+		//s.setCertLocation( '/etc/ssl/certs/ca-certificates.crt', '/etc/ssl/certs' );
+		#end
 		
-		var ip = "127.0.0.1";
-		var jid = "romeo@disktree";
-		
-		var cnx = new jabber.SecureSocketConnection( ip );
-		
-		//var cnx = new jabber.SocketConnection( ip );
 		var stream = new jabber.client.Stream( cnx );
 		stream.onOpen = function() {
-			trace( "XMPP stream opened", "info" );
-			var auth = new jabber.client.Authentication( stream, [new jabber.sasl.PlainMechanism()] );
+			trace( "XMPP stream opened" );
+			var auth = new jabber.client.Authentication( stream, [
+				//new jabber.sasl.MD5Mechanism()
+				new jabber.sasl.PlainMechanism()
+			] );
 			auth.onSuccess = function() {
-				trace( "Authenticated as: "+stream.jid.toString(), "info" );
+				trace( "Authenticated as: "+stream.jid.toString() );
 				stream.sendPresence();
 			}
-			auth.start( "test", XMPPClient.getDefaultResource() );
+			auth.start( creds.password, XMPPClient.getPlatformResource() );
 		}
 		stream.onClose = function(?e) {
 			trace( "XMPP stream closed" );
-			if( e != null ) trace( e, "warn" );
+			if( e != null ) trace( e );
 		}
-		trace( "Connecting ["+ip+","+jid+"] ..." );
-		stream.open( new jabber.JID( jid ) );
+		trace( "Connecting to "+creds.ip+" ..." );
+		try {
+			stream.open( creds.user+"@"+creds.host );
+		} catch(e:Dynamic) {
+			trace(e);
+		}
+
 	}
 	
 }

@@ -59,7 +59,7 @@ class App {
 				trace( 'XMPP stream error : $e' );
 			cnx.disconnect();
 		}
-		stream.open( jid );
+		stream.open( jid.bare );
 	}
 
 }

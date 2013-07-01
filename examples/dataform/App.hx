@@ -3,7 +3,7 @@ import xmpp.dataform.FormType;
 
 class App extends XMPPClient {
 	
-	static var ENTITY = "julia@disktree";
+	static var ENTITY = "julia@xmpp.disktree.net";
 	
 	override function onLogin() {
 		new jabber.PresenceListener( stream, onPresence );

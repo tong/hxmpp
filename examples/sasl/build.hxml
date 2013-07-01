@@ -6,11 +6,9 @@
 -main App
 --each
 
-#--next
-#-java java
-
 --next
 -neko app.n
+-lib ssl
 
 --next
 -js app.js
@@ -21,3 +19,12 @@
 --next
 -php .
 --php-front app.php
+
+--next
+-lib ssl
+-cpp cpp
+-cmd mv cpp/App ./app
+
+--next
+-java java
+-cmd mv java/java.jar ./app.jar

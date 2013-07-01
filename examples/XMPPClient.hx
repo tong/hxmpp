@@ -103,7 +103,7 @@ class XMPPClient {
 		stream = new Stream( cnx );
 		stream.onOpen = onStreamOpen;
 		stream.onClose = onStreamClose;
-		stream.open( new jabber.JID( user+'@'+host ) );
+		stream.open( user+'@'+host );
 	}
 
 	function logout() {

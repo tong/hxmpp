@@ -41,7 +41,7 @@ class App {
 			trace( "XMPP stream closed", ( e != null ) ? "error" : "info" );
 			if( e != null ) trace( e, "error" );
 		}
-		stream.open( new jabber.JID( jid ) );
+		stream.open( jid );
 	}
 	
 }

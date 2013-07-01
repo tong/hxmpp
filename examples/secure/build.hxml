@@ -4,6 +4,19 @@
 -main App
 --each
 
+--next
+-lib ssl
+-neko app.n
+
+--next
+-lib ssl
+-cpp cpp
+-cmd mv cpp/App* ./app
+
+#--next
+#-php .
+#--php-front app.php
+
 #../src/include.hxml
 #-swf test.swf
 #-swf-version 10
@@ -12,16 +25,6 @@
 #-D TLS
 #-cp ../../hxmpp/util/tls_flash
 #-swf-lib ../../hxssl.fl/ssl.swf
-
---next
--neko app.n
--lib hxssl
--cp ../../../hxssl
-
---next
--php .
---php-front app.php
-
 
 #--next
 #../src/include.hxml
