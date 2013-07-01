@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -302,7 +302,7 @@ class MUChat {
 						var self = this;
 						stream.sendIQ( iq, function(r:xmpp.IQ) {
 							if( r.type == xmpp.IQType.result ) {
-								#if jabber_debug trace( "Unlocked MUC room: "+self.room, "info" ); #end
+								#if jabber_debug trace( "Unlocked MUC room: "+self.room ); #end
 								//unlocked = true; //TODO
 								//self.onUnlock();
 								self.joined = true;
@@ -375,7 +375,7 @@ class MUChat {
 						var self = this;
 						stream.sendIQ( iq, function(r:xmpp.IQ) {
 							if( r.type == xmpp.IQType.result ) {
-								#if jabber_debug trace( "Unlocked MUC room: "+self.room, "info" ); #end
+								#if jabber_debug trace( "Unlocked MUC room: "+self.room ); #end
 								//unlocked = true; //TODO
 								//self.onUnlock();
 								self.joined = true;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,7 @@ package jabber.sasl;
 	LOGIN SASL Mechanism.
 	
 	Obsolete clear-text user/password Simple Authentication and Security Layer (SASL) mechanism called the LOGIN mechanism.
-	The LOGIN mechanism was intended to be used, in combination with data confidentiality services provided by a lower layer,
-	in protocols which lack a simple password authentication command.
+	The LOGIN mechanism was intended to be used, in combination with data confidentiality services provided by a lower layer, in protocols which lack a simple password authentication command.
 
 	http://tools.ietf.org/id/draft-murchison-sasl-login-00.txt
 */
@@ -45,7 +44,7 @@ class LOGINMechanism {
 	}
 	
 	@:keep
-	public function createAuthenticationText( username : String, host : String, password : String, resource : String ) : String {
+	public inline function createAuthenticationText( username : String, host : String, password : String, resource : String ) : String {
 		this.password = password;
 		this.username = username;
 		nChallenges = 0;
@@ -53,7 +52,7 @@ class LOGINMechanism {
 	}
 	
 	@:keep
-	public function createChallengeResponse( c : String ) : String {
+	public inline function createChallengeResponse( c : String ) : String {
 		return ( ++nChallenges == 1 ) ? username : password;
 	}
 	

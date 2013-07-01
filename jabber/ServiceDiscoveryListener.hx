@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,7 @@ class ServiceDiscoveryListener {
 	
 	public var stream(default,null) : Stream;
 	
-	/** */ //TODO hmmm here? not in stream?
+	/** */
 	public var identities : Array<xmpp.disco.Identity>;
 	
 	/** Custom info request handler relay */
@@ -58,6 +58,8 @@ class ServiceDiscoveryListener {
 		c_items = stream.collect( [new IQFilter( xmpp.disco.Items.XMLNS, xmpp.IQType.get )], handleItemsQuery, true );
 	}
 	
+	/**
+	*/
 	public function dispose() {
 		stream.removeCollector( c_info );
 		stream.removeCollector( c_items );
@@ -86,7 +88,8 @@ class ServiceDiscoveryListener {
 	}
 	
 	function handleItemsQuery( iq : IQ ) {
-		if( onItemsQuery != null ) { // redirect to custom handler
+		if( onItemsQuery != null ) {
+			// redirect to custom handler
 			var r = onItemsQuery( iq );
 			if( r != null ) {
 				stream.sendPacket( r );
@@ -102,4 +105,5 @@ class ServiceDiscoveryListener {
 		#end
 		s.sendPacket( r );
 	}
+
 }

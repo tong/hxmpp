@@ -23,6 +23,8 @@ package jabber;
 
 import haxe.io.Bytes;
 
+//TODO interface
+
 /**
 	Abstract base class for XMPP stream connections.
 */
@@ -40,7 +42,7 @@ class StreamConnection {
 	/** String recieved callback */
 	public var __onString : String->Bool;
 
-	/** TLS negotiation complete callback */
+	/** SSL negotiation complete callback */
 	public var __onSecured : String->Void;
 	
 	/** Hostname or IP address of the XMPP server. */
@@ -49,10 +51,10 @@ class StreamConnection {
 	/** Indicates if connected and ready to read and write. */
 	public var connected(default,null) : Bool;
 	
-	/** Indicates if this is a secure connection (TLS negotiation complete) */
+	/** Indicates if this is a secure connection (SSL negotiation complete) */
 	public var secure(default,null) : Bool;
 	
-	/** Indicates if TLS is negotiation is complete and data transfered is encrypted */
+	/** Indicates if SSL is negotiation is complete and data transfered is encrypted */
 	public var secured(default,null) : Bool;
 	
 	/** Indicates if this data connection is a HTTP (BOSH) connection (default is false) */
@@ -67,49 +69,50 @@ class StreamConnection {
 	
 	function set_host( t : String ) : String {
 		if( connected )
-			throw "cannot change hostname on active xmpp connection" ;
+			return throw "cannot change hostname on active xmpp connection" ;
 		return host = t;
 	}
 	
 	/**
 	*/
 	public function connect() {
-		#if jabber_debug trace( 'abstract method', 'error' ); #end
+		#if jabber_debug trace( 'StreamConnection.connect not implemented' ); #end
 	}
 	
 	/**
 	*/
 	public function disconnect() {
-		#if jabber_debug trace( 'abstract method', 'error' ); #end
+		#if jabber_debug trace( 'StreamConnection.disconnect not implemented' ); #end
 	}
 	
 	/**
+		StartTLS
 	*/
 	public function setSecure() {
-		#if jabber_debug trace( 'Connection.setSecure not implemented', 'error' ); #end
+		#if jabber_debug trace( 'StreamConnection.setSecure not implemented' ); #end
 	}
 	
 	/**
 		Starts/Stops reading data input, returns true if successfully started
 	*/
 	public function read( ?yes : Bool = true ) : Bool {
-		#if jabber_debug trace( 'abstract method', 'error' ); #end
+		#if jabber_debug trace( 'StreamConnection.read not implemented' ); #end
 		return false;
 	}
 	
 	/**
-		Send a string, returns true on succeess
+		Send string
 	*/
 	public function write( t : String ) : Bool {
-		#if jabber_debug trace( 'abstract method', 'error' ); #end
+		#if jabber_debug trace( 'StreamConnection.write not implemented' ); #end
 		return false;
 	}
 	
 	/**
-		Send raw bytes, returns true on succeess
+		Send raw bytes
 	*/
 	public function writeBytes( b : Bytes ) : Bool {
-		#if jabber_debug trace( 'abstract method', 'error' ); #end
+		#if jabber_debug trace( 'StreamConnection.writeBytes not implemented' ); #end
 		return false;
 	}
 	

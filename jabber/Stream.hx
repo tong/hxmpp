@@ -448,7 +448,7 @@ class Stream {
 		case open :
 			var x : Xml = null;
 			try x = Xml.parse( buf.toString() ) catch( e : Dynamic ) {
-				//#if jabber_debug trace( "Packet incomplete, waiting for more data ..", "info" ); #end
+				//#if jabber_debug trace( "Packet incomplete, waiting for more data .." ); #end
 				return false; // wait for more data
 			}
 			resetBuffer();
@@ -573,9 +573,7 @@ class Stream {
 	}
 	
 	function handleConnect() {
-		trace( 'connected', 'info' );
-		#if jabber_debug
-		#end
+		#if jabber_debug trace( 'connected' ); #end
 	}
 
 	function handleDisconnect( ?e : String ) {

@@ -25,7 +25,7 @@ import jabber.JID;
 import jabber.Stream;
 
 /**
-	Client-Server XMPP stream.
+	Client-to-Server XMPP stream.
 
 	See: http://xmpp.org/rfcs/rfc6120.html#examples-c2s
 */
@@ -97,6 +97,8 @@ class Stream extends jabber.Stream {
 					return true;
 				}
 			}
+			//TODO check for stream errors
+			//Example: <stream:error xmlns:stream="http://etherx.jabber.org/streams"><xml-not-well-formed xmlns="urn:ietf:params:xml:ns:xmpp-streams"/></stream:error>
 			if( id == null ) {
 				#if jabber_debug trace( "invalid xmpp stream, missing id" ); #end
 				close( true );

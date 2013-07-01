@@ -27,7 +27,7 @@ class Field {
 	
 	public var label : String;
 	public var type : FieldType;
-	public var variable : String;
+	public var variable : String; // TODO real 'var' name
 	public var desc : String;
 	public var required : Bool;
 	public var values : Array<String>;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@ package jabber.sasl;
 
 /**
 	Calculates the MD5 hash on a web server instead of locally.
-	This allows to create xmpp (web based) clients without including the (hardcoded) account password in the source code.
+	This allows to build clients not including the hardcoded account password in source code.
 	
 	Example of a remote calculator: https://gist.github.com/2464432
 */

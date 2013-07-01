@@ -22,23 +22,18 @@
 package jabber.client;
 
 /**
-	Abstract client account authentication class.
+	Abstract client account authentication class
 */
 class AuthenticationBase {
 	
-	/** Authenication was success full callback */
 	public dynamic function onSuccess() {}
-	
-	/** Authenication failed callback */
 	public dynamic function onFail( info : String ) {}
 	
 	/** The jid resource to authenticate */
 	public var resource(default,null) : String;
-	
-	/***/
 	public var stream(default,null) : Stream;
 	
-	function new( s : Stream ) {
+	inline function new( s : Stream ) {
 		this.stream = s;
 	}
 	

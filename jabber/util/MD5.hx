@@ -36,8 +36,13 @@ class MD5 {
 	public static inline function encode( s : String, raw : Bool = false ) : String {
 		
 		#if neko
-		var t = make_md5( untyped s.__s );
-		return untyped new String( raw ? t : base_encode( t, "0123456789abcdef".__s ) );
+			//#if hxssl_crypto
+			#if ssl
+				return sys.crypto.MD5.encode( s );
+			#else
+				var t = make_md5( untyped s.__s );
+				return untyped new String( raw ? t : base_encode( t, "0123456789abcdef".__s ) );
+			#end
 		
 		#elseif nodejs
 		var h = js.Node.crypto.createHash( "md5" );

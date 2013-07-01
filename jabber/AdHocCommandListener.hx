@@ -32,7 +32,6 @@ class AdHocCommandListener {
 	
 	/** */
 	public dynamic function onRequest( jid : String, cmd : xmpp.AdHocCommand, f : xmpp.AdHocCommand->Void ) {}
-	//public dynamic function onRequest( jid : String, cmd : xmpp.AdHocCommand ) : xmpp.AdHocCommand { return null; }
 	
 	/** Informational callback when a command got canceled */
 	public dynamic function onCancel( jid : String, cmd : xmpp.AdHocCommand ) {}
@@ -73,7 +72,6 @@ class AdHocCommandListener {
 		switch( action ) {
 		case execute, complete:
 			onRequest( iq.from, cmd, function(result){
-				trace(result);
 				var r = IQ.createResult( iq );
 				r.x = result;
 				stream.sendPacket( r );

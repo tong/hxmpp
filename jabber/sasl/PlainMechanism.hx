@@ -39,16 +39,32 @@ class PlainMechanism {
 	
 	@:keep
 	public inline function createAuthenticationText( username : String, host : String, password : String, resource : String ) : String {
+		
+		/*
+		#if sys
+		var b = new haxe.io.BytesOutput();
+		b.writeInt32( 0x00 );
+		b.writeString( username );
+		b.writeInt32( 0x00 );
+		b.writeString( password );
+		return b.getBytes().toString();
+	
+		#else
+	*/
 		var b = new StringBuf();
 		b.add( String.fromCharCode( 0 ) );
 		b.add( username );
 		b.add( String.fromCharCode( 0 ) );
 		b.add( password );
 		return b.toString();
+
+	//	#end
+
+		//return '\x00username\x00passowrd';
 	}
 	
 	@:keep
-	public inline function createChallengeResponse( c : String ) : String {
+	public function createChallengeResponse( c : String ) : String {
 		return null; // This mechanism will never get a challenge from the server.
 	}
 	

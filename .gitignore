@@ -1,6 +1,13 @@
-*.o
-*.pyc
 *.cache
+*.o
+*.jar
+*.js
+*.n
+*.map
+*.php
+*.swc
+*.swf
+*.zip
 *.sublime-project
 *.sublime-workspace
 .project
@@ -10,3 +17,4 @@ doc/api/*.xml
 util/libhxmpp*
 util/xmpp-*/
 util/*.*
+TODO

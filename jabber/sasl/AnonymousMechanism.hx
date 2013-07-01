@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,8 @@
 package jabber.sasl;
 
 /**
-	XEP-0175: Best Practices for Use of SASL ANONYMOUS: http://xmpp.org/extensions/xep-0175.html
+	XEP-0175: Best Practices for Use of SASL ANONYMOUS
+	http://xmpp.org/extensions/xep-0175.html
 */
 class AnonymousMechanism {
 	

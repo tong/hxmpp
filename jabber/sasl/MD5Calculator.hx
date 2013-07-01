@@ -40,8 +40,8 @@ class MD5Calculator {
 			var s = e.split( "=" );
 			el.set( s[0], s[1] );
 		}
-		if( Lambda.count( el ) == 1 && el.exists( "rspauth" ) )
-			return { realm : null, nonce : null }; // negotiation complete
+		if( Lambda.count( el ) == 1 && el.exists( "rspauth" ) ) // negotiation complete
+			return { realm : null, nonce : null };
 			//TODO hmmmmmmm should be '' (??)
 			//return null;
 		return {
@@ -51,7 +51,7 @@ class MD5Calculator {
 	}
 	
 	/**
-	 * Caluclate/Create the MD5 challenge response
+	 * Caluclate the MD5 challenge response
 	 */
 	public static function run(
 		host : String,
@@ -61,10 +61,10 @@ class MD5Calculator {
 		pass : String,
 		nonce : String ) : String {
 		
-		var digest_uri = serverType+"/"+host;
+		var digest_uri = '$serverType/$host';
 		var cnonce = hh( Date.now().toString() );
 		var a1 = h( '$username:$realm:$pass' )+':$nonce:$cnonce';
-		var a2 = "AUTHENTICATE:"+digest_uri;
+		var a2 = 'AUTHENTICATE:$digest_uri';
 		
 		var b = new StringBuf();
 		b.add( "username=" );
@@ -86,8 +86,16 @@ class MD5Calculator {
 		return b.toString();
 	}
 	
+
+	//TODO use sll.ndll if available
+	//#if ssl
+	//static inline function h( t : String)  return sys.crypto.MD5.encode( t, true );
+	//static inline function hh( t : String ) : String return sys.crypto.MD5.encode( t );
+	//#else
 	static inline function h( t : String)  return MD5.encode( t, true );
 	static inline function hh( t : String ) : String return MD5.encode( t );
+	//#end
+
 	static inline function quote( t : String ) : String return '"$t"';
 	static inline function unquote( t : String ) : String return t.substr( 1, t.length-2 );
 	

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -203,7 +203,7 @@ class ByteStreamInput extends ByteStreamIO {
 	#elseif flash
 	
 	function onSocketConnect( e : Event ) {
-		#if jabber_debug trace( "Filetransfer socket connected ["+host+":"+port+"]", "info" ); #end
+		#if jabber_debug trace( "Filetransfer socket connected ["+host+":"+port+"]" ); #end
 		try {
 			new SOCKS5Output().run( socket, digest, onSOCKS5Complete );
 		} catch( e : Dynamic ) {

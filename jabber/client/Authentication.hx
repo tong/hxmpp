@@ -21,6 +21,7 @@
  */
 package jabber.client;
 
+import jabber.sasl.Mechanism;
 import jabber.util.Base64;
 import xmpp.IQ;
 import xmpp.IQType;
@@ -39,24 +40,24 @@ import xmpp.filter.PacketNameFilter;
 */
 class Authentication extends AuthenticationBase {
 	
-	/** Callback on SASL negotiation completed */
+	/** Called on SASL negotiation complete */
 	public dynamic function onNegotiated() {}
 	
 	/** Clients SASL mechanisms (in prefered order) */
-	public var mechanisms(default,null) : Array<jabber.sasl.Mechanism>;
+	public var mechanisms(default,null) : Array<Mechanism>;
 	
-	/** Available SASL mechanisms offered by server */
+	/** SASL mechanisms offered by server */
 	public var serverMechanisms(default,null) : Array<String>;
 	
 	/** Used SASL method */
-	public var mechanism(default,null) : jabber.sasl.Mechanism;
+	public var mechanism(default,null) : Mechanism;
 	
 	var onStreamOpenHandler : Void->Void;
 	var c_challenge : PacketCollector;
 	var c_fail : PacketCollector;
 	var c_success : PacketCollector;
 	
-	public function new( stream : Stream, mechanisms : Iterable<jabber.sasl.Mechanism> ) {
+	public function new( stream : Stream, mechanisms : Iterable<Mechanism> ) {
 		super( stream );
 		var x = stream.server.features.get( "mechanisms" );
 		if( x == null )

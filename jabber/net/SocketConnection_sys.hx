@@ -29,7 +29,7 @@ class SocketConnection_sys extends SocketConnectionBase_sys {
 
 	public function new( host : String = "localhost",
 						 port : Int = #if jabber_component 5275 #else 5222 #end,
-						 secure : Bool = #if (neko||cpp||air) false #else true #end,
+						 secure : Bool = #if (air||android||cpp||neko) false #else true #end,
 						 ?bufsize : Int, ?maxbufsize : Int,
 						 timeout : Int = 10 ) {
 		
@@ -76,9 +76,8 @@ class SocketConnection_sys extends SocketConnectionBase_sys {
 			socket.output.writeString( t );
 			socket.output.flush();
 		} catch(e:Dynamic) {
-			#if jabber_debug
-			trace(e);
-			#end
+			#if jabber_debug trace(e); #end
+			return false;
 		}
 		return true;
 	}

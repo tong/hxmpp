@@ -124,6 +124,7 @@ class JIDUtil {
 		return ( i == -1 ) ? [jid] : [ jid.substr( 0, i ), jid.substr( i+1 ) ];
 	}
 	
+	//TODO remove
 	/**
 	*/
 	public static function compare( a : JID, b : JID ) : Bool {

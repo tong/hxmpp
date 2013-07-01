@@ -2,9 +2,9 @@
 	"name": "hxmpp",
 	"url": "https://github.com/tong/hxmpp",
 	"license": "MIT",
-	"tags": ["xmpp","jabber","jingle","chat","net"],
+	"tags": ["xmpp","jabber","jingle","chat","net","realtime"],
 	"description": "XMPP/Jabber library",
-	"version": "0.4.12",
+	"version": "0.4.13-RC1",
 	"releasenote": "Misc",
 	"contributors": ["tong"]
 }

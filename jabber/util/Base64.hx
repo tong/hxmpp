@@ -22,11 +22,9 @@
 package jabber.util;
 
 import haxe.io.Bytes;
-
 #if (!php&&!nodejs)
 import haxe.crypto.BaseCode;
 #end
-
 #if nodejs
 import js.Node;
 #end
@@ -37,6 +35,16 @@ import js.Node;
 class Base64 {
 
 	public static var CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+	public static inline function fillNullbits( s : String ) : String {
+		while( s.length % 3 != 0 ) s += "=";
+		return s;
+	}
+
+	public static inline function removeNullbits( s : String ) : String {
+		while( s.charAt( s.length-1 ) == "=" ) s = s.substr( 0, s.length-1 );
+		return s;
+	}
 
 	/**
 	*/
@@ -49,9 +57,8 @@ class Base64 {
 
 		#elseif nodejs
 		return new NodeBuffer(s).toString( NodeC.BASE64 );
-		
-		#else
 
+		#else
 			#if js
 			if( untyped window.btoa != null )
 				return untyped window.btoa( s );
@@ -63,7 +70,15 @@ class Base64 {
 			default : "";
 			};
 			return BaseCode.encode( s, CHARS ) + suf;
-
+			
+			/*
+			#if (ssl)
+				var r2 = sys.crypto.Base64.encode( s );
+				trace(r2);
+				return r2;
+			#end
+			*/
+			//return fillNullbits( BaseCode.encode( s, CHARS ) );
 		#end
 	}
 
@@ -80,17 +95,12 @@ class Base64 {
 		return new NodeBuffer( s, NodeC.BASE64 ).toString( NodeC.ASCII );
 		
 		#else
-
 			#if js
 			if( untyped window.atob != null )
 				untyped window.atob( s );
 			#end
-
-			while( s.charAt( s.length-1 ) == '=' )
-				s = s.substr( 0, s.length-1 );
+			return BaseCode.decode( removeNullbits(s), CHARS );
 			
-			return BaseCode.decode( s, CHARS );
-
 		#end
 	}
 
@@ -131,7 +141,6 @@ class Base64 {
 		#end
 	}
 
-	//TODO remove
 	/**
 		Create a random (base64 compatible) string of given length.
 	*/

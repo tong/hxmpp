@@ -21,7 +21,7 @@
  */
 package jabber.util;
 
-#if (sys)
+#if sys
 import sys.net.Socket;
 #elseif nodejs
 import js.Node;

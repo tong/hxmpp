@@ -26,7 +26,7 @@ class Item {
 	public var fields : Array<Field>;
 	
 	public function new( ?fields : Array<Field> ) {
-		this.fields = ( fields != null ) ?fields : new Array<Field>();
+		this.fields = ( fields != null ) ?fields : new Array();
 	}
 	
 	public function toXml() : Xml {
