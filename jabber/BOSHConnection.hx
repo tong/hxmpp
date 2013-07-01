@@ -24,39 +24,34 @@ package jabber;
 import jabber.util.Timer;
 #if nodejs
 //#
-
 #elseif js
 import js.html.XMLHttpRequest;
-
 #elseif flash
 import flash.events.Event;
 import flash.events.HTTPStatusEvent;
 import flash.events.IOErrorEvent;
 import flash.events.ProgressEvent;
 import flash.events.SecurityErrorEvent;
-
 #end
 
 using StringTools;
 
 /**
-	Emulates the semantics of a long-lived, bidirectional TCP connection
-	by efficiently using multiple synchronous HTTP request/response pairs
-	without requiring the use of frequent polling or chunked responses.
+	Emulates the semantics of a long-lived, bidirectional TCP connection by efficiently using multiple synchronous HTTP request/response pairs without requiring the use of frequent polling or chunked responses.
 	
 	Bidirectional-streams Over Synchronous HTTP (BOSH): http://xmpp.org/extensions/xep-0124.html
 	XMPP Over BOSH: http://xmpp.org/extensions/xep-0206.html
 */
 class BOSHConnection extends jabber.StreamConnection {
-	
+
 	static inline var INTERVAL = 0;
-	
+	static inline var MAX_CHILD_ELEMENTS = 10;
+
 	static inline var BOSH_VERSION = "1.6";
+	static inline var XMLNS = "http://jabber.org/protocol/httpbind";
+	static inline var XMLNS_XMPP = "urn:xmpp:xbosh";
 	
-	static var XMLNS = "http://jabber.org/protocol/httpbind";
-	static var XMLNS_XMPP = "urn:xmpp:xbosh";
-	
-	/** HTTP path */
+	/** Server HTTP path */
 	public var path(default,null) : String;
 	
 	/** Maximum number of requests the connection manager is allowed to keep waiting at any one time during the session. */
@@ -68,7 +63,7 @@ class BOSHConnection extends jabber.StreamConnection {
 	/** Session id */
 	public var sid(default,null) : String;
 	
-	/** */
+	/** Request id */
 	public var rid(default,null) : Int;
 	
 	/** */
@@ -86,8 +81,8 @@ class BOSHConnection extends jabber.StreamConnection {
 	var maxPause : Int;
 	var timeoutTimer : Timer;
 	var timeoutOffset : Int;
-	//var requests : Array<Http>;
 	var attached : Bool;
+	//var requests : Array<Http>;
 
 	/**
 		A new connection to a HTTP gateway of a jabber server.
@@ -97,9 +92,9 @@ class BOSHConnection extends jabber.StreamConnection {
 						 hold : Null<Int> = 1, wait : Null<Int> = 30, secure : Bool = false,
 						 maxConcurrentRequests : Null<Int> = 2, timeoutOffset : Null<Int> = 25 ) {
 		
-		if( path.startsWith('http://') )
+		if( path.startsWith( 'http://' ) )
 			path = path.substr(7);
-		else if( path.startsWith('https://') )
+		else if( path.startsWith( 'https://' ) )
 			path = path.substr(8);
 
 		super( host, secure, true );
@@ -113,8 +108,8 @@ class BOSHConnection extends jabber.StreamConnection {
 		initialized = pauseEnabled = attached = false;
 		pollingEnabled = true;
 		
-		#if (nodejs && jabber_debug)
-		throw 'bosh not implementd for nodejs';
+		#if (nodejs&&jabber_debug)
+		throw 'BOSH not implementd for nodejs';
 		#end
 	}
 	
@@ -170,10 +165,10 @@ class BOSHConnection extends jabber.StreamConnection {
 		}
 	}
 	
-	public override function write( t : String ) : Bool {
-		return sendQueuedRequests( t );
+	public override function write( s : String ) : Bool {
+		return sendQueuedRequests( s );
 	}
-	
+
 	/**
 		Set the value of the 'secs' attribute to null to force the connection manager to return all the requests it is holding.
 	*/
@@ -245,22 +240,21 @@ class BOSHConnection extends jabber.StreamConnection {
 	function sendRequests( ?t : Xml, poll : Bool = false ) : Bool {
 		
 		if( requestCount >= maxConcurrentRequests ) {
-			#if jabber_debug
-			trace( "max concurrent request limit reached ("+requestCount+","+maxConcurrentRequests+")" );
-			#end
+			#if jabber_debug trace( 'Max concurrent BOSH request limit reached ($requestCount,$maxConcurrentRequests)' ); #end
 			return false;
 		}
+
 		requestCount++;
-		
+
 		if( t == null ) {
 			if( poll ) {
 				t = createRequest();
 			} else {
 				var i = 0;
-				var tmp = new Array<String>();
-				while( i++ < 10 && requestQueue.length > 0 )
-					tmp.push( requestQueue.shift() );
-				 t = createRequest( tmp );
+				var e = new Array<String>();
+				while( i++ < MAX_CHILD_ELEMENTS && requestQueue.length > 0 )
+					e.push( requestQueue.shift() );
+				t = createRequest( e );
 			}
 		}
 		
@@ -287,11 +281,9 @@ class BOSHConnection extends jabber.StreamConnection {
 		*/
 			
 		#if js
-		//TODO why this ?
-		data = StringTools.replace( data, "&lt;", "<" );
-		data = StringTools.replace( data, "&gt;", ">" );
 		var r = new XMLHttpRequest();
-		//r.withCredentials = true;
+		//if( crossOrigin )
+		r.withCredentials = true;
 		r.open( "POST", getHTTPPath(), true );
 		r.onreadystatechange = function(e){
 			//trace(e+":"+r.readyState);
@@ -312,17 +304,16 @@ class BOSHConnection extends jabber.StreamConnection {
 		r.requestHeaders.push( new flash.net.URLRequestHeader( "Accept", "text/xml" ) );
 		// TODO haXe 2.06 HACK
 		var s = data;
-		s = StringTools.replace( s, "_xmlns_", "xmlns" );
-		s = StringTools.replace( s, "xml_lang", "xml:lang" );
-		s = StringTools.replace( s, "xmlns_xmpp", "xmlns:xmpp" );
-		s = StringTools.replace( s, "xmpp_version", "xmpp:version" );
-		s = StringTools.replace( s, "xmpp_restart", "xmpp:restart" );
+		s = s.replace( '_xmlns_', 'xmlns' );
+		s = s.replace( 'xml_lang', 'xml:lang' );
+		s = s.replace( 'xmlns_xmpp', 'xmlns:xmpp' );
+		s = s.replace( 'xmpp_version', 'xmpp:version' );
+		s = s.replace( 'xmpp_restart', 'xmpp:restart' );
 		r.data = s;
-		var me = this;
 		var l = new flash.net.URLLoader();
-		l.addEventListener( Event.COMPLETE, function(e) me.handleHTTPData( e.target.data ) );
+		l.addEventListener( Event.COMPLETE, function(e) handleHTTPData(e.target.data) );
 		l.addEventListener( IOErrorEvent.IO_ERROR, handleHTTPError );
-		//l.addEventListener( HTTPStatusEvent.HTTP_STATUS, function(e) me.handleHTTPStatus( e.status ) );
+		//l.addEventListener( HTTPStatusEvent.HTTP_STATUS, function(e) handleHTTPStatus( e.status ) );
 		l.addEventListener( SecurityErrorEvent.SECURITY_ERROR, handleHTTPError );
 		l.load( r );
 		
@@ -360,33 +351,26 @@ class BOSHConnection extends jabber.StreamConnection {
 	}
 	
 	function handleHTTPData( t : String ) {
-		
-		//trace("#"+t+"#");
+		//trace( 'handleHTTPData #$t#' );
 		if( t == null ) {
-			#if jabber_debug trace("Empty bosh response" ); #end
+			#if jabber_debug trace( "Received empty bosh response" ); #end
 			return;
 		}
-		
 		var x : Xml = null;
 		try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
-			#if jabber_debug trace( 'invalid XML:\n'+t ); #end
+			#if jabber_debug trace( 'Invalid XML : '+t ); #end
 			return;
 		}
 		if( x == null ) {
-			#if jabber_debug
-			trace( 'empty bosh response ($t)' );
-			#end
+			#if jabber_debug trace( 'Received empty bosh response' ); #end
 			//requestCount--; //?????????????????
 			//poll();
 			return;
 		}
 		if( x.get( 'xmlns' ) != XMLNS ) {
-			#if jabber_debug
-			trace( 'invalid bosh body ($x)' );
-			#end
+			#if jabber_debug trace( 'Invalid BOSH body ($x)' ); #end
 			cleanup();
-			//TODO disconnect
-			onDisconnect( 'invalid bosh body ($x)' );
+			onDisconnect( 'Invalid bosh body ($x)' );
 			return;
 		}
 		requestCount--;
@@ -396,11 +380,8 @@ class BOSHConnection extends jabber.StreamConnection {
 			switch( x.get( "type" ) ) {
 			case "terminate" :
 				cleanup();
-				#if jabber_debug
-				trace( "bosh stream terminated by server");
-				#end
-				trace(x);
-				onDisconnect( x.get('condition') );
+				#if jabber_debug trace( 'BOSH stream terminated by server' ); #end
+				onDisconnect( x.get( 'condition' ) );
 				return;
 			case "error" :
 				trace("TODO");
@@ -417,8 +398,8 @@ class BOSHConnection extends jabber.StreamConnection {
 			for( e in x.elements() )
 				responseQueue.push( e );
 			resetResponseProcessor();
-			if( requestCount == 0 &&!sendQueuedRequests() )
-				( responseQueue.length > 0 ) ? Timer.delay( poll, 0 ) : poll();
+			if( requestCount == 0 && !sendQueuedRequests() )
+				if( responseQueue.length > 0 ) Timer.delay( poll, 0 ) else poll();
 			
 		} else {
 			if( !initialized )
@@ -434,14 +415,14 @@ class BOSHConnection extends jabber.StreamConnection {
 			var t = x.get( "ver" );
 			if( t != null &&  t != BOSH_VERSION ) {
 				cleanup();
-				onError( 'invalid BOSH version ($t)' );
+				onError( 'Invalid BOSH version ($t)' );
 				return;
 			}
 			*/
 			var t = null;
 			t = x.get( "maxpause" );
 			if( t != null ) {
-				maxPause = Std.parseInt( t )*1000;
+				maxPause = Std.parseInt(t)*1000;
 				pauseEnabled = true;
 			}
 			t = null;
@@ -450,7 +431,7 @@ class BOSHConnection extends jabber.StreamConnection {
 			t = null;
 			t = x.get( "inactivity" );
 			if( t != null ) inactivity = Std.parseInt( t );
-		//	#if xmpp_debug XMPPDebug.i( t ); #end
+			//#if xmpp_debug XMPPDebug.i( t ); #end
 			onConnect();
 			connected = true;
 			onString( x.toString() );
@@ -482,8 +463,17 @@ class BOSHConnection extends jabber.StreamConnection {
 			return;
 		sendRequests( null, true );
 	}
+
+	/* hhmmmmmmm ???? use ?
+	function createRequestString( ?children : Array<String> ) : String {
+		rid++;
+		var s = '<body xmlns="$XMLNS" xml:lang="en" rid="$rid" sid="$sid">';
+		if( children != null ) s += children.join('');
+		return s+'</body>';
+	}
+	*/
 	
-	function createRequest( ?t : Iterable<String> ) : Xml {
+	function createRequest( ?children : Array<String> ) : Xml {
 		var x = Xml.createElement( "body" );
 		#if flash //TODO haXe 2.06 fukup
 		x.set( "_xmlns_", XMLNS );
@@ -494,10 +484,14 @@ class BOSHConnection extends jabber.StreamConnection {
 		#end
 		x.set( "rid", Std.string( ++rid ) );
 		x.set( "sid", sid );
-		if( t != null ) {
-			for( e in t ) {
-				//x.addChild( Xml.createElement(e) );
+		if( children != null ) {
+			for( e in children ) {
+				//TODO it's a disaster we have to reparse the xml here!
+				#if flash
 				x.addChild( Xml.createPCData(e) );
+				#else
+				x.addChild( Xml.parse(e) );
+				#end
 			}
 		}
 		return x;
@@ -517,9 +511,9 @@ class BOSHConnection extends jabber.StreamConnection {
 		if( responseTimer != null ) responseTimer.stop();
 		connected = initialized = false;
 		sid = null;
-		requestCount = 0;
 		requestQueue = null;
 		responseQueue = null;
+		requestCount = 0;
 	}
 	
 }
