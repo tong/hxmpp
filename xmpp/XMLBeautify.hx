@@ -19,17 +19,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package jabber.util;
+package xmpp.util;
 
 using Lambda;
 
 /**
-	Utility to 'beautify' XML strings for better readability.
+	Utility to 'beautify' XML strings for readability.
 */
 class XMLBeautify {
 	
 	/**
-		Format given string to something readable.
+		Format given xml string to something readable.
 	*/
 	public static function it( t : String ) : String  {
 		var x : Xml = null;
