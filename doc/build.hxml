@@ -1,12 +1,15 @@
 
 -cp ../
---macro "HXMPP.importAll()"
+#--macro "HXMPP.importAll()"
+--macro include('jabber.client.Stream')
+#TODO
 --no-output
 --each
 
 --next
 -cpp api
 -xml cpp.xml
+-lib hxssl
 
 --next
 -swf api.swf

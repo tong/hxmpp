@@ -21,6 +21,8 @@
  */
 package jabber.net;
 
+#if sys
+
 import sys.net.Host;
 import sys.net.Socket;
 import haxe.io.Bytes;
@@ -91,3 +93,5 @@ class SocketConnection_sys extends SocketConnectionBase_sys {
 	}
 
 }
+
+#end

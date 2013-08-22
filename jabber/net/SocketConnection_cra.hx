@@ -21,6 +21,8 @@
  */
 package jabber.net;
 
+#if chrome-app
+
 import chrome.Socket;
 import haxe.io.Bytes;
 import jabber.util.ArrayBufferUtil;
@@ -88,3 +90,5 @@ class SocketConnection_cra extends jabber.StreamConnection {
 	}
 
 }
+
+#end

@@ -21,6 +21,8 @@
  */
 package jabber.net;
 
+#if js
+
 import js.html.WebSocket;
 
 //TODO timeout
@@ -86,3 +88,5 @@ class SocketConnection_js extends SocketConnectionBase_js {
 		return untyped window.WebSocket != null;
 	}
 }
+
+#end

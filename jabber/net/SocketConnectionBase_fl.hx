@@ -21,6 +21,8 @@
  */
 package jabber.net;
 
+#if flash
+
 import flash.net.Socket;
 import flash.events.Event;
 import flash.events.IOErrorEvent;
@@ -60,3 +62,5 @@ class SocketConnectionBase_fl extends jabber.StreamConnection {
 	}
 
 }
+
+#end

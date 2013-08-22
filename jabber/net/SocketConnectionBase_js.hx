@@ -21,6 +21,8 @@
  */
 package jabber.net;
 
+#if js
+
 #if nodejs
 import js.Node;
 private typedef Socket = js.NodeNetSocket;
@@ -46,3 +48,5 @@ class SocketConnectionBase_js extends StreamConnection {
 		onDisconnect(null);
 	}
 }
+
+#end
