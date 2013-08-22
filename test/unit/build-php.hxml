@@ -1,4 +1,3 @@
--cp ../../
+params.hxml
 -php build
 --php-front test.php
--main Run

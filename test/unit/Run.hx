@@ -68,5 +68,14 @@ class Run {
 		var time = Std.parseInt( stime );
 		trace(time);
 	}
+
+	#if macro
+
+	static function prepareBuild() {
+		if( !sys.FileSystem.exists('build') )
+			sys.FileSystem.createDirectory('build');
+	}
+
+	#end
 	
 }

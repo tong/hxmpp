@@ -1,3 +1,2 @@
+params.hxml
 -neko build/test.n
--cp ../../
--main Run
