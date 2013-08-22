@@ -22,32 +22,38 @@
 package xmpp;
 
 /**
-	XML utilities.
+	Utilities and shortcuts for handling XML in context of XMPP
 */
 class XMLUtil {
 	
 	/**
+		Create <n>t</n>
+
 		@param n Name of xml element to create
 		@param t Node content
 	*/
-	public static function createElement( n : String, t : String ) : Xml {
+	public static function createElement( n : String, s : String ) : Xml {
 		var x = Xml.createElement( n );
-		x.addChild( Xml.createPCData( t ) );
+		x.addChild( Xml.createPCData( s ) );
 		return x;
 	}
 	
 	/**
+		Create and add <n>t</n>
+
 		@param x XML element to attach the created element to
 		@param n Name of xml node
 		@param t Node content
 	*/
-	public static inline function addElement( x : Xml, name : String, content : String ) : Xml {
+	public static inline function addElement( x : Xml, n : String, s : String ) : Xml {
 		//if( name != null && content != null )
-		x.addChild( createElement( name, content ) );
+		x.addChild( createElement( n, s ) );
 		return x;
 	}
-	
+
 	/**
+		Reflects/Adds the value of given object field as element to the parent element
+
 		@param x XML element to attach the element to
 		@param o The target object, provider of value
 		@param n Name of XML node
@@ -55,7 +61,8 @@ class XMLUtil {
 	*/
 	public static function addField( x : Xml, o : Dynamic, n : String, ?required : Bool = false ) : Xml {
 		var v = Reflect.field( o, n );
-		if( v != null ) addElement( x, n, Std.string(v) );
+		if( v != null )
+			addElement( x, n, Std.string(v) );
 		else if( required )
 			throw 'required field ($n) is missing';
 		return x;
@@ -64,21 +71,23 @@ class XMLUtil {
 	/**
 		@param x XML element to attach the created element to
 		@param o The target object to retrieve the field values from
-		@param fields Optional names of fields, gets reflected if null
+		@param f Optional list of reflected field names
 	*/
-	public static function addFields( x: Xml, o : Dynamic, ?fields : Iterable<String> ) : Xml {
-		if( fields == null ) fields = Reflect.fields( o );
-		for( f in fields ) addField( x, o, f );
+	public static function addFields( x: Xml, o : Dynamic, ?f : Iterable<String> ) : Xml {
+		if( f == null )
+			f = Reflect.fields( o );
+		for( e in f )
+			addField( x, o, e );
 		return x;
 	}
 	
 	/**
 		TODO use?
 	*/
-	public static function reflectElements<T>( target : T, x : Xml ) : T {
+	public static function reflectElements<T>( o : T, x : Xml ) : T {
 		for( e in x.elements() )
-			Reflect.setField( target, e.nodeName, e.firstChild().nodeValue );
-		return target;
+			Reflect.setField( o, e.nodeName, e.firstChild().nodeValue );
+		return o;
 	}
 	
 	/**
@@ -87,22 +96,32 @@ class XMLUtil {
 		@param x XML element to attach the create element to
 		@param ns Optional namespace to set
 	*/
-	public static function ns( x : Xml, ?ns : String ) : String {
-		if( ns == null )
-			return x.get( 'xmlns' );
-		setNamespace( x, ns );
-		return ns;
+	public static inline function ns( x : Xml, ?s : String ) : String {
+		return if( s == null )
+			getNamespace( x );
+		else {
+			setNamespace( x, s );
+			s;
+		}
+	}
+
+	/**
+		Returns the namespace attribute ("xmlns") of given element
+	*/
+	public static inline function getNamespace( x : Xml ) : String {
+		return x.get( 'xmlns' );
 	}
 	
 	/**
-		Hack because flash is unable to set xml namespace (since haxe 2.06) //TODO
+		Hack because flash is unable to set xml namespace (since haxe 2.06)
 	*/
-	public static inline function setNamespace( x : Xml, s : String ) {
-		#if flash
+	public static inline function setNamespace( x : Xml, s : String ) : Xml {
+		#if flash // TODO flash xml bug
 		x.set( '_xmlns_', s );
 		#else
 		x.set( 'xmlns', s );
 		#end
+		return x;
 	}
 	
 	

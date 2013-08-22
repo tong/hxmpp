@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,8 +26,11 @@ package xmpp;
 
 	Info/Query, or IQ, is a "request-response" mechanism, similar in some ways to the Hypertext Transfer Protocol [HTTP].
 	The semantics of IQ enable an entity to make a request of, and receive a response from, another entity.
-	The data content of the request and response is defined by the schema or other structural definition associated with the XML namespace that qualifies the direct child element of the IQ element,
-	and the interaction is tracked by the requesting entity through use of the 'id' attribute. Thus, IQ interactions follow a common pattern of structured data exchange such as get/result or set/result (although an error can be returned in reply to a request if appropriate)
+	The data content of the request and response is defined by the schema or other structural definition associated with
+	the XML namespace that qualifies the direct child element of the IQ element, and the interaction is tracked by the
+	requesting entity through use of the 'id' attribute.
+	Thus, IQ interactions follow a common pattern of structured data exchange such as get/result or set/result (although
+	an error can be returned in reply to a request if appropriate)
 
 	Requesting                  Responding
 	  Entity                      Entity
@@ -60,14 +63,12 @@ class IQ extends Packet {
 	/** Either: get/set/result/error */
 	public var type : IQType;
 	
-	/** The exclusive child of the IQ packet */
+	/** The exclusive child (mostly '<query xmlns="ext-namspace"/>') */
 	public var x : PacketElement;
 	
 	public function new( ?type : IQType, ?id : String, ?to : String, ?from : String ) {
-		
 		super( to, from, id );
 		this.type = ( type != null ) ? type : xmpp.IQType.get;
-
 		_type = xmpp.PacketType.iq;
 	}
 	
@@ -100,21 +101,35 @@ class IQ extends Packet {
 	}
 	
 	/**
-		Creates a '<query xmlns="namspace"/>' XML tag
+		Creates a '<query xmlns="namespace"/>' XML tag
 	*/
-    public static function createQueryXml( ns : String, name : String = "query" ) : Xml {
-		var x = Xml.createElement( name );
-		XMLUtil.setNamespace( x, ns );
-		return x;
+    public static inline function createQueryXml( ns : String, name : String = "query" ) : Xml {
+		//var x = Xml.createElement( name );
+		//XMLUtil.setNamespace( x, ns );
+		//return x;
+		return XMLUtil.setNamespace( Xml.createElement( name ), ns );
+	}
+
+	/**
+		Create a iq request packet
+	*/
+	public static inline function createRequest( jid : String, x : PacketElement ) : IQ {
+		var iq = new IQ( null, null, jid );
+		iq.x = x;
+		return iq;
 	}
 	
 	/**
-		Creates a result type IQ from the given request
+		Creates iq-result response packet of given iq-request
 	*/
-	public static inline function createResult( iq : IQ, ?from : String ) : IQ {
-		return new IQ( IQType.result, iq.id, iq.from, from );
+	//public static inline function createResult( r : IQ, ?from : String ) : IQ {
+		//return new IQ( result, r.id, r.from, from );
+	public static inline function createResult( r : IQ, ?x : PacketElement, ?from : String ) : IQ {
+		var r = new IQ( result, r.id, r.from, from );
+		r.x = x;
+		return r;
 	}
-	
+
 	/**
 		Creates a error type IQ packet from given request
 	*/

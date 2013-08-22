@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,37 +35,20 @@ class EntityTime {
 		 The format conforms to the dateTime profile specified in XEP-0082 (http://www.xmpp.org/extensions/xep-0082.html)
 		 and MUST be expressed in UTC.
 	*/
-	public var utc : String; // (default,setUTC) : String;
+	public var utc : String;
 	
 	/**
 		The entity's numeric time zone offset from UTC.
 		The format conforms to the Time Zone Definition (TZD) specified in XEP-0082 (http://www.xmpp.org/extensions/xep-0082.html).
 		Example: +02:00
 	*/
-	public var tzo : String;// (default,setTZO) : String;
+	public var tzo : String;
 	
 	
 	public function new( ?utc : String, ?tzo : String ) {
 		this.utc = utc;
 		this.tzo = tzo;
 	}
-	
-/*
-	function setTZO( t : String ) : String {
-		//if( !xmpp.DateTime.isValid( t ) ) return tzo = null;
-		return tzo = t;
-	}
-	function setUTC( t : String ) : String {
-		if( !xmpp.DateTime.isValid( t ) ) return utc = null;
-		return utc = t;
-	}
-	*/
-	
-	/*
-	public function getTime() : Float {
-		fromTime();
-	}
-	*/
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "time" );
@@ -76,14 +59,15 @@ class EntityTime {
 	}
 	
 	public static function parse( x : Xml ) : xmpp.EntityTime {
-		var t = new EntityTime();
+		var o = new EntityTime();
 		for( c in x.elements() ) {
+			var v = c.firstChild().nodeValue;
 			switch( c.nodeName ) {
-			case "tzo" : t.tzo = c.firstChild().nodeValue;
-			case "utc" : t.utc = c.firstChild().nodeValue;
+			case "tzo" : o.tzo = v;
+			case "utc" : o.utc = v;
 			}
 		}
-		return t;
+		return o;
 	}
 	
 }
