@@ -134,6 +134,7 @@ class Stream extends jabber.Stream {
 	*/
 	
 	override function processStreamInit( t : String ) : Bool {
+
 		if( t.charAt( 0 ) != "<" || t.charAt( t.length-1 ) != ">" )
 			return false;
 		var r = ~/^(<\?xml) (.)+\?>/;
@@ -148,10 +149,18 @@ class Stream extends jabber.Stream {
 		}
 		id = x.get('id');
 		status = StreamStatus.open;
+
 		#if xmpp_debug jabber.XMPPDebug.i( t ); #end
+
+		//
 		handleStreamOpen();
+
+		//
 		collect( [new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], readyHandler, false );
+
+		//
 		sendData( XMLUtil.createElement( "handshake", Xml.createPCData( SHA1.encode( id+secret ) ).toString() ).toString() );
+
 		return true;
 	}
 	

@@ -235,22 +235,29 @@ class Stream {
 	}
 
 	/**
-		Send an IQ packet and forwards the response to the given handler function.
+		Send a iq-get packet and pass the response to the given handler.
 	*/
-	public function sendIQ( iq : IQ, ?handler : IQ->Void ) : IQ {
-		if( iq.id == null ) iq.id = nextID();
+	public function sendIQ( p : IQ, ?h : IQ->Void ) : IQ {
+		if( p.id == null )
+			p.id = nextID();
 		var c : PacketCollector = null;
-		if( handler != null ) c = addIDCollector( iq.id, handler );
-		var s : IQ = sendPacket( iq );
-		// TODO wtf, is this needed ?
-		if( s == null && handler != null ) {
+		if( h != null )
+			c = addIDCollector( p.id, h );
+		var s : IQ = sendPacket( p );
+		if( s == null && h != null ) { // TODO wtf, is this needed ?
 			collectors.remove( c );
 			c = null;
 			return null;
 		}
-		//return { iq : s, collector : c };
-		return iq;
+		return p;
 	}
+
+	public function sendIQRequest( jid : String, x : xmpp.PacketElement , h : IQ->Void ) {
+		var iq = new IQ( null, null, jid );
+		iq.x = x;
+		sendIQ( iq, h );
+	}
+
 
 	/**
 		Create and send the resulting iq for given request

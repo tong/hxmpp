@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,8 +28,10 @@ package jabber;
 */
 class EntityTimeListener {
 	
+	/** Optional callback for custom request handling */
+	public var onRequest : String->xmpp.EntityTime;
+	
 	public var stream(default,null) : Stream;
-	public var time(default,null) : xmpp.EntityTime;
 	
 	var c : PacketCollector;
 	
@@ -37,7 +39,6 @@ class EntityTimeListener {
 		if( !stream.features.add( xmpp.EntityTime.XMLNS ) )
 			throw "entitytime listener already added";
 		this.stream = stream;
-		time = new xmpp.EntityTime( null, tzo );
 		c = stream.collect( [new xmpp.filter.IQFilter(xmpp.EntityTime.XMLNS,xmpp.IQType.get,"time")], handleRequest, true );
 	}
 	
@@ -47,10 +48,12 @@ class EntityTimeListener {
 	}
 	
 	function handleRequest( iq : xmpp.IQ ) {
-		var r = xmpp.IQ.createResult( iq );
-		time.utc = xmpp.DateTime.now();
-		r.x = time;
-		stream.sendPacket( r );	
+		var t : xmpp.EntityTime = null;
+		if( onRequest != null )
+			t = onRequest( iq.from );
+		if( t == null )
+			t = new xmpp.EntityTime( xmpp.DateTime.now().toString() );
+		stream.sendPacket( xmpp.IQ.createResult( iq, t ) );
 	}
 	
 }

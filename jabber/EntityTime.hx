@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,10 @@ package jabber;
 */
 class EntityTime {
 	
+	/** */
 	public dynamic function onLoad( jid : String, t : xmpp.EntityTime ) {}
+
+	/** */
 	public dynamic function onError( e : XMPPError ) {}
 	
 	public var stream(default,null) : Stream;
@@ -38,22 +41,18 @@ class EntityTime {
 	}
 	
 	/**
-		Request the local time of another jabber entity.
+		Request the local time of another entity
 	*/
 	public function load( jid : String ) {
-		var iq = new xmpp.IQ( null, null, jid );
-		iq.x = new xmpp.EntityTime();
-		stream.sendIQ( iq, handleLoad );
+		stream.sendIQRequest( jid, new xmpp.EntityTime(), handleLoad );
 	}
 	
 	function handleLoad( iq : xmpp.IQ ) {
-		switch( iq.type ) {
-		case result :
+		if( iq.type == result )
 			if( iq.x != null )
 				onLoad( iq.from, xmpp.EntityTime.parse( iq.x.toXml() ) );
-		case error : onError( new XMPPError( iq ) );
-		default : //#
-		}
+		else if( iq.type == error )
+			onError( new XMPPError( iq ) );
 	}
 	
 }

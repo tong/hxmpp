@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,10 +37,8 @@ class SHA1 {
 	
 	public static inline function encode( s : String ) : String {
 		
-		//TODO
 		//#if neko
 		//return new String( base_encode( make_sha1( untyped t.__s ), untyped hex_chr.__s ) );
-		//#elseif nodejs
 		
 		#if nodejs
 		var h = js.Node.crypto.createHash( "sha1" );
@@ -51,12 +49,8 @@ class SHA1 {
 		return untyped __call__( "sha1", s );
 		
 		#else
-			#if haxe3
 			return haxe.crypto.Sha1.encode(s);
-			#else
-			return haxe.SHA1.encode(s);
-			#end
-		
+
 		#end
 	}
 	

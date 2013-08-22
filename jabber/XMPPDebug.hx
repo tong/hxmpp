@@ -29,7 +29,7 @@ import js.Node;
 #elseif rhino
 import js.Lib;
 #end
-import jabber.util.XMLBeautify;
+import xmpp.XMLBeautify;
 
 import haxe.macro.Context; //TODO rem
 

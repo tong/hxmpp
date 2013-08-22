@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,11 +37,11 @@ class MD5 {
 		
 		#if neko
 			//#if hxssl_crypto
-			#if ssl
-				return sys.crypto.MD5.encode( s );
+			#if hxssl
+			return sys.crypto.MD5.encode( s );
 			#else
-				var t = make_md5( untyped s.__s );
-				return untyped new String( raw ? t : base_encode( t, "0123456789abcdef".__s ) );
+			var t = make_md5( untyped s.__s );
+			return untyped new String( raw ? t : base_encode( t, "0123456789abcdef".__s ) );
 			#end
 		
 		#elseif nodejs

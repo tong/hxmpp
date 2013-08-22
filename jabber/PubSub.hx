@@ -25,7 +25,8 @@ import xmpp.IQ;
 import xmpp.IQType;
 
 /**
-	PubSub client.
+	PubSub client extension.
+
 	http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe
 */
 class PubSub {
@@ -34,9 +35,9 @@ class PubSub {
 	public dynamic function onNodeCreate( node : String ) {}
 	//TODO public dynamic function onNodeConfig( node : String, form : xmpp.DataForm ) {}
 	public dynamic function onNodeDelete( node : String ) {}
+	public dynamic function onSubscriptions( subs : xmpp.pubsub.Subscriptions ) {}
 	public dynamic function onSubscribe( sub : xmpp.pubsub.Subscription ) {}
 	public dynamic function onUnsubscribe( node : String ) {}
-	public dynamic function onSubscriptions( subs : xmpp.pubsub.Subscriptions ) {}
 	public dynamic function onPublish( node : String, item : xmpp.pubsub.Item ) {}
 	public dynamic function onItems( items : xmpp.pubsub.Items ) {}
 	public dynamic function onAffiliations( a : xmpp.pubsub.Affiliations ) {}
@@ -98,13 +99,34 @@ class PubSub {
 	*/
 	
 	/**
+		Load list of current subscriptions.
+	*/
+	public function loadSubscriptions( ?node : String ) : IQ {
+		var iq = new IQ();
+		var x = new xmpp.PubSub();
+		x.subscriptions = new xmpp.pubsub.Subscriptions( node );
+		iq.x = x;
+		var h = onSubscriptions;
+		sendIQ( iq, function(r:IQ) {
+			h( xmpp.PubSub.parse( r.x.toXml() ).subscriptions );
+		} );
+		return iq;
+	}
+
+	/**
 		Subscribe to given pubsub node.
+		The 'jid' attribute specifying the exact XMPP address to be used as the subscribed JID.
+		Often a bare JID (<localpart@domain.tld> or <domain.tld>)
+		or full JID <localpart@domain.tld/resource>
+		or <domain.tld/resource>.
 	*/
 	public function subscribe( node : String, ?jid : String ) : IQ {
 		var iq = new IQ( IQType.set );
 		var x = new xmpp.PubSub();
-		x.subscribe = { node : node,
-						jid : ( jid == null ) ? stream.jid.toString() : jid };
+		x.subscribe = {
+			node : node,
+			jid : ( jid == null ) ? stream.jid.toString() : jid
+		};
 		iq.x = x;
 		var h = onSubscribe;
 		sendIQ( iq, function(r:IQ) {
@@ -125,22 +147,6 @@ class PubSub {
 		iq.x = x;
 		var h = onUnsubscribe;
 		sendIQ( iq, function(r:IQ) { h( node ); } );
-		return iq;
-	}
-	
-	/**
-		Load list of current subscriptions.
-	*/
-	public function loadSubscriptions( ?node : String ) : IQ {
-		var iq = new IQ();
-		var x = new xmpp.PubSub();
-		x.subscriptions = new xmpp.pubsub.Subscriptions( node );
-		iq.x = x;
-		var h = onSubscriptions;
-		sendIQ( iq, function(r:IQ) {
-			//trace(r);
-			h( xmpp.PubSub.parse( r.x.toXml() ).subscriptions );
-		} );
 		return iq;
 	}
 	

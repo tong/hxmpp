@@ -35,7 +35,7 @@ import flash.events.SecurityErrorEvent;
 #elseif (cpp||neko)
 import jabber.net.BOSHRequest;
 #elseif php
-throw Not implemented
+throw "Not implemented"
 #end
 
 using StringTools;
@@ -275,6 +275,7 @@ class BOSHConnection extends jabber.StreamConnection {
 	
 	function createHTTPRequest( data : String ) {
 		
+
 		#if (js&&nodejs)
 		var _path = path.substr( path.lastIndexOf( '/' ) );
 		if( _path.charAt( _path.length ) != '/' ) _path += '/';
@@ -303,6 +304,20 @@ class BOSHConnection extends jabber.StreamConnection {
 		r.write( data );
 		r.end();
 			
+		#elseif google_apps_script
+		var headers = {
+			"GData-Version": "2",
+			//"Slug": "dog-skateboarding.mpeg"
+			// Other required parameters for YouTube API
+		};
+		var options = {
+			"method": "post",
+			"headers": headers,
+			"payload": data
+		};
+		var response = google.script.UrlFetchApp.fetch( getHTTPPath(), options );
+		google.script.Logger.log(response.getContentText());
+
 		#elseif js
 		var r = new XMLHttpRequest();
 		//TODO if( crossOrigin ) r.withCredentials = true;

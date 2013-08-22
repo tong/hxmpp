@@ -47,8 +47,8 @@ class MUCOccupant {
 /**
 	Multiuser chatroom.
 
-	http://www.xmpp.org/extensions/xep-0045.html
-	http://www.xmpp.org/extensions/xep-0249.html
+	XEP-0045: Multi-User Chat: http://www.xmpp.org/extensions/xep-0045.html
+	XEP-0249: Direct MUC Invitations: http://www.xmpp.org/extensions/xep-0249.html
 */
 class MUChat {
 
@@ -62,18 +62,43 @@ class MUChat {
 	public dynamic function onKick( nick : String ) {}
 	public dynamic function onError( e : jabber.XMPPError ) {}
 	
+	/** */
 	public var jid(default,null) : String;
+	
+	/** */
 	public var room(default,null) : String;
+
+	/** */
 	public var joined(default,null)	: Bool;
+	
+	/** */
 	//public var locked(default,null) : Bool;
+	
+	/** */
 	public var myjid(default,null) : String;
+	
+	/** */
 	public var nick(default,null) : String;
+	
+	/** */
 	public var password(default,null) : String;
+	
+	/** */
 	public var role(default,null) : Role;
+	
+	/** */
 	public var affiliation(default,null) : Affiliation;
+	
+	/** List of current room occupants */
 	public var occupants(default,null) : Array<MUCOccupant>;
+	
+	/** */
 	public var subject(default,null) : String;
+	
+	/** */
 	public var me(get_me,null) : MUCOccupant;
+	
+	/** */
 	public var stream(default,null) : Stream;
 	
 	var presence : xmpp.Presence;
@@ -84,13 +109,12 @@ class MUChat {
 	public function new( stream : Stream, host : String, roomName : String ) {
 		
 		this.stream = stream;
-		this.jid = roomName+"@"+host;
 		this.room = roomName;
+		this.jid = '$roomName@$host';
 
 		stream.features.add( xmpp.MUC.XMLNS );
 		stream.features.add( xmpp.MUCUser.XMLNS );
 		
-		// collect all presences and messages from the room
 		var f_from : xmpp.PacketFilter = new PacketFromContainsFilter( jid );
 		c_presence = new PacketCollector( [f_from, new PacketTypeFilter( PacketType.presence )], handlePresence, true );
 		c_message = new PacketCollector(  [f_from, new MessageFilter()], handleMessage, true, true );

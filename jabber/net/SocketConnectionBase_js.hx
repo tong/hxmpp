@@ -28,6 +28,7 @@ private typedef Socket = js.NodeNetSocket;
 private typedef Socket = js.html.WebSocket;
 #end
 
+@:require(js)
 class SocketConnectionBase_js extends StreamConnection {
 	
 	//TODO remove?
