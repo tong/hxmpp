@@ -21,7 +21,7 @@
  */
 package jabber.net;
 
-#if js
+#if flash
 
 import flash.net.Socket;
 import flash.events.Event;

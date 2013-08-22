@@ -21,7 +21,7 @@
  */
 package jabber.net;
 
-#if chrome-app
+#if chrome_app
 
 import chrome.Socket;
 import haxe.io.Bytes;
