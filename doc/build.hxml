@@ -1,0 +1,34 @@
+
+-cp ../
+--macro "HXMPP.importAll()"
+--no-output
+--each
+
+--next
+-cpp api
+-xml cpp.xml
+
+--next
+-swf api.swf
+-xml flash.xml
+
+--next
+-java api
+-xml java.xml
+
+--next
+-js api.js
+-xml js.xml
+
+--next
+-neko api.n
+-xml neko.xml
+
+--next
+-js api.nodejs
+-xml nodejs.xml
+-lib nodejs
+
+--next
+-php api
+-xml php.xml

@@ -1,8 +1,0 @@
-jabber.client.Account
-jabber.client.Authentication
-jabber.client.GMailNotify
-jabber.client.MUChat
-jabber.client.NonSASLAuthentication
-jabber.client.Roster
-jabber.client.Stream
-jabber.client.VCardTemp
