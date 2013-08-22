@@ -2,15 +2,7 @@
 ===
 Haxe XMPP/Jabber library | [Documentation](http://hxmpp.disktree.net/doc/api/ "API documentation") | [Test](http://hxmpp.disktree.net/test/ "Unit test results")
 
-
-
-### COMPILER FLAGS
-* -D xmpp_debug    Print XMPP transfer (see [jabber.XMPPDebug](http://hxmpp.disktree.net/doc/api/types/jabber/XMPPDebug.html) for options)
-* -D jabber_debug    Print verbose debug information
-* -D jabber_component    Set to build xmpp server components (use [jabber.component.*](http://hxmpp.disktree.net/doc/api/packages/jabber/component/package.html) instead of [jabber.client.*](http://hxmpp.disktree.net/doc/api/packages/jabber/client/package.html))
-* -D jabber_flashsocketbridge  Enable to use a flash socket bridge as stream connection for the js/browser target (see [hxmpp/util/flash-socketbridge](https://github.com/tong/hxmpp/tree/master/util/flash-socketbridge))
-* -D nodejs    Set to build for nodejs
-
+The Extensible Messaging and Presence Protocol (XMPP) is an open technology for real-time communication, which powers a wide range of applications including instant messaging, presence, multi-party chat, voice and video calls, collaboration, lightweight middleware, content syndication, and generalized routing of XML data. The XMPP protocols are free, open, public, and easily understandable.
 
 
 ### EXAMPLES
@@ -29,6 +21,16 @@ romeo@disktree test localhost http://localhost:7070
 ```
 julia@disktree test localhost http://localhost:7070  
 ```
+
+
+
+### COMPILER FLAGS
+* -D xmpp_debug    Print XMPP transfer (see [jabber.XMPPDebug](http://hxmpp.disktree.net/doc/api/types/jabber/XMPPDebug.html) for options)
+* -D jabber_debug    Print verbose debug information
+* -D jabber_component    Set to build xmpp server components (use [jabber.component.*](http://hxmpp.disktree.net/doc/api/packages/jabber/component/package.html) instead of [jabber.client.*](http://hxmpp.disktree.net/doc/api/packages/jabber/client/package.html))
+* -D jabber_flashsocketbridge  Enable to use a flash socket bridge as stream connection for the js/browser target (see [hxmpp/util/flash-socketbridge](https://github.com/tong/hxmpp/tree/master/util/flash-socketbridge))
+* -D nodejs    Set to build for nodejs
+
 
 
 ### BOSH/HTTP
@@ -112,6 +114,11 @@ Set compiler flag: -D nodejs
 * [XEP-XXXX GMail Notifiy](http://code.google.com/apis/talk/jep_extensions/gmail.html)
 * [XEP-XXXX Jingle RTMP Transport](http://xmpp.org/extensions/inbox/jingle-rtmp.html)
 * XEP-XXXX Jingle RTMFP Transport
+
+
+
+### AUTHOR
+xmpp://tong@jabber.spektral.at
 
 
 

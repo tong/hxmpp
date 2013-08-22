@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@ package xmpp.pep;
 
 /**
 	Extended presence data about user activities.
-	<a href="http://xmpp.org/extensions/xep-0108.html">XEP-0108: User Activity</a><br/>
+	XEP-0108: User Activity
 */
 class UserActivity extends xmpp.PersonalEvent {
 	
