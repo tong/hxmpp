@@ -5,26 +5,8 @@ Haxe XMPP/Jabber library | [Documentation](http://hxmpp.disktree.net/doc/api/ "A
 The Extensible Messaging and Presence Protocol (XMPP) is an open technology for real-time communication, which powers a wide range of applications including instant messaging, presence, multi-party chat, voice and video calls, collaboration, lightweight middleware, content syndication, and generalized routing of XML data. The XMPP protocols are free, open, public, and easily understandable.
 
 
-### EXAMPLES
-To build all examples goto hxmpp/examples and run the build.hxml file.
-This may take some time as some examples build for all haxe compiler targets.
 
-Most of the examples extend a basic XMPPClient class in [hxmpp/examples/XMPPClient.hx](https://github.com/tong/hxmpp/blob/master/examples/XMPPClient.hx)  
-This client uses the account credentials provided in [hxmpp/examples/account_1](https://github.com/tong/hxmpp/blob/master/examples/account_1) and [hxmpp/examples/account_2](https://github.com/tong/hxmpp/blob/master/examples/account_2) in the form of:  
-```
-[jid] [password] [?ip] [?http] 
-```
-For default these are:
-```
-romeo@disktree test localhost http://localhost:7070  
-```
-```
-julia@disktree test localhost http://localhost:7070  
-```
-
-
-
-### COMPILER FLAGS
+### Compiler flags
 * -D xmpp_debug    Print XMPP transfer (see [jabber.XMPPDebug](http://hxmpp.disktree.net/doc/api/types/jabber/XMPPDebug.html) for options)
 * -D jabber_debug    Print verbose debug information
 * -D jabber_component    Set to build xmpp server components (use [jabber.component.*](http://hxmpp.disktree.net/doc/api/packages/jabber/component/package.html) instead of [jabber.client.*](http://hxmpp.disktree.net/doc/api/packages/jabber/client/package.html))
@@ -73,14 +55,7 @@ var cnx = new jabber.BOSHConnection( "server.org", "127.0.0.1/httpbind/" );
 
 
 
-### NODE.JS
-To build for nodejs use type definitions from: https://github.com/dionjwa/nodejs-std  
-Set compiler flag: -D nodejs
-
-
-
-
-### XEPS SUPPORTED
+### XEPS
 * [XEP-0004 DataForms](http://xmpp.org/extensions/xep-0004.html)
 * [XEP-0012 LastActivity](http://xmpp.org/extensions/xep-0004.html)
 * [XEP-0016 PrivacyLists](http://xmpp.org/extensions/xep-0004.html)
