@@ -1,5 +1,3 @@
-
-config.hxml
--neko out/test.n
+-neko build/test.n
+-cp ../../
 -main Run
--cmd neko out/test.n

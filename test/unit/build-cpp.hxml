@@ -1,6 +1,4 @@
-
-config.hxml
--cpp out/cpp
+-cpp build/cpp
+-cp ../../
 -main Run
--cmd mv ./out/cpp/Run ./out/test.cpp
--cmd ./out/test.cpp
+-cmd mv ./build/cpp/Run ./build/test

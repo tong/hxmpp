@@ -1,7 +1,4 @@
-
-config.hxml
--js out/test.nodejs
+-js build/test.nodejs
+-cp ../../
 -lib nodejs
--D nodejs
 -main Run
--cmd node out/test.nodejs

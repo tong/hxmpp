@@ -1,6 +1,3 @@
-
-# --- Base for every haxe compiler target
-
 #-D xmpp_debug
 #-D jabber_debug
 #-D format-warning

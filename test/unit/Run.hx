@@ -1,112 +1,15 @@
 
 import haxe.Timer;
 import haxe.Template;
-#if sys
-import sys.FileSystem;
-import sys.io.File;
-#elseif nodejs
-import js.Node;
-#elseif js
-import js.Browser.document;
-#end
 
 #if macro
 import haxe.macro.Context;
 #end
 
-private typedef Platform = {
-	var platform : String;
-	var color : String;
-}
-
-private typedef HTMLContext = { > Platform,
-	var time : Int;
-	var result : String;
-	var js : Bool;
-	var content : String;
-}
 
 class Run {
 
-	static inline var HTML_TPL = 'test.tpl.html';
-	
-	static var result : String;
-	static var platform : Platform =
-		#if cpp
-		{ platform : "cpp", color : "#ffffff" }
-		#elseif cs
-		{ platform : "cs", color : "#2E96D5" }
-		#elseif flash
-		{ platform : "flash", color : "#CC181D" }
-		#elseif java
-		{ platform : "java", color : "#F00000" }
-		#elseif neko
-		{ platform : "neko", color : "#FFA157" }
-		#elseif nodejs
-		{ platform : "nodejs", color : "#8BC84B" }
-		#elseif js
-		{ platform : "js", color : "#ff5000" }
-		#elseif php
-		{ platform : "php", color : "#9999CC" }
-		#end;
-
-	#if flash
-	static var tf : flash.text.TextField;
-	#end
-		
-	static function addResult( v : Dynamic ) {
-		result += StringTools.htmlEscape( Std.string(v) ).split( "\n" ).join( "<br>" );
-	}
-
-	static function createHTMLContext( ?time : Int ) : HTMLContext {
-		return {
-			platform : platform.platform,
-			color : platform.color,
-			time : time,
-			result : result,
-			js : platform.platform == "js",
-			content : null
-		};
-	}
-	
-	#if macro
-
-	static function writePlatformHTML( platform : String, color : String ) {
-		File.saveContent( 'out/run_$platform.html', new Template( File.getContent( HTML_TPL ) ).execute( {
-			platform : platform,
-			color : color,
-			time : 0,
-			result : "",
-			js : platform == "js",
-			content : '<script src="test.js"></script>'
-		} ) );
-	}
-	
-	#end
-
 	static function main() {
-		
-		#if jabber_component
-		platform.platform = platform.platform+"-component";
-		platform.color = "#666";
-		#end
-		
-		#if flash
-		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
-		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
-		tf = new flash.text.TextField();
-		tf.width = flash.Lib.current.stage.stageWidth;
-		tf.height = flash.Lib.current.stage.stageHeight-1;
-		tf.multiline = true;
-		var format = new flash.text.TextFormat( "sans", 9 );
-		format.leading = -1;
-		tf.defaultTextFormat = format;
-		tf.text = "FLASH\n";
-		flash.Lib.current.addChild( tf );
-		#end
-
-		result = "";
-		haxe.unit.TestRunner.print = addResult;
 		
 		var r = new haxe.unit.TestRunner();
 		
@@ -163,21 +66,7 @@ class Run {
 		var i = stime.indexOf( "." );
 		if( i != -1 ) stime = stime.substr( 0, i );
 		var time = Std.parseInt( stime );
-		
-		#if flash
-		tf.htmlText = '<b>FLASH</b> <span>$time ms</span><br><div>$result</div>';
-		
-		#elseif nodejs
-		Node.fs.writeFileSync( 'out/run_${platform.platform}.html', new Template( Node.fs.readFileSync( HTML_TPL, NodeC.ASCII ) ).execute( createHTMLContext( time ) ) );
-		
-		#elseif js
-		document.getElementById( "time" ).innerHTML = time+"ms";
-		document.getElementById( "result" ).innerHTML = result;
-		
-		#elseif sys
-		File.saveContent( 'out/run_${platform.platform}.html', new Template( File.getContent( HTML_TPL ) ).execute( createHTMLContext( time ) ) );
-		
-		#end
+		trace(time);
 	}
 	
 }

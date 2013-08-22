@@ -1,5 +1,4 @@
-
-config.hxml
--js out/test.js
+-js build/test.js
+-cp ../../
 -main Run
---macro Run.writePlatformHTML('js','#0000ff')
+#--macro Run.writePlatformHTML('js','#0000ff')

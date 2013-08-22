@@ -1,5 +1,4 @@
-
-config.hxml
--cs out/cs
+-cs build/cs
+-cp ../../
 -main Run
--cmd mv out/cs/bin/cs.exe out/test.cs && chmod +x out/test.cs && ./out/test.cs
+-cmd mv build/cs/bin/cs.exe build/test.exe && chmod +x build/test.exe

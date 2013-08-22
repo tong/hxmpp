@@ -1,9 +1,0 @@
-### FlashSocketBridge
--cp ../../
--swf-header 100:100:60:eeeeee
--swf flashsocketbridge.swf
--main FlashSocketBridge
--D jabber_flashsocketbridge_standalone
-#--flash-strict
-#--no-traces
-#-dce full

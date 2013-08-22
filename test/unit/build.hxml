@@ -1,7 +1,18 @@
 
-# --- HXMPP Unit Tests
+## HXMPP Unit Tests
 
-build-cpp.hxml
+#-D xmpp_debug
+#-D jabber_debug
+#-D format-warning
+#-D macro-times
+#--no-opt
+#-debug
+#-dce no
+#-cp ../../
+--each
+
+#--next
+#build-cpp.hxml
 
 --next
 build-cs.hxml
@@ -18,8 +29,8 @@ build-js.hxml
 --next
 build-neko.hxml
 
---next
-build-nodejs.hxml
+#--next
+#build-nodejs.hxml
 
 --next
 build-php.hxml
