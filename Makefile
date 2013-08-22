@@ -20,7 +20,7 @@ examples:
 	@(cd examples;haxe buildall.hxml $(HXCPP_FLAGS);)
 
 tests:
-	@(cd test/unit;haxe build.hxml $(HXCPP_FLAGS);)
+	@(cd test/unit && haxe build.hxml $(HXCPP_FLAGS))
 		
 hxmpp.zip: clean
 	zip -r $@ $(shell git ls-files)
