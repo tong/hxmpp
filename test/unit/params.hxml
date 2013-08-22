@@ -1,0 +1,3 @@
+--macro Run.prepareBuild()
+-cp ../../
+-main Run
