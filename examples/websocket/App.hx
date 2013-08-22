@@ -2,13 +2,16 @@
 class App {
 	
 	static function main() {
-	
-		var host = "localhost";
+
+		var user = "romeo";
+		var host = "jabber.disktree.net";
+		var ip = "localhost";
+		var password = "test";
 		var port = 7799;
 		
-		trace( 'Connecting websocket [$host:$port]' );
+		trace( 'Connecting websocket [$ip:$port]' );
 		
-		var cnx = new jabber.SocketConnection( host, port );
+		var cnx = new jabber.SocketConnection( ip, port );
 		
 		var stream = new jabber.client.Stream( cnx );
 		stream.onOpen = function(){
@@ -18,13 +21,13 @@ class App {
 				trace("logged in");
 				stream.sendPresence();
 			}
-			auth.start( "test", "HXMPP-websocket" );
+			auth.start( password, "hxmpp-websocket" );
 		}
 		stream.onClose = function(?e){
-			trace( "XMPP stream closed", "info" );
-			if( e != null ) trace( e, "error" );
+			trace( "XMPP stream closed" );
+			if( e != null ) trace( e );
 		};
-		stream.open( new jabber.JID( "romeo@om" ) );
+		stream.open( '$user@$host' );
 	}
 	
 }

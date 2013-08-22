@@ -8,7 +8,7 @@ class AppPong extends XMPPClient {
 	}
 	
 	static function main() {
-		new AppPong( XMPPClient.getAccountFromFile("b") ).login();
+		new AppPong( XMPPClient.getAccountCredentials("julia") ).login();
 	}
 	
 }

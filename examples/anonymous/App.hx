@@ -5,8 +5,10 @@
 class App {
 
 	static function main() {
+
 		var cnx = new jabber.SocketConnection( "localhost" );
 		var stream = new jabber.client.Stream( cnx );
+		
 		stream.onClose = function(?e) {
 			if( e == null ) trace( "XMPP stream closed." );
 			else trace( "XMPP stream error: "+e );
@@ -29,7 +31,7 @@ class App {
 				stream.sendPresence();
 				trace( "Anonymous session connected as: "+stream.jid.toString() );
 			}
-			auth.start( null, null ); // all null when anonymous
+			auth.start( null, null ); //pass null for anonymous authentication
 		}
 		stream.open( null );
 	}

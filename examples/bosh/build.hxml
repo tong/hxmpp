@@ -1,5 +1,5 @@
 
-../example.hxml
+../params.hxml
 -main App
 --each
 
@@ -10,11 +10,12 @@
 -swf app.swf
 -swf-header 800:600:60:dddddd
 
---next
--js app.nodejs
-#-lib nodejs
--D nodejs
--cp ../../../nodejs-std/src/
+# --- Experimental ---
+
+#--next
+#-js app.nodejs
+#-D nodejs
+#-cp ../../../nodejs-std/src/
 
 #--next
 #-neko app.n

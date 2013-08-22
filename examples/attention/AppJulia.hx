@@ -3,6 +3,7 @@ using jabber.JIDUtil;
 
 /**
 	Example usage of: http://xmpp.org/extensions/xep-0224.html
+
 	Julia tries to capture romeos 'attention'.
 */
 class AppJulia extends XMPPClient {
@@ -34,7 +35,7 @@ class AppJulia extends XMPPClient {
 	}
 	
 	static function main() {
-		new AppJulia( XMPPClient.getAccountFromFile("b") ).login();
+		new AppJulia( XMPPClient.getAccountCredentials("julia") ).login();
 	}
 
 }

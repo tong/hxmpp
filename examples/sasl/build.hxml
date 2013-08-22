@@ -1,6 +1,6 @@
 
--cp ../
--cp ../../../hxmpp/
+-cp ../src
+-cp ../../
 -D jabber_debug
 -D xmpp_debug
 -main App
@@ -8,7 +8,7 @@
 
 --next
 -neko app.n
--lib ssl
+-lib hxssl
 
 --next
 -js app.js
@@ -20,11 +20,12 @@
 -php .
 --php-front app.php
 
---next
--lib ssl
--cpp cpp
--cmd mv cpp/App ./app
+#--next
+#-lib hxssl
+#-cpp cpp
+#-cmd mv cpp/App ./app
+#-D HXCPP_M64
 
---next
--java java
--cmd mv java/java.jar ./app.jar
+#--next
+#-java java
+#-cmd mv java/java.jar ./app.jar

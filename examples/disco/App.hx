@@ -1,9 +1,16 @@
 
+import XMPPClient;
+
 class App extends XMPPClient {
 	
 	var disco : jabber.ServiceDiscovery;
 	var target : String; // discovered entity
 	
+	function new( creds : AccountCredentials, target : String ) {
+		super( creds );
+		this.target = target;
+	}
+
 	override function onLogin() {
 		
 		super.onLogin();
@@ -51,7 +58,7 @@ class App extends XMPPClient {
 		}
 		var recieved = new Array<String>();
 		for( i in items ) {
-			trace( "\t"+i.jid+" , "+i.name, "info" );
+			trace( "\t"+i.jid+" , "+i.name );
 			recieved.push( i.jid );
 		}
 		for( r in recieved ) {
@@ -61,14 +68,12 @@ class App extends XMPPClient {
 	}
 	
 	static function main() {
-		var target = "om"; //jabber.org";
+		var target = "jabber.org";
 		#if sys
 		var args = Sys.args();
 		if( args.length > 0 ) target = args[0];
 		#end
-		var app = new App( XMPPClient.getAccountFromFile("a") );
-		app.target = target;
-		app.login();
+		new App( XMPPClient.getAccountCredentials(), target ).login();
 	}
 
 }

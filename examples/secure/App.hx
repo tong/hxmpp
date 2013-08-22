@@ -6,11 +6,7 @@ class App {
 
 	static function main() {
 
-		//trace( sys.crypto.Base64.encode('tongtest') ); return;
-		//trace( sys.crypto.Base64.encode('a') );
-
-
-		var creds = XMPPClient.getAccountFromFile();
+		var creds = XMPPClient.getAccountCredentials();
 		trace(creds);
 
 		//var cnx = new jabber.SocketConnection( creds.ip, 5222 );

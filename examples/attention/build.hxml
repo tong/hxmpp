@@ -1,11 +1,11 @@
 
-../example.hxml
+../params.hxml
 --each
 
 --next
--neko app_a.n
+-neko a.n
 -main AppRomeo
 
 --next
--neko app_b.n
+-neko b.n
 -main AppJulia

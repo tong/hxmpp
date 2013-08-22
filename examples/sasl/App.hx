@@ -8,29 +8,13 @@ class App {
 	
 	static function main() {
 
-		#if ssl
-		
-		//trace(sys.crypto.MD5.encode( 'test' ));
-
-		/*
-		var b = new StringBuf();
-		b.add( String.fromCharCode( 0 ) );
-		b.add( 'tong' );
-		b.add( String.fromCharCode( 0 ) );
-		b.add( 'test' );
-		var s : String = b.toString();
-		trace(sys.crypto.Base64.encode( haxe.Utf8.encode(s) ) );
-		return;
-		*/
-		#end
-
-		var creds : AccountCredentials = XMPPClient.getAccountFromFile();
+		var creds : AccountCredentials = XMPPClient.getAccountCredentials();
 		trace( creds );
 		
 		#if (js&&!nodejs)
-		var cnx = new jabber.BOSHConnection( creds.host, creds.http );
+			var cnx = new jabber.BOSHConnection( creds.host, creds.http );
 		#else
-		var cnx = new jabber.SocketConnection( creds.ip, creds.port, false );
+			var cnx = new jabber.SocketConnection( creds.ip, creds.port, false );
 		#end
 
 		var stream = new jabber.client.Stream( cnx );

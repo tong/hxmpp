@@ -1,6 +1,7 @@
 
 /**
-	Example/Test of using the socket api of google-chrome packaged-apps.
+	Example/Test of using the socket implementation of chrome-apps.
+
 	See: https://github.com/tong/chrome.app
 */
 class App {
@@ -8,7 +9,7 @@ class App {
 	static function main() {
 	
 		var ip = "localhost";
-		var jid = "romeo@om";
+		var jid = "romeo@jabber.disktree.net";
 		var password = "test";
 		
 		var cnx = new jabber.SocketConnection( ip );

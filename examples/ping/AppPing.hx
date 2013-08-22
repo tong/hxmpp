@@ -5,7 +5,7 @@ class AppPing extends XMPPClient {
 		
 		stream.sendPresence();
 		
-		var ping = new jabber.Ping( stream, "julia@disktree/HXMPP" );
+		var ping = new jabber.Ping( stream, "julia@jabber.speltral.at/HXMPP" );
 		ping.onPong = onPong;
 		ping.onTimeout = onTimeout;
 		ping.run( 1000 );

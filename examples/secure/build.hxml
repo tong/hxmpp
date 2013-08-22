@@ -1,17 +1,18 @@
 
 
-../example.hxml
+../params.hxml
 -main App
 --each
 
 --next
--lib ssl
+-lib hxssl
 -neko app.n
 
---next
--lib ssl
--cpp cpp
--cmd mv cpp/App* ./app
+#--next
+#-lib hxssl
+#-cpp cpp
+#-cmd mv cpp/App* ./app
+#-D HXCPP_M64
 
 #--next
 #-php .

@@ -1,4 +1,4 @@
 
-../example.hxml
+../params.hxml
 -js app.js
 -main App

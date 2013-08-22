@@ -1,6 +1,9 @@
 
 import jabber.EntityCapabilities;
 
+/**
+	See: XEP-0085 Entity Capabilities: http://xmpp.org/extensions/xep-0115.html
+*/
 class App extends XMPPClient {
 	
 	var caps : EntityCapabilities;
@@ -9,16 +12,20 @@ class App extends XMPPClient {
 		
 		super.onLogin();
 		
+		// Add service discovery listener
 		var identities = [{category:"client",type:"pc",name:"HXMPP"}];
 		new jabber.ServiceDiscoveryListener( stream, identities );
-		// add some features to the stream for testing
+		
+		// Add some features to the stream for testing
 		var pong = new jabber.Pong( stream );
 		
+		//
 		caps = new EntityCapabilities( stream, "http://hxmpp.disktree.net/caps", identities );
 		//caps.onCaps = onCaps;
 		caps.onInfo = onCapsInfo;
 		caps.onError = onCapsError;
 		
+		// Send initial presence
 		stream.sendPresence();
 		
 		/*
@@ -40,19 +47,15 @@ class App extends XMPPClient {
 	*/
 	
 	function onCapsInfo( jid : String, info : xmpp.disco.Info, ?ver : String ) {
-		
-		trace( "Entity capabilities infos "+jid+":", "info" );
-		
+		trace( "Entity capabilities infos "+jid+":" );
 		if( ver != null )
 			trace( "( Capabilities got cached with verification string: "+ver+" )" );
-		
-		trace( "Identities:", "info" );
+		trace( "Identities:" );
 		for( i in info.identities )
-			trace( "\t\tname: "+i.name+" , type: "+i.type+" , category: "+i.category, "info" );
-		
-		trace( "Features:", "info" );
+			trace( "\t\tname: "+i.name+" , type: "+i.type+" , category: "+i.category );
+		trace( "Features:" );
 		for( f in info.features )
-			trace( "\t\t"+f, "info" );
+			trace( "\t\t"+f );
 		//trace( Lambda.count( caps.cached )+" cached entity capabilities" );
 	}
 	
@@ -61,7 +64,7 @@ class App extends XMPPClient {
 	}
 	
 	static function main() {
-		new App().login();
+		var creds =  XMPPClient.getAccountCredentials( 'romeo.json' );
+		new App( creds ).login();
 	}
-
 }

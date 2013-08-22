@@ -13,7 +13,7 @@ class App extends XMPPClient {
 		//vcard = new jabber.client.VCard( stream );
 		var vcard = new jabber.client.VCardTemp( stream );
 		vcard.onError = function(e) {
-			trace( "VCard error: "+e, "error" );
+			trace( "VCard error: "+e );
 		}
 		vcard.onLoad = onVCardLoad;
 		vcard.onUpdate = function(){
@@ -41,7 +41,7 @@ class App extends XMPPClient {
 		if( jid == null )
 			trace( "Own vcard loaded" );
 		else
-			trace( "VCard of ["+jid+"] loaded", "info" );
+			trace( "VCard of ["+jid+"] loaded" );
 		
 		if( d == null || d.photo == null || d.photo.binval == null || d.photo.type == null ) {
 			return;

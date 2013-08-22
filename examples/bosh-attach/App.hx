@@ -17,8 +17,8 @@ private typedef SessionState = {
 }
 
 /**
-	Stores a BOSH session into localStorage for re-load and re-attach on another website.
-	The timeout for re-attaching is the BOSH connection timeout.
+	Stores a BOSH session into browser localStorage for re-load and re-attach on another website.
+	The timeout for re-attaching is the BOSH connection timeout of the XMPP stream.
  */
 class App {
 	
@@ -26,7 +26,7 @@ class App {
 	
 	static var storage = Browser.window.localStorage;
 
-	static var creds = XMPPClient.getAccountFromFile();
+	static var creds = XMPPClient.getAccountCredentials();
 	static var cnx : BOSHConnection;
 	static var stream : Stream;
 	

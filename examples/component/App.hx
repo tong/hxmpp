@@ -13,23 +13,23 @@ class App {
 	
 	static function main() {
 		
-		trace( "HXMPP server component example", "info" );
+		trace( "HXMPP server component example" );
 		
 		var identity = { category : "conference", name : COMPONENT, type : "text" };
 		var cnx = new jabber.SocketConnection( IP, 5275 );
 		var stream = new Stream( cnx );
 		stream.onOpen = function() {
-			trace( "XMPP stream opened", "info" );
+			trace( "XMPP stream opened" );
 		}
 		stream.onClose = function(?e) {
-			if( e == null ) trace( "XMPP stream closed", "info" );
+			if( e == null ) trace( "XMPP stream closed" );
 			else {
-				trace( "XMPP stream error: "+e, "error" );
+				trace( "XMPP stream error: "+e );
 				stream.cnx.disconnect();
 			}
 		}
 		stream.onReady = function() {
-			trace( "Component connected. Have fun!", "info" );
+			trace( "Component connected. Have fun!" );
 		}
 		trace( "Connecting to server  ..." );
 		stream.open( SERVER, COMPONENT, SECRET, [identity] );

@@ -1,0 +1,10 @@
+## Base parameters for hxmpp examples
+-cp ../src
+#-cp ../
+-cp ../../
+-D jabber_debug
+-D xmpp_debug
+-D no_jid_validation
+-D hxmpp_debug
+-debug
+#-dce full

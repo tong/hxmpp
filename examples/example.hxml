@@ -1,9 +1,0 @@
-# Basic build parameters for every HXMPP example
--cp ../
--cp ../../
--D jabber_debug
--D xmpp_debug
--D no_jid_validation
--D hxmpp_debug
--debug
-#-dce full

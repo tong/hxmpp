@@ -14,21 +14,21 @@
 --next
 -swf app.swf
 
---next
--java java
--cmd mv java/java.jar app.jar
-
 #--next
-#-cs cs
-#-cmd mv cs/bin/cs.exe app.cs && chmod +x app.cs
+#-java java
+#-cmd mv java/java.jar app.jar
+
+--next
+-cs cs
+-cmd mv cs/bin/cs.exe app.exe && chmod +x app.exe
 
 --next
 -php ./
 --php-front app.php
 
---next
--cpp cpp
--cmd mv cpp/App ./app
+#--next
+#-cpp cpp
+#-cmd mv cpp/App ./app
 
 --next
 -js app.nodejs

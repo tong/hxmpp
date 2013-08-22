@@ -1,5 +1,5 @@
 
-../example.hxml
+../params.hxml
 -lib chrome-app
 -D chrome_app
 -js app/app.js

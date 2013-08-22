@@ -3,7 +3,7 @@ import xmpp.dataform.FormType;
 
 class App extends XMPPClient {
 	
-	static var ENTITY = "julia@xmpp.disktree.net";
+	static var ENTITY = "julia@jabber.disktree.net";
 	
 	override function onLogin() {
 		new jabber.PresenceListener( stream, onPresence );
@@ -33,7 +33,7 @@ class App extends XMPPClient {
 				return;
 			}
 		}
-		trace( "Resource does not support dataforms", "info" );
+		trace( "Resource does not support dataforms" );
 	}
 	
 	static function main() {
