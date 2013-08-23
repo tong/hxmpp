@@ -94,7 +94,7 @@ class BOSHConnection extends jabber.StreamConnection {
 	//var requests : Array<Http>;
 
 	/**
-		A new connection to a HTTP gateway of a jabber server.
+		A new connection to a HTTP/BOSH gateway of a jabber server.
 		The default wait time for responses is 30 seconds.
 	*/
 	public function new( host : String, path : String,
@@ -349,12 +349,13 @@ class BOSHConnection extends jabber.StreamConnection {
 		r.data = s;
 		var l = new flash.net.URLLoader();
 		l.addEventListener( Event.COMPLETE, function(e) handleHTTPData(e.target.data) );
-		l.addEventListener( IOErrorEvent.IO_ERROR, handleHTTPError );
+		l.addEventListener( IOErrorEvent.IO_ERROR, function(e){ handleHTTPError(e.type); } );
+		l.addEventListener( SecurityErrorEvent.SECURITY_ERROR, function(e){ handleHTTPError(e.type); } );
 		//l.addEventListener( HTTPStatusEvent.HTTP_STATUS, function(e) handleHTTPStatus( e.status ) );
-		l.addEventListener( SecurityErrorEvent.SECURITY_ERROR, handleHTTPError );
 		l.load( r );
 		
 		#elseif sys
+		//TODO
 		/*
 		var _path = path.substr( path.lastIndexOf('/') );
 		if( _path.charAt( _path.length ) != '/' ) _path += '/';
