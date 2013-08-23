@@ -7,15 +7,10 @@
 class App {
 	
 	static function main() {
-	
-		var ip = "localhost";
-		var jid = "romeo@jabber.disktree.net";
-		var password = "test";
-		
-		var cnx = new jabber.SocketConnection( ip );
-
-		trace( "Connecting to ["+cnx.host+"] ..." );
-
+		var creds = XMPPClient.getAccountCredentials();
+		var jid = creds.user+'@'+creds.host;
+		var cnx = new jabber.SocketConnection( creds.ip );
+		trace( 'Connecting to [${cnx.host}] ...' );
 		var stream = new jabber.client.Stream( cnx );
 		stream.onOpen = function(){
 			trace("XMPP stream opened");
@@ -25,13 +20,13 @@ class App {
 				stream.sendPresence();
 			}
 			auth.onFail = function(e){
-				trace( "Authentication failed! ("+stream.jid.s+")("+password+")" );
+				trace( 'Authentication failed! ($jid)(${creds.password})' );
 			}
-			auth.start( password, "HXMPP" );
+			auth.start( creds.password, "hxmpp" );
 		}
 		stream.onClose = function(?e){
-			trace("XMPP stream closed");
-			if( e != null ) trace(e,"error");
+			trace( "XMPP stream closed" );
+			if( e != null ) trace(e);
 		};
 		stream.open( jid );
 	}

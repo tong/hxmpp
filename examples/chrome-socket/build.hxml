@@ -1,5 +1,5 @@
-
 ../params.hxml
 -lib chrome-app
--js app/app.js
 -main App
+-js app/app.js
+

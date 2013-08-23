@@ -1,4 +1,3 @@
-
 ../params.hxml
 -main App
 -D jabber_component
@@ -7,21 +6,10 @@
 --next
 -neko app.n
 
---next
--php .
---php-front app.php
+#--next
+#-php .
+#--php-front app.php
 
 #--next
-#../include.hxml
-#-cpp cpp
-#-main ComponentDemo
-#-D jabber_component
-#-D HXCPP_MULTI_THREADED
-
-#--next
-#../include.hxml
-#-D nodejs
-#-cp ../../hxnodejs
-#-js component.node.js
-#-main ComponentDemo
-#-D jabber_component
+#-lib nodejs
+#-js app.nodejs

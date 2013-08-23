@@ -12,19 +12,21 @@ using StringTools;
 class Build {
 
 	static var PATH = ".";
-	static var AUTOCLEAN_FILES = ['exe','jar','js','map','n','nodejs','php','swf'];
+	static var AUTOCLEAN_FILES = ['chrome','exe','jar','js','map','n','nodejs','php','swf'];
 	static var AUTOCLEAN_DIRECTORIES = ['cpp','cs','java','lib','res'];
 
 	static function build() {
 
 		println('');
 
-		// Determine examples to build
+		// Get list of examples examples to build
 		var builds = new Array<String>();
 		for( p in FileSystem.readDirectory( PATH ) ) {
 			var path = PATH+"/"+p;
-			if( FileSystem.isDirectory( path ) && !StringTools.startsWith( p, "_" ) &&
-				FileSystem.exists( path+"/build.hxml" ) ) {
+			if( FileSystem.isDirectory( path )
+				&& path != "src"
+				&& !StringTools.startsWith( p, "_" )
+				&& FileSystem.exists( path+"/build.hxml" ) ) {
 				builds.push( p );
 			}
 		}
@@ -56,7 +58,7 @@ class Build {
 				println( " : ok : "+res, "ok" );
 				//println( res );
 			} else {
-				trace(err);
+				//trace(err);
 				var info = err;
 				while( StringTools.startsWith( info, "../" ) )
 					info = info.substr(3);
