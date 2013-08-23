@@ -3,9 +3,29 @@
 <title>hxmpp-bosh</title>
 <meta charset="utf-8">
 <style>
-html, body { width: 100%; height:100%;}</style>
+html, body {
+	width: 100%; height:100%;
+}
+.app {
+	width: 100%;
+	height: 300px;
+}
+#app-web {
+	background: #30B4C5;
+}
+#app-flash {
+	background: #D0191E;
+}
+#flash {
+	width: 100%;
+}
+</style>
+<script src="app.js"></script>
 </head>
 <body>
-<script src="app.js"></script>
+<div id="app-web" class="app"></div>
+<div id="app-flash" class="app">
+	<object id="flash" type="application/x-shockwave-flash" data="app.swf" width="600px" height="300px"></object>
+</div>
 </body>
 </html>

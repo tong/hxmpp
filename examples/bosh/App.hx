@@ -3,19 +3,14 @@ import jabber.client.Stream;
 import jabber.client.Authentication;
 
 /**
-	Use http/bosh for connecting to the xmpp server
+	Use http/bosh to connect with xmpp server
 */
 class App {
 
-	static function main() {
+	static function init() {
 
-		#if flash
-		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
-		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
-		#end
-		
 		var creds = XMPPClient.getAccountCredentials( "romeo" );
-		trace( creds );
+		//trace( creds );
 
 		var cnx = new jabber.BOSHConnection( creds.host, creds.http, 1, 30, false );
 
@@ -42,6 +37,7 @@ class App {
 			auth.start( creds.password, 'hxmpp-bosh' );
 		}
 		stream.onClose = function(?e) {
+			trace(e);
 			if( e == null )
 				trace( 'XMPP stream closed' );
 			else
@@ -49,6 +45,37 @@ class App {
 			cnx.disconnect();
 		}
 		stream.open( creds.user+'@'+creds.host );
+	}
+
+	static function onClick(e) {
+		init();
+		#if flash
+		flash.Lib.current.stage.removeEventListener( flash.events.MouseEvent.MOUSE_DOWN, onClick );
+		#elseif js
+		js.Browser.document.getElementById('app-web').onclick = null;
+		#end
+	}
+	
+	static function main() {
+
+		#if flash
+		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
+		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
+		flash.Lib.current.stage.addEventListener( flash.events.MouseEvent.MOUSE_DOWN, function(e){ init(); } );
+
+		#elseif nodejs
+		init();
+
+		#elseif js
+		js.Browser.window.onload = function(_){
+			js.Browser.document.getElementById('app-web').onclick = function(_){ init(); };
+		}
+
+		#else
+		init();
+
+		#end
+		
 	}
 
 }
