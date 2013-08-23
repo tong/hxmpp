@@ -36,17 +36,20 @@ private class Socket extends flash.net.Socket {
 
 /**
 */
-@:require(flash)
 @:keep
+@:require(flash)
 class FlashSocketBridge {
 
 	#if jabber_flashsocketbridge_standalone
 	static function main() {
+		
 		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
+		
 		var cm = new flash.ui.ContextMenu();
 		cm.hideBuiltInItems();
 		flash.Lib.current.contextMenu = cm;
+		
 		var ctx = flash.Lib.current.loaderInfo.parameters.ctx;
 		var fsb = new FlashSocketBridge( ctx );
 		fsb.init();
@@ -62,7 +65,7 @@ class FlashSocketBridge {
 	
 	//public function new( ?ctx : String, outputInterval : Int = 1 ) {
 	public function new( ?ctx : String ) {
-		this.ctx = ( ctx != null ) ? ctx : "jabber.net.SocketConnection_flashsocketbridge";
+		this.ctx = ( ctx != null ) ? ctx : "jabber.SocketConnection";
 		//this.outputInterval = outputInterval;
 	}
 	
@@ -85,7 +88,7 @@ class FlashSocketBridge {
 	function createSocket( ___secure : Bool, __legacy__ : Bool, timeout : Int = -1 ) : Int {
 		var id = Lambda.count( sockets );
 		var s = new Socket( id );
-		if( timeout != -1 ) s.timeout = timeout*1000;
+		if( timeout > 0 ) s.timeout = timeout*1000;
 		sockets.set( id, s );
 		s.addEventListener( Event.CONNECT, sockConnectHandler );
 		s.addEventListener( Event.CLOSE, sockDisconnectHandler );
@@ -141,18 +144,22 @@ class FlashSocketBridge {
 	}
 	
 	function sockConnectHandler( e : Event ) {
+		//trace(e);
 		ExternalInterface.call( ctx+".handleConnect", e.target.id );
 	}
 
 	function sockDisconnectHandler( e : Event ) {
+		//trace(e);
 		ExternalInterface.call( ctx+".handleDisconnect", e.target.id, null );
 	}
 	
 	function sockErrorHandler( e : Event ) {
+		//trace(e);
 		ExternalInterface.call( ctx+".handleDisconnect", e.target.id, e.type );
 	}
 	
 	function sockDataHandler( e : ProgressEvent ) {
+		//trace(e);
 		//ExternalInterface.call( ctx+".handleData", e.target.id, e.target.readUTFBytes( e.bytesLoaded ) );
 		//trace(e.bytesLoaded );
 		/*
