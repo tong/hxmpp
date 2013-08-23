@@ -72,7 +72,7 @@ private class StreamFeatures {
 }
 
 /**
-	Abstract base class for handling a XMPP data stream to and from another entity.
+	Abstract base class for handling xmpp streams to and from another entity.
 	
 	See: http://xmpp.org/rfcs/rfc6120.html#streams
 */
@@ -82,16 +82,16 @@ class Stream {
 	public static var defaultMaxBufSize = 1048576; // 524288; //TODO
 	
 	/**
-		Called when the XMPP stream is opened and ready to exchange XMPP data
+		Called when the xmpp stream got opened and ready to exchange data
 	*/
 	public dynamic function onOpen() {}
 	
 	/**
-		Called when the XMPP stream closes, optionally reporting stream errors if occured 
+		Called when the xmpp stream closes, optionally reporting stream errors if occured 
 	*/
 	public dynamic function onClose( ?e : String ) {}
 	
-	/** Current status of the XMPP stream */
+	/** Current status of the xmpp stream */
 	public var status : StreamStatus;
 	
 	/** The connection used to transport xmpp data */
@@ -121,7 +121,7 @@ class Stream {
 	/** Incoming data buffer size */
 	public var bufSize(default,null) : Int;
 
-	/***/
+	/** Max incoming data buffer size */
 	public var maxBufSize : Int;
 	
 	var buf : StringBuf;

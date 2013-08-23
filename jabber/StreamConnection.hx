@@ -23,10 +23,13 @@ package jabber;
 
 import haxe.io.Bytes;
 
-//TODO interface
-
 /**
-	Abstract base class for XMPP stream connections.
+	Abstract base class for xmpp stream connections.
+
+	Extended by:
+	  * jabber.SocketConnection
+	  * jabber.BOSHConnection
+	
 */
 class StreamConnection {
 	
@@ -34,7 +37,7 @@ class StreamConnection {
 	@:allow(jabber.Stream)
 	public var onConnect : Void->Void;
 	
-	/** Disconnected callback. Parameter is an optional error message  */
+	/** Disconnect callback. Parameter is a optional error message  */
 	@:allow(jabber.Stream)
 	public var onDisconnect : String->Void;
 	
@@ -46,7 +49,7 @@ class StreamConnection {
 	@:allow(jabber.Stream)
 	public var onString : String->Bool;
 
-	/** SSL negotiation complete callback */
+	/** SSL negotiation complete callback, optional argument indicates ssl error */
 	public var onSecured : String->Void;
 	
 	/** Hostname or IP address of the XMPP server. */
@@ -80,36 +83,35 @@ class StreamConnection {
 	/**
 	*/
 	public function connect() {
-		#if jabber_debug trace( 'StreamConnection.connect not implemented' ); #end
+		#if jabber_debug trace( 'jabber.StreamConnection.connect not implemented' ); #end
 	}
 	
 	/**
 	*/
 	public function disconnect() {
-		#if jabber_debug trace( 'StreamConnection.disconnect not implemented' ); #end
+		#if jabber_debug trace( 'jabber.StreamConnection.disconnect not implemented' ); #end
 	}
 	
 	/**
 		StartTLS
 	*/
 	public function setSecure() {
-		#if jabber_debug trace( 'StreamConnection.setSecure not implemented' ); #end
+		#if jabber_debug trace( 'jabber.StreamConnection.setSecure not implemented' ); #end
 	}
 	
 	/**
 		Starts/Stops reading data input, returns true if successfully started
 	*/
 	public function read( ?yes : Bool = true ) : Bool {
-		#if jabber_debug trace( 'StreamConnection.read not implemented' ); #end
+		#if jabber_debug trace( 'jabber.StreamConnection.read not implemented' ); #end
 		return false;
 	}
-
 	
 	/**
 		Send string
 	*/
-	public function write( t : String ) : Bool {
-		#if jabber_debug trace( 'StreamConnection.write not implemented' ); #end
+	public function write( s : String ) : Bool {
+		#if jabber_debug trace( 'jabber.StreamConnection.write not implemented' ); #end
 		return false;
 	}
 	

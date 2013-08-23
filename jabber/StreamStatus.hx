@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,9 @@
  */
 package jabber;
 
+/**
+	Describes the status of a xmpp stream.
+*/
 enum StreamStatus {
 	
 	/**
@@ -29,14 +32,18 @@ enum StreamStatus {
 	closed;
 	
 	/**
-		Request to open XMPP stream sent but no response so far.
+		Request to open xmpp stream sent but no response so far.
 	*/
-	pending; //pending( ?info : String );
+	pending;
+	//pending( ?info : String );
 	
+	//#if !jabber_external_component
+	//#if !hxmpp_external_component
+	//#if !hxmpp_component
 	#if !jabber_component
 	
 	/**
-		TLS negotiation in progress.
+		SSL/TLS negotiation in progress.
 	*/
 	starttls;
 	
@@ -45,6 +52,7 @@ enum StreamStatus {
 	/**
 		XMPP stream is open and ready to exchange data.
 	*/
-	open; //open( ?info : String );
+	open;
+	//open( ?info : String );
 	
 }
