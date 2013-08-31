@@ -23,7 +23,7 @@ package jabber;
 
 import haxe.io.Bytes;
 
-#if !jabber_flashsocketbridge
+#if !hxmpp_flashsocketbridge
 
 #if flash
 import flash.net.Socket;
@@ -383,7 +383,7 @@ class SocketConnection extends jabber.StreamConnection {
 	#end
 }
 
-#else // !jabber_flashsocketbridge
+#else // !hxmpp_flashsocketbridge
 
 @:keep
 @:expose

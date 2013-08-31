@@ -12,7 +12,7 @@
 
 --next
 -js app.js
--D jabber_flashsocketbridge
+-D hxmpp_flashsocketbridge
 
 #--next
 #-cp ../../hxssl

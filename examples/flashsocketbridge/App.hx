@@ -5,7 +5,7 @@ import jabber.SocketConnection;
 	Connect to a XMPP server from javascript using a flash socketbridge.
 */
 @:require(js)
-@:require(jabber_flashsocketbridge)
+@:require(hxmpp_flashsocketbridge)
 class App {
 	
 	static function main() {

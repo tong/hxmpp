@@ -33,6 +33,7 @@ import haxe.io.Bytes;
 */
 class StreamConnection {
 	
+
 	/** Succesfully connected callback */
 	@:allow(jabber.Stream)
 	public var onConnect : Void->Void;
@@ -49,9 +50,10 @@ class StreamConnection {
 	@:allow(jabber.Stream)
 	public var onString : String->Bool;
 
-	/** SSL negotiation complete callback, optional argument indicates ssl error */
+	/** SSL negotiation complete callback, optional argument indicates an ssl error */
 	public var onSecured : String->Void;
 	
+
 	/** Hostname or IP address of the XMPP server. */
 	public var host(default,set_host) : String;
 	
@@ -67,6 +69,7 @@ class StreamConnection {
 	/** Indicates if this data connection is a HTTP (BOSH) connection (default is false) */
 	public var http(default,null) : Bool;
 	
+
 	function new( host : String, secure : Bool, http : Bool = false ) {
 		this.host = host;
 		this.secure = secure;
@@ -74,11 +77,13 @@ class StreamConnection {
 		connected = secured = false;
 	}
 	
+
 	function set_host( t : String ) : String {
 		if( connected )
 			return throw "cannot change hostname on active xmpp connection" ;
 		return host = t;
 	}
+
 	
 	/**
 	*/

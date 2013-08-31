@@ -13,8 +13,8 @@ class App {
 		#end
 		
 		#if (js&&!nodejs)
-		untyped swfobject.embedSWF('../../hxmpp/util/socketbridge/socketbridge_tls.swf','socketbridge','0','0','10');
-		jabber.SocketConnection.init( 'socketbridge', function(error:String) {
+		untyped swfobject.embedSWF('../../hxmpp/util/flash-socketbridge/flashsocketbridge.swf','socketbridge','0','0','11');
+		jabber.SocketConnection.init( 'flashsocketbridge', function(error:String) {
 			connect();
 		}, 500 );
 		

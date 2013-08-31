@@ -40,7 +40,7 @@ private class Socket extends flash.net.Socket {
 @:require(flash)
 class FlashSocketBridge {
 
-	#if jabber_flashsocketbridge_standalone
+	#if hxmpp_flashsocketbridge_standalone
 	static function main() {
 		
 		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;

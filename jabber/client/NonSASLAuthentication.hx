@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,15 +21,17 @@
  */
 package jabber.client;
 
+import xmpp.IQ;
 import jabber.util.SHA1;
 
 /**
-	Obsolete, superseded in favor of SASL authentication (jabber.client.Authentication)!
-	<a href="http://xmpp.org/extensions/xep-0078.html">XEP-0078: Non-SASL Authentication</a>
+	Obsolete, superseded in favor of SASL authentication (jabber.client.Authentication)
+	
+	XEP-0078: Non-SASL Authentication
+	http://xmpp.org/extensions/xep-0078.html
 */
 class NonSASLAuthentication extends AuthenticationBase {
 	
-	public var active(default,null) : Bool;
 	public var usePlainText(default,null) : Bool;
 	public var username(default,null) : String;
 	public var password(default,null) : String;
@@ -37,37 +39,32 @@ class NonSASLAuthentication extends AuthenticationBase {
 	public function new( stream : Stream, ?usePlainText : Bool = false ) {
 		#if jabber_debug
 		if( stream.cnx.http )
-			throw "non SASL authentication is not supported on HTTP/BOSH connections";
+			throw "non SASL authentication not supported on http connections";
 		#end
 		super( stream );
 		this.usePlainText = usePlainText;
 		username = stream.jid.node;
-		active = false;
 	}
 
 	public override function start( password : String, ?resource : String ) {
-		if( active )
-			throw "authentication already in progress";
 		this.password = password;
 		if( resource != null ) {
 			this.resource = resource;
 			stream.jid.resource = resource; // update stream jid resource
 		}
-		active = true;
-		var iq = new xmpp.IQ();
+		var iq = new IQ();
 		iq.x = new xmpp.Auth( username );
 		stream.sendIQ( iq, handleResponse );
 		return true;
 	}
 	
-	
-	function handleResponse( iq : xmpp.IQ ) {
+	function handleResponse( iq : IQ ) {
 		switch( iq.type ) {
 		case result :
-			var hasDigest = ( !usePlainText && iq.x.toXml().elementsNamed( "digest" ).next() != null );
-			var r = new xmpp.IQ( xmpp.IQType.set );
-			r.x = if( hasDigest ) new xmpp.Auth( username, null, SHA1.encode( stream.id+password ), resource );
-			else new xmpp.Auth( username, password, null, resource );
+			var r = new IQ( xmpp.IQType.set );
+			r.x = ( !usePlainText && iq.x.toXml().elementsNamed( "digest" ).next() != null ) ?
+					new xmpp.Auth( username, null, SHA1.encode( stream.id+password ), resource ) :
+					new xmpp.Auth( username, password, null, resource );
 			stream.sendIQ( r, handleResult );
 		case error :
 			onFail( iq.errors[0].condition );
@@ -75,8 +72,7 @@ class NonSASLAuthentication extends AuthenticationBase {
 		}
 	}
 	
-	function handleResult( iq : xmpp.IQ ) {
-		active = false;
+	function handleResult( iq : IQ ) {
 		switch( iq.type ) {
 		case result : onSuccess();
 		case error :
