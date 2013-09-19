@@ -5,6 +5,7 @@
 	"tags": ["xmpp","jabber","jingle","chat","realtime","decentral"],
 	"description": "XMPP/Jabber library",
 	"version": "0.4.13-alpha.2",
+	"classPath": "src",
 	"releasenote": "Misc",
 	"contributors": ["tong"],
 	"dependencies": {

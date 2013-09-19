@@ -1,4 +1,4 @@
 ## Builds all hxmpp examples
 -cp src/
--cp ../
+-cp ../src/
 --run Build
