@@ -18,7 +18,8 @@ class App {
 				trace( e );
 				return;
 			}
-			trace( 'Flashsocketbridge ready' );
+
+			trace( 'Flashsocketbridge ready ...' );
 
 			var creds = XMPPClient.defaultAccountCredentials; //getAccountCredentials();
 			var jid = creds.user+'@'+creds.host;
@@ -36,7 +37,7 @@ class App {
 				}
 				auth.start( creds.password, "hxmpp" );
 			}
-			trace(">>>>>>>>>> "+jid );
+			trace( ">>>>>>>>>> "+jid );
 			stream.open( jid );
 		}, 200 );
 	}

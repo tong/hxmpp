@@ -12,7 +12,7 @@ using StringTools;
 class Build {
 
 	static var PATH = ".";
-	static var AUTOCLEAN_FILES = ['chrome','exe','jar','js','map','n','nodejs','php','swf'];
+	static var AUTOCLEAN_FILES = ['chrome','exe','jar','js','map','n','nodejs','php','swc','swf'];
 	static var AUTOCLEAN_DIRECTORIES = ['cpp','cs','java','lib','res'];
 
 	static function build() {

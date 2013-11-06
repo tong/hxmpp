@@ -22,11 +22,11 @@ class App extends XMPPClient {
 	}
 	
 	function onRosterError( e : jabber.XMPPError ) {
-		trace( e );
+		trace( 'Roster ERROR : '+e );
 	}
 	
 	function onRosterLoad() {
-		trace("ROSTERTEST: onRosterLoad");
+		trace( 'Roster loaded' );
 		new jabber.PresenceListener( stream, onPresence );
 		stream.sendPresence();
 		//roster.subscribe( "julia@disktree" );
@@ -35,27 +35,27 @@ class App extends XMPPClient {
 	}
 	
 	function onRosterItemAdded( item : xmpp.roster.Item ) {
-		trace("ROSTERTEST: onRosterItemAdded");
+		trace( 'Roster item added ($item)' );
 	}
 	
 	function onRosterItemRemoved( item : xmpp.roster.Item ) {
-		trace("ROSTERTEST: onRosterItemRemoved");
+		trace( 'Roster item removed ($item)');
 	}
 	
 	function onSubscriptionAsk( i : xmpp.roster.Item ) {
-		trace( i.jid+" wants to subscribe to your presence" );
+		trace( i.jid+' wants to subscribe to your presence' );
 	}
 	
 	function onSubscription( jid : String ) {
-		trace("ROSTERTEST: onSubscription "+jid);
+		trace( 'Roster subscription '+jid );
 	}
 	
 	function onSubscribed( item : xmpp.roster.Item ) {
-		trace("ROSTERTEST: onSubscribed");
+		trace( "Roster subscribed : "+item );
 	}
 	
 	function onUnsubscribed( item : xmpp.roster.Item ) {
-		trace("ROSTERTEST: onUnsubscribed "+item.jid);
+		trace( "Roster unsubscribed "+item.jid );
 	}
 	
 	function onPresence( p : xmpp.Presence ) {

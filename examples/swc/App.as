@@ -1,13 +1,14 @@
 package {
 	
 	/**
-		Example usage of the HXMPP lib from actionscript3 (mxmlc) using hxmpp.swc.
+		Example usage of the HXMPP library from actionscript3 (mxmlc)
 	*/
 
 	import flash.Boot;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.text.TextField;
+
 	import jabber.JID;
 	import jabber.SocketConnection;
 	import jabber.ServiceDiscovery;
@@ -27,7 +28,7 @@ package {
 		
 		public function Test() {
 			
-			haxe.init(this); // init haXe SWC
+			haxe.init(this); // init haxe swc
 			
 			stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 			stage.align = flash.display.StageAlign.TOP_LEFT;
@@ -38,10 +39,10 @@ package {
 			tf.width = tf.height = 800;
 			addChild( tf );
 			
-			info( "initializing HXMPP lib ..." );
+			info( "Initializing HXMPP lib ..." );
 			
-			var jid : JID = new JID( "romeo@disktree/HXMPP" );
-			var cnx : SocketConnection = new SocketConnection( "127.0.0.1" ); 
+			var jid : JID = new JID( "romeo@jabber.disktree.net/HXMPP" );
+			var cnx : SocketConnection = new SocketConnection( "localhost" ); 
 			stream = new Stream( cnx );
 			stream.onOpen = function():void {
 				info( "XMPP stream opened" );

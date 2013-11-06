@@ -1,7 +1,7 @@
 {
 	"user" : "romeo",
-	"host" : "jabber.spektral.at",
+	"host" : "jabber.disktree.net",
 	"password" : "test",
-	"ip" : null,
-	"http" : "jabber.spektral.at/http"
+	"ip" : "localhost",
+	"http" : "jabber.disktree.net/http"
 }
