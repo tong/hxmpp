@@ -1,0 +1,7 @@
+
+../params.hxml
+--each
+
+--next
+-main App
+-neko app.n

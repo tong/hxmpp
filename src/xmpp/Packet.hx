@@ -22,13 +22,13 @@
 package xmpp;
 
 /**
-	Abstract base for XMPP packets.
+	Abstract base for xmpp packets (<iq/>,<presence/>,<message/>)
 */
 class Packet {
 	
 	public static var PROTOCOL(default,null) : String = "http://jabber.org/protocol";
 	
-	/** The top level type of the XMPP packet */
+	/* Top level type */
 	public var _type(default,null) : PacketType;
 	public var to : String;
 	public var from : String;
@@ -77,7 +77,7 @@ class Packet {
 	}
 	
 	/**
-		Parses given XML into a XMPP packet object.
+		Parse XML into a XMPP packet object
 	*/
 	public static function parse( x : Xml ) : xmpp.Packet {
 		switch( x.nodeName ) {
@@ -89,7 +89,7 @@ class Packet {
 	}
 	
 	/**
-		Parses/adds basic attributes to the XMPP packet.
+		Parse/add basic attributes to the packet.
 	*/
 	static function parseAttributes( p : xmpp.Packet, x : Xml ) : xmpp.Packet {
 		p.to = x.get( "to" );

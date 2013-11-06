@@ -50,15 +50,6 @@ import sys.net.Socket;
 
 /**
 	Crossplatform socket connection for xmpp streams.
-
-	Supported targets:
-		#* adobe air
-		* chrome-app
-		* flash
-		* flashsocketbridge
-		* web/js
-		* nodejs
-		* sys
 */
 class SocketConnection extends jabber.StreamConnection {
 
@@ -104,10 +95,6 @@ class SocketConnection extends jabber.StreamConnection {
 		maxBufSize = defaultMaxBufSize;
 		reading = false;
 		#end
-
-		#if chrome_app
-		trace("CHROME-SOCKET-CHROME-SOCKET-CHROME-SOCKET-CHROME-SOCKET-CHROME-SOCKET-CHROME-SOCKET-CHROME-SOCKET-CHROME-SOCKET-CHROME-SOCKET");
-		#end
 	}
 
 	public override function connect() {
@@ -144,6 +131,7 @@ class SocketConnection extends jabber.StreamConnection {
 			#else
 			//TODO timeout
 			socket = new Socket( 'ws'+(secure?'s':'')+'://$host:$port' );
+			trace(">>>>>> "+'ws'+(secure?'s':'')+'://$host:$port');
 			socket.onopen = handleConnect;
 			socket.onclose = handleDisconnect;
 			socket.onerror = handleError;
@@ -258,11 +246,9 @@ class SocketConnection extends jabber.StreamConnection {
 	}
 
 	public override function write( s : String ) : Bool {
-
 		#if flash
 		socket.writeUTFBytes( s ); 
 		socket.flush();
-
 		#elseif js
 			#if chrome_app
 			Socket.write( socketId, ArrayBufferUtil.toArrayBuffer(s), function(e){} );
@@ -274,9 +260,7 @@ class SocketConnection extends jabber.StreamConnection {
 
 		#elseif sys
 		socket.write( s );
-
 		#end
-
 		return true;
 	}
 
