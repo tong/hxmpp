@@ -25,14 +25,16 @@ package jabber.util;
 import js.Node;
 #end
 
+
 /*
 	Creates a MD5 of a String.
-	Modified version from the haxe std lib to provide raw encoding as well as support for non official compiler targets.
+	Modified version from the haxe std lib to provide raw encoding as well as support for non-official haxe targets.
 */
 class MD5 {
 
 	public static inline function encode( s : String, raw : Bool = false ) : String {
 		
+		//TODO
 		//#if hxssl
 		//return sys.crypto.MD5.encode( s, raw );
 
@@ -51,61 +53,22 @@ class MD5 {
 		h.update( s );
 		return h.digest( raw ? NodeC.BINARY : NodeC.HEX );
 			
+		#elseif js
+		return raw ? new MD5().doEncodeRaw(s) : new MD5().doEncode(s);
+
 		#else
-		//return raw ? inst.doEncodeRaw(s) : inst.doEncode(s);
 		return raw ? haxe.crypto.Md5.make(haxe.io.Bytes.ofString(s)).toString()
-					:haxe.crypto.Md5.encode(s);
-		
+				   : haxe.crypto.Md5.encode(s);
+
 		#end
 	}
 
 	#if neko
 	static var base_encode = neko.Lib.load( "std", "base_encode", 2 );
 	static var make_md5 = neko.Lib.load( "std", "make_md5", 1 );
-	#end
 
-}
+	#elseif (cpp||js)
 	
-	/*
-	public static inline function encode( s : String, raw : Bool = false ) : String {
-		
-		#if neko
-			//#if hxssl_crypto
-			#if hxssl
-			return sys.crypto.MD5.encode( s );
-			#else
-			var t = make_md5( untyped s.__s );
-			return untyped new String( raw ? t : base_encode( t, "0123456789abcdef".__s ) );
-			#end
-		
-		#elseif nodejs
-		var h = js.Node.crypto.createHash( "md5" );
-		h.update( s );
-		return h.digest( raw ? NodeC.BINARY : NodeC.HEX );
-		
-		#elseif php
-		return untyped __call__( "md5", s, raw );
-		
-		#elseif cpp
-			//TODO
-			//#if hxssl
-			//return sys.crypt.MD5.encode( s, raw );
-			//#else
-			return raw ? new MD5().doEncodeRaw(s) : new MD5().doEncode(s);
-			//#end
-			
-		#else
-		return raw ? inst.doEncodeRaw(s) : inst.doEncode(s);
-		
-		#end
-	}
-	
-	#if neko
-	static var base_encode = neko.Lib.load( "std", "base_encode", 2 );
-	static var make_md5 = neko.Lib.load( "std", "make_md5", 1 );
-	#elseif (php||nodejs)
-	#else
-	 
 	static var inst = new MD5();
 	
 	function new() {}
@@ -113,10 +76,7 @@ class MD5 {
 	function rhex( n : Int ) : String {
 		var s = "";
 		var hex = "0123456789abcdef";
-		for( j in 0...4 ) {
-			s += hex.charAt( (n >> (j * 8 + 4)) & 0x0F ) +
-				 hex.charAt( (n >> (j * 8)) & 0x0F );
-		}
+		for( j in 0...4 ) s += hex.charAt( (n >> (j * 8 + 4)) & 0x0F ) + hex.charAt( (n >> (j * 8)) & 0x0F );
 		return s;
 	}
 	
@@ -180,17 +140,16 @@ class MD5 {
 	}
 
 	function hh( a : Int, b : Int, c : Int, d : Int, x : Int, s : Int, t : Int ) : Int {
-		return cmn(bitXOR(bitXOR(b, c), d), a, b, x, s, t);
+		return cmn( bitXOR( bitXOR( b, c ), d ), a, b, x, s, t );
 	}
 
 	function ii( a : Int, b : Int, c : Int, d : Int, x : Int, s : Int, t : Int ) : Int {
-		return cmn(bitXOR(c, bitOR(b, (~d))), a, b, x, s, t);
+		return cmn( bitXOR( c, bitOR( b, (~d) ) ), a, b, x, s, t );
 	}
 	
 	function str2bin( inp : String ) : Array<Int> {
 		var r = new Array<Int>();
-		for( i in 0...r.length )
-			r[i] = 0;
+		for( i in 0...r.length ) r[i] = 0;
 		var i2 = 0;
 		while( i2 < inp.length * 8 ) {
 		    r[i2>>5] |=  ( StringTools.fastCodeAt( inp, Std.int( i2 / 8 ) ) & 0xFF) << ( i2 % 32 );
@@ -214,15 +173,15 @@ class MD5 {
 		var x = str2bin( t );
 		x[len >> 5] |= 0x80 << ((len) % 32);
 		x[(((len + 64) >>> 9) << 4) + 14] = len;
-		return bin2str( __encode( x ) );
+		return bin2str( _encode( x ) );
 	}
 	
 	function doEncode( t : String ) : String {
-		var t = __encode( str2blks(t) );
+		var t = _encode( str2blks(t) );
 		return rhex(t[0])+rhex(t[1])+rhex(t[2])+rhex(t[3]);
 	}
 	
-	function __encode( x : Array<Int> ) : Array<Int> {
+	function _encode( x : Array<Int> ) : Array<Int> {
 		
 		var a : Int =  1732584193;
 		var b : Int = -271733879;
@@ -318,4 +277,3 @@ class MD5 {
 	#end
 
 }
-	*/
