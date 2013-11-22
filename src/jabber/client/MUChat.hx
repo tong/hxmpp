@@ -32,7 +32,7 @@ import xmpp.filter.PacketTypeFilter;
 
 /**
 */
-class MUCOccupant {
+class MUChatOccupant {
 
 	public var nick : String;
 	public var jid : String;
@@ -55,9 +55,9 @@ class MUChat {
 	public dynamic function onJoin() {}
 	public dynamic function onLeave() {}
 	public dynamic function onUnlock() {}
-	public dynamic function onMessage( o : MUCOccupant, m : xmpp.Message ) {}
+	public dynamic function onMessage( o : MUChatOccupant, m : xmpp.Message ) {}
 	//public dynamic function onRoomMessage( m : xmpp.Message ) {}
-	public dynamic function onPresence( o : MUCOccupant ) {}
+	public dynamic function onPresence( o : MUChatOccupant ) {}
 	public dynamic function onSubject( o : String, t : String ) {}
 	public dynamic function onKick( nick : String ) {}
 	public dynamic function onError( e : jabber.XMPPError ) {}
@@ -90,13 +90,13 @@ class MUChat {
 	public var affiliation(default,null) : Affiliation;
 	
 	/** List of current room occupants */
-	public var occupants(default,null) : Array<MUCOccupant>;
+	public var occupants(default,null) : Array<MUChatOccupant>;
 	
 	/** */
 	public var subject(default,null) : String;
 	
 	/** */
-	public var me(get_me,null) : MUCOccupant;
+	public var me(get_me,null) : MUChatOccupant;
 	
 	/** */
 	public var stream(default,null) : Stream;
@@ -125,8 +125,8 @@ class MUChat {
 		occupants = new Array();
 	}
 	
-	function get_me() : MUCOccupant {
-		var o = new MUCOccupant();
+	function get_me() : MUChatOccupant {
+		var o = new MUChatOccupant();
 		o.role = role;
 		o.presence = presence;
 		o.nick = nick;
@@ -142,7 +142,7 @@ class MUChat {
 		*/
 	}
 	
-	public function getOccupant( nick : String ) : MUCOccupant {
+	public function getOccupant( nick : String ) : MUChatOccupant {
 		for( o in occupants ) { if( o.nick == nick ) return o; }
 		return null;
 	}
@@ -368,7 +368,7 @@ class MUChat {
 				}
 				//..
 			} else { // process new occupant
-				occupant = new MUCOccupant();
+				occupant = new MUChatOccupant();
 				occupant.nick = from;
 				occupants.push( occupant );
 			}
