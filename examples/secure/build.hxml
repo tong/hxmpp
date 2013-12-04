@@ -1,5 +1,4 @@
 
-
 ../params.hxml
 -main App
 --each
@@ -8,15 +7,15 @@
 -lib hxssl
 -neko app.n
 
-#--next
-#-lib hxssl
-#-cpp cpp
-#-cmd mv cpp/App* ./app
-#-D HXCPP_M64
+--next
+-lib hxssl
+-cpp cpp
+-cmd mv cpp/App* ./app
+-D HXCPP_M64
 
-#--next
-#-php .
-#--php-front app.php
+--next
+-php .
+--php-front app.php
 
 #../src/include.hxml
 #-swf test.swf
