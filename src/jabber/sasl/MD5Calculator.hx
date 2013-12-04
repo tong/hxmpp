@@ -49,7 +49,7 @@ class MD5Calculator {
 			nonce : unquote( el.get( "nonce" ) )
 		};
 	}
-	
+
 	/**
 	 * Caluclate the MD5 challenge response
 	 */
@@ -85,7 +85,6 @@ class MD5Calculator {
 		//b.add( quote(authzid) );
 		return b.toString();
 	}
-	
 
 	//TODO use sll.ndll if available
 	//#if ssl

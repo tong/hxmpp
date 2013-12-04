@@ -64,7 +64,7 @@ class SocketConnection extends jabber.StreamConnection {
 	public var maxBufSize : Int;
 	#end
 
-	var socket : Socket;
+	public var socket : Socket;
 
 	#if (chrome_app||sys)
 	var reading : Null<Bool>;
@@ -74,8 +74,7 @@ class SocketConnection extends jabber.StreamConnection {
 	var socketId : Int;
 	#end
 
-	public function new( host : String = "localhost",
-						 ?port : Null<Int>,
+	public function new( host : String = "localhost", ?port : Null<Int>,
 						 secure : Bool = false,
 						 timeout : Float = 0 ) {
 		
@@ -86,7 +85,7 @@ class SocketConnection extends jabber.StreamConnection {
 			jabber.client.Stream.PORT
 			#end;
 
-		super( host, false, false );
+		super( host, secure, false );
 		this.port = port;
 		this.timeout = timeout;
 		
@@ -130,8 +129,8 @@ class SocketConnection extends jabber.StreamConnection {
 
 			#else
 			//TODO timeout
-			socket = new Socket( 'ws'+(secure?'s':'')+'://$host:$port' );
-			trace(">>>>>> "+'ws'+(secure?'s':'')+'://$host:$port');
+			var uri = 'ws'+(secure?'s':'')+'://$host:$port';
+			socket = new Socket( uri );
 			socket.onopen = handleConnect;
 			socket.onclose = handleDisconnect;
 			socket.onerror = handleError;
@@ -257,7 +256,6 @@ class SocketConnection extends jabber.StreamConnection {
 			#else
 			socket.send( s );
 			#end
-
 		#elseif sys
 		socket.write( s );
 		#end
@@ -307,20 +305,26 @@ class SocketConnection extends jabber.StreamConnection {
 		#else
 
 		function handleConnect(_) {
+			trace("handleConnect");
 			connected = true;
 			onConnect();
 		}
 
 		function handleDisconnect(_) {
+			trace("handleDisconnect");
 			handleError( null );
 		}
 
-		function handleError( e : String ) {
+		//function handleError( e : String ) {
+		function handleError( e ) {
+			trace("handleError "+e);
+			trace(e);
 			connected = false;
 			onDisconnect( e );
 		}
 
 		function handleData( s : String ) {
+			trace("handleData");
 			onString( s );
 		}
 

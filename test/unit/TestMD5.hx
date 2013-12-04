@@ -20,13 +20,9 @@ class TestMD5 extends haxe.unit.TestCase {
 		t = "514d26cfd4c8b8105a6e7cf64d5cce10";
 		assertEquals( "a5a67ee535bcf341f5600d82bf09dcb6", MD5.encode(t) );
 		
-		
 		//TODO
 		//two step..
 		//manystep..
-		
-		//trace(  haxe.Timer.stamp()-ts );
-		
 	}
 	
 }

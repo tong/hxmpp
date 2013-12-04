@@ -3,6 +3,7 @@ import haxe.Timer;
 import haxe.Template;
 
 #if macro
+import sys.FileSystem;
 import haxe.macro.Context;
 #end
 
@@ -72,8 +73,7 @@ class Run {
 	#if macro
 
 	static function prepareBuild() {
-		if( !sys.FileSystem.exists('build') )
-			sys.FileSystem.createDirectory('build');
+		if( !FileSystem.exists( 'build' ) ) FileSystem.createDirectory( 'build' );
 	}
 
 	#end

@@ -31,7 +31,7 @@ import jabber.Stream;
 */
 class Stream extends jabber.Stream {
 
-	/* IANA registered "xmpp-client" */
+	/* IANA registered "xmpp-client" port */
 	public static inline var PORT = 5222;
 
 	/**/
