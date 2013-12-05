@@ -21,9 +21,9 @@
  */
 package xmpp;
 
-class XSPF extends xspf.Playlist {
+class XSPF extends XSPFPlaylist {
 	
-	public static var XMLNS(default,null) : String = xspf.Playlist.NAMESPACE;
+	public static var XMLNS(default,null) : String = XSPFPlaylist.XMLNS;
 	
 	public function new() {
 		super();

@@ -26,7 +26,7 @@ package jabber;
 */
 class XSPFListener {
 	
-	public dynamic function onRequest( jid : String ) : xspf.Playlist { return null; }
+	public dynamic function onRequest( jid : String ) : XSPFPlaylist { return null; }
 	
 	public var stream(default,null) : Stream;
 	

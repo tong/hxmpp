@@ -7,26 +7,25 @@ import XMPPClient;
 class App {
 	
 	static function main() {
-
-		var creds : AccountCredentials = XMPPClient.getAccountCredentials();
-		trace( creds );
 		
-		#if (js&&!nodejs)
-			var cnx = new jabber.BOSHConnection( creds.host, creds.http );
-		#else
-			var cnx = new jabber.SocketConnection( creds.ip, creds.port, false );
-		#end
+		var creds : AccountCredentials = XMPPClient.getAccountCredentials();
+		//trace( creds );
 
+		var mechs : Array<jabber.sasl.Mechanism> = [
+			new jabber.sasl.MD5Mechanism(),
+			new jabber.sasl.PlainMechanism(),
+			//new jabber.sasl.LOGINMechanism(),
+		];
+
+		#if js
+		var cnx = new jabber.BOSHConnection( creds.host, creds.http, 1, 30, false );
+		#else
+		var cnx = new jabber.SocketConnection( creds.ip, creds.port, false );
+		#end
+		
 		var stream = new jabber.client.Stream( cnx );
 		stream.onOpen = function() {
-			
 			trace( "XMPP stream opened" );
-			
-			var mechs : Array<jabber.sasl.Mechanism> = [
-				new jabber.sasl.MD5Mechanism(),
-				//new jabber.sasl.PlainMechanism(),
-				//new jabber.sasl.LOGINMechanism(),
-			];
 			var auth = new jabber.client.Authentication( stream, mechs );
 			auth.onSuccess = function() {
 				trace( "Authenticated as: "+stream.jid.toString() );

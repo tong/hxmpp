@@ -75,7 +75,7 @@ class XMPPClient {
 		stream = new Stream( cnx );
 		stream.onOpen = onStreamOpen;
 		stream.onClose = onStreamClose;
-		stream.open( user+'@'+host );
+		stream.open( '$user@$host' );
 	}
 
 	public function logout() {

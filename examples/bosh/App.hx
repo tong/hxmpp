@@ -10,10 +10,8 @@ class App {
 	static function init() {
 
 		var creds = XMPPClient.getAccountCredentials( "romeo" );
-		//trace( creds );
 
 		var cnx = new jabber.BOSHConnection( creds.host, creds.http, 1, 30, false );
-
 		#if (cpp||neko||nodejs)
 		cnx.ip = creds.ip;
 		cnx.port = 7070;
@@ -75,7 +73,6 @@ class App {
 		init();
 
 		#end
-		
 	}
 
 }

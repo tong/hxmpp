@@ -1,4 +1,4 @@
-## Base parameters for hxmpp examples
+## Base parameters
 -cp ../src
 -cp ../../src
 -D jabber_debug

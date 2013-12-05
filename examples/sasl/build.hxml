@@ -1,6 +1,6 @@
 
 -cp ../src
--cp ../../
+-cp ../../src
 -D jabber_debug
 -D xmpp_debug
 -main App
@@ -29,3 +29,6 @@
 #--next
 #-java java
 #-cmd mv java/java.jar ./app.jar
+
+#--next
+#-cs cs

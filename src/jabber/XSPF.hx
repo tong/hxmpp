@@ -28,7 +28,7 @@ import jabber.Stream;
  */
 class XSPF {
 	
-	public dynamic function onLoad( jid : String, playlist : xspf.Playlist ) {}
+	public dynamic function onLoad( jid : String, playlist : XSPFPlaylist ) {}
 	public dynamic function onError( e : jabber.XMPPError ) {}
 	
 	public var stream(default,null) : Stream;
@@ -50,9 +50,9 @@ class XSPF {
 				onLoad( iq.from, null );
 			} else {
 				var x = iq.x.toXml().firstElement();
-				var pl : xspf.Playlist = null;
+				var pl : XSPFPlaylist = null;
 				try {
-					pl = xspf.Playlist.parse( x );
+					pl = XSPFPlaylist.parse( x );
 				} catch( e : Dynamic ) {
 					onError( new XMPPError( iq ) );
 					return;

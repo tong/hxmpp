@@ -1,8 +1,8 @@
 
 class App {
 	
-	static var ip = "127.0.0.1";
-	static var jid = "romeo@disktree";
+	static var ip = "localhost";
+	static var jid = "romeo@jabber.disktree.net";
 	static var password = "test";
 	
 	static function main() {
@@ -12,16 +12,15 @@ class App {
 		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
 		#end
 		
+		/*
 		#if (js&&!nodejs)
 		untyped swfobject.embedSWF('../../hxmpp/util/flash-socketbridge/flashsocketbridge.swf','socketbridge','0','0','11');
 		jabber.SocketConnection.init( 'flashsocketbridge', function(error:String) {
 			connect();
 		}, 500 );
+		*/
 		
-		#else
 		connect();
-		
-		#end
 	}
 	
 	static function connect() {
