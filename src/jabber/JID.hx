@@ -43,10 +43,10 @@ class JID {
 	/***/
 	public var domain : String;
 	
-	/** Resourcepart, uniquely identifies a specific connection (e.g., a device or location) */
+	/** Uniquely identifies a specific connection (e.g., a device or location) */
 	public var resource : String;
 	
-	/** JID without resource */
+	/** Jid without resource */
 	public var bare(get,null) : String;
 	
 	/** Just a shortcut for toString()  */
@@ -62,13 +62,11 @@ class JID {
 		}
 	}
 	
-	function get_bare() : String {
-		return ( node == null || domain == null ) ? null : node+"@"+domain;
-	}
-	
+	function get_bare() : String return (node == null || domain == null) ? null : '$node@$domain';
+
 	inline function get_s() : String return toString();
 	
-	public function copy() : JID {
+	public function clone() : JID {
 		var j = new JID();
 		j.node = node;
 		j.domain = domain;
@@ -77,8 +75,7 @@ class JID {
 	}
 	
 	public function toString() : String {
-		var j = get_bare();
-		return ( j == null ) ? null : ( resource == null ) ? j : j+"/"+resource;
+		return (resource == null) ? get_bare() : '$node@$domain/$resource';
 	}
 	
 }
