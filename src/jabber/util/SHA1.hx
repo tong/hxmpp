@@ -21,8 +21,7 @@
  */
 package jabber.util;
 
-#if nodejs
-import js.Node;
+#if (js && nodejs) import js.Node;
 #end
 
 class SHA1 {
@@ -46,7 +45,7 @@ class SHA1 {
 		#elseif (hxssl&&hxmpp_hxssl_crypto)
 		return sys.crypto.SHA1.encode(s);
 		
-		#elseif nodejs
+		#elseif (js&&nodejs)
 		var h = js.Node.crypto.createHash( "sha1" );
 		h.update( s );
 		return h.digest( NodeC.HEX );

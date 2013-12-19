@@ -21,10 +21,9 @@
  */
 package jabber.util;
 
-#if nodejs
+#if (js && nodejs)
 import js.Node;
 #end
-
 
 /*
 	Creates a MD5 of a String.
@@ -49,7 +48,7 @@ class MD5 {
 		return untyped __call__( "md5", s, raw );
 		
 		#elseif nodejs
-		var h = js.Node.crypto.createHash( "md5" );
+		var h = Node.crypto.createHash( "md5" );
 		h.update( s );
 		return h.digest( raw ? NodeC.BINARY : NodeC.HEX );
 			
