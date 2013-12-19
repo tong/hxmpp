@@ -63,11 +63,12 @@ class Run {
 		
 		var ts = Timer.stamp();
 		r.run();
-		//var stime = Std.string( (Timer.stamp()-ts)*1000 );
-		//var i = stime.indexOf( "." );
-		//if( i != -1 ) stime = stime.substr( 0, i );
-		//var time = Std.parseInt( stime );
-		//trace(time);
+		
+		var stime = Std.string( (Timer.stamp()-ts)*1000 );
+		var i = stime.indexOf( "." );
+		if( i != -1 ) stime = stime.substr( 0, i );
+		var time = Std.parseInt( stime );
+		trace( "Time: "+time );
 	}
 
 	#if macro

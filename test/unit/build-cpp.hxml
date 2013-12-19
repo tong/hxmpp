@@ -1,4 +1,4 @@
 -cpp build/cpp
--cp ../../
+-cp ../../src
 -main Run
 -cmd mv ./build/cpp/Run ./build/test
