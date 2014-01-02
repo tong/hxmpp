@@ -21,6 +21,9 @@
  */
 package jabber.client;
 
+import xmpp.IQ;
+import xmpp.IQType;
+
 //TODO required fields handling, x:data form handling
 	
 /**
@@ -53,10 +56,10 @@ class Account {
 		Request required registration fields from server
 	*/
 	public function requestRegistrationFields( jid : String ) {
-		var iq = new xmpp.IQ( null, null, jid );
+		var iq = new IQ( null, null, jid );
 		iq.x = new xmpp.Register();
 		var me = this;
-		stream.sendIQ( iq, function(r:xmpp.IQ ) {
+		stream.sendIQ( iq, function(r:IQ ) {
 			switch( r.type ) {
 			case result :
 				for( e in r.properties ) {
@@ -85,31 +88,30 @@ class Account {
 	*/
 	//public function register( username : String, password : String, email : String, name : String ) : Bool {
 	public function register( reg : xmpp.Register ) : Bool {
-		var self = this;
-		var iq = new xmpp.IQ();
+		var iq = new IQ();
 		iq.x = new xmpp.Register();
-		stream.sendIQ( iq, function(r:xmpp.IQ) {
-			switch( r.type ) {
+		stream.sendIQ( iq, function(r:IQ) {
+			switch r.type {
 			case result :
 				//TODO check required register fields
 				//var p = xmpp.Register.parse( iq.x.toXml() );
 				//var required = new Array<String>();
-				var resp = new xmpp.IQ( xmpp.IQType.set );
-				resp.x = reg;
-				self.stream.sendIQ( resp, function(r:xmpp.IQ) {
-					switch( r.type ) {
+				var res = new IQ( IQType.set );
+				res.x = reg;
+				stream.sendIQ( res, function(r:IQ) {
+					switch r.type {
 					case result :
 						//var l = xmpp.Register.parse( iq.x.toXml() );
 						//if( !l.registered ) {
 						//}
-						self.onRegister( reg.username );
+						onRegister( reg.username );
 					case error:
-						self.onError( new jabber.XMPPError( r ) );
+						onError( new jabber.XMPPError( r ) );
 					default : //#
 					}
 				} );
 			case error :
-				self.onError( new jabber.XMPPError( r ) );
+				onError( new jabber.XMPPError( r ) );
 			default : //#
 			}
 		} );
@@ -120,13 +122,13 @@ class Account {
 		Delete account from server.
 	*/	
 	public function remove() {
-		var iq = new xmpp.IQ( xmpp.IQType.set );
+		var iq = new IQ( IQType.set );
 		var ext = new xmpp.Register();
 		ext.remove = true;
 		iq.x = ext;
 		var me = this;
-		stream.sendIQ( iq, function(r) {
-			switch( r.type ) {
+		stream.sendIQ( iq, function(r:IQ) {
+			switch r.type {
 			case result :
 				//var l = xmpp.Register.parse( iq.x.toXml() );
 				//if( !l.remove ) {
@@ -143,15 +145,15 @@ class Account {
 		Change account password.
 	*/
 	public function changePassword( node : String, pass : String ) {
-		var iq = new xmpp.IQ( xmpp.IQType.set );
+		var iq = new IQ( IQType.set );
 		var e = new xmpp.Register();
 		e.username = node;
 		e.password = pass;
 		iq.x = e;
 		var self = this;
-		stream.sendIQ( iq, function(r) {
-			switch( r.type ) {
-			case result :
+		stream.sendIQ( iq, function(r:IQ) {
+			switch r.type {
+			case result:
 				//var l = xmpp.Register.parse( iq.x.toXml() );
 				self.onPasswordChange( pass );
 			case error :

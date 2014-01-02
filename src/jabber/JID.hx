@@ -77,5 +77,7 @@ class JID {
 	public function toString() : String {
 		return (resource == null) ? get_bare() : '$node@$domain/$resource';
 	}
+
+	public static inline function isValid( jid : String ) : Bool return JIDUtil.isValid( jid );
 	
 }
