@@ -1,5 +1,5 @@
 /*
- * Copyright (c) disktree.net
+ * Copyright (c) disktree
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,8 @@
  */
 package xmpp;
 
+using xmpp.XMLUtil;
+
 /**
 	XEP-0077: In-Band Registration
 */
@@ -28,6 +30,7 @@ class Register {
 	
 	public static var XMLNS(default,null) : String = "jabber:iq:register";
 	
+	//@
 	public var username : String;
 	public var password : String;
 	public var email : String;
@@ -59,38 +62,20 @@ class Register {
 	}
 
 	public function toXml() : Xml {
-		var x = xmpp.IQ.createQueryXml( XMLNS );
-		if( remove ) {
-			x.addChild( Xml.createElement( "remove" ) );
-		} else {
-			createElement( x, "username" );
-			createElement( x, "password" );
-			createElement( x, "email" );
-			createElement( x, "name" );
-			createElement( x, "nick" );
-			createElement( x, "first" );
-			createElement( x, "last" );
-			createElement( x, "address" );
-			createElement( x, "city" );
-			createElement( x, "state" );
-			createElement( x, "zip" );
-			createElement( x, "phone" );
-			createElement( x, "url" );
-			createElement( x, "date" );
-			createElement( x, "misc" );
-			createElement( x, "text" );
-			createElement( x, "key" );
-			if( form != null ) x.addChild( form.toXml() );
+		var x = IQ.createQueryXml( XMLNS );
+		if( remove ) x.addChild( Xml.createElement( "remove" ) ) else {
+			//TODO get list from metadata
+			for( e in ['username','password','email','name','nick','first','last','address','city','state','zip','phone','url','date','misc','text','key'])
+				addFieldElement( this, x, e );
+			if( form != null )
+				x.addChild( form.toXml() );
 		}
 		return x;
 	}
 	
-	function createElement( x : Xml, id : String ) : Xml {
-		if( Reflect.hasField( this, id ) ) {
-			x.addChild( XMLUtil.createElement( id, Reflect.field( this, id ) ) );
-			return x;
-		}
-		return null;
+	static function addFieldElement( o : Register, x : Xml, id : String ) {
+		var v = Reflect.getProperty( o, id );
+		if( v != null ) x.addChild( XMLUtil.createElement( id, v ) );
 	}
 	
 	public static function parse( x : Xml ) : xmpp.Register {
@@ -99,7 +84,7 @@ class Register {
 		for( e in x.elements() ) {
 			var v = e.firstChild();
 			if( v != null ) {
-				switch( e.nodeName ) {
+				switch e.nodeName {
 				case "username" : p.username = v.toString();
 				case "password" : p.password = v.toString();
 				case "email" : p.email = v.toString();
@@ -122,9 +107,8 @@ class Register {
 					p.remove = true;
 					break;
 				case "x" :
-					if( e.get("xmlns") == xmpp.DataForm.XMLNS ) {
+					if( e.getNamespace() == DataForm.XMLNS )
 						p.form = xmpp.DataForm.parse( e );
-					}
 				}
 			}
 		}
