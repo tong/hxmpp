@@ -108,17 +108,15 @@ class SocketConnection extends jabber.StreamConnection {
 		socket.connect( host, port );
 
 		#elseif js
-
 			#if chrome_app
-			Socket.create( 'tcp', null, function(i){
-				if( i.socketId > 0 ) {
-					socketId = i.socketId;
-					Socket.connect( i.socketId, host, port, handleConnect );
+			Socket.create( 'tcp', {}, function(info){
+				trace(info);
+				if( info.socketId > 0 ) {
+					Socket.connect( socketId = info.socketId, host, port, handleConnect );
 				} else {
 					onDisconnect( 'failed to create socket' );
 				}
 			});
-
 			#elseif nodejs
 			//TODO timeout
 			socket = Node.net.connect( port, host );
@@ -126,7 +124,6 @@ class SocketConnection extends jabber.StreamConnection {
 			socket.on( NodeC.EVENT_STREAM_CONNECT, handleConnect );
 			socket.on( NodeC.EVENT_STREAM_END, handleDisconnect );
 			socket.on( NodeC.EVENT_STREAM_ERROR, handleError );
-
 			#else
 			//TODO timeout
 			var uri = 'ws'+(secure?'s':'')+'://$host:$port';
@@ -134,7 +131,6 @@ class SocketConnection extends jabber.StreamConnection {
 			socket.onopen = handleConnect;
 			socket.onclose = handleDisconnect;
 			socket.onerror = handleError;
-
 			#end
 			
 		#elseif sys
@@ -272,7 +268,7 @@ class SocketConnection extends jabber.StreamConnection {
 		}
 
 		function _read() {
-			Socket.read( socketId, null, function(i:ReadInfo) {
+			Socket.read( socketId, null, function(i:SocketReadInfo) {
 				if( i.resultCode > 0 ) {
 					if( reading ) {
 						onData( Bytes.ofString( ArrayBufferUtil.toString( i.data ) ) ); //TODO
