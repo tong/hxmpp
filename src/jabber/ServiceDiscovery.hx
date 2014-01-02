@@ -27,12 +27,13 @@ import xmpp.disco.Info;
 import xmpp.disco.Items;
 
 /**
-	Manages discovery of services from XMPP entities.
-	Two kinds of information can be discovered:
-		The identity and capabilities of an entity, including the protocols and features it supports.
-		The items associated with an entity, such as the list of rooms hosted at a multi-user chat service.
-
 	XEP 30 - ServiceDiscovery: http://www.xmpp.org/extensions/xep-0030.html
+
+	Manages discovery of services from XMPP entities.
+	
+	Two kinds of information can be discovered:
+	 * The identity and capabilities of an entity, including the protocols and features it supports.
+	 * The items associated with an entity, such as the list of rooms hosted at a multi-user chat service.
 */
 class ServiceDiscovery {
 	

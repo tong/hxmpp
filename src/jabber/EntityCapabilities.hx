@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c), disktree
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,10 @@
  */
 package jabber;
 
+import xmpp.Caps;
+import xmpp.IQ;
+import xmpp.IQType;
+import xmpp.PacketType;
 import xmpp.PresenceType;
 
 /**
@@ -31,7 +35,7 @@ import xmpp.PresenceType;
 class EntityCapabilities {
 
 	/** Callback to application for checking if caps already exist (in cache) */
-	public dynamic function onCaps( jid : String, caps : xmpp.Caps, cb : Bool->Void ) {}
+	public dynamic function onCaps( jid : String, caps : Caps, cb : Bool->Void ) {}
 	
 	/** Fired when a new entity capability got discovered */
 	public dynamic function onInfo( jid : String, info : xmpp.disco.Info, ?ver : String ) {}
@@ -48,7 +52,7 @@ class EntityCapabilities {
 	
 	//public var dataform : xmpp.DataForm;
 	
-	/** My own verification string */
+	/** Own verification string */
 	public var ver(default,null) : String;
 	
 	var collector : PacketCollector;
@@ -65,11 +69,14 @@ class EntityCapabilities {
 		
 		createVerificationString( identities, stream.features );
 		
-		x = new xmpp.Caps( "sha-1", node, ver ).toXml();
+		x = new Caps( "sha-1", node, ver ).toXml();
 		
-		//ver = xmpp.Caps.createVerfificationString( identities, stream.features, dataform );
+		//ver = Caps.createVerfificationString( identities, stream.features, dataform );
 		stream.addInterceptor( this );
-		var filters : Array<xmpp.PacketFilter> = [new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence ), new xmpp.filter.PacketPropertyFilter( xmpp.Caps.XMLNS, "c" )];
+		var filters : Array<xmpp.PacketFilter> = [
+			new xmpp.filter.PacketTypeFilter( PacketType.presence ),
+			new xmpp.filter.PacketPropertyFilter( Caps.XMLNS, "c" )
+		];
 		collector = stream.collect( filters, handlePresence, true );
 	}
 	
@@ -78,11 +85,12 @@ class EntityCapabilities {
 		Call if your stream changes features
 	*/
 	public function createVerificationString( identities : Array<xmpp.disco.Identity>, features : Iterable<String>, ?dataform : xmpp.DataForm  ) {
-		ver = xmpp.Caps.createVerfificationString( identities, features, dataform );
+		ver = Caps.createVerfificationString( identities, features, dataform );
 	}
 	
 	public function interceptPacket( p : xmpp.Packet ) : xmpp.Packet {
-		if( p._type != xmpp.PacketType.presence )
+		
+		if( p._type != PacketType.presence )
 			return p;
 			
 		//TODO do not send caps with every presence (not to groupchats fe)
@@ -103,7 +111,7 @@ class EntityCapabilities {
 	}
 	
 	function handlePresence( p : xmpp.Presence ) {
-		var c = xmpp.Caps.fromPresence( p );
+		var c = Caps.fromPresence( p );
 		onCaps( p.from, c, function(h){
 			if( !h ) requestDiscoInfo( p.from, c.node+"#"+c.ver );
 		});
@@ -111,15 +119,14 @@ class EntityCapabilities {
 		//	requestDiscoInfo( p.from, c.node+"#"+c.ver );	
 	}
 	
-	function handleInfoResponse( iq : xmpp.IQ ) {
-		switch( iq.type ) {
+	function handleInfoResponse( iq : IQ ) {
+		switch iq.type {
 		case result :
 			var i = xmpp.disco.Info.parse( iq.x.toXml() );
 			var ver : String = null;
 			if( i.node != null ) {
 				var j = i.node.indexOf( "#" );
-				if( j != -1 )
-					ver = i.node.substr( j+1 );
+				if( j != -1 ) ver = i.node.substr( j+1 );
 			}
 			onInfo( iq.from, i, ver );
 		case error :
@@ -129,7 +136,7 @@ class EntityCapabilities {
 	}
 	
 	function requestDiscoInfo( jid : String, ?node : String ) {
-		var iq = new xmpp.IQ( xmpp.IQType.get, null, jid );
+		var iq = new IQ( IQType.get, null, jid );
 		iq.x = new xmpp.disco.Info( null, null, node );
 		stream.sendIQ( iq, handleInfoResponse );
 	}

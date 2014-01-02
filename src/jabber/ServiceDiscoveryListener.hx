@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c), disktree
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ import xmpp.filter.IQFilter;
 
 /**
 	Listens/Answers incoming service discovery requests.
+	
 	XEP 30 - ServiceDiscovery: http://www.xmpp.org/extensions/xep-0030.html
 */
 class ServiceDiscoveryListener {

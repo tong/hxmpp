@@ -1,5 +1,5 @@
 /*
- * Copyright (c) disktree.net
+ * Copyright (c) disktree
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,5 +25,5 @@ typedef Identity = {
 	var category : String;
 	var type : String;
 	var name : String;
-	//var lang : String; // maybe inlcuded for localization
+	//var lang : String; // TODO maybe inlcuded for localization
 }
