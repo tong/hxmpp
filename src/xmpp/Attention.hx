@@ -1,5 +1,5 @@
 /*
- * Copyright (c) disktree.net
+ * Copyright (c) disktree
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,15 @@ class Attention {
 	
 	public static var XMLNS(default,null) : String = 'urn:xmpp:attention:0';
 	
-	public static inline function createXml() : Xml {
+	public static inline function xml() : Xml {
 		return IQ.createQueryXml( XMLNS, 'attention' );
 	}
-	
+
+	public static function isRequest( m : Message ) : Bool {
+		for( x in m.properties )
+			if( x.nodeName == 'attention' && x.get( 'xmlns' ) == XMLNS )
+				return true;
+		return false;
+	}
+
 }

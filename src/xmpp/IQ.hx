@@ -104,9 +104,6 @@ class IQ extends Packet {
 		Creates a '<query xmlns="namespace"/>' XML tag
 	*/
     public static inline function createQueryXml( ns : String, name : String = "query" ) : Xml {
-		//var x = Xml.createElement( name );
-		//XMLUtil.setNamespace( x, ns );
-		//return x;
 		return XMLUtil.setNamespace( Xml.createElement( name ), ns );
 	}
 

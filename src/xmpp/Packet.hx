@@ -50,11 +50,12 @@ class Packet {
 		Creates/Returns the XML representation of this XMPP packet.
 	*/
 	public function toXml() : Xml {
-		return null; //#if jabber_debug throw 'abstract method' #else null #end;
+		//#if jabber_debug throw 'abstract method' #else null #end;
+		return null;
 	}
 	
 	/**
-		Creates/Returns the string representation of this XMPP packet.
+		Creates/Returns the string representation of this xmpp packet.
 	*/
 	public function toString() : String {
 		return toXml().toString();
@@ -70,7 +71,8 @@ class Packet {
 		if( lang != null ) x.set( "xml:lang", lang );
 		for( p in properties ) x.addChild( p );
 		for( e in errors ) {
-			if( e == null ) continue; //HACK
+			if( e == null )
+				continue; //HACK
 			x.addChild( e.toXml() );
 		}
         return x;
@@ -79,7 +81,7 @@ class Packet {
 	/**
 		Parse XML into a XMPP packet object
 	*/
-	public static function parse( x : Xml ) : xmpp.Packet {
+	public static function parse( x : Xml ) : Packet {
 		switch( x.nodeName ) {
 		case "iq" 		: return cast IQ.parse( x );
 		case "message"  : return cast Message.parse( x );
@@ -91,7 +93,7 @@ class Packet {
 	/**
 		Parse/add basic attributes to the packet.
 	*/
-	static function parseAttributes( p : xmpp.Packet, x : Xml ) : xmpp.Packet {
+	static function parseAttributes( p : Packet, x : Xml ) : Packet {
 		p.to = x.get( "to" );
 		p.from = x.get( "from" );
 		p.id = x.get( "id" );

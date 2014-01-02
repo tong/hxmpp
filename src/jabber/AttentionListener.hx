@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c), disktree
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,8 @@
  */
 package jabber;
 
+import xmpp.Message;
+
 /**
 	Listens/Reports (user) attention requests.
 
@@ -34,8 +36,8 @@ class AttentionListener {
 	
 	var c : PacketCollector;
 	
-	public function new( stream : Stream, ?onCapture : xmpp.Message->Void ) {
-		if( !stream.features.add( 'urn:xmpp:attention:0' ) )
+	public function new( stream : Stream, ?onCapture : Message->Void ) {
+		if( !stream.features.add( xmpp.Attention.XMLNS ) )
 			throw 'attention listener already added';
 		this.stream = stream;
 		this.onCapture = onCapture;
@@ -46,7 +48,7 @@ class AttentionListener {
 		stream.removeCollector( c );
 	}
 	
-	function handleRequest( m : xmpp.Message ) {
+	function handleRequest( m : Message ) {
 		onCapture( m );
 	}
 

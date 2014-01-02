@@ -1,5 +1,5 @@
 /*
- * Copyright (c) disktree.net
+ * Copyright (c) disktree
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -69,15 +69,13 @@ class XMLUtil {
 	}
 	
 	/**
-		@param x XML element to attach the created element to
+		@param x The xml element to attach the created element to
 		@param o The target object to retrieve the field values from
 		@param f Optional list of reflected field names
 	*/
 	public static function addFields( x: Xml, o : Dynamic, ?f : Iterable<String> ) : Xml {
-		if( f == null )
-			f = Reflect.fields( o );
-		for( e in f )
-			addField( x, o, e );
+		if( f == null ) f = Reflect.fields( o );
+		for( e in f ) addField( x, o, e );
 		return x;
 	}
 	

@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c), disktree
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,8 +32,10 @@ class Attention {
 	*/
 	public static function capture( stream : Stream, jid : String, message : String ) {
 		var m = new xmpp.Message( jid, message );
-		m.properties.push( xmpp.Attention.createXml() );
+		m.properties.push( xmpp.Attention.xml() );
 		stream.sendPacket( m );
 	}
+
+	public static inline function isRequest( m : xmpp.Message ) : Bool return xmpp.Attention.isRequest(m);
 	
 }
