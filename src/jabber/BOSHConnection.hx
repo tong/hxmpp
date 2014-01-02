@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c), disktree
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,12 +48,18 @@ using StringTools;
 */
 class BOSHConnection extends jabber.StreamConnection {
 
-	static inline var INTERVAL = 0;
-	static inline var MAX_CHILD_ELEMENTS = 10;
+	public static inline function isSupported() : Bool {
+		return #if (flash||js||cpp||neko) true #else false #end;
+	}
+
+	#if (flash||js||cpp||neko)
 
 	static inline var BOSH_VERSION = "1.6";
 	static inline var XMLNS = "http://jabber.org/protocol/httpbind";
 	static inline var XMLNS_XMPP = "urn:xmpp:xbosh";
+
+	static inline var INTERVAL = 0;
+	static inline var MAX_CHILD_ELEMENTS = 10;
 	
 	/** Server HTTP path */
 	public var path(default,null) : String;
@@ -549,5 +555,7 @@ class BOSHConnection extends jabber.StreamConnection {
 		responseQueue = null;
 		requestCount = 0;
 	}
+
+	#end //(flash||js||cpp||neko)
 	
 }
