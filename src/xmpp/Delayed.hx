@@ -60,31 +60,47 @@ class Delayed {
 	}
 	
 	public function toXml() : Xml {
-		var x = Xml.createElement( "delay" );
-		x.ns( XMLNS );
+		var x = IQ.createQueryXml( XMLNS, "delay" );
 		x.set( "from", from );
 		x.set( "stamp", stamp );
 		if( description != null ) x.set( "description", description );
 		return x;
+	}
+
+	/**
+		Returns true if the xmpp given packet has a delay property
+	*/
+	public static function is( p : xmpp.Packet ) {
+		for( x in p.properties ) {
+			if( isDelayProperty( x ) )
+				return true;
+		}
+		return false;
 	}
 	
 	/**
 		Parses/Returns the packet delay from the properties of the given XMPP packet.
 	*/
 	public static function fromPacket( p : xmpp.Packet ) : xmpp.PacketDelay {
-		for( e in p.properties ) {
-			var ns = e.get( "xmlns" );
-			if( ( e.nodeName == "delay" && ns == XMLNS ) ||
-				( e.nodeName == "x" && ns == "jabber:x:delay" ) )
-				return parseDelay( e );
+		for( x in p.properties ) {
+			if( isDelayProperty(x) )
+				return parseDelay( x );
 		}
 		return null;
 	}
-	
-	static function parseDelay( e : Xml ) : xmpp.PacketDelay {
-		return { from : e.get( "from" ),
-				 stamp : e.get( "stamp" ),
-				 description : ( e.firstChild() != null ) ? e.firstChild().nodeValue : null };
+
+	/**
+	*/
+	public static function isDelayProperty( x : Xml ) : Bool {
+		var s = e.get( "xmlns" );
+		return ( ( x.nodeName == "delay" && s == XMLNS ) ||
+			     ( x.nodeName == "x" && s == "jabber:x:delay" ) ? true : false;
 	}
 	
+	static inline function parseDelay( e : Xml ) : xmpp.PacketDelay {
+		return { from : e.get( "from" ),
+				 stamp : e.get( "stamp" ),
+				 description : (e.firstChild() != null) ? e.firstChild().nodeValue : null };
+	}
+
 }
