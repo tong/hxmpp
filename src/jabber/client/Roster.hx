@@ -314,28 +314,28 @@ class Roster {
 	}
 	
 	function handlePresence( p : Presence ) {
-		var jid = new jabber.JID( p.from );
+		var jid = new JID( p.from );
 		var i = getItem( jid.bare );
 		if( p.type != null ) {
 			switch( p.type ) {
 			case subscribe :
 				switch( subscriptionMode ) {
-				case acceptAll(s) :
+				case accept(s):
 					confirmSubscription( p.from, true, s );
-				case rejectAll :
+				case reject:
 					sendPresence( p.from, PresenceType.unsubscribed );
-				case manual :
+				case manual:
 					onAsk( new Item( p.from ) );
 				}
-			case subscribed :
+			case subscribed:
 				onSubscribed( i );
-			case unsubscribe :
+			case unsubscribe:
 				onUnsubscribed( i );
-			case unsubscribed :
+			case unsubscribed:
 				items.remove( i );
 				onUnsubscribed( i );
-			default : //
-				//trace( "TODO ????????????? "+p.type );
+			default : //TODO
+				#if hxmpp_debug trace( "????????????? "+p.type ); #end
 			}
 		}
 	}

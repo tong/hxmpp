@@ -22,17 +22,23 @@
 package jabber.client;
 
 /**
-	Configuration how to handle recieved presence subscriptions
+	Configuration how to handle presence subscriptions
 */
 enum RosterSubscriptionMode {
 	
-	/** Reject all subscription requests. */
-	rejectAll;
+	/**
+		Accept all subscription and unsubscription requests.
+	*/
+	accept( subscribe : Bool );
 	
-	/** Ask how to proceed. */
+	/**
+		Reject all subscription requests
+	*/
+	reject;
+	
+	/**
+		Ask how to proceed
+	*/
 	manual;
 	
-	//manual(cb:RosterItem->Bool);
-	/** Accept all subscription and unsubscription requests. */
-	acceptAll( subscribe : Bool );
 }
