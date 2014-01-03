@@ -48,12 +48,6 @@ using StringTools;
 */
 class BOSHConnection extends jabber.StreamConnection {
 
-	public static inline function isSupported() : Bool {
-		return #if (flash||js||cpp||neko) true #else false #end;
-	}
-
-	#if (flash||js||cpp||neko)
-
 	static inline var BOSH_VERSION = "1.6";
 	static inline var XMLNS = "http://jabber.org/protocol/httpbind";
 	static inline var XMLNS_XMPP = "urn:xmpp:xbosh";
@@ -556,6 +550,4 @@ class BOSHConnection extends jabber.StreamConnection {
 		requestCount = 0;
 	}
 
-	#end //(flash||js||cpp||neko)
-	
 }

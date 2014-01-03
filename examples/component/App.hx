@@ -6,15 +6,12 @@ import jabber.component.Stream;
 */
 class App {
 	
-	static var SERVER = "disktree";
-	static var COMPONENT = "mycomp";
+	static var SERVER = "jabber.disktree.net";
+	static var COMPONENT = "thecomp";
 	static var SECRET = "1234";
-	static var IP = "127.0.0.1";
+	static var IP = "localhost";
 	
 	static function main() {
-		
-		trace( "HXMPP server component example" );
-		
 		var identity = { category : "conference", name : COMPONENT, type : "text" };
 		var cnx = new jabber.SocketConnection( IP, 5275 );
 		var stream = new Stream( cnx );
@@ -24,14 +21,14 @@ class App {
 		stream.onClose = function(?e) {
 			if( e == null ) trace( "XMPP stream closed" );
 			else {
-				trace( "XMPP stream error: "+e );
-				stream.cnx.disconnect();
+				trace(e);
+				stream.close(true);
 			}
 		}
 		stream.onReady = function() {
-			trace( "Component connected. Have fun!" );
+			trace( "Server component connected." );
 		}
-		trace( "Connecting to server  ..." );
+		trace( "Connecting to jabber server" );
 		stream.open( SERVER, COMPONENT, SECRET, [identity] );
 	}
 	

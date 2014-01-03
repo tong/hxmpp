@@ -1,50 +1,28 @@
 
-../params.hxml
 -main App
+-lib hxargs
+-cp ../
+-cp ../../src
+-D jabber_debug
+-D xmpp_debug
+-D hxmpp_debug
+-debug
+-dce full
 --each
 
 --next
+-cpp cpp
 -lib hxssl
--neko app.n
+-cmd mv cpp/App* ./app
 
 --next
+-neko app.n
 -lib hxssl
--cpp cpp
--cmd mv cpp/App* ./app
--D HXCPP_M64
+
+#--next
+#-js app.nodejs
+#-lib nodejs
 
 --next
 -php .
 --php-front app.php
-
-#../src/include.hxml
-#-swf test.swf
-#-swf-version 10
-#-swf-header 600:600:60:cccccc
-#-main Test
-#-D TLS
-#-cp ../../hxmpp/util/tls_flash
-#-swf-lib ../../hxssl.fl/ssl.swf
-
-#--next
-#../src/include.hxml
-#-js test.node.js
-#-cp ../../node.hx
-#-D nodejs 
-#-main Test
-
-#--next
-#../src/include.hxml
-#-cp ../../hxair
-#-swf air/test.swf
-#-swf-version 10
-#-swf-header 600:600:60:cccccc
-#-main Test
-#-D air
-
-#--next
-#../src/include.hxml
-#-cp ../../hxair
-#-js air/test.js
-#-main Test
-#-D air

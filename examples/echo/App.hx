@@ -1,42 +1,39 @@
 
+import jabber.JID;
 import jabber.client.Stream;
 import jabber.client.Authentication;
 
 /**
-	XMPP echo client
+	Simple xmpp echo client
 */
 class App {
 
-	static var JID = 'romeo@jabber.disktree.net';
+	static var JID = 'hxmpp@jabber.disktree.net';
 	static var PASSWORD = 'test';
-	static var IP = 'localhost';
+	static var IP = 'jabber.disktree.net';
 	static var RESOURCE = 'hxmpp';
 
 	static var stream : Stream;
 
 	static function onMessage( m : xmpp.Message ) {
 
-		// avoid processing of offline sent messages
+		// Avoid processing of delayed messages
 		if( xmpp.Delayed.fromPacket( m ) != null )
 			return;
 
 		// get occupant jid from 'from' field
-		var jid = new jabber.JID( m.from );
+		var jid = new JID( m.from );
 		
 		trace( "Recieved message from "+jid.bare+" at resource: "+jid.resource );
 		
-		// send response message
+		// Send a response message
 		stream.sendPacket( new xmpp.Message( m.from, "Hello darling aka "+jid.node ) );
 	}
 
 	static function main() {
-		
-		var jid = new jabber.JID( JID );
-		if( IP == null )
-			IP = jid.domain;
-		
+		var jid = new JID( JID );
+		if( IP == null ) IP = jid.domain;
 		var cnx = new jabber.SocketConnection( IP, 5222, false );
-		
 		stream = new Stream( cnx );
 		stream.onOpen = function() {
 			var auth = new Authentication( stream, [
@@ -44,7 +41,7 @@ class App {
 				new jabber.sasl.PlainMechanism()
 			] );
 			auth.onFail = function(e) {
-				trace( "Authentication failed ("+stream.jid+")" );
+				trace( 'Authentication failed ($jid)' );
 				stream.close( true );
 			}
 			auth.onSuccess = function() {
@@ -58,7 +55,7 @@ class App {
 			if( e == null )
 				trace( 'XMPP stream closed' );
 			else
-				trace( 'XMPP stream error : $e' );
+				trace( e );
 			cnx.disconnect();
 		}
 		stream.open( jid.bare );

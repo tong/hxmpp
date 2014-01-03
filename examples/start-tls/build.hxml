@@ -1,27 +1,23 @@
 
-../params.hxml
 -main App
+-lib hxargs
+-cp ../
+-cp ../../src
+-D jabber_debug
+-D xmpp_debug
+-D hxmpp_debug
+-debug
+-dce full
 --each
-
---next
--php .
---php-front test.php
-
-#--next
-#-swf app.swf
 
 --next
 -js app.js
 -D hxmpp_flashsocketbridge
 
-#--next
-#-cp ../../hxssl
-#-neko test.n
-#-lib hxssl
+--next
+-php ./
+--php-front app.php
 
 #--next
-#-js test.node.js
-#-D nodejs
+#-js app.nodejs
 #-lib nodejs
-#-lib nodejs-std
-#-cp ../../hxnodejs

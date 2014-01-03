@@ -17,24 +17,21 @@ private typedef SessionState = {
 }
 
 /**
-	Stores a BOSH session into browser localStorage for re-load and re-attach on another website.
+	Stores a BOSH session into browser localStorage for re-load and re-attach on another site.
 	The timeout for re-attaching is the BOSH connection timeout of the XMPP stream.
  */
+@:require(js)
 class App {
 	
 	static inline var LOCAL_STORAGE_ID = "xmpp-session";
 	
-	static var storage = Browser.window.localStorage;
-
-	static var creds = XMPPClient.getAccountCredentials();
+	static var creds = XMPPClient.readArguments();
+	static var storage = window.localStorage;
 	static var cnx : BOSHConnection;
 	static var stream : Stream;
 	
 	static function createXMPPStream() {
-		
-		trace( "Initializing XMPP stream ..." );
-
-		cnx = new BOSHConnection( creds.host, creds.http );
+		cnx = new BOSHConnection( creds.ip, creds.http );
 		stream = new jabber.client.Stream( cnx );
 		stream.onOpen = function(){
 			trace("XMPP stream opened");
@@ -50,11 +47,11 @@ class App {
 			auth.start( creds.password, "hxmpp" );
 		}
 		stream.onClose = onStreamClose;
-		stream.open( creds.user+"@"+creds.host );
+		stream.open( creds.jid );
 	}
 	
 	static function onStreamClose( ?e ) {
-		trace( "XMPP stream closed: "+e );
+		trace( 'XMPP stream closed: $e' );
 	}
 	
 	static function saveState() {
@@ -78,32 +75,35 @@ class App {
 	}
 
 	static function main() {
-		var cache = storage.getItem( LOCAL_STORAGE_ID );
-		if( cache == null ) {
-			createXMPPStream();
-		} else {
-			var d = Json.parse( cache );
-			if( ( Date.now().getTime() - d.ts ) > 30000 ) {
-				trace( "TIMEOUT "+(Date.now().getTime() - d.ts));
+		window.onload = function(_) {
+			var cache = storage.getItem( LOCAL_STORAGE_ID );
+			if( cache == null ) {
 				createXMPPStream();
-				return;
+			} else {
+				var now = Date.now().getTime();
+				var d = Json.parse( cache );
+				if( ( now - d.ts ) > 30000 ) {
+					trace( "XMPP session timeout "+(Date.now().getTime() - d.ts));
+					createXMPPStream();
+					return;
+				}
+				trace( "Attaching active BOSH session ..." );
+				trace( d );
+				var jid = new JID( creds.jid );
+				cnx = new BOSHConnection( creds.ip, creds.http );
+				stream = new Stream( cnx );
+				stream.onClose = onStreamClose;
+				stream.jid = jid;
+				stream.status = StreamStatus.open;
+				cnx.attach( d.sid, d.rid, d.wait, d.hold );
+				new jabber.PresenceListener( stream, function(p) {
+					stream.sendMessage( "julia@disktree.local", "Kiss!" );
+				});
+				storage.clear(); // clear previously saved session
+				stream.sendPresence( null, document.title );
 			}
-			trace( "Attaching active BOSH session ..." );
-			trace( d );
-			var jid = new JID( creds.user+"@"+creds.host );
-			cnx = new BOSHConnection( creds.host, creds.http );
-			stream = new Stream( cnx );
-			stream.onClose = onStreamClose;
-			stream.jid = jid;
-			stream.status = StreamStatus.open;
-			cnx.attach( d.sid, d.rid, d.wait, d.hold );
-			new jabber.PresenceListener( stream, function(p) {
-				stream.sendMessage( "julia@disktree.local", "Kiss!" );
-			});
-			storage.clear(); // clear previously saved session
-			stream.sendPresence( null, document.title );
+			window.onbeforeunload = onBeforeUnload;
 		}
-		window.onbeforeunload = onBeforeUnload;
 	}
 	
 }		

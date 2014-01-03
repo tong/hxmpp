@@ -15,7 +15,7 @@ class App extends XMPPClient {
 		t.run = onTimer;
 	}
 	
-	function onPresence( p : xmpp.Presence ) {
+	override function onPresence( p : xmpp.Presence ) {
 		var activity = new jabber.LastActivity( stream );
 		activity.onLoad = function(e,secs) {
 			trace( "Last activity of: "+e+": "+secs );
@@ -27,5 +27,11 @@ class App extends XMPPClient {
 	function onTimer() {
 		lastActivityListener.time++; // update own last activity time
 	}
+
+	static function main() {
+		var creds = XMPPClient.readArguments();
+		new App( creds.jid, creds.password, creds.ip, creds.http ).login();
+	}
+
 	
 }

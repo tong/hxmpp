@@ -1,9 +1,6 @@
 
 import jabber.EntityCapabilities;
 
-/**
-	See: XEP-0085 Entity Capabilities: http://xmpp.org/extensions/xep-0115.html
-*/
 class App extends XMPPClient {
 	
 	var caps : EntityCapabilities;
@@ -59,12 +56,12 @@ class App extends XMPPClient {
 		//trace( Lambda.count( caps.cached )+" cached entity capabilities" );
 	}
 	
-	function onCapsError( e ) {
-		trace( e );
+	function onCapsError(e) {
+		trace(e);
 	}
 	
 	static function main() {
-		var creds =  XMPPClient.getAccountCredentials( 'romeo.json' );
-		new App( creds ).login();
+		var acc = XMPPClient.readArguments();
+		new App( acc.jid, acc.password, acc.ip, acc.http ).login();
 	}
 }

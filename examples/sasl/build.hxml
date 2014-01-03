@@ -1,34 +1,46 @@
 
--cp ../src
+-main App
 -cp ../../src
+-cp ../
 -D jabber_debug
 -D xmpp_debug
--main App
+-D hxmpp_debug
+#-debug
 --each
 
 --next
--neko app.n
 -lib hxssl
+-cpp cpp
+-cmd mv cpp/App ./app
+-lib hxargs
+
+#--next
+#-cs cs
+#-lib hxargs
+
+--next
+-java java
+-cmd mv java/java.jar ./app.jar
+-lib hxargs
 
 --next
 -js app.js
 
 --next
--swf app.swf
+-neko app.n
+-lib hxssl
+-lib hxargs
 
 --next
--php .
+-js app.js
+-lib nodejs
+-lib hxargs
+
+--next
+-php ./
 --php-front app.php
+-lib hxargs
 
-#--next
-#-lib hxssl
-#-cpp cpp
-#-cmd mv cpp/App ./app
-#-D HXCPP_M64
-
-#--next
-#-java java
-#-cmd mv java/java.jar ./app.jar
-
-#--next
-#-cs cs
+--next
+-swf app.swf
+-swf-header  100:100:60

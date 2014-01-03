@@ -1,10 +1,17 @@
 
-../params.hxml
 -main App
+-cp ../
+-cp ../../src
+-D jabber_debug
+-D xmpp_debug
+-D hxmpp_debug
+-debug
+-dce full
 --each
 
 --next
 -neko app.n
+-lib hxargs
 
 --next
 -js app.js

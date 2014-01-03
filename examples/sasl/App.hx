@@ -1,28 +1,20 @@
 
-import XMPPClient;
-
 /**
-	Example/Test of SASL mechanisms for authentication
+	Example/Test of different SASL mechanisms for account authentication
 */
 class App {
 	
 	static function main() {
 		
-		var creds : AccountCredentials = XMPPClient.getAccountCredentials();
-		//trace( creds );
-
+		var creds = XMPPClient.readArguments();
+		
 		var mechs : Array<jabber.sasl.Mechanism> = [
 			new jabber.sasl.MD5Mechanism(),
 			new jabber.sasl.PlainMechanism(),
 			//new jabber.sasl.LOGINMechanism(),
 		];
 
-		#if js
-		var cnx = new jabber.BOSHConnection( creds.host, creds.http, 1, 30, false );
-		#else
 		var cnx = new jabber.SocketConnection( creds.ip, creds.port, false );
-		#end
-		
 		var stream = new jabber.client.Stream( cnx );
 		stream.onOpen = function() {
 			trace( "XMPP stream opened" );
@@ -34,13 +26,12 @@ class App {
 			auth.onFail = function(e) {
 				trace( "Authentication failed: "+e );
 			}
-			auth.start( creds.password, XMPPClient.getPlatformResource() );
+			auth.start( creds.password, 'hxmpp' );
 		}
 		stream.onClose = function(?e) {
-			trace( "XMPP stream closed" );
-			if( e != null ) trace( e );
+			if( e != null ) trace( e ) else trace( "XMPP stream closed" );
 		}
-		stream.open( creds.user+"@"+creds.host );
+		stream.open( creds.jid );
 	}
 	
 }

@@ -1,16 +1,18 @@
 
--cp ../../utils/flash-socketbridge/
 -swf flashsocketbridge.swf
 -swf-header 100:100:60:D0191E
+-cp ../../utils/flash-socketbridge/
 -main FlashSocketBridge
+-D jabber_flashsocketbridge
+-D hxmpp_flashsocketbridge
 -D hxmpp_flashsocketbridge_standalone
 
 --next
--cp ../../src
--cp ../src
--main App
 -js app.js
--D hxmpp_flashsocketbridge
+-cp ../../src
+-cp ../
+-main App
+-D jabber_flashsocketbridge
 -D jabber_debug
 -D xmpp_debug
 -debug

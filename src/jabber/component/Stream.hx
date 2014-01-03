@@ -52,9 +52,10 @@ class ComponentJID {
 */
 @:require(jabber_component)
 class Stream extends jabber.Stream {
-	
+
 	public static inline var PORT = 5275;
-	public static var defaultPort = PORT;
+
+	public static var defaultPort = 5275;
 	
 	/** Called if stream got authenticated and is ready to use */
 	public dynamic function onReady() {}

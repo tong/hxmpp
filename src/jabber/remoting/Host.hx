@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,49 +21,50 @@
  */
 package jabber.remoting;
 
+import haxe.Serializer;
+import haxe.Unserializer;
 import haxe.remoting.Context;
+import xmpp.IQ;
+import xmpp.HXR;
+import xmpp.HXR.XMLNS;
+import jabber.Stream;
 
 /**
-	HaXe remoting host.<br/>
-	<a href="http://haxe.org/doc/remoting">http://haxe.org/doc/remoting</a>
+	Haxe/XMPP remoting host (http://haxe.org/doc/remoting)
 */
 class Host {
 	
-	static function __init__() {
-		numActive = 0;
-	}
+	public static var num(default,null) : Int = 0; 
 	
-	public static var numActive(default,null) : Int; 
-	
-	/** JID of current/last processed entity */
+	/** Jid of current/last active entity */
 	public var client(default,null) : String;
+	public var stream(default,null) : Stream;
 	public var ctx : Context;
-	public var stream(default,null) : jabber.Stream;
 	
 	var c : PacketCollector;
 	
-	public function new( stream : jabber.Stream, ctx : Context ) {
+	public function new( stream : Stream, ctx : Context ) {
 		this.stream = stream;
 		this.ctx = ctx;
-		stream.features.add( xmpp.HXR.XMLNS );
-		c = stream.collect( [new xmpp.filter.IQFilter( xmpp.HXR.XMLNS, xmpp.IQType.get )], handleIQ, true );
-		numActive++;
+		stream.features.add( XMLNS );
+		c = stream.collect( [new xmpp.filter.IQFilter( XMLNS, xmpp.IQType.get )], handleIQ, true );
+		num++;
 	}
 	
 	public function close() {
 		//TODO maybe other hosts are active (check in this class internal, statics)
 		stream.removeCollector( c );
-		if( --numActive == 0 )
-			stream.features.remove( xmpp.HXR.XMLNS );
+		if( --num == 0 )
+			stream.features.remove( XMLNS );
 	}
 	
-	function handleIQ( iq : xmpp.IQ ) {
+	function handleIQ( iq : IQ ) {
 		client = iq.from;
-		var request = xmpp.HXR.getData( iq.x.toXml() );
-		var response = processRequest( request, ctx );
-		var r = xmpp.IQ.createResult( iq );
+		var req = HXR.getData( iq.x.toXml() );
+		var res = processRequest( req, ctx );
+		var r = IQ.createResult( iq );
 		//TODO send empty result IQ (void)
-		r.properties.push( xmpp.HXR.create( response ) );
+		r.properties.push( HXR.create( res ) );
 		stream.sendPacket( r );
 		/*
 		//TODO check error settings
@@ -74,17 +75,15 @@ class Host {
 	
 	public static function processRequest( data : String, ctx : Context ) : String {
 		try {
-			var u = new haxe.Unserializer( data );
+			var u = new Unserializer( data );
 			var path = u.unserialize();
-			//trace(path);
 			var args = u.unserialize();
-			//trace(args);
 			var d = ctx.call( path, args );
-			var s = new haxe.Serializer();
+			var s = new Serializer();
 			s.serialize( d );
 			return "hxr"+s.toString();
 		} catch( e : Dynamic ) {
-			var s = new haxe.Serializer();
+			var s = new Serializer();
 			s.serializeException( e );
 			return "hxr"+s.toString();
 		}

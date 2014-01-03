@@ -1,6 +1,13 @@
 
-../params.hxml
 -main App
+-lib hxargs
+-cp ../
+-cp ../../src
+-D jabber_debug
+-D xmpp_debug
+-D hxmpp_debug
+-debug
+-dce full
 --each
 
 --next
@@ -10,12 +17,9 @@
 -swf app.swf
 -swf-header 100:100:60:D0191E
 
-# --- Experimental ---
-
-#--next
-#-js app.nodejs
-#-D nodejs
-#-cp ../../../nodejs-std/src/
+--next
+-js app.nodejs
+-lib nodejs
 
 #--next
 #-neko app.n

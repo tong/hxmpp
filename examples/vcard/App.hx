@@ -1,14 +1,17 @@
 
-import haxe.io.Bytes;
+#if js
+import js.Browser.document;
+import js.Browser.window;
+#end
 import jabber.util.Base64;
+import haxe.io.Bytes;
 
-/**
-*/
 class App extends XMPPClient {
 	
 	override function onLogin() {
 		
-		//stream.sendPresence();
+		super.onLogin();
+		stream.sendPresence();
 		
 		//vcard = new jabber.client.VCard( stream );
 		var vcard = new jabber.client.VCardTemp( stream );
@@ -32,25 +35,25 @@ class App extends XMPPClient {
 		roster.load();
 		*/
 		
-		// load another vcard
+		// Load another vcard
 		//vcard.load("julia@disktree");
 	}
 	
 	function onVCardLoad( jid : String, d : xmpp.VCardTemp ) {
 		
 		if( jid == null )
-			trace( "Own vcard loaded" );
+			trace( 'Own vcard received' );
 		else
-			trace( "VCard of ["+jid+"] loaded" );
+			trace( 'VCard of [$jid] loaded' );
 		
-		if( d == null || d.photo == null || d.photo.binval == null || d.photo.type == null ) {
+		if( d == null || d.photo == null || d.photo.binval == null || d.photo.type == null )
 			return;
-		}
 		
 		#if js
-		var e = untyped document.createElement( "img" );
-		e.setAttribute( "src", "data:"+d.photo.type+";base64,"+d.photo.binval );
-		untyped document.getElementById("vcards").appendChild( e );
+		var e = document.createImageElement();
+		e.src = 'data:${d.photo.type};base64,${d.photo.binval}';
+		//e.setAttribute( "src", "data:"+d.photo.type+";base64,"+d.photo.binval );
+		document.getElementById( "vcards" ).appendChild( e );
 		
 		#elseif flash
 		var t = d.photo.binval.split("\n").join("");
@@ -63,10 +66,10 @@ class App extends XMPPClient {
 		var type =  d.photo.type;
 		type = type.substr( type.indexOf( "/" )+1 );
 		var pic = Base64.decode( t );
-		var fo = sys.io.File.write( "recieved."+type );
-		fo.writeString( pic );
-		fo.flush();
-		fo.close();
+		var f = sys.io.File.write( "recieved."+type );
+		f.writeString( pic );
+		f.flush();
+		f.close();
 		
 		#end
 		
@@ -80,7 +83,15 @@ class App extends XMPPClient {
 	}
 	
 	static function main() {
-		new App().login();
+		#if js
+		window.onload = function(_){
+			var creds = XMPPClient.readArguments();
+			new App( creds.jid, creds.password, creds.ip, creds.http ).login();
+		}
+		#else
+		var creds = XMPPClient.readArguments();
+		new App( creds.jid, creds.password, creds.ip, creds.http ).login();
+		#end
 	}
 	
 }

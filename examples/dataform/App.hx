@@ -1,17 +1,19 @@
 
 import xmpp.dataform.FormType;
 
+using jabber.JIDUtil;
+
 class App extends XMPPClient {
 	
 	static var ENTITY = "julia@jabber.disktree.net";
 	
 	override function onLogin() {
-		new jabber.PresenceListener( stream, onPresence );
+		super.onLogin();
 		stream.sendPresence();
 	}
 	
-	function onPresence( p : xmpp.Presence ) {
-		if( jabber.JIDUtil.bare( p.from ) == ENTITY ) {
+	override function onPresence( p : xmpp.Presence ) {
+		if( p.from.bare() == ENTITY ) {
 			var disco = new jabber.ServiceDiscovery( stream );
 			disco.onInfo = onDiscoInfo;
 			disco.info( p.from );
@@ -37,7 +39,8 @@ class App extends XMPPClient {
 	}
 	
 	static function main() {
-		new App().login();
+		var creds = XMPPClient.readArguments();
+		new App( creds.jid, creds.password, creds.ip, creds.http ).login();
 	}
 	
 }

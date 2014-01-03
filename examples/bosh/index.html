@@ -1,31 +1,30 @@
+<!DOCTYPE html>
 <html>
 <head>
 <title>hxmpp-bosh</title>
 <meta charset="utf-8">
-<style>
-html, body {
-	width: 100%; height:100%;
-}
-.app {
-	width: 100%;
-	height: 300px;
-}
-#app-web {
-	background: #30B4C5;
-}
-#app-flash {
-	background: #D0191E;
-}
-#flash {
-	width: 100%;
-}
+<style type="text/css">
+	html,body {
+		width:100%;height:100%;
+	}
+	body {
+		margin:0;padding:0;
+	}
+	#app {
+		width: 100%;
+		height: 300px;
+		background: #30B4C5;
+	}
+	#flash {
+		width: 100%;
+		height: 300px;
+		background: #D0191E;
+	}
 </style>
 <script src="app.js"></script>
 </head>
 <body>
-<div id="app-web" class="app"></div>
-<div id="app-flash" class="app">
-	<object id="flash" type="application/x-shockwave-flash" data="app.swf" width="600px" height="300px"></object>
-</div>
+<div id="app" class="app"></div>
+<object id="flashsocketbridge" type="application/x-shockwave-flash" data="app.swf" width="600px" height="300px"></object>
 </body>
 </html>

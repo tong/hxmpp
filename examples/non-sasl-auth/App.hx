@@ -1,14 +1,13 @@
 
 /**
-	Example usage of non-sasl client authentication with a XMPP server.
-	This should NOT get used, f* unsecure (Use jabber.client.Authentication instead).
+	Example usage of non-sasl client authentication.
+
+	This should NOT get used! (Use jabber.client.Authentication instead).
 */
 class App {
 	
 	static function main() {
-
-		var creds = XMPPClient.getAccountCredentials();
-
+		var creds = XMPPClient.readArguments();
 		var cnx = new jabber.SocketConnection( creds.ip, 5222 );
 		var stream = new jabber.client.Stream( cnx );
 		stream.onOpen = function() {
@@ -25,7 +24,7 @@ class App {
 		stream.onClose = function(?e) {
 			trace("XMPP stream  closed "+e );
 		}
-		stream.open( creds.user+'@'+creds.host );
+		stream.open( creds.jid );
 	}
 
 }

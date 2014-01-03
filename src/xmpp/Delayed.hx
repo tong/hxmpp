@@ -92,15 +92,16 @@ class Delayed {
 	/**
 	*/
 	public static function isDelayProperty( x : Xml ) : Bool {
-		var s = e.get( "xmlns" );
-		return ( ( x.nodeName == "delay" && s == XMLNS ) ||
-			     ( x.nodeName == "x" && s == "jabber:x:delay" ) ? true : false;
+		var s = x.get( "xmlns" );
+		if( x.nodeName == "delay" && s == XMLNS )
+			return true;
+		return ( x.nodeName == "x" && s == "jabber:x:delay" );
 	}
 	
-	static inline function parseDelay( e : Xml ) : xmpp.PacketDelay {
-		return { from : e.get( "from" ),
-				 stamp : e.get( "stamp" ),
-				 description : (e.firstChild() != null) ? e.firstChild().nodeValue : null };
+	static inline function parseDelay( x : Xml ) : xmpp.PacketDelay {
+		return { from : x.get( "from" ),
+				 stamp : x.get( "stamp" ),
+				 description : (x.firstChild() != null) ? x.firstChild().nodeValue : null };
 	}
 
 }

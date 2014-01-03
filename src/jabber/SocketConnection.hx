@@ -1,5 +1,5 @@
 /*
- * Copyright (c) disktree.net
+ * Copyright (c) disktree
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,15 +23,15 @@ package jabber;
 
 import haxe.io.Bytes;
 
-#if !hxmpp_flashsocketbridge
+#if !jabber_flashsocketbridge
 
 #if flash
-import flash.net.Socket;
-import flash.events.Event;
-import flash.events.IOErrorEvent;
-import flash.events.SecurityErrorEvent;
-import flash.events.ProgressEvent;
-import flash.utils.ByteArray;
+	import flash.net.Socket;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.SecurityErrorEvent;
+	import flash.events.ProgressEvent;
+	import flash.utils.ByteArray;
 #elseif js
 	#if chrome_app
 	import chrome.Socket;
@@ -44,8 +44,8 @@ import flash.utils.ByteArray;
 	private typedef Socket = WebSocket;
 	#end
 #elseif sys
-import sys.net.Host;
-import sys.net.Socket;
+	import sys.net.Host;
+	import sys.net.Socket;
 #end
 
 /**
@@ -75,8 +75,7 @@ class SocketConnection extends jabber.StreamConnection {
 	#end
 
 	public function new( host : String = "localhost", ?port : Null<Int>,
-						 secure : Bool = false,
-						 timeout : Float = 0 ) {
+						 secure : Bool = false, timeout : Float = 0 ) {
 		
 		if( port == null ) port =
 			#if jabber_component
@@ -355,7 +354,7 @@ class SocketConnection extends jabber.StreamConnection {
 		reading = null;
 		connected = false;
 		try socket.close() catch( e : Dynamic ) {
-			#if jabber_debug trace( e ); #end
+			#if jabber_debug trace(e); #end
 			return;
 		}
 		onDisconnect( e );
@@ -364,16 +363,12 @@ class SocketConnection extends jabber.StreamConnection {
 	#end
 }
 
-#else // !hxmpp_flashsocketbridge
+#else // jabber_flashsocketbridge
 
 @:keep
 @:expose
 @:require(js)
 class SocketConnection extends jabber.StreamConnection {
-
-	static function __init__() {
-		initialized = false;
-	}
 
 	/** The id of the html element holding the swf */
 	public static var id(default,null) : String;
@@ -382,7 +377,7 @@ class SocketConnection extends jabber.StreamConnection {
 	public static var swf(default,null) : Dynamic;
 	
 	/** Indicates if the socketbridge stuff is initialized */
-	public static var initialized(default,null) : Bool;
+	public static var initialized(default,null) : Bool = false;
 	
 	static var sockets : Map<Int,Socket>;
 	
@@ -508,7 +503,8 @@ private class Socket {
 	
 	public var id(default,null) : Int;
 	
-	public function new( secure : Bool, timeout : Int = 10 ) {
+	@:allow(jabber.SocketConnection)
+	function new( secure : Bool, timeout : Int = 10 ) {
 		id = jabber.SocketConnection.createSocket( this, secure, timeout );
 		if( id < 0 )
 			throw "failed to create socket on flash bridge";
@@ -531,4 +527,4 @@ private class Socket {
 	}
 }
 
-#end
+#end // jabber_flashsocketbridge

@@ -1,4 +1,9 @@
 
+#if js
+import js.Browser.document;
+import js.Browser.window;
+#end
+import jabber.BOSHConnection;
 import jabber.client.Stream;
 import jabber.client.Authentication;
 
@@ -9,9 +14,10 @@ class App {
 
 	static function init() {
 
-		var creds = XMPPClient.getAccountCredentials( "romeo" );
+		var creds = XMPPClient.readArguments();
 
-		var cnx = new jabber.BOSHConnection( creds.host, creds.http, 1, 30, false );
+		var cnx = new BOSHConnection( creds.ip, creds.http, 1, 30, false );
+		
 		#if (cpp||neko||nodejs)
 		cnx.ip = creds.ip;
 		cnx.port = 7070;
@@ -21,8 +27,8 @@ class App {
 		stream.onOpen = function() {
 			trace( 'XMPP stream opened' );
 			var auth = new Authentication( stream, [
+				new jabber.sasl.MD5Mechanism(),
 				new jabber.sasl.PlainMechanism()
-				//new jabber.sasl.MD5Mechanism()
 			] );
 			auth.onFail = function(e) {
 				trace( "Authentication failed ("+stream.jid+")" );
@@ -42,7 +48,7 @@ class App {
 				trace( 'XMPP stream error : $e' );
 			cnx.disconnect();
 		}
-		stream.open( creds.user+'@'+creds.host );
+		stream.open( creds.jid );
 	}
 
 	static function onClick(e) {
@@ -50,28 +56,23 @@ class App {
 		#if flash
 		flash.Lib.current.stage.removeEventListener( flash.events.MouseEvent.MOUSE_DOWN, onClick );
 		#elseif js
-		js.Browser.document.getElementById('app-web').onclick = null;
+		document.getElementById('app').onclick = null;
 		#end
 	}
 	
 	static function main() {
-
 		#if flash
 		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
 		flash.Lib.current.stage.addEventListener( flash.events.MouseEvent.MOUSE_DOWN, function(e){ init(); } );
-
 		#elseif nodejs
 		init();
-
 		#elseif js
-		js.Browser.window.onload = function(_){
-			js.Browser.document.getElementById('app-web').onclick = function(_){ init(); };
+		window.onload = function(_){
+			init();
 		}
-
 		#else
 		init();
-
 		#end
 	}
 

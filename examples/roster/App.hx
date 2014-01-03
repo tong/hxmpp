@@ -7,9 +7,7 @@ class App extends XMPPClient {
 	public var roster(default,null) : Roster;
 	
 	override function onLogin() {
-		//roster = new Roster( stream, RosterSubscriptionMode.acceptAll(true) );
-		//roster = new Roster( stream, RosterSubscriptionMode.manual );
-		roster = new Roster( stream, RosterSubscriptionMode.rejectAll );
+		roster = new Roster( stream, RosterSubscriptionMode.manual );
 		roster.onError = onRosterError;
 		roster.onLoad = onRosterLoad;
 		roster.onAdd = onRosterItemAdded;
@@ -65,7 +63,8 @@ class App extends XMPPClient {
 	}
 	
 	static function main() {
-		new App().login();
+		var creds = XMPPClient.readArguments();
+		new App( creds.jid, creds.password, creds.ip, creds.http ).login();
 	}
 	
 }

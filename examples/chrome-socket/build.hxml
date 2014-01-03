@@ -1,5 +1,0 @@
-../params.hxml
--lib chrome-app
--main App
--js app.js
-

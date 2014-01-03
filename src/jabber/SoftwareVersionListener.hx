@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c), disktree
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,9 +22,12 @@
 package jabber;
 
 import jabber.util.SystemUtil;
+import xmpp.IQ;
+import xmpp.SoftwareVersion.XMLNS;
 
 /**
 	Extension for retrieving information about the software application associated with an XMPP entity
+	
 	XEP 0092 - Software Version: http://www.xmpp.org/extensions/xep-0092.html
 */
 class SoftwareVersionListener {
@@ -43,22 +46,22 @@ class SoftwareVersionListener {
 	var c : PacketCollector;
 	
 	public function new( stream : Stream, name : String, version : String, ?os : String ) {
-		if( !stream.features.add( xmpp.SoftwareVersion.XMLNS ) )
-			throw "softwareversion feature already added";
+		if( !stream.features.add( XMLNS ) )
+			throw 'stream feature already added: $XMLNS';
 		this.stream = stream;
 		this.name = name;
 		this.version = version;
-		this.os = ( os != null ) ? os : SystemUtil.systemName();
-		c = stream.collect( [new xmpp.filter.IQFilter( xmpp.SoftwareVersion.XMLNS, xmpp.IQType.get )], handleQuery, true);
+		this.os = (os != null) ? os : SystemUtil.systemName();
+		c = stream.collect( [new xmpp.filter.IQFilter( XMLNS, xmpp.IQType.get )], handleQuery, true);
 	}
 	
 	public function dispose() {
 		stream.removeCollector( c );
-		stream.features.remove( xmpp.SoftwareVersion.XMLNS );
+		stream.features.remove( XMLNS );
 	}
 	
-	function handleQuery( iq : xmpp.IQ ) {
-		var r = xmpp.IQ.createResult( iq );
+	function handleQuery( iq : IQ ) {
+		var r = IQ.createResult( iq );
 		r.x = new xmpp.SoftwareVersion( name, version, os );
 		stream.sendData( r.toString() );
 	}

@@ -1,15 +1,14 @@
-../params.hxml
+
 -main App
+#-lib hxargs
+-cp ../../src
 -D jabber_component
+-D jabber_debug
+-D xmpp_debug
+-D hxmpp_debug
+-debug
+-dce full
 --each
 
 --next
 -neko app.n
-
-#--next
-#-php .
-#--php-front app.php
-
-#--next
-#-lib nodejs
-#-js app.nodejs

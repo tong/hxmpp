@@ -1,4 +1,14 @@
 
-../params.hxml
--neko app.n
 -main App
+-lib hxargs
+-cp ../
+-cp ../../src
+-D jabber_debug
+-D xmpp_debug
+-D hxmpp_debug
+-debug
+-dce full
+--each
+
+--next
+-neko app.n

@@ -1,32 +1,45 @@
 
+import haxe.ds.StringMap;
+import jabber.JID;
+
 class ApiProxy extends haxe.remoting.AsyncProxy<Api> {}
 
 class App extends XMPPClient {
 	
-	static var REMOTE_HOST = "julia@om/HXMPP";
-	
-	override function onLogin() {
-		new jabber.PresenceListener( stream, onPresence );
-		stream.sendPresence();
-	}
-	
-	function onPresence( p : xmpp.Presence ) {
-		if( p.from == REMOTE_HOST && p.type == null ) {
+	var connections : StringMap<jabber.remoting.Connection>;
 
-			var c = jabber.remoting.Connection.create( stream, REMOTE_HOST );
-			c.setErrorHandler( function(e) trace( "HXR error : "+Std.string( e.name ) ) );
+	override function onLogin() {
+		
+		super.onLogin();
+		stream.sendPresence();
+
+		var ctx = new haxe.remoting.Context();
+		ctx.addObject( "inst", new Api() );
+		new jabber.remoting.Host( stream, ctx );
+
+		connections = new StringMap();
+	}
+
+	override function onPresence( p : xmpp.Presence ) {
+		var jid = new JID( p.from );
+		if( p.type == null && !connections.exists( jid.bare ) ) {
 			
-			// call functions manually ...
-			c.inst.foo.call( [1,4], function(r:Int){ trace("Result: "+r); });
+			var cnx = jabber.remoting.Connection.create( stream, jid.toString() );
+			cnx.setErrorHandler( function(e) trace( "HXR error : "+Std.string(e) ) );
+			connections.set( jid.bare, cnx );
 			
-			// ... or create a remote proxy
-			var api = new ApiProxy( c.inst );
-			api.foo( 1, 3, function(r:Int){ trace("Result: "+r); });
+			// Call functions manually
+			cnx.inst.foo.call( [1,2], function(r:Int){ trace( "Result: "+r ); });
+
+			// Or create a remote proxy
+			var api = new ApiProxy( cnx.inst );
+			api.foo( 2, 3, function(r:Int){ trace( "Result: "+r ); });
 		}
 	}
 	
 	static function main() {
-		new App().login();
+		var creds = XMPPClient.readArguments();
+		new App( creds.jid, creds.password, creds.ip, creds.http ).login();
 	}
 	
 }

@@ -1,9 +1,0 @@
-## Base parameters
--cp ../src
--cp ../../src
--D jabber_debug
--D xmpp_debug
--D no_jid_validation
--D hxmpp_debug
-#-debug
-#-dce full
