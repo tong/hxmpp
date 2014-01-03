@@ -25,9 +25,7 @@ import jabber.JID;
 import jabber.Stream;
 
 /**
-	Client-to-Server XMPP stream.
-
-	See: http://xmpp.org/rfcs/rfc6120.html#examples-c2s
+	Client-to-Server XMPP stream (http://xmpp.org/rfcs/rfc6120.html#examples-c2s)
 */
 class Stream extends jabber.Stream {
 
@@ -37,7 +35,7 @@ class Stream extends jabber.Stream {
 	/**/
 	public static inline var PORT_SECURE = 5223;
 
-	/** The default port for socket connections */
+	/** The default port for socket connections if not specified */
 	public static var defaultPort = PORT;
 
 	/** The default port for secure socket connections */
@@ -46,10 +44,8 @@ class Stream extends jabber.Stream {
 	var version : Bool;
 	
 	public function new( cnx : StreamConnection, ?maxBufSize : Int ) {
-		
 		super( cnx, maxBufSize );
 		this.jid = jid;
-
 		version = true;
 	}
 	

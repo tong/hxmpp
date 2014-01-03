@@ -1,3 +1,3 @@
 params.hxml
 -cs build/cs
--cmd mv build/cs/bin/cs.exe build/test.exe && chmod +x build/test.exe
+-cmd mv build/cs/bin/Run.exe build/test.exe && chmod +x build/test.exe

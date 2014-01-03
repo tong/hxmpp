@@ -14,8 +14,8 @@
 --next
 build-cpp.hxml
 
-#--next
-#build-cs.hxml
+--next
+build-cs.hxml
 
 --next
 build-flash.hxml

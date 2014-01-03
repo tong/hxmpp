@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,11 +26,12 @@ class Retract extends List<Item> {
 	public var node : String;
 	public var notify : Bool;
 	
-	public function new( node : String, ?itemIDs : Iterable<String>, ?notify : Bool = false ) {
+	public function new( node : String, ?itemIds : Iterable<String>, ?notify : Bool = false ) {
 		super();
 		this.node = node;
-		if( itemIDs != null )
-			for( id in itemIDs ) add( new Item( id ) );
+		if( itemIds != null )
+			for( id in itemIds )
+				add( new Item( id ) );
 		this.notify = notify;
 	}
 	
@@ -38,14 +39,16 @@ class Retract extends List<Item> {
 		var x = Xml.createElement( "retract" );
 		x.set( "node", node );
 		if( notify ) x.set( "notify", "true" );
-		for( i in iterator() )
-			x.addChild( i.toXml() );
+		for( i in iterator() ) x.addChild( i.toXml() );
 		return x;
 	}
 	
 	public static function parse( x : Xml ) : Retract {
 		var _n = x.get( "notify" );
-		var r = new Retract( x.get( "node" ), if( _n != null && ( _n == "true" || _n == "1" ) ) true else false );
+		var r = new Retract(
+			x.get( "node" ),
+			if( _n != null && ( _n == "true" || _n == "1" ) ) true else false
+		);
 		for( e in x.elementsNamed( "item" ) )
 			r.add( Item.parse( e ) );
 		return r;

@@ -72,17 +72,15 @@ private class StreamFeatures {
 }
 
 /**
-	Abstract base class for handling xmpp streams to and from another entity.
-	
-	See: http://xmpp.org/rfcs/rfc6120.html#streams
+	http://xmpp.org/rfcs/rfc6120.html#streams
 */
 class Stream {
 	
 	public static var defaultPacketIdLength = 5;
-	public static var defaultMaxBufSize = 1048576; // 524288; //TODO
+	public static var defaultMaxBufSize = 1048576; // 524288; //TODO move to connection
 	
 	/**
-		Called when the xmpp stream got opened and ready to exchange data
+		Callback when the xmpp stream is ready to exchange data
 	*/
 	public dynamic function onOpen() {}
 	
