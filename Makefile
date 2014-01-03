@@ -1,6 +1,6 @@
 
 ##
-## HXMPP - XMPP/Jabber library
+## HXMPP - Haxe XMPP/Jabber library
 ##
 
 HXCPP_FLAGS =
@@ -32,13 +32,11 @@ haxedoc.xml: $(SRC)
 
 documentation: $(SRC) haxedoc.xml
 	cd documentation \
-		haxe api.hxml && haxelib run dox -i . -o api
+		haxe api.hxml \
+		haxelib run dox -i . -o api
 
 hxmpp.zip: clean $(SRC) $(SRC_EXAMPLES) $(SRC_TESTS)
-	zip -r $@ documentation/index.html documentation/api.hxml --exclude=*_*
-	zip -r $@ examples --exclude=*_*
-	cp -r src/jabber/ src/xmpp/ ./ && zip -r $@ jabber/ xmpp/ --exclude=*_* && rm -r jabber xmpp
-	zip -r $@ haxelib.json README.md
+	zip -r $@ examples test utils src CHANGES haxelib.json README.md
 
 haxelib: hxmpp.zip
 
@@ -49,14 +47,14 @@ uninstall:
 	haxelib remove hxmpp
 
 clean:
-	rm -rf documentation/api
-	rm -f documentation/hxmpp_*.xml
-	rm -rf $(wildcard examples/*/cpp)
-	rm -rf $(wildcard examples/*/java)
-	rm -rf $(wildcard examples/*/cs)
-	rm -rf $(wildcard examples/*/lib)
-	rm -rf $(wildcard examples/*/app*)
-	rm -rf test/unit/build
-	rm -f hxmpp.zip
+	@rm -rf documentation/api
+	@rm -f documentation/hxmpp_*.xml
+	@rm -rf $(wildcard examples/*/cpp)
+	@rm -rf $(wildcard examples/*/java)
+	@rm -rf $(wildcard examples/*/cs)
+	@rm -rf $(wildcard examples/*/lib)
+	@rm -rf $(wildcard examples/*/app*)
+	@rm -rf test/unit/build
+	@rm -f hxmpp.zip
 	
 .PHONY: all build documentation examples tests haxelib install uninstall clean
