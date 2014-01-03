@@ -24,7 +24,12 @@ package jabber.net;
 import haxe.io.Bytes;
 import sys.net.Socket;
 import sys.net.Host;
-import #if cpp cpp.vm.Thread #elseif neko neko.vm.Thread #end;
+#if cpp
+import  cpp.vm.Thread;
+#elseif neko
+import neko.vm.Thread;
+#elseif doc_gen
+#else #error #end
 
 using StringTools;
 

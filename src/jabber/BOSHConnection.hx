@@ -22,21 +22,20 @@
 package jabber;
 
 import jabber.util.Timer;
+
 #if nodejs
-import js.Node;
+	import js.Node;
 #elseif js
-import js.html.XMLHttpRequest;
+	import js.html.XMLHttpRequest;
 #elseif flash
-import flash.events.Event;
-import flash.events.HTTPStatusEvent;
-import flash.events.IOErrorEvent;
-import flash.events.ProgressEvent;
-import flash.events.SecurityErrorEvent;
+	import flash.events.Event;
+	import flash.events.HTTPStatusEvent;
+	import flash.events.IOErrorEvent;
+	import flash.events.ProgressEvent;
+	import flash.events.SecurityErrorEvent;
 #elseif (cpp||neko)
-import jabber.net.BOSHRequest;
-#elseif php
-throw "Not implemented"
-#end
+	import jabber.net.BOSHRequest;
+#elseif php #end
 
 using StringTools;
 

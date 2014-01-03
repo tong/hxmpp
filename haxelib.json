@@ -2,14 +2,16 @@
 	"name": "hxmpp",
 	"url": "https://github.com/tong/hxmpp",
 	"license": "MIT",
-	"tags": ["xmpp","jabber","jingle","chat","realtime","decentral"],
+	"tags": ["xmpp","jabber","chat","realtime","jingle","decentral","im","protocol","xml","presence",""],
 	"description": "XMPP/Jabber library",
-	"version": "0.4.13-alpha.2",
-	"classPath": "src",
-	"releasenote": "Misc",
+	"version": "0.4.13.1",
+	"releasenote": "See CHANGES",
 	"contributors": ["tong"],
+	"classPath" : "src/",
 	"dependencies": {
 		"hxssl": "3.0.0-alpha",
-		"nodejs": "1.5.1"
+		"hxargs": "1.0.0",
+		"xspf": "1.1.0",
+		"nodejs": "2.0.1"
 	}
 }
