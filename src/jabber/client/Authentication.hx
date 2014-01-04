@@ -52,27 +52,30 @@ class Authentication extends AuthenticationBase {
 	/** Used SASL method */
 	public var mechanism(default,null) : Mechanism;
 	
-	var onStreamOpenHandler : Void->Void;
+	var streamOpenHandler : Void->Void;
 	var c_challenge : PacketCollector;
 	var c_fail : PacketCollector;
 	var c_success : PacketCollector;
 	
 	public function new( stream : Stream, mechanisms : Iterable<Mechanism> ) {
-		super( stream );
+	
 		var x = stream.server.features.get( "mechanisms" );
 		if( x == null )
-			throw "server does not support SASL";
+			throw "server does not support sasl";
+
 		if( mechanisms == null || Lambda.count( mechanisms ) == 0 )
-			throw "missing SASL mechanisms";
+			throw "no sasl mechanisms specified";
+
+		super( stream );
 		this.serverMechanisms = xmpp.SASL.parseMechanisms( x );
 		this.mechanisms = new Array();
-		for( m in mechanisms )
-			this.mechanisms.push( m );
+		
+		for( m in mechanisms ) this.mechanisms.push( m );
 	}
 	
 	/**
 		Inits SASL authentication.
-		Returns false if no supported SASL mechanism got offered by the server.
+		Returns false if no supported mechanism got offered by the server.
 	*/
 	public override function start( password : String, ?resource : String ) : Bool {
 		this.resource = resource;
@@ -120,7 +123,7 @@ class Authentication extends AuthenticationBase {
 	function handleSASLSuccess( p : xmpp.Packet ) {
 //		stream.cnx.reset(); // clear connection buffer
 		removeSASLCollectors(); // remove the collectors
-		onStreamOpenHandler = stream.onOpen; // relay the stream open event
+		streamOpenHandler = stream.onOpen; // relay the stream open event
 		stream.onOpen = handleStreamOpen; // relay the stream open event
 		onNegotiated();
 		//stream.version = false;
@@ -129,8 +132,8 @@ class Authentication extends AuthenticationBase {
 	}
 	
 	function handleStreamOpen() {
-		stream.onOpen = onStreamOpenHandler;
-		if( stream.server.features.exists( "bind" ) ) { // bind the resource
+		stream.onOpen = streamOpenHandler;
+		if( stream.server.features.exists( "bind" ) ) {
 			var iq = new IQ( IQType.set );
 			iq.x = new xmpp.Bind( ( mechanism.id == "ANONYMOUS" ) ? null : resource );
 			stream.sendIQ( iq, handleBind );

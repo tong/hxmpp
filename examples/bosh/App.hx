@@ -17,7 +17,6 @@ class App {
 		var creds = XMPPClient.readArguments();
 
 		var cnx = new BOSHConnection( creds.ip, creds.http, 1, 30, false );
-		
 		#if (cpp||neko||nodejs)
 		cnx.ip = creds.ip;
 		cnx.port = 7070;
@@ -51,26 +50,15 @@ class App {
 		stream.open( creds.jid );
 	}
 
-	static function onClick(e) {
-		init();
-		#if flash
-		flash.Lib.current.stage.removeEventListener( flash.events.MouseEvent.MOUSE_DOWN, onClick );
-		#elseif js
-		document.getElementById('app').onclick = null;
-		#end
-	}
-	
 	static function main() {
 		#if flash
 		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
-		flash.Lib.current.stage.addEventListener( flash.events.MouseEvent.MOUSE_DOWN, function(e){ init(); } );
+		init();
 		#elseif nodejs
 		init();
 		#elseif js
-		window.onload = function(_){
-			init();
-		}
+		window.onload = function(_){ init(); }
 		#else
 		init();
 		#end

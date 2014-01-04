@@ -540,8 +540,7 @@ class Stream {
 		}
 		if( !collected ) {
 			#if jabber_debug
-			trace( 'incoming "${Type.enumConstructor(p._type)}" packet not handled ( ${p.from} -> ${p.to} )( ${p.id} )' );
-			//trace(p);
+			trace( 'xmpp stanza not handled ( ${p.from} -> ${p.to} )( ${p.id} )' );
 			#end
 			if( p._type == xmpp.PacketType.iq ) { // 'feature not implemented' response
 				#if as3

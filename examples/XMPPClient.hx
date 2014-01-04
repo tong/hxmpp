@@ -33,7 +33,7 @@ class XMPPClient {
 	public var port(default,null) : Int = Stream.defaultPort;
 	public var http(default,null) : String;
 	
-	public var useHTTP = false;
+	public var use_http = false;
 
 	var stream : Stream;
 
@@ -45,20 +45,13 @@ class XMPPClient {
 		this.http = http;
 		
 		#if (cs||java||php)
-		useHTTP = false;
+		use_http = false;
 		#end
 	}
 
 	public function login() {
-		var cnx : jabber.StreamConnection = null;
-		#if php
-			cnx = new jabber.SocketConnection( ip );
-		#else
-			cnx = if( useHTTP && http != null )
-				new jabber.BOSHConnection( ip, http );
-			else
-				new jabber.SocketConnection( ip );
-		#end
+		var cnx = createStreamConnection();
+		trace(cnx);
 		stream = new Stream( cnx );
 		stream.onOpen = onStreamOpen;
 		stream.onClose = onStreamClose;
@@ -98,6 +91,19 @@ class XMPPClient {
 	}
 
 	function onMessage( m : xmpp.Message ) {
+	}
+
+	function createStreamConnection() : jabber.StreamConnection {
+		var cnx : jabber.StreamConnection = null;
+		#if php
+			cnx = new jabber.SocketConnection( ip );
+		#else
+			cnx = if( use_http && http != null )
+				new jabber.BOSHConnection( ip, http );
+			else
+				new jabber.SocketConnection( ip );
+		#end
+		return cnx;
 	}
 
 	function createSASLMechanisms() : Array<jabber.sasl.Mechanism> {

@@ -1,0 +1,15 @@
+
+-cp ../../src
+-debug
+-dce full
+--each
+
+-php .
+--php-front password-store.php
+-main Index
+
+--next
+-js app.js
+-main App
+-D jabber_debug
+-D xmpp_debug

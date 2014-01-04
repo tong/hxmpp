@@ -1,6 +1,5 @@
 
 -main App
--lib hxargs
 -cp ../
 -cp ../../src
 -D jabber_debug
@@ -20,6 +19,7 @@
 --next
 -js app.nodejs
 -lib nodejs
+-lib hxargs
 
 #--next
 #-neko app.n

@@ -2,7 +2,7 @@
 --macro include('jabber')
 --macro include('xmpp')
 --macro exclude('jabber.jingle')
--D doc_gen
+-D doc-gen
 -D xmpp_debug
 -D jabber_debug
 -xml ../haxedoc.xml

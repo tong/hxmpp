@@ -4,6 +4,7 @@
 *.js
 *.n
 *.map
+*.nodejs
 *.php
 *.swc
 *.swf
