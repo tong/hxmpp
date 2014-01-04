@@ -28,7 +28,8 @@ import sys.net.Socket;
 import flash.net.Socket;
 #elseif nodejs
 import js.Node;
-private typedef Socket = Stream;
+import js.Stream in Socket;
+//private typedef Socket = Stream;
 #end
 
 class ByteStreamTransport extends Transport {

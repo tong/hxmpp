@@ -27,8 +27,7 @@ import xmpp.IQ;
 import xmpp.filter.PacketIDFilter;
 
 #if jabber_component
-import jabber.component.Stream;
-private typedef JID = ComponentJID;
+import jabber.component.Stream.ComponentJID in JID;
 #end
 
 private typedef Server = {

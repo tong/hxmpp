@@ -38,10 +38,9 @@ import haxe.io.Bytes;
 	import jabber.util.ArrayBufferUtil;
 	#elseif nodejs
 	import js.Node;
-	private typedef Socket = js.NodeNetSocket;
+	import js.Node.NodeNetSocket in Socket;
 	#else
-	import js.html.WebSocket;
-	private typedef Socket = WebSocket;
+	import js.html.WebSocket in Socket;
 	#end
 #elseif sys
 	import sys.net.Host;

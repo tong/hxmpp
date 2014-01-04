@@ -25,18 +25,14 @@ package jabber.util;
 typedef Timer = haxe.Timer;
 #else
 
-#if neko
-import neko.vm.Thread;
-#elseif cs
-import cs.vm.Thread;
-#elseif java
-import java.vm.Thread;
-#elseif cpp
-import cpp.vm.Thread;
-#end
+import #if cpp cpp.vm.Thread
+	#elseif cs cs.vm.Thread
+	#elseif java java.vm.Thread
+	#elseif neko neko.vm.Thread
+	#end;
 
 /**
-	Patched version of haxe.Timer supporting neko and cpp.
+	Patched version of haxe.Timer adding support for c++, neko, cs and java.
 */
 class Timer {
 	

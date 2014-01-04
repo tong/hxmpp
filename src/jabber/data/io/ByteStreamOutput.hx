@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,29 +21,28 @@
  */
 package jabber.data.io;
 
-#if (neko||cpp)
-import sys.net.Host;
-import sys.net.Socket;
-#end
 import haxe.io.Bytes;
 import jabber.util.SOCKS5Input;
+#if sys
+	import sys.net.Host;
+	import sys.net.Socket;
+#end
 #if neko
-import neko.vm.Thread;
+	import neko.vm.Thread;
 #elseif cpp
-import cpp.vm.Thread;
+	import cpp.vm.Thread;
 #elseif nodejs
-import js.Node;
-typedef Socket = Stream;
+	import js.Node.NodeNetSocket in Socket;
 #elseif (air&&flash)
-import flash.events.ServerSocketConnectEvent;
-import flash.net.Socket;
-import flash.net.ServerSocket;
-import flash.utils.ByteArray;
+	import flash.events.ServerSocketConnectEvent;
+	import flash.net.Socket;
+	import flash.net.ServerSocket;
+	import flash.utils.ByteArray;
 #elseif (air&&js)
-import air.ServerSocketConnectEvent;
-import air.Socket;
-import air.ServerSocket;
-import air.ByteArray;
+	import air.ServerSocketConnectEvent;
+	import air.Socket;
+	import air.ServerSocket;
+	import air.ByteArray;
 #end
 
 /**
