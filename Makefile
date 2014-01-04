@@ -3,15 +3,16 @@
 ## HXMPP - Haxe XMPP/Jabber library
 ##
 
-HXCPP_FLAGS =
-ARCH = $(shell sh -c 'uname -m 2>/dev/null || echo not')
-ifeq (${ARCH},x86_64)
-	HXCPP_FLAGS += -D HXCPP_M64
-endif
 
 SRC := $(wildcard src/*.hx) $(wildcard src/*/*.hx)
 SRC_TESTS := $(wildcard test/unit/*.hx)
 SRC_EXAMPLES := $(wildcard examples/*.hx) $(wildcard examples/*/*.hx)
+
+#HXCPP_FLAGS =
+#ARCH = $(shell sh -c 'uname -m 2>/dev/null || echo not')
+#ifeq (${ARCH},x86_64)
+#	HXCPP_FLAGS += -D HXCPP_M64
+#endif
 
 EXAMPLE_BUILDFILES := $(wildcard examples/*/build.hxml)
 
@@ -20,10 +21,10 @@ all: build
 build: tests examples documentation
 
 tests: $(SRC) $(SRC_TESTS)
-	@cd test/unit && haxe build.hxml $(HXCPP_FLAGS)
+	@cd test/unit && haxe build.hxml
 
 $(EXAMPLE_BUILDFILES): $(SRC) $(SRC_EXAMPLES)
-	cd $(shell dirname $@) && haxe build.hxml $(HXCPP_FLAGS)
+	cd $(shell dirname $@) && haxe build.hxml
 
 examples: $(EXAMPLE_BUILDFILES)
 
@@ -55,6 +56,7 @@ clean:
 	@rm -rf $(wildcard examples/*/lib)
 	@rm -rf $(wildcard examples/*/app*)
 	@rm -rf test/unit/build
+	@rm -f haxedoc.xml
 	@rm -f hxmpp.zip
 	
 .PHONY: all build documentation examples tests haxelib install uninstall clean

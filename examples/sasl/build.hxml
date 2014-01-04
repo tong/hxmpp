@@ -5,14 +5,14 @@
 -D jabber_debug
 -D xmpp_debug
 -D hxmpp_debug
-#-debug
+-debug
 --each
 
---next
--lib hxssl
--cpp cpp
--cmd mv cpp/App ./app
--lib hxargs
+#--next
+#-lib hxssl
+#-cpp cpp
+#-cmd mv cpp/App ./app
+#-lib hxargs
 
 #--next
 #-cs cs

@@ -13,7 +13,7 @@ class App extends XMPPClient {
 	}
 	
 	override function onPresence( p : xmpp.Presence ) {
-		if( p.from.bare() == ENTITY ) {
+		if( p.from.bare() != stream.jid.bare ) {
 			var disco = new jabber.ServiceDiscovery( stream );
 			disco.onInfo = onDiscoInfo;
 			disco.info( p.from );
@@ -21,8 +21,6 @@ class App extends XMPPClient {
 	}
 	
 	function onDiscoInfo( jid : String, info : xmpp.disco.Info ) {
-		if( jabber.JIDUtil.bare( jid ) != ENTITY )
-			return;
 		for( f in info.features ) {
 			if( f == xmpp.DataForm.XMLNS ) {
 				var m = new xmpp.Message( jid, "fill the form" );
@@ -35,7 +33,6 @@ class App extends XMPPClient {
 				return;
 			}
 		}
-		trace( "Resource does not support dataforms" );
 	}
 	
 	static function main() {

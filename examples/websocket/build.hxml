@@ -1,4 +1,11 @@
 
-../params.hxml
--js app.js
 -main App
+-cp ../../src
+-cp ../
+-D jabber_debug
+-D xmpp_debug
+-D hxmpp_debug
+-debug
+--each
+
+-js app.js
