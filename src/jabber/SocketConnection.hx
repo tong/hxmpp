@@ -25,19 +25,11 @@ import haxe.io.Bytes;
 
 #if !jabber_flashsocketbridge
 
-#if flash
-	import flash.net.Socket;
-	import flash.events.Event;
-	import flash.events.IOErrorEvent;
-	import flash.events.SecurityErrorEvent;
-	import flash.events.ProgressEvent;
-	import flash.utils.ByteArray;
-#elseif js
+#if js
 	#if chrome_app
 	import chrome.Socket;
 	import jabber.util.ArrayBufferUtil;
 	#elseif nodejs
-	import js.Node;
 	import js.Node.NodeNetSocket in Socket;
 	#else
 	import js.html.WebSocket in Socket;
@@ -45,6 +37,13 @@ import haxe.io.Bytes;
 #elseif sys
 	import sys.net.Host;
 	import sys.net.Socket;
+#elseif flash
+	import flash.net.Socket;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.SecurityErrorEvent;
+	import flash.events.ProgressEvent;
+	import flash.utils.ByteArray;
 #end
 
 /**
@@ -108,7 +107,6 @@ class SocketConnection extends jabber.StreamConnection {
 		#elseif js
 			#if chrome_app
 			Socket.create( 'tcp', {}, function(info){
-				trace(info);
 				if( info.socketId > 0 ) {
 					Socket.connect( socketId = info.socketId, host, port, handleConnect );
 				} else {

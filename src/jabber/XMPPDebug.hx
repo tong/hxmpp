@@ -22,16 +22,16 @@
 package jabber;
 
 import jabber.util.DateUtil;
-#if (flash&&!air)
-import flash.external.ExternalInterface;
-#elseif (js&&nodejs)
-import js.Node;
-#elseif rhino
-import js.Lib;
-#end
 import xmpp.XMLBeautify;
-
-import haxe.macro.Context; //TODO rem
+#if (flash&&!air)
+	import flash.external.ExternalInterface;
+#elseif js
+	#if nodejs
+	import js.Node;
+	#elseif rhino
+	import js.Lib;
+	#end
+#end
 
 /**
 	Utility for debugging XMPP transfer.
@@ -124,10 +124,8 @@ class XMPPDebug {
 	public static function print( t : String, out : Bool, level : String = "log" ) {
 		if( !active )
 			return;
-			
 		#if xmpp_console
 		XMPPConsole.printXMPP( t, out );
-		
 		#else
 			#if (sys||nodejs||air||rhino)
 			__print( beautify ? XMLBeautify.it(t) : t+"\n", out ? color_out : color_inc );
@@ -180,7 +178,6 @@ class XMPPDebug {
 		Sys.print( b.toString() );
 		#end
 	}
-	
 	
 	#elseif (js||flash)
 	

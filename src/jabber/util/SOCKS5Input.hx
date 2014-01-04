@@ -23,31 +23,28 @@ package jabber.util;
 
 import haxe.io.Bytes;
 import haxe.io.BytesBuffer;
-
 #if sys
-import sys.net.Socket;
-#end
-
-#if nodejs
-import js.Node;
-#elseif air
-#if flash
-import flash.net.Socket;
-import flash.events.Event;
-import flash.events.IOErrorEvent;
-import flash.events.ProgressEvent;
-import flash.events.SecurityErrorEvent;
-import flash.utils.ByteArray;
-import flash.utils.IDataInput;
+	import sys.net.Socket;
 #elseif js
-import air.Socket;
-import air.Event;
-import air.IOErrorEvent;
-import air.ProgressEvent;
-import air.SecurityErrorEvent;
-import air.ByteArray;
-import air.IDataInput;
-#end
+	#if nodejs
+	import js.Node;
+	#elseif air
+	import air.Socket;
+	import air.Event;
+	import air.IOErrorEvent;
+	import air.ProgressEvent;
+	import air.SecurityErrorEvent;
+	import air.ByteArray;
+	import air.IDataInput;
+	#end
+#elseif flash
+	import flash.net.Socket;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.ProgressEvent;
+	import flash.events.SecurityErrorEvent;
+	import flash.utils.ByteArray;
+	import flash.utils.IDataInput;
 #end
 
 private enum State {

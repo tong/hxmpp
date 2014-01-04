@@ -23,10 +23,12 @@ package jabber;
 
 import jabber.util.Timer;
 
-#if nodejs
+#if js
+	#if nodejs
 	import js.Node;
-#elseif js
+	#else
 	import js.html.XMLHttpRequest;
+	#end
 #elseif flash
 	import flash.events.Event;
 	import flash.events.HTTPStatusEvent;
@@ -35,7 +37,9 @@ import jabber.util.Timer;
 	import flash.events.SecurityErrorEvent;
 #elseif (cpp||neko)
 	import jabber.net.BOSHRequest;
-#elseif php #end
+#else
+	#error
+#end
 
 using StringTools;
 

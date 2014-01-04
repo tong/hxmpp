@@ -10,7 +10,6 @@
 	"classPath" : "src/",
 	"dependencies": {
 		"hxssl": "",
-		"nodejs": "2.0.1",
 		"xspf": "1.1.0"
 	}
 }

@@ -27,10 +27,10 @@ import jabber.util.MD5;
 /**
 	Static methods for computing SASL-MD5 credentials.
 */
-class MD5Calculator {
+class MD5DigestCalculator {
 	
 	/**
-	 * Parses the initial challenge and returns calculated realm and nonce
+		Parses the initial challenge and returns calculated realm and nonce
 	 */
 	public static function parseChallenge( challenge : String ) : { realm : String, nonce : String } {
 		var c = Base64.decode( challenge );
@@ -42,7 +42,7 @@ class MD5Calculator {
 		}
 		if( Lambda.count( el ) == 1 && el.exists( "rspauth" ) ) // negotiation complete
 			return { realm : null, nonce : null };
-			//TODO hmmmmmmm should be '' (??)
+			//TODO should be '' (??)
 			//return null;
 		return {
 			realm : el.exists( "realm" ) ? unquote( el.get( "realm" ) ) : "",
@@ -51,7 +51,7 @@ class MD5Calculator {
 	}
 
 	/**
-	 * Caluclate the MD5 challenge response
+		Caluclates the MD5 challenge response
 	 */
 	public static function run(
 		host : String,

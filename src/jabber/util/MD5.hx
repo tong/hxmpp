@@ -21,7 +21,7 @@
  */
 package jabber.util;
 
-#if (js && nodejs)
+#if nodejs
 import js.Node;
 #end
 
@@ -51,50 +51,21 @@ class MD5 {
 		var h = Node.crypto.createHash( "md5" );
 		h.update( s );
 		return h.digest( raw ? NodeC.BINARY : NodeC.HEX );
-			
+		
 		#elseif js
 		return raw ? new MD5().doEncodeRaw(s) : new MD5().doEncode(s);
-
-		/*
-		#elseif java
-		var r : String = null;
-		var inp = s;
-
-		untyped __java__('
-		try {
-			java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
-			byte[] array = md.digest(inp.getBytes());
-			StringBuffer sb = new StringBuffer();
-			for( int i = 0; i < array.length; ++i ) {
-				sb.append(Integer.toHexString((array[i]&0xFF)|0x100).substring(1,3));
-			}
-			r = sb.toString();
-		} catch(java.security.NoSuchAlgorithmException e) {}');
-		return r;
-		*/
-
-		/*
-		untyped __java__('
-			try {
-				java.security.MessageDigest m = java.security.MessageDigest.getInstance("MD5");
-				m.update(inp.getBytes(),0,inp.length());
-				r = new java.math.BigInteger(1,m.digest()).toString(16);
-			} catch(java.security.NoSuchAlgorithmException e) {}
-        ');
-        return r;
-        */
-
+		
 		#else
-		return raw ? haxe.crypto.Md5.make(haxe.io.Bytes.ofString(s)).toString()
-				   : haxe.crypto.Md5.encode(s);
+		return raw ? haxe.crypto.Md5.make(haxe.io.Bytes.ofString(s)).toString() : haxe.crypto.Md5.encode(s);
 
 		#end
 	}
 
 	#if neko
+
 	static var base_encode = neko.Lib.load( "std", "base_encode", 2 );
 	static var make_md5 = neko.Lib.load( "std", "make_md5", 1 );
-
+	
 	#elseif (cpp||js)
 	
 	static var inst = new MD5();

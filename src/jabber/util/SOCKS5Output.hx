@@ -22,19 +22,18 @@
 package jabber.util;
 
 import haxe.io.Bytes;
-
 #if sys
-import haxe.io.BytesBuffer;
-import sys.net.Socket;
+	import haxe.io.BytesBuffer;
+	import sys.net.Socket;
 #elseif nodejs
-import js.Node;
+	import js.Node;
 #elseif flash
-import flash.net.Socket;
-import flash.events.Event;
-import flash.events.IOErrorEvent;
-import flash.events.ProgressEvent;
-import flash.events.SecurityErrorEvent;
-import flash.utils.ByteArray;
+	import flash.net.Socket;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.ProgressEvent;
+	import flash.events.SecurityErrorEvent;
+	import flash.utils.ByteArray;
 #end
 
 #if (nodejs||flash)

@@ -95,7 +95,7 @@ class XMPPClient {
 
 	function createStreamConnection() : jabber.StreamConnection {
 		var cnx : jabber.StreamConnection = null;
-		#if php
+		#if (cs||java||php)
 			cnx = new jabber.SocketConnection( ip );
 		#else
 			cnx = if( use_http && http != null )
