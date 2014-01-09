@@ -33,7 +33,7 @@ class XMLBeautify {
 	*/
 	public static function it( t : String ) : String  {
 		var x : Xml = null;
-		try { x = Xml.parse(t).firstElement(); } catch(e:Dynamic) { return t+'\n'; }
+		x = Xml.parse(t).firstElement();
 		var b = new StringBuf();
 		createNode( x, b, 0 );
 		return b.toString();

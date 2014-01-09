@@ -1,8 +1,4 @@
 
-#if js
-import js.Browser.document;
-import js.Browser.window;
-#end
 import jabber.BOSHConnection;
 import jabber.client.Stream;
 import jabber.client.Authentication;
@@ -58,7 +54,7 @@ class App {
 		#elseif nodejs
 		init();
 		#elseif js
-		window.onload = function(_){ init(); }
+		js.Browser.window.onload = function(_){ init(); }
 		#else
 		init();
 		#end

@@ -25,7 +25,6 @@ class App extends XMPPClient {
 	
 	function onRosterLoad() {
 		trace( 'Roster loaded' );
-		new jabber.PresenceListener( stream, onPresence );
 		stream.sendPresence();
 		//roster.subscribe( "julia@disktree" );
 		//roster.unsubscribe( "julia@disktree", false );
@@ -56,7 +55,7 @@ class App extends XMPPClient {
 		trace( "Roster unsubscribed "+item.jid );
 	}
 	
-	function onPresence( p : xmpp.Presence ) {
+	override function onPresence( p : xmpp.Presence ) {
 		var jid = new jabber.JID( p.from );
 		if( jid.bare == stream.jid.bare )
 			return;

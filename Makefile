@@ -3,16 +3,9 @@
 ## HXMPP - Haxe XMPP/Jabber library
 ##
 
-
 SRC := $(wildcard src/*.hx) $(wildcard src/*/*.hx)
 SRC_TESTS := $(wildcard test/unit/*.hx)
 SRC_EXAMPLES := $(wildcard examples/*.hx) $(wildcard examples/*/*.hx)
-
-#HXCPP_FLAGS =
-#ARCH = $(shell sh -c 'uname -m 2>/dev/null || echo not')
-#ifeq (${ARCH},x86_64)
-#	HXCPP_FLAGS += -D HXCPP_M64
-#endif
 
 EXAMPLE_BUILDFILES := $(wildcard examples/*/build.hxml)
 

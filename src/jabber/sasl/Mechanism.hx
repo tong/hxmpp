@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ package jabber.sasl;
 typedef Mechanism = {
 	
 	/**
-		The id of this mechanism, for example PLAIN, DIGEST-MD5, ...
+		The id of this mechanism (for example: PLAIN or DIGEST-MD5)
 	*/
 	var id(default,null) : String;
 	

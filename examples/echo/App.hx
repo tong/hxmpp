@@ -31,14 +31,23 @@ class App {
 	}
 
 	static function main() {
+		
+		//TODO
+		//TODO clean this up and test with different servers 
+		//TODO
+		//TODO
+		//TODO
 		var jid = new JID( JID );
-		if( IP == null ) IP = jid.domain;
-		var cnx = new jabber.SocketConnection( IP, 5222, false );
+		var ip = "jabber.spektral.at"; //(IP != null) ? IP : jid.domain;
+
+		trace(ip);
+		
+		var cnx = new jabber.SocketConnection( ip, 5222 );
 		stream = new Stream( cnx );
 		stream.onOpen = function() {
 			var auth = new Authentication( stream, [
-				new jabber.sasl.MD5Mechanism(),
-				new jabber.sasl.PlainMechanism()
+				new jabber.sasl.MD5Mechanism()
+				//new jabber.sasl.PlainMechanism()
 			] );
 			auth.onFail = function(e) {
 				trace( 'Authentication failed ($jid)' );
@@ -56,7 +65,6 @@ class App {
 				trace( 'XMPP stream closed' );
 			else
 				trace( e );
-			cnx.disconnect();
 		}
 		stream.open( jid.bare );
 	}

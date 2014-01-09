@@ -1,6 +1,6 @@
 
 /**
-	Example/Test of different SASL mechanisms for account authentication
+	Example/Test of different sasl mechanisms for account authentication
 */
 class App {
 	
