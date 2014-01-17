@@ -314,12 +314,11 @@ class Roster {
 	}
 	
 	function handlePresence( p : Presence ) {
-		var jid = new JID( p.from );
-		var i = getItem( jid.bare );
 		if( p.type != null ) {
-			switch( p.type ) {
+			var i = getItem( JIDUtil.bare( p.from ) );
+			switch p.type {
 			case subscribe :
-				switch( subscriptionMode ) {
+				switch subscriptionMode {
 				case accept(s):
 					confirmSubscription( p.from, true, s );
 				case reject:
@@ -334,9 +333,9 @@ class Roster {
 			case unsubscribed:
 				items.remove( i );
 				onUnsubscribed( i );
-			default : //TODO
-				#if hxmpp_debug trace( "????????????? "+p.type ); #end
+			default:
 			}
 		}
 	}
+	
 }
