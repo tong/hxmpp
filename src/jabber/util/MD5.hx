@@ -21,40 +21,43 @@
  */
 package jabber.util;
 
-#if nodejs
+#if (js&&nodejs)
 import js.Node;
 #end
 
 /*
 	Creates a MD5 of a String.
-	Modified version from the haxe std lib to provide raw encoding as well as support for non-official haxe targets.
+	Modified version from std to provide raw encoding as well as support for non-official haxe targets.
 */
 class MD5 {
 
 	public static inline function encode( s : String, raw : Bool = false ) : String {
 		
 		//TODO
+		//#if jabber_hxssl_crypto
+		//#if hxssl_crypto
 		//#if hxssl
 		//return sys.crypto.MD5.encode( s, raw );
 
 		#if cpp
 		return raw ? new MD5().doEncodeRaw(s) : new MD5().doEncode(s);
 
+		#elseif js
+			#if nodejs
+			var h = Node.crypto.createHash( "md5" );
+			h.update( s );
+			return h.digest( raw ? NodeC.BINARY : NodeC.HEX );
+			#else
+			return raw ? new MD5().doEncodeRaw(s) : new MD5().doEncode(s);
+			#end
+			
 		#elseif neko
 		var t = make_md5( untyped s.__s );
 		return untyped new String( raw ? t : base_encode( t, "0123456789abcdef".__s ) );
 		
 		#elseif php
 		return untyped __call__( "md5", s, raw );
-		
-		#elseif nodejs
-		var h = Node.crypto.createHash( "md5" );
-		h.update( s );
-		return h.digest( raw ? NodeC.BINARY : NodeC.HEX );
-		
-		#elseif js
-		return raw ? new MD5().doEncodeRaw(s) : new MD5().doEncode(s);
-		
+
 		#else
 		return raw ? haxe.crypto.Md5.make(haxe.io.Bytes.ofString(s)).toString() : haxe.crypto.Md5.encode(s);
 
@@ -62,10 +65,8 @@ class MD5 {
 	}
 
 	#if neko
-
 	static var base_encode = neko.Lib.load( "std", "base_encode", 2 );
 	static var make_md5 = neko.Lib.load( "std", "make_md5", 1 );
-	
 	#elseif (cpp||js)
 	
 	static var inst = new MD5();

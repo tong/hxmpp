@@ -21,6 +21,7 @@
  */
 package xmpp.command;
 
+@:fakeEnum(String)
 enum Status {
 	
 	/** The command has been canceled. The command session has ended. */

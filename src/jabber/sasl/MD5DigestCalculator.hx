@@ -53,7 +53,7 @@ class MD5DigestCalculator {
 	/**
 		Caluclates the MD5 challenge response
 	 */
-	public static function run(
+	public static function digest(
 		host : String,
 		serverType : String,
 		username : String,

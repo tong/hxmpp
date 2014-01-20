@@ -28,7 +28,7 @@ using xmpp.XMLUtil;
 */
 class SoftwareVersion {
 	
-	public static var XMLNS(default,null) : String = "jabber:iq:version";
+	public static inline var XMLNS = "jabber:iq:version";
 	
 	/** The natural-language name of the software */
 	public var name : String;
@@ -46,26 +46,11 @@ class SoftwareVersion {
 	}
 	
 	public function toXml() : Xml {
-		var x = IQ.createQueryXml( XMLNS );
-		if( name != null ) x.addElement( "name", name );
-		if( version != null ) x.addElement( "version", version );
-		if( os != null ) x.addElement( "os", os );
-		return x;
+		return XMLUtil.addFields( IQ.createQueryXml( XMLNS ), this );
 	}
 	
 	public static inline function parse( x : Xml ) : SoftwareVersion {
 		return new SoftwareVersion().reflectElements( x );
-		/*
-		for( e in x.elements() ) {
-			switch( e.nodeName ) {
-			case "name" : s.name = e.firstChild().nodeValue;
-			case "version" : s.version = e.firstChild().nodeValue;
-			case "os" : s.os = e.firstChild().nodeValue;
-			}
-		}
-		//s.reflectElements( x );
-		return s;
-		*/
 	}
 	
 }

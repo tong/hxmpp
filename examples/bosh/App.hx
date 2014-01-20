@@ -4,7 +4,7 @@ import jabber.client.Stream;
 import jabber.client.Authentication;
 
 /**
-	Use http/bosh to connect with xmpp server
+	Use http/bosh stream connection
 */
 class App {
 
@@ -13,6 +13,7 @@ class App {
 		var creds = XMPPClient.readArguments();
 
 		var cnx = new BOSHConnection( creds.ip, creds.http, 1, 30, false );
+		
 		#if (cpp||neko||nodejs)
 		cnx.ip = creds.ip;
 		cnx.port = 7070;
@@ -26,37 +27,37 @@ class App {
 				new jabber.sasl.PlainMechanism()
 			] );
 			auth.onFail = function(e) {
-				trace( "Authentication failed ("+stream.jid+")" );
+				trace( 'Authentication failed (${stream.jid})' );
 				stream.close( true );
 			}
 			auth.onSuccess = function() {
-				trace( "Authenticated as "+stream.jid );
+				trace( 'Authenticated as ${stream.jid}' );
 				stream.sendPresence();
 			}
 			auth.start( creds.password, 'hxmpp-bosh' );
 		}
 		stream.onClose = function(?e) {
-			trace(e);
-			if( e == null )
-				trace( 'XMPP stream closed' );
-			else
-				trace( 'XMPP stream error : $e' );
-			cnx.disconnect();
+			trace( (e == null) ? 'XMPP stream closed' : e );
 		}
 		stream.open( creds.jid );
 	}
 
 	static function main() {
+		
 		#if flash
 		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
 		init();
+		
 		#elseif nodejs
 		init();
+		
 		#elseif js
 		js.Browser.window.onload = function(_){ init(); }
+		
 		#else
 		init();
+
 		#end
 	}
 

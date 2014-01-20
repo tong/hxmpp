@@ -10,8 +10,8 @@ class App extends XMPPClient {
 	}
 
 	override function onPresence( p : xmpp.Presence ) {
-		var m = new xmpp.Message( p.from, "TEST" );
-		xmpp.XHTML.attach( m, '<a href="http://disktree.net"><strong>DISKTREE.NET</strong></a>' );
+		var m = new xmpp.Message( p.from, "This is a test" );
+		xmpp.XHTML.attach( m, '<a href="http://hxmpp.disktree.net/"><strong>DISKTREE.NET</strong></a>' );
 		stream.sendPacket( m );
 	}
 	

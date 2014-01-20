@@ -53,14 +53,14 @@ class Account {
 	}
 	
 	/**
-		Request required registration fields from server
+		Request required registration fields
+		@param server Server hostname
 	*/
-	public function requestRegistrationFields( jid : String ) {
-		var iq = new IQ( null, null, jid );
+	public function requestRegistrationFields( server : String ) {
+		var iq = new IQ( null, null, server );
 		iq.x = new xmpp.Register();
-		var me = this;
-		stream.sendIQ( iq, function(r:IQ ) {
-			switch( r.type ) {
+		stream.sendIQ( iq, function(r:IQ) {
+			switch r.type {
 			case result :
 				for( e in r.properties ) {
 					if( e.nodeName == "query" && e.get("xmlns") == xmpp.Register.XMLNS ) {
@@ -72,70 +72,66 @@ class Account {
 								fields.push( c.nodeName );
 							}
 						}
-						me.onFields( fields );
+						onFields( fields );
 						return;
 					}
 				}
 			case error :
-				me.onError( new jabber.XMPPError( r ) );
+				onError( new jabber.XMPPError( r ) );
 			default : //#
 			}
 		} );
 	}
 	
 	/**
-		Register new account.
+		Register client account.
 	*/
-	//public function register( username : String, password : String, email : String, name : String ) : Bool {
-	public function register( reg : xmpp.Register ) : Bool {
+	public function register( creds : xmpp.Register ) : Bool {
 		var iq = new IQ();
 		iq.x = new xmpp.Register();
 		stream.sendIQ( iq, function(r:IQ) {
 			switch r.type {
-			case result :
+			case result:
 				//TODO check required register fields
 				//var p = xmpp.Register.parse( iq.x.toXml() );
 				//var required = new Array<String>();
-				var res = new IQ( IQType.set );
-				res.x = reg;
-				stream.sendIQ( res, function(r:IQ) {
+				var iq = new IQ( IQType.set );
+				iq.x = creds;
+				stream.sendIQ( iq, function(r:IQ) {
 					switch r.type {
 					case result :
-						//var l = xmpp.Register.parse( iq.x.toXml() );
+						//var l = xmpp.Register.parse( r.x.toXml() );
 						//if( !l.registered ) {
-						//}
-						onRegister( reg.username );
+						onRegister( creds.username );
 					case error:
 						onError( new jabber.XMPPError( r ) );
-					default : //#
+					default:
 					}
 				} );
-			case error :
+			case error:
 				onError( new jabber.XMPPError( r ) );
-			default : //#
+			default:
 			}
 		} );
 		return true;
 	}
 	
 	/**
-		Delete account from server.
+		Unregister client account.
 	*/	
 	public function remove() {
 		var iq = new IQ( IQType.set );
-		var ext = new xmpp.Register();
-		ext.remove = true;
-		iq.x = ext;
-		var me = this;
+		var x = new xmpp.Register();
+		x.remove = true;
+		iq.x = x;
 		stream.sendIQ( iq, function(r:IQ) {
 			switch r.type {
 			case result :
 				//var l = xmpp.Register.parse( iq.x.toXml() );
 				//if( !l.remove ) {
-				//}
-				me.onRemove();
+				onRemove();
 			case error :
-				me.onError( new jabber.XMPPError( r ) );
+				onError( new jabber.XMPPError( r ) );
 			default : //#
 			}
 		} );
@@ -146,19 +142,15 @@ class Account {
 	*/
 	public function changePassword( node : String, pass : String ) {
 		var iq = new IQ( IQType.set );
-		var e = new xmpp.Register();
-		e.username = node;
-		e.password = pass;
-		iq.x = e;
-		var self = this;
+		var x = new xmpp.Register();
+		x.username = node;
+		x.password = pass;
+		iq.x = x;
 		stream.sendIQ( iq, function(r:IQ) {
 			switch r.type {
-			case result:
-				//var l = xmpp.Register.parse( iq.x.toXml() );
-				self.onPasswordChange( pass );
-			case error :
-				self.onError( new jabber.XMPPError( r ) );
-			default : //#
+			case result: onPasswordChange( pass );
+			case error: onError( new jabber.XMPPError( r ) );
+			default:
 			}
 		} );
 	}

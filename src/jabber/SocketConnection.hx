@@ -25,29 +25,30 @@ import haxe.io.Bytes;
 
 #if !jabber_flashsocketbridge
 
-#if js
+#if flash
+import flash.net.Socket;
+import flash.events.Event;
+import flash.events.IOErrorEvent;
+import flash.events.SecurityErrorEvent;
+import flash.events.ProgressEvent;
+import flash.utils.ByteArray;
+#elseif js
 	#if chrome_app
 	import chrome.Socket;
 	import jabber.util.ArrayBufferUtil;
 	#elseif nodejs
+	import js.Node;
 	import js.Node.NodeNetSocket in Socket;
 	#else
 	import js.html.WebSocket in Socket;
 	#end
 #elseif sys
-	import sys.net.Host;
-	import sys.net.Socket;
-#elseif flash
-	import flash.net.Socket;
-	import flash.events.Event;
-	import flash.events.IOErrorEvent;
-	import flash.events.SecurityErrorEvent;
-	import flash.events.ProgressEvent;
-	import flash.utils.ByteArray;
+import sys.net.Host;
+import sys.net.Socket;
 #end
 
 /**
-	Crossplatform socket connection for xmpp streams.
+	Crossplatform socket connection.
 */
 class SocketConnection extends jabber.StreamConnection {
 
@@ -56,13 +57,12 @@ class SocketConnection extends jabber.StreamConnection {
 
 	public var port(default,null) : Int;
 	public var timeout(default,null) : Float;
+	public var socket : Socket;
 	
 	#if sys
 	public var bufSize : Int;
 	public var maxBufSize : Int;
 	#end
-
-	public var socket : Socket;
 
 	#if (chrome_app||sys)
 	var reading : Null<Bool>;
@@ -75,12 +75,7 @@ class SocketConnection extends jabber.StreamConnection {
 	public function new( host : String = "localhost", ?port : Null<Int>,
 						 secure : Bool = false, timeout : Float = 0 ) {
 		
-		if( port == null ) port =
-			#if jabber_component
-			jabber.component.Stream.PORT
-			#else
-			jabber.client.Stream.PORT
-			#end;
+		if( port == null ) port = #if jabber_component jabber.component.Stream.PORT #else jabber.client.Stream.PORT #end;
 
 		super( host, secure, false );
 		this.port = port;
@@ -94,51 +89,46 @@ class SocketConnection extends jabber.StreamConnection {
 	}
 
 	public override function connect() {
-
 		#if flash
 		socket = new Socket();
 		if( timeout > 0 ) socket.timeout = Std.int( timeout*1000 );
-		socket.addEventListener( Event.CONNECT, handleConnect );
-		socket.addEventListener( Event.CLOSE, handleDisconnect );
-		socket.addEventListener( IOErrorEvent.IO_ERROR, handleError );
-		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, handleError );
+		socket.addEventListener( Event.CONNECT, handleConnect, false );
+		socket.addEventListener( Event.CLOSE, handleDisconnect, false );
+		socket.addEventListener( IOErrorEvent.IO_ERROR, handleError, false );
+		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, handleError, false );
 		socket.connect( host, port );
-
+		#elseif (js&&chrome_app)
+		Socket.create( 'tcp', {}, function(info){
+			if( info.socketId > 0 ) {
+				Socket.connect( socketId = info.socketId, host, port, handleConnect );
+			} else {
+				onDisconnect( 'failed to create socket' );
+			}
+		});
+		#elseif (js&&nodejs)
+		//TODO timeout
+		socket = Node.net.connect( port, host );
+		socket.setEncoding( NodeC.UTF8 );
+		socket.on( NodeC.EVENT_STREAM_CONNECT, handleConnect );
+		socket.on( NodeC.EVENT_STREAM_END, handleDisconnect );
+		socket.on( NodeC.EVENT_STREAM_ERROR, handleError );
 		#elseif js
-			#if chrome_app
-			Socket.create( 'tcp', {}, function(info){
-				if( info.socketId > 0 ) {
-					Socket.connect( socketId = info.socketId, host, port, handleConnect );
-				} else {
-					onDisconnect( 'failed to create socket' );
-				}
-			});
-			#elseif nodejs
-			//TODO timeout
-			socket = Node.net.connect( port, host );
-			socket.setEncoding( NodeC.UTF8 );
-			socket.on( NodeC.EVENT_STREAM_CONNECT, handleConnect );
-			socket.on( NodeC.EVENT_STREAM_END, handleDisconnect );
-			socket.on( NodeC.EVENT_STREAM_ERROR, handleError );
-			#else
-			//TODO timeout
-			var uri = 'ws'+(secure?'s':'')+'://$host:$port';
-			socket = new Socket( uri );
-			socket.onopen = handleConnect;
-			socket.onclose = handleDisconnect;
-			socket.onerror = handleError;
-			#end
-			
+		var uri = 'ws'+(secure?'s':'')+'://$host:$port';
+		socket = new Socket( uri );
+		socket.onopen = handleConnect;
+		socket.onclose = handleDisconnect;
+		socket.onerror = handleError;
 		#elseif sys
+		trace("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa");
 		socket = new Socket();
 		if( timeout > 0 ) socket.setTimeout( timeout );
 		try socket.connect( new Host( host ), port ) catch( e : Dynamic ) {
+			#if jabber_debug trace(e); #end
 			onDisconnect( e );
 			return;
 		}
 		connected = true;
-		onConnect();
-
+		if( onConnect != null ) onConnect();
 		#end
 	}
 
@@ -155,11 +145,10 @@ class SocketConnection extends jabber.StreamConnection {
 	}
 
 	public override function read( ?yes : Bool = true ) : Bool {
-		
+		trace("read");
 		#if flash
 		yes ? socket.addEventListener( ProgressEvent.SOCKET_DATA, handleData )
 			: socket.removeEventListener( ProgressEvent.SOCKET_DATA, handleData );
-		
 		#elseif js
 			#if chrome_app
 			if( yes ) {
@@ -173,7 +162,6 @@ class SocketConnection extends jabber.StreamConnection {
 			#else
 			socket.onmessage = yes ? handleData : null;
 			#end
-
 		#elseif sys
 		if( yes ) {
 			reading = true;
@@ -201,21 +189,15 @@ class SocketConnection extends jabber.StreamConnection {
 					buf = nbuf;
 				}
 			}
-		} else
-			reading = false;
-
+		} else reading = false;
 		#end
-
 		return true;
 	}
 	
 	public override function disconnect() {
-
 		connected = false;
-
 		#if flash
 		try socket.close() catch( e : Dynamic ) { onDisconnect( e ); }
-
 		#elseif js
 			#if chrome_app
 			Socket.disconnect( socketId );
@@ -225,14 +207,12 @@ class SocketConnection extends jabber.StreamConnection {
 			#else
 			try socket.close() catch( e : Dynamic ) { onDisconnect( e ); }
 			#end
-		
 		#elseif sys
 		try socket.close() catch( e : Dynamic ) {
 			onDisconnect( e );
 			return;
 		}
 		onDisconnect( null );
-
 		#end
 	}
 
@@ -253,76 +233,8 @@ class SocketConnection extends jabber.StreamConnection {
 		#end
 		return true;
 	}
-
-	#if js
-
-		#if chrome_app
-
-		function handleConnect(_) {
-			connected = true;
-			onConnect();
-		}
-
-		function _read() {
-			Socket.read( socketId, null, function(i:SocketReadInfo) {
-				if( i.resultCode > 0 ) {
-					if( reading ) {
-						onData( Bytes.ofString( ArrayBufferUtil.toString( i.data ) ) ); //TODO
-						_read();
-					}
-				}
-			});
-		}
-
-		#elseif nodejs
-
-		function handleConnect() {
-			connected = true;
-			onConnect();
-		}
-
-		function handleDisconnect() {
-			handleError( null );
-		}
-
-		function handleError( e : String ) {
-			connected = false;
-			onDisconnect( e );
-		}
-
-		function handleData( s : String ) {
-			onString( s );
-		}
-
-		#else
-
-		function handleConnect(_) {
-			trace("handleConnect");
-			connected = true;
-			onConnect();
-		}
-
-		function handleDisconnect(_) {
-			trace("handleDisconnect");
-			handleError( null );
-		}
-
-		//function handleError( e : String ) {
-		function handleError( e ) {
-			trace("handleError "+e);
-			trace(e);
-			connected = false;
-			onDisconnect( e );
-		}
-
-		function handleData( s : String ) {
-			trace("handleData");
-			onString( s );
-		}
-
-		#end
-
-	#elseif flash
+	
+	#if flash
 
 	function handleConnect( e : Event ) {
 		connected = true;
@@ -343,6 +255,70 @@ class SocketConnection extends jabber.StreamConnection {
 		var data = new ByteArray();
 		socket.readBytes( data, 0, Std.int( e.bytesLoaded ) );
 		onData( Bytes.ofData( data )  );
+	}
+
+	#elseif (js&&chrome_app)
+
+	function handleConnect(_) {
+		connected = true;
+		onConnect();
+	}
+
+	function _read() {
+		Socket.read( socketId, null, function(i:SocketReadInfo) {
+			if( i.resultCode > 0 ) {
+				if( reading ) {
+					onData( Bytes.ofString( ArrayBufferUtil.toString( i.data ) ) ); //TODO
+					_read();
+				}
+			}
+		});
+	}
+
+	#elseif (js&&nodejs)
+
+	function handleConnect() {
+		connected = true;
+		onConnect();
+	}
+
+	function handleDisconnect() {
+		handleError( null );
+	}
+
+	function handleError( e : String ) {
+		connected = false;
+		onDisconnect( e );
+	}
+
+	function handleData( s : String ) {
+		onString( s );
+	}
+
+	#elseif js
+
+	function handleConnect(_) {
+		trace("handleConnect");
+		connected = true;
+		onConnect();
+	}
+
+	function handleDisconnect(_) {
+		trace("handleDisconnect");
+		handleError( null );
+	}
+
+	//function handleError( e : String ) {
+	function handleError( e ) {
+		trace("handleError "+e);
+		trace(e);
+		connected = false;
+		onDisconnect( e );
+	}
+
+	function handleData( s : String ) {
+		trace("handleData");
+		onString( s );
 	}
 
 	#elseif sys

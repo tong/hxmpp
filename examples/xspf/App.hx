@@ -3,12 +3,12 @@ import XSPFPlaylist;
 using jabber.JIDUtil;
 
 /**
-	Example/Test of sharing a xspf playlist 
+	Example of sharing a xspf playlist over xmpp
 */
 class App extends XMPPClient {
 	
-	var playlists : Map<String,XSPFPlaylist>;
-	var playlist : XSPFPlaylist;
+	var playlist : XSPFPlaylist; // Own playlist
+	var playlists : Map<String,XSPFPlaylist>; // Received playlists stored by jid
 	
 	override function onLogin() {
 		

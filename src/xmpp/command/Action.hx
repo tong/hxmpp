@@ -21,6 +21,7 @@
  */
 package xmpp.command;
 
+@:fakeEnum(String)
 enum Action {
 	
 	/** The command should be canceled. */

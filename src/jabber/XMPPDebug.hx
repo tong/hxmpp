@@ -127,10 +127,12 @@ class XMPPDebug {
 		#if xmpp_console
 		XMPPConsole.printXMPP( t, out );
 		#else
-			#if (sys||nodejs||air||rhino)
-			__print( beautify ? XMLBeautify.it(t) : t+"\n", out ? color_out : color_inc );
+			#if android
+			Sys.println(t);
 			#elseif (js||flash)
 			__print( beautify ? XMLBeautify.it(t) : t, out, level );
+			#elseif (sys||nodejs||air||rhino)
+			__print( beautify ? XMLBeautify.it(t) : t+"\n", out ? color_out : color_inc );
 			#end
 		#end
 	}

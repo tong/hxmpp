@@ -128,10 +128,9 @@ class Stream {
 	var numPacketsSent : Int;
 	
 	function new( cnx : StreamConnection, ?maxBufSize : Int ) {
-		this.maxBufSize = ( maxBufSize == null || maxBufSize < 1 ) ? defaultMaxBufSize : maxBufSize;
+		this.maxBufSize = (maxBufSize == null || maxBufSize < 1) ? defaultMaxBufSize : maxBufSize;
 		cleanup();
-		if( cnx != null )
-			set_cnx( cnx );
+		if( cnx != null ) set_cnx( cnx );
 	}
 	
 	function set_jid( j : JID ) : JID {
@@ -143,6 +142,7 @@ class Stream {
 	function set_cnx( c : StreamConnection ) : StreamConnection {
 		switch( status ) {
 		case open, pending #if !jabber_component, starttls #end :
+			// TODO no! cannot share connection with other streams!
 			close( true );
 			set_cnx( c );
 			 // re-open XMPP stream
@@ -165,7 +165,7 @@ class Stream {
 	}
 	
 	/**
-		Create/Returns the next unique id for this XMPP stream
+		Create/Returns the next unique packet id for this stream
 	*/
 	public function nextID() : String {
 		return Base64.random( defaultPacketIdLength ) #if jabber_debug+"_"+numPacketsSent #end;
@@ -175,9 +175,11 @@ class Stream {
 		Open the XMPP stream.
 	*/
 	#if jabber_component
+	
 	public function open( host : String, subdomain : String, secret : String, ?identities : Array<xmpp.disco.Identity> ) {
 		#if jabber_debug throw 'abstract method "open", use "connect" for components'; #end
 	}
+
 	#else
 	public function open( jid : String ) {
 	//public function open( jid : JID ) {
@@ -207,6 +209,10 @@ class Stream {
 			cnx.disconnect();
 		handleDisconnect( null );
 	}
+
+	/**
+	*/
+	public inline function isOpen() : Bool return status == StreamStatus.open;
 
 	/**
 		Send a message packet (default type is 'chat').

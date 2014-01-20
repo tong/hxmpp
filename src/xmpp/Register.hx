@@ -28,7 +28,7 @@ using xmpp.XMLUtil;
 */
 class Register {
 	
-	public static var XMLNS(default,null) : String = "jabber:iq:register";
+	public static inline var XMLNS = "jabber:iq:register";
 	
 	//@
 	public var username : String;

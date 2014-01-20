@@ -1,6 +1,6 @@
 
 import Sys.print;
-import jabber.sasl.MD5Calculator;
+import jabber.sasl.MD5DigestCalculator;
 
 using Lambda;
 
@@ -34,7 +34,7 @@ class Index {
 		}
 
 		var hash : String = null;
-		try hash = MD5Calculator.run( host, servertype, username, realm, password, nonce ) catch( e : Dynamic ) {
+		try hash = MD5DigestCalculator.digest( host, servertype, username, realm, password, nonce ) catch( e : Dynamic ) {
 			print(null);
 			return;
 		}

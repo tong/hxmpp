@@ -57,7 +57,7 @@ class MD5Mechanism {
 	//@:keep
 	public function createChallengeResponse( challenge : String ) : String {
 		var c = MD5DigestCalculator.parseChallenge( challenge );
-		return MD5DigestCalculator.run( host, serverType, username, c.realm, pass, c.nonce );
+		return MD5DigestCalculator.digest( host, serverType, username, c.realm, pass, c.nonce );
 	}
 	
 }

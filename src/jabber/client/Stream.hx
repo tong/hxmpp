@@ -54,13 +54,13 @@ class Stream extends jabber.Stream {
 		status = pending;
 		if( !cnx.http ) {
 			sendData( xmpp.Stream.createOpenXml( xmpp.Stream.CLIENT, jid.domain, version, lang ) );
-			if( !wasOpen ) {
-				cnx.read( true ); // start reading input
+			if( !wasOpen ) { // Start reading input
+				cnx.read( true );
 			}
 		} else {
 			if( cnx.connected ) {
 				//server.features = new Hash(); // clear the server features offered (?)
-				cnx.connect(); // restart BOSH
+				cnx.connect(); // restart HTTP/BOSH
 			}
 		}
 	}
@@ -132,8 +132,7 @@ class Stream extends jabber.Stream {
 	}
 	
 	function parseServerStreamFeatures( x : Xml ) {
-		for( e in x.elements() )
-			server.features.set( e.nodeName, e );
+		for( e in x.elements() ) server.features.set( e.nodeName, e );
 	}
 	
 }

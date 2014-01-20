@@ -1,11 +1,10 @@
 
--main App
 -cp ../../src
+-main App
+-debug
 -D jabber_debug
 -D xmpp_debug
 -D hxmpp_debug
--debug
--dce full
 --each
 
 --next

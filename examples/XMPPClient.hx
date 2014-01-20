@@ -46,6 +46,9 @@ class XMPPClient {
 		
 		#if (cs||java||php)
 		use_http = false;
+		#elseif flash
+		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
+		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
 		#end
 	}
 

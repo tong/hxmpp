@@ -1,14 +1,18 @@
 
--main App
--lib hxargs
 -cp ../
 -cp ../../src
+-lib hxargs
+-main App
+-dce no
+-debug
 -D jabber_debug
 -D xmpp_debug
 -D hxmpp_debug
--debug
--dce full
 --each
 
 --next
 -js app.js
+
+#--next
+#-swf app.swf
+#-swf-header 100:100:60:cccccc

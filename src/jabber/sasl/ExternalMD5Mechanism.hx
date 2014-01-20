@@ -42,7 +42,7 @@ class ExternalMD5Mechanism extends MD5Mechanism {
 	}
 	
 	public override function createChallengeResponse( challenge : String ) : String {
-		var c = MD5Calculator.parseChallenge( challenge );
+		var c = MD5DigestCalculator.parseChallenge( challenge );
 		return haxe.Http.requestUrl( '$passwordStoreURL?host=$host&servertype=$serverType&username=$username&realm=${c.realm}&nonce=${c.nonce}' );
 	}
 	
