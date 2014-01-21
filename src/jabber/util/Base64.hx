@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c), disktree
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,117 +22,75 @@
 package jabber.util;
 
 import haxe.io.Bytes;
+
 #if (js&&nodejs)
 import js.Node;
-#elseif !php
-import haxe.crypto.BaseCode;
 #end
 
-/**
-	Base64 encoding/decoding utility.
-*/
 class Base64 {
 
-	public static var CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-
-	/*
-	public static inline function fillNullbits( s : String ) : String {
-		while( s.length % 3 != 0 ) s += "=";
-		return s;
-	}
-	
-	public static inline function removeNullbits( s : String ) : String {
-		while( s.charAt( s.length-1 ) == "=" ) s = s.substr( 0, s.length-1 );
-		return s;
-	}
-	*/
-
-	/**
-	*/
-	public static
-	#if (nodejs||php) inline #end
-	function encode( s : String ) : String {
-
+	public static inline function encode( s : String ) : String {
+		
 		#if php
 		return untyped __call__( "base64_encode", s );
+		
+	//	#elseif hxssl
+	//	return sys.crypto.Base64.encode(s);
 
-		#elseif (js&&nodejs)
-		return new js.NodeBuffer(s).toString( NodeC.BASE64 );
+		#elseif js
+			#if nodejs
+			return new js.NodeBuffer(s).toString( NodeC.BASE64 );
+			#else
+			return (untyped window.btoa != null) ? untyped window.btoa(s) : haxe.crypto.Base64.encode( Bytes.ofString(s) );
+			#end
 
 		#else
-			#if js
-			if( untyped window.btoa != null )
-				return untyped window.btoa( s );
-			#end
-			//return fillNullbits( BaseCode.encode( s, CHARS ) );
-			var suf = switch( s.length % 3 )  {
-				case 2 : "=";
-				case 1 : "==";
-				default : "";
-			};
-			return BaseCode.encode( s, CHARS ) + suf;
+		return haxe.crypto.Base64.encode( Bytes.ofString(s) );
+
 		#end
 	}
 
-	/**
-	*/
-	public static
-	#if (nodejs||php) inline #end
-	function decode( s : String ) : String {
+	public static inline function decode( s : String ) : String {
 		
 		#if php
 		return untyped __call__( "base64_decode", s );
 
-		#elseif (js&&nodejs)
-		return new NodeBuffer( s, NodeC.BASE64 ).toString( NodeC.ASCII );
+	//	#elseif hxssl
+	//	return sys.crypto.Base64.decode(s);
 		
-		#else
-			#if js
-			if( untyped window.atob != null )
-				untyped window.atob( s );
+		#elseif js
+			#if nodejs
+			return new NodeBuffer( s, NodeC.BASE64 ).toString( NodeC.ASCII );
+			#else
+			return (untyped window.atob != null) ? untyped window.atob(s) : haxe.crypto.Base64.decode( s ).toString();
 			#end
-			while( s.charAt( s.length-1 ) == "=" ) s = s.substr( 0, s.length-1 );
-			return BaseCode.decode( s, CHARS );
-			
-		#end
-	}
-
-	/**
-	*/
-	public static
-	#if (nodejs||php) inline #end
-	function encodeBytes( b : Bytes ) : Bytes {
-
-		#if php
-		return untyped __call__( "base64_encode", b.getData() );
-		
-		#elseif (js&&nodejs)
-		return Bytes.ofString( new NodeBuffer( b.toString() ).toString( NodeC.BASE64 ) );
 
 		#else
-		return new BaseCode( Bytes.ofString( CHARS ) ).encodeBytes( b );
-		//return fillNullbits( bc.encodeBytes( b ).toString() );
-		
+		return haxe.crypto.Base64.decode( s ).toString();
+
 		#end
 	}
 
-	/**
-	*/
-	public static
-	#if (nodejs||php) inline #end
-	function decodeBytes( b : Bytes ) : Bytes {
-		
+	/*
+	public static inline function decodeBytes( data : Bytes ) : Bytes {
+
 		#if php
-		return Bytes.ofData( untyped __call__( "base64_decode", b.getData() ) );
+		return Bytes.ofData( untyped __call__( "base64_decode", data.getData() ) );
 		
-		#elseif (js&&nodejs)
-		return Bytes.ofString( new NodeBuffer( b.toString(), NodeC.BASE64 ).toString( NodeC.ASCII ) );
-		
+		#elseif js
+			#if nodejs
+			return Bytes.ofString( new NodeBuffer( b.toString(), NodeC.BASE64 ).toString( NodeC.ASCII ) );
+			#else
+
+			#end
+
 		#else
-		return new BaseCode( Bytes.ofString( CHARS ) ).decodeBytes( b );
+		return haxe.crypto.Base64.decode( data );
+		//return new BaseCode( Bytes.ofString( CHARS ) ).decodeBytes( b );
 		
 		#end
 	}
+	*/
 
 	/**
 		Create a random (base64 compatible) string of given length.
@@ -140,14 +98,13 @@ class Base64 {
 	public static function random( len : Int = 1, ?chars : String ) : String {
 		var n : Null<Int> = null;
 		if( chars == null ) {
-			chars = CHARS;
-			n = CHARS.length-2;
+			chars = haxe.crypto.Base64.CHARS;
+			n = haxe.crypto.Base64.CHARS.length-2;
 		} else
 			n = chars.length;
-		var s = "";
-		for( i in 0...len )
-			s += chars.charAt( Std.random( n ) );
-		return s;
+		var s = new StringBuf();
+		for( i in 0...len ) s.add( chars.charAt( Std.random( n ) ) );
+		return s.toString();
 	}
-	
+
 }
