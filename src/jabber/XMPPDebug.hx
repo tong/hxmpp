@@ -129,10 +129,10 @@ class XMPPDebug {
 		#else
 			#if android
 			Sys.println(t);
-			#elseif (js||flash)
-			__print( beautify ? XMLBeautify.it(t) : t, out, level );
 			#elseif (sys||nodejs||air||rhino)
 			__print( beautify ? XMLBeautify.it(t) : t+"\n", out ? color_out : color_inc );
+			#elseif (js||flash)
+			__print( beautify ? XMLBeautify.it(t) : t, out, level );
 			#end
 		#end
 	}
