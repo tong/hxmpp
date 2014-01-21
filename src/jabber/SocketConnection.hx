@@ -119,7 +119,6 @@ class SocketConnection extends jabber.StreamConnection {
 		socket.onclose = handleDisconnect;
 		socket.onerror = handleError;
 		#elseif sys
-		trace("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa");
 		socket = new Socket();
 		if( timeout > 0 ) socket.setTimeout( timeout );
 		try socket.connect( new Host( host ), port ) catch( e : Dynamic ) {
