@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,8 @@ import flash.events.NetStatusEvent;
 import flash.net.NetConnection;
 import flash.net.NetStream;
 
-@:require(flash) class RTMPTransport extends Transport {
+@:require(flash)
+class RTMPTransport extends Transport {
 	
 	public var name(default,null) : String;
 	public var host(default,null) : String;

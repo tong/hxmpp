@@ -63,7 +63,7 @@ class PubSub {
 		x.configure = config;
 		iq.x = x;
 		var h = onNodeCreate;
-		iq = sendIQ( iq, function(r:xmpp.IQ){ h( name ); } );
+		iq = sendIQ( iq, function(r:IQ){ h( name ); } );
 		return iq;
 	}
 	

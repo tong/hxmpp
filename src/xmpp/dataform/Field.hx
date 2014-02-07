@@ -34,7 +34,7 @@ class Field {
 	public var options : Array<FieldOption>;
 	
 	public function new( ?type : FieldType ) {
-		this.type = ( type == null ) ? FieldType.text_single : type;
+		this.type = (type == null) ? FieldType.text_single : type;
 		values = new Array();
 		options = new Array();
 		required = false;
@@ -55,14 +55,14 @@ class Field {
 	public static function parse( x : Xml ) : Field  {
 		var f = new Field();
 		if( x.exists( "label" ) ) f.label = x.get( "label" );
-		if( x.exists( "type" ) ) f.type = Type.createEnum( FieldType, StringTools.replace( x.get( "type" ), "-", "_" ) );
+		if( x.exists( "type" ) ) f.type = haxe.EnumTools.createByName( FieldType, StringTools.replace( x.get( "type" ), "-", "_" ) );
 		if( x.exists( "var" ) ) f.variable = x.get( "var" );
 		for( e in x.elements() ) {
-			switch( e.nodeName ) {
-			case "desc" : try { f.desc = e.firstChild().nodeValue; } catch( e : Dynamic ) {}
+			switch e.nodeName {
+			case "desc" : try f.desc = e.firstChild().nodeValue catch( e : Dynamic ) {}
 			case "required" : f.required = true;
 			case "option" : f.options.push( FieldOption.parse( e ) );
-			case "value" : try { f.values.push( e.firstChild().nodeValue ); } catch( e : Dynamic ) {}
+			case "value" : try f.values.push( e.firstChild().nodeValue ) catch( e : Dynamic ) {}
 			}
 		}
 		return f;
@@ -72,9 +72,8 @@ class Field {
 		Parses all dataform fields into the given dataform field container.
 	*/
 	public static function parseFields( t : { fields : Array<Field> }, x : Xml ) : { fields : Array<Field> } {
-		for( e in x.elementsNamed( "field" ) ) {
+		for( e in x.elementsNamed( "field" ) )
 			t.fields.push( Field.parse( e.firstElement() ) );
-		}
 		return t;
 	}
 	

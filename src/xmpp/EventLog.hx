@@ -75,17 +75,44 @@ class EventLog {
 
 	public static inline var XMLNS = 'urn:xmpp:eventlog';
 
+	/** When the event occurred. */
 	//public var timestamp : Date;
 	public var timestamp : String;
+
+	/** A (human readable) text message describing what has occurred. */
 	public var messages :	Array<String>;
+
+	/** Custom tags or parameter attached to an event.*/
 	public var tags : Array<EventLogTag>;
+
+	/**
+		Exact position in the code from which the event was reported or where the error occurred.
+		Reporting it in a separate attribute unclutters the message, and removes the need to define custom tags.
+	*/
 	public var stackTrace : String;
+
+	/** An attribute providing a machine readable ID to the type of event in question without having to parse the message text itself. */
 	public var id : String;
+
+	/** Coarse classification of the event */
 	public var type : EventLogType;
+
+	/** Provides an additional level on the previous classification (Minor, Medium, Major). */
 	public var level : EventLogLevel;
+
+	/** The object to which the event message refers to, on which the current action is performed. */
 	public var object : String;
+
+	/** The subject causing the event to take place or performing the action (for instance, user, process, etc.) */
 	public var subject : String;
+
+	/** What type of device, server, application, etc., is sending the message. */
 	public var facility : String;
+
+	/**
+		The module reporting the event. Larger software packages are often divided into modules.
+		Keeping track of which modules report which events can be useful when analyzing system performance.
+	*/
 	public var module : String;
 
 	//public function new( timestamp : Date ) {
@@ -100,7 +127,8 @@ class EventLog {
 	public function toXml() : Xml {
 		var x = IQ.createQueryXml( XMLNS, 'log' );
 		x.set( 'timestamp', timestamp.toString() ); //TODO use date
-		for( m in messages ) x.addChild( XMLUtil.createElement( 'message', m ) );
+		for( m in messages )
+			x.addChild( XMLUtil.createElement( 'message', m ) );
 		for( t in tags ) {
 			var e = Xml.createElement( 'tag' );
 			e.set( 'name', t.name );

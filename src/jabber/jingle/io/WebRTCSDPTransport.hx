@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,9 +24,9 @@ package jabber.jingle.io;
 import webrtc.RTCPeerConnection;
 
 /**
-	Abstract
 */
-@:require(js) class WebRTCSDPTransport extends Transport {
+@:require(js)
+class WebRTCSDPTransport extends Transport {
 	
 	/** STUN server to use */
 	public var stun_url(default,null) : String;

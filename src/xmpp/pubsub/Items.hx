@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,8 @@ class Items extends List<Item> {
 		if( node != null ) x.set( "node", node );
 		if( subid != null ) x.set( "subid", subid );
 		if( maxItems != null ) x.set( "max_items", Std.string( maxItems ) );
-		for( i in iterator() ) x.addChild( i.toXml() );
+		for( i in iterator() )
+			x.addChild( i.toXml() );
 		return x;
 	}
 	
@@ -47,7 +48,7 @@ class Items extends List<Item> {
 		var max = x.get( "maxItems" );
 		var i = new Items( x.get( "node" ),
 						   x.get( "subid" ),
-						   ( max != null ) ? Std.parseInt( max ) : null );
+						   (max != null) ? Std.parseInt( max ) : null );
 		for( e in x.elementsNamed( "item" ) )
 			i.add( Item.parse( e ) );
 		return i;

@@ -40,15 +40,25 @@ class TestJID extends haxe.unit.TestCase {
 		assertEquals( "Resource", parts[2] );
 		
 		var t = "node@sub.domain.net/Resource";
+		
 		assertEquals( "node", JIDUtil.node( t ) );
 		assertEquals( "sub.domain.net", JIDUtil.domain( t ) );
 		assertEquals( "Resource", JIDUtil.resource( t ) );
+		
 		var parts = JIDUtil.parts( t );
 		assertEquals( "node", parts[0] );
 		assertEquals( "sub.domain.net", parts[1] );
 		assertEquals( "Resource", parts[2] );
 		
+		assertTrue( JIDUtil.EREG.match( t ) );
+		assertEquals( t, JIDUtil.EREG.matched( 0 ) );
+		assertEquals( "node", JIDUtil.EREG.matched( 1 ) );
+		assertEquals( "sub.domain.net", JIDUtil.EREG.matched( 2 ) );
+		assertEquals( "Resource", JIDUtil.EREG.matched( 4 ) );
+
+		/*
 		#if jabber_debug
+		
 		var t = "node@domain/Resource";
 		assertEquals( "node", JIDUtil.node( t ) );
 		assertEquals( "domain", JIDUtil.domain( t ) );
@@ -64,7 +74,7 @@ class TestJID extends haxe.unit.TestCase {
 		assertEquals( "node", JIDUtil.EREG.matched( 1 ) );
 		assertEquals( "domain", JIDUtil.EREG.matched( 2 ) );
 		assertEquals( "Resource", JIDUtil.EREG.matched( 5 ) );
-		
+
 		#else
 		
 		assertTrue( JIDUtil.EREG.match( t ) );
@@ -74,6 +84,7 @@ class TestJID extends haxe.unit.TestCase {
 		assertEquals( "Resource", JIDUtil.EREG.matched( 4 ) );
 		
 		#end
+		*/
 	}
 	
 	public function testJID() {

@@ -27,7 +27,8 @@ import xmpp.IQ;
 
 /**
 	Outgoing inband data transfer.
-	<a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a><br/>
+	
+	XEP-0047: In-Band Bytestreams (http://xmpp.org/extensions/xep-0047.html)
 */
 class IBOutput extends IBIO {
 	

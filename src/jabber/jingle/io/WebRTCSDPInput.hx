@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,8 @@ package jabber.jingle.io;
 
 /**
 */
-@:require(js) class WebRTCSDPInput extends WebRTCSDPTransport {
+@:require(js)
+class WebRTCSDPInput extends WebRTCSDPTransport {
 	
 	public var stream(default,null) : Dynamic;
 	

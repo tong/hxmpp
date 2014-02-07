@@ -61,7 +61,7 @@ class DataForm {
 	public static function parse( x : Xml ) : DataForm {
 		var f = new DataForm( Type.createEnum( xmpp.dataform.FormType, x.get( "type" ) ) );
 		for( e in x.elements() ) {
-			switch( e.nodeName ) {
+			switch e.nodeName {
 			case "title" : f.title = e.firstChild().nodeValue;
 			case "field" : f.fields.push( xmpp.dataform.Field.parse( e ) );
 			case "item" : f.items.push( xmpp.dataform.Item.parse( e ) );

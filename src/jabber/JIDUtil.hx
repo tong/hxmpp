@@ -35,21 +35,10 @@ class JIDUtil {
 	*/
 	public static var EREG = 
 		#if jabber_debug
-		~/([A-Z0-9._%-]+)@([A-Z0-9\.-]+)/i;
+		~/([A-Z0-9._%-]+)@([A-Z0-9\.-]+)(\/([A-Z0-9._%-]+))?/i;
 		#else
 		~/([A-Z0-9._%-]+)@([A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?)(\/([A-Z0-9._%-]+))?/i;
 		#end
-	/*
-	#if macro //TODO temp,macro bug
-	public static var EREG = 
-		#if jabber_debug
-		~/([A-Z0-9._%-]+)@([A-Z0-9.-]+(\.[A-Z][A-Z][A-Z]?)?)(\/([A-Z0-9._%-]+))?/;
-		#else
-		~/([A-Z0-9._%-]+)@([A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?)(\/([A-Z0-9._%-]+))?/;
-		#end
-	#else
-	//#end
-	*/
 	
 	/**
 		@returns True if the given JID is valid formed.

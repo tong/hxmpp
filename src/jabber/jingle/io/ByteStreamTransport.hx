@@ -21,15 +21,15 @@
  */
 package jabber.jingle.io;
 
-#if (neko||cpp)
+#if sys
 import sys.net.Socket;
-#end
-#if flash
+#elseif flash
 import flash.net.Socket;
-#elseif nodejs
-import js.Node;
-import js.Stream in Socket;
-//private typedef Socket = Stream;
+#elseif js
+	#if nodejs
+	import js.Node;
+	import js.Stream in Socket;
+	#end
 #end
 
 class ByteStreamTransport extends Transport {

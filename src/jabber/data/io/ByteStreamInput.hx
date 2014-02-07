@@ -23,30 +23,34 @@ package jabber.data.io;
 
 import haxe.io.Bytes;
 import jabber.util.SOCKS5Output;
+
 #if sys
 	import sys.net.Host;
 	import sys.net.Socket;
 #end
+
 #if neko
 	import neko.vm.Thread;
 #elseif cpp
 	import cpp.vm.Thread;
-#elseif (flash)
+#elseif js
+	#if nodejs
+	import js.html.WebSocket in Socket;
+	#elseif air
+	import air.ServerSocketConnectEvent;
+	import air.Socket;
+	import air.ServerSocket;
+	import air.ByteArray;
+	#else
+	import js.html.WebSocket in Socket;
+	#end
+#elseif flash
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.net.Socket;
 	import flash.utils.ByteArray;
-#elseif (air&&js)
-	import air.ServerSocketConnectEvent;
-	import air.Socket;
-	import air.ServerSocket;
-	import air.ByteArray;
-#elseif (js&&!nodejs)
-	import js.html.WebSocket in Socket;
-#elseif nodejs
-	import js.Node.NodeNetSocket in Socket;
 #end
 
 /**

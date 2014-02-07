@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,8 @@ import flash.events.NetStatusEvent;
 import flash.net.NetConnection;
 import flash.net.NetStream;
 
-@:require(flash10) class RTMFPTransport extends Transport {
+@:require(flash10)
+class RTMFPTransport extends Transport {
 
 	public static var EREG_URL = ~/(rtmfp:\/\/)([A-Z0-9.-]+?)(\/([A-Z0-9\-]+))?/i;
 	

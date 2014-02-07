@@ -26,7 +26,7 @@ import haxe.io.Bytes;
 typedef StreamDataInterceptor = {
 
 	/**
-		Modify raw outgoing XMPP data before sending
+		Modify raw, outgoing data before sending
 	*/
 	function interceptData( data : Bytes ) : Bytes;
 }

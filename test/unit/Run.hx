@@ -29,7 +29,7 @@ class Run {
 		TestXMPPBOB,
 		TestXMPPBookmark,
 		TestXMPPChatState,
-	TestXMPPCommand,
+	//TestXMPPCommand,
 		TestXMPPCompression,
 		TestXMPPDataForm,
 		TestXMPPDateTime,
@@ -38,6 +38,7 @@ class Run {
 		TestXMPPEntityCapabilities,
 		TestXMPPEntityTime,
 		TestXMPPError,
+	TestXMPPEventLog,
 		TestXMPPFile,
 		TestXMPPIBByteStream,
 		TestXMPPIQPacket,
@@ -74,7 +75,7 @@ class Run {
 		var r = new haxe.unit.TestRunner();
 		for( test in TESTS ) r.add( Type.createInstance( test, [] ) );
 		
-		trace( HXMPP.VERSION );
+		trace( 'hxmpp ${HXMPP.VERSION}' );
 
 		var timestamp = Timer.stamp();
 		r.run();
@@ -83,7 +84,7 @@ class Run {
 		var i = stime.indexOf( "." );
 		if( i != -1 ) stime = stime.substr( 0, i );
 		var time = Std.parseInt( stime );
-		trace( 'Time: $time' );
+		trace( '$time ms' );
 	}
 	
 }

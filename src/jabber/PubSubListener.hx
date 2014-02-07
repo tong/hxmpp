@@ -22,24 +22,30 @@
 package jabber;
 
 /**
-	Listens for incoming pubsub events from a given service.
+	Listens for pubsub events from a given service.
+
 	XEP-0060: Publish-Subscribe: http://xmpp.org/extensions/xep-0060.html
 */
 class PubSubListener {
 	
 	/** Every(!) full pubsub event message */
 	public dynamic function onMessage( m : xmpp.Message ) {}
+	
 	///** Just the pubsub event ( message may contain additional information, like delay,.. ! ) */
 	//public dynamic function onEvent( service : String, event : xmpp.PubSubEvent ) {}
 	
 	/** New pubsub item(s) recieved */
 	public dynamic function onItems( service : String, items : xmpp.pubsub.Items ) {}
+	
 	/** Configuration got changed */
 	public dynamic function onConfig( service : String, config : { node : String, form : xmpp.DataForm } ) {}
+	
 	/** Node got deleted */
 	public dynamic function onDelete( service : String, node : String ) {}
+	
 	/** Node got purged */
 	public dynamic function onPurge( service : String, node : String ) {}
+	
 	/** Subscription action notification */
 	public dynamic function onSubscription( service : String, subscription : xmpp.pubsub.Subscription ) {}
 	

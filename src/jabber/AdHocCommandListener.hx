@@ -85,9 +85,7 @@ class AdHocCommandListener {
 			onCancel( iq.from, cmd );
 		//case next : trace("TODO");
 		default :
-			#if jabber_debug
-			trace( "unknown command action : "+action );
-			#end
+			#if jabber_debug trace( "unknown command action : "+action ); #end
 		}
 	}
 }
