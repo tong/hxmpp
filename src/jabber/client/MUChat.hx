@@ -36,11 +36,11 @@ import xmpp.filter.PacketTypeFilter;
 	Multiuser chat room occupant.
 */
 class MUChatOccupant {
-	@:allow(jabber.client.MUChat) var nick : String;
-	@:allow(jabber.client.MUChat) var jid : String;
-	@:allow(jabber.client.MUChat) var presence : xmpp.Presence;
-	@:allow(jabber.client.MUChat) var role : xmpp.muc.Role;
-	@:allow(jabber.client.MUChat) var affiliation : xmpp.muc.Affiliation;
+	@:allow(jabber.client.MUChat) public var nick(default,null) : String;
+	@:allow(jabber.client.MUChat) public var jid(default,null) : String;
+	@:allow(jabber.client.MUChat) public var presence(default,null) : xmpp.Presence;
+	@:allow(jabber.client.MUChat) public var role(default,null) : xmpp.muc.Role;
+	@:allow(jabber.client.MUChat) public var affiliation(default,null) : xmpp.muc.Affiliation;
 	@:allow(jabber.client.MUChat) function new() {}
 }
 
