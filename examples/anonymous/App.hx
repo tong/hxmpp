@@ -14,9 +14,7 @@ class App {
 
 		#if sys
 		var argHandler = hxargs.Args.generate([
-			@doc( 'Jabber server hostname' ) ['--server','-s'] => function(name:String) {
-				server = name;
-			},
+			@doc( 'Jabber server hostname' ) ['--server','-s'] => function(name:String) { server = name; },
 			_ => function(arg:String) throw "Unknown command: " +arg
 		]);
 		var args = Sys.args();
@@ -30,8 +28,7 @@ class App {
 		var cnx = new jabber.SocketConnection( server );
 		var stream = new Stream( cnx );
 		stream.onClose = function(?e) {
-			if( e == null ) trace( "XMPP stream closed." );
-			else trace( "XMPP stream error: "+e );
+			trace( (e == null) ? 'XMPP stream closed' : e );
 		}
 		stream.onOpen = function() {
 			var anonAllowed = false;
@@ -43,7 +40,7 @@ class App {
 				}
 			}
 			if( !anonAllowed ) {
-				trace( "Server doesn\'t support anonymous login" );
+				trace( "Server does not support anonymous login" );
 				return;
 			}
 			var auth = new Authentication( stream, [new AnonymousMechanism()] );

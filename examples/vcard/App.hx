@@ -1,10 +1,10 @@
 
+import haxe.io.Bytes;
+import jabber.util.Base64;
 #if js
 import js.Browser.document;
 import js.Browser.window;
 #end
-import jabber.util.Base64;
-import haxe.io.Bytes;
 
 class App extends XMPPClient {
 	
@@ -28,9 +28,7 @@ class App extends XMPPClient {
 		/*
 		var roster = new jabber.client.Roster( stream );
 		roster.onLoad = function(){
-			for( i in roster.items ) {
-				vcard.load( i.jid );
-			}
+			for( i in roster.items ) vcard.load( i.jid );
 		}
 		roster.load();
 		*/
@@ -58,7 +56,7 @@ class App extends XMPPClient {
 		#elseif flash
 		var t = d.photo.binval.split("\n").join("");
 		var l = new flash.display.Loader();
-		l.loadBytes( Base64.decodeBytes( Bytes.ofString(t) ).getData() );
+		l.loadBytes( Bytes.ofString( Base64.decode(t) ).getData() );
 		flash.Lib.current.addChild( l );
 
 		#elseif sys
@@ -73,7 +71,7 @@ class App extends XMPPClient {
 		
 		#end
 		
-		// update own vcard
+		// Update own vcard
 		/*
 		if( jid == null ) {
 			data.birthday = "9/11 2001";

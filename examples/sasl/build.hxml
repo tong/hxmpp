@@ -8,11 +8,12 @@
 -debug
 --each
 
-#--next
-#-lib hxssl
-#-cpp cpp
+--next
+-lib hxssl
+-cpp cpp
+-lib hxargs
+-D HXCPP_M64
 #-cmd mv cpp/App ./app
-#-lib hxargs
 
 #--next
 #-cs cs
@@ -20,8 +21,8 @@
 
 --next
 -java java
--cmd mv java/java.jar ./app.jar
 -lib hxargs
+-cmd mv java/App-Debug.jar ./app.jar
 
 --next
 -js app.js

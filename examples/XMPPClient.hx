@@ -14,13 +14,13 @@ private typedef AccountCredentials = {
 }
 
 /**
-	Basic xmpp client boilerplate
+	Basic jabber/xmpp client (boilerplate base)
 */
 class XMPPClient {
 
 	public static var defaultServer = 'jabber.disktree.net';
 	public static var defaultAccountCredentials = {
-		jid : 'hxmpp@$defaultServer',
+		jid : 'romeo@$defaultServer',
 		password : 'test',
 		ip : 'localhost',
 		port : Stream.defaultPort,
@@ -41,7 +41,7 @@ class XMPPClient {
 		
 		this.jid = jid;
 		this.password = password;
-		this.ip = (ip == null || ip == "" ) ? jid.domain() : ip;
+		this.ip = (ip == null || ip == "") ? jid.domain() : ip;
 		this.http = http;
 		
 		#if (cs||java||php)
@@ -111,7 +111,7 @@ class XMPPClient {
 
 	function createSASLMechanisms() : Array<jabber.sasl.Mechanism> {
 		return [
-			new jabber.sasl.MD5Mechanism(),
+			//new jabber.sasl.MD5Mechanism(),
 			new jabber.sasl.PlainMechanism()
 		];
 	}

@@ -11,6 +11,7 @@ class App {
 	static function init() {
 
 		var creds = XMPPClient.readArguments();
+		creds.http = 'jabber.disktree.net/http';
 
 		var cnx = new BOSHConnection( creds.ip, creds.http, 1, 30, false );
 		
@@ -49,12 +50,13 @@ class App {
 		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
 		init();
 		
-		#elseif nodejs
-		init();
-		
 		#elseif js
-		js.Browser.window.onload = function(_){ init(); }
-		
+			#if nodejs
+			init();
+			#else
+			js.Browser.window.onload = function(_){ init(); }
+			#end
+
 		#else
 		init();
 

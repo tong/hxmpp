@@ -10,6 +10,7 @@
 
 --next
 -cpp cpp
+-D HXCPP_M64
 -cmd mv cpp/App ./app
 
 #--next
@@ -18,7 +19,7 @@
 
 --next
 -java java
--cmd mv java/java.jar app.jar
+-cmd mv java/App.jar app.jar
 
 --next
 -js app.js

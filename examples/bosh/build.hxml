@@ -16,10 +16,10 @@
 -swf app.swf
 -swf-header 100:100:60:D0191E
 
---next
--js app.nodejs
--lib nodejs
--lib hxargs
+#--next
+#-js app.nodejs
+#-lib nodejs
+#-lib hxargs
 
 #--next
 #-neko app.n

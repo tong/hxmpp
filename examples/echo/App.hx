@@ -21,10 +21,10 @@ class App {
 		if( xmpp.Delayed.fromPacket( m ) != null )
 			return;
 
-		// get occupant jid from 'from' field
+		// Get occupant jid from packet 'from' field
 		var jid = new JID( m.from );
 		
-		trace( "Recieved message from "+jid.bare+" at resource: "+jid.resource );
+		trace( 'Received message from ${jid.bare} at resource: ${jid.resource}' );
 		
 		// Send a response message
 		stream.sendPacket( new xmpp.Message( m.from, "Hello darling aka "+jid.node ) );
@@ -38,7 +38,8 @@ class App {
 		//TODO
 		//TODO
 		var jid = new JID( JID );
-		var ip = "jabber.spektral.at"; //(IP != null) ? IP : jid.domain;
+		//var ip = "jabber.spektral.at"; //(IP != null) ? IP : jid.domain;
+		var ip = (IP != null) ? IP : jid.domain;
 
 		trace(ip);
 		

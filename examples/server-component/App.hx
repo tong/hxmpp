@@ -2,7 +2,7 @@
 import jabber.component.Stream;
 
 /**
-	HXMPP server component example
+	External server component example
 */
 class App {
 	
