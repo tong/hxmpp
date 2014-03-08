@@ -26,9 +26,8 @@ import xmpp.IQ;
 import xmpp.IQType;
 
 /**
-	Base for BOSH/HTTP clients doing account pre-binding.
-	Prebinds a anonymous session for default.
-	Use jabber.BOSHPrebindAccount to use a 'real' account.
+	Base class for bosh/http clients doing account pre-binding.
+	Prebinds a anonymous session for default, use jabber.BOSHPrebindAccount to use a 'real' account.
 */
 class BOSHPrebind {
 

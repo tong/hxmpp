@@ -26,7 +26,7 @@ package jabber;
 */
 class PacketListener<T:xmpp.Packet> {
 	
-	/** Packet recieved callback */
+	/** Packet receive callback */
 	public dynamic function onPacket( p : T ) {}
 	
 	/** Activates/Deactivates packet collecting */

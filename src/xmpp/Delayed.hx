@@ -47,7 +47,7 @@ typedef PacketDelay = {
 */
 class Delayed {
 	
-	public static var XMLNS = "urn:xmpp:delay";
+	public static inline var XMLNS = "urn:xmpp:delay";
 	
 	public var from : String;
 	public var stamp : String;

@@ -125,14 +125,12 @@ class BOSHConnection extends jabber.StreamConnection {
 		if( initialized && connected ) {
 			restart();
 		} else {
-			
 			initialized = true;
 			rid = Std.int( Math.random()*10000000 );
 			requestCount = 0;
 			requestQueue = new Array();
 			responseQueue = new Array();
 			responseTimer = new Timer( INTERVAL );
-			
 			var b = Xml.createElement( "body" );
 			#if flash // TODO flash 2.06 fukup hack
 			b.set( '_xmlns_', XMLNS );
@@ -151,11 +149,9 @@ class BOSHConnection extends jabber.StreamConnection {
 			b.set( 'wait', Std.string( wait ) );
 			b.set( 'to', host );
 			b.set( 'secure', Std.string( secure ) );
-			
 			#if xmpp_debug
 			XMPPDebug.o( b.toString() );
 			#end
-			
 			sendRequests( b );
 		}
 	}
@@ -248,7 +244,7 @@ class BOSHConnection extends jabber.StreamConnection {
 	function sendRequests( ?t : Xml, poll : Bool = false ) : Bool {
 		
 		if( requestCount >= maxConcurrentRequests ) {
-			#if jabber_debug trace( 'Max concurrent BOSH request limit reached ($requestCount,$maxConcurrentRequests)' ); #end
+			#if jabber_debug trace( 'max concurrent http request limit ($requestCount,$maxConcurrentRequests)' ); #end
 			return false;
 		}
 
@@ -268,8 +264,7 @@ class BOSHConnection extends jabber.StreamConnection {
 		
 		createHTTPRequest( t.toString() );
 
-		if( timeoutTimer != null )
-			timeoutTimer.stop();
+		if( timeoutTimer != null ) timeoutTimer.stop();
 		timeoutTimer = new Timer( (wait*1000)+(timeoutOffset*1000) );
 		timeoutTimer.run = handleTimeout;
 		
@@ -277,66 +272,59 @@ class BOSHConnection extends jabber.StreamConnection {
 	}
 	
 	function createHTTPRequest( data : String ) {
-		
-
-		#if (js&&nodejs)
-		var _path = path.substr( path.lastIndexOf( '/' ) );
-		if( _path.charAt( _path.length ) != '/' ) _path += '/';
-		var opts : Dynamic = { //TODO NodeHttpsReqOpt
-			host : ip, port : port, path : _path, method : 'POST',
-			//requestCert: false,
-			rejectUnauthorized:  false,
-			headers: {
-				'Content-Type' : 'text/xml',
-				'Content-Length' : data.length
+		#if js
+			#if nodejs
+			var _path = path.substr( path.lastIndexOf( '/' ) );
+			if( _path.charAt( _path.length ) != '/' ) _path += '/';
+			var opts : Dynamic = { //TODO NodeHttpsReqOpt
+				host : ip,
+				port : port,
+				path : _path,
+				method : 'POST',
+				//requestCert: false,
+				rejectUnauthorized:  false,
+				headers: { 'Content-Type' : 'text/xml', 'Content-Length' : data.length }
+			};
+			var h = function(res:NodeHttpClientResp) {
+				switch res.statusCode {
+				case 200:
+					res.setEncoding( NodeC.UTF8 );
+					res.on( NodeC.EVENT_STREAM_DATA, handleHTTPData );
+				default:
+					trace("TODO....");
+					handleHTTPError( "ERROR" );
+				}
 			}
-		};
-		var h = function(res:NodeHttpClientResp) {
-			switch( res.statusCode ) {
-			case 200:
-				res.setEncoding( NodeC.UTF8 );
-				res.on( NodeC.EVENT_STREAM_DATA, handleHTTPData );
-			default:
-				//TODO
-				trace("TODO....");
-				handleHTTPError( "ERROR" );
-			}
-		}
-		var r : NodeHttpClientReq = secure ? Node.https.request( opts, h ): Node.http.request( opts, h );
-		r.on( NodeC.EVENT_STREAM_ERROR, handleHTTPError );
-		r.write( data );
-		r.end();
-			
-		#elseif google_apps_script
-		var headers = {
-			"GData-Version": "2",
-			//"Slug": "dog-skateboarding.mpeg"
-			// Other required parameters for YouTube API
-		};
-		var options = {
-			"method": "post",
-			"headers": headers,
-			"payload": data
-		};
-		var response = google.script.UrlFetchApp.fetch( getHTTPPath(), options );
-		google.script.Logger.log(response.getContentText());
+			var r : NodeHttpClientReq = secure ? Node.https.request( opts, h ): Node.http.request( opts, h );
+			r.on( NodeC.EVENT_STREAM_ERROR, handleHTTPError );
+			r.write( data );
+			r.end();
+			#elseif google_apps_script
+			//TODO
+			var options = {
+				"method": "post",
+				"headers": { "GData-Version": "2" },
+				"payload": data
+			};
+			var result = google.script.UrlFetchApp.fetch( getHTTPPath(), options );
+			handleHTTPData( result );
 
-		#elseif js
-		var r = new XMLHttpRequest();
-		//TODO if( crossOrigin ) r.withCredentials = true;
-		r.open( "POST", getHTTPPath(), true );
-		r.onreadystatechange = function(e){
-			//trace(e+":"+r.readyState);
-			if( r.readyState != 4 )
-				return;
-			var s = r.status;
-			if( s != null && s >= 200 && s < 400 )
-				handleHTTPData( r.responseText );
-			else
-				handleHTTPError( "Http Error #"+r.status );
-		}
-		r.send( data );
-		
+			#else
+			var r = new XMLHttpRequest();
+			//TODO if( crossOrigin ) r.withCredentials = true;
+			r.open( "POST", getHTTPPath(), true );
+			r.onreadystatechange = function(e){
+				//trace(e+":"+r.readyState);
+				if( r.readyState != 4 )
+					return;
+				var s = r.status;
+				if( s != null && s >= 200 && s < 400 )
+					handleHTTPData( r.responseText );
+				else
+					handleHTTPError( "Http Error #"+r.status );
+			}
+			r.send( data );
+			#end
 		#elseif flash
 		var r = new flash.net.URLRequest( getHTTPPath() );
 		r.method = flash.net.URLRequestMethod.POST;
@@ -356,7 +344,6 @@ class BOSHConnection extends jabber.StreamConnection {
 		l.addEventListener( SecurityErrorEvent.SECURITY_ERROR, function(e){ handleHTTPError(e.type); } );
 		//l.addEventListener( HTTPStatusEvent.HTTP_STATUS, function(e) handleHTTPStatus( e.status ) );
 		l.load( r );
-		
 		#elseif sys
 		//TODO
 		/*
@@ -366,7 +353,6 @@ class BOSHConnection extends jabber.StreamConnection {
 		r.request( ip, port, _path, data, handleHTTPData, handleHTTPError );
 		//Sys.sleep(1);
 		*/
-
 		#end
 	}
 	

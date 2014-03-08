@@ -72,6 +72,8 @@ private class StreamFeatures {
 
 /**
 	http://xmpp.org/rfcs/rfc6120.html#streams
+
+	Abstract base class, core xmpp stream implementation.
 */
 class Stream {
 	
@@ -175,14 +177,12 @@ class Stream {
 		Open the XMPP stream.
 	*/
 	#if jabber_component
-	
-	public function open( host : String, subdomain : String, secret : String, ?identities : Array<xmpp.disco.Identity> ) {
+	public function open( host : String, subdomain : String, secret : String,
+						  ?identities : Array<xmpp.disco.Identity> ) {
 		#if jabber_debug throw 'abstract method "open", use "connect" for components'; #end
 	}
-
 	#else
 	public function open( jid : String ) {
-	//public function open( jid : JID ) {
 		if( jid != null )
 			this.jid = new JID( jid );
 		else if( this.jid == null )
