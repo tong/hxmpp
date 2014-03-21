@@ -27,15 +27,15 @@ class Jingle {
 	
 	static inline var _XMLNS = "urn:xmpp:jingle:";
 	
-	public static var XMLNS = _XMLNS+"1";
-	public static var XMLNS_RTP = _XMLNS+"apps:rtp:1";
-	public static var XMLNS_RTMP = _XMLNS+"apps:rtmp";
-	public static var XMLNS_RTMFP = _XMLNS+"apps:rtmfp";
-	public static var XMLNS_FILETRANSFER = _XMLNS+"apps:file-transfer:1";
-	public static var XMLNS_S5B = _XMLNS+"transports:s5b:1";
+	public static inline var XMLNS = _XMLNS+"1";
+	public static inline var XMLNS_RTP = _XMLNS+"apps:rtp:1";
+	public static inline var XMLNS_RTMP = _XMLNS+"apps:rtmp";
+	public static inline var XMLNS_RTMFP = _XMLNS+"apps:rtmfp";
+	public static inline var XMLNS_FILETRANSFER = _XMLNS+"apps:file-transfer:1";
+	public static inline var XMLNS_S5B = _XMLNS+"transports:s5b:1";
 	
+	public static inline var XMLNS_RTC = XMLNS+"apps:rtc:1";
 	//public static var XMLNS_WEBRTC = "urn:xmpp:jingle:transports:webrtc:1"; // "apps:webrtc"; //TODO
-	public static var XMLNS_RTC = XMLNS+"apps:rtc:1";
 	
 	public var action : xmpp.jingle.Action;
 	public var initiator : String;
@@ -58,14 +58,14 @@ class Jingle {
 	public function toXml() : Xml {
 		var x = Xml.createElement( "jingle" );
 		x.ns( XMLNS );
-		x.set( "action", StringTools.replace( Type.enumConstructor( action ), "_", "-" ) );
+		x.set( "action", Std.string( action ) );
 		x.set( "initiator", initiator );
 		if( responder != null ) x.set( "responder", responder );
 		x.set( "sid", sid );
 		for( c in content ) x.addChild( c.toXml() );
 		if( reason != null ) {
 			var r = Xml.createElement( "reason" );
-			var e = Xml.createElement( Type.enumConstructor( reason.type ) );
+			var e = Xml.createElement( Std.string( reason.type ) );
 			if( reason.content != null ) e.addChild( reason.content );
 			r.addChild( e );
 			x.addChild( r );
@@ -75,7 +75,7 @@ class Jingle {
 	}
 	
 	public static function parse( x : Xml ) : Jingle {
-		var j = new xmpp.Jingle( Type.createEnum( xmpp.jingle.Action, StringTools.replace( x.get( "action" ), "-", "_" ) ),
+		var j = new xmpp.Jingle( cast x.get( "action" ),
 								 x.get( "initiator" ),
 								 x.get( "sid" ), 
 								 x.get( "responder" ) );
@@ -84,8 +84,10 @@ class Jingle {
 			case "content" :
 				j.content.push( xmpp.jingle.Content.parse( e ) );
 			case "reason" :
-				j.reason = { type : Type.createEnum( xmpp.jingle.Reason, e.firstChild().nodeName ),
-							 content : e.firstChild().firstChild() };
+				j.reason = {
+					type : cast e.firstChild().nodeName,
+					content : e.firstChild().firstChild()
+				};
 			default :
 				j.other.push( e );
 			}

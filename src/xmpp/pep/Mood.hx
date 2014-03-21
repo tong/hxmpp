@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,67 +21,67 @@
  */
 package xmpp.pep;
 
-@:fakeEnum(String) enum Mood {
-	afraid;
-	amazed;
-	angry;
-	annoyed;
-	anxious;
-	aroused;
-	ashamed;
-	bored;
-	brave;
-	calm;
-	cold;
-	confused;
-	contented;
-	cranky;
-	curious;
-	depressed;
-	disappointed;
-	disgusted;
-	distracted;
-	embarrassed;
-	excited;
-	flirtatious;
-	frustrated;
-	grumpy;
-	guilty;
-	happy;
-	hot;
-	humbled;
-	humiliated;
-	hungry;
-	hurt;
-	impressed;
-	in_awe;
-	in_love;
-	indignant;
-	interested;
-	intoxicated;
-	invincible;
-	jealous;
-	lonely;
-	mean;
-	moody;
-	nervous;
-	neutral;
-	offended;
-	playful;
-	proud;
-	relieved;
-	remorseful;
-	restless;
-	sad;
-	sarcastic;
-	serious;
-	shocked;
-	shy;
-	sick;
-	sleepy;
-	stressed;
-	surprised;
-	thirsty;
-	worried;
+@:enum abstract Mood(String) {
+	var afraid = "afraid";
+	var amazed = "amazed";
+	var angry = "angry";
+	var annoyed = "annoyed";
+	var anxious = "anxious";
+	var aroused = "aroused";
+	var ashamed = "ashamed";
+	var bored = "bored";
+	var brave = "brave";
+	var calm = "calm";
+	var cold = "cold";
+	var confused = "confused";
+	var contented = "contented";
+	var cranky = "cranky";
+	var curious = "curious";
+	var depressed = "depressed";
+	var disappointed = "disappointed";
+	var disgusted = "disgusted";
+	var distracted = "distracted";
+	var embarrassed = "embarrassed";
+	var excited = "excited";
+	var flirtatious = "flirtatious";
+	var frustrated = "frustrated";
+	var grumpy = "grumpy";
+	var guilty = "guilty";
+	var happy = "happy";
+	var hot = "hot";
+	var humbled = "humbled";
+	var humiliated = "humiliated";
+	var hungry = "hungry";
+	var hurt = "hurt";
+	var impressed = "impressed";
+	var in_awe = "in_awe";
+	var in_love = "in_love";
+	var indignant = "indignant";
+	var interested = "interested";
+	var intoxicated = "intoxicated";
+	var invincible = "invincible";
+	var jealous = "jealous";
+	var lonely = "lonely";
+	var mean = "mean";
+	var moody = "moody";
+	var nervous = "nervous";
+	var neutral = "neutral";
+	var offended = "offended";
+	var playful = "playful";
+	var proud = "proud";
+	var relieved = "relieved";
+	var remorseful = "remorseful";
+	var restless = "restless";
+	var sad = "sad";
+	var sarcastic = "sarcastic";
+	var serious = "serious";
+	var shocked = "shocked";
+	var shy = "shy";
+	var sick = "sick";
+	var sleepy = "sleepy";
+	var stressed = "stressed";
+	var surprised = "surprised";
+	var thirsty = "thirsty";
+	var worried = "worried";
 }
 	

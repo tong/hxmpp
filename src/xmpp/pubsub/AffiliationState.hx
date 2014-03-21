@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,12 +22,12 @@
 package xmpp.pubsub;
 
 /**
-	<a href="http://xmpp.org/extensions/xep-0060.html#affiliations">Affiliations</a>
+	http://xmpp.org/extensions/xep-0060.html#affiliations
 */
-enum AffiliationState {
-	none;
-	owner;
-	publisher;
-	member;
-	outcast;
+@:enum abstract AffiliationState(String) {
+	var none = "none";
+	var owner = "owner";
+	var publisher = "publisher";
+	var member = "member";
+	var outcast = "outcast";
 }

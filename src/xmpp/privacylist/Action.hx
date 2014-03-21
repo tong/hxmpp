@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,7 @@
  */
 package xmpp.privacylist;
 
-enum Action {
-	allow;
-	deny;
+@:enum abstract Action(String) {
+	var allow = "allow";
+	var deny = "deny";
 }

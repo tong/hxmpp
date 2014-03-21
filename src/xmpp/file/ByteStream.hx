@@ -36,7 +36,7 @@ class ByteStream {
 	public function new( sid : String,
 						 ?streamhosts : Array<ByteStreamHost>, ?mode : ByteStreamMode ) {
 		this.sid = sid;
-		this.streamhosts = ( streamhosts != null ) ? streamhosts : new Array();
+		this.streamhosts = (streamhosts != null) ? streamhosts : new Array();
 		this.mode = mode;
 	}
 	
@@ -49,14 +49,14 @@ class ByteStream {
 			e.set( "jid", streamhost_used );
 			x.addChild( e );
 		}
-		if( mode != null ) x.set( "mode", Type.enumConstructor( mode ) );
+		if( mode != null ) x.set( "mode", Std.string( mode ) );
 		x.addField( this, 'activate' );
 		return x;
 	}
 	
 	public static function parse( x : Xml ) : ByteStream {
 		var b = new ByteStream( x.get( "sid" ) );
-		if( x.exists( "mode" ) ) b.mode = Type.createEnum( ByteStreamMode, x.get( "mode" ) );
+		b.mode = cast x.get( "mode" );
 		for( e in x.elements() ) {
 			switch( e.nodeName ) {
 			case "streamhost-used" :

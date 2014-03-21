@@ -38,7 +38,7 @@ class IB {
 	}
 	
 	public function toXml() : Xml {
-		var x = Xml.createElement( Type.enumConstructor( type ) );
+		var x = Xml.createElement( Std.string( type ) );
 		xmpp.XMLUtil.setNamespace( x, XMLNS );
 		x.set( "sid", sid );
 		switch( type ) {
@@ -50,9 +50,9 @@ class IB {
 	}
 	
 	public static function parse( x : Xml ) : IB {
-		var _type = Type.createEnum( IBType, x.nodeName );
-		var ib = new IB( _type, x.get( "sid" ), Std.parseInt( x.get( "block-size" ) ) );
-		if( Type.enumEq( _type, xmpp.file.IBType.data ) ) {
+		var type : IBType = cast x.nodeName;
+		var ib = new IB( type, x.get( "sid" ), Std.parseInt( x.get( "block-size" ) ) );
+		if( type == IBType.data ) {
 			ib.data = x.firstChild().nodeValue;
 			ib.sid = x.get( "sid" );
 			ib.seq = Std.parseInt( x.get( "seq" ) );

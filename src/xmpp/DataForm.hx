@@ -49,7 +49,7 @@ class DataForm {
 	public function toXml() : Xml {
 		var x = Xml.createElement( "x" );
 		x.ns( XMLNS );
-		if( type != null ) x.set( "type", Type.enumConstructor( type ) );
+		if( type != null ) x.set( "type", Std.string( type ) );
 		x.addField( this, 'title' );
 		x.addField( this, 'instructions' );
 		for( f in fields ) x.addChild( f.toXml() );
@@ -59,7 +59,7 @@ class DataForm {
 	}
 	
 	public static function parse( x : Xml ) : DataForm {
-		var f = new DataForm( Type.createEnum( xmpp.dataform.FormType, x.get( "type" ) ) );
+		var f = new DataForm( cast x.get( "type" ) );
 		for( e in x.elements() ) {
 			switch e.nodeName {
 			case "title" : f.title = e.firstChild().nodeValue;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,17 +21,17 @@
  */
 package xmpp.pep;
 
-enum Activity {
-	doing_chores;
-	drinking;
-	eating;
-	exercising;
-	grooming;
-	having_appointment;
-	inactive;
-	relaxing;
-	talking;
-	traveling;
-	undefined;
-	working;
+@:enum abstract Activity(String) {
+	var doing_chores = "doing-chores";
+	var drinking = "drinking";
+	var eating = "eating";
+	var exercising = "exercising";
+	var grooming = "grooming";
+	var having_appointment = "having-appointment";
+	var inactive = "inactive";
+	var relaxing = "relaxing";
+	var talking = "talking";
+	var traveling = "traveling";
+	var undefined = "undefined";
+	var working = "working";
 }

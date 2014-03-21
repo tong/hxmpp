@@ -44,7 +44,7 @@ class Subscription {
 		x.set( "jid", jid );
 		if( node != null ) x.set( "node", node );
 		if( subid != null ) x.set( "subid", subid );
-		if( subscription != null ) x.set( "subscription", Type.enumConstructor( subscription ) );
+		if( subscription != null ) x.set( "subscription", Std.string( subscription ) );
 		// subscribe_options...
 		return x;
 	}
@@ -53,7 +53,7 @@ class Subscription {
 		var s = new Subscription( x.get( "jid" ) );
 		if( x.exists( "node" ) ) s.node = x.get( "node" );
 		if( x.exists( "subid" ) ) s.subid = x.get( "subid" );
-		if( x.exists( "subscription" ) ) s.subscription = Type.createEnum( SubscriptionState, x.get( "subscription" ) );
+		if( x.exists( "subscription" ) ) s.subscription = cast x.get( "subscription" );
 		// subscribe_options...
 		return s;
 	}

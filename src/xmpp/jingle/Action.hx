@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,76 +24,76 @@ package xmpp.jingle;
 /**
 	Actions related to management of a jingle session.
 */
-enum Action {
+@:enum abstract Action(String) {
 	
 	/** Accept a content-add or content-modify action received from another party. */
-	content_accept;
+	var content_accept = "content-accept";
 	
 	/**
 		Add one or more new content types to the session.
 	*/
-	content_add;
+	var content_add = "content-add";
 	
 	/**
 		Change an existing content type.
 	*/
-	content_modify;
+	var content_modify = "content-modify";
 	
 	/**
 	*/
-	content_reject;
+	var content_reject = "content-reject";
 	
 	/**
 		Remove one or more content types from the session.
 	*/
-	content_remove;
+	var content_remove = "content-remove";
 	
 	/**
 	*/
-	description_info;
+	var description_info = "description-info";
 	
 	/**
 	*/
-	security_info;
+	var security_info = "security-info";
 	
 	/**
 		Definitively accept a session negotiation (implicitly this action also serves as a content-accept).
 	*/
-	session_accept;
+	var session_accept = "session-accept";
 	
 	/**
 		 Send session-level information / messages, such as (for Jingle audio) a ringing message.
 	*/
-	session_info;
+	var session_info = "session-info";
 	
 	/**
 		Request negotiation of a new Jingle session.
 	*/
-	session_initiate;
+	var session_initiate = "session-initiate";
 	
 	/**
 		 End an existing session.
 	*/
-	session_terminate;
+	var session_terminate = "session-terminate";
 	
 	/**
 		Exchange transport candidates, it is mainly used in XEP-0176 but may be used in other transport specifications.
 	*/
-	transport_info;
+	var transport_info = "transport-info";
 	
 	/**
 		Accept a transport-replace action received from another party.
 	*/
-	transport_accept;
+	var transport_accept = "transport-accept";
 	
 	/**
 		Reject a transport-replace action received from another party.
 	*/
-	transport_reject;
+	var transport_reject = "transport-reject";
 	
 	/**
 		Redefine a transport method.
 	*/
-	transport_replace;
+	var transport_replace = "transport-replace";
 	
 }

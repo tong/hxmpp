@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,15 +25,13 @@ class Affiliations extends List<Affiliation> {
 	
 	public function toXml() {
 		var x = Xml.createElement( "affiliations" );
-		for( s in iterator() )
-			x.addChild( s.toXml() );
+		for( s in iterator() ) x.addChild( s.toXml() );
 		return x;
 	}
 	
 	public static function parse( x : Xml ) : Affiliations {
 		var a = new Affiliations();
-		for( e in x.elementsNamed( "affiliation" ) )
-			a.add( Affiliation.parse( e ) );
+		for( e in x.elementsNamed( "affiliation" ) ) a.add( Affiliation.parse( e ) );
 		return a;
 	}
 	

@@ -21,7 +21,7 @@
  */
 package xmpp.pubsub;
 
-enum NodeType {
-	leaf;
-	collection;
+@:enum abstract NodeType(String) {
+	var leaf = "leaf";
+	var collection = "collection";
 }

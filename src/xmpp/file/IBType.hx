@@ -21,8 +21,8 @@
  */
 package xmpp.file;
 
-enum IBType {
-	open;
-	close;
-	data;
+@:enum abstract IBType(String) {
+	var open = "open";
+	var close = "close";
+	var data = "data";
 }

@@ -43,7 +43,7 @@ class Field {
 	public function toXml() : Xml {
 		var x = Xml.createElement( "field" );
 		if( label != null ) x.set( "label", label );
-		if( type != null ) x.set( "type", StringTools.replace( Type.enumConstructor( type ), "_", "-" ) );
+		if( type != null ) x.set( "type", Std.string( type ) );
 		if( variable != null ) x.set( "var", variable );
 		if( required ) x.addChild( Xml.createElement( "required" ) );
 		if( desc != null ) x.addChild( XMLUtil.createElement( "desc", desc ) );
@@ -55,7 +55,7 @@ class Field {
 	public static function parse( x : Xml ) : Field  {
 		var f = new Field();
 		if( x.exists( "label" ) ) f.label = x.get( "label" );
-		if( x.exists( "type" ) ) f.type = haxe.EnumTools.createByName( FieldType, StringTools.replace( x.get( "type" ), "-", "_" ) );
+		f.type = cast x.get( "type" );
 		if( x.exists( "var" ) ) f.variable = x.get( "var" );
 		for( e in x.elements() ) {
 			switch e.nodeName {

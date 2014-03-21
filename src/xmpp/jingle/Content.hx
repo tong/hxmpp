@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,19 +40,19 @@ class Content {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "content" );
-		x.set( "creator", Type.enumConstructor( creator ) );
+		x.set( "creator", Std.string( creator ) );
 		x.set( "name", name );
 		if( disposition != null ) x.set( "disposition", disposition );
-		if( senders != null ) x.set( "senders", Type.enumConstructor( senders ) );
+		if( senders != null ) x.set( "senders", Std.string( senders ) );
 		for( e in other ) x.addChild( e );
 		return x;
 	}
 	
 	public static function parse( x : Xml ) : Content {
-		var c = new Content( Type.createEnum( Creator, x.get( "creator" ) ),
+		var c = new Content( cast x.get( "creator" ),
 							 x.get( "name" ),
 							 x.get( "disposition" ),
-							 x.exists( "senders" ) ? Type.createEnum( Senders, x.get( "senders" ) ) : null );
+							 cast x.get( "senders" ) );
 		c.other = Lambda.array( x );
 		return c;
 	}

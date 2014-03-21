@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,8 +46,8 @@ class Item {
 		var x = Xml.createElement( "item" );
 		if( jid != null ) x.set( "jid", jid );
 		if( nick != null ) x.set( "nick", nick );
-		if( role != null ) x.set( "role", Type.enumConstructor( role ) );
-		if( affiliation != null ) x.set( "affiliation", Type.enumConstructor( affiliation ) );
+		if( role != null ) x.set( "role", Std.string( role ) );
+		if( affiliation != null ) x.set( "affiliation", Std.string( affiliation ) );
 		if( actor != null ) {
 			var e = Xml.createElement( "actor" );
 			e.set( "jid", actor );
@@ -66,8 +66,8 @@ class Item {
 	
 	public static function parse( x : Xml ) : Item {
 		var p = new Item();
-		if( x.exists( "affiliation" ) ) p.affiliation = Type.createEnum( Affiliation, x.get( "affiliation" ) );
-		if( x.exists( "role" ) ) p.role = Type.createEnum( Role, x.get( "role" ) );
+		if( x.exists( "affiliation" ) ) p.affiliation = cast x.get( "affiliation" );
+		if( x.exists( "role" ) ) p.role = cast x.get( "role" );
 		if( x.exists( "nick" ) ) p.nick = x.get( "nick" );
 		if( x.exists( "jid" ) ) p.jid = x.get( "jid" );
 		for( e in x.elements() ) {

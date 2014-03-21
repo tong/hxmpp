@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,9 +21,9 @@
  */
 package xmpp.jingle;
 
-enum Senders {
-	initiator;
-	none;
-	responder;
-	both;
+@:enum abstract Senders(String) {
+	var initiator = "initiator";
+	var none = "none";
+	var responder = "responder";
+	var both = "both";
 }

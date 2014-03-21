@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +42,7 @@ class UserActivity extends xmpp.PersonalEvent {
 	
 	public override function toXml() : Xml {
 		var x = empty();
-		var a = Xml.createElement( Type.enumConstructor( activity ) );
+		var a = Xml.createElement( Std.string( activity ) );
 		if( extended != null ) {
 			var e = Xml.createElement( extended.activity );
 			if( extended.xmlns != null ) xmpp.XMLUtil.setNamespace( e, extended.xmlns );
@@ -63,7 +63,8 @@ class UserActivity extends xmpp.PersonalEvent {
 				t = e.firstChild().nodeValue;
 			else {
 				//try {
-					a = Type.createEnum( xmpp.pep.Activity, e.nodeName );
+					//a = Type.createEnum( xmpp.pep.Activity, e.nodeName );
+					a = cast e.nodeName;
 					for( _ext in e.elements() ) {
 						var detail : { activity : String, xmlns : String } = null;
 						for( _d in _ext.elements() )

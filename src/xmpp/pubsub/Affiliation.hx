@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,12 +34,12 @@ class Affiliation {
 	public function toXml() : Xml {
 		var x = Xml.createElement( "affiliation" );
 		x.set( "node", node );
-		x.set( "affiliation", Type.enumConstructor( affiliation ) );
+		x.set( "affiliation", Std.string( affiliation ) );
 		return x;
 	}
 	
-	public static function parse( x : Xml) : Affiliation {
-		return new Affiliation( x.get( "node" ), Type.createEnum( AffiliationState, x.get( "affiliation" ) ) );
+	public static inline function parse( x : Xml) : Affiliation {
+		return new Affiliation( x.get( "node" ), cast x.get( "affiliation" ) );
 	}
 	
 }

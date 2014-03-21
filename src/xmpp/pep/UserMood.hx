@@ -42,7 +42,7 @@ class UserMood extends xmpp.PersonalEvent {
 	
 	public override function toXml() : Xml {
 		var x = empty();
-		var m = Xml.createElement( Type.enumConstructor( type ) );
+		var m = Xml.createElement( Std.string( type ) );
 		if( extended != null ) {
 			var e = Xml.createElement( extended.mood );
 			e.set( "xmlns", extended.xmlns );
@@ -63,7 +63,8 @@ class UserMood extends xmpp.PersonalEvent {
 				t = e.firstChild().nodeValue;
 			else {
 				//try {
-					m = Type.createEnum( xmpp.pep.Mood, e.nodeName );
+					//m = Type.createEnum( xmpp.pep.Mood, e.nodeName );
+					m = cast e.nodeName;
 					for( _ext in e.elements() )
 						ext = { mood : _ext.nodeName, xmlns : _ext.get( "xmlns" ) };
 				//} catch( e :Dynamic ) { return null; }

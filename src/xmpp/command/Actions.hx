@@ -21,15 +21,14 @@
  */
 package xmpp.command;
 
-@:fakeEnum(String)
-enum Actions {
+@:enum abstract Actions(String) {
 	
 	/** */
-	complete;
+	var complete = "complete";
 	
 	/** */
-	next;
+	var next = "next";
 	
 	/** */
-	prev;
+	var prev = "prev";
 }

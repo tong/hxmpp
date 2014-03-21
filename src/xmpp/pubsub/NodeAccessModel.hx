@@ -24,31 +24,31 @@ package xmpp.pubsub;
 /**
 	http://xmpp.org/extensions/xep-0060.html#accessmodels
 */
-enum NodeAccessModel {
+@:enum abstract NodeAccessModel(String) {
 	
 	/**
 		Any entity may subscribe to the node (i.e., without the necessity for subscription approval)
 		and any entity may retrieve items from the node (i.e., without being subscribed).
 		This SHOULD be the default access model for generic pubsub services.
 	*/
-	open;
+	var open = "open";
 	
 	/**
 		Any entity with a subscription of type "from" or "both" may subscribe to the node and retrieve items from the node.
 		This access model applies mainly to instant messaging systems.
 	*/
-	presence;
+	var presence = "presence";
 	
 	/**
 		Any entity in the specified roster group(s) may subscribe to the node and retrieve items from the node.
 		This access model applies mainly to instant messaging systems.
 	*/
-	roster;
+	var roster = "roster";
 	
 	/**
 		The node owner must approve all subscription requests, and only subscribers may retrieve items from the node.
 	*/
-	authorize;
+	var authorize = "authorize";
 	
 	/**
 		An entity may subscribe or retrieve items only if on a whitelist managed by the node owner.
@@ -57,6 +57,6 @@ enum NodeAccessModel {
 		the node owner SHOULD use the protocol specified in the Manage Affiliated Entities section of this document,
 		specifically by setting the affiliation to "member".
 	*/
-	whitelist;
+	var whitelist = "whitelist";
 	
 }

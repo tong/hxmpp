@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,9 +24,9 @@ package xmpp.muc;
 /**
 	Roles and Affiliations: http://xmpp.org/extensions/xep-0045.html#connections
 */
-enum Role {
-	none;
-	visitor;
-	participant;
-	moderator;
+@:enum abstract Role(String) {
+	var none = "none";
+	var visitor = "visitor";
+	var participant = "participant";
+	var moderator = "moderator";
 }

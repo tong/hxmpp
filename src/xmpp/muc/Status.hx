@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,7 @@ class Status {
 		return x;
 	}
 	
-	public static inline function parse( x ) : Status {
+	public static inline function parse( x : Xml ) : Status {
 		return new Status( Std.parseInt( x.get( "code" ) ) );
 	}
 	

@@ -21,21 +21,20 @@
  */
 package xmpp.command;
 
-@:fakeEnum(String)
-enum Action {
+@:enum abstract Action(String) {
 	
 	/** The command should be canceled. */
-	cancel;
+	var cancel = "cancel";
 
 	/** The command should be completed (if possible). */
-	complete;
+	var complete = "complete";
 	
 	/** The command should be executed or continue to be executed. This is the default value. */
-	execute;
+	var execute = "execute";
 	
 	/** The command should progress to the next stage of execution. */
-	next;
+	var next = "next";
 	
 	/** The command should be digress to the previous stage of execution. */
-	prev;
+	var prev = "prev";
 }

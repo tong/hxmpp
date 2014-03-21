@@ -21,7 +21,7 @@
  */
 package xmpp.file;
 
-enum ByteStreamMode {
-	tcp;
-	udp;
+@:enum abstract ByteStreamMode(String) {
+	var tcp = "tcp";
+	var udp = "udp";
 }

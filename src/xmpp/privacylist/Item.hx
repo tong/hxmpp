@@ -37,8 +37,8 @@ class Item {
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "item" );
-		x.set( "action", Type.enumConstructor( action ) );
-		if( type != null ) x.set( "type", Type.enumConstructor( type ) );
+		x.set( "action", Std.string( action ) );
+		if( type != null ) x.set( "type", Std.string( type ) );
 		if( value != null ) x.set( "value", value );
 		if( order != -1 ) x.set( "order", Std.string( order ) );
 		return x;
@@ -47,9 +47,10 @@ class Item {
 	public static function parse( x : Xml ) : xmpp.privacylist.Item {
 		var _order = x.get( "order" );
 		var order = ( _order == null ) ? -1 : Std.parseInt( _order );
-		var _type =  x.get( "type" );
-		return new Item( Type.createEnum( Action, x.get( "action" ) ),
-						 if( _type != null ) Type.createEnum( ItemType, _type ) else null,
+		//var _type =  x.get( "type" );
+		//return new Item( Type.createEnum( Action, x.get( "action" ) ),
+		return new Item( cast x.get( "action" ),
+						 cast x.get( "type" ),
 						 x.get( "value" ),
 						 order );
 	}

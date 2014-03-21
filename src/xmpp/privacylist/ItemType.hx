@@ -21,8 +21,8 @@
  */
 package xmpp.privacylist;
 
-enum ItemType {
-	group;
-	jid;
-	subscription;
+@:enum abstract ItemType(String) {
+	var group = "group";
+	var jid = "jid";
+	var subscription = "subscription";
 }
