@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,12 +24,11 @@ package xmpp.roster;
 /**
 	Roster ask types.
 */
-enum AskType {
+@:enum abstract AskType(String) {
 	
 	/** Denotes that  a request to subscribe to a entities presence has been made. */
-	subscribe;
+	var subscribe = 'subscribe';
 	
-	/** Denotes that a request to unscubscribe from a users presence has been made.*/
-	unsubscribe;
-	
+	/** Denotes that a request to unscubscribe from a users presence has been made. */
+	var unsubscribe = 'unsubscribe';
 }

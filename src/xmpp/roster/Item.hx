@@ -37,29 +37,25 @@ class Item {
 		this.subscription = subscription;
 		this.name = name;
 		this.askType = askType;
-		this.groups = ( groups != null ) ? Lambda.list( groups ) : new List();
+		this.groups = (groups != null) ? Lambda.list( groups ) : new List();
 	}
 	
 	public function toXml() : Xml {
 		var x = Xml.createElement( "item" );
 		x.set( "jid", jid );
 		if( name != null ) x.set( "name", name );
-		if( subscription != null ) x.set( "subscription", Type.enumConstructor( subscription ) );
-		if( askType != null ) x.set( "ask", Type.enumConstructor( askType ) );
-		for( g in groups )
-			x.addChild( XMLUtil.createElement( "group", g ) );
+		if( subscription != null ) x.set( "subscription", Std.string( subscription ) ); //TODO default 'none' ?
+		if( askType != null ) x.set( "ask", Std.string( askType ) );
+		for( g in groups ) x.addChild( XMLUtil.createElement( "group", g ) );
 		return x;
 	}
 	
 	public static function parse( x : Xml ) : xmpp.roster.Item {
 		var i = new Item( x.get( "jid" ) );
-		var _sub = x.get( "subscription" );
-		if( _sub != null ) i.subscription = Type.createEnum( Subscription, _sub );
 		i.name = x.get( "name" );
-		var _ask = x.get( "ask" );
-		if( _ask != null ) i.askType = Type.createEnum( AskType, _ask );
-		for( g in x.elementsNamed( "group" ) )
-			i.groups.add( g.firstChild().nodeValue );
+		i.subscription = cast x.get( "subscription" );
+		i.askType = cast x.get( "ask" );
+		for( g in x.elementsNamed( "group" ) ) i.groups.add( g.firstChild().nodeValue );
 		return i;
 	}
 	

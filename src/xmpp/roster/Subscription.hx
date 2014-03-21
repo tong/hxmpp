@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c), disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +24,22 @@ package xmpp.roster;
 /**
 	Roster subscription states.
 */
-enum Subscription {
+@:enum abstract Subscription(String) {
 	
-	/** The user and subscriber have no interest in each other's presence.*/
-	none;
+	/** The user and subscriber have no interest in each other's presence. */
+	var none = "none";
 	
 	/** The user is interested in receiving presence updates from the subscriber. */
-    to;
-    
+	var to = "to";
+
 	/** The subscriber is interested in receiving presence updates from the user. */
-	from;
+	var from = "from";
 	
 	/** The user and subscriber have a mutual interest in each other's presence. */
-	both;
+	var both = "both";
 	
 	/** The user wishes to stop receiving presence updates from the subscriber. */
-	remove;
+	var remove = "remove";
 	
 }
+
