@@ -21,21 +21,21 @@
  */
 package xmpp;
 
-enum ErrorType {
+@:enum abstract ErrorType(String) {
 	
 	/** Retry after providing credentials */
-	auth;
+	var auth = "auth";
 	
 	/** Do not retry (the error is unrecoverable)  */
-	cancel;
+	var cancel = "cancel";
 	
 	/** Proceed (the condition was only a warning)  */
-	continue_; //TODO unprefix
+	var continue_ = "continue";
 	
 	/** Retry after changing the data sent */
-	modify;
+	var modify = "modify";
 	
 	/** Retry after waiting (the error is temporary) */
-	wait;
+	var wait = "wait";
 	
 }

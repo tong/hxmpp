@@ -27,7 +27,7 @@ import xmpp.ErrorPacket;
 */
 class Error extends xmpp.ErrorPacket {
 	
-	public static var XMLNS(default,null) : String = "urn:ietf:params:xml:ns:xmpp-stanzas";
+	public static inline var XMLNS = "urn:ietf:params:xml:ns:xmpp-stanzas";
 	
 	public var type : ErrorType;
 	public var code : Null<Int>;
@@ -41,7 +41,7 @@ class Error extends xmpp.ErrorPacket {
 	
 	public function toXml() : Xml {
 		var x = _toXml( "error", XMLNS );
-		x.set( "type", Type.enumConstructor( type ) );
+		x.set( "type", Std.string( type ) );
 		if( code != null ) x.set( "code", Std.string( code ) );
 		return x;
 	}
@@ -50,16 +50,10 @@ class Error extends xmpp.ErrorPacket {
 		var p = new Error( null, null );
 		if( !ErrorPacket.parseInto( p, x, XMLNS ) )
 			return null;
-		//TODO remove try/catch here
-	//	try {
-			p.type = Type.createEnum( ErrorType, x.get( "type" ).toLowerCase() );
-			var v = x.get( "code" );
-			if( v != null )
-				p.code = Std.parseInt( v );
-	//	} catch(e:Dynamic) {
-	//		#if jabber_debug trace(e,"error"); #end
-	//		return null;
-	//	}
+		p.type = cast x.get( "type" );
+		var v = x.get( "code" );
+		if( v != null )
+			p.code = Std.parseInt( v );
 		return p;
 	}
 	
