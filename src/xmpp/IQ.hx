@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -74,7 +74,7 @@ class IQ extends Packet {
 	
 	public override function toXml(): Xml {
 		var p = super.addAttributes( Xml.createElement( "iq" ) );
-		p.set( "type", Type.enumConstructor( (type==null)?IQType.get:type ) );
+		p.set( "type", Std.string( (type == null) ? IQType.get : type ) );
 		if( id != null ) p.set( "id", id );
 		if( x != null ) p.addChild( x.toXml() );
 		return p;
@@ -82,21 +82,19 @@ class IQ extends Packet {
 	
 	public static function parse( x : Xml ) : IQ {
 		var iq = new IQ();
-		iq.type = Type.createEnum( IQType, x.get( "type" ) );
+		iq.type = cast x.get( "type" );
 		Packet.parseAttributes( iq, x );
 		for( c in x.elements() ) {
-			switch( c.nodeName ) {
+			switch c.nodeName {
 			case "error" :
 				var e = xmpp.Error.parse( c );
-				if( e != null )
-					iq.errors.push( e );
+				if( e != null ) iq.errors.push( e );
 			default :
 				iq.properties.push( c );
 			}
 		}
-		if( iq.properties.length > 0 ) {
+		if( iq.properties.length > 0 )
 			iq.x = new PlainPacket( iq.properties.shift() );
-		}
 		return iq;
 	}
 	
@@ -108,7 +106,7 @@ class IQ extends Packet {
 	}
 
 	/**
-		Create a iq request packet
+		Create a IQ request packet
 	*/
 	public static inline function createRequest( jid : String, x : PacketElement ) : IQ {
 		var iq = new IQ( null, null, jid );
@@ -117,7 +115,7 @@ class IQ extends Packet {
 	}
 	
 	/**
-		Creates iq-result response packet of given iq-request
+		Creates IQ result response packet of given iq-request
 	*/
 	//public static inline function createResult( r : IQ, ?from : String ) : IQ {
 		//return new IQ( result, r.id, r.from, from );
