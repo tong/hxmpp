@@ -30,7 +30,7 @@ import xmpp.muc.Invite;
 
 class MUCUser {
 	
-	public static var XMLNS(default,null) : String = xmpp.MUC.XMLNS+"#user";
+	public static inline var XMLNS = xmpp.MUC.XMLNS+"#user";
 	
 	public var decline : Decline;
 	public var destroy : Destroy;

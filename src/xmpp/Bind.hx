@@ -29,7 +29,7 @@ using xmpp.XMLUtil;
 */
 class Bind {
 	
-	public static var XMLNS(default,null) : String = 'urn:ietf:params:xml:ns:xmpp-bind';
+	public static inline var XMLNS = 'urn:ietf:params:xml:ns:xmpp-bind';
 	
 	public var resource : String;
 	public var jid : String;

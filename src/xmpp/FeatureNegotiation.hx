@@ -23,6 +23,6 @@ package xmpp;
 
 class FeatureNegotiation {
 	
-	public static var XMLNS(default,null) : String = "http://jabber.org/protocol/feature-neg";
+	public static inline var XMLNS = "http://jabber.org/protocol/feature-neg";
 	
 }

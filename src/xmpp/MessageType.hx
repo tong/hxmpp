@@ -23,10 +23,10 @@ package xmpp;
 
 /**
 */
-enum MessageType {
-	normal;
-	error;
-	chat;
-	groupchat;
-	headline;
+@:enum abstract MessageType(String) {
+	var normal = "normal";
+	var error = "error";
+	var chat = "chat";
+	var groupchat = "groupchat";
+	var headline = "headline";
 }

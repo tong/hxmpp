@@ -28,7 +28,7 @@ using xmpp.XMLUtil;
 */
 class EntityTime {
 	
-	public static var XMLNS(default,null) : String = "urn:xmpp:time";
+	public static inline var XMLNS = "urn:xmpp:time";
 	
 	/**
 		 The UTC time according to the responding entity.

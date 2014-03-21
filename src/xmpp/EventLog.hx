@@ -23,39 +23,37 @@ package xmpp;
 
 import haxe.EnumTools;
 
-@:fakeEnum(String)
-enum EventLogType {
+@:enum abstract EventLogType(String) {
 
 	/** Developers can ask applications to send debug messages during development or testing to more easily see what happens in a system. */
-	debug;
+	var debug = "debug";
 
 	/** An informational message describing a normal event. */
-	informational;
+	var informational = "informational";
 
 	/** Represents a significant condition or change that administrators should be aware of. */
-	notice;
+	var notice = "notice";
 
 	/** A warning condition. If not taken into account, the condition could turn into an error. */
-	warning;
+	var warning = "warning";
 	
 	/** An error condition. A condition has been detected that is considered to be an error or a fault. */
-	error;
+	var error = "error";
 
 	/** A critical condition. An error so great that it could escalate into something graver if not addressed. */
-	critical;
+	var critical = "critical";
 
 	/** An alert condition. Action must be taken immediately. */
-	alert;
+	var alert = "alert";
 
 	/** System is unusable. */
-	emergency;
+	var emergency = "emergency";
 }
 
-@:fakeEnum(String)
-enum EventLogLevel {
-	minor;
-	medium;
-	major;
+@:enum abstract EventLogLevel(String) {
+	var minor = "minor";
+	var medium = "medium";
+	var major = "major";
 }
 
 //TODO class
@@ -151,8 +149,8 @@ class EventLog {
 		var e = new EventLog( x.get( 'timestamp' ) );
 		e.stackTrace = x.get( 'stackTrace' );
 		e.id = x.get( 'id' );
-		if( x.exists('type') ) e.type = EnumTools.createByName( EventLogType, x.get( 'type' ) );
-		if( x.exists('level') ) e.level = EnumTools.createByName( EventLogLevel, x.get( 'level' ) );
+		if( x.exists('type') ) e.type = cast x.get( 'type' );
+		if( x.exists('level') ) e.level = cast x.get( 'level' );
 		e.object = x.get( 'object' );
 		e.subject = x.get( 'subject' );
 		e.facility = x.get( 'facility' );

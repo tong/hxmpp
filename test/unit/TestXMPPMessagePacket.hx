@@ -7,13 +7,13 @@ class TestXMPPMessagePacket extends haxe.unit.TestCase {
 	public function testBuild() {
 		var m = new xmpp.Message();
 		assertEquals( '<message type="chat"/>', m.toString() );
-		m.type = xmpp.MessageType.chat;
+		m.type = MessageType.chat;
 		assertEquals( m.toString(), '<message type="chat"/>' );
-		m.type = xmpp.MessageType.groupchat;
+		m.type = MessageType.groupchat;
 		assertEquals( m.toString(), '<message type="groupchat"/>' );
-		m.type = xmpp.MessageType.headline;
+		m.type = MessageType.headline;
 		assertEquals( m.toString(), '<message type="headline"/>' );
-		m.type = xmpp.MessageType.error;
+		m.type = MessageType.error;
 		assertEquals( m.toString(), '<message type="error"/>' );
 		m.type = null;
 		assertEquals( m.toString(), '<message/>' );
@@ -39,7 +39,8 @@ class TestXMPPMessagePacket extends haxe.unit.TestCase {
 				</html>
 			</message>' ).firstElement();
 		var m : Message = cast xmpp.Packet.parse( x );
-		assertEquals( chat, m.type );
+		assertEquals( MessageType.chat, m.type );
+		assertEquals( "chat", Std.string( m.type ) );
 		assertEquals( 'green with envy!', m.body );
 		assertEquals( 1, m.properties.length );
 		assertEquals( "html", m.properties[0].nodeName );

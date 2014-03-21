@@ -21,6 +21,8 @@
  */
 package xmpp;
 
+//TODO @:enum abstract
+
 class ErrorCondition {
 	
 	/**	

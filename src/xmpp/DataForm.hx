@@ -31,7 +31,7 @@ using xmpp.XMLUtil;
 */
 class DataForm {
 	
-	public static var XMLNS(default,null) : String = "jabber:x:data";
+	public static inline var XMLNS = "jabber:x:data";
 	
 	public var type : FormType;
 	public var title : String;

@@ -28,19 +28,19 @@ class TestXMPPPacketFilters extends haxe.unit.TestCase {
 		assertFalse( f.accept( new Presence() ) );
 		assertFalse( f.accept( new IQ() ) );
 		assertTrue( f.accept( new Message() ) );
-		assertTrue( f.accept( new Message( chat ) ) );
-		assertTrue( f.accept( new Message( error ) ) );
-		assertTrue( f.accept( new Message( groupchat ) ) );
-		assertTrue( f.accept( new Message( headline ) ) );
+		assertTrue( f.accept( new Message( MessageType.chat ) ) );
+		assertTrue( f.accept( new Message( MessageType.error ) ) );
+		assertTrue( f.accept( new Message( MessageType.groupchat ) ) );
+		assertTrue( f.accept( new Message( MessageType.headline ) ) );
 		
 		f = new MessageFilter( chat );
 		assertTrue( f.accept( new Message() ) );
-		assertTrue( f.accept( new Message( chat ) ) );
-		assertFalse( f.accept( new Message( normal ) ) );
-		assertFalse( f.accept( new Message( groupchat ) ) );
-		assertFalse( f.accept( new Message( error ) ) );
-		assertFalse( f.accept( new Message( groupchat ) ) );
-		assertFalse( f.accept( new Message( headline ) ) );
+		assertTrue( f.accept( new Message( MessageType.chat ) ) );
+		assertFalse( f.accept( new Message( MessageType.normal ) ) );
+		assertFalse( f.accept( new Message( MessageType.groupchat ) ) );
+		assertFalse( f.accept( new Message( MessageType.error ) ) );
+		assertFalse( f.accept( new Message( MessageType.groupchat ) ) );
+		assertFalse( f.accept( new Message( MessageType.headline ) ) );
 		
 		/*
 		var m = xmpp.Message.parse( Xml.parse( '<message id="aadba" from="disktree@conference.disktree/tong" to="hxmpp@disktree/spekchat" type="groupchat"> <body>yg</body> <nick xmlns="http://jabber.org/protocol/nick">account</nick> <x from="account@disktree/desktop" xmlns="jabber:x:delay" stamp="20081110T15:07:05"/></message>' ).firstElement() );

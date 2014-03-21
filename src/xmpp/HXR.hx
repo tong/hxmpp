@@ -26,7 +26,7 @@ package xmpp;
 */
 class HXR {
 
-	public static var XMLNS(default,null) : String = "http://haxe.org/hxr";
+	public static inline var XMLNS = "http://haxe.org/hxr";
 	
 	/**
 	*/

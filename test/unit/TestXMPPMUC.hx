@@ -11,7 +11,7 @@ class TestXMPPMUC extends haxe.unit.TestCase {
 		assertEquals( null, decline.from );
 		assertEquals( "Sorry, I'm too busy right now.", decline.reason );
 		
-		//TODO
+		//TODO cmon!
 		//.....
 	}
 	

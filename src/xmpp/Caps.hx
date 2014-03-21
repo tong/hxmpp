@@ -30,7 +30,7 @@ using xmpp.XMLUtil;
 */
 class Caps {
 	
-	public static var XMLNS(default,null) : String = xmpp.Packet.PROTOCOL+"/caps";
+	public static inline var XMLNS = xmpp.Packet.PROTOCOL+"/caps";
 	
 	/**
 		The hashing algorithm used to generate the verification string, fe: sha-1.

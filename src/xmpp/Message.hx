@@ -49,7 +49,7 @@ class Message extends xmpp.Packet {
     
     public override function toXml() : Xml {
     	var x = super.addAttributes( Xml.createElement( "message" ) );
-		if( type != null ) x.set( "type", Type.enumConstructor( type ) );
+		if( type != null ) x.set( "type", Std.string( type ) );
 		if( subject != null ) x.addChild( XMLUtil.createElement( "subject", subject ) );
 		if( body != null ) x.addChild( XMLUtil.createElement( "body", body ) );
 		if( thread != null ) x.addChild( XMLUtil.createElement( "thread", thread ) );
@@ -58,7 +58,7 @@ class Message extends xmpp.Packet {
     }
     
     public static function parse( x : Xml ) : xmpp.Message {
-    	var type : MessageType = x.exists( "type" ) ? Type.createEnum( xmpp.MessageType, x.get( "type" ) ) : null;
+    	var type : MessageType = cast x.get( "type" );
     	var m = new Message( null, null, null, type );
    		xmpp.Packet.parseAttributes( m, x );
    		for( c in x.elements() ) {
