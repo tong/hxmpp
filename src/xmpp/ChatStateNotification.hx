@@ -40,11 +40,11 @@ class ChatStateNotification {
 	}
 	
 	/**
-		Remove the chat state property from the given message packet.
+		Remove the chatstate property from the given message packet.
 	*/
 	public static function clearChatStateProperty( m : xmpp.Message ) : xmpp.Message  {
 		for( p in m.properties ) {
-			switch( p.nodeName ) {
+			switch p.nodeName {
 			case "active","composing","paused","inactive","gone" :
 				m.properties.remove( p );
 			}
@@ -56,7 +56,7 @@ class ChatStateNotification {
 		Creates chat state extension XML.
 	*/
 	public static function createXML( s : ChatState ) : Xml {
-		var x = Xml.createElement( Type.enumConstructor( s ) );
+		var x = Xml.createElement( Std.string( s ) );
 		x.ns( XMLNS );
 		return x;
 	}
@@ -65,20 +65,10 @@ class ChatStateNotification {
 		Extracts the chat state of the given message.
 	*/
 	public static function get( m : xmpp.Message ) : xmpp.ChatState {
-		var s = getString( m );
-		return ( s == null ) ? null : Type.createEnum( xmpp.ChatState, s );
-	}
-	
-	/**
-		Extracts the chat state of the given message as string.
-	*/
-	public static function getString( m : xmpp.Message ) : String {
 		for( e in m.properties ) {
-			var s = e.nodeName;
-			switch( s ) {
-			case "active","composing","paused","inactive","gone" :
+			var s : ChatState = cast e.nodeName;
+			if( s != null )
 				return s;
-			}
 		}
 		return null;
 	}

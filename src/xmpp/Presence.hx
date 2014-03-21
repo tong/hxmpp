@@ -44,15 +44,13 @@ class Presence extends xmpp.Packet {
 	}
 	
 	function set_status( s : String ) : String {
-		return status = ( ( s == null || s == "" ) ?
-			null :
-			( s.length > MAX_STATUS_SIZE ) ? s.substr( 0, MAX_STATUS_SIZE ) : s );
+		return status = ( (s == null || s == "") ? null : (s.length > MAX_STATUS_SIZE) ? s.substr( 0, MAX_STATUS_SIZE ) : s );
 	}
 	
 	public override function toXml() : Xml {
 		var x = super.addAttributes( Xml.createElement( "presence" ) );
-		if( type != null ) x.set( "type", Type.enumConstructor( type ) );
-		if( show != null ) x.addChild( XMLUtil.createElement( "show", Type.enumConstructor( show ) ) );
+		if( type != null ) x.set( "type", Std.string( type ) );
+		if( show != null ) x.addChild( XMLUtil.createElement( "show", Std.string( show ) ) );
 		if( status != null ) x.addChild( XMLUtil.createElement( "status", status ) );
 		if( priority != null ) x.addChild( XMLUtil.createElement( "priority", Std.string( priority ) ) );
 		return x;
@@ -61,13 +59,14 @@ class Presence extends xmpp.Packet {
 	public static function parse( x : Xml ) : Presence {
 		var p = new Presence( x.get( "type" ) );
 		Packet.parseAttributes( p, x );
-		if( x.exists( "type" ) )
-			p.type = Type.createEnum( PresenceType, x.get( "type" ) );
+		//if( x.exists( "type" ) )
+		//	p.type = Type.createEnum( PresenceType, x.get( "type" ) );
+		p.type = cast x.get( "type" );
 		for( c in x.elements() ) {
 			var fc = c.firstChild();
 			switch( c.nodeName ) {
 			case "show" :
-				if( fc != null ) p.show = Type.createEnum( PresenceShow, fc.nodeValue );
+				p.show = cast fc.nodeValue;
 			case "status" :
 				if( fc != null ) p.status =  fc.nodeValue;
 			case "priority" :
