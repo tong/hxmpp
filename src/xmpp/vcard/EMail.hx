@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,11 +22,11 @@
 package xmpp.vcard;
 
 typedef EMail = {
-	?home : String,
-	?work : String,
-	?internet : String,
-	?pref : String,
-	?x400 : String,
-	userid : String
+	@:optional var home : String;
+	@:optional var work : String;
+	@:optional var internet : String;
+	@:optional var pref : String;
+	@:optional var x400 : String;
+	var userid : String;
 }
 	

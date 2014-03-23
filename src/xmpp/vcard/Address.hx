@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,17 +22,17 @@
 package xmpp.vcard;
 
 typedef Address = {
-	?home : String,
-	?work : String,
-	?postal : String,
-	?parcel : String,
-	//?DOM/INTL : String,
-	?pref : String,
-	?pobox : String,
-	?extadd : String,
-	?street : String,
-	?locality : String,
-	?region : String,
-	?pcode : String,
-	?ctry : String
+	@:optional var home : String;
+	@:optional var work : String;
+	@:optional var postal : String;
+	@:optional var parcel : String;
+	//?DOM/INTL : String
+	@:optional var pref : String;
+	@:optional var pobox : String;
+	@:optional var extadd : String;
+	@:optional var street : String;
+	@:optional var locality : String;
+	@:optional var region : String;
+	@:optional var pcode : String;
+	@:optional var ctry : String;
 }

@@ -25,5 +25,5 @@ typedef Identity = {
 	var category : String;
 	var type : String;
 	var name : String;
-	//var lang : String; // TODO maybe inlcuded for localization
+	@:optional var lang : String;
 }

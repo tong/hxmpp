@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,18 +22,17 @@
 package xmpp.vcard;
 
 typedef Tel = {
-	number : String,
-	?home : String,
-	?work : String,
-	?voice : String,
-	?fax : String,
-	?pager : String,
-	?msg : String,
-	?cell : String,
-	?video : String,
-	?bbs : String,
-	?modem : String,
-	?isdn : String,
-	?pcs : String,
-	?pref : String
-}
+	var number : String;
+	@:optional var home : String;
+	@:optional var work : String;
+	@:optional var voice : String;
+	@:optional var fax : String;
+	@:optional var pager : String;
+	@:optional var msg : String;
+	@:optional var cell : String;
+	@:optional var video : String;
+	@:optional var bbs : String;
+	@:optional var modem : String;
+	@:optional var isdn : String;
+	@:optional var pcs : String;
+	@:optional var pref : String;}

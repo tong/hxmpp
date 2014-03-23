@@ -75,7 +75,10 @@ class SocketConnection extends jabber.StreamConnection {
 	public function new( host : String = "localhost", ?port : Null<Int>,
 						 secure : Bool = false, timeout : Float = 0 ) {
 		
-		if( port == null ) port = #if jabber_component jabber.component.Stream.PORT #else jabber.client.Stream.PORT #end;
+		if(port == null) port =
+			#if jabber_component jabber.component.Stream.defaultPort
+			#else jabber.client.Stream.defaultPort
+			#end;
 
 		super( host, secure, false );
 		this.port = port;
@@ -97,6 +100,29 @@ class SocketConnection extends jabber.StreamConnection {
 		socket.addEventListener( IOErrorEvent.IO_ERROR, handleError, false );
 		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, handleError, false );
 		socket.connect( host, port );
+		#elseif js
+			#if chrome_app
+			Socket.create( 'tcp', {}, function(info){
+				if( info.socketId > 0 ) {
+					Socket.connect( socketId = info.socketId, host, port, handleConnect );
+				} else {
+					onDisconnect( 'failed to create socket' );
+				}
+			});
+			#elseif nodejs
+			socket = Node.net.connect( port, host );
+			socket.setEncoding( NodeC.UTF8 );
+			socket.on( NodeC.EVENT_STREAM_CONNECT, handleConnect );
+			socket.on( NodeC.EVENT_STREAM_END, handleDisconnect );
+			socket.on( NodeC.EVENT_STREAM_ERROR, handleError );
+			#else
+			var uri = 'ws'+(secure?'s':'')+'://$host:$port';
+			socket = new Socket( uri );
+			socket.onopen = handleConnect;
+			socket.onclose = handleDisconnect;
+			socket.onerror = handleError;
+			#end
+		/*
 		#elseif (js&&chrome_app)
 		Socket.create( 'tcp', {}, function(info){
 			if( info.socketId > 0 ) {
@@ -105,6 +131,22 @@ class SocketConnection extends jabber.StreamConnection {
 				onDisconnect( 'failed to create socket' );
 			}
 		});
+		#elseif js
+			#if nodejs
+			socket = Node.net.connect( port, host );
+			socket.setEncoding( NodeC.UTF8 );
+			socket.on( NodeC.EVENT_STREAM_CONNECT, handleConnect );
+			socket.on( NodeC.EVENT_STREAM_END, handleDisconnect );
+			socket.on( NodeC.EVENT_STREAM_ERROR, handleError );
+			#else
+			var uri = 'ws'+(secure?'s':'')+'://$host:$port';
+			socket = new Socket( uri );
+			socket.onopen = handleConnect;
+			socket.onclose = handleDisconnect;
+			socket.onerror = handleError;
+			#end
+			*/
+		/*
 		#elseif (js&&nodejs)
 		//TODO timeout
 		socket = Node.net.connect( port, host );
@@ -118,6 +160,7 @@ class SocketConnection extends jabber.StreamConnection {
 		socket.onopen = handleConnect;
 		socket.onclose = handleDisconnect;
 		socket.onerror = handleError;
+		*/
 		#elseif sys
 		socket = new Socket();
 		if( timeout > 0 ) socket.setTimeout( timeout );
@@ -144,7 +187,6 @@ class SocketConnection extends jabber.StreamConnection {
 	}
 
 	public override function read( ?yes : Bool = true ) : Bool {
-		trace("read");
 		#if flash
 		yes ? socket.addEventListener( ProgressEvent.SOCKET_DATA, handleData )
 			: socket.removeEventListener( ProgressEvent.SOCKET_DATA, handleData );
@@ -308,8 +350,7 @@ class SocketConnection extends jabber.StreamConnection {
 	}
 
 	//function handleError( e : String ) {
-	function handleError( e ) {
-		trace("handleError "+e);
+	function handleError( e : Dynamic ) {
 		trace(e);
 		connected = false;
 		onDisconnect( e );

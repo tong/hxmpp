@@ -25,7 +25,7 @@ import jabber.util.SHA1;
 import xmpp.XMLUtil;
 
 /**
-	JID of a XMPP component.
+	Server component jabber-id (fe: mycomp.jabber.org)
 */
 @:require(jabber_component)
 class ComponentJID {
@@ -34,28 +34,32 @@ class ComponentJID {
 	public var host(default,null) : String;
 	public var s(get,null) : String;
 	
-	public function new( subdomain : String, host : String ) {
+	public inline function new( subdomain : String, host : String ) {
 		this.subdomain = subdomain;
 		this.host = host;
 	}
 	
 	inline function get_s() : String return toString();
 	
-	public inline function toString() : String {
-		return subdomain+'.'+host;
-	}
+	public inline function toString() : String return '$subdomain.$host';
 }
 
 /**
 	XMPP server-component stream.
+	
 	XEP-0114: Jabber Component Protocol, http://www.xmpp.org/extensions/xep-0114.html
 */
 @:require(jabber_component)
 class Stream extends jabber.Stream {
+	
+	//public static inline function PORT() : Int { return 5275; }
+	//public static inline var PORT = 5275;
 
-	public static inline var PORT = 5275;
+	static function __init__() {
+		defaultPort = 5275;
+	}
 
-	public static var defaultPort = 5275;
+	public static var defaultPort : Int; // = 5275;
 	
 	/** Called if stream got authenticated and is ready to use */
 	public dynamic function onReady() {}
@@ -104,7 +108,7 @@ class Stream extends jabber.Stream {
 	}
 	
 	function get_serviceName() : String {
-		return ( jid.subdomain == null || jid.host == null ) ? null : jid.toString();
+		return (jid.subdomain == null || jid.host == null) ? null : jid.toString();
 	}
 	
 	inline function get_items() : xmpp.disco.Items {

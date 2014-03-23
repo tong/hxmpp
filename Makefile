@@ -1,16 +1,14 @@
 
 ##
-## HXMPP - Haxe XMPP/Jabber library
+## HXMPP - Haxe Jabber/XMPP library
 ##
 
 SRC := $(wildcard src/*.hx) $(wildcard src/*/*.hx)
 SRC_TESTS := $(wildcard test/unit/*.hx)
 SRC_EXAMPLES := $(wildcard examples/*.hx) $(wildcard examples/*/*.hx)
-
 EXAMPLES_BUILDFILES := $(wildcard examples/*/build.hxml)
-EXAMPLE =
-
-COLOR_OK = \x1b[32;01m
+#EXAMPLE =
+#COLOR_OK = \x1b[32;01m
 #STRING_OK = $(OK_COLOR)[OK]$(NO_COLOR)
 
 all: build

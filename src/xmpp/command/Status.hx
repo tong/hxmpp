@@ -21,15 +21,22 @@
  */
 package xmpp.command;
 
-@:fakeEnum(String)
-enum Status {
+@:enum abstract Status(String) {
 	
-	/** The command has been canceled. The command session has ended. */
-	canceled;
+	/**
+		The command has been canceled.
+		The command session has ended.
+	*/
+	var canceled = "canceled";
 	
-	/** The command has completed. The command session has ended. */
-	completed;
+	/**
+		The command has completed.
+		The command session has ended.
+	*/
+	var completed = "completed";
 
-	/** The command is being executed */
-	executing;
+	/**
+		The command is being executed
+	*/
+	var executing = "executing";
 }

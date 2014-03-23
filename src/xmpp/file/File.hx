@@ -23,7 +23,7 @@ package xmpp.file;
 
 class File {
 	
-	public static var XMLNS = SI.XMLNS+"/profile/file-transfer";
+	public static inline var XMLNS = SI.XMLNS+"/profile/file-transfer";
 	
 	public var name : String;
 	public var size : Null<Int>;

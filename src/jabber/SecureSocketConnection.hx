@@ -60,10 +60,12 @@ class SecureSocketConnection extends jabber.StreamConnection {
 		bufSize = defaultBufSize;
 		maxBufSize = defaultMaxBufSize;
 		reading = false;
+		
+		socket = new Socket();
 	}
 
 	public override function connect() {
-		socket = new Socket();
+		//socket = new Socket();
 		if( timeout > 0 ) socket.setTimeout( timeout );
 		try socket.connect( new Host( host ), port ) catch( e : Dynamic ) {
 			onDisconnect( e );
@@ -81,7 +83,7 @@ class SecureSocketConnection extends jabber.StreamConnection {
 		}
 		onSecured( null );
 		#else
-		throw "Start-TLS not implemented";
+			throw "Start-TLS not implemented";
 		#end
 	}
 
@@ -118,7 +120,7 @@ class SecureSocketConnection extends jabber.StreamConnection {
 	}
 	
 	public override function disconnect() {
-		connected = false;
+		connected = reading = false;
 		try socket.close() catch( e : Dynamic ) {
 			onDisconnect( e );
 			return;

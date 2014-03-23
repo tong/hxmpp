@@ -25,7 +25,7 @@ using xmpp.XMLUtil;
 
 class ByteStream {
 	
-	public static var XMLNS = xmpp.Packet.PROTOCOL+"/bytestreams";
+	public static inline var XMLNS = xmpp.Packet.PROTOCOL+"/bytestreams";
 	
 	public var sid : String;
 	public var mode : ByteStreamMode;

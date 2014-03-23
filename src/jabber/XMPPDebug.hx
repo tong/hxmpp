@@ -145,6 +145,7 @@ class XMPPDebug {
 	/**
 	*/
 	public static function __print( t : String, color : Int = -1 ) {
+		
 		if( color == -1 ) {
 			#if rhino
 			Lib._print( t );
@@ -166,6 +167,7 @@ class XMPPDebug {
 		b.add( t );
 		b.add( "\033[" );
 		b.add( "m" );
+		
 		#if rhino
 		Lib._print( b.toString() );
 		#elseif air
@@ -197,8 +199,9 @@ class XMPPDebug {
 		#if air
 		var info = out ? ">>> xmpp >>>" : "<<< xmpp <<< "; // )+" ("+num+":"+(++numPrinted)+")";
 		haxe.Log.trace( t, { className : "", methodName : "", fileName : info, lineNumber : t.length, customParams : [] } );
-		
-		#else
+		#elseif google_apps_script
+		google.script.Logger.log( t );
+		#else 
 		if( useConsole ) {
 			if( currentGroup == null ) {
 				__console( "group", currentGroup = createMetaInformationString( out ) );
