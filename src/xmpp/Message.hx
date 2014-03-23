@@ -28,10 +28,13 @@ class Message extends xmpp.Packet {
 	
 	/***/
 	public var type : MessageType;
+	
 	/***/
 	public var body : String;
+	
 	/***/
 	public var subject : String;
+	
 	/***/
     public var thread : String;
 	
@@ -41,7 +44,7 @@ class Message extends xmpp.Packet {
 		_type = xmpp.PacketType.message;
 		
 		super( to, from );
-		this.type = if ( type != null ) type else xmpp.MessageType.chat;
+		this.type = (type != null) ? type : MessageType.chat;
 		this.body = body;
 		this.subject = subject;
 		this.thread = thread;
@@ -58,8 +61,8 @@ class Message extends xmpp.Packet {
     }
     
     public static function parse( x : Xml ) : xmpp.Message {
-    	var type : MessageType = cast x.get( "type" );
-    	var m = new Message( null, null, null, type );
+    	var m = new Message();
+    	m.type = cast x.get( "type" );
    		xmpp.Packet.parseAttributes( m, x );
    		for( c in x.elements() ) {
 			switch( c.nodeName ) {
