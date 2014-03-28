@@ -54,13 +54,13 @@ class AdHocCommand {
 		var x = Xml.createElement( "command" );
 		x.ns( XMLNS );
 		x.set( "node", node );
-		if( action != null ) x.set( "action", Type.enumConstructor( action ) );
+		if( action != null ) x.set( "action", Std.string( action ) );
 		if( sessionId != null ) x.set( "sessionid", sessionId );
-		if( status != null ) x.set( "status", Type.enumConstructor( status ) );
+		if( status != null ) x.set( "status", Std.string( status ) );
 		if( actions.length > 0 ) {
 			var e = Xml.createElement( "actions" );
 			for( a in actions )
-				e.addChild( Xml.createElement( Type.enumConstructor( a ) ) );
+				e.addChild( Xml.createElement( Std.string( a ) ) );
 			x.addChild( e );
 		}
 		if( child != null )
@@ -69,14 +69,8 @@ class AdHocCommand {
 	}
 	
 	public static function parse( x : Xml ) : xmpp.AdHocCommand {
-		var _action = x.get( "action" );
-		var action : Action = null;
-		if( _action != null ) action = Type.createEnum( Action, _action );
-		var c = new AdHocCommand( x.get( "node" ), action, x.get( "sessionid" ) );
-		var _status = x.get( "status" );
-		var status : Status = null;
-		if( _status != null ) status = Type.createEnum( Status, _status );
-		c.status = status;
+		var c = new AdHocCommand( x.get( "node" ), cast x.get( "action" ), x.get( "sessionid" ) );
+		c.status = cast x.get( "status" );
 		//TODO parse actions
 		c.child = x.firstElement();
 		return c;
