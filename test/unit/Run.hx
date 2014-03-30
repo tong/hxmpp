@@ -76,8 +76,6 @@ class Run {
 		var r = new haxe.unit.TestRunner();
 		for( test in TESTS ) r.add( Type.createInstance( test, [] ) );
 		
-		trace( 'hxmpp ${HXMPP.VERSION}' );
-
 		var timestamp = Timer.stamp();
 		r.run();
 
