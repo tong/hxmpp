@@ -1,4 +1,5 @@
+params.hxml
 -cpp build/cpp
--cp ../../src
--main Run
+#-D HXCPP_M64
+#-lib hxssl
 -cmd mv ./build/cpp/Run ./build/test

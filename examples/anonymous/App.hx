@@ -13,16 +13,8 @@ class App {
 		var server = 'localhost';
 
 		#if sys
-		var argHandler = hxargs.Args.generate([
-			@doc( 'Jabber server hostname' ) ['--server','-s'] => function(name:String) { server = name; },
-			_ => function(arg:String) throw "Unknown command: " +arg
-		]);
 		var args = Sys.args();
-		if( args.length < 1 ) {
-			Sys.println( argHandler.getDoc() );
-			Sys.exit(0);
-		}
-		argHandler.parse( args );
+		if( args.length > 0 ) server = args[0];
 		#end
 
 		var cnx = new jabber.SocketConnection( server );

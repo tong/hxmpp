@@ -4,9 +4,7 @@
 -debug
 -D jabber_debug
 -D xmpp_debug
--D hxmpp_debug
 --each
 
 --next
 -neko app.n
--lib hxargs

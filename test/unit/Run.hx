@@ -39,6 +39,7 @@ class Run {
 		TestXMPPEntityTime,
 		TestXMPPError,
 	TestXMPPEventLog,
+//	TestXMPPRealtimeText,
 		TestXMPPFile,
 		TestXMPPIBByteStream,
 		TestXMPPIQPacket,

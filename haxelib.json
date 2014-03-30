@@ -3,13 +3,12 @@
 	"license": "MIT",
 	"tags": ["jabber","xmpp","realtime","protocol","net","xml","messaging","presence","chat","jingle"],
 	"description": "Jabber/XMPP library",
-	"version": "0.4.13",
+	"version": "0.4.14",
 	"releasenote": "See CHANGES",
 	"url": "https://github.com/tong/hxmpp",
 	"contributors": ["tong"],
 	"classPath" : "src/",
 	"dependencies": {
-		"hxssl": "",
-		"xspf": "1.1.0"
+		"hxssl": ""
 	}
 }

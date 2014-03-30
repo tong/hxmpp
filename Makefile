@@ -6,6 +6,7 @@
 SRC := $(wildcard src/*.hx) $(wildcard src/*/*.hx)
 SRC_TESTS := $(wildcard test/unit/*.hx)
 SRC_EXAMPLES := $(wildcard examples/*.hx) $(wildcard examples/*/*.hx)
+
 EXAMPLES_BUILDFILES := $(wildcard examples/*/build.hxml)
 #EXAMPLE =
 #COLOR_OK = \x1b[32;01m
@@ -21,16 +22,13 @@ tests: $(SRC) $(SRC_TESTS)
 $(EXAMPLES_BUILDFILES): $(SRC) $(SRC_EXAMPLES)
 	@echo $(OK_COLOR)$(shell dirname $@)$(NO_COLOR)
 	@cd $(shell dirname $@) && haxe build.hxml 
-
 examples: $(EXAMPLES_BUILDFILES)
 
 haxedoc.xml: $(SRC)
-	cd documentation && haxe haxedoc.hxml
+	haxe haxedoc.hxml
 
 documentation: $(SRC) haxedoc.xml
-	cd documentation \
-		haxe api.hxml \
-		haxelib run dox -i . -o api
+	haxelib run dox -i ./ -o doc/api
 
 hxmpp.zip: clean $(SRC) $(SRC_EXAMPLES) $(SRC_TESTS)
 	zip -r $@ examples/ utils/flash-socketbridge/ src/ haxelib.json README.md
@@ -46,7 +44,7 @@ uninstall:
 clean:
 	@rm -rf documentation/api
 	@rm -f documentation/hxmpp_*.xml
-	@rm -rf $(wildcard examples/*/cpp) $(wildcard examples/*/cs) $(wildcard examples/*/java) $(wildcard examples/*/cs) -rf $(wildcard examples/*/php)
+	@rm -rf $(wildcard examples/*/cpp) $(wildcard examples/*/cs) $(wildcard examples/*/java) $(wildcard examples/*/cs) $(wildcard examples/*/php) $(wildcard examples/*/lib)
 	@rm -rf $(wildcard examples/*/app*)
 	@rm -rf test/unit/build
 	@rm -f haxedoc.xml

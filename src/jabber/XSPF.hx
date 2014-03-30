@@ -24,8 +24,8 @@ package jabber;
 import jabber.Stream;
 
 /**
- * Request entities for their XSPF playlist.
- */
+	Request entities for their XSPF playlist.
+*/
 class XSPF {
 	
 	public dynamic function onLoad( jid : String, playlist : XSPFPlaylist ) {}
@@ -44,16 +44,14 @@ class XSPF {
 	}
 	
 	function handleResult( iq : xmpp.IQ ) {
-		switch( iq.type ) {
+		switch iq.type {
 		case result :
 			if( iq.x == null ) {
 				onLoad( iq.from, null );
 			} else {
 				var x = iq.x.toXml().firstElement();
 				var pl : XSPFPlaylist = null;
-				try {
-					pl = XSPFPlaylist.parse( x );
-				} catch( e : Dynamic ) {
+				try pl = XSPFPlaylist.parse( x ) catch( e : Dynamic ) {
 					onError( new XMPPError( iq ) );
 					return;
 				}

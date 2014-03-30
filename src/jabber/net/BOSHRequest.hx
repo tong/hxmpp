@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,15 +29,17 @@ import  cpp.vm.Thread;
 #elseif neko
 import neko.vm.Thread;
 #elseif doc_gen
-#else #error #end
+#else #error
+#end
 
 using StringTools;
 
 /**
 	Non-blocking bosh/http request
+
 	//TODO use a single socket connection to transfer all packets
 */
-@:require(cpp||neko)
+@:require(sys&&(cpp||neko))
 class BOSHRequest {
 
 	static var pending = 0;

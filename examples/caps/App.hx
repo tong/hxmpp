@@ -1,5 +1,6 @@
 
 import jabber.EntityCapabilities;
+import xmpp.disco.Identity;
 
 class App extends XMPPClient {
 	
@@ -10,7 +11,7 @@ class App extends XMPPClient {
 		super.onLogin();
 		
 		// Add service discovery listener
-		var identities = [{category:"client",type:"pc",name:"HXMPP"}];
+		var identities : Array<Identity> = [{category:"client",type:"pc",name:"HXMPP"}];
 		new jabber.ServiceDiscoveryListener( stream, identities );
 		
 		// Add some features to the stream for testing
