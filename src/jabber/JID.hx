@@ -49,9 +49,6 @@ class JID {
 	/** Jid without resource */
 	public var bare(get,null) : String;
 	
-	/** Just a shortcut for toString()  */
-	public var s(get,null) : String;
-	
 	public function new( ?t : String ) {
 		if( t != null ) {
 			if( !JIDUtil.isValid( t ) )
@@ -64,8 +61,6 @@ class JID {
 	
 	function get_bare() : String return (node == null || domain == null) ? null : '$node@$domain';
 
-	inline function get_s() : String return toString();
-	
 	public function clone() : JID {
 		var j = new JID();
 		j.node = node;
