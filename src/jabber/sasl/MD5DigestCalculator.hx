@@ -40,10 +40,9 @@ class MD5DigestCalculator {
 			var s = e.split( "=" );
 			el.set( s[0], s[1] );
 		}
-		if( Lambda.count( el ) == 1 && el.exists( "rspauth" ) ) // negotiation complete
-			return { realm : null, nonce : null };
-			//TODO should be '' (??)
-			//return null;
+		if( el.exists( "rspauth" ) ) { // Negotiation complete
+			return null; // { realm : null, nonce : null };
+		}
 		return {
 			realm : el.exists( "realm" ) ? unquote( el.get( "realm" ) ) : "",
 			nonce : unquote( el.get( "nonce" ) )
@@ -79,7 +78,6 @@ class MD5DigestCalculator {
 		b.add( quote( digest_uri ) );
 		b.add( ",response=" );
 		b.add( hh( hh( a1 )+':$nonce:00000001:$cnonce:auth:'+hh( a2 ) ) );
-		
 		b.add( ",charset=utf-8" );
 		//b.add( ",authzid=" );
 		//b.add( quote(authzid) );
