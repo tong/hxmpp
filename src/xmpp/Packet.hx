@@ -28,13 +28,25 @@ class Packet {
 	
 	public static inline var PROTOCOL = "http://jabber.org/protocol";
 	
-	/* Top level type */
+	/** Top level type */
 	public var _type(default,null) : PacketType;
+
+	/** JID of the intended recipient */
 	public var to : String;
+
+	/** */
 	public var from : String;
+
+	/** */
 	public var id : String;	
+
+	/** */
 	public var lang : String;
+
+	/** */
 	public var properties : Array<Xml>;
+
+	/** */
 	public var errors : Array<xmpp.Error>;
 	
 	function new( ?to : String, ?from : String, ?id : String, ?lang : String ) {

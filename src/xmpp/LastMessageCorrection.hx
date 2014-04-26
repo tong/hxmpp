@@ -30,9 +30,9 @@ class LastMessageCorrection {
 
 	public static inline var XMLNS = 'urn:xmpp:message-correct:0';
 
-	public static inline function createXml() : Xml {
+	public static inline function createXml( id : String ) : Xml {
 		var x = Xml.createElement( 'replace' );
-		XMLUtil.setNamespace( XMLNS );
+		XMLUtil.setNamespace( x, XMLNS );
 		x.set( 'id', id );
 		return x;
 	}

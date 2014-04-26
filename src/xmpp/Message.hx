@@ -29,13 +29,13 @@ class Message extends xmpp.Packet {
 	/***/
 	public var type : MessageType;
 	
-	/***/
+	/** Human-readable XML character data that specifies the textual contents */
 	public var body : String;
 	
-	/***/
+	/** Human-readable XML character data that specifies the topic */
 	public var subject : String;
 	
-	/***/
+	/** String to uniquely identify a conversation thread or "chat session" */
     public var thread : String;
 	
     public function new( ?to : String, ?body : String, ?subject : String,

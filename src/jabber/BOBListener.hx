@@ -64,7 +64,7 @@ class BOBListener {
 			//var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
 			var r = xmpp.IQ.createResult( iq );
 			// encode here?
-			bob.data =  new haxe.crypto.BaseCode( haxe.io.Bytes.ofString( Base64.CHARS ) ).encodeString( bob.data );
+			bob.data =  new haxe.crypto.BaseCode( haxe.io.Bytes.ofString( haxe.crypto.Base64.CHARS ) ).encodeString( bob.data );
 			r.x = bob;
 			stream.sendPacket( r );
 		}

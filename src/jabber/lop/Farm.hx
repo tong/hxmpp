@@ -72,7 +72,7 @@ class Farm {
 		this.vm_species = vm_species;
 		this.vm_time_to_live = vm_time_to_live;
 		this.job_timeout = job_timeout;
-		this.farm_start_time = xmpp.DateTime.now();
+		this.farm_start_time = Std.string( xmpp.DateTime.now() );
 		this.read_file = new Array();
 		this.write_file = new Array();
 		this.delete_file = new Array();

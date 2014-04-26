@@ -36,6 +36,8 @@ class XMLBeautify {
 		try x = Xml.parse(t).firstElement() catch(e:Dynamic) {
 			return t;
 		}
+		if( x == null )
+			return t;
 		var b = new StringBuf();
 		createNode( x, b, 0 );
 		return b.toString();

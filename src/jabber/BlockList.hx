@@ -21,6 +21,8 @@
  */
 package jabber;
 
+import xmpp.IQ;
+
 /**
 	XEP 191 - Simple Communications Blocking: http://xmpp.org/extensions/xep-0191.html
 */
@@ -31,9 +33,9 @@ class BlockList {
 	public dynamic function onUnblock( i : Array<String> ) {}
 	public dynamic function onError( e : jabber.XMPPError ) {}
 	
-	public var stream(default,null) : jabber.Stream;
+	public var stream(default,null) : Stream;
 	
-	public function new( stream : jabber.Stream ) {
+	public function new( stream : Stream ) {
 		this.stream = stream;
 	}
 	
@@ -41,7 +43,7 @@ class BlockList {
 		Load list of blocked entities.
 	*/
 	public function load() {
-		var iq = new xmpp.IQ();
+		var iq = new IQ();
 		iq.x = new xmpp.BlockList();
 		stream.sendIQ( iq, handleLoad );
 	}
@@ -50,7 +52,7 @@ class BlockList {
 		Block recieving stanzas from entity.
 	*/
 	public function block( jids : Array<String> ) {
-		var iq = new xmpp.IQ( xmpp.IQType.set );
+		var iq = new IQ( xmpp.IQType.set );
 		iq.x = new xmpp.BlockList( jids );
 		stream.sendIQ( iq, handleBlock );
 	}
@@ -59,29 +61,29 @@ class BlockList {
 		Unblock recieving stanzas from entity.
 	*/
 	public function unblock( ?jids : Array<String> ) {
-		var iq = new xmpp.IQ( xmpp.IQType.set );
+		var iq = new IQ( xmpp.IQType.set );
 		iq.x = new xmpp.BlockList( jids, true );
 		stream.sendIQ( iq, handleUnblock );
 	}
 	
-	function handleLoad( iq : xmpp.IQ ) {
-		switch( iq.type ) {
+	function handleLoad( iq : IQ ) {
+		switch iq.type {
 		case result : onLoad( xmpp.BlockList.parse( iq.x.toXml() ).items );
 		case error : onError( new jabber.XMPPError( iq ) );
 		default : //#
 		}
 	}
 	
-	function handleBlock( iq : xmpp.IQ ) {
-		switch( iq.type ) {
+	function handleBlock( iq : IQ ) {
+		switch iq.type {
 		case result : onBlock( xmpp.BlockList.parse( iq.x.toXml() ).items );
 		case error : onError( new jabber.XMPPError( iq ) );
 		default : //#
 		}
 	}
 		
-	function handleUnblock( iq : xmpp.IQ ) {
-		switch( iq.type ) {
+	function handleUnblock( iq : IQ ) {
+		switch iq.type {
 		case result : onUnblock( xmpp.BlockList.parse( iq.x.toXml() ).items );
 		case error : onError( new jabber.XMPPError( iq ) );
 		default : //#

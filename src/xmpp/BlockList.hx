@@ -27,17 +27,19 @@ class BlockList {
 	
 	public static inline var XMLNS = 'urn:xmpp:blocking';
 	
+	/** List of blocked contacts */
 	public var items : Array<String>;
-	public var unblock : Bool;
+
+	/** Block|Unblock (default=true) */
+	public var block : Bool;
 	
-	public function new( ?items : Array<String>, unblock : Bool = false ) {
-		this.items = ( items != null ) ? items : new Array();
-		this.unblock = unblock;
+	public function new( ?items : Array<String>, block : Bool = true ) {
+		this.items = (items != null) ? items : new Array();
+		this.block = block;
 	}
 	
 	public function toXml() : Xml {
-		var x = Xml.createElement( unblock ? "unblock" : "block" );
-		x.ns( XMLNS );
+		var x = IQ.createQueryXml( XMLNS, block ? "block" : "unblock" );
 		for( i in items ) {
 			var e = Xml.createElement( "item" );
 			e.set( "jid", i );
