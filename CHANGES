@@ -1,0 +1,15 @@
+
+## HXMPP - Haxe Jabber/XMPP library
+
+0.4.15 - 2014-??-??
+	Removed jid.s shortcut
+	SASL-MD5 challenge response fix on rspauth
+	Added CHANGES file
+
+0.4.14 - 2014-03-30
+	Using haxe.crypto.Base64
+	Using import aliases instead of typedefs
+	Added xmpp.EventLog (XEP-0337)
+	Added xmpp.LastMessageCorrection (XEP-0301)
+	Using @:optional
+	Using @:enum(String)
