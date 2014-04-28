@@ -21,9 +21,9 @@
  */
 package xmpp;
 
-@:enum abstract IQType(String) {
-	var get = "get";
-	var set = "set";
-	var result = "result";
-	var error = "error";
+enum IQType {
+	get;
+	set;
+	result;
+	error;
 }

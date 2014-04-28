@@ -82,7 +82,7 @@ class IQ extends Packet {
 	
 	public static function parse( x : Xml ) : IQ {
 		var iq = new IQ();
-		iq.type = cast x.get( "type" );
+		iq.type = haxe.EnumTools.createByName( IQType, x.get( "type" ) );
 		Packet.parseAttributes( iq, x );
 		for( c in x.elements() ) {
 			switch c.nodeName {
