@@ -45,7 +45,7 @@ class IQFilter {
 		var iq : xmpp.IQ = cast p;
 		#end
 		if( type != null ) {
-			if( !Type.enumEq( type, iq.type ) )
+			if( !haxe.EnumTools.equals( type, iq.type ) )
 				return false;
 		}
 		var x : Xml = null;
