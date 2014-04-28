@@ -91,10 +91,12 @@ class Ping {
 	}
 	
 	function handlePong( iq : xmpp.IQ ) {
-		if( Type.enumEq( iq.type, xmpp.IQType.result ) )
+		switch iq.type {
+		case result:
 			pending = false;
-		else {
-			//TODO
+			onPong( iq.from );
+		case error:
+			onError( new jabber.XMPPError( iq ) );
 		}
 	}
 	
