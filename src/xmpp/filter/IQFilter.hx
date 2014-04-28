@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,8 +21,13 @@
  */
 package xmpp.filter;
 
+import haxe.EnumTools;
+
 /**
-	Filters IQ packets: namespace/nodename/iqtype
+	Filters IQ packets:
+		1) by namespace
+		2) by nodename
+		3) by iqtype
 */
 class IQFilter {
 	
@@ -36,8 +41,9 @@ class IQFilter {
 		this.type = type;
 	}
 	
-	@:keep public function accept( p : xmpp.Packet ) : Bool {
-		if( !Type.enumEq( p._type, xmpp.PacketType.iq ) )
+	@:keep
+	public function accept( p : xmpp.Packet ) : Bool {
+		if( !EnumValueTools.equals( p._type, xmpp.PacketType.iq ) )
 			return false;
 		#if as3
 		var iq : Dynamic = p;
@@ -45,7 +51,7 @@ class IQFilter {
 		var iq : xmpp.IQ = cast p;
 		#end
 		if( type != null ) {
-			if( !haxe.EnumTools.equals( type, iq.type ) )
+			if( !EnumValueTools.equals( iq.type, type ) )
 				return false;
 		}
 		var x : Xml = null;
