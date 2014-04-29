@@ -21,10 +21,11 @@
  */
 package jabber.util;
 
-#if (!cpp&&!neko)
+#if php #error #end
+
+#if !sys
 typedef Timer = haxe.Timer;
 #else
-
 import #if cpp cpp.vm.Thread
 	#elseif cs cs.vm.Thread
 	#elseif java java.vm.Thread
@@ -36,9 +37,6 @@ import #if cpp cpp.vm.Thread
 */
 class Timer {
 	
-	#if php
-	#else
-
 	var id : Null<Int>;
 
 	#if js
@@ -48,8 +46,6 @@ class Timer {
 	#elseif (cpp||css||java||neko)
 	var runThread : Thread;
 	
-	#end
-
 	public function new( time_ms : Int ){
 		
 		#if flash9
