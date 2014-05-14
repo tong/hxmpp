@@ -36,7 +36,7 @@ import xmpp.roster.Subscription;
 */
 class Roster {
 
-	public static var defaultSubscriptionMode = manual;
+	public static var defaultSubscriptionMode = RosterSubscriptionMode.manual;
 	
 	/** Roster got loaded */
 	public dynamic function onLoad() {}
