@@ -31,15 +31,14 @@ import jabber.component.Stream.ComponentJID in JID;
 #end
 
 private typedef Server = {
-	var features :Map<String,Xml>;
+	var features : Map<String,Xml>;
 }
 
-//TODO get rid of this
 private class StreamFeatures {
 
 	var l : #if neko List<String> #else Array<String> #end;
 	
-	public function new() {
+	public inline function new() {
 		l = #if neko new List() #else new Array<String>() #end;
 	}
 	
@@ -72,8 +71,9 @@ private class StreamFeatures {
 
 /**
 	http://xmpp.org/rfcs/rfc6120.html#streams
-
+	
 	Abstract base class, core xmpp stream implementation.
+	Container for the exchange of XML elements.
 */
 class Stream {
 	
@@ -255,7 +255,9 @@ class Stream {
 		return p;
 	}
 
-	public function sendIQRequest( jid : String, x : xmpp.PacketElement , h : IQ->Void ) {
+	/**
+	*/
+	public function sendIQRequest( jid : String, x : xmpp.PacketElement, h : IQ->Void ) {
 		var iq = new IQ( null, null, jid );
 		iq.x = x;
 		sendIQ( iq, h );
@@ -263,7 +265,7 @@ class Stream {
 
 
 	/**
-		Create and send the resulting iq for given request
+		Create and send the result iq for given request
 	*/
 	public inline function sendIQResult( iq : IQ ) {
 		sendPacket( IQ.createResult( iq ) );
@@ -395,13 +397,14 @@ class Stream {
 	}
 	
 	/**
+		Process incomig stream data.
+		Returns false if unable to process (more data needed).
 	*/
 	public function handleString( t : String ) : Bool {
-
 		
 		if( status == closed ) {
-			#if jabber_debug trace( "cannot process incoming data, xmpp stream not connected", "debug" ); #end
-			throw "stream is closed";
+			#if jabber_debug trace( "failed to process incoming data, xmpp stream not ready" ); #end
+			throw "stream not ready";
 		}
 
 		if( StringTools.fastCodeAt( t, t.length-1 ) != 62 ) { // ">"
@@ -413,7 +416,6 @@ class Stream {
 			trace("Invalid XMPP data recieved","error");
 		}
 		*/
-
 		
 		if( StringTools.startsWith( t, '</stream:stream' ) ) {
 			#if xmpp_debug XMPPDebug.i( t ); #end
@@ -435,7 +437,7 @@ class Stream {
 			close( false );
 		}
 		
-		switch( status ) {
+		switch status {
 		case closed :
 			return false;
 		case pending :
@@ -483,7 +485,7 @@ class Stream {
 	}
 	
 	/**
-		Inject incoming XML data.
+		Process incoming XML data.
 		Returns array of handled XMPP packets.
 	*/
 	public function handleXml( x : Xml ) : Array<xmpp.Packet> {
@@ -497,7 +499,7 @@ class Stream {
 	}
 	
 	/**
-		Handles incoming XMPP packets.
+		Process incoming XMPP packets.
 		Returns true if the packet got handled.
 	*/
 	public function handlePacket( p : xmpp.Packet ) : Bool {
@@ -538,7 +540,6 @@ class Stream {
 					collectors.splice( i, 1 );
 				}
 				c.deliver( p );
-				
 				if( c.block )
 					break;
 			}
@@ -573,24 +574,6 @@ class Stream {
 		bufSize = 0;
 	}
 	
-	//TODO is this needed ? seamless connection changin
-	/*
-	public function replaceConnection( n : Connection ) {
-		if( !n.connected )
-			throw 'not connected';
-		#if jabber_debug
-		if( n.http )
-			throw 'cannot replace with http connection';
-		trace( 'replacing stream connection', 'debug' );
-		#end
-		n.onConnect = handleConnect;
-		n.onDisconnect = handleDisconnect;
-		n.onString = handleString;
-		n.onData = handleData;
-		cnx = n;
-	}
-	*/
-	
 	function processStreamInit( t : String ) : Bool {
 		return #if jabber_debug throw 'abstract method' #else false #end;
 	}
@@ -600,8 +583,8 @@ class Stream {
 	}
 
 	function handleDisconnect( ?e : String ) {
-		//if( status != closed )
-		handleStreamClose( e );
+		if( status != closed )
+			handleStreamClose( e );
 	}
 	
 	function handleStreamOpen() {
