@@ -54,7 +54,6 @@ class XMPPClient {
 
 	public function login() {
 		var cnx = createStreamConnection();
-		trace(cnx);
 		stream = new Stream( cnx );
 		stream.onOpen = onStreamOpen;
 		stream.onClose = onStreamClose;
@@ -98,7 +97,7 @@ class XMPPClient {
 
 	function createStreamConnection() : jabber.StreamConnection {
 		var cnx : jabber.StreamConnection = null;
-		#if (cs||java||php)
+		#if (cs||java||php||python)
 			cnx = new jabber.SocketConnection( ip );
 		#else
 			cnx = if( use_http && http != null )
@@ -111,8 +110,8 @@ class XMPPClient {
 
 	function createSASLMechanisms() : Array<jabber.sasl.Mechanism> {
 		return [
-			//new jabber.sasl.MD5Mechanism(),
-			new jabber.sasl.PlainMechanism()
+			new jabber.sasl.MD5Mechanism(),
+			//new jabber.sasl.PlainMechanism()
 		];
 	}
 

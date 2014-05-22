@@ -24,7 +24,7 @@ class App {
 		stream.onOpen = function() {
 			trace( 'XMPP stream opened' );
 			var auth = new Authentication( stream, [
-				new jabber.sasl.MD5Mechanism(),
+				//new jabber.sasl.MD5Mechanism(),
 				new jabber.sasl.PlainMechanism()
 			] );
 			auth.onFail = function(e) {

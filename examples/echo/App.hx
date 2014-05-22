@@ -8,9 +8,11 @@ import jabber.client.Authentication;
 */
 class App {
 
-	static var JID = 'hxmpp@jabber.disktree.net';
+	static var USER = 'romeo';
+	static var SERVER = 'jabber.disktree.net';
+	static var IP = 'localhost';
+	static var HTTP = 'http';
 	static var PASSWORD = 'test';
-	static var IP = 'jabber.disktree.net';
 	static var RESOURCE = 'hxmpp';
 
 	static var stream : Stream;
@@ -31,24 +33,23 @@ class App {
 	}
 
 	static function main() {
-		
-		//TODO
-		//TODO clean this up and test with different servers 
-		//TODO
-		//TODO
-		//TODO
-		var jid = new JID( JID );
-		//var ip = "jabber.spektral.at"; //(IP != null) ? IP : jid.domain;
-		var ip = (IP != null) ? IP : jid.domain;
 
-		trace(ip);
-		
+		trace( "Echo client" );
+
+		var jid = new JID( '$USER@$SERVER' );
+
+		#if (js&&!nodejs)
+		var cnx = new jabber.BOSHConnection( SERVER, '$SERVER/$HTTP' );
+		#else
+		var ip = (IP != null) ? IP : jid.domain;
 		var cnx = new jabber.SocketConnection( ip, 5222 );
+		#end
+
 		stream = new Stream( cnx );
 		stream.onOpen = function() {
 			var auth = new Authentication( stream, [
-				new jabber.sasl.MD5Mechanism()
 				//new jabber.sasl.PlainMechanism()
+				new jabber.sasl.MD5Mechanism()
 			] );
 			auth.onFail = function(e) {
 				trace( 'Authentication failed ($jid)' );
@@ -56,10 +57,10 @@ class App {
 			}
 			auth.onSuccess = function() {
 				trace( "Authenticated as "+stream.jid );
-				new jabber.MessageListener( stream, onMessage ); // --- listen for messages
-				stream.sendPresence(); // --- send initial presence 
+				new jabber.MessageListener( stream, onMessage ); // Listen for messages
+				stream.sendPresence(); // Send initial presence 
 			}
-			auth.start( PASSWORD, RESOURCE );
+			auth.start( PASSWORD, RESOURCE ); // Start authentication
 		}
 		stream.onClose = function(?e) {
 			if( e == null )
@@ -67,7 +68,7 @@ class App {
 			else
 				trace( e );
 		}
-		stream.open( jid.bare );
+		stream.open( jid.bare ); // Open xml stream
 	}
 
 }

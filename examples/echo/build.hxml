@@ -4,18 +4,19 @@
 -cp ../../src/
 -D jabber_debug
 -D xmpp_debug
--D hxmpp_debug
 -dce full
 --each
 
 --next
 -cpp cpp
+-lib hxssl
+-D hxssl_crypto
 -D HXCPP_M64
 -cmd mv cpp/App ./app
 
-#--next
-#-cs cs
-#-cmd mv cs/bin/cs.exe app.exe && chmod +x app.exe
+--next
+-cs cs
+-cmd mv cs/bin/App.exe app.exe && chmod +x app.exe
 
 --next
 -java java
@@ -26,6 +27,8 @@
 
 --next
 -neko app.n
+-lib hxssl
+-D hxssl_crypto
 
 --next
 -js app.nodejs
@@ -34,6 +37,9 @@
 --next
 -php ./
 --php-front app.php
+
+#--next
+#-python app.py
 
 --next
 -swf app.swf

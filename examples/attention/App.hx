@@ -5,7 +5,7 @@ import jabber.JID;
 using jabber.JIDUtil;
 
 /**
-	Example usage of: http://xmpp.org/extensions/xep-0224.html
+	Example usage of getting the attention of another user (http://xmpp.org/extensions/xep-0224.html)
 */
 class App extends XMPPClient {
 	
@@ -26,8 +26,7 @@ class App extends XMPPClient {
 	}
 	
 	static function main() {
-		var creds = XMPPClient.readArguments();
-		var client = new App( creds.jid, creds.password, creds.ip, creds.http );
+		var client = new App( 'romeo@jabber.disktree.net', 'test', 'localhost', null );
 		client.login();
 	}
 
