@@ -21,12 +21,12 @@
  */
 package xmpp;
 
-@:enum abstract PresenceType(String) {
-	var error = "error";
-	var probe = "probe";
-	var subscribe = "subscribe";
-	var subscribed = "subscribed";
-	var unavailable = "unavailable";
-	var unsubscribe = "unsubscribe";
-	var unsubscribed = "unsubscribed";
+enum PresenceType {
+	error;
+	probe;
+	subscribe;
+	subscribed;
+	unavailable;
+	unsubscribe;
+	unsubscribed;
 }

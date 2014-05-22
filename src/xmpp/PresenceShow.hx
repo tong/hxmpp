@@ -22,21 +22,20 @@
 package xmpp;
 
 /**
-	Four elements, which provide insights into a human users availbility
-	for and interest in communication.
+	Four elements, which provide insights into a human users availbility for and interest in communication.
 */
-@:enum abstract PresenceShow(String) {
-	
+enum PresenceShow {
+
 	/** Especially socialable */
-	var chat = "chat";
-	
+	chat;
+
 	/** Away from device */
-	var away = "away";
+	away;
 	
 	/** Extended Away */
-	var xa = "xa";
+	xa;
 
 	/** Busy */
-	var dnd = "dnd";
-	
+	dnd;
+
 }

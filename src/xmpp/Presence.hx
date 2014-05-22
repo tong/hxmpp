@@ -1,16 +1,16 @@
 /*
  * Copyright (c), disktree.net
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,14 +26,14 @@ package xmpp;
 	Exchanging Presence Information: http://www.xmpp.org/rfcs/rfc3921.html#presence
 */
 class Presence extends xmpp.Packet {
-	
+
 	public static inline var MAX_STATUS_SIZE = 1023;
-	
-	public var type : PresenceType;
-   	public var show : PresenceShow;
+
+    public var type : PresenceType;
+    public var show : PresenceShow;
     public var status(default,set_status) : String;
     public var priority : Null<Int>;
-    
+
 	public function new( ?show : PresenceShow, ?status : String, ?priority : Int, ?type : PresenceType ) {
 		super();
 		_type = xmpp.PacketType.presence;
@@ -42,11 +42,11 @@ class Presence extends xmpp.Packet {
 		this.priority = priority;
 		this.type = type;
 	}
-	
+
 	function set_status( s : String ) : String {
 		return status = ( (s == null || s == "") ? null : (s.length > MAX_STATUS_SIZE) ? s.substr( 0, MAX_STATUS_SIZE ) : s );
 	}
-	
+
 	public override function toXml() : Xml {
 		var x = super.addAttributes( Xml.createElement( "presence" ) );
 		if( type != null ) x.set( "type", Std.string( type ) );
@@ -55,18 +55,16 @@ class Presence extends xmpp.Packet {
 		if( priority != null ) x.addChild( XMLUtil.createElement( "priority", Std.string( priority ) ) );
 		return x;
 	}
-	
+
 	public static function parse( x : Xml ) : Presence {
 		var p = new Presence( x.get( "type" ) );
 		Packet.parseAttributes( p, x );
-		//if( x.exists( "type" ) )
-		//	p.type = Type.createEnum( PresenceType, x.get( "type" ) );
-		p.type = cast x.get( "type" );
+		if( x.exists( "type" ) ) p.type = Type.createEnum( PresenceType, x.get( "type" ) );
 		for( c in x.elements() ) {
 			var fc = c.firstChild();
-			switch( c.nodeName ) {
+			switch c.nodeName {
 			case "show" :
-				p.show = cast fc.nodeValue;
+				if( fc != null ) p.show = Type.createEnum( PresenceShow, fc.nodeValue );
 			case "status" :
 				if( fc != null ) p.status =  fc.nodeValue;
 			case "priority" :
@@ -79,7 +77,5 @@ class Presence extends xmpp.Packet {
 		}
 		return p;
 	}
-	
-	//public static function showOfString() : PresenceShow {
-	
+
 }
