@@ -21,28 +21,15 @@
  */
 package jabber.util;
 
-#if (js && nodejs) import js.Node;
+#if (js&&nodejs)
+import js.Node;
 #end
 
 class SHA1 {
 	
-	/*
-	#if neko
-	static var base_encode = neko.Lib.load("std","base_encode",2);
-	static var make_sha1 = neko.Lib.load("std","make_sha1",3);
-	static inline var hex_chr = "0123456789abcdef";
-	#end
-	*/
-	
 	public static inline function encode( s : String ) : String {
 		
-		//#if neko
-		//return new String( base_encode( make_sha1( untyped t.__s ), untyped hex_chr.__s ) );
-		
-		#if php
-		return untyped __call__( "sha1", s );
-		
-		#elseif (hxssl&&hxmpp_hxssl_crypto)
+		#if (hxssl&&hxssl_crypto)
 		return sys.crypto.SHA1.encode(s);
 		
 		#elseif (js&&nodejs)
