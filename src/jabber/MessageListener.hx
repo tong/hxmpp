@@ -31,7 +31,7 @@ package jabber;
 */
 class MessageListener extends PacketListener<xmpp.Message> {
 	
-	public function new( stream : Stream, handler : xmpp.Message->Void, ?listen : Bool = true ) {
+	public function new( stream : Stream, handler : xmpp.Message->Void, listen : Bool = true ) {
 		super( stream, handler, xmpp.PacketType.message, listen );
 	}
 	

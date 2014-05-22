@@ -217,8 +217,8 @@ class Stream {
 	/**
 		Send a message packet (default type is 'chat').
 	*/
-	public function sendMessage( to : String, body : String, ?subject : String, ?type : Null<xmpp.MessageType>, ?thread : String, ?from : String ) : xmpp.Message {
-		return sendPacket( new xmpp.Message( to, body, subject, type, thread, from ) );
+	public function sendMessage( jid : String, body : String, ?subject : String, ?type : Null<xmpp.MessageType>, ?thread : String, ?from : String ) : xmpp.Message {
+		return sendPacket( new xmpp.Message( jid, body, subject, type, thread, from ) );
 	}
 	
 	/**
@@ -583,8 +583,8 @@ class Stream {
 	}
 
 	function handleDisconnect( ?e : String ) {
-		if( status != closed )
-			handleStreamClose( e );
+		//if( status != closed )
+		handleStreamClose( e );
 	}
 	
 	function handleStreamOpen() {

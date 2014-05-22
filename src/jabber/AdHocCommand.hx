@@ -29,7 +29,8 @@ import xmpp.command.Status;
 	such as those related to a configuration workflow.
 
 	XEP-0050: Ad-Hoc Commands: http://xmpp.org/extensions/xep-0050.html
-	XEP-0146: Remote Controlling Clients: http://xmpp.org/extensions/xep-0146.html
+
+	See also: XEP-0146: Remote Controlling Clients: http://xmpp.org/extensions/xep-0146.html
 */
 class AdHocCommand {
 	

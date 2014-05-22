@@ -97,6 +97,7 @@ class Ping {
 			onPong( iq.from );
 		case error:
 			onError( new jabber.XMPPError( iq ) );
+		default:
 		}
 	}
 	

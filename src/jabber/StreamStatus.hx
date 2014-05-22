@@ -37,9 +37,6 @@ enum StreamStatus {
 	pending;
 	//pending( ?info : String );
 	
-	//#if !jabber_external_component
-	//#if !hxmpp_external_component
-	//#if !hxmpp_component
 	#if !jabber_component
 	
 	/**

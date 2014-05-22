@@ -62,14 +62,12 @@ class Authentication extends AuthenticationBase {
 		var x = stream.server.features.get( "mechanisms" );
 		if( x == null )
 			throw "server does not support sasl";
-
 		if( mechanisms == null || Lambda.count( mechanisms ) == 0 )
 			throw "no sasl mechanisms specified";
 
 		super( stream );
 		this.serverMechanisms = xmpp.SASL.parseMechanisms( x );
 		this.mechanisms = new Array();
-		
 		for( m in mechanisms ) this.mechanisms.push( m );
 	}
 	

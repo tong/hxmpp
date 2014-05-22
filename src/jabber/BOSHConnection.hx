@@ -37,8 +37,8 @@ import jabber.util.Timer;
 	import flash.events.SecurityErrorEvent;
 #elseif (cpp||neko)
 	import jabber.net.BOSHRequest;
-#else
-	#error
+//#elseif xmldoc
+//#else #error
 #end
 
 using StringTools;
@@ -51,9 +51,9 @@ using StringTools;
 */
 class BOSHConnection extends jabber.StreamConnection {
 
-	static inline var BOSH_VERSION = "1.6";
-	static inline var XMLNS = "http://jabber.org/protocol/httpbind";
-	static inline var XMLNS_XMPP = "urn:xmpp:xbosh";
+	public static inline var BOSH_VERSION = "1.6";
+	public static inline var XMLNS = "http://jabber.org/protocol/httpbind";
+	public static inline var XMLNS_XMPP = "urn:xmpp:xbosh";
 
 	static inline var INTERVAL = 0;
 	static inline var MAX_CHILD_ELEMENTS = 10;

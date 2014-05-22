@@ -165,7 +165,7 @@ class SocketConnection extends jabber.StreamConnection {
 		socket = new Socket();
 		if( timeout > 0 ) socket.setTimeout( timeout );
 		try socket.connect( new Host( host ), port ) catch( e : Dynamic ) {
-			#if jabber_debug trace(e); #end
+			//#if jabber_debug trace(e); #end
 			onDisconnect( e );
 			return;
 		}

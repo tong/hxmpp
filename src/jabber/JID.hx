@@ -49,17 +49,19 @@ class JID {
 	/** Jid without resource */
 	public var bare(get,null) : String;
 	
-	public function new( ?t : String ) {
-		if( t != null ) {
-			if( !JIDUtil.isValid( t ) )
-				throw 'invalid jid [$t]'; 
-			this.node = JIDUtil.node( t );
-			this.domain = JIDUtil.domain( t );
-			this.resource = JIDUtil.resource( t );
+	public function new( ?s : String ) {
+		if( s != null ) {
+			if( !JIDUtil.isValid( s ) )
+				throw 'invalid jid : $s'; 
+			this.node = JIDUtil.node( s );
+			this.domain = JIDUtil.domain( s );
+			this.resource = JIDUtil.resource( s );
 		}
 	}
 	
-	function get_bare() : String return (node == null || domain == null) ? null : '$node@$domain';
+	function get_bare() : String {
+		return (node == null || domain == null) ? null : '$node@$domain';
+	}
 
 	public function clone() : JID {
 		var j = new JID();
@@ -68,11 +70,19 @@ class JID {
 		j.resource = resource;
 		return j;
 	}
+
+	/*
+	public inline function equals( jid : JID ) : Bool {
+		return JIDUtil.compare( jid, this );
+	}
+	*/
 	
 	public function toString() : String {
 		return (resource == null) ? get_bare() : '$node@$domain/$resource';
 	}
 
-	public static inline function isValid( jid : String ) : Bool return JIDUtil.isValid( jid );
+	public static inline function isValid( jid : String ) : Bool {
+		return JIDUtil.isValid( jid );
+	}
 	
 }

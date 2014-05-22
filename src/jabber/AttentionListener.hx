@@ -49,7 +49,8 @@ class AttentionListener {
 	}
 	
 	function handleRequest( m : Message ) {
-		onCapture( m );
+		if( xmpp.Attention.isRequest(m) )
+			onCapture( m );
 	}
 
 }
