@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,12 +23,13 @@
 package xmpp.filter;
 
 /**
-	Filters jingle IQs.
+	Filters jingle IQ packets.
 */
 class JingleFilter extends IQFilter {
 	
 	/**  Jingle session-id */
 	public var sid : String;
+
 	/** Jingle transport namespace */
 	public var transport : String;
 	
@@ -41,7 +42,7 @@ class JingleFilter extends IQFilter {
 	@:keep public override function accept( p : xmpp.Packet ) {
 		if( !super.accept( p ) )
 			return false;
-		var iq : xmpp.IQ = untyped p;
+		var iq : xmpp.IQ = cast p;
 		if( iq.x == null )
 			return false;
 		var x = iq.x.toXml();

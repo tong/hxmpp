@@ -29,7 +29,7 @@ using Lambda;
 class XMLBeautify {
 	
 	/**
-		Format given xml string to something readable.
+		Format given xml string to something human readable.
 	*/
 	public static function it( t : String ) : String  {
 		var x : Xml = null;

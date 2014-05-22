@@ -29,7 +29,17 @@ class Attention {
 		return IQ.createQueryXml( XMLNS, 'attention' );
 	}
 
+	/**
+		Returns true if the given message packet contains a attention property
+	*/
 	public static function isRequest( m : Message ) : Bool {
+		for( x in m.properties )
+			if( x.nodeName == 'attention' && x.get( 'xmlns' ) == XMLNS )
+				return true;
+		return false;
+	}
+
+	public static function getValue( m : Message ) : Bool {
 		for( x in m.properties )
 			if( x.nodeName == 'attention' && x.get( 'xmlns' ) == XMLNS )
 				return true;

@@ -31,7 +31,7 @@ class MD5DigestCalculator {
 	
 	/**
 		Parses the initial challenge and returns calculated realm and nonce
-	 */
+	*/
 	public static function parseChallenge( challenge : String ) : { realm : String, nonce : String } {
 		var c = Base64.decode( challenge );
 		var s = c.split( "," );
@@ -50,8 +50,8 @@ class MD5DigestCalculator {
 	}
 
 	/**
-		Caluclates the MD5 challenge response
-	 */
+		Calculates the MD5 challenge response
+	*/
 	public static function digest(
 		host : String,
 		serverType : String,
@@ -84,14 +84,8 @@ class MD5DigestCalculator {
 		return b.toString();
 	}
 
-	//TODO use sll.ndll if available
-	//#if ssl
-	//static inline function h( t : String)  return sys.crypto.MD5.encode( t, true );
-	//static inline function hh( t : String ) : String return sys.crypto.MD5.encode( t );
-	//#else
 	static inline function h( t : String)  return MD5.encode( t, true );
 	static inline function hh( t : String ) : String return MD5.encode( t );
-	//#end
 
 	static inline function quote( t : String ) : String return '"$t"';
 	static inline function unquote( t : String ) : String return t.substr( 1, t.length-2 );

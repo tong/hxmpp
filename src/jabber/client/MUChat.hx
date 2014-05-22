@@ -185,12 +185,12 @@ class MUChat {
 	/**
 		Send a message to all room occupants.
 	*/
-	public function speak( m : String, ?properties : Array<Xml> ) : xmpp.Message {
+	public function sendMessage( body : String, ?properties : Array<Xml> ) : xmpp.Message {
 		if( !joined )
 			throwNotJoined();
 		message.properties = (properties == null) ? [] : properties;
 		message.subject = null;
-		message.body = m;
+		message.body = body;
 		return stream.sendPacket( message );
 	}
 	
