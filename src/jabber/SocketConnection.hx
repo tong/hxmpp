@@ -92,6 +92,7 @@ class SocketConnection extends jabber.StreamConnection {
 	}
 
 	public override function connect() {
+		
 		#if flash
 		socket = new Socket();
 		if( timeout > 0 ) socket.timeout = Std.int( timeout*1000 );
@@ -100,6 +101,7 @@ class SocketConnection extends jabber.StreamConnection {
 		socket.addEventListener( IOErrorEvent.IO_ERROR, handleError, false );
 		socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR, handleError, false );
 		socket.connect( host, port );
+		
 		#elseif js
 			#if chrome_app
 			Socket.create( 'tcp', {}, function(info){
@@ -109,87 +111,57 @@ class SocketConnection extends jabber.StreamConnection {
 					onDisconnect( 'failed to create socket' );
 				}
 			});
+			
 			#elseif nodejs
 			socket = Node.net.connect( port, host );
 			socket.setEncoding( NodeC.UTF8 );
 			socket.on( NodeC.EVENT_STREAM_CONNECT, handleConnect );
 			socket.on( NodeC.EVENT_STREAM_END, handleDisconnect );
 			socket.on( NodeC.EVENT_STREAM_ERROR, handleError );
+			
 			#else
 			var uri = 'ws'+(secure?'s':'')+'://$host:$port';
 			socket = new Socket( uri );
 			socket.onopen = handleConnect;
 			socket.onclose = handleDisconnect;
 			socket.onerror = handleError;
+			
 			#end
-		/*
-		#elseif (js&&chrome_app)
-		Socket.create( 'tcp', {}, function(info){
-			if( info.socketId > 0 ) {
-				Socket.connect( socketId = info.socketId, host, port, handleConnect );
-			} else {
-				onDisconnect( 'failed to create socket' );
-			}
-		});
-		#elseif js
-			#if nodejs
-			socket = Node.net.connect( port, host );
-			socket.setEncoding( NodeC.UTF8 );
-			socket.on( NodeC.EVENT_STREAM_CONNECT, handleConnect );
-			socket.on( NodeC.EVENT_STREAM_END, handleDisconnect );
-			socket.on( NodeC.EVENT_STREAM_ERROR, handleError );
-			#else
-			var uri = 'ws'+(secure?'s':'')+'://$host:$port';
-			socket = new Socket( uri );
-			socket.onopen = handleConnect;
-			socket.onclose = handleDisconnect;
-			socket.onerror = handleError;
-			#end
-			*/
-		/*
-		#elseif (js&&nodejs)
-		//TODO timeout
-		socket = Node.net.connect( port, host );
-		socket.setEncoding( NodeC.UTF8 );
-		socket.on( NodeC.EVENT_STREAM_CONNECT, handleConnect );
-		socket.on( NodeC.EVENT_STREAM_END, handleDisconnect );
-		socket.on( NodeC.EVENT_STREAM_ERROR, handleError );
-		#elseif js
-		var uri = 'ws'+(secure?'s':'')+'://$host:$port';
-		socket = new Socket( uri );
-		socket.onopen = handleConnect;
-		socket.onclose = handleDisconnect;
-		socket.onerror = handleError;
-		*/
+
 		#elseif sys
 		socket = new Socket();
 		if( timeout > 0 ) socket.setTimeout( timeout );
 		try socket.connect( new Host( host ), port ) catch( e : Dynamic ) {
-			//#if jabber_debug trace(e); #end
 			onDisconnect( e );
 			return;
 		}
 		connected = true;
 		if( onConnect != null ) onConnect();
+
 		#end
 	}
 
 	public override function setSecure() {
+		
 		#if php
 		try secured = untyped __call__( 'stream_socket_enable_crypto', socket.__s, true, 1 ) catch( e : Dynamic ) {
 			onSecured( e );
 			return;
 		}
 		onSecured( null );
+		
 		#else
 		throw "Start-TLS not implemented";
+		
 		#end
 	}
 
 	public override function read( ?yes : Bool = true ) : Bool {
+		
 		#if flash
 		yes ? socket.addEventListener( ProgressEvent.SOCKET_DATA, handleData )
 			: socket.removeEventListener( ProgressEvent.SOCKET_DATA, handleData );
+		
 		#elseif js
 			#if chrome_app
 			if( yes ) {
@@ -197,12 +169,16 @@ class SocketConnection extends jabber.StreamConnection {
 				_read();
 			} else
 				reading = false;
+			
 			#elseif nodejs
 			yes ? socket.on( NodeC.EVENT_STREAM_DATA, handleData )
 				: socket.removeListener( NodeC.EVENT_STREAM_DATA, handleData );
+			
 			#else
 			socket.onmessage = yes ? handleData : null;
+			
 			#end
+		
 		#elseif sys
 		if( yes ) {
 			reading = true;
@@ -231,47 +207,65 @@ class SocketConnection extends jabber.StreamConnection {
 				}
 			}
 		} else reading = false;
+
 		#end
+
 		return true;
 	}
 	
 	public override function disconnect() {
+		
 		connected = false;
+		
 		#if flash
 		try socket.close() catch( e : Dynamic ) { onDisconnect( e ); }
+		
 		#elseif js
 			#if chrome_app
 			Socket.disconnect( socketId );
 			Socket.destroy( socketId );
+			
 			#elseif nodejs
 			try socket.end() catch( e : Dynamic ) { onDisconnect( e ); }
+			
 			#else
 			try socket.close() catch( e : Dynamic ) { onDisconnect( e ); }
+			
 			#end
+		
 		#elseif sys
 		try socket.close() catch( e : Dynamic ) {
 			onDisconnect( e );
 			return;
 		}
 		onDisconnect( null );
+		
 		#end
 	}
 
 	public override function write( s : String ) : Bool {
+		
 		#if flash
 		socket.writeUTFBytes( s ); 
 		socket.flush();
+
 		#elseif js
 			#if chrome_app
 			Socket.write( socketId, ArrayBufferUtil.toArrayBuffer(s), function(e){} );
+			
 			#elseif nodejs
 			socket.write( s );
+			
 			#else
 			socket.send( s );
+			
 			#end
+		
 		#elseif sys
 		socket.write( s );
+		
 		#end
+		
 		return true;
 	}
 	
@@ -339,25 +333,21 @@ class SocketConnection extends jabber.StreamConnection {
 	#elseif js
 
 	function handleConnect(_) {
-		trace("handleConnect");
 		connected = true;
 		onConnect();
 	}
 
 	function handleDisconnect(_) {
-		trace("handleDisconnect");
-		handleError( null );
+		connected = false;
+		onDisconnect( null );
 	}
 
-	//function handleError( e : String ) {
 	function handleError( e : Dynamic ) {
-		trace(e);
 		connected = false;
 		onDisconnect( e );
 	}
 
 	function handleData( s : String ) {
-		trace("handleData");
 		onString( s );
 	}
 
