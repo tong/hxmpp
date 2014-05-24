@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -53,7 +53,7 @@ class Stream extends jabber.Stream {
 		var wasOpen = status == StreamStatus.open;
 		status = pending;
 		if( !cnx.http ) {
-			sendData( xmpp.Stream.createOpenXml( xmpp.Stream.CLIENT, jid.domain, version, lang ) );
+			send( xmpp.Stream.createOpenXml( xmpp.Stream.CLIENT, jid.domain, version, lang ) );
 			if( !wasOpen ) { // Start reading input
 				cnx.read( true );
 			}
@@ -121,7 +121,7 @@ class Stream extends jabber.Stream {
 			#if xmpp_debug jabber.XMPPDebug.i( t ); #end
 			if( cnx.secure && !cnx.secured && server.features.get( "starttls" ) != null ) {
 				status = starttls;
-				sendData( '<starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls"/>' );
+				send( '<starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls"/>' );
 			} else {
 				status = StreamStatus.open;
 				handleStreamOpen();
@@ -132,7 +132,8 @@ class Stream extends jabber.Stream {
 	}
 	
 	function parseServerStreamFeatures( x : Xml ) {
-		for( e in x.elements() ) server.features.set( e.nodeName, e );
+		for( e in x.elements() )
+			server.features.set( e.nodeName, e );
 	}
 	
 }

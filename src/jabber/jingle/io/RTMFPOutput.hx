@@ -21,12 +21,10 @@
  */
 package jabber.jingle.io;
 
-#if flash
-
 import flash.events.NetStatusEvent;
 import flash.net.NetStream;
 
-@:require(flash10)
+@:require(flash)
 class RTMFPOutput extends RTMFPTransport {
 	
 	/**
@@ -65,5 +63,3 @@ class RTMFPOutput extends RTMFPTransport {
 	}
 	
 }
-
-#end // flash

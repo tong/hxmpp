@@ -22,20 +22,14 @@
 package jabber.sasl;
 
 /**
-	DIGEST-MD5 SASL Mechanism.
-
-	See:
-	 * Using Digest Authentication as a SASL Mechanism: ftp://ietf.org//rfc/rfc2831.txt
-	 * SASL and DIGEST-MD5 for XMPP:
-	 	http://web.archive.org/web/20050224191820/
-	 	http://cataclysm.cx/wip/digest-md5-crash.html
+	DIGEST-MD5 SASL Mechanism (ftp://ietf.org//rfc/rfc2831.txt)
 */
 class MD5Mechanism {
 	
 	public static inline var NAME = 'DIGEST-MD5';
 	
 	public var id(default,null) : String;
-	public var serverType : String;
+	public var serverType(default,null) : String;
 	
 	var username : String;
 	var host : String;
@@ -56,8 +50,9 @@ class MD5Mechanism {
 	}
 	
 	public function createChallengeResponse( challenge : String ) : String {
-		var c = MD5DigestCalculator.parseChallenge( challenge );
-		return (c == null) ? "" : MD5DigestCalculator.digest( host, serverType, username, c.realm, pass, c.nonce );
+		var c = MD5Calculator.parseChallenge( challenge );
+		trace(c);
+		return (c == null) ? "" : MD5Calculator.createResponse( host, serverType, username, c.realm, pass, c.nonce );
 	}
 	
 }

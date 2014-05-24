@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,8 +32,8 @@ class ExternalMD5Mechanism extends MD5Mechanism {
 	public static inline var NAME = MD5Mechanism.NAME;
 	
 	/**
-	 * The base URL of the challenge response calculator
-	 */
+		The base URL of the challenge response calculator
+	*/
 	public var passwordStoreURL : String;
 	
 	public function new( passwordStoreURL : String, serverType : String = "xmpp" ) {
@@ -42,7 +42,7 @@ class ExternalMD5Mechanism extends MD5Mechanism {
 	}
 	
 	public override function createChallengeResponse( challenge : String ) : String {
-		var c = MD5DigestCalculator.parseChallenge( challenge );
+		var c = MD5Calculator.parseChallenge( challenge );
 		return haxe.Http.requestUrl( '$passwordStoreURL?host=$host&servertype=$serverType&username=$username&realm=${c.realm}&nonce=${c.nonce}' );
 	}
 	

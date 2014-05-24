@@ -25,14 +25,8 @@ import haxe.io.Bytes;
 
 /**
 	Abstract base class for xmpp stream connections.
-
-	Extended by:
-	  * jabber.SocketConnection
-	  * jabber.BOSHConnection
-	
 */
 class StreamConnection {
-	
 
 	/** Succesfully connected callback */
 	@:allow(jabber.Stream)
@@ -52,7 +46,6 @@ class StreamConnection {
 
 	/** SSL negotiation complete callback, optional argument indicates an ssl error */
 	public var onSecured : String->Void;
-	
 
 	/** Hostname or IP address of the XMPP server. */
 	public var host(default,set_host) : String;
@@ -68,7 +61,6 @@ class StreamConnection {
 	
 	/** Indicates if this data connection is a HTTP (BOSH) connection (default is false) */
 	public var http(default,null) : Bool;
-	
 
 	function new( host : String, secure : Bool, http : Bool = false ) {
 		this.host = host;
@@ -77,38 +69,54 @@ class StreamConnection {
 		connected = secured = false;
 	}
 	
-
-	function set_host( t : String ) : String {
+	function set_host( s : String ) : String {
 		if( connected )
-			return throw "cannot change hostname on active xmpp connection" ;
-		return host = t;
+			return throw "cannot change hostname for active connection" ;
+		return host = s;
 	}
-
 	
 	/**
 	*/
 	public function connect() {
-		#if jabber_debug trace( 'jabber.StreamConnection.connect not implemented' ); #end
+		#if jabber_debug
+		trace( 'not implemented' );
+		#end
 	}
 	
 	/**
 	*/
 	public function disconnect() {
-		#if jabber_debug trace( 'jabber.StreamConnection.disconnect not implemented' ); #end
+		#if jabber_debug
+		trace( 'not implemented' );
+		#end
 	}
 	
 	/**
 		Start ssl negotiation
 	*/
 	public function setSecure() {
-		#if jabber_debug trace( 'jabber.StreamConnection.setSecure not implemented' ); #end
+		#if jabber_debug
+		trace( 'not implemented' );
+		#end
 	}
 	
 	/**
-		Starts/Stops reading data input, returns true if successfully started
+		Start/Stop reading data input
 	*/
 	public function read( ?yes : Bool = true ) : Bool {
-		#if jabber_debug trace( 'jabber.StreamConnection.read not implemented' ); #end
+		#if jabber_debug
+		trace( 'not implemented' );
+		#end
+		return false;
+	}
+
+	/**
+		Send raw bytes
+	*/
+	public function writeData( data : Bytes ) : Bool {
+		#if jabber_debug
+		trace( 'not implemented' );
+		#end
 		return false;
 	}
 	
@@ -116,22 +124,9 @@ class StreamConnection {
 		Send string
 	*/
 	public function write( s : String ) : Bool {
-		#if jabber_debug trace( 'jabber.StreamConnection.write not implemented' ); #end
-		return false;
-	}
-	
-	/**
-	public function writeXml( x : Xml ) : Bool {
-		#if jabber_debug trace( 'StreamConnection.writeXml not implemented' ); #end
-		return false;
-	}
-	*/
-
-	/**
-		Send raw bytes
-	*/
-	public function writeBytes( b : Bytes ) : Bool {
-		#if jabber_debug trace( 'StreamConnection.writeBytes not implemented' ); #end
+		#if jabber_debug
+		trace( 'not implemented' );
+		#end
 		return false;
 	}
 	

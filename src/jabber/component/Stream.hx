@@ -25,7 +25,7 @@ import jabber.util.SHA1;
 import xmpp.XMLUtil;
 
 /**
-	Server component jabber-id (fe: mycomp.jabber.org)
+	Server component jabber-id (fe: mycomp.server.net)
 */
 @:require(jabber_component)
 class ComponentJID {
@@ -116,8 +116,8 @@ class Stream extends jabber.Stream {
 	}
 	
 	override function handleConnect() {
-		sendData( xmpp.Stream.createOpenXml( xmpp.Stream.COMPONENT, jid.toString() ) );
-		status = StreamStatus.pending;
+		send( xmpp.Stream.createOpenXml( xmpp.Stream.COMPONENT, jid.toString() ) );
+		status = pending;
 		cnx.read( true );
 	}
 	
@@ -161,10 +161,10 @@ class Stream extends jabber.Stream {
 		handleStreamOpen();
 
 		//
-		collect( [new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], readyHandler, false );
+		collectPacket( [new xmpp.filter.PacketNameFilter( ~/handshake/ ) ], readyHandler, false );
 
 		//
-		sendData( XMLUtil.createElement( "handshake", Xml.createPCData( SHA1.encode( id+secret ) ).toString() ).toString() );
+		send( XMLUtil.createElement( "handshake", Xml.createPCData( SHA1.encode( id+secret ) ).toString() ).toString() );
 
 		return true;
 	}

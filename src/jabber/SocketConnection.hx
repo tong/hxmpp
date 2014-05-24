@@ -1,5 +1,5 @@
 /*
- * Copyright (c) disktree
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -75,10 +75,11 @@ class SocketConnection extends jabber.StreamConnection {
 	public function new( host : String = "localhost", ?port : Null<Int>,
 						 secure : Bool = false, timeout : Float = 0 ) {
 		
-		if(port == null) port =
-			#if jabber_component jabber.component.Stream.defaultPort
-			#else jabber.client.Stream.defaultPort
-			#end;
+		if( port == null )
+			port =
+				#if jabber_component jabber.component.Stream.defaultPort
+				#else jabber.client.Stream.defaultPort
+				#end;
 
 		super( host, secure, false );
 		this.port = port;
@@ -142,17 +143,16 @@ class SocketConnection extends jabber.StreamConnection {
 	}
 
 	public override function setSecure() {
-		
 		#if php
-		try secured = untyped __call__( 'stream_socket_enable_crypto', socket.__s, true, 1 ) catch( e : Dynamic ) {
+		try {
+			secured = untyped __call__( 'stream_socket_enable_crypto', socket.__s, true, 1 );
+		} catch( e : Dynamic ) {
 			onSecured( e );
 			return;
 		}
 		onSecured( null );
-		
 		#else
-		throw "Start-TLS not implemented";
-		
+		throw "start-tls not implemented";
 		#end
 	}
 
@@ -190,6 +190,7 @@ class SocketConnection extends jabber.StreamConnection {
 					handleError( e );
 					return false;
 				}
+				//trace("rrrrrrrrrrrr "+buf );
 				pos += len;
 				if( len < bufSize ) {
 					onData( buf.sub( 0, pos ) );
@@ -246,29 +247,49 @@ class SocketConnection extends jabber.StreamConnection {
 	public override function write( s : String ) : Bool {
 		
 		#if flash
-		socket.writeUTFBytes( s ); 
+		//socket.writeUTFBytes( s );
+		//var b = Bytes.ofString(s).getData(); 
+		//socket.writeBytes( d, 0, d.length ); 
+		socket.writeUTFBytes( s );
 		socket.flush();
 
 		#elseif js
 			#if chrome_app
 			Socket.write( socketId, ArrayBufferUtil.toArrayBuffer(s), function(e){} );
-			
 			#elseif nodejs
 			socket.write( s );
-			
 			#else
 			socket.send( s );
-			
 			#end
 		
 		#elseif sys
 		socket.write( s );
-		
+		socket.output.flush();
+
 		#end
 		
 		return true;
 	}
 	
+	//TODO
+	public override function writeData( b : Bytes ) : Bool {
+		
+		#if flash
+		//var ba = data.getData();
+		//socket.writeBytes( ba, 0, ba.length );
+		//socket.flush();
+		
+		#elseif sys
+		//socket.output.writeBytes( data, 0, data.length );
+		//socket.output.flush();
+		socket.output.write( b );
+		socket.output.flush();
+
+		#end
+
+		return true;
+	}
+
 	#if flash
 
 	function handleConnect( e : Event ) {
@@ -287,6 +308,9 @@ class SocketConnection extends jabber.StreamConnection {
 	}
 
 	function handleData( e : ProgressEvent ) {
+		trace("########");
+		trace(e);
+		trace("########");
 		var data = new ByteArray();
 		socket.readBytes( data, 0, Std.int( e.bytesLoaded ) );
 		onData( Bytes.ofData( data )  );

@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,12 +42,12 @@ class AdHocCommandListener {
 	
 	public function new( stream : Stream ) {
 		this.stream = stream;
-		c = stream.collect( [new xmpp.filter.IQFilter(xmpp.AdHocCommand.XMLNS)], handleRequest, true );
+		c = stream.collectPacket( [new xmpp.filter.IQFilter(xmpp.AdHocCommand.XMLNS)], handleRequest, true );
 		stream.features.add( xmpp.AdHocCommand.XMLNS );
 	}
 	
 	/**
-		Dispose command listener service for this stream
+		Dispose command listener service
 	*/
 	public function dispose() {
 		stream.removeCollector( c );
@@ -69,7 +69,7 @@ class AdHocCommandListener {
 		var action = cmd.action;
 		if( action == null )
 			action = execute;
-		switch( action ) {
+		switch action {
 		case execute, complete:
 			onRequest( iq.from, cmd, function(result){
 				var r = IQ.createResult( iq );
@@ -85,7 +85,7 @@ class AdHocCommandListener {
 			onCancel( iq.from, cmd );
 		//case next : trace("TODO");
 		default :
-			#if jabber_debug trace( "unknown command action : "+action ); #end
+			#if jabber_debug trace( 'unknown command action ($action)' ); #end
 		}
 	}
 }

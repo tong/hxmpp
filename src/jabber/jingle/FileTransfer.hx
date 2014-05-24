@@ -92,7 +92,9 @@ class FileTransfer extends OutgoingSession<ByteStreamOutput> {
 		var xfile = Xml.createElement( "file" );
 		xfile.set( "xmlns", xmpp.file.File.XMLNS );
 		//TODO if( hash != null ) xfile.set( "hash", hash );
-		xfile.set( "date", xmpp.DateTime.utc( date ) );
+//TODO!
+//xfile.set( "date", xmpp.DateTime.utc( date ) );
+//xfile.set( "date", xmpp.DateTime.ofDate( date ) );
 		xfile.set( "name", name );
 		xfile.set( "size", Std.string( size ) );
 		if( desc != null ) xfile.addChild( xmpp.XMLUtil.createElement( "desc", desc ) );

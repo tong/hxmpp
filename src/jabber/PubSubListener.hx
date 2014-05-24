@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -54,11 +54,14 @@ class PubSubListener {
 	var c : PacketCollector;
 	
 	public function new( stream : Stream, service : String ) {
+		
 		this.stream = stream;
-		var filters : Array<xmpp.PacketFilter> = [ new xmpp.filter.PacketFromFilter( service ),
-							  new xmpp.filter.MessageFilter( xmpp.MessageType.normal ),
-						 	  new xmpp.filter.PacketPropertyFilter( xmpp.PubSubEvent.XMLNS, 'event' ) ];
-		c = stream.collect( filters, handlePubSubEvent, true );
+		
+		var filters : Array<xmpp.PacketFilter> = [
+			new xmpp.filter.PacketFromFilter( service ),
+			new xmpp.filter.MessageFilter( normal ),
+			new xmpp.filter.PacketPropertyFilter( xmpp.PubSubEvent.XMLNS, 'event' ) ];
+		c = stream.collectPacket( filters, handlePubSubEvent, true );
 	}
 	
 	public function dispose() {

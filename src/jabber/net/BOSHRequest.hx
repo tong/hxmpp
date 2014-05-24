@@ -124,6 +124,7 @@ class BOSHRequest {
 		out.writeString( data );
 		out.flush();
 
+
 //Origin: http://localhost
 //User-Agent: HXMPP BOSH client
 //Referer: http://localhost/lib/hxmpp/examples/bosh/

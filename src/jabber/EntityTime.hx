@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,8 @@
  */
 package jabber;
 
+import xmpp.IQ;
+
 /**
 	Extension for requesting the local time of an entity.
 
@@ -36,23 +38,28 @@ class EntityTime {
 	
 	public var stream(default,null) : Stream;
 	
-	public function new( s : Stream ) {
-		this.stream = s;
+	public function new( stream : Stream ) {
+		this.stream = stream;
 	}
 	
 	/**
 		Request the local time of another entity
 	*/
-	public function load( jid : String ) {
-		stream.sendIQRequest( jid, new xmpp.EntityTime(), handleLoad );
+	public function request( jid : String ) {
+		var iq = new IQ( null, null, jid );
+		iq.x = new xmpp.EntityTime();
+		stream.sendIQ( iq, handleLoad );
 	}
 	
-	function handleLoad( iq : xmpp.IQ ) {
-		if( iq.type == result )
+	function handleLoad( iq : IQ ) {
+		switch iq.type {
+		case result:
 			if( iq.x != null )
 				onLoad( iq.from, xmpp.EntityTime.parse( iq.x.toXml() ) );
-		else if( iq.type == error )
+		case error:
 			onError( new XMPPError( iq ) );
+		default:
+		}
 	}
 	
 }

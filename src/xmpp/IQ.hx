@@ -99,14 +99,14 @@ class IQ extends Packet {
 	}
 	
 	/**
-		Creates a '<query xmlns="namespace"/>' XML tag
+		Creates a '<query xmlns="namespace"/>' xml tag
 	*/
     public static inline function createQueryXml( ns : String, name : String = "query" ) : Xml {
 		return XMLUtil.setNamespace( Xml.createElement( name ), ns );
 	}
 
 	/**
-		Create a IQ request packet
+		Create a iq request packet
 	*/
 	public static inline function createRequest( jid : String, x : PacketElement ) : IQ {
 		var iq = new IQ( null, null, jid );

@@ -9,8 +9,11 @@ class App extends XMPPClient {
 	static inline var RESOURCE = 'hxmpp';
 
 	override function onLogin() {
+		
 		new jabber.PresenceListener( stream, function(p){
+			
 			if( p.type == null ) {
+				
 				// Request buddy time
 				var time = new jabber.EntityTime( stream );
 				time.onLoad = function(jid:String,time:xmpp.EntityTime) {
@@ -19,9 +22,10 @@ class App extends XMPPClient {
 						info += ' TZ= ${time.tzo}';
 					trace( info );
 				}
-				time.load( p.from );
+				time.request( p.from );
 			}
 		});
+
 		// Listen for entity time request from other entities
 		var listener = new jabber.EntityTimeListener( stream );
 		// Optionally specify a request callback to handle requests
@@ -29,6 +33,8 @@ class App extends XMPPClient {
 			trace( '$jid has requested my time' );
 			return new xmpp.EntityTime( xmpp.DateTime.now().toString(), '23:00' );
 		}
+
+		// Send initial presence
 		stream.sendPresence();
 	}
 

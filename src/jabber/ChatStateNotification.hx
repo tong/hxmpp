@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,9 +21,8 @@
  */
 package jabber;
 
+import xmpp.ChatState;
 import xmpp.MessageType;
-import xmpp.filter.MessageFilter;
-import xmpp.filter.PacketPropertyFilter;
 
 /**
 	Extension for communicating the status of a user in a chat session.
@@ -40,26 +39,30 @@ import xmpp.filter.PacketPropertyFilter;
 */
 class ChatStateNotification {
 	
-	public dynamic function onState( jid : String, state : xmpp.ChatState ) {}
+	public dynamic function onState( jid : String, state : ChatState ) {}
 	
 	/** The chat state to intercept message packets with */
-	public var state : xmpp.ChatState;
+	public var state : ChatState;
 	public var stream(default,null) : Stream;
 	
 	var collector : PacketCollector;
 	
 	public function new( stream : jabber.Stream ) {
 		
-		//if( !stream.features.add( xmpp.ChatStateNotification.XMLNS ) )
-		//	throw "chatstate listener already added";
+		//if( !stream.features.add( xmpp.ChatStateNotification.XMLNS ) ) throw "chatstate listener already added";
 		stream.features.add( xmpp.ChatStateNotification.XMLNS );
 		
 		this.stream = stream;
-		var filters : Array<xmpp.PacketFilter> = [new MessageFilter(MessageType.chat),new PacketPropertyFilter(xmpp.ChatStateNotification.XMLNS)];
-		collector = stream.collect( filters, handleMessage, true );
+		
+		var filters : Array<xmpp.PacketFilter> = [
+			new xmpp.filter.MessageFilter( MessageType.chat ),
+			new xmpp.filter.PacketPropertyFilter( xmpp.ChatStateNotification.XMLNS ) ];
+		collector = stream.collectPacket( filters, handleMessage, true );
 		stream.addInterceptor( this );
 	}
 	
+	/**
+	*/
 	public function dispose() {
 		stream.removeCollector( collector );
 		stream.removeInterceptor( this );
@@ -68,13 +71,15 @@ class ChatStateNotification {
 	/**
 		Force send chat state in (standalone) notification message.
 	*/
-	public function send( to : String, state : xmpp.ChatState ) : xmpp.Message {
+	public function send( to : String, state : ChatState ) : xmpp.Message {
 		var m = new xmpp.Message( to );
 		xmpp.ChatStateNotification.set( m, state );
-		stream.sendData( m.toString() );
+		stream.send( m.toString() );
 		return m;
 	}
 	
+	/**
+	*/
 	public function interceptPacket( p : xmpp.Packet ) : xmpp.Packet {
 		if( p._type != xmpp.PacketType.message || state == null )
 			return p;

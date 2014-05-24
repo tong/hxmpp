@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,6 +20,9 @@
  * THE SOFTWARE.
  */
 package jabber;
+
+import xmpp.IQ;
+import xmpp.IQType;
 
 /**
 	Extension for blocking communication with unknown or undesirable entities.
@@ -44,55 +47,47 @@ class PrivacyLists {
 		if( !stream.features.add( xmpp.PrivacyLists.XMLNS ) )
 			throw "privacylists feature already added";
 		this.stream = stream;
-		stream.collect( 
-			[new xmpp.filter.IQFilter(xmpp.PrivacyLists.XMLNS,xmpp.IQType.set)],
-			handleListPush,
-			true );
+		stream.collectPacket( [new xmpp.filter.IQFilter(xmpp.PrivacyLists.XMLNS,set)], handleListPush, true );
 	}
 	
 	public function loadLists() {
-		var me = this;
-		sendRequest( xmpp.IQType.get, function(r) {
+		sendRequest( get, function(r) {
 			var l = xmpp.PrivacyLists.parse( r.x.toXml() );
-			me.onLists( l );
+			onLists( l );
 		} );
 	}
 	
 	public function load( name : String ) {
-		var me = this;
-		sendRequest( xmpp.IQType.get, function(r) {
+		sendRequest( get, function(r) {
 			var l = xmpp.PrivacyLists.parse( r.x.toXml() );
-			me.onInfo( l.lists[0] );
+			onInfo( l.lists[0] );
 		}, null, null, new xmpp.PrivacyList( name ) );
 	}
 	
 	public function activate( name : String ) {
-		var me = this;
-		sendRequest( xmpp.IQType.set, function(r) {
+		sendRequest( set, function(r) {
 			var l = xmpp.PrivacyLists.parse( r.x.toXml() );
-			me.onActivate( l.active );
+			onActivate( l.active );
 		}, name );
 	}
 	
 	public function deactivate() {
-		var me = this;
-		sendRequest( xmpp.IQType.set, function(r) {
-			me.onDeactivate();
+		sendRequest( set, function(r) {
+			onDeactivate();
 		}, "" );
 	}
 	
 	public function changeDefault( name : String ) {
-		var iq = new xmpp.IQ( xmpp.IQType.set );
+		var iq = new IQ( set );
 		var ext = new xmpp.PrivacyLists();
 		ext._default = name;
 		iq.x = ext;
-		var me = this;
-		stream.sendIQ( iq, function(r:xmpp.IQ) {
-			switch( r.type ) {
+		stream.sendIQ( iq, function(r:IQ) {
+			switch r.type {
 			case result :
-				me.onDefaultChange( name );
+				onDefaultChange( name );
 			case error :
-				me.onError( new jabber.XMPPError( r ) );
+				onError( new jabber.XMPPError( r ) );
 			default :
 			}
 		} );
@@ -107,41 +102,38 @@ class PrivacyLists {
 	}
 	
 	public function remove( name : String ) {
-		var me = this;
-		sendRequest( xmpp.IQType.set, function(r) {
+		sendRequest( set, function(r) {
 			var l = xmpp.PrivacyLists.parse( r.x.toXml() );
-			me.onRemoved( l.lists[0] );
+			onRemoved( l.lists[0] );
 		}, null, null, new xmpp.PrivacyList( name ) );
 	}
 	
 	
 	function _update( list : xmpp.PrivacyList ) {
-		var me = this;
-		sendRequest( xmpp.IQType.set, function(r) {
+		sendRequest( set, function(r) {
 			var l = xmpp.PrivacyLists.parse( r.x.toXml() );
-			me.onUpdate( l.lists[0] );
+			onUpdate( l.lists[0] );
 		}, null, null, list );
 	}
 	
-	function sendRequest( iqType : xmpp.IQType, resultHandler : xmpp.IQ->Void,
+	function sendRequest( iqType : IQType, resultHandler : IQ->Void,
 						  ?active : String, ?_default : String, ?list : xmpp.PrivacyList ) {
-		var iq = new xmpp.IQ( iqType );
+		var iq = new IQ( iqType );
 		var xt = new xmpp.PrivacyLists();
 		if( active != null ) xt.active = active;
 		else if( _default != null ) xt._default = _default; 
 		else if( list != null ) xt.lists.push( list );
 		iq.x = xt;
-		var me = this;
-		stream.sendIQ( iq, function(r:xmpp.IQ) {
-			switch( r.type ) {
+		stream.sendIQ( iq, function(r:IQ) {
+			switch r.type {
 				case result : resultHandler( r );
-				case error : me.onError( new jabber.XMPPError( r ) );
-				default : // #
+				case error : onError( new jabber.XMPPError( r ) );
+				default:
 			}
 		} );
 	}
 	
-	function handleListPush( iq : xmpp.IQ ) {
+	function handleListPush( iq : IQ ) {
 		trace("TODO händleListPush");
 	}
 	

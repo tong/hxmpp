@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ package jabber.client;
 */
 class GMailNotify {
 	
-	public static var XMLNS(default,null) : String = "google:mail:notify";
+	public static inline var XMLNS = "google:mail:notify";
 	
 	public dynamic function onMail( m : Xml ) {}
 	
@@ -56,7 +56,7 @@ class GMailNotify {
 	*/
 	public function request( ?newerThanTime : Int, ?newerThanTid : Int, ?q : String  ) {
 		if( c == null )
-			c = stream.collect( [new xmpp.filter.IQFilter(XMLNS,xmpp.IQType.set,"mailbox")], handleNotification, true );
+			c = stream.collectPacket( [new xmpp.filter.IQFilter(XMLNS,set,"mailbox")], handleNotification, true );
 		var iq = new xmpp.IQ();
 		var x = xmpp.IQ.createQueryXml( XMLNS );
 		if( newerThanTime != null ) x.set( "newer-than-time", Std.string( newerThanTime ) );

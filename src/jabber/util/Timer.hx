@@ -32,10 +32,12 @@ import cs.vm.Thread;
 import java.vm.Thread;
 #elseif neko
 import neko.vm.Thread;
+#elseif python
+import python.vm.Thread;
 #elseif php #error
 #end
 
-#if (cpp||cs||java||neko||doc_gen)
+#if (cpp||cs||java||neko||python||doc_gen)
 
 /**
 	Patched version of haxe.Timer adding support for c++, neko, cs and java.

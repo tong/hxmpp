@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ import xmpp.lop.Submit;
 */
 class Farm {
 	
-	public dynamic function onJob( job : Submit ) : String { return "no LOP job handler specified"; }
+	public dynamic function onJob( job : Submit ) : String { return "no lop job handler specified"; }
 	public dynamic function onVMKill( id : String ) {}
 	public dynamic function onPing( ping : Ping ) : String { return null; }
 	public dynamic function onSetBindings( bindings : Bindings ) {}
@@ -61,10 +61,8 @@ class Farm {
 	public var perform_multicast : Null<Bool>;
 	
 	public function new( stream : jabber.Stream,
-						 ?password : String,
-						 vm_species : String = "unknown",
-						 vm_time_to_live : Float = 1.0,
-						 job_timeout : Float = 1.0 ) {
+	 ?password : String,
+						 vm_species : String = "unknown", vm_time_to_live : Float = 1.0,  job_timeout : Float = 1.0 ) {
 		
 		this.stream = stream;
 		stream.features.add( xmpp.LOP.XMLNS );
@@ -79,7 +77,7 @@ class Farm {
 		
 		//open_connection = listen_for_connection = accept_connection = perform_multicast = false;
 		species = new Map();
-		stream.collect( [ new xmpp.filter.IQFilter(xmpp.LOP.XMLNS,null) ], handleIQ, true );
+		stream.collectPacket( [ new xmpp.filter.IQFilter(xmpp.LOP.XMLNS,null) ], handleIQ, true );
 	}
 	
 	/**

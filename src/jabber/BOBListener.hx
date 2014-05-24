@@ -1,5 +1,5 @@
 /*
- * Copyright (c) disktree
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,11 +40,14 @@ class BOBListener {
 	var c : PacketCollector;
 
 	public function new( stream : jabber.Stream, onRequest : String->String->xmpp.BOB ) {
+		
 		if( !stream.features.add( xmpp.BOB.XMLNS ) )
 			throw "bob listener already added";
+
 		this.stream = stream;
 		this.onRequest = onRequest;
-		c = stream.collect( [new xmpp.filter.IQFilter(xmpp.BOB.XMLNS,xmpp.IQType.get,'data')], handleRequest, true );
+
+		c = stream.collectPacket( [new xmpp.filter.IQFilter(xmpp.BOB.XMLNS,get,'data')], handleRequest, true );
 	}
 	
 	public function dispose() {

@@ -37,11 +37,14 @@ class AttentionListener {
 	var c : PacketCollector;
 	
 	public function new( stream : Stream, ?onCapture : Message->Void ) {
+		
 		if( !stream.features.add( xmpp.Attention.XMLNS ) )
 			throw 'attention listener already added';
+
 		this.stream = stream;
 		this.onCapture = onCapture;
-		c = stream.collect( [new xmpp.filter.MessageFilter(xmpp.MessageType.chat)], handleRequest, true );
+		
+		c = stream.collectPacket( [new xmpp.filter.MessageFilter(chat)], handleRequest, true );
 	}
 	
 	public function stop() {

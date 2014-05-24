@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,13 +21,15 @@
  */
 package jabber.jingle.io;
 
-import haxe.io.Bytes;
-import jabber.util.SOCKS5Input;
-#if neko
-import sys.net.Host;
-import sys.net.Socket;
+#if cpp
+import cpp.vm.Thread;
+#elseif neko
 import neko.vm.Thread;
 #end
+import haxe.io.Bytes;
+import jabber.util.SOCKS5Input;
+import sys.net.Host;
+import sys.net.Socket;
 
 class ByteStreamOutput extends ByteStreamTransport {
 	

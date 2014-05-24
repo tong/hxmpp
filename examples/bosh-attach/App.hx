@@ -131,7 +131,7 @@ class App {
 	}
 
 	static function onBeforeUnload(_) {
-		if( stream != null && stream.isOpen() ) {
+		if( stream != null && stream.status == open ) {
 			saveState();
 		} else {
 			SessionStore.clear();

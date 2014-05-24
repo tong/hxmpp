@@ -21,8 +21,19 @@
  */
 package jabber;
 
+/*
+abstract JIDPart(String) {
+	inline function new( s : String ) this = s;
+	@:from public static inline function fromString( s : String ) : JIDPart {
+		if( s.length > 1023 )
+			throw 'max jid part size';
+		return new JIDPart(s);
+	}
+}
+*/
+
 /**
-	Unique Jabber-ID.
+	Unique jabber identifier.
 
 	A JID is made up of a node (generally a username), a domain, and a resource.
 
@@ -32,7 +43,7 @@ package jabber;
 		sub-domain      = (internationalized domain label)
 		address-literal = IPv4address / IPv6address
 
-	Each allowable portion of a JID (node, domain, and resource) must not be more than 1023 bytes in length,
+	Each allowable portion of a jid (node, domain, and resource) must not be more than 1023 bytes in length,
 	resulting in a maximum total size (including the '@' and '/' separators) of 3071 bytes.
 */
 class JID {
@@ -40,7 +51,7 @@ class JID {
 	/** Node (generally a username) part */
 	public var node : String;
 	
-	/***/
+	/** Domain part */
 	public var domain : String;
 	
 	/** Uniquely identifies a specific connection (e.g., a device or location) */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,11 +33,14 @@ class LastActivityListener {
 	var c : PacketCollector;
 	
 	public function new( stream : Stream, time : Int = 0 ) {
+		
 		if( !stream.features.add( xmpp.LastActivity.XMLNS ) )
-			throw "last activity listener already added" ;
+			throw "last activity listener already added";
+
 		this.stream = stream;
 		this.time = time;
-		c = stream.collect( [new xmpp.filter.IQFilter( xmpp.LastActivity.XMLNS, xmpp.IQType.get, "query" )], handleRequest, true );
+
+		c = stream.collectPacket( [new xmpp.filter.IQFilter( xmpp.LastActivity.XMLNS, xmpp.IQType.get, "query" )], handleRequest, true );
 	}
 	
 	public function dispose() {

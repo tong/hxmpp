@@ -101,14 +101,14 @@ class Authentication extends AuthenticationBase {
 			return false;
 		}
 
-		c_fail = stream.collect( [new PacketNameFilter( xmpp.SASL.EREG_FAILURE )], handleSASLFailed );
-		c_success = stream.collect( [new PacketNameFilter( ~/success/ )], handleSASLSuccess );
-		c_challenge = stream.collect( [new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
+		c_fail = stream.collectPacket( [new PacketNameFilter( xmpp.SASL.EREG_FAILURE )], handleSASLFailed );
+		c_success = stream.collectPacket( [new PacketNameFilter( ~/success/ )], handleSASLSuccess );
+		c_challenge = stream.collectPacket( [new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
 		
 		// Start authentication
 		var t = mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password, stream.jid.resource );
 		if( t != null ) t = Base64.encode( t );
-		return stream.sendData( xmpp.SASL.createAuth( mechanism.id, t ).toString() ) != null;
+		return stream.send( xmpp.SASL.createAuth( mechanism.id, t ).toString() ) != null;
 	}
 	
 	function handleSASLFailed( p : xmpp.Packet ) {
@@ -122,18 +122,18 @@ class Authentication extends AuthenticationBase {
 	function handleSASLChallenge( p : xmpp.Packet ) {
 		var c = p.toXml().firstChild().nodeValue;
 		var r = Base64.encode( mechanism.createChallengeResponse( c ) );
-		stream.sendData( xmpp.SASL.createResponse( r ).toString() );
+		stream.send( xmpp.SASL.createResponse( r ).toString() );
 	}
 	
 	function handleSASLSuccess( p : xmpp.Packet ) {
-//		stream.cnx.reset(); // clear connection buffer
+//		stream.cnx.reset(); // Clear connection buffer
 		removeCollectors();
 		streamOpenHandler = stream.onOpen; // Relay the stream open event
 		stream.onOpen = handleStreamOpen;
 		onNegotiated();
 		//stream.version = false;
 		//stream.cnx.reset();
-		stream.open( null ); // re-open XMPP stream
+		stream.open( null ); // Re-open stream
 	}
 	
 	function handleStreamOpen() {
@@ -175,7 +175,6 @@ class Authentication extends AuthenticationBase {
 		case result:
 			onSuccess();
 		case error:
-			//trace(iq.errors);
 			onFail( iq.errors[0].condition ); // TODO condition ?
 //			onFail( new jabber.XMPPError( iq ) );
 		default:

@@ -80,12 +80,13 @@ class Roster {
 	public function new( stream : Stream, ?subscriptionMode : RosterSubscriptionMode ) {
 		
 		this.stream = stream;
-		this.subscriptionMode = ( subscriptionMode != null ) ? subscriptionMode : defaultSubscriptionMode;
+		this.subscriptionMode = (subscriptionMode != null) ? subscriptionMode : defaultSubscriptionMode;
 		
 		available = false;
 		items = new Array();
-		c_presence = stream.collect( [new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence )], handlePresence, true );
-		c_message = stream.collect( [new xmpp.filter.IQFilter( xmpp.Roster.XMLNS )], handleIQ, true );
+
+		c_presence = stream.collectPacket( [new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence )], handlePresence, true );
+		c_message = stream.collectPacket( [new xmpp.filter.IQFilter( xmpp.Roster.XMLNS )], handleIQ, true );
 	}
 	
 	function get_groups() : Array<String> {

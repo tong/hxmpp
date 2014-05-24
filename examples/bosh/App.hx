@@ -8,16 +8,18 @@ import jabber.client.Authentication;
 */
 class App {
 
-	static function init() {
+	static function login() {
 
-		var creds = XMPPClient.readArguments();
-		creds.http = 'jabber.disktree.net/http';
+		var user = 'romeo';
+		var server = 'jabber.disktree.net';
+		var password = 'test';
+		var ip = 'localhost';
+		var http = '$ip/http';
 
-		var cnx = new BOSHConnection( creds.ip, creds.http, 1, 30, false );
-		
+		var cnx = new BOSHConnection( server, http, 1, 30, false );
 		#if (cpp||neko||nodejs)
-		cnx.ip = creds.ip;
-		cnx.port = 7070;
+		cnx.ip = ip;
+		cnx.port = 80; //7070;
 		#end
 
 		var stream = new Stream( cnx );
@@ -28,19 +30,19 @@ class App {
 				new jabber.sasl.PlainMechanism()
 			] );
 			auth.onFail = function(e) {
-				trace( 'Authentication failed (${stream.jid})' );
+				trace( 'Authentication failed (${stream.jid}) '+e );
 				stream.close( true );
 			}
 			auth.onSuccess = function() {
 				trace( 'Authenticated as ${stream.jid}' );
 				stream.sendPresence();
 			}
-			auth.start( creds.password, 'hxmpp-bosh' );
+			auth.start( password, 'anything' );
 		}
 		stream.onClose = function(?e) {
 			trace( (e == null) ? 'XMPP stream closed' : e );
 		}
-		stream.open( creds.jid );
+		stream.open( '$user@$server' );
 	}
 
 	static function main() {
@@ -48,18 +50,12 @@ class App {
 		#if flash
 		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
-		init();
-		
-		#elseif js
-			#if nodejs
-			init();
-			#else
-			js.Browser.window.onload = function(_){ init(); }
-			#end
+		#end
 
+		#if (js&&!nodejs)
+		js.Browser.window.onload = function(_){ login(); }
 		#else
-		init();
-
+		login();
 		#end
 	}
 

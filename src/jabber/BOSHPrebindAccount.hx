@@ -27,6 +27,7 @@ import xmpp.XMLUtil;
 
 /**
 	Prebinds an XMPP client account to a BOSH connection.
+	
 	Warning! Uses plain text SASL login!
 */
 class BOSHPrebindAccount extends BOSHPrebind {

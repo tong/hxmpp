@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@ package jabber;
 
 import jabber.util.SystemUtil;
 import xmpp.IQ;
+import xmpp.IQType;
 import xmpp.SoftwareVersion.XMLNS;
 
 /**
@@ -52,7 +53,7 @@ class SoftwareVersionListener {
 		this.name = name;
 		this.version = version;
 		this.os = (os != null) ? os : SystemUtil.systemName();
-		c = stream.collect( [new xmpp.filter.IQFilter( XMLNS, xmpp.IQType.get )], handleQuery, true);
+		c = stream.collectPacket( [new xmpp.filter.IQFilter( XMLNS, IQType.get )], handleQuery, true);
 	}
 	
 	public function dispose() {
@@ -63,7 +64,7 @@ class SoftwareVersionListener {
 	function handleQuery( iq : IQ ) {
 		var r = IQ.createResult( iq );
 		r.x = new xmpp.SoftwareVersion( name, version, os );
-		stream.sendData( r.toString() );
+		stream.send( r.toString() );
 	}
 	
 }

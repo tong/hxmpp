@@ -1,5 +1,5 @@
 /*
- * Copyright (c) disktree
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,10 +44,12 @@ class Host {
 	var c : PacketCollector;
 	
 	public function new( stream : Stream, ctx : Context ) {
+		
 		this.stream = stream;
 		this.ctx = ctx;
+
 		stream.features.add( XMLNS );
-		c = stream.collect( [new xmpp.filter.IQFilter( XMLNS, xmpp.IQType.get )], handleIQ, true );
+		c = stream.collectPacket( [new xmpp.filter.IQFilter( XMLNS, xmpp.IQType.get )], handleIQ, true );
 		num++;
 	}
 	

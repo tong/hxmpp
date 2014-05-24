@@ -35,10 +35,13 @@ class Pong {
 	var c : PacketCollector;
 	
 	public function new( stream : Stream ) {
+		
 		if( !stream.features.add( xmpp.Ping.XMLNS ) )
 			throw "Ping listener already added";
+
 		this.stream = stream;
-		c = stream.collect( [new xmpp.filter.IQFilter( xmpp.Ping.XMLNS, xmpp.IQType.get )], handlePing, true );
+
+		c = stream.collectPacket( [new xmpp.filter.IQFilter( xmpp.Ping.XMLNS, get )], handlePing, true );
 	}
 	
 	public function dispose() {
@@ -52,7 +55,7 @@ class Pong {
 	function handlePing( iq : xmpp.IQ ) {
 		var r = xmpp.IQ.createResult( iq );
 		r.properties.push( xmpp.Ping.createXml() );
-		stream.sendData( r.toString() );
+		stream.send( r.toString() );
 		onPong( iq.from );
 	}
 		

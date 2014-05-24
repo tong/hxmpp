@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,7 @@ class EntityTimeListener {
 		if( !stream.features.add( xmpp.EntityTime.XMLNS ) )
 			throw "entitytime listener already added";
 		this.stream = stream;
-		c = stream.collect( [new xmpp.filter.IQFilter(xmpp.EntityTime.XMLNS,xmpp.IQType.get,"time")], handleRequest, true );
+		c = stream.collectPacket( [new xmpp.filter.IQFilter(xmpp.EntityTime.XMLNS,get,"time")], handleRequest, true );
 	}
 	
 	public function dispose() {

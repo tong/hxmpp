@@ -103,15 +103,15 @@ class XMPPDebug {
 	/**
 		Print incoming XMPP data
 	*/
-	public static inline function i( t : String ) {
-		print( t, false );
+	public static inline function i( v : Dynamic ) {
+		print( v, false );
 	}
 	
 	/**
 		Print outgoing XMPP data
 	*/
-	public static inline function o( t : String ) {
-		print( t, true );
+	public static inline function o( v : Dynamic ) {
+		print( v, true );
 	}
 	
 	//public static inline function printXml( x : Xml )
@@ -121,18 +121,20 @@ class XMPPDebug {
 	/**
 		Print manually to console
 	*/
-	public static function print( t : String, out : Bool, level : String = "log" ) {
+	public static function print( v : Dynamic, out : Bool, level : String = "log" ) {
+		
 		if( !active )
 			return;
+		
 		#if xmpp_console
-		XMPPConsole.printXMPP( t, out );
+		XMPPConsole.printXMPP( v, out );
 		#else
 			#if android
-			Sys.println(t);
+			Sys.println(v);
 			#elseif (sys||nodejs||air||rhino)
-			__print( beautify ? XMLBeautify.it(t) : t+"\n", out ? color_out : color_inc );
+			__print( beautify ? XMLBeautify.it(v) : "$v\n", out ? color_out : color_inc );
 			#elseif (js||flash)
-			__print( beautify ? XMLBeautify.it(t) : t, out, level );
+			__print( beautify ? XMLBeautify.it(v) : v, out, level );
 			#end
 		#end
 	}

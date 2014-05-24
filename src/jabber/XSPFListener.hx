@@ -34,18 +34,21 @@ class XSPFListener {
 	var c : PacketCollector;
 	
 	public function new( stream : Stream ) {
+
 		if( !stream.features.add( xmpp.XSPF.XMLNS ) )
 			throw "xspf listener already added" ;
+
 		this.stream = stream;
-		c = stream.collect( [new xmpp.filter.IQFilter( xmpp.XSPF.XMLNS, xmpp.IQType.get, "query" )], handleRequest, true );
+		
+		c = stream.collectPacket( [new xmpp.filter.IQFilter( xmpp.XSPF.XMLNS, xmpp.IQType.get, "query" )], handleRequest, true );
 	}
 	
 	function handleRequest( iq : xmpp.IQ ) {
 		var r = xmpp.IQ.createResult( iq );
-		var pl = onRequest( iq.from );
-		if( pl != null ) {
+		var p = onRequest( iq.from );
+		if( p != null ) {
 			var x = xmpp.XSPF.emptyXml();
-			x.addChild( pl.toXml() );
+			x.addChild( p.toXml() );
 			r.properties.push( x );
 		}
 		stream.sendPacket( r );

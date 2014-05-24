@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -77,7 +77,7 @@ class EntityCapabilities {
 			new xmpp.filter.PacketTypeFilter( PacketType.presence ),
 			new xmpp.filter.PacketPropertyFilter( Caps.XMLNS, "c" )
 		];
-		collector = stream.collect( filters, handlePresence, true );
+		collector = stream.collectPacket( filters, handlePresence, true );
 	}
 	
 	/**

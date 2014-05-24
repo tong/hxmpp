@@ -22,6 +22,7 @@
 package jabber;
 
 import xmpp.IQ;
+import xmpp.IQType;
 import xmpp.filter.IQFilter;
 
 /**
@@ -49,14 +50,15 @@ class ServiceDiscoveryListener {
 	
 	public function new( stream : Stream, ?identities : Array<xmpp.disco.Identity> ) {
 		
-		if( !stream.features.add( xmpp.disco.Info.XMLNS ) || !stream.features.add( xmpp.disco.Items.XMLNS ) )
+		if( !stream.features.add( xmpp.disco.Info.XMLNS ) ||
+			!stream.features.add( xmpp.disco.Items.XMLNS ) )
 			throw "service discovery listener already added";
 		
 		this.stream = stream;
-		this.identities = ( identities == null ) ? [defaultIdentity] : identities;
+		this.identities = (identities == null) ? [defaultIdentity] : identities;
 		
-		c_info = stream.collect( [new IQFilter( xmpp.disco.Info.XMLNS, xmpp.IQType.get )], handleInfoQuery, true );
-		c_items = stream.collect( [new IQFilter( xmpp.disco.Items.XMLNS, xmpp.IQType.get )], handleItemsQuery, true );
+		c_info = stream.collectPacket( [new IQFilter( xmpp.disco.Info.XMLNS, IQType.get )], handleInfoQuery, true );
+		c_items = stream.collectPacket( [new IQFilter( xmpp.disco.Items.XMLNS, IQType.get )], handleItemsQuery, true );
 	}
 
 	/**
@@ -84,9 +86,9 @@ class ServiceDiscoveryListener {
 			return;
 		}
 		*/
-		var r = new IQ( xmpp.IQType.result, iq.id, iq.from, stream.jid.toString() );
+		var r = new IQ( IQType.result, iq.id, iq.from, stream.jid.toString() );
 		r.x = new xmpp.disco.Info( identities, Lambda.array( stream.features ) );
-		stream.sendData( r.toString() );
+		stream.send( r.toString() );
 	}
 	
 	function handleItemsQuery( iq : IQ ) {
