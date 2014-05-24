@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,8 +37,6 @@ import jabber.util.Timer;
 	import flash.events.SecurityErrorEvent;
 #elseif (cpp||neko)
 	import jabber.net.BOSHRequest;
-//#elseif xmldoc
-//#else #error
 #end
 
 using StringTools;

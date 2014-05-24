@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ class FilterGroup extends List<xmpp.PacketFilter> {
 				add( f );
 	}
 	
-	@:keep public function accept( p : xmpp.Packet ) : Bool {
+	public function accept( p : xmpp.Packet ) : Bool {
 		for( f in iterator() )
 			if( f.accept( p ) )
 				return true;

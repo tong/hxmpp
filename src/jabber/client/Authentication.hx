@@ -40,16 +40,16 @@ import xmpp.filter.PacketNameFilter;
 */
 class Authentication extends AuthenticationBase {
 	
-	/** Called on SASL negotiation complete */
+	/** Negotiation complete callback */
 	public dynamic function onNegotiated() {}
 	
-	/** Clients SASL mechanisms (in prefered order) */
+	/** Clients mechanisms (in prefered order) */
 	public var mechanisms(default,null) : Array<Mechanism>;
 	
-	/** SASL mechanisms offered by server */
+	/** Mechanisms offered by server */
 	public var serverMechanisms(default,null) : Array<String>;
 	
-	/** Used SASL method */
+	/** Used mechanism */
 	public var mechanism(default,null) : Mechanism;
 	
 	var streamOpenHandler : Void->Void;
@@ -72,17 +72,22 @@ class Authentication extends AuthenticationBase {
 	}
 	
 	/**
-		Inits SASL authentication.
+		Inits authentication.
 		Returns false if no supported mechanism got offered by the server.
 	*/
 	public override function start( password : String, ?resource : String ) : Bool {
+		
 		this.resource = resource;
-		if( stream.jid != null && resource != null ) // update JID resource
+		
+		// Update jid resource
+		if( stream.jid != null && resource != null )
 			stream.jid.resource = resource;
-		if( mechanism == null ) { // locate SASL mechanism to use
-			for( s_mechs in serverMechanisms ) {
+		
+		// Locate mechanism to use
+		if( mechanism == null ) {
+			for( smechs in serverMechanisms ) {
 				for( m in mechanisms ) {
-					if( m.id != s_mechs )
+					if( m.id != smechs )
 						continue;
 					mechanism = m;
 					break;
@@ -92,20 +97,22 @@ class Authentication extends AuthenticationBase {
 			}
 		}
 		if( mechanism == null ) {
-			#if jabber_debug trace( 'no supported SASL mechanism found' ); #end
+			#if jabber_debug trace( 'no supported sasl mechanism found' ); #end
 			return false;
 		}
+
 		c_fail = stream.collect( [new PacketNameFilter( xmpp.SASL.EREG_FAILURE )], handleSASLFailed );
 		c_success = stream.collect( [new PacketNameFilter( ~/success/ )], handleSASLSuccess );
 		c_challenge = stream.collect( [new PacketNameFilter( ~/challenge/ )], handleSASLChallenge, true );
-		// --- init auth
+		
+		// Start authentication
 		var t = mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password, stream.jid.resource );
 		if( t != null ) t = Base64.encode( t );
 		return stream.sendData( xmpp.SASL.createAuth( mechanism.id, t ).toString() ) != null;
 	}
 	
 	function handleSASLFailed( p : xmpp.Packet ) {
-		removeSASLCollectors();
+		removeCollectors();
 		var info : String = null;
 		var c = p.toXml().firstChild();
 		if( c != null ) info = c.nodeName;
@@ -120,9 +127,9 @@ class Authentication extends AuthenticationBase {
 	
 	function handleSASLSuccess( p : xmpp.Packet ) {
 //		stream.cnx.reset(); // clear connection buffer
-		removeSASLCollectors(); // remove the collectors
-		streamOpenHandler = stream.onOpen; // relay the stream open event
-		stream.onOpen = handleStreamOpen; // relay the stream open event
+		removeCollectors();
+		streamOpenHandler = stream.onOpen; // Relay the stream open event
+		stream.onOpen = handleStreamOpen;
 		onNegotiated();
 		//stream.version = false;
 		//stream.cnx.reset();
@@ -133,15 +140,14 @@ class Authentication extends AuthenticationBase {
 		stream.onOpen = streamOpenHandler;
 		if( stream.server.features.exists( "bind" ) ) {
 			var iq = new IQ( IQType.set );
-			iq.x = new xmpp.Bind( ( mechanism.id == "ANONYMOUS" ) ? null : resource );
+			iq.x = new xmpp.Bind( (mechanism.id == "ANONYMOUS") ? null : resource );
 			stream.sendIQ( iq, handleBind );
-		} else {
+		} else
 			onSuccess();
-		}
 	}
 	
 	function handleBind( iq : IQ ) {
-		switch( iq.type ) {
+		switch iq.type {
 		case result :
 			//onBind();
 			var b = xmpp.Bind.parse( iq.x.toXml() );
@@ -149,7 +155,7 @@ class Authentication extends AuthenticationBase {
 			stream.jid.node = p[0];
 			stream.jid.domain = p[1];
 			stream.jid.resource = p[2];
-			if( stream.server.features.exists( "session" ) ) { // init session
+			if( stream.server.features.exists( "session" ) ) { // Init session
 				var iq = new IQ( IQType.set );
 				iq.x = new xmpp.PlainPacket( Xml.parse( '<session xmlns="urn:ietf:params:xml:ns:xmpp-session"/>' ).firstElement() );
 				stream.sendIQ( iq, handleSession );
@@ -160,22 +166,23 @@ class Authentication extends AuthenticationBase {
 			//trace(iq.errors);
 			onFail( iq.errors[0].condition ); // TODO condition ?
 //			onFail( new jabber.XMPPError( iq ) );
-		default : //
+		default:
 		}
 	}
 	
 	function handleSession( iq : IQ ) {
-		switch( iq.type ) {
-		case result : onSuccess();
-		case error :
+		switch iq.type {
+		case result:
+			onSuccess();
+		case error:
 			//trace(iq.errors);
 			onFail( iq.errors[0].condition ); // TODO condition ?
 //			onFail( new jabber.XMPPError( iq ) );
-		default : //#
+		default:
 		}
 	}
 	
-	function removeSASLCollectors() {
+	function removeCollectors() {
 		stream.removeCollector( c_challenge );
 		c_challenge = null;
 		stream.removeCollector( c_fail );

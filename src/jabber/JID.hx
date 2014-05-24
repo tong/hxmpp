@@ -37,7 +37,7 @@ package jabber;
 */
 class JID {
 	
-	/***/
+	/** Node (generally a username) part */
 	public var node : String;
 	
 	/***/

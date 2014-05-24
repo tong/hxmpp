@@ -4,8 +4,8 @@
 -cp ../
 -D jabber_debug
 -D xmpp_debug
--D hxmpp_debug
 -debug
 --each
 
+--next
 -js app.js

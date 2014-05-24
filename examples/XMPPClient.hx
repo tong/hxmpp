@@ -97,14 +97,12 @@ class XMPPClient {
 
 	function createStreamConnection() : jabber.StreamConnection {
 		var cnx : jabber.StreamConnection = null;
-		#if (cs||java||php||python)
-			cnx = new jabber.SocketConnection( ip );
-		#else
-			cnx = if( use_http && http != null )
-				new jabber.BOSHConnection( ip, http );
-			else
-				new jabber.SocketConnection( ip );
+		#if (js||cpp||neko)
+		if( use_http && http != null )
+			cnx = new jabber.BOSHConnection( ip, http );
 		#end
+		if( cnx == null )
+			cnx = new jabber.SocketConnection( ip );
 		return cnx;
 	}
 

@@ -54,7 +54,7 @@ private class SessionStore {
 /**
 	Stores a BOSH session into browser's localStorage for re-load and re-attach on another site.
 	The timeout for re-attaching is the BOSH connection timeout of the XMPP stream.
- */
+*/
 class App {
 
 	static var TIMEOUT = 30;
@@ -96,6 +96,7 @@ class App {
 		});
 	}
 
+	@:access(jabber.Stream)
 	static function init() {
 		var session = SessionStore.load();
 		if( session == null ) {

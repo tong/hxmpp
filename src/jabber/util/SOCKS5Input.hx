@@ -28,6 +28,7 @@ import haxe.io.BytesBuffer;
 #elseif js
 	#if nodejs
 	import js.Node;
+	import js.Node.NodeNetSocket in Socket;
 	#elseif air
 	import air.Socket;
 	import air.Event;
@@ -162,24 +163,24 @@ class SOCKS5Input {
 	
 	#elseif nodejs
 	
-	var socket : Stream;
+	var socket : Socket;
 	var digest : String;
 	var cb : String->Void;
 	var state : State;
 	
-	public function run( socket : Stream, digest : String, cb : String->Void ) {
+	public function run( socket : Socket, digest : String, cb : String->Void ) {
 		
 		this.socket = socket;
 		this.digest = digest;
 		this.cb = cb;
 		
 		state = WaitInit;
-		socket.on( Node.STREAM_END, onError );
-		socket.on( Node.STREAM_ERROR, onError );
-		socket.on( Node.STREAM_DATA, onData );
+		socket.on( NodeC.EVENT_STREAM_END, onError );
+		socket.on( NodeC.EVENT_STREAM_ERROR, onError );
+		socket.on( NodeC.EVENT_STREAM_DATA, onData );
 	}
 	
-	function onData( buf : Buffer ) {
+	function onData( buf : NodeBuffer ) {
 		switch( state ) {
 		case WaitInit :
 			var b = new haxe.io.BytesBuffer();
@@ -211,9 +212,9 @@ class SOCKS5Input {
 	}
 	
 	function removeSocketListeners() {
-		socket.removeAllListeners( Node.STREAM_DATA );
-		socket.removeAllListeners( Node.STREAM_END );
-		socket.removeAllListeners( Node.STREAM_ERROR );
+		socket.removeAllListeners( NodeC.EVENT_STREAM_DATA );
+		socket.removeAllListeners( NodeC.EVENT_STREAM_END );
+		socket.removeAllListeners( NodeC.EVENT_STREAM_ERROR );
 	}
 	
 	#end

@@ -95,7 +95,7 @@ class MUChat {
 	public var subject(default,null) : String;
 	
 	/** Own identity as room occupoant */
-	public var me(get,null) : MUChatOccupant;
+	public var myself(get,null) : MUChatOccupant;
 	
 	/** */
 	public var stream(default,null) : Stream;
@@ -124,7 +124,7 @@ class MUChat {
 		occupants = new Array();
 	}
 	
-	function get_me() : MUChatOccupant {
+	function get_myself() : MUChatOccupant {
 		var o = new MUChatOccupant();
 		o.role = role;
 		o.presence = presence;
@@ -286,7 +286,7 @@ class MUChat {
 				return;
 			}
 			if( o == null && from == nick  )
-				o = me;
+				o = myself;
 			onMessage( o, m );
 		case error :
 			trace( "TODO handle muc error" );
@@ -342,7 +342,7 @@ class MUChat {
 						affiliation = x_user.item.affiliation;
 					}
 					presence = p;
-					this.onPresence( me );
+					this.onPresence( myself );
 				}
 				return;
 			}

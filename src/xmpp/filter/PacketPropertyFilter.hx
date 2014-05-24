@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,21 +25,19 @@ package xmpp.filter;
 */
 class PacketPropertyFilter {
 	
-	public var ns : String;
+	public var xmlns : String;
 	public var name : String;
 	
-	public function new( ns : String, ?name : String ) {
-		this.ns = ns;
+	public function new( xmlns : String, ?name : String ) {
+		this.xmlns = xmlns;
 		this.name = name;
 	}
 	
-	@:keep public function accept( p : xmpp.Packet ) : Bool {
+	public function accept( p : xmpp.Packet ) : Bool {
 		for( prop in p.properties ) {
-			if( ns != null && prop.get( "xmlns" ) != ns )
+			if( xmlns != null && prop.get( "xmlns" ) != xmlns )
 				continue;
-			if( name == null )
-				return true;
-			if( prop.nodeName == name )
+			if( name == null || prop.nodeName == name )
 				return true;
 		}
 		return false;

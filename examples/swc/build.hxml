@@ -2,11 +2,11 @@
 -swf hxmpp.swc
 -cp ../
 -cp ../../src
--D jabber_debug
--D xmpp_debug
--D hxmpp_debug
 -debug
 -dce full
+-D jabber_debug
+-D xmpp_debug
+
 jabber.SocketConnection
 jabber.ServiceDiscovery
 jabber.client.Stream

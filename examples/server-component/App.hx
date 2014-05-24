@@ -7,7 +7,7 @@ import jabber.component.Stream;
 class App {
 	
 	static var SERVER = "jabber.disktree.net";
-	static var COMPONENT = "thecomp";
+	static var COMPONENT = "mycomp";
 	static var SECRET = "1234";
 	static var IP = "localhost";
 	
@@ -28,7 +28,7 @@ class App {
 		stream.onReady = function() {
 			trace( "Server component connected." );
 		}
-		trace( "Connecting to jabber server" );
+		trace( "Connecting to server" );
 		stream.open( SERVER, COMPONENT, SECRET, [identity] );
 	}
 	

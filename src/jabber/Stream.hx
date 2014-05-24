@@ -21,17 +21,18 @@
  */
 package jabber;
 
+import haxe.ds.StringMap;
 import haxe.io.Bytes;
 import jabber.util.Base64;
 import xmpp.IQ;
-import xmpp.filter.PacketIDFilter;
+import xmpp.filter.PacketIdFilter;
 
 #if jabber_component
 import jabber.component.Stream.ComponentJID in JID;
 #end
 
 private typedef Server = {
-	var features : Map<String,Xml>;
+	var features : StringMap<Xml>;
 }
 
 private class StreamFeatures {
@@ -81,17 +82,17 @@ class Stream {
 	public static var defaultMaxBufSize = 1048576; // 524288; //TODO move to connection
 	
 	/**
-		Callback when the xmpp stream is ready to exchange data
+		Callback when the stream is ready to exchange data
 	*/
 	public dynamic function onOpen() {}
 	
 	/**
-		Called when the xmpp stream closes, optionally reporting stream errors if occured 
+		Called when the stream closes, optionally reporting stream errors if occured 
 	*/
 	public dynamic function onClose( ?e : String ) {}
 	
-	/** Current status of the xmpp stream */
-	public var status : StreamStatus;
+	/** Current status */
+	public var status(default,null) : StreamStatus;
 	
 	/** The connection used to transport xmpp data */
 	public var cnx(default,set) : StreamConnection;
@@ -102,7 +103,7 @@ class Stream {
 	/** */
 	public var server(default,null) : Server;
 	
-	/** Stream-id */
+	/** Stream id */
 	public var id(default,null) : String;
 	
 	/** */
@@ -124,9 +125,9 @@ class Stream {
 	public var maxBufSize : Int;
 	
 	var buf : StringBuf;
-	var collectors_id : Array<PacketCollector>;
-	var collectors : Array<PacketCollector>;
-	var interceptors : Array<PacketInterceptor>;
+	var packetCollectorsId : haxe.ds.StringMap<PacketCollector>;
+	var packetCollectors : Array<PacketCollector>;
+	var packetInterceptors : Array<PacketInterceptor>;
 	var numPacketsSent : Int;
 	
 	function new( cnx : StreamConnection, ?maxBufSize : Int ) {
@@ -169,8 +170,9 @@ class Stream {
 	/**
 		Create/Returns the next unique packet id for this stream
 	*/
-	public function nextID() : String {
-		return Base64.random( defaultPacketIdLength ) #if jabber_debug+"_"+numPacketsSent #end;
+	public function nextId() : String {
+		return Base64.random( defaultPacketIdLength )
+			#if jabber_debug + '_$numPacketsSent' #end;
 	}
 	
 	/**
@@ -240,19 +242,19 @@ class Stream {
 	/**
 		Send a iq-get packet and pass the response to the given handler.
 	*/
-	public function sendIQ( p : IQ, ?h : IQ->Void ) : IQ {
-		if( p.id == null )
-			p.id = nextID();
+	public function sendIQ( iq : IQ, ?h : IQ->Void ) : IQ {
+		if( iq.id == null )
+			iq.id = nextId();
 		var c : PacketCollector = null;
 		if( h != null )
-			c = addIDCollector( p.id, h );
-		var s : IQ = sendPacket( p );
+			c = addIdCollector( iq.id, h );
+		var s : IQ = sendPacket( iq );
 		if( s == null && h != null ) { // TODO wtf, is this needed ?
-			collectors.remove( c );
+			packetCollectors.remove( c );
 			c = null;
 			return null;
 		}
-		return p;
+		return iq;
 	}
 
 	/**
@@ -262,7 +264,6 @@ class Stream {
 		iq.x = x;
 		sendIQ( iq, h );
 	}
-
 
 	/**
 		Create and send the result iq for given request
@@ -328,8 +329,7 @@ class Stream {
 		Runs this stream XMPP packet interceptors on the given packet.
 	*/
 	public function interceptPacket( p : xmpp.Packet ) : xmpp.Packet {
-		for( i in interceptors )
-			i.interceptPacket( p );
+		for( i in packetInterceptors ) i.interceptPacket( p );
 		return p;
 	}
 	
@@ -345,9 +345,10 @@ class Stream {
 		Adds an packet collector which filters XMPP packets by ids.
 		These collectors get processed before any other.
 	*/
-	public function addIDCollector( id : String, handler : Dynamic->Void ) : PacketCollector {
-		var c = new PacketCollector( [new PacketIDFilter(id)], handler );
-		collectors_id.push( c );
+	public function addIdCollector( id : String, h : Dynamic->Void ) : PacketCollector {
+		var c = new PacketCollector( [new PacketIdFilter(id)], h );
+		//collectors_id.push( c );
+		packetCollectorsId.set( id, c );
 		return c;
 	}
 	
@@ -355,34 +356,57 @@ class Stream {
 		Adds a XMPP packet collector to this stream and starts the timeout if not null.
 	*/
 	public function addCollector( c : PacketCollector ) : Bool {
-		if( Lambda.has( collectors, c ) )
+		if( Lambda.has( packetCollectors, c ) )
 			return false;
-		collectors.push( c );
+		packetCollectors.push( c );
 		return true;
 	}
 	
 	/**
 	*/
 	public function removeCollector( c : PacketCollector ) : Bool {
+		if( packetCollectors.remove( c ) ) return true;
+		//if( packetCollectorsId.remove( c ) ) return true;
+		//if( Std.is( c, PcketIdCollector) )
+		return false;
+		/*
 		if( !collectors.remove( c ) )
-			if( !collectors_id.remove( c ) )
+			if( !idPacketCollectors.remove( c ) )
 				return false;
+		return true;
+		*/
+	}
+
+	/**
+	*/
+	public function removeIdCollector( id : String ) : Bool {
+		/*
+		for( c in packetCollectorsId ) {
+			if( c.id == id ) {
+				packetCollectorsId.remove( c );
+				return true;
+			}
+		}
+		return false;
+		*/
+		if( !packetCollectorsId.exists( id ) )
+			return false;
+		packetCollectorsId.remove( id );
 		return true;
 	}
 	
 	/**
 	*/
 	public function addInterceptor( i : PacketInterceptor ) : Bool {
-		if( Lambda.has( interceptors, i ) )
-			return false;
-		interceptors.push( i );
+		if( Lambda.has( packetInterceptors, i ) ) return false;
+		packetInterceptors.push( i );
 		return true;
 	}
 	
 	/**
 	*/
 	public function removeInterceptor( i : PacketInterceptor ) : Bool {
-		return interceptors.remove( i );
+		return packetInterceptors.remove( i );
 	}
 	
 	/**
@@ -503,27 +527,35 @@ class Stream {
 		Returns true if the packet got handled.
 	*/
 	public function handlePacket( p : xmpp.Packet ) : Bool {
-		#if xmpp_debug
-		XMPPDebug.i( p.toString() );
-		#end
+		#if xmpp_debug XMPPDebug.i( p.toString() ); #end
+		/*
 		var i = -1;
-		while( ++i < collectors_id.length ) {
-			var c = collectors_id[i];
+		while( ++i < idPacketCollectors.length ) {
+			var c = idPacketCollectors[i];
 			if( c.accept( p ) ) {
-				collectors_id.splice( i, 1 );
+				idPacketCollectors.splice( i, 1 );
 				c.deliver( p );
 				c = null;
 				return true;
 			}
 		}
+		*/
+		if( p.id != null && packetCollectorsId.exists( p.id ) ) {
+			var c = packetCollectorsId.get( p.id );
+			packetCollectorsId.remove( p.id );
+			c.deliver( p );
+			c = null;
+			return true;
+		}
+
 		var collected = false;
-		i = -1;
-		while( ++i < collectors.length ) {
-			var c = collectors[i];
+		var i = -1;
+		while( ++i < packetCollectors.length ) {
+			var c = packetCollectors[i];
 			//remove unused collectors
 			/*
 			if( c.handlers.length == 0 ) {
-				collectors.splice( i, 1 );
+				packetCollectors.splice( i, 1 );
 				continue;
 			}
 			*/
@@ -532,12 +564,12 @@ class Stream {
 				/*
 				c.deliver( p );
 				if( !c.permanent ) {
-					collectors.splice( i, 1 );
+					packetCollectors.splice( i, 1 );
 					c = null;
 				}
 				*/
 				if( !c.permanent ) {
-					collectors.splice( i, 1 );
+					packetCollectors.splice( i, 1 );
 				}
 				c.deliver( p );
 				if( c.block )
@@ -603,9 +635,9 @@ class Stream {
 		server = { features : new Map() };
 		features = new StreamFeatures();
 		
-		collectors = new Array();
-		collectors_id = new Array();
-		interceptors = new Array();
+		packetCollectors = new Array();
+		packetCollectorsId = new haxe.ds.StringMap();
+		packetInterceptors = new Array();
 
 		dataFilters = new Array();
 		dataInterceptors = new Array();

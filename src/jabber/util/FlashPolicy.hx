@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,8 @@ package jabber.util;
 import sys.net.Socket;
 #elseif nodejs
 import js.Node.Stream in Socket;
+#elseif js
+import js.html.WebSocket in Socket;
 #elseif (air&&flash)
 import flash.net.Socket;
 #elseif (air&&js)
@@ -34,16 +36,23 @@ import air.Socket;
 class FlashPolicy {
 	
 	public static function allow( request : String, socket : Socket, host : String, port : Int ) {
-		if( request.length == 23 && request.substr(0,22) == "<policy-file-request/>" ) {
+		
+		if( request.length == 23 &&
+			request.substr(0,22) == "<policy-file-request/>" ) {
+			
 			var s = '<cross-domain-policy><allow-access-from domain="'+host+'" to-ports="'+port+'"/></cross-domain-policy>'+String.fromCharCode(0);
+			
 			#if sys
 			socket.write(s);
 			socket.output.flush();
+			
 			#elseif nodejs
 			socket.write(s);
+			
 			#elseif air
 			socket.writeUTFBytes(s);
 			socket.flush();
+			
 			#end
 		}
 	}

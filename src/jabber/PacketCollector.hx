@@ -22,32 +22,34 @@
 package jabber;
 
 import xmpp.PacketFilter;
-import xmpp.filter.PacketIDFilter;
+import xmpp.filter.PacketIdFilter;
 
 /**
-	Default XMPP packet collector implementation.
+	XMPP packet collector.
 */
 class PacketCollector {
 	
 	/** This collectors filters */
 	public var filters(default,null) : FilterList;
 	
-	/** Callbacks to which collected packets get delivered to. */
+	/** Callbacks to which collected packets get delivered to */
 	public var handlers : Array<xmpp.Packet->Void>;
 	
-	/** Indicates if the the collector should get removed from the stream after collecting. */
+	/** Indicates if the the collector should get removed from the stream after collecting */
 	public var permanent : Bool;
 	
 	/** Block remaining collectors */
 	public var block : Bool; //remove?
 	
 	public function new( filters : Iterable<PacketFilter>, handler : Dynamic->Void,
-						 permanent : Bool = false,
-						 block : Bool = false ) {
+						 permanent : Bool = false, block : Bool = false ) {
+		
 		handlers = new Array();
 		this.filters = new FilterList();
-		for( f in filters ) this.filters.push( f );
+		for( f in filters )
+			this.filters.push( f );
 		if( handler != null ) handlers.push( handler );
+		
 		this.permanent = permanent;
 		this.block = block;
 	}
@@ -71,6 +73,7 @@ class PacketCollector {
 
 }
 
+//TODO remove?
 private class FilterList {
 	
 	var fid : Array<PacketFilter>;
@@ -89,7 +92,7 @@ private class FilterList {
 		return fid.concat( f ).iterator();
 	}
 	
-	public inline function addIDFilter( _f : PacketIDFilter ) {
+	public inline function addIDFilter( _f : PacketIdFilter ) {
 		fid.push( _f );
 	}
 	
@@ -98,11 +101,11 @@ private class FilterList {
 	}
 	
 	public inline function push( _f : PacketFilter ) {
-		( Std.is( _f, PacketIDFilter ) ) ? fid.push( _f ) : f.push( _f );
+		( Std.is( _f, PacketIdFilter ) ) ? fid.push( _f ) : f.push( _f );
 	}
 	
 	public inline function unshift( _f : PacketFilter ) {
-		( Std.is( _f, PacketIDFilter ) ) ? fid.unshift( _f ) : f.unshift( _f );
+		( Std.is( _f, PacketIdFilter ) ) ? fid.unshift( _f ) : f.unshift( _f );
 	}
 	
 	public inline function remove( _f : PacketFilter ) : Bool {

@@ -144,6 +144,18 @@ class DateTime {
 		return n;
 	}
 
+	public static function parse( s : String ) : DateTime {
+		var d = getDateTimeParts( s );
+		var n = new DateTime();
+		n.year = d[0];
+		n.month = d[1];
+		n.day = d[2];
+		n.hour = d[3];
+		n.min = d[4];
+		n.sec = d[5];
+		return n;
+	}
+
 	public static inline function now() : DateTime return ofDate( Date.now() );
 
 }

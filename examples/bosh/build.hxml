@@ -4,8 +4,6 @@
 -cp ../../src
 -D jabber_debug
 -D xmpp_debug
--D hxmpp_debug
--debug
 -dce full
 --each
 
@@ -16,10 +14,11 @@
 -swf app.swf
 -swf-header 100:100:60:D0191E
 
-#--next
-#-js app.nodejs
-#-lib nodejs
-#-lib hxargs
+--next
+-js app.node
+-lib nodejs
+-lib hxargs
 
-#--next
-#-neko app.n
+--next
+-neko app.n
+-lib hxargs

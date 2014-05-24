@@ -27,6 +27,7 @@ import haxe.io.Bytes;
 	import sys.net.Socket;
 #elseif nodejs
 	import js.Node;
+	import js.Node.NodeNetSocket in Socket;
 #elseif flash
 	import flash.net.Socket;
 	import flash.events.Event;
@@ -143,26 +144,26 @@ class SOCKS5Output {
 	
 	#elseif nodejs
 	
-	var socket : Stream;
+	var socket : Socket;
 	var digest : String;
 	var cb : String->Void;
 	var state : State;
 	
-	public function run( socket : Stream, digest : String, cb : String->Void ) {
+	public function run( socket : Socket, digest : String, cb : String->Void ) {
 		
 		this.socket = socket;
 		this.digest = digest;
 		this.cb = cb;
 		
 		state = WaitResponse;
-		socket.on( Node.STREAM_END, onError );
-		socket.on( Node.STREAM_ERROR, onError );
-		socket.on( Node.STREAM_DATA, onData );
+		socket.on( NodeC.EVENT_STREAM_END, onError );
+		socket.on( NodeC.EVENT_STREAM_ERROR, onError );
+		socket.on( NodeC.EVENT_STREAM_DATA, onData );
 		socket.write( "\x05\x01"+String.fromCharCode(0) );
 	}
 	
-	function onData( buf : Buffer ) {
-		switch( state ) {
+	function onData( buf : NodeBuffer ) {
+		switch state {
 		case WaitResponse :
 			socket.write( SOCKS5.createOutgoingMessage( 1, digest ).getData() );
 			state = WaitAuth;
@@ -185,9 +186,9 @@ class SOCKS5Output {
 	}
 	
 	function removeSocketListeners() {
-		socket.removeAllListeners( Node.STREAM_DATA );
-		socket.removeAllListeners( Node.STREAM_END );
-		socket.removeAllListeners( Node.STREAM_ERROR );
+		socket.removeAllListeners( NodeC.EVENT_STREAM_DATA );
+		socket.removeAllListeners( NodeC.EVENT_STREAM_END );
+		socket.removeAllListeners( NodeC.EVENT_STREAM_ERROR );
 	}
 	
 	#end

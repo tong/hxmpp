@@ -29,18 +29,21 @@ class Stream {
 	public static var STREAM(default,null) : String = "http://etherx.jabber.org/streams";
 	public static var CLIENT(default,null) : String = "jabber:client";
 	public static var SERVER(default,null) : String = "jabber:client";
+
 	#if jabber_component
 	public static var COMPONENT(default,null) : String = "jabber:component:accept";
+	//public static inline var COMPONENT_ACCEPT = "jabber:component:accept";
+	//public static inline var COMPONENT_CONNECT = "jabber:component:connect";
 	#end
 	
 	/**
 		Creates the opening XML tag of a XMPP stream.
 	*/
-	public static function createOpenXml( ns : String, to : String,
-										  ?version : Bool, ?lang : String, ?header : Bool = true ) : String {
+	public static function createOpenXml( xmlns : String, to : String,
+										  ?version : Bool, ?lang : String, header : Bool = true ) : String {
 		var b = new StringBuf();
 		b.add( '<stream:stream xmlns="' );
-		b.add( ns );
+		b.add( xmlns );
 		b.add( '" xmlns:stream="'+STREAM );
 		if( to != null ) {
 			b.add( '" to="' );
@@ -55,7 +58,7 @@ class Stream {
 			b.add( '"' );
 		}
 		b.add( '>' );
-		return ( header ) ? '<?xml version="1.0" encoding="UTF-8"?>'+b.toString() : b.toString();
+		return header ? '<?xml version="1.0" encoding="UTF-8"?>'+b.toString() : b.toString();
 	}
 	
 }

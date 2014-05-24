@@ -21,6 +21,7 @@
  */
 package xmpp;
 
+@:require(xspf)
 class XSPF extends XSPFPlaylist {
 	
 	public static var XMLNS(default,null) : String = XSPFPlaylist.XMLNS;

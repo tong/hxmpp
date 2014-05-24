@@ -45,6 +45,7 @@ import xmpp.XMLBeautify;
 class XMPPDebug {
 	
 	static function __init__() {
+		active = true;
 		//numPrinted = numPrintedIncoming = numPrintedOutgoing = 0;
 		#if (flash||js)
 			#if (air||nodejs||rhino)
@@ -74,10 +75,9 @@ class XMPPDebug {
 	//public static var numPrintedOutgoing(default,null) : Int;
 
 	/**
-		Activate/Deactivate output.
-		Default is true.
+		Activate/Deactivate output (default=true)
 	*/
-	public static var active = true;
+	public static var active : Bool;
 	
 	/** */
 	public static var lastPrintWasOutgoing(default,null) : Bool = false;

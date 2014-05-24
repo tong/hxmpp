@@ -70,7 +70,7 @@ class IBOutput extends IBIO {
 	}
 	
 	function sendNextPacket() {
-		iq.id = stream.nextID()+"_ib_"+seq;
+		iq.id = stream.nextId()+"_ib_"+seq;
 		var remain = size-bufpos;
 		var len = ( remain > bufsize ) ? bufsize : remain;
 		var buf = Bytes.alloc( len );

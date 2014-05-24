@@ -26,6 +26,7 @@ import jabber.Stream;
 /**
 	Request entities for their XSPF playlist.
 */
+@:require(xspf)
 class XSPF {
 	
 	public dynamic function onLoad( jid : String, playlist : XSPFPlaylist ) {}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@ package xmpp.filter;
 /**
 	Filters XMPP packets with matching id attribute.
 */
-class PacketIDFilter {
+class PacketIdFilter {
 	
 	public var id : String;
 	
@@ -32,7 +32,8 @@ class PacketIDFilter {
 		this.id = id;
 	}
 	
-	@:keep public inline function accept( p : xmpp.Packet ) : Bool {
+	@:keep
+	public inline function accept( p : xmpp.Packet ) : Bool {
 		return p.id == id;
 	}
 	

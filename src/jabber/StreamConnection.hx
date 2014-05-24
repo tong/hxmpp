@@ -98,7 +98,7 @@ class StreamConnection {
 	}
 	
 	/**
-		StartTLS
+		Start ssl negotiation
 	*/
 	public function setSecure() {
 		#if jabber_debug trace( 'jabber.StreamConnection.setSecure not implemented' ); #end

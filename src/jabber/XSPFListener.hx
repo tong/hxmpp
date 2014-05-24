@@ -24,6 +24,7 @@ package jabber;
 /**
 	Listens for incoming XSPF playlist requests
 */
+@:require(xspf)
 class XSPFListener {
 	
 	public dynamic function onRequest( jid : String ) : XSPFPlaylist { return null; }

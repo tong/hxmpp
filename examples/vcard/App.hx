@@ -1,10 +1,10 @@
 
-import haxe.io.Bytes;
-import jabber.util.Base64;
 #if js
 import js.Browser.document;
 import js.Browser.window;
 #end
+import haxe.io.Bytes;
+import jabber.util.Base64;
 
 class App extends XMPPClient {
 	

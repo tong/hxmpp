@@ -21,27 +21,24 @@
  */
 package jabber.net;
 
+#if cpp
+	import  cpp.vm.Thread;
+#elseif neko
+	import neko.vm.Thread;
+#end
 import haxe.io.Bytes;
 import sys.net.Socket;
 import sys.net.Host;
-#if cpp
-import  cpp.vm.Thread;
-#elseif neko
-import neko.vm.Thread;
-//#elseif doc_gen
-//#else
-#end
 
 using StringTools;
 
 /**
 	Non-blocking bosh over http request.
-
 	//TODO use a single socket connection to transfer all packets
 */
-@:require(sys&&(cpp||neko))
+@:require(cpp||neko)
 class BOSHRequest {
-
+	
 	public static var pending(default,null) : Int;
 
 	public inline function new() {}

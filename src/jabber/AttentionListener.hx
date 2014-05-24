@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,12 +25,12 @@ import xmpp.Message;
 
 /**
 	Listens/Reports (user) attention requests.
-
+	
 	XEP 224 - Attention: http://www.xmpp.org/extensions/xep-0224.html
 */
 class AttentionListener {
 	
-	public dynamic function onCapture( m : xmpp.Message ) {}
+	public dynamic function onCapture( m : Message ) {}
 	
 	public var stream(default,null) : Stream;
 	
@@ -44,7 +44,7 @@ class AttentionListener {
 		c = stream.collect( [new xmpp.filter.MessageFilter(xmpp.MessageType.chat)], handleRequest, true );
 	}
 	
-	public function dispose() {
+	public function stop() {
 		stream.removeCollector( c );
 	}
 	

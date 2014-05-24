@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
 package xmpp.filter;
 
 /**
-	Filters (just) custom XMPP packets with given nodename expression.
+	Filters xmpp packets where the packets nodename matches expression
 */
 class PacketNameFilter {
 	
@@ -32,11 +32,7 @@ class PacketNameFilter {
 		this.expr = expr;
 	}
 	
-	@:keep public function accept( p : xmpp.Packet ) : Bool {
-		/* hmm
-		if( p._type != xmpp.PacketType.custom ) 
-			return false;
-		*/
+	public function accept( p : xmpp.Packet ) : Bool {
 		return expr.match( p.toXml().nodeName );
 	}
 	

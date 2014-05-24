@@ -5,14 +5,13 @@
 -cp ../../src
 -D jabber_debug
 -D xmpp_debug
--D hxmpp_debug
 -debug
 -dce full
 --each
 
---next
--js app.js
--D hxmpp_flashsocketbridge
+#--next
+#-js app.js
+#-D jabber_flashsocketbridge
 
 --next
 -php ./

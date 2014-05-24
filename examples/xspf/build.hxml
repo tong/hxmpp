@@ -4,11 +4,10 @@
 -lib xspf
 -cp ../
 -cp ../../src
--D jabber_debug
--D xmpp_debug
--D hxmpp_debug
 -debug
 -dce full
+-D jabber_debug
+-D xmpp_debug
 --each
 
 --next

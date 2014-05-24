@@ -21,16 +21,21 @@
  */
 package jabber.util;
 
-#if php #error #end
-
-#if !sys
+#if (flash||js)
 typedef Timer = haxe.Timer;
-#else
-import #if cpp cpp.vm.Thread
-	#elseif cs cs.vm.Thread
-	#elseif java java.vm.Thread
-	#elseif neko neko.vm.Thread
-	#end;
+
+#elseif cpp
+import cpp.vm.Thread;
+#elseif cs
+import cs.vm.Thread;
+#elseif java
+import java.vm.Thread;
+#elseif neko
+import neko.vm.Thread;
+#elseif php #error
+#end
+
+#if (cpp||cs||java||neko||doc_gen)
 
 /**
 	Patched version of haxe.Timer adding support for c++, neko, cs and java.

@@ -28,7 +28,7 @@ using xmpp.XMLUtil;
 */
 class SASL {
 	
-	public static var XMLNS(default,null) : String = "urn:ietf:params:xml:ns:xmpp-sasl";
+	public static inline var XMLNS = "urn:ietf:params:xml:ns:xmpp-sasl";
 	public static var EREG_FAILURE = ~/(^failure$)|(^not-authorized$)|(^aborted$)|(^incorrect-encoding$)|(^invalid-authzid$)|(^invalid-mechanism$)|(^mechanism-too-weak$)|(^temporary-auth-failure$)/;
 	
 	/**

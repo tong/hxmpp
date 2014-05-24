@@ -4,15 +4,14 @@
 -cp ../
 -D jabber_debug
 -D xmpp_debug
--D hxmpp_debug
 -debug
 --each
 
---next
--lib hxssl
--cpp cpp
--lib hxargs
--D HXCPP_M64
+#--next
+#-cpp cpp
+#-lib hxssl
+#-lib hxargs
+#-D HXCPP_M64
 #-cmd mv cpp/App ./app
 
 #--next
@@ -40,6 +39,10 @@
 --next
 -php ./
 --php-front app.php
+-lib hxargs
+
+--next
+-python app.py
 -lib hxargs
 
 --next

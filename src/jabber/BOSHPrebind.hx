@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,22 +47,22 @@ class BOSHPrebind {
 		this.serviceUrl = serviceUrl;
 		this.wait = wait;
 		this.hold = hold;
-		this.rid = ( rid == null ) ? Std.int( Math.random()*10000000 ) : rid;
+		this.rid = (rid == null) ? Std.int( Math.random()*10000000 ) : rid;
 	}
 	
 	/**
 		Init account pre-binding.
 	*/
-	public function init( ?cb : BOSHPrebindInfo->Void  ) {
-		if( cb != null )
-			this.onComplete = cb;
+	public function init( ?f : BOSHPrebindInfo->Void  ) {
+		if( f != null )
+			this.onComplete = f;
 		var x = buildInitialBody();
 		sendRequest( x.toString(), function(r){
 			//trace(x);
 			var x = Xml.parse(r).firstChild();
 			sid = x.get( "sid" );
 			if( sid == null ) {
-				cb( null );
+				f( null );
 				return;
 			}
 			wait = Std.parseInt( x.get( "wait" ) );
@@ -163,7 +163,7 @@ class BOSHPrebind {
 
 	function sendRequest( t : String, cb : String->Void ) {
 		var r = new haxe.Http( serviceUrl );
-		r.noShutdown = true;
+//		r.noShutdown = true;
 		r.setHeader( 'Content-type', 'text/xml' );
 		r.setHeader( 'Accept', 'text/xml' );
 		r.setHeader( 'Content-Length', Std.string( t.length ) );

@@ -51,19 +51,20 @@ class ServiceDiscoveryListener {
 		
 		if( !stream.features.add( xmpp.disco.Info.XMLNS ) || !stream.features.add( xmpp.disco.Items.XMLNS ) )
 			throw "service discovery listener already added";
-			
+		
 		this.stream = stream;
 		this.identities = ( identities == null ) ? [defaultIdentity] : identities;
 		
 		c_info = stream.collect( [new IQFilter( xmpp.disco.Info.XMLNS, xmpp.IQType.get )], handleInfoQuery, true );
 		c_items = stream.collect( [new IQFilter( xmpp.disco.Items.XMLNS, xmpp.IQType.get )], handleItemsQuery, true );
 	}
-	
+
 	/**
 	*/
-	public function dispose() {
+	public function stop() {
 		stream.removeCollector( c_info );
 		stream.removeCollector( c_items );
+		c_info = c_items = null;
 	}
 	
 	function handleInfoQuery( iq : IQ ) {

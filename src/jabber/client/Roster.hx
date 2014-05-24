@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ import xmpp.roster.AskType;
 import xmpp.roster.Subscription;
 
 /**
-	Client roster (serverside saved contact list)
+	Client roster (serverside stored contact list)
 */
 class Roster {
 
@@ -42,28 +42,28 @@ class Roster {
 	public dynamic function onLoad() {}
 	
 	/** Item got added to the roster */
-	public dynamic function onAdd( i : Item ) {}
+	public dynamic function onAdd( item : Item ) {}
 	
 	/** Item got removed from your roster */
-	public dynamic function onRemove( i : Item ) {}
+	public dynamic function onRemove( item : Item ) {}
 	
 	/** Item got updated */
-	public dynamic function onUpdate( i : Item ) {}
+	public dynamic function onUpdate( item : Item ) {}
 	
 	/** Subscribed to the presence of the contact */
-	public dynamic function onSubscribed( i : Item ) {}
+	public dynamic function onSubscribed( item : Item ) {}
 	
 	/** Unsubscribed presence of the contact */
-	public dynamic function onUnsubscribed( i : Item ) {}
+	public dynamic function onUnsubscribed( item : Item ) {}
 	
 	/** Incoming presence subscription request */
-	public dynamic function onAsk( i : Item  ) {}
+	public dynamic function onAsk( item : Item  ) {}
 	
 	/** Contact subscribed to your presence */
 	public dynamic function onSubscription( jid : String  ) {}
 	
 	/** Contact unsubscribed from your presence */
-	public dynamic function onUnsubscription( i : Item ) {}
+	public dynamic function onUnsubscription( item : Item ) {}
 	
 	/** A roster manipulation error occured */
 	public dynamic function onError( e : XMPPError ) {}
@@ -157,7 +157,7 @@ class Roster {
 		var i = getItem( jid );
 		if( i == null )
 			return false;
-		var iq = new xmpp.IQ( IQType.set );
+		var iq = new IQ( IQType.set );
 		iq.x = new xmpp.Roster( [new Item( jid, Subscription.remove )] );
 		var me = this;
 		stream.sendIQ( iq, function(r) {
@@ -180,7 +180,7 @@ class Roster {
 	public function subscribe( jid : String ) : Bool {
 		var i = getItem( jid );
 		if( i == null ) {
-			var iq = new xmpp.IQ( IQType.set );
+			var iq = new IQ( IQType.set );
 			iq.x = new xmpp.Roster( [new Item( jid )] );
 			var me = this;
 			stream.sendIQ( iq, function(r) {
@@ -245,7 +245,7 @@ class Roster {
 	}
 	
 	function sendAddItemRequest( jid : String, ?groups : Iterable<String> ) {
-		var iq = new xmpp.IQ( IQType.set );
+		var iq = new IQ( IQType.set );
 		var i = new Item( jid );
 		if( groups != null )
 			for( g in groups )

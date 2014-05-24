@@ -41,12 +41,11 @@ class SoftwareVersion {
 	public function load( jid : String ) {
 		var iq = new xmpp.IQ( xmpp.IQType.get, null, jid );
 		iq.x = new xmpp.SoftwareVersion();
-		var me = this;
-		stream.sendIQ( iq, function( r ) {
-			switch( r.type ) {
-			case result : me.onLoad( jid, xmpp.SoftwareVersion.parse( r.x.toXml() ) );
-			case error : me.onError( new jabber.XMPPError( r ) );
-			default : //
+		stream.sendIQ( iq, function(r) {
+			switch r.type {
+			case result: onLoad( jid, xmpp.SoftwareVersion.parse( r.x.toXml() ) );
+			case error: onError( new XMPPError( r ) );
+			default:
 			}
 		} );
 	}
