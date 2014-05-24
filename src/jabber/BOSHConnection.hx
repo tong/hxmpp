@@ -21,8 +21,6 @@
  */
 package jabber;
 
-import jabber.util.Timer;
-
 #if js
 	#if nodejs
 	import js.Node;
@@ -35,9 +33,13 @@ import jabber.util.Timer;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
-#elseif (cpp||neko)
+#elseif php
+	#error
+#elseif sys
 	import jabber.net.BOSHRequest;
 #end
+import haxe.io.Path;
+import jabber.util.Timer;
 
 using StringTools;
 
@@ -71,9 +73,9 @@ class BOSHConnection extends jabber.StreamConnection {
 	/** Request id */
 	public var rid(default,null) : Int;
 
-	#if (cpp||neko||nodejs)
+	#if (sys||nodejs)
 	public var ip : String;
-	public var port : Int;
+	public var port : Int = 80;
 	#end
 	
 	/** */
@@ -270,10 +272,11 @@ class BOSHConnection extends jabber.StreamConnection {
 	}
 	
 	function createHTTPRequest( data : String ) {
+		
 		#if js
 			#if nodejs
 			var _path = path.substr( path.lastIndexOf( '/' ) );
-			if( _path.charAt( _path.length ) != '/' ) _path += '/';
+			_path = Path.addTrailingSlash( _path );
 			var opts : Dynamic = { //TODO NodeHttpsReqOpt
 				host : ip,
 				port : port,
@@ -297,8 +300,8 @@ class BOSHConnection extends jabber.StreamConnection {
 			r.on( NodeC.EVENT_STREAM_ERROR, handleHTTPError );
 			r.write( data );
 			r.end();
-			#elseif google_apps_script
-			//TODO
+			
+			#elseif google_apps_script //TODO
 			var options = {
 				"method": "post",
 				"headers": { "GData-Version": "2" },
@@ -322,7 +325,9 @@ class BOSHConnection extends jabber.StreamConnection {
 					handleHTTPError( "Http Error #"+r.status );
 			}
 			r.send( data );
+
 			#end
+		
 		#elseif flash
 		var r = new flash.net.URLRequest( getHTTPPath() );
 		r.method = flash.net.URLRequestMethod.POST;
@@ -342,15 +347,13 @@ class BOSHConnection extends jabber.StreamConnection {
 		l.addEventListener( SecurityErrorEvent.SECURITY_ERROR, function(e){ handleHTTPError(e.type); } );
 		//l.addEventListener( HTTPStatusEvent.HTTP_STATUS, function(e) handleHTTPStatus( e.status ) );
 		l.load( r );
+		
 		#elseif sys
-		//TODO
-		/*
 		var _path = path.substr( path.lastIndexOf('/') );
-		if( _path.charAt( _path.length ) != '/' ) _path += '/';
+		_path = Path.addTrailingSlash( _path );
 		var r = new BOSHRequest();
 		r.request( ip, port, _path, data, handleHTTPData, handleHTTPError );
-		//Sys.sleep(1);
-		*/
+
 		#end
 	}
 	
@@ -367,7 +370,7 @@ class BOSHConnection extends jabber.StreamConnection {
 	*/
 	
 	function handleHTTPError( e : String ) {
-		#if jabber_debug trace(e); #end
+		//#if jabber_debug trace(e); #end
 		cleanup();
 		onDisconnect( e );
 	}

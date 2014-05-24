@@ -1,0 +1,61 @@
+
+-cmd mkdir -p doc/xml
+
+--next
+--no-output
+-xml doc/xml/server-component.xml
+-cp src
+-D jabber_component
+-D xmpp_debug
+-D jabber_debug
+jabber.component.Stream
+
+--next
+--no-output
+-cp src/
+#-cp ../hxotr/src
+#-lib hxssl
+-lib xspf
+--macro HXMPP.importAll()
+-D jabber_debug
+-D xmpp_debug
+-D xmldoc
+--each
+
+--next
+-cpp api
+-xml doc/xml/cpp.xml
+-D HXCPP_MULTI_THREADED
+
+--next
+-cs api
+-xml doc/xml/cs.xml
+-D unsafe
+
+--next
+-java api
+-xml doc/xml/java.xml
+
+--next
+-js api.js
+-xml doc/xml/js.xml
+
+--next
+-neko api.n
+-xml doc/xml/neko.xml
+
+--next
+-js api.js
+-lib nodejs
+-xml doc/xml/nodejs.xml
+
+--next
+-php api
+-xml doc/xml/php.xml
+
+--next
+-python api
+-xml doc/xml/python.xml
+
+--next
+-xml haxedoc.xml
