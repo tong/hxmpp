@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,8 @@
 package jabber;
 
 /**
-	Listens for incoming ping messages and automaticly responds with a pong.
 	XEP 199 - XMPP Ping: http://www.xmpp.org/extensions/xep-0199.html
+	Listens for incoming ping messages and automaticly responds with a pong.
 */
 class Pong {
 	
@@ -51,7 +51,7 @@ class Pong {
 	
 	function handlePing( iq : xmpp.IQ ) {
 		var r = xmpp.IQ.createResult( iq );
-		r.properties.push( xmpp.Ping.xml );
+		r.properties.push( xmpp.Ping.createXml() );
 		stream.sendData( r.toString() );
 		onPong( iq.from );
 	}

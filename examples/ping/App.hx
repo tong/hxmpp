@@ -4,23 +4,18 @@ class App extends XMPPClient {
 	override function onLogin() {
 		
 		var pong = new jabber.Pong( stream );
-		pong.onPong = function(jid:String) { trace("Sent pong to: "+jid); }
+		pong.onPong = function(jid:String) { trace( "Sent pong to: "+jid ); }
 		
 		stream.sendPresence();
 		
-		var ping = new jabber.Ping( stream, stream.jid.domain );
+		var ping = new jabber.Ping( stream );
 		ping.onPong = onPong;
-		ping.onTimeout = onTimeout;
-		ping.run( 30000 );
+		ping.send( stream.jid.domain );
 	}
 	
 	function onPong( jid : String ) {
 		if( jid == null ) jid = "XMPP server";
-		trace( "Pong from "+jid );
-	}
-	
-	function onTimeout( jid : String ) {
-		trace( "Pong timeout: "+jid );
+		trace( 'Pong: $jid' );
 	}
 	
 	static function main() {
