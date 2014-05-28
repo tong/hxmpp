@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@ package xmpp.pep;
 
 class UserBrowsing extends xmpp.PersonalEvent {
 
-	public static var XMLNS = 'urn:xmpp:browsing:0';
+	public static inline var XMLNS = 'urn:xmpp:browsing:0';
 	
 	public var uri : String;
 	

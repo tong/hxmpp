@@ -21,6 +21,8 @@
  */
 package jabber;
 
+import xmpp.IQ;
+
 /**
 	XEP-0055: Search: http://xmpp.org/extensions/xep-0055.html
 */
@@ -37,14 +39,14 @@ class UserSearch {
 	}
 	
 	public function requestFields( jid : String ) {
-		var iq = new xmpp.IQ();
+		var iq = new IQ();
 		iq.to = jid;
 		iq.x = new xmpp.UserSearch();
 		sendIQ( iq, onFields );
 	}
 	
 	public function search( jid : String, item : xmpp.UserSearchItem ) {
-		var iq = new xmpp.IQ( xmpp.IQType.set );
+		var iq = new IQ( set );
 		iq.to = jid;
 		var u = new xmpp.UserSearch();
 		for( f in Reflect.fields( item ) )
@@ -53,12 +55,11 @@ class UserSearch {
 		sendIQ( iq, onResult );
 	}
 	
-	function sendIQ( iq : xmpp.IQ, h : String->xmpp.UserSearch->Void ) {
-		var me = this;
-		stream.sendIQ( iq, function(r:xmpp.IQ){
-			switch( r.type ) {
+	function sendIQ( iq : IQ, h : String->xmpp.UserSearch->Void ) {
+		stream.sendIQ( iq, function(r:IQ){
+			switch r.type {
 			case result : h( r.from, xmpp.UserSearch.parse( r.x.toXml() ) );
-			case error : me.onError( new XMPPError( r ) );
+			case error : onError( new XMPPError( r ) );
 			default :
 			}
 		} );

@@ -25,8 +25,6 @@ package jabber.util;
 import sys.net.Socket;
 #elseif nodejs
 import js.Node.Stream in Socket;
-#elseif js
-import js.html.WebSocket in Socket;
 #elseif (air&&flash)
 import flash.net.Socket;
 #elseif (air&&js)

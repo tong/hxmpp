@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@ import jabber.util.SHA1;
 import jabber.data.io.ByteStreamOutput;
 //import jabber.io.ByteStreamOutput;
 import xmpp.IQ;
-import xmpp.IQType;
 import xmpp.file.ByteStreamHost;
 
 /**

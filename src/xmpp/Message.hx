@@ -21,6 +21,14 @@
  */
 package xmpp;
 
+@:enum abstract MessageType(String) {
+	var normal = "normal";
+	var error = "error";
+	var chat = "chat";
+	var groupchat = "groupchat";
+	var headline = "headline";
+}
+
 /**
 	XMPP message packet.
 */
@@ -41,7 +49,7 @@ class Message extends xmpp.Packet {
     public function new( ?to : String, ?body : String, ?subject : String,
     					 ?type : Null<MessageType>, ?thread : String, ?from : String ) {
 		
-		_type = xmpp.PacketType.message;
+		_type = message;
 		
 		super( to, from );
 		this.type = (type != null) ? type : MessageType.chat;

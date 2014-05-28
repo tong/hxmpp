@@ -24,25 +24,25 @@ package jabber;
 import haxe.io.Bytes;
 
 /**
-	Abstract base class for xmpp stream connections.
+	Abstract base class for stream connections.
 */
 class StreamConnection {
 
 	/** Succesfully connected callback */
 	@:allow(jabber.Stream)
-	public var onConnect : Void->Void;
+	var onConnect : Void->Void;
 	
 	/** Disconnect callback. Parameter is a optional error message  */
 	@:allow(jabber.Stream)
-	public var onDisconnect : String->Void;
+	var onDisconnect : String->Void;
 	
 	/** Bytes recieved callback */
-	@:allow(jabber.Stream)
-	public var onData : Bytes->Bool;
+	//@:allow(jabber.Stream)
+	//var onData : Bytes->Bool;
 	
 	/** String recieved callback */
 	@:allow(jabber.Stream)
-	public var onString : String->Bool;
+	var onData : String->Bool;
 
 	/** SSL negotiation complete callback, optional argument indicates an ssl error */
 	public var onSecured : String->Void;
@@ -113,12 +113,14 @@ class StreamConnection {
 	/**
 		Send raw bytes
 	*/
+	/*
 	public function writeData( data : Bytes ) : Bool {
 		#if jabber_debug
 		trace( 'not implemented' );
 		#end
 		return false;
 	}
+	*/
 	
 	/**
 		Send string

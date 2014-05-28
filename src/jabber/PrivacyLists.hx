@@ -22,7 +22,6 @@
 package jabber;
 
 import xmpp.IQ;
-import xmpp.IQType;
 
 /**
 	Extension for blocking communication with unknown or undesirable entities.

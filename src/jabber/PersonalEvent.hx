@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,6 +20,8 @@
  * THE SOFTWARE.
  */
 package jabber;
+
+import xmpp.IQ;
 
 /**
 	Send personal updates or "events" to other users, who are typically contacts in the user's roster.
@@ -59,10 +61,10 @@ class PersonalEvent {
 		var p = new xmpp.pubsub.Publish( e.getNode(), [new xmpp.pubsub.Item( null, x )] );
 		var x = new xmpp.PubSub();
 		x.publish = p;
-		var iq = new xmpp.IQ( xmpp.IQType.set, null );
+		var iq = new IQ( set, null );
 		iq.x = x;
 		var me = this;
-		stream.sendIQ( iq, function(r:xmpp.IQ) {
+		stream.sendIQ( iq, function(r:IQ) {
 			switch( r.type ) {
 			case result :
 				h( e );

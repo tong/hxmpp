@@ -22,6 +22,34 @@
 package xmpp;
 
 /**
+	Core XMPP stanza semantics
+*/
+enum PacketType {
+	
+	/*
+		Info/Query "request-response" mechanism
+	*/
+	iq;
+	
+	/*
+		"push" mechanism whereby one entity pushes information to another entity
+	*/
+	message;
+	
+	/*
+		The <presence/> stanza is a specialized "broadcast" or "publish-subscribe" mechanism,
+		whereby multiple entities receive information (in this case, network availability information) about an entity to which they have subscribed. 
+	*/
+	presence;
+	
+	/*
+		Out of XMPP semantics
+	*/
+	custom;
+	
+}
+
+/**
 	Abstract base for xmpp packets (<iq/>,<presence/>,<message/>)
 */
 class Packet {

@@ -17,6 +17,7 @@ class App {
 		var http = '$ip/http';
 
 		var cnx = new BOSHConnection( server, http, 1, 30, false );
+		
 		#if (cpp||neko||nodejs)
 		cnx.ip = ip;
 		cnx.port = 80; //7070;

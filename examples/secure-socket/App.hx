@@ -8,13 +8,12 @@ class App {
 
 		var creds = XMPPClient.readArguments();
 
-		//var cnx = new jabber.SocketConnection( creds.ip, 5223, true );
+		//var cnx = new jabber.SocketConnection( 'localhost', 5223, true );
 		var cnx = new jabber.SecureSocketConnection( creds.ip, 5223 );
 
-		//#if !php
-		//var s : sys.ssl.Socket = cast cnx.socket;
-		//s.setCertLocation( '/etc/ssl/certs/ca-certificates.crt', '/etc/ssl/certs' );
-		//#end
+		#if !php
+		cnx.socket.setCertLocation( '/etc/ssl/certs/ca-certificates.crt', '/etc/ssl/certs' );
+		#end
 		
 		var stream = new jabber.client.Stream( cnx );
 		stream.onOpen = function() {

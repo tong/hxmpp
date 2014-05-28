@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ import sys.ssl.Socket;
 @:require(sys)
 class SecureSocketConnection extends jabber.StreamConnection {
 
-	public static var defaultBufSize = #if php 65536 #else 256 #end;
+	public static var defaultBufSize = #if php 65536 #else 256 #end; //TODO
 	public static var defaultMaxBufSize = 1<<22; // 4MB
 
 	public var port(default,null) : Int;
@@ -48,8 +48,7 @@ class SecureSocketConnection extends jabber.StreamConnection {
 	var reading : Null<Bool>;
 
 	public function new( host : String = "localhost", ?port : Null<Int>,
-						 secure : Bool = true,
-						 timeout : Float = 0 ) {
+						 secure : Bool = true, timeout : Float = 0 ) {
 		
 		if( port == null ) port = jabber.client.Stream.PORT_SECURE;
 
@@ -83,7 +82,7 @@ class SecureSocketConnection extends jabber.StreamConnection {
 		}
 		onSecured( null );
 		#else
-			throw "Start-TLS not implemented";
+			throw "start-tls not implemented";
 		#end
 	}
 
@@ -100,7 +99,7 @@ class SecureSocketConnection extends jabber.StreamConnection {
 				}
 				pos += len;
 				if( len < bufSize ) {
-					onData( buf.sub( 0, pos ) );
+					onData( buf.sub( 0, pos ).toString() );
 					pos = 0;
 					buf = Bytes.alloc( bufSize = defaultBufSize );
 				} else {

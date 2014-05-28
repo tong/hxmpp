@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,15 +24,19 @@ package jabber.data;
 import xmpp.IQ;
 
 /**
-	Listens/Negotiates incoming data transfer requests <a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a>
+	Listens/Negotiates incoming data transfer requests.
+	http://xmpp.org/extensions/xep-0096.html">
+	XEP-0096: SI File Transfer
 */
 class SIListener {
 	
 	public dynamic function onFail( info : String ) {}
 	
 	public var stream(default,null) : jabber.Stream;
+	
 	/** Callback handler for incoming transfer requests */
 	public var handler : DataReciever->Void;
+	
 	/** Available file transfer methods */
 	public var methods(default,null) : Array<DataReciever>;
 	
@@ -44,8 +48,7 @@ class SIListener {
 		this.stream = stream;
 		this.handler = handler;
 		methods = new Array();
-		c = stream.collect( [new xmpp.filter.IQFilter( xmpp.file.SI.XMLNS, xmpp.IQType.set, "si" )],
-						 	 handleRequest, true );
+		c = stream.collectPacket( [new xmpp.filter.IQFilter( xmpp.file.SI.XMLNS, set, "si" )], handleRequest, true );
 	}
 	
 	public function dispose() {
@@ -79,7 +82,7 @@ class SIListener {
 			}
 		}
 		if( file == null ) {
-			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( xmpp.ErrorType.cancel, "bad-request" )] ) );
+			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( cancel, "bad-request" )] ) );
 			onFail( "invalid file transfer request" );
 			return;
 		}
@@ -91,7 +94,7 @@ class SIListener {
 		}
 		if( a_methods.length == 0 ) {
 			onFail( "no matching file transfer method" );
-			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( xmpp.ErrorType.cancel, "bad-request" )] ) );
+			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( cancel, "bad-request" )] ) );
 			return;
 		}
 		// new FileTransferNegotiator();

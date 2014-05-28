@@ -21,6 +21,7 @@
  */
 package jabber.component;
 
+import jabber.Stream;
 import jabber.util.SHA1;
 import xmpp.XMLUtil;
 
@@ -117,7 +118,7 @@ class Stream extends jabber.Stream {
 	
 	override function handleConnect() {
 		send( xmpp.Stream.createOpenXml( xmpp.Stream.COMPONENT, jid.toString() ) );
-		status = pending;
+		status = connecting;
 		cnx.read( true );
 	}
 	
@@ -153,7 +154,7 @@ class Stream extends jabber.Stream {
 			return false;
 		}
 		id = x.get('id');
-		status = StreamStatus.open;
+		status = jabber.StreamStatus.open;
 
 		#if xmpp_debug jabber.XMPPDebug.i( t ); #end
 

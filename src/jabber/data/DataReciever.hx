@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -70,7 +70,7 @@ class DataReciever {
 	
 	function sendDeny() {
 		var r = IQ.createError( request );
-		r.errors.push( new xmpp.Error( xmpp.ErrorType.auth, "not-acceptable" ) );
+		r.errors.push( new xmpp.Error( auth, "not-acceptable" ) );
 		stream.sendPacket( r );
 	}
 	
@@ -96,7 +96,7 @@ class DataReciever {
 		r.x = si;
 		
 		stream.sendPacket( r );
-		stream.collect( [new xmpp.filter.IQFilter( xmlns, xmpp.IQType.set, xname )], handleRequest );
+		stream.collectPacket( [new xmpp.filter.IQFilter( xmlns, xmpp.IQType.set, xname )], handleRequest );
 	}
 	
 	function handleRequest( iq : IQ ) {

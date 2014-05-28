@@ -75,8 +75,7 @@ class XMPPClient {
 	}
 
 	function onStreamClose(?e) {
-		if( stream != null )
-			trace( (e!=null) ? e : 'XMPP stream closed' );
+		if( stream != null ) trace( (e!=null) ? e : 'XMPP stream closed' );
 	}
 
 	function onLogin() {
@@ -97,7 +96,8 @@ class XMPPClient {
 
 	function createStreamConnection() : jabber.StreamConnection {
 		var cnx : jabber.StreamConnection = null;
-		#if (js||cpp||neko)
+		//#if (js||cpp||neko)
+		#if (js)
 		if( use_http && http != null )
 			cnx = new jabber.BOSHConnection( ip, http );
 		#end

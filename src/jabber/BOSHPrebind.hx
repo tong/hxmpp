@@ -23,7 +23,6 @@ package jabber;
 
 import jabber.util.Base64;
 import xmpp.IQ;
-import xmpp.IQType;
 
 /**
 	Base class for bosh/http clients doing account pre-binding.

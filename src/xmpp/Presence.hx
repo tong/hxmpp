@@ -22,36 +22,61 @@
 package xmpp;
 
 /**
+	Four elements, which provide insights into a human users availbility for and interest in communication.
+*/
+@:enum abstract PresenceShow(String) {
+	
+	/** Especially socialable */
+	var chat = "chat";
+
+	/** Away from device */
+	var away = "away";
+	
+	/** Extended Away */
+	var xa = "xa";
+
+	/** Busy */
+	var dnd = "dnd";
+}
+
+@:enum abstract PresenceType(String) {
+	var error = "error";
+	var probe = "probe";
+	var subscribe = "subscribe";
+	var subscribed = "subscribed";
+	var unavailable = "unavailable";
+	var unsubscribe = "unsubscribe";
+	var unsubscribed = "unsubscribed";
+}
+
+/**
 	RFC-3921 - Instant Messaging and Presence: http://xmpp.org/rfcs/rfc3921.html
 	Exchanging Presence Information: http://www.xmpp.org/rfcs/rfc3921.html#presence
 */
 class Presence extends xmpp.Packet {
 
-	public static inline var MAX_STATUS_SIZE = 1023;
-
-    public var type : PresenceType;
-    public var show : PresenceShow;
-    public var status(default,set_status) : String;
-    public var priority : Null<Int>;
+	public var type : PresenceType;
+	public var show : PresenceShow;
+	public var status : String;
+	public var priority : Null<Int>;
 
 	public function new( ?show : PresenceShow, ?status : String, ?priority : Int, ?type : PresenceType ) {
+		
 		super();
-		_type = xmpp.PacketType.presence;
+
+		_type = presence;
+
 		this.show = show;
 		this.status = status;
 		this.priority = priority;
 		this.type = type;
 	}
 
-	function set_status( s : String ) : String {
-		return status = ( (s == null || s == "") ? null : (s.length > MAX_STATUS_SIZE) ? s.substr( 0, MAX_STATUS_SIZE ) : s );
-	}
-
 	public override function toXml() : Xml {
 		var x = super.addAttributes( Xml.createElement( "presence" ) );
 		if( type != null ) x.set( "type", Std.string( type ) );
 		if( show != null ) x.addChild( XMLUtil.createElement( "show", Std.string( show ) ) );
-		if( status != null ) x.addChild( XMLUtil.createElement( "status", status ) );
+		if( status != null && status != "" ) x.addChild( XMLUtil.createElement( "status", status ) );
 		if( priority != null ) x.addChild( XMLUtil.createElement( "priority", Std.string( priority ) ) );
 		return x;
 	}
@@ -59,20 +84,16 @@ class Presence extends xmpp.Packet {
 	public static function parse( x : Xml ) : Presence {
 		var p = new Presence( x.get( "type" ) );
 		Packet.parseAttributes( p, x );
-		if( x.exists( "type" ) ) p.type = Type.createEnum( PresenceType, x.get( "type" ) );
+		//if( x.exists( "type" ) ) p.type = Type.createEnum( PresenceType, x.get( "type" ) );
+		if( x.exists( "type" ) ) p.type = cast x.get( "type" );
 		for( c in x.elements() ) {
 			var fc = c.firstChild();
 			switch c.nodeName {
-			case "show" :
-				if( fc != null ) p.show = Type.createEnum( PresenceShow, fc.nodeValue );
-			case "status" :
-				if( fc != null ) p.status =  fc.nodeValue;
-			case "priority" :
-				if( fc != null ) p.priority = Std.parseInt( fc.nodeValue );
-			case "error" :
-				p.errors.push( xmpp.Error.parse( c ) );
-			default :
-				p.properties.push( c );
+			case "show" : p.show = cast fc.nodeValue;
+			case "status" : p.status =  fc.nodeValue;
+			case "priority" : if( fc != null ) p.priority = Std.parseInt( fc.nodeValue );
+			case "error" : p.errors.push( xmpp.Error.parse( c ) );
+			default : p.properties.push( c );
 			}
 		}
 		return p;

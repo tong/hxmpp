@@ -22,6 +22,7 @@
 package xmpp.filter;
 
 import haxe.EnumTools;
+import xmpp.IQ;
 
 /**
 	Filters IQ packets:
@@ -33,9 +34,9 @@ class IQFilter {
 	
 	public var xmlns : String;
 	public var node : String;
-	public var type : xmpp.IQType;
+	public var type : IQType;
 	
-	public function new( ?xmlns : String, ?type : xmpp.IQType, ?node : String ) {
+	public function new( ?xmlns : String, ?type : IQType, ?node : String ) {
 		this.xmlns = xmlns;
 		this.node = node;
 		this.type = type;
@@ -43,7 +44,7 @@ class IQFilter {
 	
 	@:keep
 	public function accept( p : xmpp.Packet ) : Bool {
-		if( !EnumValueTools.equals( p._type, xmpp.PacketType.iq ) )
+		if( !EnumValueTools.equals( p._type, iq ) )
 			return false;
 		#if as3
 		var iq : Dynamic = p;

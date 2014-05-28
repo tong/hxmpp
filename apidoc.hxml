@@ -1,0 +1,50 @@
+
+-cmd mkdir -p doc
+
+--next
+--no-output
+-cp src
+-lib xspf
+#-lib otr
+#-lib hxssl
+--macro HXMPP.importAll()
+-D xmldoc
+-D xmpp_debug
+--each
+
+--next
+-cpp cpp
+-xml doc/cpp.xml
+
+--next
+-cs api
+-xml doc/cs.xml
+
+--next
+-java api
+-xml doc/java.xml
+
+--next
+-js api
+-xml doc/js.xml
+
+--next
+-neko api.n
+-xml doc/neko.xml
+
+--next
+-js api.n
+-xml doc/nodejs.xml
+-lib nodejs
+
+--next
+-python api
+-xml doc/php.xml
+
+--next
+-python api
+-xml doc/python.xml
+
+--next
+-swf api.swf
+-xml doc/flash.xml

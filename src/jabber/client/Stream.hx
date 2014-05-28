@@ -51,40 +51,41 @@ class Stream extends jabber.Stream {
 	
 	override function handleConnect() {
 		var wasOpen = status == StreamStatus.open;
-		status = pending;
+		status = connecting;
 		if( !cnx.http ) {
 			send( xmpp.Stream.createOpenXml( xmpp.Stream.CLIENT, jid.domain, version, lang ) );
-			if( !wasOpen ) { // Start reading input
-				cnx.read( true );
-			}
+			if( !wasOpen )
+				cnx.read( true ); // Start reading input
 		} else {
 			if( cnx.connected ) {
 				//server.features = new Hash(); // clear the server features offered (?)
-				cnx.connect(); // restart HTTP/BOSH
+				cnx.connect(); // Restart HTTP/BOSH
 			}
 		}
 	}
 	
-	override function processStreamInit( t : String ) : Bool {
-		if( cnx.http ) {
-			#if xmpp_debug jabber.XMPPDebug.i( t ); #end
+	override function processStreamInit( s : String ) : Bool {
+		if( cnx.http ) { //TODO remove
+			#if xmpp_debug jabber.XMPPDebug.i(s); #end
 			var x : Xml = null;
-			try x = Xml.parse( t ).firstElement() catch( e : Dynamic ) {
+			try x = Xml.parse( s ).firstElement() catch( e : Dynamic ) {
 				return false;
 			}
-			parseServerStreamFeatures( ( x.nodeName == "body" ) ? x.firstElement() : x );
+			for( e in ((x.nodeName == "body") ? x.firstElement() : x).elements() )
+				serverFeatures.set( e.nodeName, e );
+			//parseServerStreamFeatures( ( x.nodeName == "body" ) ? x.firstElement() : x );
 			status = StreamStatus.open;
 			handleStreamOpen();
 			return true;
 		} else {
 			var r = ~/^(<\?xml) (.)+\?>/;
-			if( r.match(t) ) t = r.matchedRight();
-			var sei = t.indexOf( ">" );
+			if( r.match(s) ) s = r.matchedRight();
+			var sei = s.indexOf( ">" );
 			if( sei == -1 )
 				return false;
-			if( id == null ) { // parse open stream
-				var s = t.substr( 0, sei )+" />";
-				var sx = Xml.parse( s ).firstElement();
+			if( id == null ) { // Parse open stream
+				var str = s.substr( 0, sei )+" />";
+				var sx = Xml.parse( str ).firstElement();
 				id = sx.get( "id" );
 				if( !version ) {
 					status = StreamStatus.open;
@@ -96,9 +97,8 @@ class Stream extends jabber.Stream {
 			//TODO check for stream errors
 			//Example: <stream:error xmlns:stream="http://etherx.jabber.org/streams"><xml-not-well-formed xmlns="urn:ietf:params:xml:ns:xmpp-streams"/></stream:error>
 			if( id == null ) {
-				#if jabber_debug trace( "invalid xmpp stream, missing id" ); #end
 				close( true );
-				onClose( "invalid stream id" );
+				onClose( "no stream id" );
 				return false;
 			}
 			if( !version ) {
@@ -107,19 +107,25 @@ class Stream extends jabber.Stream {
 				return true;
 			}
 		}
-		var sfi = t.indexOf( "<stream:features>" );
+		var sfi = s.indexOf( "<stream:features>" );
 		if( sfi != -1 ) {
-			var sf = t.substr( sfi );
+			
+			var sf = s.substr( sfi );
+			
 			#if flash // TODO haxe 2.06 xml namespace fuckup
 			sf = StringTools.replace( sf, "stream:features", "stream_features" );
 			#end
+
 			var x : Xml;
 			try x = Xml.parse( sf ).firstElement() catch( e : Dynamic ) {
 				return false;
 			}
-			parseServerStreamFeatures( x );
-			#if xmpp_debug jabber.XMPPDebug.i( t ); #end
-			if( cnx.secure && !cnx.secured && server.features.get( "starttls" ) != null ) {
+			for( e in x.elements() )
+				serverFeatures.set( e.nodeName, e );
+		
+			#if xmpp_debug jabber.XMPPDebug.i( s ); #end
+			
+			if( cnx.secure && !cnx.secured && serverFeatures.get( "starttls" ) != null ) {
 				status = starttls;
 				send( '<starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls"/>' );
 			} else {
@@ -128,12 +134,8 @@ class Stream extends jabber.Stream {
 			}
 			return true;
 		}
-		return false; // read more
-	}
-	
-	function parseServerStreamFeatures( x : Xml ) {
-		for( e in x.elements() )
-			server.features.set( e.nodeName, e );
+		return false;
+		
 	}
 	
 }

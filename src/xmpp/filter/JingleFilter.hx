@@ -22,6 +22,8 @@
  
 package xmpp.filter;
 
+import xmpp.IQ;
+
 /**
 	Filters jingle IQ packets.
 */
@@ -33,7 +35,7 @@ class JingleFilter extends IQFilter {
 	/** Jingle transport namespace */
 	public var transport : String;
 	
-	public function new( ?transport : String, ?sid : String, ?iqType : xmpp.IQType ) {
+	public function new( ?transport : String, ?sid : String, ?iqType : IQType ) {
 		super( xmpp.Jingle.XMLNS, iqType, "jingle" );
 		this.transport = transport;
 		this.sid = sid;

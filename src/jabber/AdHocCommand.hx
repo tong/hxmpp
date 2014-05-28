@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,7 @@
  */
 package jabber;
 
+import xmpp.IQ;
 import xmpp.command.Action;
 import xmpp.command.Status;
 
@@ -54,25 +55,24 @@ class AdHocCommand {
 	/** */
 	public var sessionId(default,null) : String;
 	
-	public function new( stream : Stream,
-						 host : String, node : String ) {
+	public function new( stream : Stream, host : String, node : String ) {
 		this.stream = stream;
 		this.host = host;
 		this.node = node;
 	}
 	
 	public function execute() {
-		var iq = new xmpp.IQ( xmpp.IQType.set, null, host );
+		var iq = new IQ( xmpp.IQType.set, null, host );
 		iq.x = new xmpp.AdHocCommand( node, xmpp.command.Action.execute );
 		stream.sendIQ( iq, handleResponse );
 		//executeAction( Action.execute, form );
 	}
 	
 	/**
-		Start command process
+		Cancel session
 	*/
 	public function cancel() {
-		var iq = new xmpp.IQ( xmpp.IQType.set, null, host );
+		var iq = new IQ( xmpp.IQType.set, null, host );
 		iq.x = new xmpp.AdHocCommand( node, xmpp.command.Action.cancel );
 		stream.sendIQ( iq, handleResponse );
 		//executeAction
@@ -93,20 +93,20 @@ class AdHocCommand {
 	*/
 	
 	function executeAction( node : String, action : Action, ?child : Xml ) {
-		var iq = new xmpp.IQ( xmpp.IQType.set, null, host );
+		var iq = new IQ( set, null, host );
 		var cmd = new xmpp.AdHocCommand( node, action, sessionId );
 		cmd.child = child;
 		iq.x = cmd; //new xmpp.AdHocCommand( node, action, sessionId );
 		stream.sendIQ( iq, handleResponse );
 	}
 	
-	function handleResponse( iq : xmpp.IQ ) {
+	function handleResponse( iq : IQ ) {
 		//trace("RRR--------------------------------");
-		switch( iq.type ) {
+		switch iq.type {
 		case result :
 			var cmd = xmpp.AdHocCommand.parse( iq.x.toXml() );
 			//trace( "SSSS "+cmd.status );
-			switch( cmd.status ) {
+			switch cmd.status {
 			case executing :
 				onExecuting( cmd );
 			case completed :

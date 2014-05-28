@@ -1,7 +1,7 @@
 {
 	"name": "hxmpp",
 	"license": "MIT",
-	"tags": ["jabber","xmpp","realtime","protocol","net","xml","messaging","presence","chat","jingle"],
+	"tags": ["jabber","xmpp","realtime","protocol","net","xml","im","presence","chat","jingle","pubsub","sasl"],
 	"description": "Jabber/XMPP library",
 	"version": "0.4.15-alpha",
 	"releasenote": "See CHANGES",
@@ -9,8 +9,9 @@
 	"contributors": ["tong"],
 	"classPath" : "src/",
 	"dependencies": {
-		"hxssl": "",
-		"hxargs": "3.0.0",
-		"nodejs": "2.2.5"
+		"hxssl" : "",
+		"hxargs" : "",
+		"nodejs" : "",
+		"xspf" : ""
 	}
 }

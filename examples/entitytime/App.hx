@@ -10,6 +10,8 @@ class App extends XMPPClient {
 
 	override function onLogin() {
 		
+		trace("logged in");
+
 		new jabber.PresenceListener( stream, function(p){
 			
 			if( p.type == null ) {
@@ -28,6 +30,7 @@ class App extends XMPPClient {
 
 		// Listen for entity time request from other entities
 		var listener = new jabber.EntityTimeListener( stream );
+		
 		// Optionally specify a request callback to handle requests
 		listener.onRequest = function(jid){
 			trace( '$jid has requested my time' );

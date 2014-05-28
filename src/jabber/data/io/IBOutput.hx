@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
 package jabber.data.io;
 
 import haxe.io.Bytes;
-import jabber.util.Base64;
+import haxe.crypto.Base64;
 import xmpp.IQ;
 
 /**
@@ -51,7 +51,7 @@ class IBOutput extends IBIO {
 		this.bufsize = bufsize;
 		var filters : Array<xmpp.PacketFilter> = [ new xmpp.filter.PacketFromFilter( reciever ),
 						 new xmpp.filter.IQFilter( xmpp.file.IB.XMLNS, xmpp.IQType.set, "close" )];
-		collector = stream.collect( filters, handleIBClose );
+		collector = stream.collectPacket( filters, handleIBClose );
 		iq = new IQ( xmpp.IQType.set, null, reciever );
 		bufpos = 0;
 		sendNextPacket();
@@ -63,8 +63,8 @@ class IBOutput extends IBIO {
 			active = false;
 			__onComplete();
 		} else {
-			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( xmpp.ErrorType.cancel, "bad-request" )] ) );
-			__onFail( "invalid IB transfer" );
+			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( cancel, "bad-request" )] ) );
+			__onFail( "invalid ib transfer" );
 		}
 		stream.removeCollector( collector );
 	}
@@ -76,7 +76,7 @@ class IBOutput extends IBIO {
 		var buf = Bytes.alloc( len );
 		bufpos += input.readBytes( buf, 0, len );
 		__onProgress( bufpos );
-		iq.properties = [xmpp.file.IB.createDataElement( sid, seq, Base64.encodeBytes( buf ) )];
+		iq.properties = [xmpp.file.IB.createDataElement( sid, seq, Base64.encode( buf ) )];
 		stream.sendIQ( iq, handleChunkResponse );
 	}
 	

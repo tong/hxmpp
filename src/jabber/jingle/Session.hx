@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@ package jabber.jingle;
 import jabber.io.Transport;
 import jabber.util.Base64;
 import xmpp.IQ;
-import xmpp.IQType;
 
 /**
 	Abstract base for incoming or outgoing jingle sessions

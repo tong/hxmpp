@@ -22,10 +22,9 @@
 package jabber.client;
 
 import xmpp.IQ;
-import xmpp.IQType;
 import xmpp.Message;
-import xmpp.MessageType;
-import xmpp.PacketType;
+import xmpp.Presence;
+import xmpp.Packet;
 import xmpp.muc.Affiliation;
 import xmpp.muc.Role;
 import xmpp.filter.MessageFilter;
@@ -67,7 +66,7 @@ class MUChat {
 	/** Room name */
 	public var room(default,null) : String;
 
-	/** */
+	/** Indicates if you are member of this room */
 	public var joined(default,null)	: Bool;
 	
 	/** */
@@ -119,7 +118,7 @@ class MUChat {
 		c_message = new PacketCollector(  [f_from, new MessageFilter()], handleMessage, true, true );
 		//c_message = new PacketCollector(  [f_from, new MessageFilter( MessageType.groupchat )], handleMessage, true ); //TODO
 		
-		message = new xmpp.Message( jid, null, null, MessageType.groupchat, null );
+		message = new xmpp.Message( jid, null, null, groupchat, null );
 		joined = false;
 		occupants = new Array();
 	}

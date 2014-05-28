@@ -10,21 +10,21 @@ class App {
 
 	static function main() {
 		
-		var server = 'localhost';
+		var ip = 'localhost';
 
 		#if sys
 		var args = Sys.args();
-		if( args.length > 0 ) server = args[0];
+		if( args.length > 0 ) ip = args[0];
 		#end
 
-		var cnx = new jabber.SocketConnection( server );
+		var cnx = new jabber.SocketConnection( ip );
 		var stream = new Stream( cnx );
 		stream.onClose = function(?e) {
 			trace( (e == null) ? 'XMPP stream closed' : e );
 		}
 		stream.onOpen = function() {
 			var anonAllowed = false;
-			var serverMechs = stream.server.features.get( "mechanisms" );
+			var serverMechs = stream.serverFeatures.get( "mechanisms" );
 			for( m in serverMechs ) {
 				if( m.firstChild().nodeValue == AnonymousMechanism.NAME  ) {
 					anonAllowed = true;

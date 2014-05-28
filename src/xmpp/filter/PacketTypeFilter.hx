@@ -21,6 +21,8 @@
  */
 package xmpp.filter;
 
+import xmpp.Packet;
+
 /**
 	Filters packets with matching xmpp.PacketType.
 */

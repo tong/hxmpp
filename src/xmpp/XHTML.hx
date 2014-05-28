@@ -26,7 +26,7 @@ package xmpp;
 */
 class XHTML {
 	
-	public static var XMLNS(default,null) : String = xmpp.Packet.PROTOCOL+"/xhtml-im";
+	public static inline var XMLNS = xmpp.Packet.PROTOCOL+"/xhtml-im";
 	
 	static inline var W3NS = "http://www.w3.org/1999/xhtml";
 	
@@ -38,7 +38,7 @@ class XHTML {
 	
 	public function toXml() : Xml {
 		var x = IQ.createQueryXml( XMLNS, 'html' );
-		x.addChild( Xml.parse( '<body xmlns="'+W3NS+'">'+body+'</body>' ).firstElement() );
+		x.addChild( Xml.parse( '<body xmlns="$W3NS">$body</body>' ).firstElement() );
 		return x;
 	}
 	
@@ -70,8 +70,8 @@ class XHTML {
 	/**
 		Attaches a HTML body to the properties of the given message packet.
 	*/
-	public static inline function attach( m : xmpp.Message, t : String ) : xmpp.Message {
-		m.properties.push( new XHTML( t ).toXml() );
+	public static inline function attach( m : Message, s : String ) : Message {
+		m.properties.push( new XHTML( s ).toXml() );
 		return m;
 	}
 	

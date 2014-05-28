@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,6 +20,8 @@
  * THE SOFTWARE.
  */
 package jabber;
+
+import xmpp.Packet;
 
 /**
 	Abstract base for top level packet listeners (jabber.PresenceListener, jabber.MessageListener).

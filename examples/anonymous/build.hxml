@@ -1,6 +1,6 @@
 
--cp ../../src
 -main App
+-cp ../../src
 -debug
 -D jabber_debug
 -D xmpp_debug

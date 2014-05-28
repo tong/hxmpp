@@ -21,6 +21,8 @@
  */
 package jabber.net;
 
+#if (cpp||neko)
+
 #if cpp
 import  cpp.vm.Thread;
 #elseif java
@@ -41,7 +43,7 @@ using StringTools;
 @:require(sys)
 class BOSHRequest {
 
-	static var HTTP_HEADER = ~/HTTP\/1\.1 ([0-9][0-9][0-9]) (.+)/;
+	//static var HTTP_HEADER = ~/HTTP\/1\.1 ([0-9][0-9][0-9]) (.+)/;
 
 //	public static var pending(default,null) : Null<Int>;
 
@@ -245,3 +247,5 @@ class BOSHRequest {
 
 #end
 */
+
+#end

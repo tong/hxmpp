@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,8 @@ import jabber.util.SOCKS5Output;
 	import cpp.vm.Thread;
 #elseif js
 	#if nodejs
-	import js.html.WebSocket in Socket;
+	import js.Node;
+	import js.Node.NodeNetSocket in Socket;
 	#elseif air
 	import air.ServerSocketConnectEvent;
 	import air.Socket;
@@ -70,7 +71,7 @@ class ByteStreamInput extends ByteStreamIO {
 	var buf : ByteArray;
 	
 	#elseif nodejs
-	var buf : Buffer;
+	var buf : NodeBuffer;
 	#end
 	
 	#if (flash||nodejs)
@@ -275,7 +276,7 @@ class ByteStreamInput extends ByteStreamIO {
 		__onFail( "bytestream inut failed" );
 	}
 
-	function sockDataHandler( b : Buffer ) {
+	function sockDataHandler( b : NodeBuffer ) {
 		__onProgress( Bytes.ofData(b) );
 		if( ( bufpos += b.length ) == size ) {
 			cleanup();

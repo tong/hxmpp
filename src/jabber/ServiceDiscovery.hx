@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,6 @@
 package jabber;
 
 import xmpp.IQ;
-import xmpp.IQType;
 import xmpp.disco.Info;
 import xmpp.disco.Items;
 
@@ -55,7 +54,7 @@ class ServiceDiscovery {
 		if( jid == null )
 			jid = stream.jid.domain;
 		#end
-		var r = new IQ( IQType.get, null, jid );
+		var r = new IQ( get, null, jid );
 		r.x = new Info( null, null, node );
 		stream.sendIQ( r, handleInfo );
 	}
@@ -68,7 +67,7 @@ class ServiceDiscovery {
 		if( jid == null )
 			jid = stream.jid.domain;
 		#end
-		var r = new IQ( IQType.get, null, jid );
+		var r = new IQ( get, null, jid );
 		r.x = new Items( node );
 		stream.sendIQ( r, handleItems );
 	}
@@ -98,7 +97,7 @@ class ServiceDiscovery {
 	}
 	
 	function handleItems( iq : IQ ) {
-		switch( iq.type ) {
+		switch iq.type {
 		case result :
 			onItems( iq.from, Items.parse( iq.x.toXml() ) );
 		case error :

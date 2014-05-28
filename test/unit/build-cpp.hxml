@@ -1,5 +1,5 @@
 params.hxml
 -cpp build/cpp
-#-D HXCPP_M64
 #-lib hxssl
+-D HXCPP_MULTI_THREADED
 -cmd mv ./build/cpp/Run ./build/test

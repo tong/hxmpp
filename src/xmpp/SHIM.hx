@@ -21,16 +21,16 @@
  */
 package xmpp;
 
-private typedef Header = {
+private typedef SHIMHeader = {
 	var name : String;
 	var value : String;
 }
 
 class SHIM {
 	
-	public static var XMLNS(default,null) : String = "http://jabber.org/protocol/shim";
+	public static inline var XMLNS = "http://jabber.org/protocol/shim";
 	
-	public var headers : Array<Header>;
+	public var headers : Array<SHIMHeader>;
 	
 	public function new() {
 		headers = new Array();

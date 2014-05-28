@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,11 +21,11 @@
  */
 package jabber.data.io;
 
+import haxe.crypto.Base64;
 import haxe.io.Bytes;
-import jabber.util.Base64;
+//import jabber.util.Base64;
 import xmpp.filter.IQFilter;
 import xmpp.IQ;
-import xmpp.IQType;
 
 class IBInput extends IBIO {
 	
@@ -41,11 +41,11 @@ class IBInput extends IBIO {
 		seq = 0;
 		active = true;
 		var fromfilter : xmpp.PacketFilter = new xmpp.filter.PacketFromFilter( initiator );
-		stream.collect( [fromfilter,
-						 new IQFilter( xmpp.file.IB.XMLNS, IQType.set, "close" )],
+		stream.collectPacket( [fromfilter,
+						 new IQFilter( xmpp.file.IB.XMLNS, set, "close" )],
 						 handleClose );
-		collector = stream.collect( [fromfilter,
-						 			 new IQFilter( xmpp.file.IB.XMLNS, IQType.set, "data" )],
+		collector = stream.collectPacket( [fromfilter,
+						 			 new IQFilter( xmpp.file.IB.XMLNS, set, "data" )],
 						 			 handleChunk, true );
 	}
 	
@@ -68,16 +68,17 @@ class IBInput extends IBIO {
 		var ib = xmpp.file.IB.parse( iq.x.toXml() );
 		if( ib.sid != sid ) {
 			stream.removeCollector( collector );
-			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( xmpp.ErrorType.cancel, "bad-request" )] ) );
+			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( cancel, "bad-request" )] ) );
 			return;
 		}
 		if( ib.seq != seq ) {
 			stream.removeCollector( collector );
-			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( xmpp.ErrorType.cancel, "unexpected-request" )] ) );
+			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( cancel, "unexpected-request" )] ) );
 			return;
 		}
 		seq++;
-		var bytes = Base64.decodeBytes( ib.data );
+		var bytes = Base64.decode( ib.data );
+		//var bytes = Base64.decodeBytes( ib.data );
 		bufpos += bytes.length;
 		stream.sendPacket( IQ.createResult( iq ) );
 		__onProgress( bytes );

@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,8 @@
  */
 package jabber;
 
+import xmpp.IQ;
+
 /**
 	XEP 0092 - Software Version: http://www.xmpp.org/extensions/xep-0092.html
 */
@@ -39,7 +41,7 @@ class SoftwareVersion {
 		Requests the software version of the given entity.
 	*/
 	public function load( jid : String ) {
-		var iq = new xmpp.IQ( xmpp.IQType.get, null, jid );
+		var iq = new IQ( get, null, jid );
 		iq.x = new xmpp.SoftwareVersion();
 		stream.sendIQ( iq, function(r) {
 			switch r.type {

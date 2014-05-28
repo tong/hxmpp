@@ -9,10 +9,11 @@
 -dce full
 --each
 
-#--next
-#-cpp cpp
-#-lib hxssl
-#-cmd mv cpp/App* ./app
+--next
+-cpp cpp
+-lib hxssl
+#-D HXCPP_M64
+-cmd mv cpp/App* ./app
 
 --next
 -neko app.n

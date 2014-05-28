@@ -23,9 +23,7 @@ package jabber;
 
 import xmpp.Caps;
 import xmpp.IQ;
-import xmpp.IQType;
-import xmpp.PacketType;
-import xmpp.PresenceType;
+import xmpp.Packet;
 
 /**
 	Extension for broadcasting and dynamically discovering client, device, or generic entity capabilities.
@@ -90,7 +88,7 @@ class EntityCapabilities {
 	
 	public function interceptPacket( p : xmpp.Packet ) : xmpp.Packet {
 		
-		if( p._type != PacketType.presence )
+		if( p._type != presence )
 			return p;
 			
 		//TODO do not send caps with every presence (not to groupchats fe)

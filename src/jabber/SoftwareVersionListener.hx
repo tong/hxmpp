@@ -23,7 +23,6 @@ package jabber;
 
 import jabber.util.SystemUtil;
 import xmpp.IQ;
-import xmpp.IQType;
 import xmpp.SoftwareVersion.XMLNS;
 
 /**
@@ -53,7 +52,7 @@ class SoftwareVersionListener {
 		this.name = name;
 		this.version = version;
 		this.os = (os != null) ? os : SystemUtil.systemName();
-		c = stream.collectPacket( [new xmpp.filter.IQFilter( XMLNS, IQType.get )], handleQuery, true);
+		c = stream.collectPacket( [new xmpp.filter.IQFilter( XMLNS, get )], handleQuery, true);
 	}
 	
 	public function dispose() {

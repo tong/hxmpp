@@ -39,7 +39,8 @@ package jabber;
 	import jabber.net.BOSHRequest;
 #end
 import haxe.io.Path;
-import jabber.util.Timer;
+//import jabber.util.Timer;
+import haxe.Timer;
 
 using StringTools;
 
@@ -53,7 +54,7 @@ class BOSHConnection extends jabber.StreamConnection {
 
 	public static inline var BOSH_VERSION = "1.6";
 	public static inline var XMLNS = "http://jabber.org/protocol/httpbind";
-	public static inline var XMLNS_XMPP = "urn:xmpp:xbosh";
+	public static inline var XBOSH = "urn:xmpp:xbosh";
 
 	static inline var INTERVAL = 0;
 	static inline var MAX_CHILD_ELEMENTS = 10;
@@ -135,12 +136,12 @@ class BOSHConnection extends jabber.StreamConnection {
 			#if flash // TODO flash 2.06 fukup hack
 			b.set( '_xmlns_', XMLNS );
 			b.set( 'xml_lang', 'en' );
-			b.set( 'xmlns_xmpp', XMLNS_XMPP );
+			b.set( 'xmlns_xmpp', XBOSH );
 			b.set( 'xmpp_version', '1.0' );
 			#else
 			b.set( 'xmlns', XMLNS );
 			b.set( 'xml:lang', 'en' );
-			b.set( 'xmlns:xmpp', XMLNS_XMPP );
+			b.set( 'xmlns:xmpp', XBOSH );
 			b.set( 'xmpp:version', '1.0' );
 			#end
 			b.set( 'ver', BOSH_VERSION );
@@ -160,7 +161,7 @@ class BOSHConnection extends jabber.StreamConnection {
 		if( connected ) {
 			var r = createRequest();
 			r.set( "type", "terminate" );
-			r.addChild( new xmpp.Presence(null,null,null,xmpp.PresenceType.unavailable).toXml() );
+			r.addChild( new xmpp.Presence(null,null,null,unavailable).toXml() );
 			//sendQueuedRequests( r.toString() );
 			sendRequests( r );
 			cleanup();
@@ -220,12 +221,12 @@ class BOSHConnection extends jabber.StreamConnection {
 		#if flash // haXe 2.06 fuckup
 		r.set( '_xmlns_', XMLNS );
 		r.set( "xmpp_restart", "true" );
-		r.set( "xmlns_xmpp", XMLNS_XMPP );
+		r.set( "xmlns_xmpp", XBOSH );
 		r.set( "xml_lang", "en" );
 		#else
 		r.set( 'xmlns', XMLNS );
 		r.set( "xmpp:restart", "true" );
-		r.set( "xmlns:xmpp", XMLNS_XMPP );
+		r.set( "xmlns:xmpp", XBOSH );
 		r.set( "xml:lang", "en" );
 		#end
 		r.set( "to", host );
@@ -348,12 +349,14 @@ class BOSHConnection extends jabber.StreamConnection {
 		//l.addEventListener( HTTPStatusEvent.HTTP_STATUS, function(e) handleHTTPStatus( e.status ) );
 		l.load( r );
 		
-		#elseif sys
+		#elseif (cpp||neko)
 		var _path = path.substr( path.lastIndexOf('/') );
 		_path = Path.addTrailingSlash( _path );
 		var r = new BOSHRequest();
 		r.request( ip, port, _path, data, handleHTTPData, handleHTTPError );
 
+		#else
+		
 		#end
 	}
 	
@@ -458,7 +461,7 @@ class BOSHConnection extends jabber.StreamConnection {
 			//#if xmpp_debug XMPPDebug.i( t ); #end
 			onConnect();
 			connected = true;
-			onString( x.toString() );
+			onData( x.toString() );
 		}
 	}
 	
@@ -470,7 +473,7 @@ class BOSHConnection extends jabber.StreamConnection {
 	
 	function processResponse() {
 		responseTimer.stop();
-		onString( responseQueue.shift().toString() );
+		onData( responseQueue.shift().toString() );
 		resetResponseProcessor();
 	}
 	

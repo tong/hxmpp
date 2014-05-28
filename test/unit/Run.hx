@@ -17,12 +17,16 @@ class Run {
 	#end
 
 	static var TESTS : Array<Class<haxe.unit.TestCase>> = [
+		
 		TestBase64,
 		TestJID,
 		TestMD5,
 		TestMUCUtil,
 		TestSHA1,
+		
+		TestXMLBeautify,
 		TestXMLUtil,
+		
 		TestXMPPAuth,
 		TestXMPPBind,
 		TestXMPPBlockList,
@@ -67,14 +71,15 @@ class Run {
 	];
 
 	static function main() {
-		
+
 		#if flash
 		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
 		#end
 
 		var r = new haxe.unit.TestRunner();
-		for( test in TESTS ) r.add( Type.createInstance( test, [] ) );
+		for( test in TESTS )
+			r.add( Type.createInstance( test, [] ) );
 		
 		var timestamp = Timer.stamp();
 		r.run();

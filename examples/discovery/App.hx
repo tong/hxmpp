@@ -22,9 +22,11 @@ class App extends XMPPClient {
 		stream.sendPresence();
 		
 		disco = new jabber.ServiceDiscovery( stream );
+		
 		disco.onInfo = onDiscoInfo;
-		disco.onItems = onDiscoItems;
 		disco.info( target ); // discover server info
+
+		disco.onItems = onDiscoItems;
 		disco.items( target ); // discover server items
 	}
 	
@@ -65,7 +67,7 @@ class App extends XMPPClient {
 	static function main() {
 		var creds = XMPPClient.readArguments();
 		var client = new App( creds.jid, creds.password, creds.ip, creds.http );
-		client.target = 'jabber.org';
+		client.target = 'jabber.disktree.net';
 		client.login();
 	}
 

@@ -22,7 +22,7 @@
 package jabber;
 
 import xmpp.ChatState;
-import xmpp.MessageType;
+import xmpp.Message;
 
 /**
 	Extension for communicating the status of a user in a chat session.
@@ -81,7 +81,7 @@ class ChatStateNotification {
 	/**
 	*/
 	public function interceptPacket( p : xmpp.Packet ) : xmpp.Packet {
-		if( p._type != xmpp.PacketType.message || state == null )
+		if( p._type != message || state == null )
 			return p;
 		xmpp.ChatStateNotification.set( untyped p, state );
 		return p;

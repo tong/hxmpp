@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -87,7 +87,7 @@ class ByteStreamReciever extends DataReciever {
 		if( bytestreamIndex < bytestream.streamhosts.length ) {
 			connect();
 		} else {
-			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( xmpp.ErrorType.cancel, "item-not-found" )] ) );
+			stream.sendPacket( IQ.createError( iq, [new xmpp.Error( cancel, "item-not-found" )] ) );
 		}
 	}
 	

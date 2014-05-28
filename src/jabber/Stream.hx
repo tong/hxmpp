@@ -23,23 +23,48 @@ package jabber;
 
 import haxe.ds.StringMap;
 import haxe.io.Bytes;
-import jabber.util.Base64;
-import xmpp.IQ;
-import xmpp.IQType;
-import xmpp.Message;
-import xmpp.MessageType;
 import xmpp.Packet;
-import xmpp.PacketType;
+import xmpp.IQ;
+import xmpp.Message;
 import xmpp.Presence;
-import xmpp.PresenceType;
-import xmpp.PresenceShow;
-import xmpp.filter.PacketIdFilter;
-
-using Lambda;
+import jabber.util.Base64;
 
 #if jabber_component
 import jabber.component.Stream.ComponentJID in JID;
 #end
+
+using Lambda;
+
+/**
+	Describes the status of a xmpp stream.
+*/
+enum StreamStatus {
+	
+	/**
+		XMPP stream is inactive.
+	*/
+	closed;
+	
+	/**
+		Request to open xmpp stream sent but no response so far.
+	*/
+	//pending;
+	connecting;
+	//pending( ?info : String );
+	
+	#if !jabber_component
+	/**
+		SSL/TLS negotiation in progress.
+	*/
+	starttls;
+	#end
+	
+	/**
+		XMPP stream is open and ready to exchange data.
+	*/
+	open;
+	//open( ?info : String );
+}
 
 /**
 	Base for xmpp/xml stream implementations.
@@ -72,7 +97,7 @@ class Stream {
 	public var features(default,null) : StreamFeatures;
 	
 	/** Holds servers stream features */
-	public var server(default,null) : Server;
+	public var serverFeatures(default,null) :  StringMap<Xml>;
 	
 	/** Stream id */
 	public var id(default,null) : String;
@@ -83,10 +108,7 @@ class Stream {
 	/** Jabber-id of this entity */
 	public var jid(default,set) : JID;
 
-	/** */
 	//public var dataFilters(default,null) : Array<StreamDataFilter>;
-
-	/** */
 	//public var dataInterceptors(default,null) : Array<StreamDataInterceptor>;
 
 	/** Incoming data buffer size */
@@ -94,35 +116,55 @@ class Stream {
 
 	/** Max incoming data buffer size */
 	public var maxBufSize : Int;
-	
-	var buf : StringBuf;
-	var packetCollectorsId : haxe.ds.StringMap<PacketCollector>;
-	var packetCollectors : Array<PacketCollector>;
-	var packetInterceptors : Array<PacketInterceptor>;
+
+	var idCollectors : StringMap<Packet->Void>; //? StringMap<PacketIdCollector>;
+	var collectors : Array<PacketCollector>;
+	var interceptors : Array<PacketInterceptor>;
+	var buffer : StringBuf;
 
 	#if jabber_debug
-	var numPacketsSent : Int;
+	var numPacketsSent = 0;
 	#end
 
 	function new( cnx : StreamConnection, ?maxBufSize : Int ) {
+		
 		this.maxBufSize = (maxBufSize == null || maxBufSize < 1) ? defaultMaxBufSize : maxBufSize;
-		reset();
+		
+		status = closed;
+		features = new StreamFeatures();
+		serverFeatures = new StringMap();
+		collectors = new Array();
+		idCollectors = new StringMap();
+		interceptors = new Array();
+		//dataFilters = new Array();
+		//dataInterceptors = new Array();
+		buffer = new StringBuf();
+		//reset();
+
 		if( cnx != null ) set_cnx( cnx );
 	}
 	
 	function set_jid( j : JID ) : JID {
 		if( status != StreamStatus.closed )
-			throw "cannot change jid on open xmpp stream";
+			throw "cannot change jid";
 		return jid = j;
 	}
 	
 	function set_cnx( c : StreamConnection ) : StreamConnection {
-		switch( status ) {
-		case open, pending #if !jabber_component, starttls #end :
-			// TODO no! cannot share connection with other streams!
+		if( status != closed ) {
+			return throw 'stream active';
+		}
+		cnx = c;
+		cnx.onConnect = handleConnect;
+		cnx.onDisconnect = handleDisconnect;
+		cnx.onData = handleData;
+		return c;
+		/*
+		switch status {
+		case open, connecting #if !jabber_component, starttls #end :
 			close( true );
 			set_cnx( c );
-			 // re-open XMPP stream
+			 // Re-open XMPP stream
 			#if jabber_component
 			// ?????
 			#else
@@ -131,7 +173,7 @@ class Stream {
 		case closed :
 			if( cnx != null && cnx.connected )
 				cnx.disconnect();
-			resetBuffer();
+			buffer = new StringBuf();
 			cnx = c;
 			cnx.onConnect = handleConnect;
 			cnx.onDisconnect = handleDisconnect;
@@ -139,6 +181,7 @@ class Stream {
 			cnx.onData = handleData;
 		}
 		return cnx;
+		*/
 	}
 	
 	/**
@@ -156,8 +199,7 @@ class Stream {
 		else if( this.jid == null )
 			this.jid = new JID( null );
 		if( cnx == null )
-			throw 'no stream connection set';
-		//status = Status.pending;
+			throw 'no stream connection';
 		cnx.connected ? handleConnect() : cnx.connect();
 	}
 	#end
@@ -168,7 +210,7 @@ class Stream {
 	public function close( ?disconnect = false ) {
 		if( status == closed ) {
 			#if jabber_debug
-			trace( "cannot close stream (status=closed)" ); #end
+			trace( "cannot close stream (closed)" ); #end
 			return;
 		}
 		if( !cnx.http )
@@ -181,29 +223,42 @@ class Stream {
 	/**
 		Send raw bytes
 	*/
+	/*
 	public function sendData( data : Bytes ) : Bytes {
 		//TODO
 		//trace("sendBytes / "+dataInterceptors.length );
 		/*
 		for( i in dataInterceptors )
 			bytes = i.interceptData( bytes );
-		*/
+		* /
+		if( !cnx.connected )
+			return null;
 		if( !cnx.writeData( data ) )
 			return null;
 		#if jabber_debug numPacketsSent++; #end
 		#if xmpp_debug XMPPDebug.o( data ); #end
 		return data;
 	}
+	*/
 
 	/**
 		Send string
 	*/
-	public function send( s : String ) : String {
-		if( !cnx.connected )
-			return null;
+	//public function send( s : String ) : String {
+	public function send( s : String ) : Bool {
+		
 		#if flash // TODO haXe 2.06 fukup		
 		s = StringTools.replace( s, "_xmlns_=", "xmlns=" );
 		#end
+
+		if( cnx.write(s) ) {
+			#if jabber_debug numPacketsSent++; #end
+			#if xmpp_debug XMPPDebug.o( s ); #end
+			return true;
+		} else {
+			return false;
+		}
+
 		/*
 		if( dataInterceptors.length > 0 ) {
 			if( sendBytes( Bytes.ofString( s+"\n" ) ) == null )
@@ -213,45 +268,40 @@ class Stream {
 				return null;
 		}
 		*/
-		var sent = sendData( Bytes.ofString(s) );
-		if( sent == null )
-			return null;
-		return s;
+		//var sent = sendData( Bytes.ofString(s) );
+		//return cnx.write(s);
+		//var sent = cnx.write(s);
+		//if( sent == null )
+		//	return null;
+		//return sent;
 	}
 
 	/**
 		Intercept/Send/Return packet
 	*/
-	//public function sendPacket<T:Packet>( p : T, intercept : Bool = true ) : T {
 	public function sendPacket<T:Packet>( p : T ) : T {
 		if( !cnx.connected )
 			return null;
 		var s = p.toString();
-		if( !cnx.write( s ) )
+
+		//if( !cnx.write( s ) )
+		if( !send( s ) )
 			return null;
 		return p;
-		/*
-		if( intercept )
-			interceptPacket( #if (java||cs) cast #end p ); //TODO still throws error on java
-		//if( cnx.http ) {
-			//return if( cnx.writeXml( p.toXml() ) != null ) p else null;
-		return ( sendData( untyped p.toString() ) != null ) ? p : null;
-		*/
 	}
 
 	/**
 		Send a presence packet.
 	*/
 	public function sendPresence( ?show : PresenceShow, ?status : String, ?priority : Int, ?type : PresenceType ) : Presence {
-		return cast sendPacket( new Presence( show, status, priority, type ) );
+		return sendPacket( new Presence( show, status, priority, type ) );
 	}
 
 	/**
 		Send a message packet (default type is 'chat')
 	*/
 	public function sendMessage( to : String, body : String,
-								 ?subject : String, ?type : Null<MessageType>,
-								 ?thread : String, ?from : String ) : Message {
+								 ?subject : String, ?type : Null<MessageType>, ?thread : String, ?from : String ) : Message {
 		return sendPacket( new Message( to, body, subject, type, thread, from ) );
 	}
 
@@ -261,23 +311,24 @@ class Stream {
 	public function sendIQ( iq : IQ, ?h : IQ->Void ) : IQ {
 		if( iq.id == null )
 			iq.id = nextId();
+		if( h != null )
+			idCollectors.set( iq.id, cast h );
+		var sent : IQ = sendPacket( iq );
+		return sent;
+		/*
+		if( iq.id == null )
+			iq.id = nextId();
 		var c : PacketCollector = null;
 		if( h != null )
-			c = addIdCollector( iq.id, h );
+			c = addIdCollector( iq.id, cast h );
 		var s : IQ = sendPacket( iq );
 		if( s == null && h != null ) { // TODO wtf, is this needed ?
-			packetCollectors.remove( c );
+			collectors.remove( c );
 			c = null;
 			return null;
 		}
 		return iq;
-	}
-
-	/**
-		Create and send the result for given request
-	*/
-	public inline function sendIQResult( iq : IQ ) {
-		sendPacket( IQ.createResult( iq ) );
+		*/
 	}
 	
 	/**
@@ -286,130 +337,83 @@ class Stream {
 	public function collectPacket( filters : Iterable<xmpp.PacketFilter>, h : Dynamic->Void,
 								   permanent : Bool = false ) : PacketCollector {
 		var c = new PacketCollector( filters, h, permanent );
-		//return addCollector(c) ? c : null;
-		addCollector(c);
-		return c;
-	}
-
-	/**
-		Runs this stream XMPP packet interceptors on the given packet.
-	*/
-	/*
-	public function interceptPacket( p : xmpp.Packet ) : xmpp.Packet {
-		for( i in packetInterceptors ) i.interceptPacket( p );
-		return p;
-	}
-	*/
-	
-	/**
-		Adds an packet collector which filters XMPP packets by ids.
-		These collectors get processed before any other.
-	*/
-	public function addIdCollector( id : String, h : Dynamic->Void ) : PacketCollector {
-		var c = new PacketCollector( [new PacketIdFilter(id)], h );
-		//collectors_id.push( c );
-		packetCollectorsId.set( id, c );
-		return c;
+		return addCollector(c) ? c : null;
 	}
 	
 	/**
 		Add a packet collector.
 	*/
 	public function addCollector( c : PacketCollector ) : Bool {
-		if( packetCollectors.has( c ) )
+		if( collectors.has( c ) )
 			return false;
-		packetCollectors.push( c );
+		collectors.push( c );
 		return true;
 	}
 	
 	/**
 	*/
 	public function removeCollector( c : PacketCollector ) : Bool {
-		if( packetCollectors.remove( c ) )
-			return true;
-		//if( packetCollectorsId.remove( c ) ) return true;
-		//if( Std.is( c, PcketIdCollector) )
-		return false;
-		/*
-		if( !collectors.remove( c ) )
-			if( !idPacketCollectors.remove( c ) )
-				return false;
-		return true;
-		*/
+		return collectors.remove(c);
 	}
 
 	/**
 	*/
 	public function removeIdCollector( id : String ) : Bool {
-		/*
-		for( c in packetCollectorsId ) {
-			if( c.id == id ) {
-				packetCollectorsId.remove( c );
-				return true;
-			}
-		}
-		return false;
-		*/
-		/*
-		if( !packetCollectorsId.exists( id ) )
-			return false;
-		packetCollectorsId.remove( id );
-		return true;
-		*/
-		if( !packetCollectorsId.remove( id ) )
-			return false;
-		return true;
+		return idCollectors.remove( id );
 	}
 	
 	/**
 	*/
 	public function addInterceptor( i : PacketInterceptor ) : Bool {
-		if( Lambda.has( packetInterceptors, i ) )
+		if( Lambda.has( interceptors, i ) )
 			return false;
-		packetInterceptors.push( i );
+		interceptors.push( i );
 		return true;
 	}
 	
 	/**
 	*/
 	public function removeInterceptor( i : PacketInterceptor ) : Bool {
-		return packetInterceptors.remove( i );
+		return interceptors.remove( i );
 	}
 	
 	/**
 		Process incoming xmpp packets.
-		Returns true if the packet got handled.
+		Returns true if collected/handled by stream.
 	*/
 	public function handlePacket( p : xmpp.Packet ) : Bool {
-		#if xmpp_debug XMPPDebug.i( p.toString() ); #end
+		
+		#if xmpp_debug
+		XMPPDebug.i( p.toString() );
+		#end
 		/*
 		var i = -1;
-		while( ++i < idPacketCollectors.length ) {
-			var c = idPacketCollectors[i];
+		while( ++i < idcollectors.length ) {
+			var c = idcollectors[i];
 			if( c.accept( p ) ) {
-				idPacketCollectors.splice( i, 1 );
+				idcollectors.splice( i, 1 );
 				c.deliver( p );
 				c = null;
 				return true;
 			}
 		}
 		*/
-		if( p.id != null && packetCollectorsId.exists( p.id ) ) {
-			var c = packetCollectorsId.get( p.id );
-			packetCollectorsId.remove( p.id );
-			c.deliver( p );
-			c = null;
+
+		if( p.id != null && idCollectors.exists( p.id ) ) {
+			var h = idCollectors.get( p.id );
+			idCollectors.remove( p.id );
+			h(p);
 			return true;
 		}
 
 		var collected = false;
 		var i = -1;
-		while( ++i < packetCollectors.length ) {
-			var c = packetCollectors[i];
+		while( ++i < collectors.length ) {
+			var c = collectors[i];
 			//remove unused collectors
 			/*
 			if( c.handlers.length == 0 ) {
-				packetCollectors.splice( i, 1 );
+				collectors.splice( i, 1 );
 				continue;
 			}
 			*/
@@ -418,12 +422,12 @@ class Stream {
 				/*
 				c.deliver( p );
 				if( !c.permanent ) {
-					packetCollectors.splice( i, 1 );
+					collectors.splice( i, 1 );
 					c = null;
 				}
 				*/
 				if( !c.permanent ) {
-					packetCollectors.splice( i, 1 );
+					collectors.splice( i, 1 );
 				}
 				c.deliver( p );
 				if( c.block )
@@ -442,7 +446,7 @@ class Stream {
 				#end
 				if( q.type != IQType.error ) {
 					var r = new IQ(IQType.error, p.id, p.from, p.to );
-					r.errors.push( new xmpp.Error( xmpp.ErrorType.cancel, 'feature-not-implemented' ) );
+					r.errors.push( new xmpp.Error( cancel, 'feature-not-implemented' ) );
 					send( r.toString() );
 				}
 			}
@@ -465,11 +469,93 @@ class Stream {
 	}
 	
 	/**
-		Process incomig stream data.
+		Process incomig data.
 		Returns false if unable to process (more data needed).
 	*/
-	public function handleString( s : String ) : Bool {
+	public function handleData( s : String ) : Bool {
 		
+		if( status == closed )
+			throw "stream not ready";
+
+		if( StringTools.fastCodeAt( s, s.length-1 ) != 62 ) { // ">"
+			//trace("BUFFER "+s );
+			buffer.add( s );
+			return false;
+		}
+		if( StringTools.startsWith( s, '</stream:stream' ) ) {
+			#if xmpp_debug XMPPDebug.i( s ); #end
+			close( cnx.connected );
+			return true;
+		}
+		if( StringTools.startsWith( s, '</stream:error' ) ) {
+			// TODO report error info (?)
+			#if xmpp_debug XMPPDebug.i( s ); #end
+			close( cnx.connected );
+			return true;
+		}
+
+		buffer.add(s);
+
+		//TODO
+		/*
+		if( buffer.length > maxBufSize ) {
+			#if jabber_debug
+			trace( 'max buffer size ($maxBufSize)' );
+			#end
+			close( false );
+			return false;
+		}
+		*/
+
+		switch status {
+		
+		case closed :
+			return false;
+
+		case connecting:
+			if( processStreamInit( buffer.toString() ) ) {
+				buffer = new StringBuf();
+				return true;
+			}
+			return false;
+
+#if !jabber_component	
+		case starttls :
+			var x : Xml = null;
+			try x = Xml.parse(s).firstElement() catch( e : Dynamic ) {
+				#if xmpp_debug XMPPDebug.i( s ); #end
+				onClose(e);
+				return true;
+			}
+			#if xmpp_debug XMPPDebug.i( s ); #end
+			if( x.nodeName != "proceed" || x.get( "xmlns" ) != "urn:ietf:params:xml:ns:xmpp-tls" ) {
+				cnx.disconnect();
+				return true;
+			}
+			cnx.onSecured = function(err:String) {
+				if( err != null ) {
+					handleStreamClose( 'tls failed : $err' );
+				}
+				open( null );
+			}
+			cnx.setSecure();
+			return true;
+#end
+		case open:
+			var x : Xml = null;
+			try x = Xml.parse( buffer.toString() ) catch( e : Dynamic ) {
+				#if jabber_debug trace( "Packet incomplete, waiting for more data .." ); #end
+				return false;
+			}
+			buffer = new StringBuf();
+			handleXml( x );
+			return true;
+
+		}
+
+		return true;
+
+		/*
 		if( status == closed )
 			throw "stream closed";
 
@@ -482,7 +568,7 @@ class Stream {
 		if( bufSize == 0 && StringTools.fastCodeAt( t, 0 ) != 60 ) {
 			trace("Invalid XMPP data recieved","error");
 		}
-		*/
+		* /
 		
 		if( StringTools.startsWith( s, '</stream:stream' ) ) {
 			#if xmpp_debug XMPPDebug.i( s ); #end
@@ -547,10 +633,10 @@ class Stream {
 			return true;
 		}
 		return true;
+		*/
 	}
 
 	/**
-	*/
 	public function handleData( data : Bytes ) : Bool {
 		/*
 		if( status == closed )
@@ -558,9 +644,10 @@ class Stream {
 		for( f in dataFilters ) {
 			bytes = f.filterData( bytes );
 		}
-		*/
+		* /
 		return handleString( data.toString() );
 	}
+	*/
 
 	/**
 		Create/Returns unique ids
@@ -570,19 +657,13 @@ class Stream {
 	}
 
 	function handleConnect() {
-		#if jabber_debug trace( 'connected' ); #end
 	}
 
 	function handleDisconnect( ?e : String ) {
 		//if( status != closed )
 		handleStreamClose( e );
 	}
-	
-	function buffer( s : String ) {
-		buf.add( s );
-		bufSize += s.length;
-	}
-	
+
 	function processStreamInit( s : String ) : Bool {
 		return #if jabber_debug throw 'abstract method' #else false #end;
 	}
@@ -592,48 +673,41 @@ class Stream {
 	}
 	
 	function handleStreamClose( ?e : String ) {
-		resetBuffer();
 		reset();
+		status = closed;
 		onClose( e );
 	}
 	
-	function resetBuffer() {
-		buf = new StringBuf();
-		bufSize = 0;
-	}
-	
 	function reset() {
-		status = closed;
-		server = { features : new Map() };
+		//status = closed;
 		features = new StreamFeatures();
-		packetCollectors = new Array();
-		packetCollectorsId = new haxe.ds.StringMap();
-		packetInterceptors = new Array();
+		serverFeatures = new StringMap();
+		collectors = new Array();
+		idCollectors = new haxe.ds.StringMap();
+		interceptors = new Array();
 		//dataFilters = new Array();
 		//dataInterceptors = new Array();
+		buffer = new StringBuf();
 		#if jabber_debug numPacketsSent = 0; #end
 	}
 }
 
-private typedef Server = {
-	var features : StringMap<Xml>;
-}
-
 private class StreamFeatures {
 
-	var l : #if neko List<String> #else Array<String> #end;
+	var l : Array<String>;
 	
 	public inline function new() {
-		l = #if neko new List() #else new Array<String>() #end;
+		l = new Array<String>();
 	}
 	
 	public inline function iterator() : Iterator<String> {
 		return l.iterator();
 	}
 	
-	public function add( f : String ) : Bool {
-		if( Lambda.has( l, f ) ) return false;
-		#if neko l.add(f) #else l.push(f) #end;
+	public inline function add( f : String ) : Bool {
+		if( Lambda.has( l, f ) )
+			return false;
+		l.push(f);
 		return true;
 	}
 	
@@ -646,10 +720,11 @@ private class StreamFeatures {
 	}
 	
 	public inline function clear( f : String ) {
-		l = #if neko new List() #else new Array<String>() #end;
+		l = new Array<String>();
 	}
 	
 	#if jabber_debug
 	public inline function toString() : String { return l.toString(); }
 	#end
+
 }

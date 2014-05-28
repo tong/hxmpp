@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,6 +20,8 @@
  * THE SOFTWARE.
  */
 package jabber.jingle;
+
+#if flash
 
 import jabber.jingle.io.RTMFPOutput;
 import jabber.jingle.io.Transport;
@@ -88,3 +90,5 @@ class RTMFPCall extends OutgoingSession<RTMFPOutput> {
 	}
 	
 }
+
+#end

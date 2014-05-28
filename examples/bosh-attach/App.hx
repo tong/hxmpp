@@ -2,7 +2,6 @@
 import haxe.Json;
 import jabber.JID;
 import jabber.BOSHConnection;
-import jabber.StreamStatus;
 import jabber.client.Stream;
 
 #if js

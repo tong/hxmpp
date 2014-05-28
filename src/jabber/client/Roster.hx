@@ -24,9 +24,7 @@ package jabber.client;
 import jabber.XMPPError;
 import jabber.client.RosterSubscriptionMode;
 import xmpp.IQ;
-import xmpp.IQType;
 import xmpp.Presence;
-import xmpp.PresenceType;
 import xmpp.roster.Item;
 import xmpp.roster.AskType;
 import xmpp.roster.Subscription;
@@ -85,7 +83,7 @@ class Roster {
 		available = false;
 		items = new Array();
 
-		c_presence = stream.collectPacket( [new xmpp.filter.PacketTypeFilter( xmpp.PacketType.presence )], handlePresence, true );
+		c_presence = stream.collectPacket( [new xmpp.filter.PacketTypeFilter(presence)], handlePresence, true );
 		c_message = stream.collectPacket( [new xmpp.filter.IQFilter( xmpp.Roster.XMLNS )], handleIQ, true );
 	}
 	

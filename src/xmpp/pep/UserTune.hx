@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ package xmpp.pep;
 */
 class UserTune extends xmpp.PersonalEvent {
 
-	public static var XMLNS(default,null) : String = xmpp.Packet.PROTOCOL+"/tune";
+	public static inline var XMLNS = xmpp.Packet.PROTOCOL+"/tune";
 	
 	/** The artist or performer of the song or piece */
 	public var artist : String;

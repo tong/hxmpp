@@ -22,7 +22,6 @@
 package jabber.client;
 
 import xmpp.IQ;
-import xmpp.IQType;
 
 /**
 	Abstract base for vcard classes (jabber.client.VCard and jabber.client.VCardTemp)

@@ -21,6 +21,13 @@
  */
 package xmpp;
 
+enum IQType {
+	get;
+	set;
+	result;
+	error;
+}
+
 /**
 	InfoQuery XMPP packet
 
@@ -69,7 +76,7 @@ class IQ extends Packet {
 	public function new( ?type : IQType, ?id : String, ?to : String, ?from : String ) {
 		super( to, from, id );
 		this.type = ( type != null ) ? type : xmpp.IQType.get;
-		_type = xmpp.PacketType.iq;
+		_type = iq;
 	}
 	
 	public override function toXml(): Xml {

@@ -23,25 +23,30 @@ package jabber.util;
 
 #if (flash||js)
 typedef Timer = haxe.Timer;
+#else
+#end
+
+/*
 
 #elseif cpp
 import cpp.vm.Thread;
 #elseif cs
-import cs.vm.Thread;
+//import cs.vm.Thread;
 #elseif java
 import java.vm.Thread;
 #elseif neko
 import neko.vm.Thread;
 #elseif python
 import python.vm.Thread;
-#elseif php #error
+//#elseif php #error
 #end
 
-#if (cpp||cs||java||neko||python||doc_gen)
+//#if (cpp||cs||java||neko||python)
 
 /**
 	Patched version of haxe.Timer adding support for c++, neko, cs and java.
-*/
+* /
+@:noDoc
 class Timer {
 	
 	var id : Null<Int>;
@@ -50,7 +55,7 @@ class Timer {
 	static var arr = new Array<Timer>();
 	var timerId : Int;
 	
-	#elseif (cpp||css||java||neko)
+	#elseif sys
 	var runThread : Thread;
 	
 	public function new( time_ms : Int ){
@@ -140,7 +145,7 @@ class Timer {
 
 	/**
 		Returns a timestamp, in seconds
-	*/
+	* /
 	public static inline function stamp() : Float {
 		#if flash
 		return flash.Lib.getTimer() / 1000;
@@ -155,4 +160,5 @@ class Timer {
 
 }
 
-#end
+//#end
+*/

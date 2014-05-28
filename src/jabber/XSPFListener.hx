@@ -21,6 +21,8 @@
  */
 package jabber;
 
+import xmpp.IQ;
+
 /**
 	Listens for incoming XSPF playlist requests
 */
@@ -40,11 +42,11 @@ class XSPFListener {
 
 		this.stream = stream;
 		
-		c = stream.collectPacket( [new xmpp.filter.IQFilter( xmpp.XSPF.XMLNS, xmpp.IQType.get, "query" )], handleRequest, true );
+		c = stream.collectPacket( [new xmpp.filter.IQFilter( xmpp.XSPF.XMLNS, get, "query" )], handleRequest, true );
 	}
 	
-	function handleRequest( iq : xmpp.IQ ) {
-		var r = xmpp.IQ.createResult( iq );
+	function handleRequest( iq : IQ ) {
+		var r = IQ.createResult( iq );
 		var p = onRequest( iq.from );
 		if( p != null ) {
 			var x = xmpp.XSPF.emptyXml();

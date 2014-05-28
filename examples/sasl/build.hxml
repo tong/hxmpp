@@ -11,40 +11,40 @@
 #-cpp cpp
 #-lib hxssl
 #-lib hxargs
-#-D HXCPP_M64
-#-cmd mv cpp/App ./app
+#-cmd mv cpp/App-debug ./app
 
 #--next
 #-cs cs
 #-lib hxargs
+#-cmd mv cs/bin/App-Debug.exe ./app.exe
 
---next
--java java
--lib hxargs
--cmd mv java/App-Debug.jar ./app.jar
+#--next
+#-java java
+#-lib hxargs
+#-cmd mv java/App-Debug.jar ./app.jar
 
---next
--js app.js
+#--next
+#-js app.js
 
 --next
 -neko app.n
 -lib hxssl
 -lib hxargs
 
---next
--js app.js
--lib nodejs
--lib hxargs
+#--next
+#-js app.js
+#-lib nodejs
+#-lib hxargs
 
---next
--php ./
---php-front app.php
--lib hxargs
+#--next
+#-php ./
+#--php-front app.php
+#-lib hxargs
 
---next
--python app.py
--lib hxargs
+#--next
+#-python app.py
+#-lib hxargs
 
---next
--swf app.swf
--swf-header  100:100:60
+#--next
+#-swf app.swf
+#-swf-header  100:100:60

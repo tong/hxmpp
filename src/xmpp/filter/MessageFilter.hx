@@ -21,20 +21,22 @@
  */
 package xmpp.filter;
 
+import xmpp.Message;
+
 /** 
 	Filters message packets, optional including xmpp.MessageType.
 */
 class MessageFilter {
 		
-	public var type : xmpp.MessageType;
+	public var type : MessageType;
 	
-	public function new( ?type : xmpp.MessageType ) {
+	public function new( ?type : MessageType ) {
 		this.type = type;
 	}
 	
 	@:keep
 	public function accept( p : xmpp.Packet ) : Bool {
-		if( p._type != xmpp.PacketType.message )
+		if( p._type != message )
 			return false;
 		//if( type != null )
 		//	return EnumValueTools.equals( type, untyped p.type );

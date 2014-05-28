@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,8 +27,8 @@ package jabber;
 class PresenceListener extends PacketListener<xmpp.Presence> {
 	
 	public function new( stream : Stream, handler : xmpp.Presence->Void,
-						 ?listen : Bool = true ) {
-		super( stream, handler, xmpp.PacketType.presence, listen );
+						 listen : Bool = true ) {
+		super( stream, handler, presence, listen );
 	}
 	
 }

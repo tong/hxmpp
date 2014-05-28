@@ -23,6 +23,25 @@ package xmpp;
 
 import xmpp.ErrorPacket;
 
+@:enum abstract ErrorType(String) {
+	
+	/** Retry after providing credentials */
+	var auth = "auth";
+	
+	/** Do not retry (the error is unrecoverable)  */
+	var cancel = "cancel";
+	
+	/** Proceed (the condition was only a warning)  */
+	var continue_ = "continue";
+	
+	/** Retry after changing the data sent */
+	var modify = "modify";
+	
+	/** Retry after waiting (the error is temporary) */
+	var wait = "wait";
+	
+}
+
 /**
 */
 class Error extends xmpp.ErrorPacket {

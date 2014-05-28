@@ -22,6 +22,7 @@
 package jabber.lop;
 
 import xmpp.dataform.FieldType;
+import xmpp.IQ;
 import xmpp.lop.Bindings;
 import xmpp.lop.Ping;
 import xmpp.lop.SpawnVM;
@@ -82,14 +83,14 @@ class Farm {
 	
 	/**
 	*/
-	public function handleIQ( iq : xmpp.IQ ) {
+	public function handleIQ( iq : IQ ) {
 		switch( iq.x.toXml().nodeName ) {
 		case "spawn_vm" :
 			var spawn = SpawnVM.parse( iq.x.toXml() );
 			if( !species.exists( spawn.species ) ) {
-				var err = new xmpp.Error( xmpp.ErrorType.cancel, "'"+spawn.species+"' is a unsupported virtual machine", 503 );
+				var err = new xmpp.Error( cancel, "'"+spawn.species+"' is a unsupported virtual machine", 503 );
 //TODO			err.conditions.push( Xml.parse( '<species_not_supported xmlns="http://linkedprocess.org/2009/06/Farm#"/>' ) );
-				var r = xmpp.IQ.createError( iq, [err] );
+				var r = IQ.createError( iq, [err] );
 				spawn.species = null; // XMPP error (?), TODO report to XEP author
 				r.properties.push( spawn.toXml() );
 				stream.sendPacket( r );
@@ -100,7 +101,7 @@ class Farm {
 				var jid = new jabber.JID( iq.from );
 				var spawn_handler = species.get( spawn.species );
 				spawn.id = spawn_handler( jid, spawn );
-				var r = xmpp.IQ.createResult( iq );
+				var r = IQ.createResult( iq );
 				r.x = spawn;
 				stream.sendPacket( r );
 			}
@@ -111,16 +112,16 @@ class Farm {
 			try {
 				result = onJob( job );
 			} catch( e : Dynamic ) {
-				var err = new xmpp.Error( xmpp.ErrorType.modify, e, 400 );
+				var err = new xmpp.Error( modify, e, 400 );
 				err.app = { condition : "evaluation_error", xmlns : "http://linkedprocess.org/2009/06/Farm#" };
-				var r = xmpp.IQ.createError( iq, [err] );
+				var r = IQ.createError( iq, [err] );
 				job.code = null;
 				r.x = job;
 				stream.sendPacket( r );
 				return;
 			}
 			job.code = result;
-			var r = xmpp.IQ.createResult( iq );
+			var r = IQ.createResult( iq );
 			r.x = job;
 			stream.sendPacket( r );
 		
@@ -139,7 +140,7 @@ class Farm {
 				return;
 			}
 			p.status = s;
-			var r = xmpp.IQ.createResult( iq );
+			var r = IQ.createResult( iq );
 			r.x = p;
 			stream.sendPacket( r );
 			
@@ -148,14 +149,14 @@ class Farm {
 			var bindings = Bindings.parse( iq.x.toXml() );
 			switch( iq.type ) {
 			case get :
-				var r = xmpp.IQ.createResult( iq );
+				var r = IQ.createResult( iq );
 				//var b = onGetBindings( bindings );
 				//try {
 				r.x = onGetBindings( bindings );//new xmpp.lop.Bindings( bindings.vm_id );
 				stream.sendPacket( r );
 			case set :
 				onSetBindings( bindings );
-				var r = xmpp.IQ.createResult( iq );
+				var r = IQ.createResult( iq );
 				//try {
 				r.x = new Bindings( bindings.vm_id );
 				stream.sendPacket( r );
@@ -165,7 +166,7 @@ class Farm {
 		case "terminate_vm" :
 			//onKillVM( xmpp.lop.Terminate.parse( iq.x.toXml() ).vm_id );
 			onVMKill( iq.x.toXml().get( "vm_id" ) );
-			var r = xmpp.IQ.createResult( iq );
+			var r = IQ.createResult( iq );
 			r.x = iq.x;
 			stream.sendPacket( r );
 		}

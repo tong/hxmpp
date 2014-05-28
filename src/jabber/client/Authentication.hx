@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,6 @@ package jabber.client;
 import jabber.sasl.Mechanism;
 import jabber.util.Base64;
 import xmpp.IQ;
-import xmpp.IQType;
 import xmpp.filter.PacketNameFilter;
 
 /**
@@ -59,7 +58,7 @@ class Authentication extends AuthenticationBase {
 	
 	public function new( stream : Stream, mechanisms : Iterable<Mechanism> ) {
 	
-		var x = stream.server.features.get( "mechanisms" );
+		var x = stream.serverFeatures.get( "mechanisms" );
 		if( x == null )
 			throw "server does not support sasl";
 		if( mechanisms == null || Lambda.count( mechanisms ) == 0 )
@@ -108,7 +107,8 @@ class Authentication extends AuthenticationBase {
 		// Start authentication
 		var t = mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password, stream.jid.resource );
 		if( t != null ) t = Base64.encode( t );
-		return stream.send( xmpp.SASL.createAuth( mechanism.id, t ).toString() ) != null;
+		//return stream.send( xmpp.SASL.createAuth( mechanism.id, t ).toString() ) != null;
+		return stream.send( xmpp.SASL.createAuth( mechanism.id, t ).toString() );
 	}
 	
 	function handleSASLFailed( p : xmpp.Packet ) {
@@ -138,7 +138,7 @@ class Authentication extends AuthenticationBase {
 	
 	function handleStreamOpen() {
 		stream.onOpen = streamOpenHandler;
-		if( stream.server.features.exists( "bind" ) ) {
+		if( stream.serverFeatures.exists( "bind" ) ) {
 			var iq = new IQ( IQType.set );
 			iq.x = new xmpp.Bind( (mechanism.id == "ANONYMOUS") ? null : resource );
 			stream.sendIQ( iq, handleBind );
@@ -155,8 +155,8 @@ class Authentication extends AuthenticationBase {
 			stream.jid.node = p[0];
 			stream.jid.domain = p[1];
 			stream.jid.resource = p[2];
-			if( stream.server.features.exists( "session" ) ) { // Init session
-				var iq = new IQ( IQType.set );
+			if( stream.serverFeatures.exists( "session" ) ) { // Init session
+				var iq = new IQ( set );
 				iq.x = new xmpp.PlainPacket( Xml.parse( '<session xmlns="urn:ietf:params:xml:ns:xmpp-session"/>' ).firstElement() );
 				stream.sendIQ( iq, handleSession );
 			} else {

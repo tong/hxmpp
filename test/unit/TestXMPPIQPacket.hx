@@ -1,6 +1,5 @@
 
 import xmpp.IQ;
-import xmpp.IQType;
 
 class TestXMPPIQPacket extends haxe.unit.TestCase {
 	

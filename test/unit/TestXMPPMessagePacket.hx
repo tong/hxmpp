@@ -1,6 +1,5 @@
 
 import xmpp.Message;
-import xmpp.MessageType;
 
 class TestXMPPMessagePacket extends haxe.unit.TestCase {
 	
@@ -27,7 +26,7 @@ class TestXMPPMessagePacket extends haxe.unit.TestCase {
 
 	public function testParse() {
 		var x = Xml.parse( '
-			<message to="hxmpp@disktree">
+			<message to="romeo@jabber.disktree.net">
 				<body>green with envy!</body>
 				<html xmlns="http://jabber.org/protocol/xhtml-im">
 					<body xmlns="http://www.w3.org/1999/xhtml">
@@ -39,8 +38,8 @@ class TestXMPPMessagePacket extends haxe.unit.TestCase {
 				</html>
 			</message>' ).firstElement();
 		var m : Message = cast xmpp.Packet.parse( x );
-		assertEquals( MessageType.chat, m.type );
-		assertEquals( "chat", Std.string( m.type ) );
+		assertEquals( null, m.type );
+		assertEquals( 'romeo@jabber.disktree.net', m.to );
 		assertEquals( 'green with envy!', m.body );
 		assertEquals( 1, m.properties.length );
 		assertEquals( "html", m.properties[0].nodeName );

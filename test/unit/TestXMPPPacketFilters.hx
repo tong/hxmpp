@@ -1,12 +1,9 @@
 
 import xmpp.Packet;
-import xmpp.PacketType;
 import xmpp.Message;
-import xmpp.MessageType;
 import xmpp.Presence;
 import xmpp.PlainPacket;
 import xmpp.IQ;
-import xmpp.IQType;
 import xmpp.filter.FilterReverse;
 import xmpp.filter.FilterGroup;
 import xmpp.filter.MessageFilter;
@@ -15,7 +12,7 @@ import xmpp.filter.PacketFieldFilter;
 import xmpp.filter.PacketFromContainsFilter;
 import xmpp.filter.PacketToContainsFilter;
 import xmpp.filter.PacketFromFilter;
-import xmpp.filter.PacketIDFilter;
+import xmpp.filter.PacketIdFilter;
 import xmpp.filter.PacketNameFilter;
 import xmpp.filter.PacketTypeFilter;
 import xmpp.filter.IQFilter;
@@ -49,7 +46,7 @@ class TestXMPPPacketFilters extends haxe.unit.TestCase {
 		
 		var f = new PacketFromContainsFilter( "disktree@conference.disktree" );
 		assertTrue( f.accept( m ) );
-*/
+		*/
 	}
 	
 	public function testAcceptAllFilter() {
@@ -60,14 +57,19 @@ class TestXMPPPacketFilters extends haxe.unit.TestCase {
 	}
 	
 	public function testFromContainsFilter() {
+		
 		var m = new Message();
 		m.from = "sender@domain.net/resource";
+		
 		var f = new PacketFromContainsFilter( "sender" );
 		assertTrue( f.accept( m ) );
+		
 		f = new PacketFromContainsFilter( "domain.net" );
 		assertTrue( f.accept( m ) );
+		
 		f = new PacketFromContainsFilter( "resource" );
 		assertTrue( f.accept( m ) );
+		
 		f = new PacketFromContainsFilter( "WRoNG" );
 		assertFalse( f.accept( m ) );
 	}
@@ -98,7 +100,7 @@ class TestXMPPPacketFilters extends haxe.unit.TestCase {
 	
 	public function testIDFilter() {
 		var iq = new IQ( null, "12345" );
-		var f = new PacketIDFilter( "12345" );
+		var f = new PacketIdFilter( "12345" );
 		assertTrue( f.accept( iq ) );
 		iq.id = "54321";
 		assertFalse( f.accept( iq ) );
@@ -213,5 +215,7 @@ class TestXMPPPacketFilters extends haxe.unit.TestCase {
 		group = new FilterGroup( [cast f2] );
 		assertFalse( group.accept( m ) );
 	}
+
+	//public function testPropter
 	
 }

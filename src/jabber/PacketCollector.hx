@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,8 +21,11 @@
  */
 package jabber;
 
+import xmpp.Packet;
 import xmpp.PacketFilter;
 import xmpp.filter.PacketIdFilter;
+
+using Lambda;
 
 /**
 	XMPP packet collector.
@@ -33,9 +36,9 @@ class PacketCollector {
 	public var filters(default,null) : FilterList;
 	
 	/** Callbacks to which collected packets get delivered to */
-	public var handlers : Array<xmpp.Packet->Void>;
+	public var handlers : Array<Packet->Void>;
 	
-	/** Indicates if the the collector should get removed from the stream after collecting */
+	/** The collector is not removed from stream after collecting a packet */
 	public var permanent : Bool;
 	
 	/** Block remaining collectors */
@@ -45,19 +48,16 @@ class PacketCollector {
 						 permanent : Bool = false, block : Bool = false ) {
 		
 		handlers = new Array();
-		this.filters = new FilterList();
-		for( f in filters )
-			this.filters.push( f );
+		this.filters = FilterList.ofIterable( filters );
 		if( handler != null ) handlers.push( handler );
-		
 		this.permanent = permanent;
 		this.block = block;
 	}
 
 	/**
-		Returns true if the given XMPP packet passes through all filters.
+		Returns true if the given packet passes through all filters.
 	*/
-	public function accept( p : xmpp.Packet ) : Bool {
+	public function accept( p : Packet ) : Bool {
 		for( f in filters )
 			if( !f.accept( p ) )
 				return false;
@@ -67,25 +67,24 @@ class PacketCollector {
 	/**
 		Delivers the given packet to all registerd handlers.
 	*/
-	public function deliver( p : xmpp.Packet ) {
+	public function deliver( p : Packet ) {
 		for( h in handlers ) h( p );
 	}
-
 }
 
-//TODO remove?
 private class FilterList {
 	
-	var fid : Array<PacketFilter>;
 	var f : Array<PacketFilter>;
+	var fid : Array<PacketFilter>;
 	
-	public function new() {
-		clear();
+	public inline function new( ?filters : Iterable<PacketFilter> ) {
+		f = (filters == null) ? new Array() : filters.array();
+		fid = new Array<PacketFilter>();
 	}
 	
 	public inline function clear( ) {
-		fid = new Array<PacketFilter>();
-		f = new Array<PacketFilter>();
+		f = new Array();
+		fid = new Array();
 	}
 	
 	public inline function iterator() : Iterator<PacketFilter> {
@@ -101,16 +100,22 @@ private class FilterList {
 	}
 	
 	public inline function push( _f : PacketFilter ) {
-		( Std.is( _f, PacketIdFilter ) ) ? fid.push( _f ) : f.push( _f );
+		(Std.is( _f, PacketIdFilter )) ? fid.push( _f ) : f.push( _f );
 	}
 	
 	public inline function unshift( _f : PacketFilter ) {
-		( Std.is( _f, PacketIdFilter ) ) ? fid.unshift( _f ) : f.unshift( _f );
+		(Std.is( _f, PacketIdFilter)) ? fid.unshift( _f ) : f.unshift( _f );
 	}
 	
 	public inline function remove( _f : PacketFilter ) : Bool {
-		if( fid.remove( _f ) || f.remove( _f ) ) return true;
+		if( fid.remove( _f ) || f.remove( _f ) )
+			return true;
 		return false;
+	}
+
+	public static inline function ofIterable( it : Iterable<PacketFilter> ) : FilterList {
+		var l = new FilterList( it );
+		return l;
 	}
 	
 }

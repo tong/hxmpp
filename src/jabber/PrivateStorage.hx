@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,8 @@
  */
 package jabber;
 
+import xmpp.IQ;
+
 /**
 	Extension to store any arbitrary XML on the server side.
 	XEP-0049: Private XML Storage: http://xmpp.org/extensions/xep-0049.html
@@ -41,13 +43,12 @@ class PrivateStorage {
 		Load private data.
 	*/
 	public function load( name : String, namespace : String ) {
-		var iq = new xmpp.IQ( xmpp.IQType.get );
+		var iq = new IQ( get );
 		iq.x = new xmpp.PrivateStorage( name, namespace );
-		var me = this;
-		stream.sendIQ( iq, function(r:xmpp.IQ) {
-			switch( r.type ) {
-			case result : me.onLoad( xmpp.PrivateStorage.parse( r.x.toXml() ) );
-			case error : me.onError( new jabber.XMPPError( iq ) );
+		stream.sendIQ( iq, function(r:IQ) {
+			switch r.type {
+			case result : onLoad( xmpp.PrivateStorage.parse( r.x.toXml() ) );
+			case error : onError( new jabber.XMPPError( iq ) );
 			default://#
 			}
 		} );
@@ -57,15 +58,15 @@ class PrivateStorage {
 		Store private data.
 	*/
 	public function store( name : String, namespace : String, data : Xml ) {
-		var iq = new xmpp.IQ( xmpp.IQType.set );
+		var iq = new IQ( set );
 		var xt = new xmpp.PrivateStorage( name, namespace, data );
 		iq.x = xt;
 		var me = this;
-		stream.sendIQ( iq, function(r:xmpp.IQ) {
-			switch( r.type ) {
+		stream.sendIQ( iq, function(r:IQ) {
+			switch r.type {
 			case result : me.onStored( xt );
 			case error : me.onError( new jabber.XMPPError( iq ) );
-			default://#
+			default:
 			}
 		} );
 	}

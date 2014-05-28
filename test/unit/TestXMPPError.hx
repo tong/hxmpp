@@ -1,4 +1,6 @@
 
+import xmpp.Error;
+
 class TestXMPPError extends haxe.unit.TestCase {
 	
 	public function testParse() {

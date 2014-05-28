@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,23 +35,29 @@ import jabber.util.SOCKS5Input;
 	import cpp.vm.Thread;
 #elseif js
 	#if nodejs
+	import js.Node;
 	import js.Node.NodeNetSocket in Socket;
 	#elseif air
 	import air.ServerSocketConnectEvent;
 	import air.Socket;
 	import air.ServerSocket;
 	import air.ByteArray;
+	#else
+	import js.html.WebSocket in Socket;
 	#end
 #elseif (flash&&air)
 import flash.events.ServerSocketConnectEvent;
 import flash.net.Socket;
 import flash.net.ServerSocket;
 import flash.utils.ByteArray;
+#elseif flash
+import flash.net.Socket;
 #end
 
 /**
 	SOCKS5 bytestream output.
 */
+@:noDoc
 class ByteStreamOutput extends ByteStreamIO  {
 	
 	public var __onConnect : ByteStreamOutput->Void;
@@ -61,11 +67,8 @@ class ByteStreamOutput extends ByteStreamIO  {
 	var socket : Socket;
 	var digest : String;
 	
-	#if (neko||cpp||php)
+	#if (neko||cpp||php||nodejs)
 	var server : Socket;
-	
-	#elseif nodejs
-	var server : Server;
 	
 	#elseif air
 	var server : ServerSocket;
@@ -177,10 +180,11 @@ class ByteStreamOutput extends ByteStreamIO  {
 	
 	//force close unused bytestream transport
 	public function close() {
+		#if (cpp||neko)
 		cleanup();
+		#end
 	}
-	
-	
+
 	#if (neko||cpp)
 	
 	function callbackConnect( err : String ) {
@@ -263,7 +267,6 @@ class ByteStreamOutput extends ByteStreamIO  {
 		if( socket != null ) try socket.close() catch( e : Dynamic ) { #if jabber_debug trace(e); #end }
 		if( server != null ) try server.close() catch( e : Dynamic ) { #if jabber_debug trace(e); #end }
 	}
-	
 	
 	#elseif nodejs
 	

@@ -1,5 +1,5 @@
 /*
- * Copyright (c), disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,7 @@
  */
 package jabber.lop;
 
+import xmpp.IQ;
 import xmpp.lop.Bindings;
 import xmpp.lop.Ping;
 import xmpp.lop.SpawnVM;
@@ -56,7 +57,7 @@ class Villein {
 	/**
 	*/
 	public function spawnVM( species : String, ?password : String ) {
-		var iq = new xmpp.IQ( null, null, farm );
+		var iq = new IQ( null, null, farm );
 		iq.x = new SpawnVM( species );
 		stream.sendIQ( iq, handleVMSpawn );
 	}
@@ -64,7 +65,7 @@ class Villein {
 	/**
 	*/
 	public function submitJob( id : String, job : String ) : String {
-		var iq = new xmpp.IQ( null, null, farm );
+		var iq = new IQ( null, null, farm );
 		iq.x = new Submit( id, job );
 		stream.sendIQ( iq, handleJob );
 		return null; //TODO generate job id
@@ -74,7 +75,7 @@ class Villein {
 	*/
 	public function pingJob( vm_id : String, job_id : String ) {
 		//TODO check
-		var iq = new xmpp.IQ( null, null, farm );
+		var iq = new IQ( null, null, farm );
 		iq.x = new Ping( vm_id, job_id );
 		stream.sendIQ( iq, handlePing );
 	}
@@ -89,7 +90,7 @@ class Villein {
 	/**
 	*/
 	public function getBindings( id : String, names : Iterable<String> ) {
-		var iq = new xmpp.IQ( null, null, farm );
+		var iq = new IQ( null, null, farm );
 		var l = new Bindings( id );
 		for( n in names ) l.add( cast { name : n } );
 		iq.x = l;
@@ -100,7 +101,7 @@ class Villein {
 	/**
 	*/
 	public function setBindings( id : String, list : Iterable<xmpp.lop.Binding> ) {
-		var iq = new xmpp.IQ( xmpp.IQType.set, null, farm );
+		var iq = new IQ( set, null, farm );
 		if( Std.is( list, Bindings ) ) iq.x = cast list;
 		else {
 			var l = new Bindings( id );
@@ -113,13 +114,13 @@ class Villein {
 	/**
 	*/
 	public function terminateVM( vm_id : String ) {
-		var iq = new xmpp.IQ( null, null, farm );
+		var iq = new IQ( null, null, farm );
 		iq.x = new Terminate( vm_id );
 		stream.sendIQ( iq, handleTerminate );
 	}
 	
-	function handleVMSpawn( iq : xmpp.IQ ) {
-		switch( iq.type ) {
+	function handleVMSpawn( iq : IQ ) {
+		switch iq.type {
 		case result :
 			var s = SpawnVM.parse( iq.x.toXml() );
 			onSpawn( s );
@@ -128,8 +129,8 @@ class Villein {
 		}
 	}
 	
-	function handleJob( iq : xmpp.IQ ) {
-		switch( iq.type ) {
+	function handleJob( iq : IQ ) {
+		switch iq.type {
 		case result :
 			var job = Submit.parse( iq.x.toXml() );
 			onResult( job );
@@ -141,8 +142,8 @@ class Villein {
 	}
 	
 	//TODO
-	function handlePing( iq : xmpp.IQ ) {
-		switch( iq.type ) {
+	function handlePing( iq : IQ ) {
+		switch iq.type {
 		case result :
 			trace("######################PING RESULT");
 			//onPing();
@@ -152,8 +153,8 @@ class Villein {
 		}
 	}
 	
-	function handleTerminate( iq : xmpp.IQ ) {
-		switch( iq.type ) {
+	function handleTerminate( iq : IQ ) {
+		switch iq.type {
 		case result :
 			var id = Terminate.parse( iq.x.toXml() ).vm_id;
 			onTerminate( id );
@@ -164,9 +165,9 @@ class Villein {
 		}
 	}
 	
-	function handleGetBindings( iq : xmpp.IQ ) {
+	function handleGetBindings( iq : IQ ) {
 		trace("handleGetBindings");
-		switch( iq.type ) {
+		switch iq.type {
 		case result :
 			onVariables( Bindings.parse( iq.x.toXml() ) );
 		case error :
@@ -176,9 +177,9 @@ class Villein {
 		}
 	}
 	
-	function handleSetBindings( iq : xmpp.IQ ) {
+	function handleSetBindings( iq : IQ ) {
 		trace("handleSetBindings");
-		switch( iq.type ) {
+		switch iq.type {
 		case result :
 			onBind( Bindings.parse( iq.x.toXml() ) );
 		case error :

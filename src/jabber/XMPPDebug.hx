@@ -45,8 +45,8 @@ import xmpp.XMLBeautify;
 class XMPPDebug {
 	
 	static function __init__() {
-		active = true;
 		//numPrinted = numPrintedIncoming = numPrintedOutgoing = 0;
+		active = true;
 		#if (flash||js)
 			#if (air||nodejs||rhino)
 			#else
@@ -86,33 +86,29 @@ class XMPPDebug {
 		Indicates if the XMPP debug output should get formatted/beautified.
 		Mind: If active, it is not ensured that the formatted string matches exactly the sent/recieved ones!
 		Default value is false.
-		Currently only supported in terminal targets.
+		Currently only supported for terminal targets.
 	*/
-	public static var beautify : Bool = true;
+	public static var beautify = true;
 	
 	/**
 		Toggle print the current date in meta information
 	*/
-	public static var showDate : Bool = false;
+	public static var showDate = false;
 	
 	/**
 		Toggle print the current time in meta information
 	*/
-	public static var showTime : Bool = true;
+	public static var showTime = true;
 	
 	/**
 		Print incoming XMPP data
 	*/
-	public static inline function i( v : Dynamic ) {
-		print( v, false );
-	}
+	public static inline function i( v : Dynamic ) print( v, false );
 	
 	/**
 		Print outgoing XMPP data
 	*/
-	public static inline function o( v : Dynamic ) {
-		print( v, true );
-	}
+	public static inline function o( v : Dynamic ) print( v, true );
 	
 	//public static inline function printXml( x : Xml )
 	//public static inline function printXMPPPacket( p : xmpp.Packet )
@@ -128,11 +124,12 @@ class XMPPDebug {
 		
 		#if xmpp_console
 		XMPPConsole.printXMPP( v, out );
+
 		#else
 			#if android
 			Sys.println(v);
 			#elseif (sys||nodejs||air||rhino)
-			__print( beautify ? XMLBeautify.it(v) : "$v\n", out ? color_out : color_inc );
+			__print( beautify ? XMLBeautify.it(v) : v, out ? color_out : color_inc );
 			#elseif (js||flash)
 			__print( beautify ? XMLBeautify.it(v) : v, out, level );
 			#end
@@ -181,7 +178,7 @@ class XMPPDebug {
 		#elseif (js&&nodejs)
 		Node.console.log( b.toString() );
 		#else
-		Sys.print( b.toString() );
+		Sys.println( b.toString() );
 		#end
 	}
 	

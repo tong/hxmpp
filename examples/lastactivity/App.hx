@@ -11,8 +11,6 @@ class App extends XMPPClient {
 		new jabber.PresenceListener( stream, onPresence );
 		stream.sendPresence();
 		
-		var t = new jabber.util.Timer( 1000 );
-		t.run = onTimer;
 	}
 	
 	override function onPresence( p : xmpp.Presence ) {
@@ -24,9 +22,11 @@ class App extends XMPPClient {
 		activity.request( p.from );
 	}
 	
+	/*
 	function onTimer() {
 		lastActivityListener.time++; // update own last activity time
 	}
+	*/
 
 	static function main() {
 		var creds = XMPPClient.readArguments();

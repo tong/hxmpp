@@ -21,26 +21,27 @@
  */
 package jabber;
 
+import xmpp.IQ;
+
 /**
 	XEP-0012: Last Activity: http://xmpp.org/extensions/xep-0012.html
 */
 class LastActivityListener {
+
+	public dynamic function onRequest( jid : String ) : Null<Int> { return null; }
 	
-	/** Seconds passed after last user activity */
-	public var time : Int;
 	public var stream(default,null) : Stream;
 	
 	var c : PacketCollector;
 	
-	public function new( stream : Stream, time : Int = 0 ) {
+	public function new( stream : Stream ) {
 		
 		if( !stream.features.add( xmpp.LastActivity.XMLNS ) )
 			throw "last activity listener already added";
 
 		this.stream = stream;
-		this.time = time;
 
-		c = stream.collectPacket( [new xmpp.filter.IQFilter( xmpp.LastActivity.XMLNS, xmpp.IQType.get, "query" )], handleRequest, true );
+		c = stream.collectPacket( [new xmpp.filter.IQFilter( xmpp.LastActivity.XMLNS, get, "query" )], handleRequest, true );
 	}
 	
 	public function dispose() {
@@ -51,8 +52,10 @@ class LastActivityListener {
 		c = null;
 	}
 	
-	function handleRequest( iq : xmpp.IQ ) {
-		var r = new xmpp.IQ( xmpp.IQType.result, iq.id, iq.from );
+	function handleRequest( iq : IQ ) {
+		var time = onRequest( iq.from );
+		//TODO if( time == null )
+		var r = IQ.createResult( iq );
 		r.x = new xmpp.LastActivity( time );
 		stream.sendPacket( r );	
 	}

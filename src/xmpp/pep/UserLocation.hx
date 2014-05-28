@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, disktree.net
+ * Copyright (c) disktree.net
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,11 +23,11 @@ package xmpp.pep;
 
 /**
 	Extended information about the current geographical or physical location of an entity.
-	<a href="http://xmpp.org/extensions/xep-0080.html">XEP-0080: User Location</a><br/>
+	XEP-0080: User Location: http://xmpp.org/extensions/xep-0080.html
 */
 class UserLocation extends xmpp.PersonalEvent {
 
-	public static var XMLNS(default,null) : String = xmpp.Packet.PROTOCOL+"/geoloc";
+	public static inline var XMLNS = xmpp.Packet.PROTOCOL+"/geoloc";
 	
 	/** Horizontal GPS error in meters; this element obsoletes the <error/> element */
 	public var accuracy : Int;

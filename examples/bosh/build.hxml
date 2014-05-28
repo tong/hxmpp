@@ -2,21 +2,11 @@
 -main App
 -cp ../
 -cp ../../src
+-debug
 -D jabber_debug
 -D xmpp_debug
 -dce full
 --each
-
---next
--cpp cpp
--cmd mv cpp/App ./app
-
-#--next
-#-java java
-#-cmd mv java/App.jar ./app.jar
-
-#--next
-#-cs cs
 
 --next
 -js app.js
@@ -26,11 +16,5 @@
 -swf-header 100:100:60:D0191E
 
 --next
--js app.node
+-js app.nodejs
 -lib nodejs
-
---next
--neko app.n
-
-#--next
-#-python app.py

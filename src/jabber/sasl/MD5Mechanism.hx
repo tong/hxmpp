@@ -51,7 +51,6 @@ class MD5Mechanism {
 	
 	public function createChallengeResponse( challenge : String ) : String {
 		var c = MD5Calculator.parseChallenge( challenge );
-		trace(c);
 		return (c == null) ? "" : MD5Calculator.createResponse( host, serverType, username, c.realm, pass, c.nonce );
 	}
 	

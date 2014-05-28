@@ -22,7 +22,6 @@
 package jabber.remoting;
 
 import haxe.remoting.AsyncConnection;
-import xmpp.IQType;
 
 /**
 	Haxe remoting connection to another XMPP entity.
