@@ -31,13 +31,19 @@ class XMLBeautify {
 	/**
 		Format given xml string to something human readable.
 	*/
-	public static function it( t : String ) : String  {
+	public static function beautify( s : String ) : String {
 		var x : Xml = null;
-		try x = Xml.parse(t).firstElement() catch(e:Dynamic) {
-			return t;
+		try x = Xml.parse(s).firstElement() catch(e:Dynamic) {
+			return s;
 		}
 		if( x == null )
-			return t;
+			return s;
+		return beautifyXml(x);
+	}
+
+	/**
+	*/
+	public static function beautifyXml( x : Xml ) : String {
 		var b = new StringBuf();
 		createNode( x, b, 0 );
 		return b.toString();
