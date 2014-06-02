@@ -105,11 +105,11 @@ class BOSHConnection extends jabber.StreamConnection {
 						 hold : Null<Int> = 1, wait : Null<Int> = 30, secure : Bool = false,
 						 maxConcurrentRequests : Null<Int> = 2, timeoutOffset : Null<Int> = 25 ) {
 		
-		if( path.startsWith( 'http://' ) )
-			path = path.substr(7);
-		else if( path.startsWith( 'https://' ) )
+		if( path.startsWith( 'https://' ) )
 			path = path.substr(8);
-
+		else if( path.startsWith( 'http://' ) )
+			path = path.substr(7);
+			
 		super( host, secure, true );
 		this.path = path;
 		this.hold = hold;
