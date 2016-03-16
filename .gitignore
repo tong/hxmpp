@@ -15,7 +15,5 @@
 _*
 doc/*
 doc/api/*.xml
-util/libhxmpp*
-util/xmpp-*/
-util/*.*
-TODO
+util/
+TODO*

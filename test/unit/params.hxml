@@ -1,3 +1,0 @@
---macro Run.prepareBuild()
--cp ../../src/
--main Run

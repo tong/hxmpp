@@ -1,3 +1,0 @@
-params.hxml
--java build/java
--cmd mv build/java/Run.jar build/test.jar

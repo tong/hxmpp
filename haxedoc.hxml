@@ -1,7 +1,0 @@
--cp src
--lib xspf
---macro HXMPP.importAll()
--D jabber_debug
--D xmpp_debug
--D xmldoc
--xml haxedoc.xml
