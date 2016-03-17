@@ -1,3 +1,8 @@
+doc/*
+doc/api/*.xml
+test/build/
+test/unit*
+util/
 *.cache
 *.o
 *.jar
@@ -6,6 +11,7 @@
 *.map
 *.nodejs
 *.php
+*.py
 *.swc
 *.swf
 *.zip
@@ -13,7 +19,5 @@
 *.sublime-workspace
 .project
 _*
-doc/*
-doc/api/*.xml
-util/
+haxedoc.xml
 TODO*
