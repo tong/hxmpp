@@ -42,8 +42,7 @@ class Stream {
 	}
 
 	public function open() {
-		sendHeader();
-    }
+	}
 
 	public function close() {
 		send( '</stream:stream>' );
@@ -85,12 +84,6 @@ class Stream {
 		);
 		send( iq );
     }
-
-	/*
-	public function sendString( str : String ) {
-		onSend( str );
-	}
-	*/
 
 	//public function extend( xmlns : String, handler : XML->Void ) {
 	public function handle( xmlns : String, handler : XML->Void ) {
@@ -151,8 +144,6 @@ class Stream {
 		return false;
 	}
 
-	function sendHeader() {}
-
 	function randomStanzaId( len = 8 ) : String {
 		var buf = new StringBuf();
 		var n = Base64.CHARS.length - 2;
@@ -162,28 +153,15 @@ class Stream {
 	}
 
 	public static function createInitElement( xmlns : String, to : String, ?version : Bool, ?lang : String, xmlDecl = true ) : String {
-		var b = new StringBuf();
-		if( xmlDecl )
-			b.add( '<?xml version="1.0" encoding="UTF-8"?>' );
-		b.add( '<stream:stream xmlns="' );
-		b.add( xmlns );
-		b.add( '" xmlns:stream="' );
-		b.add( Stream.XMLNS );
-		b.add( '" ' );
-		if( to != null ) {
-			b.add( 'to="' );
-			b.add( to );
-		}
-		b.add( '" xmlns:xml="http://www.w3.org/XML/1998/namespace"' );
-		if( version )
-			b.add( ' version="1.0"' );
-		if( lang != null ) {
-			b.add( ' xml:lang="' );
-			b.add( lang );
-			b.add( '"' );
-		}
-		b.add( '>' );
-		return b.toString();
+		var xml = XML.create( 'stream:stream' )
+			.set( 'xmlns', xmlns )
+			.set( 'xmlns:stream', XMLNS )
+			//.set( 'xmlns:xml', 'http://www.w3.org/XML/1998/namespace' )
+			.set( 'to', to );
+		if( version ) xml.set( 'version', '1.0' );
+		if( lang != null ) xml.set( 'xml:lang', lang );
+		var s = xml.toString();
+		return s.substr( 0, s.lastIndexOf( '/' ) ) + '>';
 	}
 
 	public static function readHeader( s : String ) : Header {

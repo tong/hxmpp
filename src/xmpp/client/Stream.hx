@@ -29,9 +29,14 @@ class Stream extends xmpp.Stream {
         this.starttls = starttls;
     }
 
+	public override function open() {
+		send( xmpp.Stream.createInitElement( xmlns, jid.domain, true, lang ) );
+		state = State.header;
+	}
+
 	public function restart( callback : Void->Void ) {
         onRestart = callback;
-		sendHeader();
+		send( xmpp.Stream.createInitElement( xmlns, jid.domain, true, lang ) );
 		state = State.restart;
 	}
 
@@ -87,12 +92,5 @@ class Stream extends xmpp.Stream {
 			onRestart();
 		}
 		return true;
-	}
-
-	//function handleOpen( fun : Void->Void ) {
-
-	override function sendHeader() {
-		send( xmpp.Stream.createInitElement( xmlns, jid.domain, true, lang ) );
-		state = header;
 	}
 }
