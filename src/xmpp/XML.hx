@@ -2,7 +2,6 @@ package xmpp;
 
 import Xml;
 
-//@:access(Xml)
 @:forward(get)
 abstract XML(Xml) from Xml to Xml {
 
@@ -19,13 +18,12 @@ abstract XML(Xml) from Xml to Xml {
 
     public var value(get,never) : String;
     function get_value() : String {
-		//trace(this.nodeType);
 		return switch this.nodeType {
-		case Xml.XmlType.Element:
-			var c = this.firstChild();
-			(c == null) ? null : c.nodeValue;
-		default:
-			null;
+			case Xml.XmlType.Element:
+				var c = this.firstChild();
+				(c == null) ? null : c.nodeValue;
+			default:
+				null;
 		}
 	}
 
@@ -46,9 +44,6 @@ abstract XML(Xml) from Xml to Xml {
 	    return this;
 	}
 
-	//public inline function countAttrs() : Int
-	//	return Lambda.count( this.attributes() );
-
 	public inline function append( child : XML ) : XML {
 		this.addChild( child );
 		return this;
@@ -56,6 +51,14 @@ abstract XML(Xml) from Xml to Xml {
 
 	public inline function elements() : Iterator<XML> {
 		return this.elements();
+	}
+
+	@:access(Xml)
+	public inline function elementsNamed( name : String ) : Array<XML> {
+		//this.ensureElementType();
+		//var ret = [for(c in this.children) if (c.nodeType == Element && c.nodeName == name) c];
+		//return ret;
+		return [for(c in this.children) if (c.nodeType == Element && c.nodeName == name) c];
 	}
 
 	public inline function firstElement() : XML {

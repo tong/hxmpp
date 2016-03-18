@@ -7,23 +7,17 @@ package xmpp.sasl;
 	as this mechanism affords no integrity or confidentiality protections itself.
 */
 @:keep
-//class PlainMechanism extends Mechanism {
 class PlainMechanism implements Mechanism {
 
 	public static inline var NAME = 'PLAIN';
 
 	public var id(default,null) = NAME;
 
-	//public inline function new() super( NAME );
 	public inline function new() {}
 
 	public function createAuthenticationText( user : String, host : String, password : String, resource : String ) : String {
-		var b = new StringBuf();
-		b.add( String.fromCharCode( 0 ) );
-		b.add( user );
-		b.add( String.fromCharCode( 0 ) );
-		b.add( password );
-		return b.toString();
+		var z = String.fromCharCode( 0 );
+		return z + user + z + password;
 	}
 
 	public inline function createChallengeResponse( c : String ) : String {

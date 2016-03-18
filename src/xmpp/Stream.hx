@@ -2,18 +2,22 @@ package xmpp;
 
 import haxe.crypto.Base64;
 import xmpp.IQ;
+import xmpp.Message;
+import xmpp.Presence;
 
 using StringTools;
 
-private typedef Header = {
+typedef Header = {
 	var to : String;
 	var from : String;
 	var id : String;
-	//var lang : String;
+	var lang : String;
 	var version : String;
 }
 
 class Stream {
+
+	public static inline var XMLNS = 'http://etherx.jabber.org/streams';
 
 	public dynamic function onReady() {}
 	public dynamic function onSend( str : String ) {}
@@ -42,9 +46,14 @@ class Stream {
     }
 
 	public function close() {
-		sendString( '</stream:stream>' );
+		send( '</stream:stream>' );
 	}
 
+	public function send( str : String ) {
+		onSend( str );
+	}
+
+	/*
 	public function send( stanza : Stanza ) {
 		sendXml( stanza.toXml() );
 	}
@@ -53,21 +62,37 @@ class Stream {
 		sendString( xml.toString() );
 	}
 
-	public function sendString( str : String ) {
-		onSend( str );
+	public function send<T:{t:String}>( stringProvider : T ) {
+		sendString( stringProvider.toString() );
+	}
+	*/
+
+	public function sendMessage( to : String, body : String, ?subject : String, ?type : Null<MessageType>, ?thread : String, ?from : String ) {
+		send( new Message( to, body, subject, type, thread, from ).toString() );
+	}
+
+	public function sendPresence( ?show : PresenceShow, ?status : String, ?priority : Int, ?type : PresenceType ) {
+		send( new Presence( show, status, priority, type ).toString() );
 	}
 
 	public function sendQuery( iq : IQ, callback : IQResponse->Void ) {
         if( iq.id == null ) iq.id = Std.string( randomStanzaId() );
 		pending.set( iq.id, function(r) switch r.type {
-			case result: callback( IQResponse.result( r.payload ) );
-			case error: callback( IQResponse.error( r.payload ) );
+			case result: callback( result( r.payload ) );
+			case error: callback( error( r.payload ) );
 			default:
 			}
 		);
 		send( iq );
     }
 
+	/*
+	public function sendString( str : String ) {
+		onSend( str );
+	}
+	*/
+
+	//public function extend( xmlns : String, handler : XML->Void ) {
 	public function handle( xmlns : String, handler : XML->Void ) {
 		handlers.set( xmlns, handler );
 	}
@@ -79,12 +104,16 @@ class Stream {
 	public function receive( str : String ) : Bool {
 		//if( StringTools.fastCodeAt( str, str.length-1 ) != 62 ) {
 		//if( str.fastCodeAt( str.length-1 ) != '>'.code ) {
-		if( str.charAt( str.length-1 ) != '>' ) {
-            buf.add( str );
-			return false;
-		}
+		if( str == null )
+			return true;
 		buf.add( str );
-		return _receive( buf.toString() );
+		//if( str.fastCodeAt( str.length-1 ) != 62 ) // >
+		if( !str.endsWith( '>' ) ) // >
+			return false;
+		//if( str.charAt( str.length-1 ) != '>' )
+		var str = buf.toString();
+		buf = new StringBuf();
+		return _receive( str );
 	}
 
 	public function receiveXml( xml : XML ) {
@@ -111,19 +140,18 @@ class Stream {
 		}
 	}
 
-	function _receive( str : String ) : Bool {
-		return false;
-	}
-
-	function sendHeader() {
-	}
-
-	function reset() {
+	public function reset() {
 		id = null;
 		buf = new StringBuf();
 		handlers = new Map();
 		pending = new Map();
 	}
+
+	function _receive( str : String ) : Bool {
+		return false;
+	}
+
+	function sendHeader() {}
 
 	function randomStanzaId( len = 8 ) : String {
 		var buf = new StringBuf();
@@ -140,7 +168,7 @@ class Stream {
 		b.add( '<stream:stream xmlns="' );
 		b.add( xmlns );
 		b.add( '" xmlns:stream="' );
-		b.add( 'http://etherx.jabber.org/streams' );
+		b.add( Stream.XMLNS );
 		b.add( '" ' );
 		if( to != null ) {
 			b.add( 'to="' );
@@ -166,13 +194,13 @@ class Stream {
 		if( i == -1 )
 			throw 'invalid xmpp'; //TODO??
 		s = s.substr( 0, i )+" />";
-		var x = Xml.parse(s).firstElement();
+		var x = XML.parse(s);
 		return {
     		id : x.get( "id" ),
     		from : x.get( "from" ),
     		to : x.get( "to" ),
     		version : x.get( "version" ),
-    		//h.lang = x.get( "lang" );
+			lang : x.get( "lang" )
         };
 	}
 
