@@ -2,55 +2,6 @@ package xmpp;
 
 using StringTools;
 
-class JIDType {
-
-    public var node : String;
-    public var domain : String;
-    public var resource : String;
-
-    public function new( node : String, domain : String, resource : String ) {
-        this.node = node;
-        this.domain = domain;
-        this.resource = resource;
-    }
-
-    public inline function getBare() : String {
-        return node+'@'+domain;
-    }
-
-    public function toString() : String {
-        var s = getBare();
-        if( resource != null ) s += '/$resource';
-        return s;
-    }
-
-    public inline function toArray() : Array<String> {
-        return [node,domain,resource];
-    }
-
-    public static inline function fromArray( a : Array<String> ) : JIDType {
-        return new JIDType( a[0], a[1], a[2] );
-    }
-
-    public static function parse( str : String ) : JIDType {
-        var i = str.indexOf( "@" );
-        if( i == -1 )
-            throw 'invalid jid';
-            //throw InvalidJid();
-		var j = str.indexOf( "/" );
-        var node = str.substr( 0, i );
-        var domain : String = null;
-        var resource : String = null;
-        if( j == -1 ) {
-            domain = str.substr( i+1 );
-        } else {
-            domain = str.substring( i+1, j );
-            resource = str.substr( j+1 );
-        }
-        return new JIDType( node, domain, resource );
-    }
-}
-
 /**
     Unique jabber identifier.
 
@@ -71,44 +22,39 @@ class JIDType {
 )
 abstract JID(JIDType) from JIDType to JIDType {
 
-    public static inline var MIN_LENGTH = 8;
-    public static inline var MAX_PARTSIZE = 1023;
-    public static inline var MAX_SIZE = 3071;
+    public inline function new( jid : JIDType ) this = jid;
 
-    /**
-        Regular expression matching a JID
-    */
-    public static var EREG =
-        #if jabber_debug
-        ~/([A-Z0-9._%-]+)@([A-Z0-9\.-]+)(\/([A-Z0-9._%-]+))?/i;
-        #else
-        ~/([A-Z0-9._%-]+)@([A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?)(\/([A-Z0-9._%-]+))?/i;
-        #end
+    @:to public inline function toString() : String
+		return this.toString();
 
-    public inline function new( jid : JIDType ) {
-        this = jid;
-    }
+    @:to public inline function toArray() : Array<String>
+		return this.toArray();
 
-    /*
-    works but really?
-    @:op(A+B)
-    public function add( s : String ) : Jid {
-        if( this.resource != null )
-            return this;
-        if( this.domain == null )
-            this.domain = s;
-        else
-            this.resource = s;
-        return this;
-    }
-    */
+    @:from public static inline function fromString( s : String )
+		return new JID( JIDType.parse( s ) );
 
-    @:to public inline function toString() : String return this.toString();
-    @:to public inline function toArray() : Array<String> return this.toArray();
+	@:from public static inline function fromArray( s : Array<String> )
+		return new JID( JIDType.fromArray( s ) );
 
-    @:from public static inline function fromString( s : String ) return new JID( JIDType.parse( s ) );
-    @:from public static inline function fromArray( s : Array<String> ) return new JID( JIDType.fromArray( s ) );
-    @:from public static inline function parse( s : String ) return new JID( JIDType.parse( s ) );
+	@:from public static inline function parse( s : String )
+		return new JID( JIDType.parse( s ) );
+
+	@:from public static inline function create( ?node : String, ?domain : String, ?resource : String )
+		return new JID( new JIDType( node, domain, resource ) );
+
+	public static inline var MIN_LENGTH = 8;
+	public static inline var MAX_PARTSIZE = 1023;
+	public static inline var MAX_SIZE = 3071;
+
+	/**
+		Regular expression matching a JID
+	*/
+	public static var EREG =
+		#if jabber_debug
+		~/([A-Z0-9._%-]+)@([A-Z0-9\.-]+)(\/([A-Z0-9._%-]+))?/i;
+		#else
+		~/([A-Z0-9._%-]+)@([A-Z0-9.-]+\.[A-Z][A-Z][A-Z]?)(\/([A-Z0-9._%-]+))?/i;
+		#end
 
     /**
         Returns true if the given JID is valid.
@@ -193,4 +139,53 @@ abstract JID(JIDType) from JIDType to JIDType {
 		s = s.replace( "\\5c", "\\" );
 		return s;
 	}
+}
+
+private class JIDType {
+
+    public var node : String;
+    public var domain : String;
+    public var resource : String;
+
+    public function new( ?node : String, ?domain : String, ?resource : String ) {
+        this.node = node;
+        this.domain = domain;
+        this.resource = resource;
+    }
+
+    public inline function getBare() : String {
+        return node + '@' + domain;
+    }
+
+    public function toString() : String {
+        var s = getBare();
+        if( resource != null ) s += '/$resource';
+        return s;
+    }
+
+    public inline function toArray() : Array<String> {
+        return [node,domain,resource];
+    }
+
+    public static inline function fromArray( a : Array<String> ) : JIDType {
+        return new JIDType( a[0], a[1], a[2] );
+    }
+
+    public static function parse( str : String ) : JIDType {
+        var i = str.indexOf( "@" );
+        if( i == -1 )
+            throw 'invalid jid';
+            //throw InvalidJid();
+		var j = str.indexOf( "/" );
+        var node = str.substr( 0, i );
+        var domain : String = null;
+        var resource : String = null;
+        if( j == -1 ) {
+            domain = str.substr( i+1 );
+        } else {
+            domain = str.substring( i+1, j );
+            resource = str.substr( j+1 );
+        }
+        return new JIDType( node, domain, resource );
+    }
 }

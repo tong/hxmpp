@@ -35,7 +35,7 @@ class Stream {
 	var handlers : Map<String,Xml->Void>;
 	var pending : Map<String,IQ->Void>;
 
-	function new( xmlns : String, ?lang : String ) {
+	public function new( xmlns : String, ?lang : String ) {
 		this.xmlns = xmlns;
         this.lang = lang;
 		reset();
@@ -45,7 +45,7 @@ class Stream {
 	}
 
 	public function close() {
-		send( '</stream:stream>' );
+		onSend( '</stream:stream>' );
 	}
 
 	public function send( str : String ) {
@@ -85,7 +85,7 @@ class Stream {
 		send( iq );
     }
 
-	//public function extend( xmlns : String, handler : XML->Void ) {
+	//public function extend( ext : Extension ) {
 	public function handle( xmlns : String, handler : XML->Void ) {
 		handlers.set( xmlns, handler );
 	}

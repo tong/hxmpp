@@ -47,6 +47,45 @@ enum IQResponse {
 	|                            |
 
 */
+@:forward(
+	from,to,id,lang,
+	type,payload
+)
+abstract IQ(IQStanza) to Stanza {
+
+	public inline function new( ?type : IQType, ?payload : XML, ?to : String, ?from : String, ?id : String )
+		this = new IQStanza( type, payload, to, from, id );
+
+	@:to public inline function toXml() : XML
+		return this.toXml();
+
+	@:to public inline function toString() : String
+		return this.toString();
+
+	//public inline function toError() : IQ
+	//	return this.toString();
+
+	@:from public static inline function fromString( str : String ) : IQ
+		return fromXml( Xml.parse( str ).firstElement() );
+
+	@:from public static function fromXml( xml : XML ) : IQ {
+		var iq = new IQ( xml.get('type'), xml.firstElement() );
+		Stanza.parseAttrs( iq, xml );
+		for( e in xml.elements() ) {
+			switch e.name {
+			case "error" :
+	            trace("TODO");
+			default:
+			}
+		}
+		return iq;
+	}
+
+	public static inline function get( xmlns : String, queryName = 'query' ) : IQ return new IQ( IQType.get, XML.create( queryName ).set('xmlns',xmlns) );
+	public static inline function set( payload : XML ) : IQ return new IQ( IQType.set, payload );
+
+}
+
 private class IQStanza extends Stanza {
 
     public static inline var NAME = 'iq';
@@ -68,40 +107,4 @@ private class IQStanza extends Stanza {
 		if( payload != null ) xml.append( payload );
 		return xml;
 	}
-}
-
-@:forward(
-	from,to,id,lang,
-	type,payload
-)
-abstract IQ(IQStanza) to Stanza {
-
-	public inline function new( ?type : IQType, ?payload : XML, ?to : String, ?from : String, ?id : String )
-		this = new IQStanza( type, payload, to, from, id );
-
-	@:to public inline function toXml() : XML
-		return this.toXml();
-
-	@:to public inline function toString() : String
-		return this.toString();
-
-	@:from public static inline function fromString( str : String ) : IQ
-		return fromXml( Xml.parse( str ).firstElement() );
-
-	@:from public static function fromXml( xml : XML ) : IQ {
-		var iq = new IQ( xml.get('type'), xml.firstElement() );
-		Stanza.parseAttrs( iq, xml );
-		for( e in xml.elements() ) {
-			switch e.name {
-			case "error" :
-	            trace("TODO");
-			default:
-			}
-		}
-		return iq;
-	}
-
-	public static inline function get( xmlns : String, queryName = 'query' ) : IQ return new IQ( IQType.get, XML.create( queryName ).set('xmlns',xmlns) );
-	public static inline function set( payload : XML ) : IQ return new IQ( IQType.set, payload );
-
 }

@@ -68,6 +68,13 @@ abstract XML(Xml) from Xml to Xml {
 	@:to public inline function toString() : String
 		return this.toString();
 
+	#if sys
+
+	public static function readFile( path : String ) : XML {
+		return parse( sys.io.File.getContent( path ) );
+	}
+	#end
+
 	public static function createPCData( str : String ) : XML {
 		var xml : XML = Xml.createPCData( str );
 		return xml;

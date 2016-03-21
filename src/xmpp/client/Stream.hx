@@ -15,7 +15,17 @@ class Stream extends xmpp.Stream {
 
 	public dynamic function onStartTLS( proceed : Void->Void ) {}
 
-	public var jid(default,null) : JID;
+	public var jid(get,null) : JID;
+	function get_jid() : JID {
+		if( node == null || server == null )
+			return null;
+		return JID.create( node, server, resource );
+	}
+
+	public var node(default,null) : String;
+	public var server(default,null) : String;
+	public var resource(default,null) : String;
+
 	public var state(default,null) : State;
     public var serverFeatures(default,null) : Map<String,Xml>;
     public var starttls(default,null) : Bool;
@@ -23,14 +33,18 @@ class Stream extends xmpp.Stream {
 
 	var onRestart : Void->Void;
 
-	public function new( jid : JID, starttls = true, ?lang : String ) {
+	public function new( node : String, server : String, starttls = true, ?lang : String ) {
+	//public function new( jid : JID, starttls = true, ?lang : String ) {
         super( XMLNS, lang );
-        this.jid = jid;
+        //this.jid = new JID( node, domain );
+        this.node = node;
+        this.server = server;
         this.starttls = starttls;
     }
 
 	public override function open() {
-		send( xmpp.Stream.createInitElement( xmlns, jid.domain, true, lang ) );
+		//send( xmpp.Stream.createInitElement( xmlns, jid.domain, true, lang ) );
+		send( xmpp.Stream.createInitElement( xmlns, server, true, lang ) );
 		state = State.header;
 	}
 
