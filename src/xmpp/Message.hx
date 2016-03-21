@@ -1,5 +1,7 @@
 package xmpp;
 
+using xmpp.Stanza;
+
 @:enum abstract MessageType(String) from String to String {
 	var normal = "normal";
 	var error = "error";
@@ -66,10 +68,10 @@ abstract Message(MessageStanza) to Stanza {
 		return this.toString();
 
 	@:from public static inline function fromString( str : String ) : Message
-		return fromXml( Xml.parse( str ).firstElement() );
+		return parse( Xml.parse( str ).firstElement() );
 
-	@:from public static function fromXml( xml : XML ) : Message {
-		var m = new Message( xml.get('to') );
+	@:from public static function parse( xml : XML ) : Message {
+		var m = new Message( xml.get('to') ).parseAttrs( xml );
 		m.type = xml.get( 'type' );
 		for( e in xml.elements() ) {
 			switch e.name {

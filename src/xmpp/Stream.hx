@@ -32,8 +32,10 @@ class Stream {
 	public var lang(default,null) : String;
 
 	var buf : StringBuf;
-	var handlers : Map<String,Xml->Void>;
+	var handlers : Map<String,XML->Void>;
+	var queryHandlers : Map<String,IQ->Void>;
 	var pending : Map<String,IQ->Void>;
+	//var extensions : Map<String,Extension>;
 
 	public function new( xmlns : String, ?lang : String ) {
 		this.xmlns = xmlns;
@@ -90,6 +92,10 @@ class Stream {
 		handlers.set( xmlns, handler );
 	}
 
+	public function handleQuery( xmlns : String, handler : IQ->Void ) {
+		queryHandlers.set( xmlns, handler );
+	}
+
 	public function unhandle( xmlns : String ) {
 		handlers.remove( xmlns );
 	}
@@ -117,13 +123,28 @@ class Stream {
 			return;
 		}
 		switch xml.name {
+		case 'presence':
+			var p : Presence = xml;
+			onPresence( p );
+		case 'message':
+			var m : Message = xml;
+			onMessage( m );
 		case 'iq':
-			var iq :IQ = xml;
+			var iq : IQ = xml;
 			switch iq.type {
 			case result:
 				if( pending.exists( iq.id ) ) {
 					var h = pending.get( iq.id );
 					pending.remove( iq.id );
+					h( iq );
+				}
+			case get:
+				var xmlns = iq.payload.get( 'xmlns' );
+				trace(xmlns);
+				trace(queryHandlers);
+				if( queryHandlers.exists( xmlns ) ) {
+					trace(">>>>>");
+					var h = queryHandlers.get( xmlns );
 					h( iq );
 				}
 			default:
@@ -133,12 +154,20 @@ class Stream {
 		}
 	}
 
-	public function reset() {
+	function reset() {
 		id = null;
 		buf = new StringBuf();
 		handlers = new Map();
+		queryHandlers = new Map();
 		pending = new Map();
+		//extensions = new Map();
 	}
+
+	/*
+	public function extend( ext : xmpp.Extension ) {
+		extensions.set( ext.xmlns, ext );
+	}
+	*/
 
 	function _receive( str : String ) : Bool {
 		return false;

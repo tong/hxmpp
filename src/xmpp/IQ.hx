@@ -81,8 +81,16 @@ abstract IQ(IQStanza) to Stanza {
 		return iq;
 	}
 
-	public static inline function get( xmlns : String, queryName = 'query' ) : IQ return new IQ( IQType.get, XML.create( queryName ).set('xmlns',xmlns) );
-	public static inline function set( payload : XML ) : IQ return new IQ( IQType.set, payload );
+	public static inline function get( xmlns : String, queryName = 'query' ) : IQ
+		return new IQ( IQType.get, XML.create( queryName ).set('xmlns',xmlns) );
+
+	public static inline function set( payload : XML ) : IQ
+		return new IQ( IQType.set, payload );
+
+	public static inline function result( iq : IQ, ?payload : XML, ?from : String ) : IQ {
+		if( payload == null ) payload = iq.payload;
+		return new IQ( IQType.result, payload, iq.from, from, iq.id );
+	}
 
 }
 

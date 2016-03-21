@@ -183,10 +183,10 @@ abstract Presence(PresenceStanza) to Stanza {
 		return this.toString();
 
 	@:from public static inline function fromString( str : String ) : Presence
-		return fromXml( Xml.parse( str ).firstElement() );
+		return parse( Xml.parse( str ).firstElement() );
 
-	@:from public static function fromXml( xml : XML ) : Presence {
-		var p = new Presence();
+	@:from public static function parse( xml : XML ) : Presence {
+		var p = new Presence().parseAttrs( xml );
 		p.type = xml.get( 'type' );
 		for( e in xml.elements() ) {
 			switch e.name {
