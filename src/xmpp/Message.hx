@@ -34,8 +34,8 @@ private class MessageStanza extends Stanza {
 	}
 
 	public override function toXml() : XML {
-		var xml = addStanzaAttrs( XML.create( 'message' ) );
-		if( type != null ) xml.set( "type", type );
+		var xml = addAttrs( XML.create( 'message' ) );
+		if( type != null ) xml.set( "type", Std.string(type) );
 		if( body != null ) xml.append( XML.create( "body", body ) );
 		if( thread != null ) xml.append( XML.create( "thread", thread ) );
 		for( e in properties ) xml.append( e );
@@ -73,14 +73,24 @@ abstract Message(MessageStanza) to Stanza {
 	@:from public static function parse( xml : XML ) : Message {
 		var m = new Message( xml.get('to') ).parseAttrs( xml );
 		m.type = xml.get( 'type' );
-		for( e in xml.elements() ) {
+		for( e in xml.elements ) {
 			switch e.name {
-			case 'subject': m.subject = e.value;
-			case 'body': m.body = e.value;
-			case 'thread': m.thread = e.value;
-			//case 'error': //TODO
+			case 'body': m.body = e.text;
+			case 'subject': m.subject = e.text;
+			case 'thread': m.thread = e.text;
 			default: m.properties.push( e );
 			}
+
+			/*
+			switch e.name {
+			case 'subject': m.subject = e.text;
+			case 'body': m.body = e.text;
+			case 'thread': m.thread = e.text;
+			//case 'error': //TODO
+			//default: m.properties.push( e );
+			}
+			*/
+
 		}
 		return m;
 	}

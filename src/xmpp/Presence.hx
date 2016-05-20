@@ -69,7 +69,7 @@ abstract PresenceStatus(String) from String to String {
 		return XML.create( "status", this );
 
 	@:from public static inline function fromXml( xml : XML ) : PresenceStatus
-		return new PresenceStatus( xml.value );
+		return new PresenceStatus( xml.text );
 }
 
 /**
@@ -93,7 +93,7 @@ abstract PresencePriority(Int) from Int to Int {
 		return new PresencePriority( Std.parseInt( s ) );
 
 	@:from public static inline function fromXml( xml : XML ) : PresencePriority
-		return new PresencePriority( fromString( xml.value ) );
+		return new PresencePriority( fromString( xml.text ) );
 }
 
 /**
@@ -115,50 +115,6 @@ abstract PresencePriority(Int) from Int to Int {
 
 	/** The user wishes to stop receiving presence updates from the subscriber. */
 	var remove = "remove";
-}
-
-private class PresenceStanza extends Stanza {
-
-	public var type : PresenceType;
-	public var show : PresenceShow;
-	public var status : String;
-	public var priority : Null<PresencePriority>;
-
-	public function new( ?show : PresenceShow, ?status : String, ?priority : PresencePriority, ?type : PresenceType ) {
-        super();
-		this.show = show;
-		this.status = status;
-		this.priority = priority;
-		this.type = type;
-	}
-
-	public override function toXml() : XML {
-		var xml = addStanzaAttrs( XML.create( 'presence' ) );
-		if( type != null ) xml.set( "type", type );
-		if( show != null ) xml.append( XML.create( "show", show ) );
-		if( status != null ) xml.append( XML.create( "status", status ) );
-		if( priority != null ) xml.append( priority );
-		return xml;
-	}
-
-	/*
-	public static inline function parse( xml : XML ) : PresenceStanza {
-		var p = new PresenceStanza( xml.get( "type" ) );
-		p.to = xml.get( 'to' );
-		p.from = xml.get( 'from' );
-		p.id = xml.get( 'id' );
-		p.lang = xml.get( 'lang' );
-		for( e in xml.elements() ) {
-			switch e.name {
-			case 'show':
-			case 'status': p.status = e.value;
-			case 'priority': p.priority = e.value;
-			case 'error':
-			}
-		}
-		return p;
-	}
-	*/
 }
 
 /**
@@ -188,14 +144,58 @@ abstract Presence(PresenceStanza) to Stanza {
 	@:from public static function parse( xml : XML ) : Presence {
 		var p = new Presence().parseAttrs( xml );
 		p.type = xml.get( 'type' );
-		for( e in xml.elements() ) {
+		for( e in xml.elements ) {
 			switch e.name {
-			case 'show': p.show = e.value;
-			case 'status': p.status = e.value;
-			case 'priority': p.priority = e.value;
+			case 'show': p.show = cast e.text;
+			case 'status': p.status = e.text;
+			case 'priority': p.priority = e.text;
 			case 'error': //TODO
 			}
 		}
 		return p;
 	}
+}
+
+private class PresenceStanza extends Stanza {
+
+	public var type : PresenceType;
+	public var show : PresenceShow;
+	public var status : String;
+	public var priority : Null<PresencePriority>;
+
+	public function new( ?show : PresenceShow, ?status : String, ?priority : PresencePriority, ?type : PresenceType ) {
+        super();
+		this.show = show;
+		this.status = status;
+		this.priority = priority;
+		this.type = type;
+	}
+
+	public override function toXml() : XML {
+		var xml = addAttrs( XML.create( 'presence' ) );
+		if( type != null ) xml.set( "type", type );
+		if( show != null ) xml.append( XML.create( "show", show ) );
+		if( status != null ) xml.append( XML.create( "status", status ) );
+		if( priority != null ) xml.append( priority );
+		return xml;
+	}
+
+	/*
+	public static inline function parse( xml : XML ) : PresenceStanza {
+		var p = new PresenceStanza( xml.get( "type" ) );
+		p.to = xml.get( 'to' );
+		p.from = xml.get( 'from' );
+		p.id = xml.get( 'id' );
+		p.lang = xml.get( 'lang' );
+		for( e in xml.elements() ) {
+			switch e.name {
+			case 'show':
+			case 'status': p.status = e.value;
+			case 'priority': p.priority = e.value;
+			case 'error':
+			}
+		}
+		return p;
+	}
+	*/
 }

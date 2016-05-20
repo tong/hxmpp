@@ -1,14 +1,22 @@
 package xmpp;
 
 @:enum abstract IQType(String) from String to String {
+
+	/** The stanza requests information, inquires about what data is needed in order to complete further operations, */
 	var get = "get";
+
+	/** The stanza provides data that is needed for an operation to be completed, sets new values, replaces existing values, etc. */
 	var set = "set";
+
+	/** The stanza is a response to a successful get or set request. */
 	var result = "result";
+
+	/** The stanza reports an error that has occurred regarding processing or delivery of a get or set request */
 	var error = "error";
 }
 
 enum IQResponse {
-	result( payload : XML );
+	result( x : XML ); //TODO
 	error( e : XML ); //TODO
 }
 
@@ -48,12 +56,12 @@ enum IQResponse {
 
 */
 @:forward(
-	from,to,id,lang,
+	from,to,id,lang,error,
 	type,payload
 )
 abstract IQ(IQStanza) to Stanza {
 
-	public inline function new( ?type : IQType, ?payload : XML, ?to : String, ?from : String, ?id : String )
+	public inline function new( type : IQType, ?payload : XML, ?to : String, ?from : String, ?id : String )
 		this = new IQStanza( type, payload, to, from, id );
 
 	@:to public inline function toXml() : XML
@@ -69,20 +77,17 @@ abstract IQ(IQStanza) to Stanza {
 		return fromXml( Xml.parse( str ).firstElement() );
 
 	@:from public static function fromXml( xml : XML ) : IQ {
-		var iq = new IQ( xml.get('type'), xml.firstElement() );
-		Stanza.parseAttrs( iq, xml );
-		for( e in xml.elements() ) {
-			switch e.name {
-			case "error" :
-	            trace("TODO");
-			default:
-			}
+		var type : IQType = xml.get( 'type' );
+		var iq = Stanza.parseAttrs( new IQ( type, xml.first ), xml );
+		switch type {
+		case error: iq.error = Error.fromXml( xml.element['error'][0] );
+		default:
 		}
 		return iq;
 	}
 
-	public static inline function get( xmlns : String, queryName = 'query' ) : IQ
-		return new IQ( IQType.get, XML.create( queryName ).set('xmlns',xmlns) );
+	public static inline function get( xmlns : String, nodeName = 'query' ) : IQ
+		return new IQ( IQType.get, XML.create( nodeName ).set( 'xmlns', xmlns ) );
 
 	public static inline function set( payload : XML ) : IQ
 		return new IQ( IQType.set, payload );
@@ -92,6 +97,12 @@ abstract IQ(IQStanza) to Stanza {
 		return new IQ( IQType.result, payload, iq.from, from, iq.id );
 	}
 
+	public static function createErrorResponse( iq : IQ, error : Error ) : IQ {
+		var r = new IQ( IQType.error, null, iq.from ); //, iq.to );
+		r.id = iq.id;
+		r.error = error;
+		return r;
+	}
 }
 
 private class IQStanza extends Stanza {
@@ -101,7 +112,7 @@ private class IQStanza extends Stanza {
     /** Either: get/set/result/error */
 	public var type : IQType;
 
-	/** The exclusive query child (mostly: '<query xmlns="ext-namspace"/>') */
+	/** The exclusive child element (mostly: '<query xmlns="ext-namspace"/>') */
 	public var payload : XML;
 
     public function new( ?type : IQType, ?payload : XML, ?to : String, ?from : String, ?id : String ) {
@@ -111,8 +122,9 @@ private class IQStanza extends Stanza {
 	}
 
     public override function toXml() : Xml {
-		var xml = addStanzaAttrs( XML.create( NAME ) ).set( "type", (type != null) ? type : get );
+		var xml = addAttrs( XML.create( NAME ) ).set( "type", (type != null) ? type : IQType.get );
 		if( payload != null ) xml.append( payload );
+		if( error != null ) xml.append( error.toXml() );
 		return xml;
 	}
 }

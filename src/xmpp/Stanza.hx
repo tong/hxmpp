@@ -1,12 +1,27 @@
 package xmpp;
 
+/**
+	Abstract base type for stanzas (<iq/>,<presence/>,<message/>)
+*/
 class Stanza {
 
+	/** Intended recipient */
     public var to : String;
+
+	/** JID of the sender */
     public var from : String;
+
+	/** Used by the originating entity to track any response or error stanza that it might receive in relation to the generated stanza from another entity */
     public var id : String;
+
+	/** Specifies the default language of any such human-readable XML character data. */
     public var lang : String;
-    public var properties : Array<Xml>;
+
+    /***/
+    public var error : Error;
+
+	/** */
+    public var properties : Array<XML>;
 
 	function new( ?to : String, ?from : String, ?id : String, ?lang : String ) {
         this.to = to;
@@ -22,7 +37,7 @@ class Stanza {
 	public inline function toString() : String
 		return toXml().toString();
 
-	function addStanzaAttrs( xml : XML ) : XML {
+	function addAttrs( xml : XML ) : XML {
 		if( to != null ) xml.set( 'to', to );
         if( from != null ) xml.set( 'from', from );
         if( id != null ) xml.set( 'id', id );
@@ -36,6 +51,10 @@ class Stanza {
         stanza.id = xml.get( 'id' );
         stanza.lang = xml.get( 'xml:lang' );
         //TODO parse error if type=error
+        if( xml.get( 'type' ) == 'error' ) {
+            trace(xml);
+            //error = xmpp.Error.parse( xml.element["item"]);
+        }
         return stanza;
     }
 

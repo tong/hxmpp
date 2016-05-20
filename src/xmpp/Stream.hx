@@ -4,6 +4,7 @@ import haxe.crypto.Base64;
 import xmpp.IQ;
 import xmpp.Message;
 import xmpp.Presence;
+import xmpp.Error;
 
 using StringTools;
 
@@ -19,22 +20,26 @@ class Stream {
 
 	public static inline var XMLNS = 'http://etherx.jabber.org/streams';
 
+	/*
 	public dynamic function onReady() {}
-	public dynamic function onSend( str : String ) {}
 	//public dynamic function onReceive( str : String ) {}
 	public dynamic function onEnd() {}
+	*/
 
-	public dynamic function onMessage( m : Message ) {}
-	public dynamic function onPresence( m : Presence ) {}
+	public dynamic function onSend( str : String ) {}
+
+	public dynamic function onMessage( stanza : Message ) {}
+	public dynamic function onPresence( stanza : Presence ) {}
 
 	public var xmlns(default,null) : String;
 	public var id(default,null) : String;
 	public var lang(default,null) : String;
 
-	var buf : StringBuf;
+	var buffer : StringBuf;
 	var handlers : Map<String,XML->Void>;
-	var queryHandlers : Map<String,IQ->Void>;
-	var pending : Map<String,IQ->Void>;
+	var pendingRequests : Map<String,IQ->Void>;
+	//var handlers : Map<String,XML->Void>;
+	//var queryHandlers : Map<String,IQ->Void>;
 	//var extensions : Map<String,Extension>;
 
 	public function new( xmlns : String, ?lang : String ) {
@@ -47,26 +52,12 @@ class Stream {
 	}
 
 	public function close() {
-		onSend( '</stream:stream>' );
+		//onSend( '</stream:stream>' );
 	}
 
 	public function send( str : String ) {
 		onSend( str );
 	}
-
-	/*
-	public function send( stanza : Stanza ) {
-		sendXml( stanza.toXml() );
-	}
-
-	public function sendXml( xml : Xml ) {
-		sendString( xml.toString() );
-	}
-
-	public function send<T:{t:String}>( stringProvider : T ) {
-		sendString( stringProvider.toString() );
-	}
-	*/
 
 	public function sendMessage( to : String, body : String, ?subject : String, ?type : Null<MessageType>, ?thread : String, ?from : String ) {
 		send( new Message( to, body, subject, type, thread, from ).toString() );
@@ -76,6 +67,46 @@ class Stream {
 		send( new Presence( show, status, priority, type ).toString() );
 	}
 
+	public function handle( xmlns : String, handler : XML->Void ) {
+		handlers.set( xmlns, handler );
+	}
+
+	public function get( xmlns : String, jid : String ) : Promise<XML> {
+		return new Promise<XML>( function(resolve,reject){
+			var iq = IQ.get( xmlns );
+			iq.to = jid;
+			iq.id = Std.string( randomStanzaId() );
+			pendingRequests.set( iq.id, function(r:IQ) switch r.type {
+				case result:
+					resolve( r.payload );
+				case error:
+					reject( r.error );
+				case _:
+			});
+			send( iq );
+		});
+	}
+
+	public function set( xmlns : String, ?content : XML ) : Promise<XML> {
+		return new Promise<XML>(function(resolve:XML->Void,reject:Error->Void){
+			var iq = IQ.set( XML.create( 'query' ).set( 'xmlns', xmlns ) );
+			iq.id = Std.string( randomStanzaId() );
+			if( content != null ) iq.payload.append( content );
+			pendingRequests.set( iq.id, function(r:IQ) {
+				switch r.type {
+				case result:
+					resolve( r.payload );
+				case error:
+					reject( r.error );
+				case _:
+				}
+			});
+			send( iq );
+		});
+	}
+
+	/*
+	//remove
 	public function sendQuery( iq : IQ, callback : IQResponse->Void ) {
         if( iq.id == null ) iq.id = Std.string( randomStanzaId() );
 		pending.set( iq.id, function(r) switch r.type {
@@ -86,42 +117,49 @@ class Stream {
 		);
 		send( iq );
     }
+	*/
 
-	//public function extend( ext : Extension ) {
-	public function handle( xmlns : String, handler : XML->Void ) {
-		handlers.set( xmlns, handler );
-	}
-
-	public function handleQuery( xmlns : String, handler : IQ->Void ) {
-		queryHandlers.set( xmlns, handler );
-	}
-
-	public function unhandle( xmlns : String ) {
-		handlers.remove( xmlns );
-	}
+	/*
+	public function get<T>( xmlns : String, ?payload : XML, callback : Error->T->Void ) {
+		if( payload == null ) payload = XML.create( 'query' ).set( 'xmlns', xmlns );
+		var iq = new IQ( IQType.get, payload );
+		iq.id = Std.string( randomStanzaId() );
+		pending.set( iq.id, function(r) switch r.type {
+			case result:
+				trace(r.payload);
+			case error:
+				trace(r);
+			case _:
+			}
+		);
+		send( iq );
+    }
+	*/
 
 	public function receive( str : String ) : Bool {
 		//if( StringTools.fastCodeAt( str, str.length-1 ) != 62 ) {
 		//if( str.fastCodeAt( str.length-1 ) != '>'.code ) {
 		if( str == null )
 			return true;
-		buf.add( str );
+		buffer.add( str );
 		//if( str.fastCodeAt( str.length-1 ) != 62 ) // >
 		if( !str.endsWith( '>' ) ) // >
 			return false;
 		//if( str.charAt( str.length-1 ) != '>' )
-		var str = buf.toString();
-		buf = new StringBuf();
+		var str = buffer.toString();
+		buffer = new StringBuf();
 		return _receive( str );
 	}
 
-	public function receiveXml( xml : XML ) {
-		var xmlns = xml.ns();
+	public function receiveXML( xml : XML ) {
+
+		var xmlns = xml.get( 'xmlns' );
 		if( xmlns != null && handlers.exists( xmlns ) ) {
 			var h = handlers.get( xmlns );
 			h( xml );
 			return;
 		}
+
 		switch xml.name {
 		case 'presence':
 			var p : Presence = xml;
@@ -132,23 +170,41 @@ class Stream {
 		case 'iq':
 			var iq : IQ = xml;
 			switch iq.type {
-			case result:
-				if( pending.exists( iq.id ) ) {
-					var h = pending.get( iq.id );
-					pending.remove( iq.id );
-					h( iq );
-				}
+
 			case get:
 				var xmlns = iq.payload.get( 'xmlns' );
-				trace(xmlns);
-				trace(queryHandlers);
-				if( queryHandlers.exists( xmlns ) ) {
-					trace(">>>>>");
-					var h = queryHandlers.get( xmlns );
+				if( handlers.exists( xmlns ) ) {
+					var h = handlers.get( xmlns );
+					h( iq );
+				} else {
+					trace("TODO iq not handled");
+					var iq = IQ.createErrorResponse( iq, new Error( ErrorType.cancel, 'feature-not-implemented' ) );
+					//var iq = new IQ( IQType.error, iq.id, iq.from, iq.to );
+					//iq.error = new Error( ErrorType.cancel, 'feature-not-implemented' );
+					send( iq.toString() );
+				}
+
+			case set:
+				//TODO
+
+			case result:
+				if( pendingRequests.exists( iq.id ) ) {
+					var h = pendingRequests.get( iq.id );
+					pendingRequests.remove( iq.id );
 					h( iq );
 				}
-			default:
-				var xmlns = iq.payload.get( 'xmlns' );
+
+			case error:
+				if( pendingRequests.exists( iq.id ) ) {
+					var h = pendingRequests.get( iq.id );
+					pendingRequests.remove( iq.id );
+					h( iq );
+				} else {
+					//..
+				}
+
+			//default:
+				//var xmlns = iq.payload.get( 'xmlns' );
 				//if( listeners.exists( xmlns ) ) {
 			}
 		}
@@ -156,18 +212,10 @@ class Stream {
 
 	function reset() {
 		id = null;
-		buf = new StringBuf();
+		buffer = new StringBuf();
 		handlers = new Map();
-		queryHandlers = new Map();
-		pending = new Map();
-		//extensions = new Map();
+		pendingRequests = new Map();
 	}
-
-	/*
-	public function extend( ext : xmpp.Extension ) {
-		extensions.set( ext.xmlns, ext );
-	}
-	*/
 
 	function _receive( str : String ) : Bool {
 		return false;
@@ -201,7 +249,7 @@ class Stream {
 		if( i == -1 )
 			throw 'invalid xmpp'; //TODO??
 		s = s.substr( 0, i )+" />";
-		var x = XML.parse(s);
+		var x : XML = s;
 		return {
     		id : x.get( "id" ),
     		from : x.get( "from" ),

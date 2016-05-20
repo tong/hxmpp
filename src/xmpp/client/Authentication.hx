@@ -21,6 +21,8 @@ import xmpp.sasl.Mechanism;
 class Authentication {
 
 	public static inline var XMLNS = 'urn:ietf:params:xml:ns:xmpp-sasl';
+	public static inline var XMLNS_BIND = 'urn:ietf:params:xml:ns:xmpp-bind';
+	public static inline var XMLNS_SESSION = 'urn:ietf:params:xml:ns:xmpp-session';
 
 	/** SASL negotiation completed */
 	//public dynamic function onNegotiated() {}
@@ -62,9 +64,11 @@ class Authentication {
 		if( xml == null )
 			return throw 'server does not support sasl';
 
-		for( e in xml.elementsNamed( 'mechanism' ) ) {
+		//for( e in xml.elementsNamed( 'mechanism' ) ) {
+		//for( e in xml.elements['mechanism'] ) {
+		for( e in xml.element['mechanism'] ) {
 			for( mech in mechanisms ) {
-				if( mech.id == e.value )
+				if( mech.id == e.text )
 					continue;
 				mechanism = mech;
 				break;
@@ -76,7 +80,7 @@ class Authentication {
 		if( mechanism == null ) // no supported sasl mechanism found
 			return false;
 
-		stream.handle( XMLNS, handleXml );
+		stream.handle( XMLNS, handleStanza );
 
 		var authText = mechanism.createAuthenticationText( stream.jid.node, stream.jid.domain, password, this.resource );
 		if( authText != null )
@@ -86,16 +90,16 @@ class Authentication {
 		return true;
     }
 
-	function handleXml( xml : XML ) {
+	function handleStanza( xml : XML ) {
 		switch xml.name {
 		case 'challenge':
-			stream.send( XML.create( 'response', Base64.encode( Bytes.ofString( mechanism.createChallengeResponse( xml.value ) ), true ) ).set( 'xmlns', XMLNS ) );
+			stream.send( XML.create( 'response', Base64.encode( Bytes.ofString( mechanism.createChallengeResponse( xml.text ) ), true ) ).set( 'xmlns', XMLNS ) );
 		case 'failure':
 			var info : String = null;
 			var text : String = null;
-			for( e in xml.elements() ) {
+			for( e in xml.elements ) {
 				switch e.name {
-				case 'text': text = e.value;
+				case 'text': text = e.text;
 				default: info = e.name;
 				}
 			}
@@ -111,10 +115,37 @@ class Authentication {
 	}
 
 	function handleStreamRestart() {
-		if( !stream.serverFeatures.exists( 'bind' ) ) onSuccess( null ) else {
+		if( !stream.serverFeatures.exists( 'bind' ) ) {
+			onSuccess( null );
+		} else {
+			var payload = (mechanism.id != AnonymousMechanism.NAME) ? XML.create( 'resource', resource ) : null;
+			//stream.set( XMLNS_BIND, payload, function(res){
+			//	trace(res);
+			//});
+			stream.set( XMLNS_BIND, payload ).then(
+				function(x:XML){
+					stream.jid.resource = resource;
+					if( stream.serverFeatures.exists( 'session' ) ) {
+						stream.set( XMLNS_SESSION ).then(
+							function(x){
+								onSuccess( resource );
+							}
+						);
+					} else {
+						//TODO
+					}
+				}
+			);
+
+			/*
 			var iq = IQ.set( '<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"/>' );
 			if( mechanism.id != AnonymousMechanism.NAME )
 				iq.payload.append( XML.create( 'resource', resource ) );
+
+			stream.get();
+			*/
+
+			/*
 			stream.sendQuery( iq, function(res){
 				switch res {
 				case result(r):
@@ -131,6 +162,7 @@ class Authentication {
 					trace( e ); //TODO
 				}
 			});
+			*/
 		}
 	}
 

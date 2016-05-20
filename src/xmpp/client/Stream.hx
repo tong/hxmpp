@@ -15,6 +15,14 @@ class Stream extends xmpp.Stream {
 
 	public dynamic function onStartTLS( proceed : Void->Void ) {}
 
+    public dynamic function onReady() {}
+    //public dynamic function onSend( str : String ) {}
+    //public dynamic function onReceive( str : String ) {}
+    public dynamic function onEnd() {}
+
+    //public dynamic function onMessage( stanza : Message ) {}
+    //public dynamic function onPresence( stanza : Presence ) {}
+
 	public var jid(get,null) : JID;
 	function get_jid() : JID {
 		if( node == null || server == null )
@@ -34,16 +42,13 @@ class Stream extends xmpp.Stream {
 	var onRestart : Void->Void;
 
 	public function new( node : String, server : String, starttls = true, ?lang : String ) {
-	//public function new( jid : JID, starttls = true, ?lang : String ) {
         super( XMLNS, lang );
-        //this.jid = new JID( node, domain );
         this.node = node;
         this.server = server;
         this.starttls = starttls;
     }
 
 	public override function open() {
-		//send( xmpp.Stream.createInitElement( xmlns, jid.domain, true, lang ) );
 		send( xmpp.Stream.createInitElement( xmlns, server, true, lang ) );
 		state = State.header;
 	}
@@ -70,38 +75,38 @@ class Stream extends xmpp.Stream {
 				send( '<starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls"/>' );
 				state = State.starttls;
 			} else {
-				buf = new StringBuf();
+				buffer = new StringBuf();
 				state = State.open;
 				onReady();
 			}
 		case starttls:
-			var xml = try XML.parse( str ) catch(e:Dynamic) {
+			var xml : XML = try str catch(e:Dynamic) {
 				trace( e );
 				//TODO close stream
 				return false;
 			}
 			switch xml.name {
 			case 'proceed':
-				buf = new StringBuf();
+				buffer = new StringBuf();
 				onStartTLS( function(){
 					encrypted = true;
 				});
 			case 'failure':
 				trace("TODO starttls failed");
 			}
-
 		case open:
-			var xml : XML = null;
-			try xml = XML.parse( str ) catch(e:Dynamic) {
+			//var xml : XML = null;
+			//try xml = XML.parse( str ) catch(e:Dynamic) {
+			var xml : XML = try str catch(e:Dynamic) {
 				trace( "TODO stanza incomplete" );
 				//TODO close stream
 				return false;
 			}
-			buf = new StringBuf();
-			receiveXml( xml );
+			buffer = new StringBuf();
+			receiveXML( xml );
 		case restart:
 			serverFeatures = xmpp.Stream.readFeatures( str );
-			buf = new StringBuf();
+			buffer = new StringBuf();
 			state = State.open;
 			onRestart();
 		}

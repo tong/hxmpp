@@ -20,7 +20,7 @@ doc/api/*.xml
 examples/*/app*
 examples/*/build/
 test/build/
-test/unit*
+test/unit/build/
 util/
 haxedoc.xml
 TODO*
