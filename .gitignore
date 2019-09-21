@@ -3,6 +3,7 @@ doc/
 exp/
 ref/
 res/
+src/xep/
 test/bin/
 xml/
 haxedoc.xml
