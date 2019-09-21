@@ -2,64 +2,89 @@ package xmpp.component;
 
 import haxe.crypto.Sha1;
 
-enum State {
-    header;
-	handshake;
-    open;
+/*
+@:enum abstract ConnectionMethod(String) to String {
+	var accept = "accept";
+	var connect = "connect";
 }
+*/
 
 /**
-	XMPP server-component stream.
-
-	XEP-0114: Jabber Component Protocol, http://www.xmpp.org/extensions/xep-0114.html
+	[XEP-0114: Jabber Component Protocol](https://xmpp.org/extensions/xep-0114.html)
 */
 class Stream extends xmpp.Stream {
 
+	/** */
+	public static inline var PORT = 5275;
+
+	/** XMPP server component namespace */
 	public static inline var XMLNS = 'jabber:component:accept';
-    public static inline var PORT = 5275;
 
+	/** Component name */
 	public var name(default,null) : String;
-	public var domain(default,null) : String;
-	public var secret(default,null) : String;
-	public var state(default,null) : State;
 
-	public var jid(get,null) : String;
-	inline function get_jid() return name+'.'+domain;
+	/** Component jid */
+	public var jid(default,null) : String;
 
-	//var disco : ServiceDicovery;
-
-	public function new( name : String, domain : String, secret : String ) {
-		super( XMLNS );
+	public function new( name : String, domain : String,  ?lang : String ) {
+		super( XMLNS, domain, lang );
 		this.name = name;
-		this.domain = domain;
-		this.secret = secret;
+		this.jid = '$name.$domain';
 	}
 
-	public override function open() {
-		send( xmpp.Stream.createInitElement( xmlns, jid, false, lang ) );
-		state = State.header;
-	}
+	//public function start( secret : String, callback : xmpp.Stream.StreamError->Void ) {
+	public function start( secret : String, callback : xmpp.Stanza.Error->Void ) {
 
-	override function _receive( str : String ) : Bool {
-		switch state {
-		case header:
+		reset();
+
+		processor = function(str) {
+
 			var header = xmpp.Stream.readHeader( str );
 			id = header.id;
 			send( XML.create( 'handshake', Sha1.encode( id + secret ) ) );
-			state = handshake;
-		case handshake:
-			var xml = XML.parse( str );
-			if( xml.name == 'handshake' ) {
-				state = State.open;
-				onReady();
-			} else {
-				//....
-			}
-		case open:
-			trace(">>");
-			//TODO
 
+			processor = function(str) {
+				var xml : XML = XML.parse( str );
+				switch xml.name {
+				case 'handshake':
+					ready = true;
+					processor = handleString;
+					callback( null );
+				default:
+					//TODO
+					trace( xml );
+					switch xml.name {
+					case 'stream:error':
+						//TODO
+						trace(">>>>>>>>>>>");
+						//var error = xmpp.Stream.Error.fromXML( xml );
+						//trace(error.condition);
+						//callback( error );
+					}
+				}
+			}
 		}
-		return true;
+
+		output( xmpp.Stream.createHeader( XMLNS, jid, null, lang ) );
 	}
+
+	override function handleXML( xml : XML ) {
+
+		var xmlns = xml.get( 'xmlns' );
+		if( xmlns != null && xmlns != this.xmlns ) {
+			trace("INVALID NAMESPACE");
+			return;
+		}
+
+		switch xml.name {
+		case 'message':
+			onMessage( xml );
+		case 'presence':
+			onPresence( xml );
+		case 'iq':
+			//onIQ( xml );
+			trace(">>>");
+		}
+	}
+
 }

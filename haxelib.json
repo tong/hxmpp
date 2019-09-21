@@ -1,15 +1,15 @@
 {
 	"name": "hxmpp",
-	"version": "1.0.0-alpha",
-	"description": "XMPP Client/Component library",
+	"version": "1.0.0-alpha.1",
+	"description": "XMPP library",
 	"url": "https://github.com/tong/hxmpp",
 	"license": "MIT",
-	"tags": ["xmpp","jabber","realtime","xml","presence","chat","pubsub","sasl","messaging"],
+	"tags": ["xmpp","jabber"],
 	"releasenote": "See CHANGELOG.md",
 	"contributors": ["tong"],
 	"classPath" : "src/",
 	"dependencies": {
-		"hxssl" : "",
-		"hxnodejs" : ""
-	}
+		"sasl": ""
+	},
+	"main": "HXMPP"
 }

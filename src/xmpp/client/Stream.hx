@@ -1,115 +1,150 @@
 package xmpp.client;
 
-enum State {
-    header;
-    features( f : Map<String,Xml> );
-    starttls;
-    open;
-	restart;
-}
+/**
+	Client-to-Server XMPP stream.
 
+	See: http://xmpp.org/rfcs/rfc6120.html#examples-c2s
+*/
 class Stream extends xmpp.Stream {
 
+	/** IANA registered `xmpp-client` port (5222) */
+	public static inline var PORT = 5222;
+
+	/** XMPP client namespace */
 	public static inline var XMLNS = 'jabber:client';
-    public static inline var PORT = 5222;
 
-	public dynamic function onStartTLS( proceed : Void->Void ) {}
-
-    public dynamic function onReady() {}
-    //public dynamic function onSend( str : String ) {}
-    //public dynamic function onReceive( str : String ) {}
-    public dynamic function onEnd() {}
-
-    //public dynamic function onMessage( stanza : Message ) {}
-    //public dynamic function onPresence( stanza : Presence ) {}
-
-	public var jid(get,null) : JID;
-	function get_jid() : JID {
-		if( node == null || server == null )
-			return null;
-		return JID.create( node, server, resource );
+	public function new( domain : String, ?xmlns : String, ?lang : String ) {
+		super( (xmlns == null) ? XMLNS : xmlns, domain, lang );
 	}
 
-	public var node(default,null) : String;
-	public var server(default,null) : String;
-	public var resource(default,null) : String;
+	//public function start( callback : XML->Void, headerName = 'stream:stream' ) {
+	//TODO public function start( callback : xmpp.Stanza.Error->XML->Void ) {
+	public function start( callback : XML->Void ) {
 
-	public var state(default,null) : State;
-    public var serverFeatures(default,null) : Map<String,Xml>;
-    public var starttls(default,null) : Bool;
-    public var encrypted(default,null) = false;
+		reset();
 
-	var onRestart : Void->Void;
+		processor = function(str) {
 
-	public function new( node : String, server : String, starttls = true, ?lang : String ) {
-        super( XMLNS, lang );
-        this.node = node;
-        this.server = server;
-        this.starttls = starttls;
-    }
+			if( str == '</stream:stream>' ) {
+				ready = false;
+				//state = ended;
+				return;
+			}
 
-	public override function open() {
-		send( xmpp.Stream.createInitElement( xmlns, server, true, lang ) );
-		state = State.header;
-	}
-
-	public function restart( callback : Void->Void ) {
-        onRestart = callback;
-		send( xmpp.Stream.createInitElement( xmlns, jid.domain, true, lang ) );
-		state = State.restart;
-	}
-
-	override function _receive( str : String ) : Bool {
-		switch state {
-		case header:
-			var header = xmpp.Stream.readHeader( str );
-			id = header.id;
-			//if( header.id == null )
-			var features = xmpp.Stream.readFeatures( str );
-			state = State.features( features );
-			if( features != null ) _receive( null );
-		case features(f):
-			if( f == null ) f = xmpp.Stream.readFeatures( str );
-			serverFeatures = f;
-			if( starttls && serverFeatures.exists( 'starttls' ) ) {
-				send( '<starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls"/>' );
-				state = State.starttls;
+			if( ready ) {
+				handleString( str );
 			} else {
-				buffer = new StringBuf();
-				state = State.open;
-				onReady();
+
+				if( id == null ) {
+
+					//TODO
+
+					/*
+					var xml = XML.parse( str );
+					var firstElement = xml.firstElement();
+					if( firstElement != null ) {
+						switch firstElement.nodeName {
+						case 'stream:error':
+							//TODO
+							trace(">>>>>>>>>>>>>>>>");
+							var error = xmpp.Stanza.Error.fromXML( firstElement );
+							trace(error);
+							//var error : xmpp.Stream.Error = {};
+
+							/*
+							var error = { condition : null, text : null };
+							for( e in firstElement.elements() ) {
+								//trace(e.nodeName,e.get('xmlns'));
+								switch e.nodeName {
+								case 'text':
+									error.text = e.firstChild().nodeValue;
+								default:
+									error.condition = e.nodeName;
+								}
+							}
+							trace(error);
+							* /
+
+						case 'stream:features':
+							var features = firstElement;
+							if( features != null ) {
+								ready = true;
+								callback( features );
+							}
+
+							/*
+							var features = xmpp.Stream.readFeatures( str );
+							if( features != null ) {
+								ready = true;
+								callback( features );
+							}
+							* /
+						}
+					}
+					*/
+
+					var header = xmpp.Stream.readHeader( str );
+					id = header.id;
+					version = header.version;
+
+					var features = xmpp.Stream.readFeatures( str );
+					if( features != null ) {
+						ready = true;
+						callback( features );
+					}
+
+				} else {
+					//TODO remove
+					var features = xmpp.Stream.readFeatures( str );
+					ready = true;
+					callback( features );
+					//TODO
+				}
 			}
-		case starttls:
-			var xml : XML = try str catch(e:Dynamic) {
-				trace( e );
-				//TODO close stream
-				return false;
-			}
-			switch xml.name {
-			case 'proceed':
-				buffer = new StringBuf();
-				onStartTLS( function(){
-					encrypted = true;
-				});
-			case 'failure':
-				trace("TODO starttls failed");
-			}
-		case open:
-			//var xml : XML = null;
-			//try xml = XML.parse( str ) catch(e:Dynamic) {
-			var xml : XML = try str catch(e:Dynamic) {
-				trace( "TODO stanza incomplete" );
-				//TODO close stream
-				return false;
-			}
-			buffer = new StringBuf();
-			receiveXML( xml );
-		case restart:
-			serverFeatures = xmpp.Stream.readFeatures( str );
-			buffer = new StringBuf();
-			state = State.open;
-			onRestart();
 		}
-		return true;
+
+		output( xmpp.Stream.createHeader( XMLNS, domain, version, lang ) );
+
+		return this;
 	}
+
+	override function handleXML( xml : XML ) {
+		if( xml.has( 'xmlns' ) ) {
+			if( xml.get( 'xmlns' ) != this.xmlns ) {
+				trace( "invalid stream namespace" );
+				return;
+			}
+		}
+		switch xml.name {
+		case 'message': onMessage( xml );
+		case 'presence': onPresence( xml );
+		case 'iq':
+			var iq = IQ.parse( xml );
+			switch iq.type {
+			case result, error:
+				if( queries.exists( iq.id ) ) {
+					var h = queries.get( iq.id );
+					queries.remove( iq.id );
+					h( iq );
+				} else {
+					trace( '??' );
+				}
+			case get,set:
+				if( iq.content != null ) {
+					var ns = iq.content.get( 'xmlns' );
+					if( extensions.exists( ns ) ) {
+						extensions.get( ns )( iq );
+					} else {
+						//trace( '?? unknown iq' );
+						onIQ( iq );
+					}
+				}
+			}
+		case 'stream:error':
+			trace("TODO");
+		default:
+			trace( '?? invalid stanza' );
+		}
+	}
+
 }
