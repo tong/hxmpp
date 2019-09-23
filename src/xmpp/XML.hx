@@ -2,20 +2,6 @@ package xmpp;
 
 import Xml;
 
-/*
-abstract AttributeId(String) from String to String {
-}
-
-abstract AttributeValue(String) from String to String {
-}
-
-abstract NodeName(String) from String to String {
-}
-
-abstract NodeValue(String) from String to String {
-}
-*/
-
 @:noDoc
 private abstract Text(String) from String to String {
 
@@ -32,8 +18,17 @@ private abstract Text(String) from String to String {
 			case _: throw 'invalid boolean value: '+this;
 		}
 }
+/* 
+abstract ElementAccess(Xml) {
 
-@:noDoc
+	public inline function new( xml : Xml ) this = xml;
+
+	@:arrayAccess public inline function elementsNamed( s : String ) : NodeIterator
+		return this.elementsNamed(s);
+}
+ */
+ 
+ @:noDoc
 @:forward(hasNext)
 abstract NodeIterator(Iterator<XML>) from Iterator<XML> to Iterator<XML> {
 
@@ -68,11 +63,11 @@ abstract NodeIterator(Iterator<XML>) from Iterator<XML> to Iterator<XML> {
     }
 
 	/*
-	public function doFilter( f : XML->Bool ) : NodeIterator {
+	function doFilter( f : XML->Bool ) : NodeIterator {
 		return [for(e in this) if(f(e))e].iterator();
 	}
 
-	public function doFind( f : XML->Bool ) : XML {
+	function doFind( f : XML->Bool ) : XML {
 		for( e in this ) if( f(e) ) return e;
 		return null;
 	}
@@ -92,7 +87,7 @@ abstract NodeIterator(Iterator<XML>) from Iterator<XML> to Iterator<XML> {
 }
 
 @:access(Xml)
-@:forward(attributes,firstElement)
+@:forward(attributes)
 abstract XML(Xml) from Xml to Xml {
 
     public var parent(get,never) : XML;
@@ -103,6 +98,9 @@ abstract XML(Xml) from Xml to Xml {
 
     public var name(get,never) : String;
 	inline function get_name() : String return this.nodeName;
+    
+	public var firstElement(get,never) : XML;
+	inline function get_firstElement() : XML return this.firstElement();
 
     public var text(get,set) : Text;
 	function get_text() : Text return switch type {
@@ -124,6 +122,9 @@ abstract XML(Xml) from Xml to Xml {
 
     public var elements(get,never) : NodeIterator;
 	inline function get_elements() : NodeIterator return this.elements();
+
+	//public var element(get,never) : ElementAccess;
+	//function get_element() : ElementAccess return new ElementAccess( this );
 
     @:noDoc inline function new( x : Xml ) this = x;
 

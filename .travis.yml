@@ -1,0 +1,21 @@
+language: haxe
+
+os:
+  - linux
+
+haxe:
+  - "4.0.0-rc.5"
+  - development
+
+matrix:
+  allow_failures:
+    - haxe: development
+
+install:
+  - haxelib install hxnodejs
+
+script:
+  #- haxe build.hxml
+  - haxe haxedoc.hxml
+  - haxe test.hxml
+  # TODO: run tests

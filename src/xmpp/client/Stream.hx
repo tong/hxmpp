@@ -7,10 +7,14 @@ package xmpp.client;
 */
 class Stream extends xmpp.Stream {
 
-	/** IANA registered `xmpp-client` port (5222) */
+	/**
+	 * IANA registered `xmpp-client` port (5222)
+	 */
 	public static inline var PORT = 5222;
 
-	/** XMPP client namespace */
+	/**
+	 * XMPP client namespace
+	 */
 	public static inline var XMLNS = 'jabber:client';
 
 	public function new( domain : String, ?xmlns : String, ?lang : String ) {
@@ -116,10 +120,12 @@ class Stream extends xmpp.Stream {
 			}
 		}
 		switch xml.name {
-		case 'message': onMessage( xml );
-		case 'presence': onPresence( xml );
+		case 'message':
+			onMessage( xml );
+		case 'presence':
+			onPresence( xml );
 		case 'iq':
-			var iq = IQ.parse( xml );
+			var iq = IQ.fromXML( xml );
 			switch iq.type {
 			case result, error:
 				if( queries.exists( iq.id ) ) {
@@ -133,9 +139,18 @@ class Stream extends xmpp.Stream {
 				if( iq.content != null ) {
 					var ns = iq.content.get( 'xmlns' );
 					if( extensions.exists( ns ) ) {
-						extensions.get( ns )( iq );
+						trace("EEEEEEEEEEEEEEEEEEEEEEEE");
+						var res = extensions.get( ns )( iq );
+						if( res == null ) {
+							trace('NOT HANDLED BY EXTENSION');
+							//r.errors.push( new xmpp.Error( cancel, 'feature-not-implemented' ) );
+						} else {
+							trace(res);
+							trace("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
+							send( res );
+						}
 					} else {
-						//trace( '?? unknown iq' );
+						trace( '?? unknown iq' );
 						onIQ( iq );
 					}
 				}

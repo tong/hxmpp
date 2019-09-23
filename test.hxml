@@ -1,0 +1,6 @@
+-lib hxmpp
+-lib utest
+-main Unit
+-cp test
+-x Unit
+-dce no

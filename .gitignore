@@ -2,8 +2,8 @@ _*
 doc/
 exp/
 ref/
-res/
 src/xep/
 test/bin/
 xml/
+xsd/
 haxedoc.xml

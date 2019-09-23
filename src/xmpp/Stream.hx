@@ -18,7 +18,6 @@ class Stream {
 	public static inline var XMLNS = 'http://etherx.jabber.org/streams';
 	//public static inline var VERSION = '1.0';
 
-	//public dynamic function onError( error : StreamError ) {}
 	public dynamic function onMessage( m : Message ) {}
 	public dynamic function onPresence( p : Presence ) {}
 	public dynamic function onIQ( iq : IQ ) {}
@@ -30,7 +29,7 @@ class Stream {
 	public var lang(default,null) : String;
 	public var ready(default,null) : Bool;
 	public var output : String->Void;
-	public var extensions = new Map<String,IQ->Void>();
+	public var extensions = new Map<String,IQ->IQ>();
 
 	var buffer : StringBuf;
 	var processor : String->Void;
