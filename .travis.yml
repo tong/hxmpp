@@ -20,6 +20,7 @@ branches:
 
 install:
   - haxelib install hxnodejs
+  - haxelib install utest
   - haxelib dev hxmpp .
 
 script:
