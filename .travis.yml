@@ -4,12 +4,19 @@ os:
   - linux
 
 haxe:
+  - "3.4.7"
   - "4.0.0-rc.5"
   - development
 
 matrix:
   allow_failures:
-    - haxe: development
+    - haxe: "3.4.7"
+    - haxe: "development"
+
+branches:
+  only:
+  - master
+  - r2
 
 install:
   - haxelib install hxnodejs
