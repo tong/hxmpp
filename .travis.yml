@@ -20,6 +20,7 @@ branches:
 
 install:
   - haxelib install hxnodejs
+  - haxelib dev three.hx .
 
 script:
   #- haxe build.hxml

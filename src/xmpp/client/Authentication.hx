@@ -2,7 +2,7 @@ package xmpp.client;
 
 import haxe.crypto.Base64;
 import haxe.io.Bytes;
-import sasl.Mechanism;
+import xmpp.sasl.Mechanism;
 
 /**
 	SASL (Simple Authentication and Security Layer) client authentication.
@@ -27,6 +27,8 @@ class Authentication {
 
 		stream.processor = function(str){
 
+			trace(str);
+
 			var xml = XML.parse( str );
 
 			switch xml.name {
@@ -37,16 +39,24 @@ class Authentication {
 				stream.send( XML.create( 'response', response ).set( 'xmlns', XMLNS ) );
 
 			case 'success':
+				trace(">>>>success>",str,streamStart);
 				/*
 				if( onNegotiated != null ) {
 					if( !onNegotiated() )
 						return;
 				}
 				*/
-			//	var f = if( streamStart != null ) streamStart else stream.start;
-				stream.start( function(features) {
 
-					//stream.set( new xep.Bind( null, resource ), function(res) {
+				if( streamStart != null ) {
+				}
+				
+			//	var f = if( streamStart != null ) streamStart else stream.start;
+				//stream.start( function(features) {
+				var f = streamStart;
+				if( f == null ) f = stream.start;
+				f( function(features) {
+
+					//stream.set( new xep.Bind( resource ), function(res) {
 					stream.set( XML.create( 'bind' ).set( 'xmlns', 'urn:ietf:params:xml:ns:xmpp-bind' ).append( XML.create( 'resource', resource ) ), function(res:IQ) {
 
 						switch res.type {
@@ -103,12 +113,26 @@ class Authentication {
 		stream.send( xml );
 		//stream.send( "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN' client-uses-full-bind-result='true'>AHRvbmcAdGVzdA==</auth>" );
 		*/
-
+		var text = mechanism.createAuthenticationText( node, stream.domain, password );
+		var auth = XML.create( 'auth' ).set( 'xmlns', XMLNS ).set( 'mechanism', mechanism.name );
+		if( text != null ) auth.text = Base64.encode( Bytes.ofString( text ), true );
+		stream.send( auth );
+		/*
 		var xml = XML.create( 'auth' ).set( 'xmlns', XMLNS ).set( 'mechanism', mechanism.name );
 		var text = mechanism.createAuthenticationText( node, stream.domain, password );
 		//if( text != null ) xml.append( Xml.createPCData( Base64.encode( Bytes.ofString( text ), true ) ) );
 		if( text != null ) xml.text = Base64.encode( Bytes.ofString( text ), true );
 		stream.send( xml );
+		*/
+
+
+	/* 	var auth = new xep.SASL.Auth();
+		auth.mechanism = mechanism.name;
+		if( text != null ) text = Base64.encode( Bytes.ofString( text ), true );
+		var xml : XML = auth;
+		//xml.set( 'xmlns', XMLNS );
+		xml.text = text;
+		stream.send( xml ); */
 
 	}
 	
