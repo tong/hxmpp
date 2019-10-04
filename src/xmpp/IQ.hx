@@ -76,26 +76,15 @@ abstract IQ(IQStanza) to Stanza {
 
 	@:to public inline function toXML()
 		return this.toXML();
+	
+	@:to public inline function toString()
+		return this.toXML().toString();
 
-	@:from public static inline function fromString( str : String ) : IQ {
+	@:from public static inline function fromString( str : String ) : IQ
 		return IQStanza.parse( XML.parse( str ) );
-	}
 
-	/*
-	@:from public static function parse( xml : XML ) : IQ {
-		var iq = Stanza.parseAttributes( new IQ( xml.get( 'type' ) ), xml );
-		for( e in xml.elements ) {
-			switch e.name {
-			case 'error': iq.error = xmpp.Stanza.Error.fromXML(e);
-			default: iq.content = e;
-			}
-		}
-		return iq;
-	}
-	*/
-	@:from public static inline function fromXML( xml : XML ) : IQ {
+	@:from public static inline function fromXML( xml : XML ) : IQ
 		return IQStanza.parse( xml );
-	}
 }
 
 private class IQStanza extends Stanza {
