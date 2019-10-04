@@ -37,18 +37,18 @@ class Stream extends xmpp.Stream {
 
 		reset();
 
-		processor = function(str) {
+		input = function(str) {
 
 			var header = xmpp.Stream.readHeader( str );
 			id = header.id;
 			send( XML.create( 'handshake', Sha1.encode( id + secret ) ) );
 
-			processor = function(str) {
+			input = function(str) {
 				var xml : XML = XML.parse( str );
 				switch xml.name {
 				case 'handshake':
 					ready = true;
-					processor = handleString;
+					input = handleString;
 					callback( null );
 				default:
 					//TODO

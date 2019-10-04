@@ -23,38 +23,33 @@ class Authentication {
 	//public static inline var XMLNS_SESSION = 'urn:ietf:params:xml:ns:xmpp-session';
 
 	@:access(xmpp.Stream)
-	public static function authenticate( stream : Stream, node : String, resource : String, ?password : String, mechanism : Mechanism, onComplete : String->Void, ?streamStart : (XML->Void)->Void ) {
+	public static function authenticate( stream : Stream, node : String, resource : String, ?password : String, mechanism : Mechanism, onResult : ?String->Void, ?streamStart : (XML->Void)->Void ) {
 
-		stream.processor = function(str){
-
-			trace(str);
-
+		stream.input = function(str){
 			var xml = XML.parse( str );
-
 			switch xml.name {
-
 			case 'challenge':
-				var response = mechanism.createChallengeResponse( xml.text );
-				response = Base64.encode( Bytes.ofString( response ) );
-				stream.send( XML.create( 'response', response ).set( 'xmlns', XMLNS ) );
-
+				var res = mechanism.createChallengeResponse( xml.text );
+				res = Base64.encode( Bytes.ofString( res ) );
+				stream.send( XML.create( 'response', res ).set( 'xmlns', XMLNS ) );
 			case 'success':
-				trace(">>>>success>",str,streamStart);
-				/*
-				if( onNegotiated != null ) {
-					if( !onNegotiated() )
-						return;
-				}
-				*/
+				if( streamStart == null ) streamStart = stream.start;
+				streamStart( function(features) {
 
-				if( streamStart != null ) {
-				}
-				
-			//	var f = if( streamStart != null ) streamStart else stream.start;
-				//stream.start( function(features) {
-				var f = streamStart;
-				if( f == null ) f = stream.start;
-				f( function(features) {
+					/* trace(features);
+					var bindSupport : Bool = null;
+					var sessionSupport : Bool = null;
+					for( e in features ) {
+						var ns = e.get( 'xmlns' );
+						switch ns {
+						case 'urn:ietf:params:xml:ns:xmpp-bind': bindSupport = true;
+						case 'urn:ietf:params:xml:ns:xmpp-session': sessionSupport = true;
+						}
+					}
+
+					if( !bindSupport )
+						onResult();
+ */
 
 					//stream.set( new xep.Bind( resource ), function(res) {
 					stream.set( XML.create( 'bind' ).set( 'xmlns', 'urn:ietf:params:xml:ns:xmpp-bind' ).append( XML.create( 'resource', resource ) ), function(res:IQ) {
@@ -66,7 +61,7 @@ class Authentication {
 							stream.set( xml, function(res:IQ) {
 								switch res.type {
 								case result:
-									onComplete( null );
+									onResult( null );
 								case error:
 									//TODO
 									trace( res );
@@ -90,7 +85,7 @@ class Authentication {
 							});
 						case error:
 							//TODO
-							onComplete( "SSSSSSSSSSSSSSS");
+							onResult( "SSSSSSSSSSSSSSS");
 							trace( res.error );
 
 						default:

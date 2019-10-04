@@ -28,7 +28,7 @@ class BOSH {
 	public var host(default,null) : String;
 
 	/***/
-	public var port(default,null) : Int;
+	public var port(default,null) : Null<Int>;
 
 	/** Server HTTP path */
 	public var path(default,null) : String;
@@ -92,11 +92,13 @@ class BOSH {
 		this.stream = stream;
 		this.startCallback = callback;
 
-		rid = Std.int( Math.random()*10000000 );
+		rid = Std.int( Math.random() * 10000000 );
 		requestCount = 0;
 		requestQueue = [];
 		responseQueue = [];
 		responseTimer = new Timer( INTERVAL );
+
+		initialized = true;
 
 		sendRequests( XML.create( "body" )
 			.set( 'xmlns', XMLNS )
@@ -110,8 +112,6 @@ class BOSH {
 			.set( 'to', host )
 			.set( 'secure', Std.string( secure ) )
 		);
-		
-		initialized = true;
 	}
 
 	public function send( str : String ) : Bool {
@@ -126,10 +126,10 @@ class BOSH {
 
 	public function restart( callback : XML->Void ) {
 		//var _processor = @:privateAccess stream.processor;
-		@:privateAccess stream.processor = function(e){
+		@:privateAccess stream.input = function(e){
 			// Simulate stream restart
 			//stream.processor = _processor;
-			stream.processor = stream.handleString;
+			stream.input = stream.handleString;
 			stream.reset();
 			stream.ready = true;
 			callback( e );
@@ -191,7 +191,7 @@ class BOSH {
 		var httpPath = 'http';
 		if( secure ) httpPath += 's';
 		httpPath += '://$host';
-		httpPath += ':$port';
+		if( port != null ) httpPath += ':$port';
 		httpPath += '/$path';
 
 		#if nodejs
@@ -240,7 +240,17 @@ class BOSH {
 		#elseif sys
 
 		//TODO
-
+		/* var req = new xmpp.net.BOSHRequest();
+		req.send( host, port, path, body,
+			function(res) {
+				handleData(res);
+			},
+			function(e) {
+				trace(e);
+				handleError(e);
+			}
+		);
+ */
 		#end
 	}
 
