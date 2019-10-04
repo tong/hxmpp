@@ -2,5 +2,5 @@
 -lib hxmpp
 -D doc-gen
 --macro include('xmpp')
---macro include('xep')
+#--macro include('xep')
 -xml haxedoc.xml

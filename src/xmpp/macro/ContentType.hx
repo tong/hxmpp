@@ -1,5 +1,7 @@
 package xmpp.macro;
 
+#if macro
+
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.MacroStringTools;
@@ -319,3 +321,5 @@ class ContentType {
     }
 
 }
+
+#end
