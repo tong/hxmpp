@@ -16,7 +16,6 @@ private typedef Header = {
 class Stream {
 
 	public static inline var XMLNS = 'http://etherx.jabber.org/streams';
-	//public static inline var VERSION = '1.0';
 
 	public dynamic function onMessage( m : Message ) {}
 	public dynamic function onPresence( p : Presence ) {}
@@ -28,11 +27,15 @@ class Stream {
 	public var version(default,null) : String;
 	public var lang(default,null) : String;
 	public var ready(default,null) : Bool;
-	public var output : String->Void;
-	public var extensions = new Map<String,IQ->IQ>();
+
+	public var extensions = new Map<String,IQ->Void>();
+	//public var extensions = new Map<String,IQ->IQ>();
+	//public var extensions2 = new Map<String,XML->XML>();
+
+	var input : String->Void;
+	var output : String->Void;
 
 	var buffer : StringBuf;
-	var processor : String->Void;
 	var queries : Map<String,IQ->Void>;
 
 	function new( xmlns : String, domain : String, ?lang : String ) {
@@ -41,6 +44,24 @@ class Stream {
         this.lang = lang;
 		version = '1.0';
 		ready = false;
+	}
+
+	public function recv( str : String ) {
+		if( str == null || str.length == 0 )
+			return;
+		if( buffer == null ) buffer = new StringBuf();
+		buffer.add( str );
+		if( !str.endsWith( '>' ) )
+			return;
+		if( str.endsWith( '>' ) ) {
+			var received = buffer.toString();
+			buffer = new StringBuf();
+			input( received );
+		}
+	}
+
+	public function send( xml : XML ) {
+		output( xml );
 	}
 
 	public function get( content : XML, ?jid : String, callback : IQ->Void ) {
@@ -65,31 +86,6 @@ class Stream {
 		send( iq );
 	}
 
-	public function send( xml : XML ) {
-		output( xml );
-	}
-
-	/**
-		Use with care!
-	**/
-	public function sendString( str : String ) {
-		output( str );
-	}
-
-	public function recv( str : String ) {
-		if( str == null || str.length == 0 )
-			return;
-		if( buffer == null ) buffer = new StringBuf();
-		buffer.add( str );
-		if( !str.endsWith( '>' ) )
-			return;
-		if( str.endsWith( '>' ) ) {
-			var received = buffer.toString();
-			buffer = new StringBuf();
-			processor( received );
-		}
-	}
-
 	//public function end( ?error : StreamError ) {
 	public function end() {
 		output( '</stream:stream>' );
@@ -106,6 +102,12 @@ class Stream {
 	}
 
 	function handleXML( xml : XML ) {
+		if( xml.has( 'xmlns' ) ) {
+			if( xml.get( 'xmlns' ) != this.xmlns ) {
+				trace( "invalid stream namespace" );
+				return;
+			}
+		}
 	}
 
 	function reset() {

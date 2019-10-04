@@ -167,11 +167,11 @@ abstract Presence(PresenceStanza) to Stanza {
 	public inline function new( ?show : Show, ?status : Status, ?priority : Priority, ?type : PresenceType )
 		this = new PresenceStanza( show, status, priority, type );
 
-	@:to public inline function toString() : String
-		return this.toString();
-
 	@:to public inline function toXML() : XML
 		return this.toXML();
+
+	@:to public inline function toString() : String
+		return this.toString();
 
 	@:from public static inline function fromString( str : String ) : Presence
 		return fromXML( XML.parse( str ) );

@@ -27,7 +27,7 @@ class Stream extends xmpp.Stream {
 
 		reset();
 
-		processor = function(str) {
+		input = function(str) {
 
 			if( str == '</stream:stream>' ) {
 				ready = false;
@@ -40,53 +40,7 @@ class Stream extends xmpp.Stream {
 			} else {
 
 				if( id == null ) {
-
-					//TODO
-
-					/*
-					var xml = XML.parse( str );
-					var firstElement = xml.firstElement();
-					if( firstElement != null ) {
-						switch firstElement.nodeName {
-						case 'stream:error':
-							//TODO
-							trace(">>>>>>>>>>>>>>>>");
-							var error = xmpp.Stanza.Error.fromXML( firstElement );
-							trace(error);
-							//var error : xmpp.Stream.Error = {};
-
-							/*
-							var error = { condition : null, text : null };
-							for( e in firstElement.elements() ) {
-								//trace(e.nodeName,e.get('xmlns'));
-								switch e.nodeName {
-								case 'text':
-									error.text = e.firstChild().nodeValue;
-								default:
-									error.condition = e.nodeName;
-								}
-							}
-							trace(error);
-							* /
-
-						case 'stream:features':
-							var features = firstElement;
-							if( features != null ) {
-								ready = true;
-								callback( features );
-							}
-
-							/*
-							var features = xmpp.Stream.readFeatures( str );
-							if( features != null ) {
-								ready = true;
-								callback( features );
-							}
-							* /
-						}
-					}
-					*/
-
+					
 					var header = xmpp.Stream.readHeader( str );
 					id = header.id;
 					version = header.version;
@@ -125,7 +79,7 @@ class Stream extends xmpp.Stream {
 		case 'presence':
 			onPresence( xml );
 		case 'iq':
-			var iq = IQ.fromXML( xml );
+			var iq : IQ = xml;
 			switch iq.type {
 			case result, error:
 				if( queries.exists( iq.id ) ) {
@@ -139,19 +93,24 @@ class Stream extends xmpp.Stream {
 				if( iq.content != null ) {
 					var ns = iq.content.get( 'xmlns' );
 					if( extensions.exists( ns ) ) {
-						trace("EEEEEEEEEEEEEEEEEEEEEEEE");
+
+						extensions.get( ns )( iq );
+
+						/*
 						var res = extensions.get( ns )( iq );
 						if( res == null ) {
 							trace('NOT HANDLED BY EXTENSION');
 							//r.errors.push( new xmpp.Error( cancel, 'feature-not-implemented' ) );
 						} else {
-							trace(res);
-							trace("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
 							send( res );
 						}
+						*/
 					} else {
 						trace( '?? unknown iq' );
-						onIQ( iq );
+						var res = new IQ( error, iq.from, iq.to, iq.id );
+						res.error = new xmpp.Stanza.Error( cancel, 'feature-not-implemented' );
+						send( res );
+						//onIQ( iq );
 					}
 				}
 			}
