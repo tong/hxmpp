@@ -183,8 +183,8 @@ class ContentType {
 					pos: null,
 					meta: optional ? [{ name: ':optional', pos: null }] : []
 				} );
-				toXMLExprs.push( macro if( this.$fieldName != null ) x.set( $v{a.name}, this.$fieldName ) );
-				fromXMLExprs.push( macro o.$fieldName = x.get( $v{a.name} ) );
+				toXMLExprs.push( macro if( this.$fieldName != null ) x.set( $v{name}, this.$fieldName ) );
+				fromXMLExprs.push( macro o.$fieldName = x.get( $v{name} ) );
 			}
 
 			if( e.complexType.attribute != null ) {
@@ -215,30 +215,39 @@ class ContentType {
 			}
 
 			if( e.complexType.sequence != null ) {
-				var fromXMLswitchExprCases = new Array<Case>();
-				for( e in e.complexType.sequence.elements ) {
-					var fieldName = escapeFieldName( (e.ref != null) ? e.ref : e.name );
-					var fieldType = getComplexType( (e.type != null) ? e.type : e.ref );
-					var optional = false;
-					var isArray = true; 
-					if( isArray ) fieldType = TPath( { name: 'Array<${fieldType.toString()}>', pack: [] } );
-					typeDefinitionFields.push( {
-						name: fieldName,
-						kind: FVar( fieldType ),
-						pos: null,
-						meta: optional ? [{ name: ':optional', pos: null }] : []
-					} );
-					if( isArray ) {
-						constructorExprs.push( macro if( this.$fieldName == null ) this.$fieldName = [] );
-						toXMLExprs.push( macro if( this.$fieldName != null ) for( e in this.$fieldName ) x.append( e ) );
-						fromXMLswitchExprCases.push({expr: macro o.$fieldName.push(e), values:[ macro $v{fieldName}] });
-					} else {
-						toXMLExprs.push( macro if( this.$fieldName != null ) x.append( xmpp.XML.create( $v{fieldName}, this.$fieldName ) ) );
-						fromXMLswitchExprCases.push({expr: macro o.$fieldName = e.text, values:[ macro $v{fieldName}] });
+				if( e.complexType.sequence.elements != null ) {
+					var fromXMLswitchExprCases = new Array<Case>();
+					for( e in e.complexType.sequence.elements ) {
+						var fieldName = escapeFieldName( (e.ref != null) ? e.ref : e.name );
+						var fieldType = getComplexType( (e.type != null) ? e.type : e.ref );
+						var optional = false;
+						var isArray = true; 
+						if( isArray ) fieldType = TPath( { name: 'Array<${fieldType.toString()}>', pack: [] } );
+						typeDefinitionFields.push( {
+							name: fieldName,
+							kind: FVar( fieldType ),
+							pos: null,
+							meta: optional ? [{ name: ':optional', pos: null }] : []
+						} );
+						if( isArray ) {
+							constructorExprs.push( macro if( this.$fieldName == null ) this.$fieldName = [] );
+							toXMLExprs.push( macro if( this.$fieldName != null ) for( e in this.$fieldName ) x.append( e ) );
+							fromXMLswitchExprCases.push({expr: macro o.$fieldName.push(e), values:[ macro $v{fieldName}] });
+						} else {
+							toXMLExprs.push( macro if( this.$fieldName != null ) x.append( xmpp.XML.create( $v{fieldName}, this.$fieldName ) ) );
+							fromXMLswitchExprCases.push({expr: macro o.$fieldName = e.text, values:[ macro $v{fieldName}] });
+						}
 					}
+					var switchExpr = ESwitch( macro e.name, fromXMLswitchExprCases, null ) ;
+					fromXMLExprs.push( { expr: EFor( macro e in x.elements, { expr: switchExpr, pos: null } ), pos: null } );
 				}
-				var switchExpr = ESwitch( macro e.name, fromXMLswitchExprCases, null ) ;
-				fromXMLExprs.push( { expr: EFor( macro e in x.elements, { expr: switchExpr, pos: null } ), pos: null } );
+				/*
+				TODO
+				if( e.complexType.sequence.choice != null ) {
+					trace("CHOICE");
+					trace(e.complexType.sequence.choice );
+				}
+				*/
 			}
 
 			toXMLExprs.push( macro return x );
