@@ -1,9 +1,0 @@
--cp src
--debug
--D eval-stack
-#--macro HXMPP.build('xep.disco.Info','xsd/disco-info.xsd')
-#--macro HXMPP.build('xep.disco.Item','xsd/disco-items.xsd')
---macro HXMPP.build('xep.Roster','xsd/roster.xsd')
-#--macro HXMPP.build('xep.SASL','xsd/sasl.xsd')
-#--macro HXMPP.build('xep.Ping','xsd/ping.xsd')
-
