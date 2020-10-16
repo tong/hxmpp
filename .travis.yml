@@ -4,7 +4,7 @@ os:
   - linux
 
 haxe:
-  - "4.0.0-rc.5"
+  - "4.1.4"
   - development
 
 matrix:
@@ -22,7 +22,7 @@ install:
   - haxelib dev hxmpp .
 
 script:
-  - haxe build.hxml
+  #- haxe build.hxml
   - haxe haxedoc.hxml
   - haxe test.hxml
   # TODO: run tests
