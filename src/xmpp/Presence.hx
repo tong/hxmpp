@@ -222,7 +222,7 @@ private class PresenceStanza extends Stanza {
 			//case 'show': PresenceShow.fromString(e.text);
 			case 'show': p.show = cast e.text ;
 			case 'status': p.status = Std.string( e.text );
-			case 'priority': p.priority = e.text;
+			case 'priority': p.priority = Std.parseInt( e.text );
 			case 'error': //TODO:
 			default: p.properties.push( e );
 			}

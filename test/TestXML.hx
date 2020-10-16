@@ -59,14 +59,14 @@ class TestXML extends utest.Test {
 		isNull( xml.text );
     }
 
-	function test_is() {
+	/* function test_is() {
 
 		var xml = XML.parse( '<node id="123">abc</node>' );
 		isFalse( xml.is( 'https://disktree.net' ) );
 		
 		var xml = XML.parse( '<node xmlns="https://disktree.net" id="123">abc</node>' );
 		isTrue( xml.is( 'https://disktree.net' ) );
-	}
+	} */
 
 	function test_count() {
 		equals( 3, XML_SALES.elements.count() );

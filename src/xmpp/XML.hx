@@ -136,8 +136,8 @@ abstract XML(Xml) from Xml to Xml {
         return this;
     }
 
-    public inline function is( xmlns : String ) : Bool
-        return get( 'xmlns' ) == xmlns;
+    //public inline function is( xmlns : String ) : Bool
+    //   return get( 'xmlns' ) == xmlns;
 
     public inline function has( att : String ) : Bool
     	return this.exists( att );
