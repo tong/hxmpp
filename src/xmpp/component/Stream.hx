@@ -33,7 +33,7 @@ class Stream extends xmpp.Stream {
 	}
 
 	//public function start( secret : String, callback : xmpp.Stream.StreamError->Void ) {
-	public function start( secret : String, callback : xmpp.Stanza.Error->Void ) {
+	public function start( secret : String, callback : (?error:xmpp.Stanza.Error)->Void ) {
 
 		reset();
 

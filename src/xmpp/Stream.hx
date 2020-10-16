@@ -21,20 +21,18 @@ class Stream {
 	public dynamic function onPresence( p : Presence ) {}
 	public dynamic function onIQ( iq : IQ ) {}
 
-	public var xmlns(default,null) : String;
-	public var domain(default,null) : String;
+	public final xmlns : String;
+	public final domain : String;
+	public final lang : String;
+	
 	public var id(default,null) : String;
-	public var version(default,null) : String;
-	public var lang(default,null) : String;
-	public var ready(default,null) : Bool;
-
+	public var version(default,null) = "1.0";
+	
+	public var ready(default,null) = false;
 	public var extensions = new Map<String,IQ->Void>();
-	//public var extensions = new Map<String,IQ->IQ>();
-	//public var extensions2 = new Map<String,XML->XML>();
 
 	var input : String->Void;
 	var output : String->Void;
-
 	var buffer : StringBuf;
 	var queries : Map<String,IQ->Void>;
 
@@ -43,7 +41,6 @@ class Stream {
 		this.domain = domain;
         this.lang = lang;
 		version = '1.0';
-		ready = false;
 	}
 
 	public function recv( str : String ) {
@@ -64,23 +61,23 @@ class Stream {
 		output( xml );
 	}
 
-	public function get( content : XML, ?jid : String, callback : IQ->Void ) {
-		var iq = new IQ( IQType.get, jid );
-		iq.content = content;
+	public function get( payload : XML, ?jid : String, callback : (response:IQ)->Void ) {
+		var iq = new IQ( payload, IQType.get, createRandomStanzaId(), jid );
 		query( iq, callback );
 	}
 
-	public function set( content : XML, ?jid : String, callback : IQ->Void ) {
-		var iq = new IQ( IQType.set, jid );
-		if( content != null ) iq.content = content;
+	public function set( payload : XML, ?jid : String, callback : (response:IQ)->Void ) {
+		var iq = new IQ( payload, IQType.set, createRandomStanzaId(), jid );
 		query( iq, callback );
 	}
 
+	/*
 	public inline function result( iq : IQ, content : XML ) {
 		send( new IQ( IQType.result, iq.from, iq.to, iq.id, content ) );
 	}
+	*/
 
-	public function query( iq : IQ, callback : IQ->Void ) {
+	public function query( iq : IQ, callback : (response:IQ)->Void ) {
 		if( iq.id == null ) iq.id = createRandomStanzaId();
 		queries.set( iq.id, cast callback );
 		send( iq );

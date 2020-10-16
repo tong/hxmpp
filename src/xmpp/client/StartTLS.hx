@@ -8,7 +8,7 @@ class StartTLS {
 	public static inline var XMLNS = 'urn:ietf:params:xml:ns:xmpp-tls';
 
 	@:access(xmpp.Stream)
-	public static function startTLS( stream : Stream, callback : Bool->Void ) {
+	public static function startTLS( stream : Stream, callback : (success:Bool)->Void ) {
 		stream.input = function(str){
 			var xml = XML.parse( str );
 			//if( xml.get( 'xmlns' ) != XMLNS ) throw '';

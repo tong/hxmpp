@@ -87,7 +87,7 @@ class BOSH {
 		this.timeoutOffset = timeoutOffset;
 	}
 
-	public function start( stream : xmpp.client.Stream, callback : XML->Void ) {
+	public function start( stream : xmpp.client.Stream, callback : (features:XML)->Void ) {
 
 		this.stream = stream;
 		this.startCallback = callback;
@@ -284,7 +284,8 @@ class BOSH {
 				if( responseQueue.length > 0 ) Timer.delay( poll, 0 ) else poll();
 			}
 		} else {
-			if( !initialized ) return;
+			if( !initialized )
+				return;
 			sid = xml["sid"];
 			if( sid == null ) {
 				//TODO

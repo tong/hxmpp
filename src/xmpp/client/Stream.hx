@@ -23,7 +23,7 @@ class Stream extends xmpp.Stream {
 
 	//public function start( callback : XML->Void, headerName = 'stream:stream' ) {
 	//TODO public function start( callback : xmpp.Stanza.Error->XML->Void ) {
-	public function start( callback : XML->Void ) {
+	public function start( callback : (features:XML)->Void ) {
 
 		reset();
 
@@ -90,12 +90,10 @@ class Stream extends xmpp.Stream {
 					trace( '??' );
 				}
 			case get,set:
-				if( iq.content != null ) {
-					var ns = iq.content.get( 'xmlns' );
+				if( iq.payload != null ) {
+					var ns = iq.payload.xmlns;
 					if( extensions.exists( ns ) ) {
-
 						extensions.get( ns )( iq );
-
 						/*
 						var res = extensions.get( ns )( iq );
 						if( res == null ) {
