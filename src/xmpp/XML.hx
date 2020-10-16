@@ -145,19 +145,20 @@ abstract XML(Xml) from Xml to Xml {
     //public inline function unset( att : String )
     //	this.remove( att );
 
+	public inline function xmlns() : String
+        return this.get( 'xmlns' );
+
     //@:op(A+=B)
     public inline function append( e : XML ) : XML {
 		this.addChild( e );
 		return this;
 	}
 
-    /*
     public inline function addChild( x : XML )
         this.addChild( x );
 
     public inline function removeChild( x : XML ) : Bool
         return this.removeChild( x );
-    */
 
     public inline function insert( x: XML , pos = 0 ) : XML {
         this.insertChild( x, pos );
@@ -197,7 +198,15 @@ abstract XML(Xml) from Xml to Xml {
 
     @:from public static inline function parse( s : String ) : XML {
 		return fromXml( Xml.parse( s ).firstElement() );
-		//return new XML( Xml.parse( s ).firstElement() );
+	}
+
+	macro public static function markup( mu ) : ExprOf<xmpp.XML> {
+		return switch mu.expr {
+      	case EMeta( { name: ":markup" }, { expr: EConst(CString(s)) } ):
+      		macro XML.parse( $v{s} );
+      	case _:
+        	throw new haxe.macro.Expr.Error( "not an xml literal", mu.pos );
+    	}
 	}
 
 }
