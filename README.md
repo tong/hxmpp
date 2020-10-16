@@ -21,4 +21,4 @@ haxelib git https://github.com/tong/hxmpp
 
 ---
 
-[![Build Status](https://img.shields.io/travis/tong/hxmpp/r2.svg?style=flat-square)](https://travis-ci.org/tong/hxmpp) [![Haxelib Version](https://img.shields.io/github/tag/tong/hxmpp.svg?style=flat-square&colorA=F68712&colorB=141419&label=haxelib)](http://lib.haxe.org/p/hxmpp/)
+[![Actions Status](https://github.com/tong/hxmpp/workflows/CI/badge.svg)](https://github.com/tong/hxmpp) [![Haxelib Version](https://img.shields.io/github/tag/tong/hxmpp.svg?style=flat-square&colorA=F68712&colorB=141419&label=haxelib)](http://lib.haxe.org/p/hxmpp/)
