@@ -66,18 +66,18 @@ enum abstract IQType(String) from String to String {
 	    |                            |
 
 **/
-@:forward(from,to,id,lang,error,type,content)
+@:forward(from,to,id,lang,error,type,payload)
 abstract IQ(IQStanza) to Stanza {
 
 	public static inline var NAME = 'iq';
 
-	public inline function new( ?type : IQType, ?to : String, ?from : String, ?id : String, ?content : XML )
-		this = new IQStanza( type, to, from, id, content );
+	public inline function new( ?payload : Payload, type = IQType.get , ?id : String , ?to : String, ?from : String )
+		this = new IQStanza( payload, type, id, to, from );
 
-	@:to public inline function toXML()
+	@:to public inline function toXML() : XML
 		return this.toXML();
 	
-	@:to public inline function toString()
+	@:to public inline function toString() : String
 		return this.toXML().toString();
 
 	@:from public static inline function fromString( str : String ) : IQ
@@ -93,37 +93,63 @@ private class IQStanza extends Stanza {
 	public var type : IQType;
 
 	/** The exclusive child element (mostly: '<query xmlns="ext-namspace"/>') */
-	public var content : XML;
+	public var payload : Payload;
 
-	/*
 	public var xmlns(get,never) : String;
-	inline function get_xmlns() : String
-		return (payload != null) ? payload.get( 'xmlns' ) : null;
-	*/
+	inline function get_xmlns() : String return (payload != null) ? payload.xmlns : null;
 
-	public function new( ?type : IQType = IQType.get, ?to : String, ?from : String, ?id : String, ?content : XML ) {
+	@:allow(xmpp.IQ)
+	function new( ?payload : Payload, type : IQType, ?id : String, ?to : String, ?from : String ) {
 		super( to, from, id );
-		//this.type = (type == null) ? get : type;
 		this.type = type;
-		this.content = content;
+		this.payload = payload;
 	}
 
-	public override function toXML() : Xml {
+	public override function toXML() : XML {
 		var xml = Stanza.createXML( this, IQ.NAME );
 		xml.set( 'type', type );
-		if( content != null ) xml.append( content );
+		if( payload != null ) xml.append( payload );
 		if( error != null ) xml.append( error.toXML() );
 		return xml;
 	}
 
 	public static function parse( xml : XML ) : IQ {
-		var iq = Stanza.parseAttributes( new IQ( xml.get( 'type' ) ), xml );
+		var iq = Stanza.parseAttributes( new IQ( null, xml.get( 'type' ) ), xml );
 		for( e in xml.elements ) {
 			switch e.name {
 			case 'error': iq.error = xmpp.Stanza.Error.fromXML(e);
-			default: iq.content = e;
+			default: iq.payload = e;
 			}
 		}
 		return iq;
 	}
+}
+
+@:forward
+@:forwardStatics
+private abstract Payload(XML) from XML to XML {
+
+	public var xmlns(get,set) : String;
+	inline function get_xmlns() : String return this.get('xmlns');
+	inline function set_xmlns(s:String) : String return this.set('xmlns',s);
+
+	public var content(get,set) : XML;
+	inline function get_content() : XML return this.firstElement;
+	inline function set_content(x:XML) : XML {
+		for( e in this.elements ) this.removeChild(e);
+		return this.append(x);
+	}
+
+	inline function new( xml : XML ) this = xml;
+
+	/*
+	public static function create( xmlns : String, ?content : XML, name = 'query' ) : Payload {
+		var xml = XML.create( name ).set( 'xmlns', xmlns );
+		if( content != null ) xml.append( content );
+		return new Payload( xml );
+	}
+	*/
+
+	@:from public static inline function fromString( xmlns : String ) : Payload
+		return new Payload( XML.create( 'query' ).set( 'xmlns', xmlns ) );
 }
