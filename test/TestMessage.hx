@@ -23,11 +23,11 @@ class TestMessage extends utest.Test {
 
         var m = new Message();
 
-        equals( null, m.to );
-        equals( null, m.from );
-        equals( null, m.id );
-        equals( null, m.lang );
-        //equals( null, m.error );
+        isNull( m.to );
+        isNull( m.from );
+        isNull( m.id );
+        isNull( m.lang );
+        //isNull( m.error );
         //equals( 0, m.properties.length );
 
         var m = new Message( 'node@domain.com/resource', 'mybody', 'mysubject' );
@@ -35,7 +35,7 @@ class TestMessage extends utest.Test {
         equals( 'mybody', m.body );
         equals( 'mysubject', m.subject );
         equals( 'chat', m.type );
-        equals( null, m.thread );
+        isNull( m.thread );
 
         var xml = m.toXML();
         equals( 'node@domain.com/resource', xml.get( 'to' ) );
@@ -63,7 +63,7 @@ class TestMessage extends utest.Test {
 				</html>
 			</message>' ).firstElement();
 		var m = Message.fromXML( xml );
-		equals( null, m.type );
+		isNull( m.type );
 		equals( 'romeo@jabber.disktree.net', m.to );
 		equals( 'green with envy!', m.body );
 		equals( 1, m.properties.length );

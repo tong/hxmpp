@@ -56,7 +56,7 @@ class TestXML extends utest.Test {
 
 		xml.text = null;
 
-		equals( null, xml.text );
+		isNull( xml.text );
     }
 
 	function test_is() {
@@ -246,4 +246,12 @@ class TestXML extends utest.Test {
 		//trace(xml);
 	}
 	*/
+
+	function test_markup() {
+		var x = XML.markup( <div id="myid">MyContent</div> );
+		equals( 'div', x.name );
+		equals( 'myid', x.get('id') );
+		equals( 'MyContent', x.text );
+	}
+	
 }

@@ -9,47 +9,47 @@ class TestPresence extends utest.Test {
     function test_create() {
 
         var p = new Presence();
-		equals( null, p.to );
-		equals( null, p.from );
-        equals( null, p.type );
-        equals( null, p.show );
-        equals( null, p.status );
-        equals( null, p.priority );
+		isNull( p.to );
+		isNull( p.from );
+        isNull( p.type );
+        isNull( p.show );
+        isNull( p.status );
+        isNull( p.priority );
 
 		var str = '<presence></presence>';
 		var xml = Xml.parse( str ).firstElement();
 
 		var p = Presence.fromString( str );
-		equals( null, p.to );
-		equals( null, p.from );
-        equals( null, p.type );
-        equals( null, p.show );
-        equals( null, p.status );
-        equals( null, p.priority );
+		isNull( p.to );
+		isNull( p.from );
+        isNull( p.type );
+        isNull( p.show );
+        isNull( p.status );
+        isNull( p.priority );
 
 		var p = Presence.fromXML( xml );
-		equals( null, p.to );
-		equals( null, p.from );
-        equals( null, p.type );
-        equals( null, p.show );
-        equals( null, p.status );
-        equals( null, p.priority );
+		isNull( p.to );
+		isNull( p.from );
+        isNull( p.type );
+        isNull( p.show );
+        isNull( p.status );
+        isNull( p.priority );
 
 		var p : Presence = str;
-		equals( null, p.to );
-		equals( null, p.from );
-        equals( null, p.type );
-        equals( null, p.show );
-        equals( null, p.status );
-        equals( null, p.priority );
+		isNull( p.to );
+		isNull( p.from );
+        isNull( p.type );
+        isNull( p.show );
+        isNull( p.status );
+        isNull( p.priority );
 
 		var p : Presence = xml;
-		equals( null, p.to );
-		equals( null, p.from );
-        equals( null, p.type );
-        equals( null, p.show );
-        equals( null, p.status );
-        equals( null, p.priority );
+		isNull( p.to );
+		isNull( p.from );
+        isNull( p.type );
+        isNull( p.show );
+        isNull( p.status );
+        isNull( p.priority );
     }
 
 	function test_parse() {
@@ -68,9 +68,9 @@ class TestPresence extends utest.Test {
 				<priority>5</priority>
 				<status>my status information</status>
 			</presence>';
-		equals( null, p.to );
-		equals( null, p.from );
-		equals( null, p.type );
+		isNull( p.to );
+		isNull( p.from );
+		isNull( p.type );
 		equals( away, p.show );
 		equals( 'my status information', p.status );
 		equals( 5, p.priority );
@@ -83,9 +83,9 @@ class TestPresence extends utest.Test {
 				<status>my status information</status>
 			</presence>';
 		var xml = p.toXML();
-		equals( null, xml.get('to') );
-		equals( null, xml.get('from') );
-		equals( null, xml.get('type') );
+		isNull( xml.get('to') );
+		isNull( xml.get('from') );
+		isNull( xml.get('type') );
 	}
 
 	function test_priority() {

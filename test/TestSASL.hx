@@ -14,12 +14,12 @@ class TestSASL extends utest.Test {
 
     function test_plain_createChallengeResponse() {
 		var mech = new xmpp.sasl.PlainMechanism();
-		equals( null, mech.createChallengeResponse( 'challenge' ) );
+		isNull( mech.createChallengeResponse( 'challenge' ) );
 	}
 
 	function test_anonymous_createAuthenticationText() {
 		var mech = new xmpp.sasl.AnonymousMechanism();
-		equals( null, mech.createAuthenticationText( 'user', null, 'password' ) );
+		isNull( mech.createAuthenticationText( 'user', null, 'password' ) );
 	}
 
     function test_anonymous_createChallengeResponse() {
@@ -145,7 +145,7 @@ class TestSASL extends utest.Test {
 	function test_md5_createAuthenticationText() {
 		var mech = new MD5Mechanism();
 
-		equals( null, mech.createAuthenticationText('user','host','password') );
+		isNull( mech.createAuthenticationText('user','host','password') );
 	}
 
     function test_md5_parseChallenge() {
