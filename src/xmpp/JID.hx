@@ -45,10 +45,6 @@ abstract JID(JIDType) from JIDType to JIDType {
 	public static inline var MAX_PARTSIZE = 1023;
 	public static inline var MAX_SIZE = 3071;
 
-    //TODO 
-	/**
-		Regular expression matching a valid JID
-	*/
 	public static var EREG(default,null) = ~/^(([A-Z0-9._%-]{1,1023})@([A-Z0-9._%-]{1,1023})((?:\/)([A-Z0-9._%-]{1,1023}))?)$/i;
 
     public inline function new( ?node : String, domain : String, ?resource : String  )
@@ -66,6 +62,31 @@ abstract JID(JIDType) from JIDType to JIDType {
 
     @:to public inline function toArray() : Array<String>
         return [this.node,this.domain,this.resource];
+
+	@:op(A==B) public function equals( jid : JID ) : Bool {
+		if( this.node != jid.node ) return false;
+        if( this.domain != jid.domain ) return false;
+        if( this.resource != jid.resource ) return false;
+        return true;
+	}
+
+	@:arrayAccess function getPart( i : Int ) : String {
+		return switch i {
+		case 0: this.node;
+		case 1: this.domain;
+		case 2: this.resource;
+		default: toString();
+		}
+	}
+	
+	@:arrayAccess function setPart( i : Int, str : String ) {
+		switch i {
+		case 0: this.node = str;
+		case 1: this.domain = str;
+		case 2: this.resource = str;
+		default:
+		}
+	}
 
 	@:from public static inline function fromArray( arr : Array<String> ) : JID
 	    return new JIDType( arr[0], arr[1], arr[2] );
@@ -111,13 +132,6 @@ abstract JID(JIDType) from JIDType to JIDType {
         var j = str.indexOf( "/" );
         var a = [str.substr( 0, i )];
         return a.concat( (j == -1) ? [str.substring( i+1 )] : [str.substring( i+1, j ),str.substr( j+1 )] );
-    }
-
-    public static function compare( a : JID, b : JID ) : Bool {
-        if( a.node != b.node ) return false;
-        if( a.domain != b.domain ) return false;
-        if( a.resource != b.resource ) return false;
-        return true;
     }
 
 	/**
