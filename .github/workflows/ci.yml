@@ -20,7 +20,9 @@ jobs:
           haxelib dev hxmpp .
           haxelib install hxnodejs
           haxelib install utest
+      - name: Run unit tests
+        run: haxe test.hxml
       - name: Build haxedoc.xml
         run: haxe haxedoc.hxml
-      - name: Run tests
-        run: haxe test.hxml
+      - name: Build example client
+        run: haxe --cwd example nodejs.hxml
