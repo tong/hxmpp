@@ -84,7 +84,7 @@ abstract Status(String) from String to String {
 
 	@:noCompletion public inline function new( s : String ) this = s;
 
-	@:to public inline function toXML() : Xml
+	@:to public inline function toXML() : XML
 		return XML.create( "status", this );
 
 	@:from public static inline function fromXML( xml : XML ) : Status
