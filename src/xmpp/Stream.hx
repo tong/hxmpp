@@ -30,9 +30,9 @@ class Stream {
 	
 	public var ready(default,null) = false;
 	public var extensions = new Map<String,IQ->Void>();
+	public var output : String->Void;
 
 	var input : String->Void;
-	var output : String->Void;
 	var buffer : StringBuf;
 	var queries : Map<String,IQ->Void>;
 
