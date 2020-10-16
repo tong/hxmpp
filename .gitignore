@@ -1,6 +1,9 @@
 _*
 doc/
 exp/
+example/*.hl
+example/*.js*
+example/*.n
 ref/
 test/bin/
 xsd/

@@ -1,0 +1,7 @@
+-js app.js
+-main App
+-lib hxmpp
+-lib hxnodejs
+-dce full
+-debug
+-D xmpp_debug
