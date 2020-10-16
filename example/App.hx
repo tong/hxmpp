@@ -1,10 +1,8 @@
 
-import js.Node.console;
-import js.Node.process;
-import js.node.Buffer;
-import js.node.Readline;
+#if nodejs
 import js.node.net.Socket;
 import js.node.tls.TLSSocket;
+#end
 import xmpp.JID;
 import xmpp.IQ;
 import xmpp.Message;
@@ -14,30 +12,11 @@ import xmpp.client.Stream;
 import xmpp.XML;
 import xmpp.sasl.*;
 
-using Lambda;
-using StringTools;
 using xmpp.client.Authentication;
 using xmpp.client.StartTLS;
 
 class App {
 
-    static var tls : TLSSocket;
-    static var stream : Stream;
-
-	static function handleSocketDisconnect() {
-        trace( 'Socket disconnected' );
-    }
-	
-	static function handleSocketError(e) {
-		trace( 'Socket error', e );
-    }
-
-	static function handleSocketData(buf) {
-		var str : String = buf.toString();
-		print( xmpp.extra.Printer.print( str, true ), 33 );
-		stream.recv( str );
-	}
-	
 	static function print( str : String, ?color : Int ) {
 		if( color != null ) str = '\x1B['+color+'m'+str+'\x1B[0m';
 		Sys.println(str);
@@ -57,14 +36,26 @@ class App {
 		var password = args[1];
 		var ip = (args[2] == null) ? jid.domain : args[2];
 		var port = (args[3] == null) ? xmpp.client.Stream.PORT : Std.parseInt( args[3] );
+		
+		Sys.println( 'Connecting $jid' );
+
+		var stream : Stream = null;
+
+		function handleSocketData(buf) {
+			var str : String = buf.toString();
+			print( xmpp.extra.Printer.print( str, true ), 33 );
+			stream.recv( str );
+		}
 
 		var socket = new Socket();
 		socket.on( Data, handleSocketData );
-		socket.on( End, handleSocketDisconnect );
-		socket.on( Error, handleSocketError );
+		socket.on( End, () -> trace('Socket disconnected') );
+		socket.on( Error, e -> trace('Socket error',e) );
 		socket.connect( port, ip, function() {
-
+			
 			stream = new Stream( jid.domain );
+
+			var tls : TLSSocket = null;
 
 			stream.output = function(str){
 				print( xmpp.extra.Printer.print(str,true), 32 );
@@ -81,9 +72,9 @@ class App {
 				stream.startTLS( function(success){
 					if( success ) {
 						tls = new TLSSocket( socket, { requestCert: true, rejectUnauthorized: true } );
-						tls.on( End, handleSocketDisconnect );
+						tls.on( End, () -> trace('TLSSocket disconnected') );
+						tls.on( Error, e -> trace('TLSSocket error',e) );
 						tls.on( Data, handleSocketData );
-						tls.on( Error, handleSocketError );
 						stream.start( function(features){
 							var mech = new PlainMechanism();
 							//var mech = new SCRAMSHA1Mechanism();
