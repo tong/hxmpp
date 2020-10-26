@@ -30,7 +30,8 @@ class Stream extends xmpp.Stream {
 		input = function(str) {
 
 			if( str == '</stream:stream>' ) {
-				ready = false;
+				//ready = false;
+				reset();
 				//state = ended;
 				return;
 			}
