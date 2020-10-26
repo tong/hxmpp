@@ -7,29 +7,23 @@ private enum EStringOrXml {
 	xml( v : Xml );
 }
 
-abstract StringOrXml(EStringOrXml) {
+private abstract StringOrXml(EStringOrXml) {
 
 	inline function new( sox : EStringOrXml ) this = sox;
 
-	public function isXml() : Bool {
-		return switch this {
-			case string(_): false;
-			case xml(_): true;
-		}
+	public function isXml() : Bool return switch this {
+		case string(_): false;
+		case xml(_): true;
 	}
 
-	@:to public function toString() : String {
-		return switch this {
-			case string(v): v;
-			case xml(v): v.toString();
-		}
+	@:to public function toString() : String return switch this {
+		case string(v): v;
+		case xml(v): v.toString();
 	}
 
-	@:to public function toXml() : Xml {
-		return switch this {
-			case string(v): Xml.parse( v );
-			case xml(v): v;
-		}
+	@:to public function toXml() : Xml return switch this {
+		case string(v): Xml.parse( v );
+		case xml(v): v;
 	}
 
 	@:from public static inline function fromString( str : String )
@@ -40,8 +34,6 @@ abstract StringOrXml(EStringOrXml) {
 }
 
 class Printer {
-
-	//TODO really? instance ?
 
 	public var pretty : Bool;
 
