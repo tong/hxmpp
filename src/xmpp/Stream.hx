@@ -31,8 +31,8 @@ class Stream {
 	public var ready(default,null) = false;
 	public var extensions = new Map<String,IQ->Void>();
 	public var output : String->Void;
+	public var input : String->Void;
 
-	var input : String->Void;
 	var buffer : StringBuf;
 	var queries : Map<String,IQ->Void>;
 
@@ -90,6 +90,7 @@ class Stream {
 	}
 
 	function handleString( str : String ) {
+		if( !ready ) return;
 		var xml : XML;
 		try xml = XML.parse( str ) catch(e:Dynamic) {
 			trace(e);
