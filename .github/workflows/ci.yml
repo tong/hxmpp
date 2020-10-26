@@ -25,4 +25,4 @@ jobs:
       - name: Build haxedoc.xml
         run: haxe haxedoc.hxml
       - name: Build example client
-        run: haxe --cwd example nodejs.hxml
+        run: haxe --cwd example build.hxml
