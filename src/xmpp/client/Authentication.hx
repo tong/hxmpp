@@ -22,8 +22,12 @@ class Authentication {
 	public static inline var XMLNS_BIND = 'urn:ietf:params:xml:ns:xmpp-bind';
 	public static inline var XMLNS_SESSION = 'urn:ietf:params:xml:ns:xmpp-session';
 
-	@:access(xmpp.Stream)
 	public static function authenticate( stream : Stream, node : String, resource : String, ?password : String, mechanism : Mechanism, onResult : (?error:xmpp.Stanza.Error)->Void, ?streamStart : (XML->Void)->Void ) {
+		var _input = stream.input;
+		function callback(err) {
+			stream.input = _input;
+			onResult( err );
+		}
 		stream.input = function(str) {
 			var xml = XML.parse( str );
 			switch xml.name {
@@ -47,24 +51,25 @@ class Authentication {
 					}
 					if( !bindSupport )
 						onResult();
- 					*/
-					stream.set( XML.create( 'bind' ).set( 'xmlns', XMLNS_BIND ).append( XML.create( 'resource', resource ) ), function(res) {
+					 */
+					 stream.set( XML.create( 'bind' ).set( 'xmlns', XMLNS_BIND ).append( XML.create( 'resource', resource ) ), function(res:IQ) {
 						switch res.type {
 						case result:
 							var xml = XML.create( 'session' ).set( 'xmlns', XMLNS_SESSION );
 							stream.set( xml, function(res:IQ) {
-								switch res.type {
-								case result: onResult( null );
-								case error: onResult( res.error );
-								case _: throw 'invalid session response';
+								var err = switch res.type {
+								case error: res.error;
+								default: null;
 								}
+								callback( err );
 							});
-						case error: onResult( res.error );
-						case _: throw 'invalid bind response';
+						case error: callback( res.error );
+						default:
 						}
 					});
 				});
-			case 'failure': throw 'SASL failure';
+			case 'failure':
+				callback( new xmpp.Stanza.Error( null, xml.elements[0].name, xml.elements[1].text ) );
 			}
 		};
 		var text = mechanism.createAuthenticationText( node, stream.domain, password );
