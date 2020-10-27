@@ -61,14 +61,14 @@ class Stream {
 		output( xml );
 	}
 
-	public function get( payload : XML, ?jid : String, callback : (response:IQ)->Void ) {
+	public function get( payload : xmpp.IQ.Payload, ?jid : String, handler : (response:IQ)->Void ) {
 		var iq = new IQ( payload, IQType.get, createRandomStanzaId(), jid );
-		query( iq, callback );
+		query( iq, handler );
 	}
 
-	public function set( payload : XML, ?jid : String, callback : (response:IQ)->Void ) {
+	public function set( payload : xmpp.IQ.Payload, ?jid : String, handler : (response:IQ)->Void ) {
 		var iq = new IQ( payload, IQType.set, createRandomStanzaId(), jid );
-		query( iq, callback );
+		query( iq, handler );
 	}
 
 	/*

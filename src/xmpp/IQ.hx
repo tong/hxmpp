@@ -127,7 +127,7 @@ private class IQStanza extends Stanza {
 
 @:forward
 @:forwardStatics
-private abstract Payload(XML) from XML to XML {
+abstract Payload(XML) from XML to XML {
 
 	public var xmlns(get,set) : String;
 	inline function get_xmlns() : String return this.get('xmlns');
