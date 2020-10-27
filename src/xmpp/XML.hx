@@ -30,7 +30,7 @@ abstract ElementAccess(Xml) {
  
  @:noDoc
 @:forward(hasNext)
-abstract NodeIterator(Iterator<XML>) from Iterator<XML> to Iterator<XML> {
+private abstract NodeIterator(Iterator<XML>) from Iterator<XML> to Iterator<XML> {
 
     public inline function next() : XML return this.next();
 
@@ -46,7 +46,6 @@ abstract NodeIterator(Iterator<XML>) from Iterator<XML> to Iterator<XML> {
         return null;
 	}
 
-   //@:arrayAccess public function elementsNamed( name : String ) : Array<XML> {
    @:arrayAccess public function named( name : String ) : Array<XML> {
         var e = new Array<XML>();
         while( this.hasNext() ) {
@@ -120,8 +119,13 @@ abstract XML(Xml) from Xml to Xml {
         return v;
 	}
 
-    public var elements(get,never) : NodeIterator;
+    public var elements(get,set) : NodeIterator;
 	inline function get_elements() : NodeIterator return this.elements();
+	inline function set_elements( elements : NodeIterator ) : NodeIterator {
+        this.children = [];
+        for( e in elements ) this.addChild( e );
+        return this.elements();
+    }
 
 	//public var element(get,never) : ElementAccess;
 	//function get_element() : ElementAccess return new ElementAccess( this );
