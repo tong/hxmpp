@@ -13,6 +13,11 @@ private typedef Header = {
 	version : String
 }
 
+enum Response<T:IQ.Payload> {
+	Result( payload : T );
+	Error( error : xmpp.Stanza.Error );
+}
+
 class Stream {
 
 	public static inline var XMLNS = 'http://etherx.jabber.org/streams';
@@ -30,8 +35,9 @@ class Stream {
 	
 	public var ready(default,null) = false;
 	public var extensions = new Map<String,IQ->Void>();
-	public var output : String->Void;
+
 	public var input : String->Void;
+	public var output : String->Void;
 
 	var buffer : StringBuf;
 	var queries : Map<String,IQ->Void>;
@@ -40,7 +46,6 @@ class Stream {
 		this.xmlns = xmlns;
 		this.domain = domain;
         this.lang = lang;
-		version = '1.0';
 	}
 
 	public function recv( str : String ) {
@@ -61,14 +66,26 @@ class Stream {
 		output( xml );
 	}
 
-	public function get( payload : xmpp.IQ.Payload, ?jid : String, handler : (response:IQ)->Void ) {
+	//public function get<T:IQ.Payload>( payload : T, ?jid : String, handler : (response:Response<T>)->Void ) : IQ {
+	public function get<T:IQ.Payload>( payload : IQ.Payload, ?jid : String, handler : (response:Response<T>)->Void ) : IQ {
 		var iq = new IQ( payload, IQType.get, createRandomStanzaId(), jid );
-		query( iq, handler );
+		query( iq, res -> switch res.type {
+			case result: handler( Result( cast res.payload ) );
+			case error: handler( Error( res.error ) );
+			default:
+		} );
+		return iq;
 	}
 
-	public function set( payload : xmpp.IQ.Payload, ?jid : String, handler : (response:IQ)->Void ) {
+	//public function set<T:IQ.Payload>( payload : T, ?jid : String, handler : (response:Response<T>)->Void ) : IQ {
+	public function set<T:IQ.Payload>( payload : IQ.Payload, ?jid : String, handler : (response:Response<T>)->Void ) : IQ {
 		var iq = new IQ( payload, IQType.set, createRandomStanzaId(), jid );
-		query( iq, handler );
+		query( iq, res -> switch res.type {
+			case result: handler( Result( cast res.payload ) );
+			case error: handler( Error( res.error ) );
+			default:
+		} );
+		return iq;
 	}
 
 	/*
