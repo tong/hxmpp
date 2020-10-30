@@ -3,6 +3,7 @@ package xmpp.client;
 import haxe.crypto.Base64;
 import haxe.io.Bytes;
 import xmpp.sasl.Mechanism;
+import xmpp.Stream.Response;
 
 /**
 	SASL (Simple Authentication and Security Layer) client authentication.
@@ -52,19 +53,17 @@ class Authentication {
 					if( !bindSupport )
 						onResult();
 					 */
-					 stream.set( XML.create( 'bind' ).set( 'xmlns', XMLNS_BIND ).append( XML.create( 'resource', resource ) ), function(res:IQ) {
-						switch res.type {
-						case result:
+					stream.set( XML.create( 'bind' ).set( 'xmlns', XMLNS_BIND ).append( XML.create( 'resource', resource ) ), function(res) {
+						switch res {
+						case Result(r):
 							var xml = XML.create( 'session' ).set( 'xmlns', XMLNS_SESSION );
-							stream.set( xml, function(res:IQ) {
-								var err = switch res.type {
-								case error: res.error;
-								default: null;
-								}
-								callback( err );
+							stream.set( xml, function(res) {
+								callback( switch res {
+									case Error(e): e;
+									default: null;
+								});
 							});
-						case error: callback( res.error );
-						default:
+						case Error(e): callback( e );
 						}
 					});
 				});
