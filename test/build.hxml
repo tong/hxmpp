@@ -1,0 +1,45 @@
+-main Unit
+-lib hxmpp
+-lib utest
+-dce no
+-D test_unit
+--each
+
+--next
+-cpp bin/cpp
+-cmd mv bin/cpp/Unit bin/unit
+
+--next
+-cs bin/cs
+-cmd mv bin/cs/bin/Unit.exe bin/unit.exe
+
+--next
+-hl bin/unit.hl
+
+--next
+-java bin/java
+-cmd mv bin/java/Unit.jar bin/unit.jar
+
+--next
+--jvm bin/unit.jvm.jar
+
+--next
+-js bin/unit.js
+
+--next
+-js bin/unit.node.js
+-lib hxnodejs
+
+--next
+-lua bin/unit.lua
+
+--next
+-neko bin/unit.n
+
+--next
+-php bin/php
+-D php-front=unit.php
+#-cmd echo "<?php require_once dirname(__FILE__).'/bin/php/unit.php'; ?>" > bin/unit.php
+
+--next
+-python bin/unit.py

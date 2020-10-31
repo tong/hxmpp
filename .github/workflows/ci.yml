@@ -18,10 +18,15 @@ jobs:
           sudo apt-get install haxe -y
           mkdir ~/haxelib && haxelib setup ~/haxelib
           haxelib dev hxmpp .
+          haxelib install hxcpp
+          haxelib install hxcs
+          haxelib install hxjava
           haxelib install hxnodejs
           haxelib install utest
       - name: Run unit tests
         run: haxe test.hxml
+      - name: Build platform unit tests
+        run: haxe --cwd test build.hxml
       - name: Build haxedoc.xml
         run: haxe haxedoc.hxml
       - name: Build example client
