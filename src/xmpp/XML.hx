@@ -28,7 +28,7 @@ abstract ElementAccess(Xml) {
 }
  */
  
- @:noDoc
+@:noDoc
 @:forward(hasNext)
 private abstract NodeIterator(Iterator<XML>) from Iterator<XML> to Iterator<XML> {
 
@@ -169,7 +169,7 @@ abstract XML(Xml) from Xml to Xml {
         return this;
     }
 
-    @:arrayAccess public inline function getChild( i : Int ) : XML
+    @:arrayAccess public inline function getChildAt( i : Int ) : XML
         return this.children[i];
 
     /*
