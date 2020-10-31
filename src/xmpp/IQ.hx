@@ -142,13 +142,11 @@ abstract Payload(XML) from XML to XML {
 
 	inline function new( xml : XML ) this = xml;
 
-	/*
 	public static function create( xmlns : String, ?content : XML, name = 'query' ) : Payload {
 		var xml = XML.create( name ).set( 'xmlns', xmlns );
 		if( content != null ) xml.append( content );
 		return new Payload( xml );
 	}
-	*/
 
 	@:from public static inline function fromString( xmlns : String ) : Payload
 		return new Payload( XML.create( 'query' ).set( 'xmlns', xmlns ) );
