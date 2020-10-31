@@ -11,7 +11,7 @@ class TestXML extends utest.Test {
 				<item type="peas" price="4" quantity="6"/>
 				<item type="carrot" price="3" quantity="10"/>
 				<item type="chips" price="5" quantity="3"/>
-			</sales>; ');
+			</sales> ');
 
 	function test_type() {
 		equals( Xml.XmlType.Element, XML.create( 'node' ).type );
@@ -76,11 +76,25 @@ class TestXML extends utest.Test {
 
 		equals( 'peas', XML_SALES.elements.get(0).get('type') );
 		equals( 'peas', XML_SALES.elements[0].get('type') );
+		equals( 'carrot', XML_SALES.elements[1].get('type') );
 		
 		equals( 'chips', XML_SALES.elements.get(2).get('type') );
 
 		equals( 3, XML_SALES.elements.named('item').length );
 		equals( 3, XML_SALES.elements['item'].length );
+		//equals( 3, XML_SALES.elements.count() );
+
+		/* var others = XML.parse(
+			'<others>
+				<item type="aaa" price="111" quantity="111"/>
+				<item type="bbb" price="222" quantity="222"/>
+			</others> ');
+		
+		XML_SALES.elements = others.elements;
+
+		equals( 2, XML_SALES.elements.named('item').length );
+		equals( 'aaa', XML_SALES.elements.get(0).get('type') );
+		equals( 'bbb', XML_SALES.elements.get(1).get('type') ); */
 	} 
 
 /* 	function test_element() {

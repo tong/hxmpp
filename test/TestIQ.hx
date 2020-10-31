@@ -42,5 +42,17 @@ class TestIQ extends utest.Test {
 		isNull( iq.lang );
 		equals( 'http://jabber.org/protocol/disco#info', iq.payload.get('xmlns') );
 	}
+	
+	function test_payload() {
+
+		var p : xmpp.IQ.Payload = 'abc';
+		equals( 'abc', p.get('xmlns') );
+		equals( 'query', p.name );
+		
+		var p = xmpp.IQ.Payload.create( 'abc', '<feature var="123"/>', 'some' );
+		equals( 'abc', p.get('xmlns') );
+		equals( 'some', p.name );
+		equals( '123', p.elements[0].get('var') );
+	}
 
 }

@@ -6,6 +6,12 @@ class TestMessage extends utest.Test {
 
     function test_type() {
 
+		equals( 'normal', MessageType.normal );
+		equals( 'error', MessageType.error );
+		equals( 'chat', MessageType.chat );
+		equals( 'groupchat', MessageType.groupchat );
+		equals( 'headline', MessageType.headline );
+
 		equals( normal, cast('normal', MessageType) );
 		equals( error, cast('error', MessageType) );
 		equals( chat, cast('chat', MessageType) );
@@ -28,7 +34,11 @@ class TestMessage extends utest.Test {
         isNull( m.id );
         isNull( m.lang );
         //isNull( m.error );
-        //equals( 0, m.properties.length );
+        equals( chat, m.type);
+        isNull( m.body );
+        isNull( m.subject );
+        isNull( m.thread );
+        equals( 0, m.properties.length );
 
         var m = new Message( 'node@domain.com/resource', 'mybody', 'mysubject' );
         equals( 'node@domain.com/resource', m.to );
