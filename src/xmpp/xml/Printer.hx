@@ -1,9 +1,9 @@
-package xmpp.extra;
+package xmpp.xml;
 
 using StringTools;
 
 private enum EStringOrXml {
-	string( v : String );
+	str( v : String );
 	xml( v : Xml );
 }
 
@@ -12,22 +12,22 @@ private abstract StringOrXml(EStringOrXml) {
 	inline function new( sox : EStringOrXml ) this = sox;
 
 	public function isXml() : Bool return switch this {
-		case string(_): false;
+		case str(_): false;
 		case xml(_): true;
 	}
 
 	@:to public function toString() : String return switch this {
-		case string(v): v;
+		case str(v): v;
 		case xml(v): v.toString();
 	}
 
 	@:to public function toXml() : Xml return switch this {
-		case string(v): Xml.parse( v );
+		case str(v): Xml.parse( v );
 		case xml(v): v;
 	}
 
 	@:from public static inline function fromString( str : String )
-		return new StringOrXml( EStringOrXml.string( str ) );
+		return new StringOrXml( EStringOrXml.str( str ) );
 
 	@:from public static inline function fromXml( xml : Xml )
 		return new StringOrXml( EStringOrXml.xml( xml ) );
