@@ -7,9 +7,10 @@ import xmpp.Stream;
 import xmpp.client.Stream;
 import xmpp.XML;
 import xmpp.sasl.*;
-import js.node.Buffer;
 import js.node.net.Socket;
 import js.node.tls.TLSSocket;
+import Sys.print;
+import Sys.println;
 
 using xmpp.client.Authentication;
 using xmpp.client.StartTLS;
@@ -38,13 +39,13 @@ class XMPPClient {
 		if( ip == null ) ip = jid.domain;
 
 		function sendData(str:String) {
-			print( xmpp.extra.Printer.print(str,true), 32 );
+			print( xmpp.xml.Printer.print(str,true), 32 );
 			socket.write( str );
 		};
 
 		function recvData(buf) {
 			var str : String = #if nodejs buf.toString() #else buf #end;
-			print( xmpp.extra.Printer.print( str, true ), 33 );
+			print( xmpp.xml.Printer.print( str, true ), 33 );
 			stream.recv( str );
 		}
 
@@ -52,7 +53,7 @@ class XMPPClient {
 		socket.on( Data, recvData );
 		socket.on( End, () -> trace('Socket disconnected') );
 		socket.on( Error, e -> trace('Socket error',e) );
-		
+
 		stream = new Stream( jid.domain );
 		stream.onPresence = p -> trace( 'Presence from: '+p.from );
 		stream.onMessage = m -> trace( 'Message from: '+m.from );
@@ -64,6 +65,7 @@ class XMPPClient {
 
 		socket.connect( xmpp.client.Stream.PORT, ip, function() {
 			stream.start( function(features){
+				trace(features);
 				stream.startTLS( function(success){
 					if( success ) {
 						var tls = new js.node.tls.TLSSocket( socket, { requestCert: true, rejectUnauthorized: true } );
@@ -72,6 +74,7 @@ class XMPPClient {
 						tls.on( Data, recvData );
 						socket = tls;
 						stream.start( function(features){
+							for( f in features.elements ) trace(f);
 							var mech = new PlainMechanism();
 							//var mech = new SCRAMSHA1Mechanism();
 							stream.authenticate( jid.node, jid.resource, password, mech, function(?error){
@@ -80,10 +83,46 @@ class XMPPClient {
 									stream.end();
 									socket.end();
 								} else {
+
+									/* stream.extensions.set( ServiceDiscovery.XMLNS_INFO, iq -> {
+										trace(iq);
+									} ); */
+
+									/*
+									stream.getRoster( r -> {
+										switch r {
+										case Result(roster):
+											for( i in roster.items ) println( i);
+										case Error(e):
+											trace(e);
+										}
+
+										stream.send( new Presence() );
+
+										 stream.getDiscoInfo( stream.domain, r -> {
+											switch r {
+											case Result(p):
+												for( i in p.identity ) trace(i);
+												for( f in p.feature ) trace(f);
+											case Error(e):
+											}
+										});
+
+										stream.getDiscoItems( stream.domain, r -> {
+											switch r {
+											case Result(p):
+												for( i in p.items ) trace(i);
+											case Error(e):
+											}
+										});
+
+									}); */
+									/*
 									stream.query( new IQ('jabber:iq:roster'), r -> {
 										stream.send( new Presence() );
 										onReady();
 									});
+									*/
 								}
 							});
 						});
@@ -109,7 +148,7 @@ class XMPPClient {
 		if( jid.resource == null ) jid.resource = 'hxmpp';
 		var password = args[1];
 		var ip = (args[2] == null) ? jid.domain : args[2];
-		
+
 		var client = new XMPPClient( jid, password );
 		client.login( ip, () -> {
 			trace("Client connected");
