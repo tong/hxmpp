@@ -14,6 +14,8 @@ import Sys.println;
 
 using xmpp.client.Authentication;
 using xmpp.client.StartTLS;
+using xmpp.client.Roster;
+using xmpp.ServiceDiscovery;
 
 class XMPPClient {
 
