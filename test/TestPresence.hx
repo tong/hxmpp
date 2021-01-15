@@ -17,7 +17,7 @@ class TestPresence extends utest.Test {
         isNull( p.priority );
 
 		var str = '<presence></presence>';
-		var xml = Xml.parse( str ).firstElement();
+		var xml : XML = Xml.parse( str ).firstElement();
 
 		var p = Presence.fromString( str );
 		isNull( p.to );
