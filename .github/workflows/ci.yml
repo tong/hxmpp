@@ -11,12 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.1.5
       - name: Setup haxe
         run: |
-          sudo add-apt-repository ppa:haxe/releases -y
-          sudo apt-get update
-          sudo apt-get install haxe -y
-          mkdir ~/haxelib && haxelib setup ~/haxelib
+          haxe -version
           haxelib dev hxmpp .
           haxelib install hxcpp
           haxelib install hxcs
