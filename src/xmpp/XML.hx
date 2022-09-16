@@ -86,7 +86,7 @@ private abstract NodeIterator(Iterator<XML>) from Iterator<XML> to Iterator<XML>
 }
 
 @:access(Xml)
-@:forward(attributes)
+@:forward(attributes,children)
 abstract XML(Xml) from Xml to Xml {
 
     public var parent(get,never) : XML;
