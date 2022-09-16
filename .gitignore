@@ -8,3 +8,4 @@ ref/
 test/bin/
 xsd/
 haxedoc.xml
+.unittest/

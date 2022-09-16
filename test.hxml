@@ -1,6 +1,6 @@
--lib hxmpp
--lib utest
 -main Unit
 -cp test
--x Unit
+-lib hxmpp
+-lib utest
 -dce no
+-x Unit
