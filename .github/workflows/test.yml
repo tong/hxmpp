@@ -12,20 +12,39 @@ jobs:
       - uses: krdlab/setup-haxe@v1.1.7
         with:
           haxe-version: 4.2.5
-      - name: Setup haxe
+      - name: Setup
         run: |
           haxe -version
           haxelib dev hxmpp .
+          haxelib install haxelib.json
+          haxelib install test.hxml
           haxelib install hxcpp
           haxelib install hxcs
           haxelib install hxjava
           haxelib install hxnodejs
-          haxelib install utest
       - name: Run unit tests
         run: haxe test.hxml
-      - name: Build platform unit tests
-        run: haxe --cwd test build.hxml
+      - name: Build unit tests (cpp)
+        run: haxe --cwd test build-cpp.hxml
+      - name: Build unit tests (cs)
+        run: haxe --cwd test build-cs.hxml
+      - name: Build unit tests (hl)
+        run: haxe --cwd test build-hl.hxml
+      - name: Build unit tests (java)
+        run: haxe --cwd test build-java.hxml
+      - name: Build unit tests (jvm)
+        run: haxe --cwd test build-jvm.hxml
+      - name: Build unit tests (lua)
+        run: haxe --cwd test build-lua.hxml
+      - name: Build unit tests (neko)
+        run: haxe --cwd test build-neko.hxml
+      - name: Build unit tests (nodejs)
+        run: haxe --cwd test build-nodejs.hxml
+      - name: Build unit tests (php)
+        run: haxe --cwd test build-php.hxml
+      - name: Build unit tests (python)
+        run: haxe --cwd test build-python.hxml
       - name: Build haxedoc.xml
         run: haxe haxedoc.hxml
-      - name: Build example client
+      - name: Build example
         run: haxe --cwd example build.hxml
