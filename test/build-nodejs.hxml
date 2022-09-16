@@ -1,0 +1,3 @@
+unit.hxml
+-js bin/unit.node.js
+-lib hxnodejs

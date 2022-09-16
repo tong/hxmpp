@@ -1,0 +1,4 @@
+unit.hxml
+-php bin/php
+-D php-front=unit.php
+#-cmd echo "<?php require_once dirname(__FILE__).'/bin/php/unit.php'; ?>" > bin/unit.php

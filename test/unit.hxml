@@ -1,0 +1,5 @@
+-main Unit
+-lib hxmpp
+-lib utest
+-dce no
+-D test_unit
