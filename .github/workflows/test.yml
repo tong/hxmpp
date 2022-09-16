@@ -16,12 +16,12 @@ jobs:
         run: |
           haxe -version
           haxelib dev hxmpp .
-          haxelib install haxelib.json
           haxelib install test.hxml
           haxelib install hxcpp
           haxelib install hxcs
           haxelib install hxjava
           haxelib install hxnodejs
+          haxelib install utest
       - name: Run unit tests
         run: haxe test.hxml
       - name: Build unit tests (cpp)
