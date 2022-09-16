@@ -20,4 +20,4 @@ haxelib install hxmpp
 haxelib git https://github.com/tong/hxmpp
 ```
 
-[![test](https://github.com/tong/hxmpp/workflows/test/badge.svg)](https://github.com/tong/hxmpp) [![Haxelib Version](https://img.shields.io/github/v/tag/tong/hxmpp.svg?colorA=F68712&colorB=141419&label=haxelib&style=flat-square)](http://lib.haxe.org/p/hxmpp/)
+[![test](https://github.com/tong/hxmpp/actions/workflows/test.yml/badge.svg)](https://github.com/tong/hxmpp/actions/workflows/test.yml) [![haxelib](https://img.shields.io/github/v/tag/tong/hxmpp.svg?colorA=F68712&colorB=141419&label=haxelib&style=flat-square)](http://lib.haxe.org/p/hxmpp/)
