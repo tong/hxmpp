@@ -8,5 +8,7 @@
 	"releasenote": "See CHANGELOG.md",
 	"contributors": ["tong"],
 	"classPath" : "src/",
-	"dependencies": {}
+	"dependencies": {
+        "sasl": ""
+    }
 }

@@ -13,7 +13,6 @@ class Unit {
 		runner.addCase( new TestPresence() );
 		runner.addCase( new TestPrinter() );
 		runner.addCase( new TestIQ() );
-		runner.addCase( new TestSASL() );
 		runner.addCase( new TestStream() );
 
         utest.ui.Report.create( runner );
