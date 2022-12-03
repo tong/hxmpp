@@ -1,7 +1,10 @@
 -js app.js
--main XMPPClient
+-main App
 -lib hxmpp
 -lib hxnodejs
 -dce full
 -debug
 -D xmpp_debug
+-D js-es=6
+-D analyzer-optimize
+

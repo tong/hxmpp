@@ -17,7 +17,7 @@ jobs:
           haxe --version
           haxelib git sasl https://github.com/tong/hxsasl
           haxelib dev hxmpp .
-          haxelib install test.hxml
+          haxelib install test.hxml --always
           haxelib install hxcpp
           haxelib install hxcs
           haxelib install hxjava
@@ -47,5 +47,7 @@ jobs:
         run: haxe --cwd test build-python.hxml
       - name: Build haxedoc.xml
         run: haxe haxedoc.hxml
-      - name: Build example
-        run: haxe --cwd example build.hxml
+      - name: Build example [node]
+        run: haxe --cwd example node.hxml
+      # - name: Build example [hl]
+      #   run: haxe --cwd example hl.hxml

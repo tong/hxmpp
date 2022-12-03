@@ -6,7 +6,6 @@ import xmpp.Presence;
 import xmpp.Stream;
 import xmpp.client.Stream;
 import xmpp.XML;
-import xmpp.sasl.*;
 import js.node.net.Socket;
 import js.node.tls.TLSSocket;
 import Sys.print;
@@ -14,8 +13,9 @@ import Sys.println;
 
 using xmpp.client.Authentication;
 using xmpp.client.StartTLS;
+using xmpp.client.Roster;
 
-class XMPPClient {
+class App {
 
 	static function print( str : String, ?color : Int ) {
 		if( color != null ) str = '\x1B['+color+'m'+str+'\x1B[0m';
@@ -34,7 +34,7 @@ class XMPPClient {
 		this.password = password;
 	}
 
-	public function login( ?ip : String, onReady : Void->Void ) {
+	public function login( ?ip : String, callback : Void->Void ) {
 
 		if( ip == null ) ip = jid.domain;
 
@@ -75,14 +75,40 @@ class XMPPClient {
 						socket = tls;
 						stream.start( function(features){
 							for( f in features.elements ) trace(f);
-							var mech = new PlainMechanism();
-							//var mech = new SCRAMSHA1Mechanism();
+							var mech = new sasl.PlainMechanism();
+							//var mech = new sasl.AnonymousMechanism();
+							//var mech = new sasl.SCRAMSHA1Mechanism();
 							stream.authenticate( jid.node, jid.resource, password, mech, function(?error){
 								if( error != null ) {
 									trace( error.condition, error.text );
 									stream.end();
 									socket.end();
 								} else {
+
+									//var muc = new MUC( stream, 'conference.x.disktree.net', 'disktree' );
+									//muc.join('tong');
+
+                                    stream.getRoster(r -> switch r {
+                                        case Result(r):
+                                            trace('Roster ver=${r.ver} loaded');
+                                            for(item in r.items) {
+                                                trace(item);
+                                            }
+                                            stream.send(new Presence());
+                                            callback();
+                                        case Error(e):
+                                            trace(e);
+                                    });
+
+									/* stream.getRoster( r -> switch r {
+									case Result(payload):
+										trace( 'Roster v${payload.ver} loaded' );
+	
+									for( item in payload.items ) {
+											trace(item.name+': '+item.jid);
+										}
+									case Error(error): trace(error);
+									}); */
 
 									/* stream.extensions.set( ServiceDiscovery.XMLNS_INFO, iq -> {
 										trace(iq);
@@ -149,7 +175,7 @@ class XMPPClient {
 		var password = args[1];
 		var ip = (args[2] == null) ? jid.domain : args[2];
 
-		var client = new XMPPClient( jid, password );
+		var client = new App( jid, password );
 		client.login( ip, () -> {
 			trace("Client connected");
 		});
