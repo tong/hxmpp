@@ -87,19 +87,7 @@ class App {
 
 									//var muc = new MUC( stream, 'conference.x.disktree.net', 'disktree' );
 									//muc.join('tong');
-
-                                    stream.getRoster(r -> switch r {
-                                        case Result(r):
-                                            trace('Roster ver=${r.ver} loaded');
-                                            for(item in r.items) {
-                                                trace(item);
-                                            }
-                                            stream.send(new Presence());
-                                            callback();
-                                        case Error(e):
-                                            trace(e);
-                                    });
-
+                                  
 									/* stream.getRoster( r -> switch r {
 									case Result(payload):
 										trace( 'Roster v${payload.ver} loaded' );
