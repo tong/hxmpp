@@ -23,47 +23,38 @@ class Stream extends xmpp.Stream {
 
 	//public function start( callback : XML->Void, headerName = 'stream:stream' ) {
 	//TODO public function start( callback : xmpp.Stanza.Error->XML->Void ) {
-	public function start( callback : (features:XML)->Void ) {
-
+	//public function start( callback : (features:Array<XML>)->Void ) {
+	public function start( callback : (features:XML)->Void ) : Stream {
 		reset();
-
 		input = function(str) {
-
 			if( str == '</stream:stream>' ) {
-				//ready = false;
 				reset();
-				//state = ended;
+				onEnd();
 				return;
 			}
-
 			if( ready ) {
 				handleString( str );
 			} else {
-
 				if( id == null ) {
-					
 					var header = xmpp.Stream.readHeader( str );
 					id = header.id;
 					version = header.version;
-
 					var features = xmpp.Stream.readFeatures( str );
 					if( features != null ) {
 						ready = true;
 						callback( features );
 					}
-
 				} else {
 					//TODO remove
 					var features = xmpp.Stream.readFeatures( str );
-					ready = true;
-					callback( features );
-					//TODO
+					if( features != null ) {
+						ready = true;
+						callback( features );
+					}
 				}
 			}
 		}
-
 		output( xmpp.Stream.createHeader( XMLNS, domain, version, lang ) );
-
 		return this;
 	}
 
@@ -105,6 +96,7 @@ class Stream extends xmpp.Stream {
 						}
 						*/
 					} else {
+						//TODO
 						trace( '?? unknown iq' );
 						var res = new IQ( error, iq.from, iq.to, iq.id );
 						res.error = new xmpp.Stanza.Error( cancel, 'feature-not-implemented' );
@@ -116,7 +108,7 @@ class Stream extends xmpp.Stream {
 		case 'stream:error':
 			trace("TODO");
 		default:
-			trace( '?? invalid stanza' );
+			trace( '?? invalid stanza', xml );
 		}
 	}
 

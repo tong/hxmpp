@@ -1,5 +1,6 @@
 package xmpp;
 
+import haxe.macro.Expr.Error;
 import haxe.crypto.Md5;
 import xmpp.IQ;
 
@@ -22,6 +23,8 @@ class Stream {
 
 	public static inline var XMLNS = 'http://etherx.jabber.org/streams';
 
+	public dynamic function onEnd() {}
+
 	public dynamic function onMessage( m : Message ) {}
 	public dynamic function onPresence( p : Presence ) {}
 	public dynamic function onIQ( iq : IQ ) {}
@@ -29,10 +32,10 @@ class Stream {
 	public final xmlns : String;
 	public final domain : String;
 	public final lang : String;
-	
+
 	public var id(default,null) : String;
 	public var version(default,null) = "1.0";
-	
+
 	public var ready(default,null) = false;
 	public var extensions = new Map<String,IQ->Void>();
 
@@ -71,7 +74,16 @@ class Stream {
 		var iq = new IQ( payload, IQType.get, createRandomStanzaId(), jid );
 		query( iq, res -> switch res.type {
 			case result: handler( Result( cast res.payload ) );
-			case error: handler( Error( res.error ) );
+			case error:
+				handler( Error( res.error ) );
+				/* if( res.error != null ) {
+					handler( Error( res.error ) );
+				} else {
+					if( res.payload != null ) {
+						handler(  new xmpp.Stanza.Error() );
+					}
+					//handler( Error( res.error ) );
+				} */
 			default:
 		} );
 		return iq;
@@ -82,7 +94,9 @@ class Stream {
 		var iq = new IQ( payload, IQType.set, createRandomStanzaId(), jid );
 		query( iq, res -> switch res.type {
 			case result: handler( Result( cast res.payload ) );
-			case error: handler( Error( res.error ) );
+			case error:
+				trace(res.error);
+				handler( Error( res.error ) );
 			default:
 		} );
 		return iq;
@@ -187,8 +201,8 @@ class Stream {
 			return null;
 		str = str.substr( i );
 		i = str.indexOf( "</stream:stream>" );
-		if( i != -1 ) 	str = str.substr( 0, i );
-		return str;
+		if( i != -1 ) str = str.substr( 0, i );
+		return XML.parse( str );
 	}
 
 }
