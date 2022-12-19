@@ -6,14 +6,13 @@ using xmpp.Stanza;
 	Optional <show/> element specifying the particular availability sub-state of an entity or a specific resource thereof.
 
 	See: http://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-show
-*/
+ */
 enum abstract Show(String) to String {
-
 	/** Especially socialable */
 	var chat;
 
 	/** Away from device */
-	var away ;
+	var away;
 
 	/** Extended Away */
 	var xa;
@@ -21,13 +20,14 @@ enum abstract Show(String) to String {
 	/** Busy */
 	var dnd;
 
-	@:from public static inline function fromString( s : String ) return switch s {
-		case 'chat': chat;
-		case 'away': away;
-		case 'xa': xa;
-		case 'dnd': dnd;
-		case _: null;
-	}
+	@:from public static inline function fromString(s:String)
+		return switch s {
+			case 'chat': chat;
+			case 'away': away;
+			case 'xa': xa;
+			case 'dnd': dnd;
+			case _: null;
+		}
 }
 
 /**
@@ -39,9 +39,8 @@ enum abstract Show(String) to String {
 	 - There is no value of "available" for the 'type' attribute of the <presence/> element.
 
 	See: http://xmpp.org/rfcs/rfc6121.html#presence-syntax-type
-*/
+ */
 enum abstract PresenceType(String) to String {
-
 	/** An error has occurred regarding processing or delivery of a previously-sent presence stanza. */
 	var error;
 
@@ -63,15 +62,16 @@ enum abstract PresenceType(String) to String {
 	/** The subscription request has been denied or a previously-granted subscription has been cancelled. */
 	var unsubscribed;
 
-	@:from public static inline function fromString( s : String ) return switch s {
-		case 'error': error;
-		case 'probe': probe;
-		case 'subscribe': subscribe;
-		case 'unavailable': unavailable;
-		case 'unsubscribe': unsubscribe;
-		case 'unsubscribed': unsubscribed;
-		case _: null;
-	}
+	@:from public static inline function fromString(s:String)
+		return switch s {
+			case 'error': error;
+			case 'probe': probe;
+			case 'subscribe': subscribe;
+			case 'unavailable': unavailable;
+			case 'unsubscribe': unsubscribe;
+			case 'unsubscribed': unsubscribed;
+			case _: null;
+		}
 }
 
 /**
@@ -79,16 +79,16 @@ enum abstract PresenceType(String) to String {
 	It is normally used in conjunction with the show element to provide a detailed description of an availability state (e.g., "In a meeting") when the presence stanza has no `type` attribute.
 
 	See: http://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-status
-*/
+ */
 abstract Status(String) from String to String {
+	@:noCompletion public inline function new(s:String)
+		this = s;
 
-	@:noCompletion public inline function new( s : String ) this = s;
+	@:to public inline function toXML():XML
+		return XML.create("status", this);
 
-	@:to public inline function toXML() : XML
-		return XML.create( "status", this );
-
-	@:from public static inline function fromXML( xml : XML ) : Status
-		return new Status( xml.text );
+	@:from public static inline function fromXML(xml:XML):Status
+		return new Status(xml.text);
 }
 
 /**
@@ -96,33 +96,31 @@ abstract Status(String) from String to String {
 	The value MUST be an integer between `-128` and `+127`.
 
 	http://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-priority
-*/
+ */
 abstract Priority(Int) from Int to Int {
-
 	public static inline var MIN = -128;
-	public static inline var MAX =  127;
+	public static inline var MAX = 127;
 
-	@:noCompletion public function new( i : Int )
+	@:noCompletion public function new(i:Int)
 		this = i < MIN ? MIN : i > MAX ? MAX : i;
 
-	@:to public inline function toXML() : XML
-		return XML.create( "priority", Std.string( this ) );
+	@:to public inline function toXML():XML
+		return XML.create("priority", Std.string(this));
 
-	@:from public static inline function fromFloat( f : Float )
-		return new Priority( Std.int( f ) );
+	@:from public static inline function fromFloat(f:Float)
+		return new Priority(Std.int(f));
 
-	@:from public static inline function fromString( s : String )
-		return new Priority( Std.parseInt( s ) );
+	@:from public static inline function fromString(s:String)
+		return new Priority(Std.parseInt(s));
 
-	@:from public static inline function fromXML( x : XML )
-		return new Priority( fromString( x.text ) );
+	@:from public static inline function fromXML(x:XML)
+		return new Priority(fromString(x.text));
 }
 
 /**
 	Presence subscription states.
-*/
+ */
 enum abstract Subscription(String) to String {
-
 	/** The user and subscriber have no interest in each other's presence. */
 	var none;
 
@@ -138,14 +136,15 @@ enum abstract Subscription(String) to String {
 	/** The user wishes to stop receiving presence updates from the subscriber. */
 	var remove;
 
-	@:from public static inline function fromString( s : String ) return switch s {
-		case 'none': none;
-		case 'to': to;
-		case 'from': from;
-		case 'both': both;
-		case 'remove': remove;
-		case _: null;
-	}
+	@:from public static inline function fromString(s:String)
+		return switch s {
+			case 'none': none;
+			case 'to': to;
+			case 'from': from;
+			case 'both': both;
+			case 'remove': remove;
+			case _: null;
+		}
 }
 
 /**
@@ -155,49 +154,44 @@ enum abstract Subscription(String) to String {
 	 - [Exchanging Presence Information](http://www.xmpp.org/rfcs/rfc3921.html#presence)
 
 	The <presence/> element represents a broadcast or "publish-subscribe" mechanism, whereby multiple entities receive information about an entity to which they have subscribed (in this case, network availability information).
-*/
-@:forward(
-	from,to,id,lang,properties,
-	type,show,status,priority
-)
+ */
+@:forward(from, to, id, lang, properties, type, show, status, priority)
 abstract Presence(PresenceStanza) to Stanza {
-
 	public static inline var NAME = 'presence';
 
-	public inline function new( ?show : Show, ?status : Status, ?priority : Priority, ?type : PresenceType )
-		this = new PresenceStanza( show, status, priority, type );
+	public inline function new(?show:Show, ?status:Status, ?priority:Priority, ?type:PresenceType)
+		this = new PresenceStanza(show, status, priority, type);
 
-	@:to public inline function toXML() : XML
+	@:to public inline function toXML():XML
 		return this.toXML();
 
-	@:to public inline function toString() : String
+	@:to public inline function toString():String
 		return this.toString();
 
-	@:from public static inline function fromString( str : String ) : Presence
-		return fromXML( XML.parse( str ) );
+	@:from public static inline function fromString(str:String):Presence
+		return fromXML(XML.parse(str));
 
-	@:from public static inline function fromXML( xml : XML ) : Presence
-		return PresenceStanza.parse( xml );
+	@:from public static inline function fromXML(xml:XML):Presence
+		return PresenceStanza.parse(xml);
 }
 
 private class PresenceStanza extends Stanza {
+	/**/
+	public var type:PresenceType;
 
 	/**/
-	public var type : PresenceType;
-	
+	public var show:Show;
+
 	/**/
-	public var show : Show;
-	
+	public var status:Status;
+
 	/**/
-	public var status : Status;
-	
+	public var priority:Null<Priority>;
+
 	/**/
-	public var priority : Null<Priority>;
-	
-	/**/
-	public var properties : Array<XML> = [];
-	
-	public function new( ?show : Show, ?status : String, ?priority : Priority, ?type : PresenceType ) {
+	public var properties:Array<XML> = [];
+
+	public function new(?show:Show, ?status:String, ?priority:Priority, ?type:PresenceType) {
 		super();
 		this.show = show;
 		this.status = status;
@@ -205,27 +199,36 @@ private class PresenceStanza extends Stanza {
 		this.type = type;
 	}
 
-	public override function toXML() : XML {
-		var xml = Stanza.createXML( this, Presence.NAME );
-		if( type != null ) xml.set( "type", type );
-		if( show != null ) xml.append( XML.create( "show", show ) );
-		if( status != null ) xml.append( XML.create( "status", status ) );
-		if( priority != null ) xml.append( priority );
-		for( p in properties ) xml.append( p );
+	public override function toXML():XML {
+		var xml = Stanza.createXML(this, Presence.NAME);
+		if (type != null)
+			xml.set("type", type);
+		if (show != null)
+			xml.append(XML.create("show", show));
+		if (status != null)
+			xml.append(XML.create("status", status));
+		if (priority != null)
+			xml.append(priority);
+		for (p in properties)
+			xml.append(p);
 		return xml;
 	}
 
-	public static function parse( xml : XML ) : Presence {
-		var p = Stanza.parseAttributes( new Presence(), xml );
-		p.type = xml.get( 'type' );
-		for( e in xml.elements ) {
+	public static function parse(xml:XML):Presence {
+		var p = Stanza.parseAttributes(new Presence(), xml);
+		p.type = xml.get('type');
+		for (e in xml.elements) {
 			switch e.name {
-			//case 'show': PresenceShow.fromString(e.text);
-			case 'show': p.show = cast e.text ;
-			case 'status': p.status = Std.string( e.text );
-			case 'priority': p.priority = Std.parseInt( e.text );
-			case 'error': //TODO:
-			default: p.properties.push( e );
+				// case 'show': PresenceShow.fromString(e.text);
+				case 'show':
+					p.show = cast e.text;
+				case 'status':
+					p.status = Std.string(e.text);
+				case 'priority':
+					p.priority = Std.parseInt(e.text);
+				case 'error': // TODO:
+				default:
+					p.properties.push(e);
 			}
 		}
 		return p;

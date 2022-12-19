@@ -2,7 +2,8 @@ _*
 doc/
 exp/
 example/*.hl
-example/*.js*
+example/*.js
+example/*.js.map
 example/*.n
 ref/
 test/bin/

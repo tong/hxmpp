@@ -1,7 +1,6 @@
 package xmpp;
 
 enum abstract MessageType(String) to String {
-
 	/**
 	 * The message is a standalone message that is sent outside the context of a one-to-one conversation or groupchat, and to which it is expected that the recipient will reply.
 	 */
@@ -27,14 +26,15 @@ enum abstract MessageType(String) to String {
 	 */
 	var headline;
 
-	@:from public static function fromString( s : String ) return switch s {
-		case 'normal': normal;
-		case 'error': error;
-		case 'chat': chat;
-		case 'groupchat': groupchat;
-		case 'headline': headline;
-		case _: null;
-	}
+	@:from public static function fromString(s:String)
+		return switch s {
+			case 'normal': normal;
+			case 'error': error;
+			case 'chat': chat;
+			case 'groupchat': groupchat;
+			case 'headline': headline;
+			case _: null;
+		}
 }
 
 /**
@@ -43,52 +43,45 @@ enum abstract MessageType(String) to String {
 	- [RFC-3921 - Instant Messaging and Presence](http://xmpp.org/rfcs/rfc3921.html)
 
 	The <message/> stanza kind can be seen as a "push" mechanism whereby one entity pushes information to another entity.
-*/
-@:forward(
-	from,to,id,lang,
-	type,
-	body,subject,thread,
-	properties
-)
+ */
+@:forward(from, to, id, lang, type, body, subject, thread, properties)
 abstract Message(MessageStanza) to Stanza {
-
 	public static inline var NAME = 'message';
 
-	public inline function new( ?to : String, ?body : String, ?subject : String, ?type : Null<MessageType>, ?thread : String, ?from : String )
-		this = new MessageStanza( to, body, subject, type, thread, from );
+	public inline function new(?to:String, ?body:String, ?subject:String, ?type:Null<MessageType>, ?thread:String, ?from:String)
+		this = new MessageStanza(to, body, subject, type, thread, from);
 
-	@:to public inline function toXML() : XML
+	@:to public inline function toXML():XML
 		return this.toXML();
 
-	@:to public inline function toString() : String
+	@:to public inline function toString():String
 		return this.toString();
 
-	@:from public static inline function fromString( str : String ) : Message
-		return fromXML( XML.parse( str ) );
+	@:from public static inline function fromString(str:String):Message
+		return fromXML(XML.parse(str));
 
-	@:from public static inline function fromXML( xml : XML ) : Message
-		return MessageStanza.parse( xml );
+	@:from public static inline function fromXML(xml:XML):Message
+		return MessageStanza.parse(xml);
 }
 
 private class MessageStanza extends Stanza {
-
 	/***/
-	public var type : MessageType;
+	public var type:MessageType;
 
 	/** Human-readable XML character data that specifies the textual contents */
-    public var body : String;
+	public var body:String;
 
 	/** Human-readable XML character data that specifies the topic */
-    public var subject : String;
+	public var subject:String;
 
 	/** String to uniquely identify a conversation thread or "chat session" */
-    public var thread : String;
+	public var thread:String;
 
 	/** */
-    public var properties : Array<XML>;
+	public var properties:Array<XML>;
 
-	public function new( ?to : String, ?body : String, ?subject : String, ?type : Null<MessageType>, ?thread : String, ?from : String ) {
-		super( to, from );
+	public function new(?to:String, ?body:String, ?subject:String, ?type:Null<MessageType>, ?thread:String, ?from:String) {
+		super(to, from);
 		this.body = body;
 		this.subject = subject;
 		this.type = (type != null) ? type : chat;
@@ -96,24 +89,32 @@ private class MessageStanza extends Stanza {
 		properties = [];
 	}
 
-	public override function toXML() : XML {
-		var xml = Stanza.createXML( this, Message.NAME );
-		if( type != null ) xml.set( "type", Std.string(type) );
-		if( body != null ) xml.append( XML.create( "body", body ) );
-		if( thread != null ) xml.append( XML.create( "thread", thread ) );
-		for( e in properties ) xml.append( e );
+	public override function toXML():XML {
+		var xml = Stanza.createXML(this, Message.NAME);
+		if (type != null)
+			xml.set("type", Std.string(type));
+		if (body != null)
+			xml.append(XML.create("body", body));
+		if (thread != null)
+			xml.append(XML.create("thread", thread));
+		for (e in properties)
+			xml.append(e);
 		return xml;
 	}
 
-	public static function parse( xml : XML ) : Message {
-		var m = Stanza.parseAttributes( new Message(), xml );
-		m.type = xml.get( 'type' );
-		for( e in xml.elements ) {
+	public static function parse(xml:XML):Message {
+		var m = Stanza.parseAttributes(new Message(), xml);
+		m.type = xml.get('type');
+		for (e in xml.elements) {
 			switch e.name {
-			case 'body': m.body = e.text;
-			case 'subject': m.subject = e.text;
-			case 'thread': m.thread = e.text;
-			default: m.properties.push( e );
+				case 'body':
+					m.body = e.text;
+				case 'subject':
+					m.subject = e.text;
+				case 'thread':
+					m.thread = e.text;
+				default:
+					m.properties.push(e);
 			}
 		}
 		return m;

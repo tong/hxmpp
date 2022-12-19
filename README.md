@@ -1,4 +1,3 @@
-
 HXMPP
 =====
 > [Haxe](https://haxe.org/) [XMPP](https://xmpp.org/) library
