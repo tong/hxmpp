@@ -4,29 +4,29 @@ enum abstract IQType(String) from String to String {
 	/**
 		The stanza requests information, inquires about what data is needed in order to complete further operations.
 	 */
-	var get;
+	var Get = "get";
 
 	/**
 		The stanza provides data that is needed for an operation to be completed, sets new values, replaces existing values, etc.
 	 */
-	var set;
+	var Set = "set";
 
 	/**
 		The stanza is a response to a successful get or set request.
 	 */
-	var result;
+	var Result = "result";
 
 	/**
 		The stanza reports an error that has occurred regarding processing or delivery of a get or set request.
 	 */
-	var error;
+	var Error = "error";
 
 	@:from public static function fromString(s:String)
 		return switch s {
-			case 'get': get;
-			case 'set': set;
-			case 'result': result;
-			case 'error': error;
+			case 'get': Get;
+			case 'set': Set;
+			case 'result': Result;
+			case 'error': Error;
 			case _: null;
 		}
 }
@@ -70,7 +70,7 @@ enum abstract IQType(String) from String to String {
 abstract IQ(IQStanza) to Stanza {
 	public static inline var NAME = 'iq';
 
-	public inline function new(?payload:Payload, type = IQType.get, ?id:String, ?to:String, ?from:String)
+	public inline function new(?payload:Payload, type = IQType.Get, ?id:String, ?to:String, ?from:String)
 		this = new IQStanza(payload, type, id, to, from);
 
 	@:to public inline function toXML():XML
@@ -118,9 +118,9 @@ private class IQStanza extends Stanza {
 	public static function parse(xml:XML):IQ {
 		var iq = Stanza.parseAttributes(new IQ(null, xml.get('type')), xml);
 		switch iq.type {
-			case error:
+			case Error:
 				iq.error = xmpp.Stanza.Error.fromXML(xml.firstElement);
-			case get, set, result:
+			case Get, Set, Result:
 				iq.payload = xml.firstElement;
 		}
 		return iq;

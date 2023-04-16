@@ -72,7 +72,7 @@ class Stream extends xmpp.Stream {
 			case 'iq':
 				var iq:IQ = xml;
 				switch iq.type {
-					case result, error:
+					case Result, Error:
 						if (queries.exists(iq.id)) {
 							var h = queries.get(iq.id);
 							queries.remove(iq.id);
@@ -80,7 +80,7 @@ class Stream extends xmpp.Stream {
 						} else {
 							trace('??');
 						}
-					case get, set:
+					case Get, Set:
 						if (iq.payload != null) {
 							var ns = iq.payload.xmlns;
 							if (extensions.exists(ns)) {
@@ -97,7 +97,7 @@ class Stream extends xmpp.Stream {
 							} else {
 								// TODO
 								trace('?? unknown iq');
-								var res = new IQ(error, iq.from, iq.to, iq.id);
+								var res = new IQ(Error, iq.from, iq.to, iq.id);
 								res.error = new xmpp.Stanza.Error(cancel, 'feature-not-implemented');
 								send(res);
 								// onIQ( iq );

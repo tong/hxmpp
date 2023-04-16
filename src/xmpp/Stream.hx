@@ -73,10 +73,10 @@ class Stream {
 
 	// public function get<T:IQ.Payload>( payload : T, ?jid : String, handler : (response:Response<T>)->Void ) : IQ {
 	public function get<T:IQ.Payload>(payload:IQ.Payload, ?jid:String, handler:(response:Response<T>) -> Void):IQ {
-		var iq = new IQ(payload, IQType.get, createRandomStanzaId(), jid);
+		var iq = new IQ(payload, IQType.Get, createRandomStanzaId(), jid);
 		query(iq, res -> switch res.type {
-			case result: handler(Result(cast res.payload));
-			case error:
+			case Result: handler(Result(cast res.payload));
+			case Error:
 				handler(Error(res.error));
 			/* if( res.error != null ) {
 					handler( Error( res.error ) );
@@ -93,10 +93,10 @@ class Stream {
 
 	// public function set<T:IQ.Payload>( payload : T, ?jid : String, handler : (response:Response<T>)->Void ) : IQ {
 	public function set<T:IQ.Payload>(payload:IQ.Payload, ?jid:String, handler:(response:Response<T>) -> Void):IQ {
-		var iq = new IQ(payload, IQType.set, createRandomStanzaId(), jid);
+		var iq = new IQ(payload, IQType.Set, createRandomStanzaId(), jid);
 		query(iq, res -> switch res.type {
-			case result: handler(Result(cast res.payload));
-			case error:
+			case Result: handler(Result(cast res.payload));
+			case Error:
 				trace(res.error);
 				handler(Error(res.error));
 			default:
