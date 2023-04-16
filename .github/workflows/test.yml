@@ -9,9 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: krdlab/setup-haxe@v1.2.0
+      - uses: krdlab/setup-haxe@v1.5.0
         with:
-          haxe-version: 4.2.5
+          haxe-version: 4.3.0
       - name: Setup
         run: |
           haxe --version
