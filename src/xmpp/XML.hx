@@ -18,15 +18,6 @@ private abstract Text(String) from String to String {
 		}
 }
 
-/* 
-	abstract ElementAccess(Xml) {
-
-	public inline function new( xml : Xml ) this = xml;
-
-	@:arrayAccess public inline function elementsNamed( s : String ) : NodeIterator
-		return this.elementsNamed(s);
-	}
- */
 @:noDoc
 @:forward(hasNext)
 private abstract NodeIterator(Iterator<XML>) from Iterator<XML> to Iterator<XML> {
@@ -57,8 +48,7 @@ private abstract NodeIterator(Iterator<XML>) from Iterator<XML> to Iterator<XML>
 
 	public function count():Int {
 		var i = 0;
-		while (next() != null)
-			i++;
+		while (next() != null) i++;
 		return i;
 	}
 	/*
@@ -110,7 +100,7 @@ abstract XML(Xml) from Xml to Xml {
 
 	public var xmlns(get, set):String;
 
-	public inline function get_xmlns()
+	public inline function get_xmlns():String
 		return this.get('xmlns');
 
 	public inline function set_xmlns(ns:String): String {
@@ -148,8 +138,7 @@ abstract XML(Xml) from Xml to Xml {
 
 	inline function set_elements(elements:NodeIterator):NodeIterator {
 		this.children = [];
-		for (e in elements)
-			this.addChild(e);
+		for (e in elements) this.addChild(e);
 		return this.elements();
 	}
 
@@ -167,6 +156,14 @@ abstract XML(Xml) from Xml to Xml {
 		return this;
 	}
 
+    @:op(a.b) public inline function fieldRead(name:String) : String
+        return this.get(name);
+
+    @:op(a.b) public inline function fieldWrite(name:String, value:String) : String {
+        this.set(name, value);
+        return value;
+    }
+
 	// public inline function is( xmlns : String ) : Bool
 	//   return get( 'xmlns' ) == xmlns;
 
@@ -183,7 +180,7 @@ abstract XML(Xml) from Xml to Xml {
 		return this;
 	}
 
-	public inline function addChild(x:XML)
+	public inline function addChild(x:XML):Void
 		this.addChild(x);
 
 	public inline function removeChild(x:XML):Bool
@@ -207,6 +204,10 @@ abstract XML(Xml) from Xml to Xml {
 			return this;
 		}
 	 */
+
+    //public inline function iterator() : NodeIterator
+    //    return this.elements();
+
 	@:to public inline function toString():String
 		return this.toString();
 
@@ -225,9 +226,8 @@ abstract XML(Xml) from Xml to Xml {
 		}
 	}
 
-	@:from public static inline function parse(s:String):XML {
+	@:from public static inline function parse(s:String):XML
 		return fromXml(Xml.parse(s).firstElement());
-	}
 
 	macro public static function markup(mu):ExprOf<xmpp.XML> {
 		return switch mu.expr {
