@@ -8,6 +8,7 @@ class Unit {
 		runner.addCase( new TestXML() );
 		runner.addCase( new TestXMLSchema() );
 		runner.addCase( new TestJID() );
+		runner.addCase( new TestResponse() );
 		runner.addCase( new TestStanza() );
 		runner.addCase( new TestMessage() );
 		runner.addCase( new TestPresence() );

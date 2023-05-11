@@ -14,27 +14,21 @@ private typedef Header = {
 	version:String
 }
 
-enum Response<T:IQ.Payload> {
-	Result(payload:T);
-	Error(error:xmpp.Stanza.Error);
-}
-
 class Stream {
 	public static inline var XMLNS = 'http://etherx.jabber.org/streams';
 
 	public dynamic function onEnd() {}
-
 	public dynamic function onMessage(m:Message) {}
-
 	public dynamic function onPresence(p:Presence) {}
-
 	public dynamic function onIQ(iq:IQ) {}
 
 	public final xmlns:String;
 	public final domain:String;
 	public final lang:String;
-
+    
+    /** Stream id **/
 	public var id(default, null):String;
+    /** Stream version **/
 	public var version(default, null) = "1.0";
 
 	public var ready(default, null) = false;
@@ -52,6 +46,9 @@ class Stream {
 		this.lang = lang;
 	}
 
+    /**
+        Process incoming data
+    **/
 	public function recv(str:String) {
 		if (str == null || str.length == 0)
 			return;
@@ -67,11 +64,16 @@ class Stream {
 		}
 	}
 
+    /**
+        Send stanza
+    **/
 	public function send(xml:XML) {
 		output(xml);
 	}
-
-	// public function get<T:IQ.Payload>( payload : T, ?jid : String, handler : (response:Response<T>)->Void ) : IQ {
+    
+    /**
+        Info get query
+    **/
 	public function get<T:IQ.Payload>(payload:IQ.Payload, ?jid:String, handler:(response:Response<T>) -> Void):IQ {
 		var iq = new IQ(payload, IQType.Get, createRandomStanzaId(), jid);
 		query(iq, res -> switch res.type {
@@ -91,7 +93,9 @@ class Stream {
 		return iq;
 	}
 
-	// public function set<T:IQ.Payload>( payload : T, ?jid : String, handler : (response:Response<T>)->Void ) : IQ {
+    /**
+        Info set query
+    **/
 	public function set<T:IQ.Payload>(payload:IQ.Payload, ?jid:String, handler:(response:Response<T>) -> Void):IQ {
 		var iq = new IQ(payload, IQType.Set, createRandomStanzaId(), jid);
 		query(iq, res -> switch res.type {
@@ -104,11 +108,8 @@ class Stream {
 		return iq;
 	}
 
-	/*
-		public inline function result( iq : IQ, content : XML ) {
-			send( new IQ( IQType.result, iq.from, iq.to, iq.id, content ) );
-		}
-	 */
+	/**
+	**/
 	public function query(iq:IQ, callback:(response:IQ) -> Void) {
 		if (iq.id == null)
 			iq.id = createRandomStanzaId();
@@ -116,6 +117,9 @@ class Stream {
 		send(iq);
 	}
 
+    /**
+        Send closing `</stream>` element
+    **/
 	// public function end( ?error : StreamError ) {
 	public function end() {
 		output('</stream:stream>');
@@ -151,8 +155,8 @@ class Stream {
 		// extensions = new Map(); //TODO: ?
 	}
 
-	function createRandomStanzaId(length = 8):String {
-		return Std.string(Md5.encode(id + Date.now().getTime())).substr(0, length);
+	function createRandomStanzaId(length = 8) : String {
+		return Std.string(Md5.encode(id + Date.now().getTime() + (Math.random()*1))).substr(0, length);
 	}
 
 	static function createHeader(xmlns:String, to:String, ?version:String, ?lang:String):String {
@@ -201,6 +205,7 @@ class Stream {
 			return str;
 		}
 	 */
+
 	static function readFeatures(str:String):XML {
 		var i = str.indexOf("<stream:features");
 		if (i == -1)
