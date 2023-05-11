@@ -174,8 +174,8 @@ abstract XML(Xml) from Xml to Xml {
 	//	this.remove( att );
 	//	public inline function xmlns() : String
 	//        return this.get( 'xmlns' );
-	// @:op(A+=B)
-	public inline function append(e:XML):XML {
+
+	@:op(A+B) public inline function append(e:XML):XML {
 		this.addChild(e);
 		return this;
 	}
