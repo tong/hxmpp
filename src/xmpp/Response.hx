@@ -12,16 +12,18 @@ enum TResponse<T:IQ.Payload> {
 }
 
 /**
-    Type that represents either success (Ok) or failure (Err).
+    A query response representing either success (Result) or failure (Error).
 **/
 abstract Response<T:IQ.Payload>(TResponse<T>) from TResponse<T> to TResponse<T> {
 
+    /** The payload **/
     public var payload(get,never) : T;
     inline function get_payload() : T return switch this {
         case Result(pl): pl;
         case Error(e): null;
     }
 
+    /** The payload namespace **/
     public var xmlns(get,never) : String;
     inline function get_xmlns() : String return switch this {
         case Result(pl): pl.get('xmlns');
@@ -30,6 +32,7 @@ abstract Response<T:IQ.Payload>(TResponse<T>) from TResponse<T> to TResponse<T> 
 
     inline function new(r:Response<T>) this = r;
 
+    /** Returns `true` if payload namespace matches **/
     public inline function is(xmlns:String):Bool
         return get_xmlns() == xmlns;
 

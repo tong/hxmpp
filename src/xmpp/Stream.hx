@@ -25,12 +25,9 @@ class Stream {
 	public final xmlns:String;
 	public final domain:String;
 	public final lang:String;
-    
-    /** Stream id **/
-	public var id(default, null):String;
-    /** Stream version **/
-	public var version(default, null) = "1.0";
 
+	public var id(default, null):String;
+	public var version(default, null) = "1.0";
 	public var ready(default, null) = false;
 	public var extensions = new Map<String, IQ->Void>();
 
@@ -65,14 +62,14 @@ class Stream {
 	}
 
     /**
-        Send stanza
+        Send XML stanza
     **/
-	public function send(xml:XML) {
+	public inline function send(xml:XML) {
 		output(xml);
 	}
-    
+
     /**
-        Info get query
+        Info `get` query
     **/
 	public function get<T:IQ.Payload>(payload:IQ.Payload, ?jid:String, handler:(response:Response<T>) -> Void):IQ {
 		var iq = new IQ(payload, IQType.Get, createRandomStanzaId(), jid);
@@ -94,7 +91,7 @@ class Stream {
 	}
 
     /**
-        Info set query
+        Info `set` query
     **/
 	public function set<T:IQ.Payload>(payload:IQ.Payload, ?jid:String, handler:(response:Response<T>) -> Void):IQ {
 		var iq = new IQ(payload, IQType.Set, createRandomStanzaId(), jid);
