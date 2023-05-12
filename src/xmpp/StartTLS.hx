@@ -11,7 +11,7 @@ class Socket extends sys.net.Socket {
 
 private typedef SSLSocket =
     #if python xmpp.Socket;
-    #elseif sys sys.ssl.Socket;
+    #elseif (cpp||hl||neko) sys.ssl.Socket;
     #end
 
 /**
@@ -40,7 +40,8 @@ class StartTLS {
 		stream.send(XML.create('starttls').set('xmlns', XMLNS));
 	}
 
-    #if sys
+    //#if sys
+    #if (cpp||hl||neko||python)
 
     @:access(sys.net.Socket)
     public static function upgrade(sock: sys.net.Socket, host: sys.net.Host) : SSLSocket {
