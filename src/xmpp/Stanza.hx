@@ -198,29 +198,30 @@ class Error {
 	}
 }
 
-class Stanza {
+abstract class Stanza {
+
 	/**
 		JID of the intended recipient.
-	 */
+	**/
 	public var to:String;
 
 	/**
 		JID of the sender.
-	 */
+	**/
 	public var from:String;
 
 	/**
 		Used by the originating entity to track any response or error stanza that it might receive in relation to the generated stanza from another entity.
-	 */
+	**/
 	public var id:String;
 
 	/**
 		Specifies the default language of any such human-readable XML character data.
-	 */
+	**/
 	public var lang:String;
 
 	/**
-	 */
+	**/
 	public var error:Error;
 
 	inline function new(?to:String, ?from:String, ?id:String, ?lang:String) {
@@ -230,22 +231,17 @@ class Stanza {
 		this.lang = lang;
 	}
 
-	public function toXML():XML
-		return throw 'abstract method';
+	abstract function toXML():XML;
 
 	public inline function toString():String
 		return toXML().toString();
 
 	static function createXML(s:Stanza, name:String):XML {
-		var x = XML.create(name);
-		if (s.to != null)
-			x.set('to', s.to);
-		if (s.from != null)
-			x.set('from', s.from);
-		if (s.id != null)
-			x.set('id', s.id);
-		if (s.lang != null)
-			x.set('xml:lang', s.lang);
+		final x = XML.create(name);
+		if (s.to != null) x.set('to', s.to);
+		if (s.from != null) x.set('from', s.from);
+		if (s.id != null) x.set('id', s.id);
+		if (s.lang != null) x.set('xml:lang', s.lang);
 		return x;
 	}
 
