@@ -105,7 +105,7 @@ private class IQStanza extends Stanza {
 		this.payload = payload;
 	}
 
-	public override function toXML():XML {
+	public function toXML():XML {
 		var xml = Stanza.createXML(this, IQ.NAME);
 		xml.set('type', type);
 		if (payload != null)

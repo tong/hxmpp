@@ -200,7 +200,7 @@ private class PresenceStanza extends Stanza {
 		this.type = type;
 	}
 
-	public override function toXML():XML {
+	public function toXML():XML {
 		final xml = Stanza.createXML(this, Presence.NAME);
 		if (type != null)
 			xml.set("type", type);

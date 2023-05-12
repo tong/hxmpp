@@ -89,7 +89,7 @@ private class MessageStanza extends Stanza {
 		properties = [];
 	}
 
-	public override function toXML():XML {
+	public function toXML():XML {
 		var xml = Stanza.createXML(this, Message.NAME);
 		if (type != null)
 			xml.set("type", Std.string(type));
