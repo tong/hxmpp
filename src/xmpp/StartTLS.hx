@@ -1,5 +1,19 @@
 package xmpp;
 
+#if python
+class Socket extends sys.net.Socket {
+    public inline function handshake() {
+        trace('TODO handshake');
+        //SSLSocket.do_handshake()
+    }
+}
+#end
+
+private typedef SSLSocket =
+    #if python xmpp.Socket;
+    #elseif sys sys.ssl.Socket;
+    #end
+
 /**
 
     XMPP includes a method for securing the stream from tampering and eavesdropping.
@@ -11,7 +25,6 @@ class StartTLS {
 
 	public static inline var XMLNS = 'urn:ietf:params:xml:ns:xmpp-tls';
 
-	//@:access(xmpp.Stream)
 	public static function startTLS(stream:Stream, callback:(success:Bool) -> Void) {
 		stream.input = str -> {
             var xml = try XML.parse(str) catch(e:Dynamic) {
@@ -27,13 +40,21 @@ class StartTLS {
 		stream.send(XML.create('starttls').set('xmlns', XMLNS));
 	}
 
-    #if (cpp||hl||neko)
+    #if sys
 
     @:access(sys.net.Socket)
-    public static function upgrade(sock: sys.net.Socket, host: sys.net.Host) : sys.ssl.Socket {
+    public static function upgrade(sock: sys.net.Socket, host: sys.net.Host) : SSLSocket {
 
+        #if python
+        final ctx = python.lib.Ssl.create_default_context(python.lib.ssl.Purpose.SERVER_AUTH);
+        final s = new xmpp.Socket();
+        s.__s = ctx.wrap_socket(sock.__s, false, true, true, host.host);
+        s.__rebuildIoStreams();
+        #else
         final s = new sys.ssl.Socket();
         s.__s = sock.__s;
+        #else #error 'STARTTLS not implemented'
+        #end
 
         #if cpp
         s.conf = s.buildSSLConfig(false);
@@ -73,3 +94,4 @@ class StartTLS {
 
     #end
 }
+
