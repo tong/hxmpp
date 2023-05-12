@@ -12,6 +12,7 @@ class Socket extends sys.net.Socket {
 private typedef SSLSocket =
     #if python xmpp.Socket;
     #elseif (cpp||hl||neko) sys.ssl.Socket;
+    #elseif macro sys.ssl.Socket;
     #end
 
 /**
@@ -41,12 +42,22 @@ class StartTLS {
 	}
 
     //#if sys
-    #if (cpp||hl||neko||python)
+    #if (macro||cpp||hl||neko||python)
 
     @:access(sys.net.Socket)
     public static function upgrade(sock: sys.net.Socket, host: sys.net.Host) : SSLSocket {
 
-        #if python
+        #if macro
+        final s = new sys.ssl.Socket();
+        s.socket = sock.socket;
+		s.ssl = new mbedtls.Ssl();
+        sys.ssl.Mbedtls.setSocket(s.ssl, s.socket);
+		s.handshakeDone = false;
+		if (s.hostname == null)
+		    s.hostname = host.host;
+		if (s.hostname != null)
+			s.ssl.set_hostname(s.hostname);
+        #elseif python
         final ctx = python.lib.Ssl.create_default_context(python.lib.ssl.Purpose.SERVER_AUTH);
         final s = new xmpp.Socket();
         s.__s = ctx.wrap_socket(sock.__s, false, true, true, host.host);
@@ -54,7 +65,8 @@ class StartTLS {
         #else
         final s = new sys.ssl.Socket();
         s.__s = sock.__s;
-        #else #error 'STARTTLS not implemented'
+        #else
+            #error 'STARTTLS not implemented'
         #end
 
         #if cpp
