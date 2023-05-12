@@ -14,7 +14,8 @@ private typedef Header = {
 	version:String
 }
 
-class Stream {
+abstract class Stream {
+
 	public static inline var XMLNS = 'http://etherx.jabber.org/streams';
 
 	public dynamic function onEnd() {}
