@@ -62,7 +62,7 @@ enum abstract PresenceType(String) to String {
 	/** The subscription request has been denied or a previously-granted subscription has been cancelled. */
 	var unsubscribed;
 
-	@:from public static inline function fromString(s:String)
+	@:from public static inline function fromString(s:String) : PresenceType {
 		return switch s {
 			case 'error': error;
 			case 'probe': probe;
@@ -70,8 +70,9 @@ enum abstract PresenceType(String) to String {
 			case 'unavailable': unavailable;
 			case 'unsubscribe': unsubscribe;
 			case 'unsubscribed': unsubscribed;
-			case _: null;
+			case null, _: null;
 		}
+    }
 }
 
 /**
@@ -143,7 +144,7 @@ enum abstract Subscription(String) to String {
 			case 'from': from;
 			case 'both': both;
 			case 'remove': remove;
-			case _: null;
+			case null, _: null;
 		}
 }
 
@@ -200,7 +201,7 @@ private class PresenceStanza extends Stanza {
 	}
 
 	public override function toXML():XML {
-		var xml = Stanza.createXML(this, Presence.NAME);
+		final xml = Stanza.createXML(this, Presence.NAME);
 		if (type != null)
 			xml.set("type", type);
 		if (show != null)
@@ -215,20 +216,15 @@ private class PresenceStanza extends Stanza {
 	}
 
 	public static function parse(xml:XML):Presence {
-		var p = Stanza.parseAttributes(new Presence(), xml);
+		final p = Stanza.parseAttributes(new Presence(), xml);
 		p.type = xml.get('type');
 		for (e in xml.elements) {
 			switch e.name {
-				// case 'show': PresenceShow.fromString(e.text);
-				case 'show':
-					p.show = cast e.text;
-				case 'status':
-					p.status = Std.string(e.text);
-				case 'priority':
-					p.priority = Std.parseInt(e.text);
+				case 'show': p.show = cast e.text;
+				case 'status': p.status= Std.string(e.text);
+				case 'priority': p.priority = Std.parseInt(e.text);
 				case 'error': // TODO:
-				default:
-					p.properties.push(e);
+                default: p.properties.push(e);
 			}
 		}
 		return p;

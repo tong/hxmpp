@@ -33,7 +33,7 @@ enum abstract MessageType(String) to String {
 			case 'chat': chat;
 			case 'groupchat': groupchat;
 			case 'headline': headline;
-			case _: null;
+			case null, _: null;
 		}
 }
 

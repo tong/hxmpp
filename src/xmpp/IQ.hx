@@ -1,6 +1,6 @@
 package xmpp;
 
-enum abstract IQType(String) from String to String {
+enum abstract IQType(String) to String {
 	/**
 		The stanza requests information, inquires about what data is needed in order to complete further operations.
 	 */
@@ -27,7 +27,7 @@ enum abstract IQType(String) from String to String {
 			case 'set': Set;
 			case 'result': Result;
 			case 'error': Error;
-			case _: null;
+			case null, _: null;
 		}
 }
 
