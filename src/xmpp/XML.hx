@@ -14,16 +14,19 @@ private abstract Text(String) from String to String {
 		return switch this {
 			case '', '0', 'false', 'null': false;
 			case '1', 'true': true;
-			case _: throw 'invalid boolean value: ' + this;
+			case _: throw 'invalid bool value: $this';
 		}
 }
 
 @:noDoc
 @:forward(hasNext)
-private abstract NodeIterator(Iterator<XML>) from Iterator<XML> to Iterator<XML> {
+abstract NodeIterator(Iterator<XML>) from Iterator<XML> to Iterator<XML> {
 	public inline function next():XML
 		return this.next();
 
+	/**
+		Get nth(i) element.
+	**/
 	@:arrayAccess public function get(i:Int):XML {
 		var j = 0;
 		while (j <= i) {
@@ -36,8 +39,11 @@ private abstract NodeIterator(Iterator<XML>) from Iterator<XML> to Iterator<XML>
 		return null;
 	}
 
+	/**
+		Returns all child elements with given node name.
+	**/
 	@:arrayAccess public function named(name:String):Array<XML> {
-		var e = new Array<XML>();
+		final e = new Array<XML>();
 		while (this.hasNext()) {
 			var c = next();
 			if (c.type == Element && c.name == name)
@@ -48,7 +54,8 @@ private abstract NodeIterator(Iterator<XML>) from Iterator<XML> to Iterator<XML>
 
 	public function count():Int {
 		var i = 0;
-		while (next() != null) i++;
+		while (next() != null)
+			i++;
 		return i;
 	}
 	/*
@@ -83,11 +90,13 @@ abstract XML(Xml) from Xml to Xml {
 	inline function get_parent()
 		return this.parent;
 
+	/** Node type **/
 	public var type(get, never):XmlType;
 
 	inline function get_type():XmlType
 		return this.nodeType;
 
+	/** Node name **/
 	public var name(get, never):String;
 
 	inline function get_name():String
@@ -98,15 +107,16 @@ abstract XML(Xml) from Xml to Xml {
 	inline function get_firstElement():XML
 		return this.firstElement();
 
+	/** XMLNS/Namespace **/
 	public var xmlns(get, set):String;
 
 	public inline function get_xmlns():String
 		return this.get('xmlns');
 
-	public inline function set_xmlns(ns:String): String {
-		this.set('xmlns',ns);
+	public inline function set_xmlns(ns:String):String {
+		this.set('xmlns', ns);
 		return ns;
-    }
+	}
 
 	public var text(get, set):Text;
 
@@ -138,15 +148,19 @@ abstract XML(Xml) from Xml to Xml {
 
 	inline function set_elements(elements:NodeIterator):NodeIterator {
 		this.children = [];
-		for (e in elements) this.addChild(e);
+		for (e in elements)
+			this.addChild(e);
 		return this.elements();
 	}
 
 	// public var element(get,never) : ElementAccess;
 	// function get_element() : ElementAccess return new ElementAccess( this );
 
-	@:noDoc inline function new(x:Xml)
-		this = x;
+	@:noDoc inline function new(x:Xml) this = x;
+
+    //TODO: really?
+	public inline function iterator() : NodeIterator
+    	return this.elements();
 
 	@:arrayAccess public inline function get(att:String):String
 		return this.get(att);
@@ -156,13 +170,16 @@ abstract XML(Xml) from Xml to Xml {
 		return this;
 	}
 
-    @:op(a.b) public inline function fieldRead(name:String) : String
-        return this.get(name);
+	@:op(a.b) public inline function fieldRead(name:String):String
+		return this.get(name);
 
-    @:op(a.b) public inline function fieldWrite(name:String, value:String) : String {
-        this.set(name, value);
-        return value;
-    }
+	@:op(a.b) public inline function fieldWrite(name:String, value:String):String {
+		this.set(name, value);
+		return value;
+	}
+
+	// public inline function unset( att : String )
+	//	this.remove( att );
 
 	// public inline function is( xmlns : String ) : Bool
 	//   return get( 'xmlns' ) == xmlns;
@@ -170,12 +187,10 @@ abstract XML(Xml) from Xml to Xml {
 	public inline function has(att:String):Bool
 		return this.exists(att);
 
-	// public inline function unset( att : String )
-	//	this.remove( att );
 	//	public inline function xmlns() : String
 	//        return this.get( 'xmlns' );
 
-	@:op(A+B) public inline function append(e:XML):XML {
+	@:op(A + B) public inline function append(e:XML):XML {
 		this.addChild(e);
 		return this;
 	}
@@ -194,26 +209,14 @@ abstract XML(Xml) from Xml to Xml {
 	@:arrayAccess public inline function getChildAt(i:Int):XML
 		return this.children[i];
 
-	/*
-		public inline function append( parent : XML ) {
-			parent.addChild( this );
-		}
-
-		public inline function remove() : XML {
-			if( parent != null ) this.parent.removeChild( this );
-			return this;
-		}
-	 */
-
-    //public inline function iterator() : NodeIterator
-    //    return this.elements();
-
 	@:to public inline function toString():String
 		return this.toString();
 
-	// public static function create( name : String, ?text : String, ?attributes : Map<String,String>, ?children : Array<XML> ) : XML {
-	public static function create(name:String, ?text:String):XML {
+	public static function create(name:String, ?attributes:Map<String, String>, ?text:String):XML {
 		var x:XML = Xml.createElement(name);
+		if (attributes != null)
+			for (k => v in attributes)
+				x.set(k, v);
 		if (text != null)
 			x.append(Xml.createPCData(text));
 		return x;

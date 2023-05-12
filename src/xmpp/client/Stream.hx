@@ -4,7 +4,7 @@ package xmpp.client;
 	Client-to-Server XMPP stream.
 
 	See: http://xmpp.org/rfcs/rfc6120.html#examples-c2s
- */
+**/
 class Stream extends xmpp.Stream {
 	/**
 	 * IANA registered `xmpp-client` port (5222)
@@ -20,9 +20,6 @@ class Stream extends xmpp.Stream {
 		super((xmlns == null) ? XMLNS : xmlns, domain, lang);
 	}
 
-	// public function start( callback : XML->Void, headerName = 'stream:stream' ) {
-	// TODO public function start( callback : xmpp.Stanza.Error->XML->Void ) {
-	// public function start( callback : (features:Array<XML>)->Void ) {
 	public function start(callback:(features:XML) -> Void):Stream {
 		reset();
 		input = function(str) {
@@ -78,7 +75,7 @@ class Stream extends xmpp.Stream {
 							queries.remove(iq.id);
 							h(iq);
 						} else {
-							trace('??');
+							trace('??', iq);
 						}
 					case Get, Set:
 						if (iq.payload != null) {

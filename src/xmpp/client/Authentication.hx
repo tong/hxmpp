@@ -5,50 +5,32 @@ import haxe.io.Bytes;
 import sasl.Mechanism;
 import xmpp.Response;
 
-/*
-	abstract Auth(xmpp.XML) from XML to XML {
-
-	public var mechanism(get,set) : String;
-	inline function get_mechanism() : String return this.get('mechanism');
-	inline function set_mechanism(v:String) : String {
-		this.set('mechanism',v);
-		return v;
-	}
-
-	public var text(get,set) : String;
-	inline function get_text() : String return this.text;
-	inline function set_text(v:String) : String {
-		this.text = v;
-		return v;
-	}
-}*/
 /**
 	SASL (Simple Authentication and Security Layer) client authentication.
 
-	- [RFC3920-SASL](http://xmpp.org/rfcs/rfc3920.html#sasl)
-	- [RFC3920-BIND](http://xmpp.org/rfcs/rfc3920.html#bind)
+	- [RFC3920-SASL](https://xmpp.org/rfcs/rfc3920.html#sasl)
+	- [RFC3920-BIND](https://xmpp.org/rfcs/rfc3920.html#bind)
+    - [RFC2222](https://datatracker.ietf.org/doc/html/rfc2222)
 
 	This class is responsible for:
 
-	 1. Authenticating a client account using SASL
-	 2. Binding the resource to the connection
-	 3. Establishing a session with the server
+	1. Authenticating a client account using SASL
+	2. Binding the resource to the connection
+	3. Establishing a session with the server
  */
 class Authentication {
+
 	public static inline var XMLNS = 'urn:ietf:params:xml:ns:xmpp-sasl';
 	public static inline var XMLNS_BIND = 'urn:ietf:params:xml:ns:xmpp-bind';
 	public static inline var XMLNS_SESSION = 'urn:ietf:params:xml:ns:xmpp-session';
 
-	public static function authenticate(stream:Stream, node:String, resource:String, ?password:String, mechanism:Mechanism,
+    /** **/
+    public static function authenticate(stream:Stream, node:String, resource:String, ?password:String, mechanism:Mechanism,
 			callback:(?error:xmpp.Stanza.Error) -> Void, ?streamStart:(XML->Void)->Void) {
-		saslAuthentication(stream, node, resource, password, mechanism, function(?e, features) {
-			if (e != null)
-				callback(e)
-			else {
-				bindResource(stream, resource, function(?e, r) {
-					if (e != null)
-						callback(e)
-					else {
+		saslAuthentication(stream, node, resource, password, mechanism, (?e, features) -> {
+			if (e != null) callback(e) else {
+				bindResource(stream, resource, (?e,r) -> {
+					if (e != null) callback(e) else {
 						initSesssion(stream, callback);
 					}
 				});
@@ -56,14 +38,13 @@ class Authentication {
 		}, streamStart);
 	}
 
-	public static function saslAuthentication(stream:Stream, node:String, resource:String, ?password:String, mechanism:Mechanism,
-			callback:(?error:xmpp.Stanza.Error, features:XML) -> Void, ?streamStart:(XML->Void)->Void) {
+	public static function saslAuthentication(stream:Stream, node:String, resource:String, ?password:String, mechanism:Mechanism, callback:(?error:xmpp.Stanza.Error, features:XML) -> Void, ?streamStart:(XML->Void)->Void) {
 		var _input = stream.input;
 		function _callback(?e, features) {
 			stream.input = _input;
 			callback(e, features);
 		}
-		stream.input = function(str) {
+		stream.input = str -> {
 			var xml = XML.parse(str);
 			switch xml.name {
 				case 'challenge':
