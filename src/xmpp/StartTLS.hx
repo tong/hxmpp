@@ -41,7 +41,7 @@ class StartTLS {
 		stream.send(XML.create('starttls').set('xmlns', XMLNS));
 	}
 
-    //#if sys
+    //TODO: #if sys
     #if (macro||cpp||hl||neko||python)
 
     @:access(sys.net.Socket)
@@ -72,28 +72,27 @@ class StartTLS {
         #if cpp
         s.conf = s.buildSSLConfig(false);
 		s.ssl = cpp.NativeSsl.ssl_new(s.conf);
-		s.handshakeDone = false;
 		cpp.NativeSsl.ssl_set_socket(s.ssl, s.__s);
-		if (s.hostname == null)
-		    s.hostname = host.host;
-		if (s.hostname != null)
-			cpp.NativeSsl.ssl_set_hostname(s.ssl, s.hostname);
+        s.setHostname(host.host);
+		cpp.NativeSsl.ssl_set_hostname(s.ssl, s.hostname);
+		s.handshakeDone = false;
 
         #elseif hl
-        //TODO:
-        s.handshakeDone = false;
+        s.conf = s.buildConfig(false);
+		s.ssl = new sys.ssl.Context(s.conf);
+        s.ssl.setSocket(s.__s);
 		s.hostname = host.host;
         s.ssl.setHostname(@:privateAccess host.host.toUtf8());
+        s.handshakeDone = false;
 
         #elseif neko
         s.ctx = s.buildSSLContext(false);
         s.ssl = sys.ssl.Socket.ssl_new(s.ctx);
         sys.ssl.Socket.ssl_set_socket(s.ssl, s.__s);
+        s.setHostname(host.host);
+        sys.ssl.Socket.ssl_set_hostname(s.ssl, untyped host.host.__s);
+        //sys.ssl.Socket.ssl_set_hostname(s.ssl, untyped s.hostname.__s);
         s.handshakeDone = false;
-		if (s.hostname == null)
-		    s.hostname = host.host;
-		if (s.hostname != null)
-            sys.ssl.Socket.ssl_set_hostname(s.ssl, untyped s.hostname.__s);
         #end
         //s.handshake();
         return s;
