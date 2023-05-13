@@ -7,7 +7,7 @@ class Unit {
 
 		runner.addCase( new TestXML() );
 		runner.addCase( new TestXMLSchema() );
-		runner.addCase( new TestJID() );
+		runner.addCase( new TestJid() );
 		runner.addCase( new TestResponse() );
 		runner.addCase( new TestStanza() );
 		runner.addCase( new TestMessage() );

@@ -84,7 +84,7 @@ class Authentication {
 				case Result(payload):
 					switch payload.firstElement.name {
 						case 'jid':
-							callback(null, JID.parseResource(payload.firstElement.text));
+							callback(null, Jid.parseResource(payload.firstElement.text));
 						case 'resource':
 							callback(null, payload.firstElement.text);
 						default:

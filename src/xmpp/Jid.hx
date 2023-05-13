@@ -2,12 +2,12 @@ package xmpp;
 
 using StringTools;
 
-private class JIDType {
+private class JidType {
 	public var node:String;
 	public var domain:String;
 	public var resource:String;
 
-	@:allow(xmpp.JID)
+	@:allow(xmpp.Jid)
 	inline function new(?node:String, domain:String, ?resource:String) {
 		this.node = node;
 		this.domain = domain;
@@ -37,7 +37,7 @@ private class JIDType {
 
 **/
 @:forward(node, domain, resource)
-abstract JID(JIDType) from JIDType to JIDType {
+abstract Jid(JidType) from JidType to JidType {
 	// public static inline var MIN_LENGTH = 8;
 	public static inline var MAX_PARTSIZE = 1023;
 	public static inline var MAX_SIZE = 3071;
@@ -45,7 +45,7 @@ abstract JID(JIDType) from JIDType to JIDType {
 	public static var EREG(default, null) = ~/^(([A-Z0-9._%-]{1,1023})@([A-Z0-9._%-]{1,1023})((?:\/)([A-Z0-9._%-]{1,1023}))?)$/i;
 
 	public inline function new(?node:String, domain:String, ?resource:String)
-		this = new JIDType(node, domain, resource);
+		this = new JidType(node, domain, resource);
 
 	public function getBare():String {
 		return (this.node == null || this.domain == null) ? null : this.node + '@' + this.domain;
@@ -61,7 +61,7 @@ abstract JID(JIDType) from JIDType to JIDType {
 	@:to public inline function toArray():Array<String>
 		return [this.node, this.domain, this.resource];
 
-	@:op(A == B) public function equals(jid:JID):Bool {
+	@:op(A == B) public function equals(jid:Jid):Bool {
 		if (this.node != jid.node)
 			return false;
 		if (this.domain != jid.domain)
@@ -92,10 +92,10 @@ abstract JID(JIDType) from JIDType to JIDType {
 		}
 	}
 
-	@:from public static inline function fromArray(arr:Array<String>):JID
-		return new JIDType(arr[0], arr[1], arr[2]);
+	@:from public static inline function fromArray(arr:Array<String>):Jid
+		return new JidType(arr[0], arr[1], arr[2]);
 
-	@:from public static inline function fromString(str:String):JID
+	@:from public static inline function fromString(str:String):Jid
 		return fromArray(parseParts(str));
 
 	/**
