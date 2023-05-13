@@ -6,14 +6,11 @@ package xmpp.client;
 	See: http://xmpp.org/rfcs/rfc6120.html#examples-c2s
 **/
 class Stream extends xmpp.Stream {
-	/**
-	 * IANA registered `xmpp-client` port (5222)
-	 */
+
+	/** IANA registered `xmpp-client` port (5222) **/
 	public static inline var PORT = 5222;
 
-	/**
-	 * XMPP client namespace
-	 */
+	/** XMPP client namespac **/
 	public static inline var XMLNS = 'jabber:client';
 
 	public function new(domain:String, ?xmlns:String, ?lang:String) {
@@ -61,45 +58,46 @@ class Stream extends xmpp.Stream {
 				return;
 			}
 		}
+        trace("....................");
 		switch xml.name {
-			case 'message':
-				onMessage(xml);
-			case 'presence':
-				onPresence(xml);
+			case 'message': onMessage(xml);
+			case 'presence': onPresence(xml);
 			case 'iq':
 				var iq:IQ = xml;
 				switch iq.type {
-					case Result, Error:
-						if (queries.exists(iq.id)) {
-							var h = queries.get(iq.id);
-							queries.remove(iq.id);
-							h(iq);
-						} else {
-							trace('??', iq);
-						}
-					case Get, Set:
-						if (iq.payload != null) {
-							var ns = iq.payload.xmlns;
-							if (extensions.exists(ns)) {
-								extensions.get(ns)(iq);
-								/*
-									var res = extensions.get( ns )( iq );
-									if( res == null ) {
-										trace('NOT HANDLED BY EXTENSION');
-										//r.errors.push( new xmpp.Error( cancel, 'feature-not-implemented' ) );
-									} else {
-										send( res );
-									}
-								 */
-							} else {
-								// TODO
-								trace('?? unknown iq');
-								var res = new IQ(Error, iq.from, iq.to, iq.id);
-								res.error = new xmpp.Stanza.Error(cancel, 'feature-not-implemented');
-								send(res);
-								// onIQ( iq );
-							}
-						}
+                case Result, Error:
+                    if (queries.exists(iq.id)) {
+                        final h = queries.get(iq.id);
+                        queries.remove(iq.id);
+                        h(iq);
+                    } else {
+                        #if debug
+                        trace('unhandled iq response');
+                        #end
+                    }
+                case Get, Set:
+                    if (iq.payload != null) {
+                        var ns = iq.payload.xmlns;
+                        if (extensions.exists(ns)) {
+                            extensions.get(ns)(iq);
+                            /*
+                                var res = extensions.get( ns )( iq );
+                                if( res == null ) {
+                                    trace('NOT HANDLED BY EXTENSION');
+                                    //r.errors.push( new xmpp.Error( cancel, 'feature-not-implemented' ) );
+                                } else {
+                                    send( res );
+                                }
+                             */
+                        } else {
+                            // TODO
+                            trace('?? unknown iq');
+                            var res = new IQ(Error, iq.from, iq.to, iq.id);
+                            res.error = new xmpp.Stanza.Error(cancel, 'feature-not-implemented');
+                            send(res);
+                            // onIQ( iq );
+                        }
+                    }
 				}
 			case 'stream:error':
 				trace("TODO");

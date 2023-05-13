@@ -57,8 +57,12 @@ abstract class Stream {
 			return;
 		if (str.endsWith('>')) {
 			var received = buffer.toString();
-			buffer = new StringBuf();
-			input(received);
+            if(received == "</stream:stream>") {
+                onEnd();
+            } else {
+                buffer = new StringBuf(); 
+                input(received);
+            }
 		}
 	}
 
@@ -74,20 +78,20 @@ abstract class Stream {
     **/
 	public function get<T:IQ.Payload>(payload:IQ.Payload, ?jid:String, handler:(response:Response<T>) -> Void):IQ {
 		var iq = new IQ(payload, IQType.Get, createRandomStanzaId(), jid);
-		query(iq, res -> switch res.type {
-			case Result: handler(Result(cast res.payload));
-			case Error:
-				handler(Error(res.error));
-			/* if( res.error != null ) {
-					handler( Error( res.error ) );
-				} else {
-					if( res.payload != null ) {
-						handler(  new xmpp.Stanza.Error() );
-					}
-					//handler( Error( res.error ) );
-			}*/
-			default:
-		});
+        query(iq, (handler==null) ? null : res -> switch res.type {
+                case Result: handler(Result(cast res.payload));
+                case Error:
+                    handler(Error(res.error));
+                /* if( res.error != null ) {
+                        handler( Error( res.error ) );
+                    } else {
+                        if( res.payload != null ) {
+                            handler(  new xmpp.Stanza.Error() );
+                        }
+                        //handler( Error( res.error ) );
+                }*/
+                default:
+            });
 		return iq;
 	}
 
@@ -96,13 +100,17 @@ abstract class Stream {
     **/
 	public function set<T:IQ.Payload>(payload:IQ.Payload, ?jid:String, handler:(response:Response<T>) -> Void):IQ {
 		var iq = new IQ(payload, IQType.Set, createRandomStanzaId(), jid);
-		query(iq, res -> switch res.type {
-			case Result: handler(Result(cast res.payload));
-			case Error:
-				trace(res.error);
-				handler(Error(res.error));
-			default:
-		});
+        if(handler != null) {
+            query(iq, res -> switch res.type {
+                case Result: handler(Result(cast res.payload));
+                case Error:
+                    trace(res.error);
+                    handler(Error(res.error));
+                default:
+            });
+        } else {
+            query(iq, null);
+        }
 		return iq;
 	}
 
@@ -111,14 +119,14 @@ abstract class Stream {
 	public function query(iq:IQ, callback:(response:IQ) -> Void) {
 		if (iq.id == null)
 			iq.id = createRandomStanzaId();
-		queries.set(iq.id, cast callback);
+        if(callback != null)
+		    queries.set(iq.id, cast callback);
 		send(iq);
 	}
 
     /**
-        Send closing `</stream>` element
+        End stream
     **/
-	// public function end( ?error : StreamError ) {
 	public function end() {
 		output('</stream:stream>');
 		reset();
@@ -127,14 +135,14 @@ abstract class Stream {
 	function handleString(str:String) {
 		if (!ready)
 			return;
-		var xml:XML;
-		try
-			xml = XML.parse(str)
-		catch (e:Dynamic) {
+		final xml = try XML.parse(str) catch (e) {
 			trace(e);
-			return;
+            if(str.endsWith("</stream:stream>")) {
+                onEnd();
+            }
+			null;
 		}
-		handleXML(xml);
+        if(xml != null) handleXML(xml);
 	}
 
 	function handleXML(xml:XML) {
