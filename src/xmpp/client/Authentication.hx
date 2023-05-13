@@ -17,7 +17,7 @@ import xmpp.Response;
 	1. Authenticating a client account using SASL
 	2. Binding the resource to the connection
 	3. Establishing a session with the server
- */
+**/
 class Authentication {
 
 	public static inline var XMLNS = 'urn:ietf:params:xml:ns:xmpp-sasl';
@@ -58,7 +58,15 @@ class Authentication {
 						_callback(null, features);
 					});
 				case 'failure':
-					callback(new xmpp.Stanza.Error(null, xml.elements[0].name, xml.elements[1].text), null);
+                    var text : String = null;
+                    var condition : xmpp.Stanza.ErrorCondition = null;
+                    for(e in xml.elements) {
+                        switch e.name {
+                            case "text": text = e.text;
+                            default: condition = e.name;
+                        }
+                    }
+					callback(new xmpp.Stanza.Error(null, condition, text), null);
 			}
 		}
 		var text = mechanism.createAuthenticationText(node, stream.domain, password);
