@@ -43,7 +43,7 @@ enum abstract MessageType(String) to String {
 	- [RFC-3921 - Instant Messaging and Presence](http://xmpp.org/rfcs/rfc3921.html)
 
 	The <message/> stanza kind can be seen as a "push" mechanism whereby one entity pushes information to another entity.
- */
+**/
 @:forward(from, to, id, lang, type, body, subject, thread, properties)
 abstract Message(MessageStanza) to Stanza {
 	public static inline var NAME = 'message';
@@ -65,6 +65,7 @@ abstract Message(MessageStanza) to Stanza {
 }
 
 private class MessageStanza extends Stanza {
+
 	/***/
 	public var type:MessageType;
 
@@ -107,14 +108,10 @@ private class MessageStanza extends Stanza {
 		m.type = xml.get('type');
 		for (e in xml.elements) {
 			switch e.name {
-				case 'body':
-					m.body = e.text;
-				case 'subject':
-					m.subject = e.text;
-				case 'thread':
-					m.thread = e.text;
-				default:
-					m.properties.push(e);
+            case 'body': m.body = e.text;
+            case 'subject': m.subject = e.text;
+            case 'thread': m.thread = e.text;
+            case _: m.properties.push(e);
 			}
 		}
 		return m;

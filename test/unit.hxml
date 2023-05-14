@@ -3,3 +3,4 @@
 -lib utest
 -dce no
 -D test_unit
+-D message.reporting=pretty

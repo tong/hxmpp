@@ -4,3 +4,4 @@
 -lib utest
 -dce no
 -x Unit
+-D no-deprecation-warnings

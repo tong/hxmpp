@@ -13,6 +13,7 @@ private typedef SSLSocket =
     #if python xmpp.Socket;
     #elseif (cpp||hl||neko) sys.ssl.Socket;
     #elseif macro sys.ssl.Socket;
+    #elseif doc_gen Any;
     #end
 
 /**
@@ -28,7 +29,7 @@ class StartTLS {
 
 	public static function startTLS(stream:Stream, callback:(success:Bool) -> Void) {
 		stream.input = str -> {
-            var xml = try XML.parse(str) catch(e:Dynamic) {
+            var xml = try XML.parse(str) catch(e) {
                 trace(e);
                 callback(false);
                 return;

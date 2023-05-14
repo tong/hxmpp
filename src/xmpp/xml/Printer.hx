@@ -8,22 +8,22 @@ private enum EStringOrXml {
 }
 
 private abstract StringOrXml(EStringOrXml) {
-	inline function new(sox:EStringOrXml)
-		this = sox;
+	
+    inline function new(sox:EStringOrXml) this = sox;
 
-	public function isXml():Bool
+	public inline function isXml():Bool
 		return switch this {
 			case str(_): false;
 			case xml(_): true;
 		}
 
-	@:to public function toString():String
+	@:to public inline function toString():String
 		return switch this {
 			case str(v): v;
 			case xml(v): v.toString();
 		}
 
-	@:to public function toXml():Xml
+	@:to public inline function toXml():Xml
 		return switch this {
 			case str(v): Xml.parse(v);
 			case xml(v): v;
@@ -37,18 +37,15 @@ private abstract StringOrXml(EStringOrXml) {
 }
 
 class Printer {
+
 	public var pretty:Bool;
 
-	function new(pretty:Bool) {
-		this.pretty = pretty;
-	}
+	function new(pretty=true) this.pretty = pretty;
 
 	function printString(str:String):String {
 		if (pretty) {
-			var xml:Xml = null;
-			try
-				xml = Xml.parse(str).firstElement()
-			catch (e:Dynamic) {
+			//var xml:Xml = try Xml.parse(str).firstElement() catch(e) {
+			var xml:Xml = try Xml.parse(str) catch(e) {
 				return str;
 			}
 			return printXml(xml);
@@ -56,12 +53,12 @@ class Printer {
 		return str;
 	}
 
-	function printXml(xml:Xml):String {
+	inline function printXml(xml:Xml):String {
 		return haxe.xml.Printer.print(xml, pretty);
 	}
 
-	public static function print(msg:StringOrXml, pretty = true):String {
+	public static function print(msg:StringOrXml, ?pretty: Bool):String {
 		var printer = new Printer(pretty);
-		return (msg.isXml() ? printer.printXml(msg) : printer.printString(msg)).trim();
+		return msg.isXml() ? printer.printXml(msg) : printer.printString(msg);
 	}
 }

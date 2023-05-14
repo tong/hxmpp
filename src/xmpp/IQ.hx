@@ -130,27 +130,23 @@ private class IQStanza extends Stanza {
 @:forward
 @:forwardStatics
 abstract Payload(XML) from XML to XML {
-	public var xmlns(get, set):String;
 
+	public var xmlns(get,set):String;
 	inline function get_xmlns():String
 		return this.get('xmlns');
-
 	inline function set_xmlns(s:String):String
 		return this.set('xmlns', s);
 
-	public var content(get, set):XML;
-
+	public var content(get,set):XML;
 	inline function get_content():XML
 		return this.firstElement;
-
 	inline function set_content(x:XML):XML {
 		for (e in this.elements)
 			this.removeChild(e);
 		return this.append(x);
 	}
 
-	inline function new(xml:XML)
-		this = xml;
+	inline function new(xml:XML) this = xml;
 
 	public static function create(xmlns:String, ?content:XML, name = 'query'):Payload {
 		var xml = XML.create(name).set('xmlns', xmlns);

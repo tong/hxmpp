@@ -1,7 +1,5 @@
 --no-output
--lib hxmpp
--D doc-gen
---macro include('xmpp', true, ['xmpp.xep','xmpp.macro'])
-#--macro exclude('xmpp.macro')
-#--macro include('xep')
 -xml haxedoc.xml
+-lib hxmpp
+--macro include('xmpp', true, ['xmpp.xep','xmpp.macro'])
+-D doc-gen

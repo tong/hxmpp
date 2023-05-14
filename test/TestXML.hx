@@ -4,11 +4,22 @@ import xmpp.XML;
 using xmpp.XML;
 
 class TestXML extends utest.Test {
-	static var XML_SALES = XML.parse('<sales vendor="John">
+
+    static var XML_SALES = XML.parse('<sales vendor="John">
 				<item type="peas" price="4" quantity="6"/>
 				<item type="carrot" price="3" quantity="10"/>
 				<item type="chips" price="5" quantity="3"/>
 			</sales> ');
+
+
+    function test_create() {
+        var xml = XML.create("a");
+        equals("a", xml.name);
+        equals(0, xml.elements.count());
+        var xml = XML.create("a",["x"=>"1","y"=>"2"]);
+        equals("1", xml.get("x"));
+        equals("2", xml.get("y"));
+    }
 
 	function test_type() {
 		equals(Xml.XmlType.Element, XML.create('node').type);
@@ -20,8 +31,8 @@ class TestXML extends utest.Test {
 	}
 
 	function test_parent() {
-		notNull(XML_SALES.parent);
 		isNull(XML.create('node').parent);
+		notNull(XML_SALES.parent);
 	}
 
 	function test_attributes() {
@@ -38,6 +49,13 @@ class TestXML extends utest.Test {
 		equals('xyz', xml.get('id'));
 		equals('xyz', xml['id']);
 	}
+
+	function test_unset() {
+		var xml = XML.create('node').set('id', 'abc');
+        xml.unset('id');
+        isNull(xml.get('id'));
+		isFalse(xml.has( 'id'));
+    }
 
 	function test_text() {
 		var xml = XML.create('node', 'value');
@@ -62,6 +80,7 @@ class TestXML extends utest.Test {
 		var xml = XML.parse( '<node xmlns="https://disktree.net" id="123">abc</node>' );
 		isTrue( xml.is( 'https://disktree.net' ) );
 	}*/
+
 	function test_count() {
 		equals(3, XML_SALES.elements.count());
 	}
@@ -102,6 +121,7 @@ class TestXML extends utest.Test {
 			isFalse( xml.has( 'id' ) );
 		}
 	 */
+
 	function test_parse() {
 		var xml = XML_SALES;
 
@@ -195,7 +215,6 @@ class TestXML extends utest.Test {
 
 		var i:Int = xml.text;
 		equals(23, i);
-		equals(23.0, i);
 	}
 
 	function test_primitive_float() {
@@ -204,56 +223,61 @@ class TestXML extends utest.Test {
 
 		var f:Float = xml.text;
 		equals(1.988, f);
+
+		xml = '<node>.988</node>';
+		f = xml.text;
+		equals(0.988, f);
 	}
 
-	function test_object_access() {
+	function test_field_access_overload() {
 		var xml:XML = '<node>1.988</node>';
         isNull(xml.id);
 		var xml:XML = '<node id="123">1.988</node>';
         equals("123", xml.id);
     }
 
+	function test_addition_overload() {
+		var xml:XML = '<node></node>';
+        xml = xml + '<child>element</child>';
+        equals(1, xml.elements.count());
+        equals("child", xml.elements[0].name);
+        equals("element", xml.elements[0].text);
+    }
+
 	/*
-		function test_find() {
+    function test_find() {
 
-			var xml = XML_SALES;
+        var xml = XML_SALES;
 
-			//var item = xml.elements.doFind( e -> return e.get("type") == "chips" );
-			//equals( 'chips', item.get("type") );
+        //var item = xml.elements.doFind( e -> return e.get("type") == "chips" );
+        //equals( 'chips', item.get("type") );
 
-			xml.element["item"].find(element["type"] == "oranges")["quantity"] = "4";
+        xml.element["item"].find(element["type"] == "oranges")["quantity"] = "4";
 
-			//var item = xml.elements.find( element["type"] == "chips" );
-			equals( 'item', item.name );
-			equals( '3', item['price'] );
-	 */
-	/**
-		 <sales vendor="John">
-					<item type="peas" price="4" quantity="6"/>
-					<item type="carrot" price="3" quantity="10"/>
-					<item type="chips" price="5" quantity="3"/>
-				</sales>
-		}
-	 */
-	/* 
-		function test_getChild() {
+        //var item = xml.elements.find( element["type"] == "chips" );
+        equals( 'item', item.name );
+        equals( '3', item['price'] );
+	*/
 
-			var xml = XML.parse(
-				'<sales vendor="John">
-					<item type="peas" price="4" quantity="6"/>
-					<item type="carrot" price="3" quantity="10"/>
-					<item type="chips" price="5" quantity="3"/>
-				</sales>; ');
-			//trace(xml.getChild(0));
-			//trace(xml.getChild(1).get('type'));
-			//trace(xml.getChild(2));
-			//trace(xml);
-		}
-	 */
+    function test_print() {
+        var src = '<node><child ns="my_ns">value</child></node>';
+        var str = xmpp.xml.Printer.print(src, false);
+        equals(src, str);
+        var str = xmpp.xml.Printer.print(src, true);
+        equals('<node>
+	<child ns="my_ns">
+		value
+	</child>
+</node>
+', str);
+    }
+
 	function test_markup() {
 		var x = XML.markup(<div id="myid">MyContent</div>);
 		equals('div', x.name);
 		equals('myid', x.get('id'));
 		equals('MyContent', x.text);
 	}
+
+
 }

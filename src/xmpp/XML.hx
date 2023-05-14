@@ -2,118 +2,33 @@ package xmpp;
 
 import Xml;
 
-@:noDoc
-private abstract Text(String) from String to String {
-	@:to public inline function toFloat():Float
-		return Std.parseFloat(this);
-
-	@:to public inline function toInt():Int
-		return Std.parseInt(this);
-
-	@:to function toBool():Bool
-		return switch this {
-			case '', '0', 'false', 'null': false;
-			case '1', 'true': true;
-			case _: throw 'invalid bool value: $this';
-		}
-}
-
-@:noDoc
-@:forward(hasNext)
-abstract NodeIterator(Iterator<XML>) from Iterator<XML> to Iterator<XML> {
-	public inline function next():XML
-		return this.next();
-
-	/**
-		Get nth(i) element.
-	**/
-	@:arrayAccess public function get(i:Int):XML {
-		var j = 0;
-		while (j <= i) {
-			if (!this.hasNext())
-				return null;
-			var n = next();
-			if (j++ == i)
-				return n;
-		}
-		return null;
-	}
-
-	/**
-		Returns all child elements with given node name.
-	**/
-	@:arrayAccess public function named(name:String):Array<XML> {
-		final e = new Array<XML>();
-		while (this.hasNext()) {
-			var c = next();
-			if (c.type == Element && c.name == name)
-				e.push(c);
-		}
-		return e;
-	}
-
-	public function count():Int {
-		var i = 0;
-		while (next() != null)
-			i++;
-		return i;
-	}
-	/*
-		function doFilter( f : XML->Bool ) : NodeIterator {
-			return [for(e in this) if(f(e))e].iterator();
-		}
-
-		function doFind( f : XML->Bool ) : XML {
-			for( e in this ) if( f(e) ) return e;
-			return null;
-		}
-
-		macro public static function where( ethis : ExprOf<xmpp.XML.NodeIterator>, cond : ExprOf<Bool> ) {
-			var f = macro function( element : XML ) return $cond;
-			var e = macro xmpp.XML.NodeIterator.doFilter( $ethis, $f );
-			return e;
-		}
-
-		macro public static function find( ethis : ExprOf<xmpp.XML.NodeIterator>, cond : ExprOf<Bool> ) {
-			var f = macro function(element:XML) return $cond;
-			var e = macro xmpp.XML.NodeIterator.doFind( $ethis, $f );
-			return e;
-		}
-	 */
-}
-
 @:access(Xml)
 @:forward(attributes, children)
 abstract XML(Xml) from Xml to Xml {
-	public var parent(get, never):XML;
 
+	public var parent(get, never):XML;
 	inline function get_parent()
 		return this.parent;
 
 	/** Node type **/
 	public var type(get, never):XmlType;
-
 	inline function get_type():XmlType
 		return this.nodeType;
 
 	/** Node name **/
 	public var name(get, never):String;
-
 	inline function get_name():String
 		return this.nodeName;
 
 	public var firstElement(get, never):XML;
-
 	inline function get_firstElement():XML
 		return this.firstElement();
 
-	/** XMLNS/Namespace **/
-	public var xmlns(get, set):String;
-
-	public inline function get_xmlns():String
+	/** Element namespace **/
+	public var ns(get,set):String;
+	inline function get_ns():String
 		return this.get('xmlns');
-
-	public inline function set_xmlns(ns:String):String {
+	inline function set_ns(ns:String):String {
 		this.set('xmlns', ns);
 		return ns;
 	}
@@ -141,11 +56,9 @@ abstract XML(Xml) from Xml to Xml {
 		return v;
 	}
 
-	public var elements(get, set):NodeIterator;
-
+	public var elements(get,set):NodeIterator;
 	inline function get_elements():NodeIterator
 		return this.elements();
-
 	inline function set_elements(elements:NodeIterator):NodeIterator {
 		this.children = [];
 		for (e in elements)
@@ -178,13 +91,13 @@ abstract XML(Xml) from Xml to Xml {
 		return value;
 	}
 
-	// public inline function unset( att : String )
-	//	this.remove( att );
+	public inline function unset(att: String)
+	    this.remove(att);
 
-	// public inline function is( xmlns : String ) : Bool
-	//   return get( 'xmlns' ) == xmlns;
+	public inline function is(xmlns: String) : Bool
+	    return get('xmlns') == xmlns;
 
-	public inline function has(att:String):Bool
+	public inline function has(att: String):Bool
 		return this.exists(att);
 
 	//	public inline function xmlns() : String
@@ -230,7 +143,8 @@ abstract XML(Xml) from Xml to Xml {
 	}
 
 	@:from public static inline function parse(s:String):XML
-		return fromXml(Xml.parse(s).firstElement());
+	    //return fromXml(Xml.parse(s).firstElement());
+	    return fromXml(Xml.parse(s));
 
 	macro public static function markup(mu):ExprOf<xmpp.XML> {
 		return switch mu.expr {
@@ -240,4 +154,90 @@ abstract XML(Xml) from Xml to Xml {
 				throw new haxe.macro.Expr.Error("not an xml literal", mu.pos);
 		}
 	}
+}
+
+@:noDoc
+private abstract Text(String) from String to String {
+	@:to public inline function toFloat():Float
+		return Std.parseFloat(this);
+
+	@:to public inline function toInt():Int
+		return Std.parseInt(this);
+
+	@:to function toBool():Bool
+		return switch this {
+			case '', '0', 'false', 'null': false;
+			case '1', 'true': true;
+			case _: throw 'invalid bool value: $this';
+		}
+}
+
+@:noDoc
+@:forward(hasNext)
+private abstract NodeIterator(Iterator<XML>) from Iterator<XML> to Iterator<XML> {
+	public inline function next():XML
+		return this.next();
+
+	/**
+		Get nth(i) element.
+	**/
+	@:arrayAccess public function get(i:Int):XML {
+		var j = 0;
+		while (j <= i) {
+			if (!this.hasNext())
+				return null;
+			var n = next();
+			if (j++ == i)
+				return n;
+		}
+		return null;
+	}
+
+	/**
+		Returns all child elements with given node name.
+	**/
+	@:arrayAccess public function named(name:String):Array<XML> {
+		final e = new Array<XML>();
+		while (this.hasNext()) {
+			var c = next();
+			if (c.type == Element && c.name == name)
+				e.push(c);
+		}
+		return e;
+	}
+
+	public function count():Int {
+		var i = 0;
+		while (next() != null)
+			i++;
+		return i;
+	}
+
+  //   public function hasChild(f: XML->Bool) : Bool {
+		// for( e in this ) if( f(e) ) return true;
+  //       return false;
+  //   }
+
+	/*
+		function doFilter( f : XML->Bool ) : NodeIterator {
+			return [for(e in this) if(f(e))e].iterator();
+		}
+
+		function doFind( f : XML->Bool ) : XML {
+			for( e in this ) if( f(e) ) return e;
+			return null;
+		}
+
+		macro public static function where( ethis : ExprOf<xmpp.XML.NodeIterator>, cond : ExprOf<Bool> ) {
+			var f = macro function( element : XML ) return $cond;
+			var e = macro xmpp.XML.NodeIterator.doFilter( $ethis, $f );
+			return e;
+		}
+
+		macro public static function find( ethis : ExprOf<xmpp.XML.NodeIterator>, cond : ExprOf<Bool> ) {
+			var f = macro function(element:XML) return $cond;
+			var e = macro xmpp.XML.NodeIterator.doFind( $ethis, $f );
+			return e;
+		}
+	 */
 }

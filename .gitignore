@@ -1,12 +1,17 @@
 _*
 doc/
 exp/
+example/out/
 example/*.hl
 example/*.js
 example/*.js.map
+example/*.lua
 example/*.n
+example/*.py
 ref/
 test/bin/
 xsd/
+build.hxml
 haxedoc.xml
 .unittest/
+TODO*
