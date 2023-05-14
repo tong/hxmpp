@@ -1,3 +1,4 @@
 unit.hxml
 -hl bin/unit.hl
--dce std # TODO: https://github.com/HaxeFoundation/haxe/issues/11196
+# TODO: https://github.com/HaxeFoundation/haxe/issues/11196
+-dce std

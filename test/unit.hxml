@@ -2,5 +2,6 @@
 -lib hxmpp
 -lib utest
 -dce no
--D test_unit
 -D message.reporting=pretty
+-D no-deprecation-warnings
+-D test_unit
