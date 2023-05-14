@@ -7,14 +7,25 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+        - ubuntu-latest
+        haxe:
+        - latest
+        - 4.3.1
+        - 4.2.5
     steps:
-      - uses: actions/checkout@v3
-      - uses: krdlab/setup-haxe@v1.5.0
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install haxe ${{ matrix.haxe }}
+        uses: krdlab/setup-haxe@v1.5.1
         with:
-          haxe-version: 4.3.1
-      - name: Setup
+          haxe-version: ${{ matrix.haxe }}
+      - run: haxe --version
+      - name: Install haxelibs
         run: |
-          haxe --version
           haxelib git sasl https://github.com/tong/hxsasl
           haxelib dev hxmpp .
           haxelib install test.hxml --always
@@ -25,8 +36,6 @@ jobs:
           haxelib install utest
       - name: Run unit tests
         run: haxe test.hxml
-      - name: Build unit tests (cpp)
-        run: haxe --cwd test build-cpp.hxml
       - name: Build unit tests (cs)
         run: haxe --cwd test build-cs.hxml
       - name: Build unit tests (hl)
@@ -45,6 +54,8 @@ jobs:
         run: haxe --cwd test build-php.hxml
       - name: Build unit tests (python)
         run: haxe --cwd test build-python.hxml
+      - name: Build unit tests (cpp)
+        run: haxe --cwd test build-cpp.hxml
       - name: Build haxedoc.xml
         run: haxe haxedoc.hxml
       # - name: Build example [node]
