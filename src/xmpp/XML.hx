@@ -3,7 +3,7 @@ package xmpp;
 import Xml;
 
 @:access(Xml)
-@:forward(addChild,attributes,children,removeChild)
+@:forward(attributes,children)
 abstract XML(Xml) from Xml to Xml {
 
 	public var parent(get,never):XML;
@@ -99,11 +99,11 @@ abstract XML(Xml) from Xml to Xml {
 		return this;
 	}
 
-	// public inline function addChild(x:XML):Void
-	// 	this.addChild(x);
-	//
-	// public inline function removeChild(x:XML):Bool
-	// 	return this.removeChild(x);
+	public inline function addChild(x:XML):Void
+		this.addChild(x);
+
+	public inline function removeChild(x:XML):Bool
+		return this.removeChild(x);
 
 	public inline function insert(x:XML, pos = 0):XML {
 		this.insertChild(x, pos);
