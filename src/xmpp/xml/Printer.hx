@@ -40,11 +40,13 @@ class Printer {
 
 	public var pretty:Bool;
 
-	function new(pretty=true) this.pretty = pretty;
+	public function new(pretty=true) this.pretty = pretty;
+	
+    public inline function it(sox:StringOrXml):String
+		return sox.isXml() ? printXml(sox) : printString(sox);
 
-	function printString(str:String):String {
+	public function printString(str:String):String {
 		if (pretty) {
-			//var xml:Xml = try Xml.parse(str).firstElement() catch(e) {
 			var xml:Xml = try Xml.parse(str) catch(e) {
 				return str;
 			}
@@ -53,12 +55,9 @@ class Printer {
 		return str;
 	}
 
-	inline function printXml(xml:Xml):String {
+	public inline function printXml(xml:Xml):String
 		return haxe.xml.Printer.print(xml, pretty);
-	}
 
-	public static function print(msg:StringOrXml, ?pretty: Bool):String {
-		var printer = new Printer(pretty);
-		return msg.isXml() ? printer.printXml(msg) : printer.printString(msg);
-	}
+	public static inline function print(sox:StringOrXml, ?pretty: Bool):String
+        return new Printer(pretty).it(sox);
 }
