@@ -9,12 +9,14 @@ class Socket extends sys.net.Socket {
 }
 #end
 
+#if sys
 private typedef SSLSocket =
     #if python xmpp.Socket;
     #elseif (cpp||hl||neko) sys.ssl.Socket;
     #elseif macro sys.ssl.Socket;
     #elseif doc_gen Any;
     #end
+#end
 
 /**
 
@@ -29,12 +31,12 @@ class StartTLS {
 
 	public static function startTLS(stream:Stream, callback:(success:Bool) -> Void) {
 		stream.input = str -> {
-            var xml = try XML.parse(str) catch(e) {
+            var xml = try Xml.parse(str).firstElement() catch(e) {
                 trace(e);
                 callback(false);
                 return;
             }
-            callback((xml.xmlns == XMLNS) ? switch xml.name {
+            callback((xml.get("xmlns") == XMLNS) ? switch xml.nodeName {
                 case 'proceed': true;
                 case _: false;
             } : false);
@@ -42,7 +44,6 @@ class StartTLS {
 		stream.send(XML.create('starttls').set('xmlns', XMLNS));
 	}
 
-    //TODO: #if sys
     #if (macro||cpp||hl||neko||python)
 
     @:access(sys.net.Socket)
