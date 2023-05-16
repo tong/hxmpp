@@ -67,6 +67,7 @@ enum abstract IQType(String) to String {
 
 **/
 @:forward(from, to, id, lang, error, type, payload)
+@:forwardStatics(createResult)
 abstract IQ(IQStanza) to Stanza {
 	public static inline var NAME = 'iq';
 
@@ -87,14 +88,14 @@ abstract IQ(IQStanza) to Stanza {
 }
 
 private class IQStanza extends Stanza {
+
 	/** Either: get/set/result/error */
 	public var type:IQType;
 
 	/** The exclusive child element (mostly: '<query xmlns="ext-namspace"/>') */
 	public var payload:Payload;
 
-	public var xmlns(get, never):String;
-
+	public var xmlns(get,never):String;
 	inline function get_xmlns():String
 		return (payload != null) ? payload.xmlns : null;
 
@@ -118,13 +119,17 @@ private class IQStanza extends Stanza {
 	public static function parse(xml:XML):IQ {
 		var iq = Stanza.parseAttributes(new IQ(null, xml.get('type')), xml);
 		switch iq.type {
-			case Error:
-				iq.error = xmpp.Stanza.Error.fromXML(xml.firstElement);
-			case Get, Set, Result:
-				iq.payload = xml.firstElement;
+        case Error:
+            iq.error = xmpp.Stanza.Error.fromXML(xml.firstElement);
+        case Get, Set, Result:
+            iq.payload = xml.firstElement;
 		}
 		return iq;
 	}
+
+    public static inline function createResult(iq:IQ, payload:Payload, ?from: String) {
+        return new IQ(payload, Result, iq.id, iq.from, from);
+    }
 }
 
 @:forward
@@ -148,10 +153,17 @@ abstract Payload(XML) from XML to XML {
 
 	inline function new(xml:XML) this = xml;
 
-	public static function create(xmlns:String, ?content:XML, name = 'query'):Payload {
+	public static function create(xmlns:String, ?elements:Iterable<XML>, name = 'query'):Payload {
 		var xml = XML.create(name).set('xmlns', xmlns);
-		if (content != null)
-			xml.append(content);
+        if(elements != null) {
+            //xml.elements = elements;
+            for(e in elements) xml.append(e);
+        }
+		// if (content != null)
+		// 	xml.append(content);
+        // if(elements != null) {
+        //     
+        // }
 		return new Payload(xml);
 	}
 

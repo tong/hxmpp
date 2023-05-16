@@ -79,15 +79,14 @@ private class MessageStanza extends Stanza {
 	public var thread:String;
 
 	/** */
-	public var properties:Array<XML>;
+	public var properties:Array<XML> = [];
 
-	public function new(?to:String, ?body:String, ?subject:String, ?type:Null<MessageType>, ?thread:String, ?from:String) {
+	public function new(?to:String, ?body:String, ?subject:String, ?type:MessageType=chat, ?thread:String, ?from:String) {
 		super(to, from);
 		this.body = body;
 		this.subject = subject;
-		this.type = (type != null) ? type : chat;
+		this.type = type;
 		this.thread = thread;
-		properties = [];
 	}
 
 	public function toXML():XML {
