@@ -1,6 +1,8 @@
 package xmpp;
 
-enum abstract IQType(String) to String {
+import xmpp.Stanza;
+
+enum abstract IQType(String) from String to String {
 	/**
 		The stanza requests information, inquires about what data is needed in order to complete further operations.
 	 */
@@ -21,14 +23,36 @@ enum abstract IQType(String) to String {
 	 */
 	var Error = "error";
 
-	@:from public static function fromString(s:String)
-		return switch s {
-			case 'get': Get;
-			case 'set': Set;
-			case 'result': Result;
-			case 'error': Error;
-			case null, _: null;
-		}
+	// @:from public static function fromString(s:String)
+	// 	return switch s {
+	// 		case 'get': Get;
+	// 		case 'set': Set;
+	// 		case 'result': Result;
+	// 		case 'error': Error;
+	// 		case null, _: null;
+	// 	}
+}
+
+enum abstract IQRequestType(String) to String to IQType {
+	var Get = "get";
+	var Set = "set";
+	// @:from public static function fromString(s:String)
+	// 	return switch s {
+	// 		case 'get': Get;
+	// 		case 'set': Set;
+	// 		case null, _: null;
+	// 	}
+}
+
+enum abstract IQResponseType(String) to String {
+	var Result = "result";
+	var Error = "error";
+	// @:from public static function fromString(s:String)
+	// 	return switch s {
+	// 		case 'result': Result;
+	// 		case 'error': Error;
+	// 		case null, _: null;
+	// 	}
 }
 
 /**
@@ -66,9 +90,11 @@ enum abstract IQType(String) to String {
 		|                            |
 
 **/
-@:forward(from, to, id, lang, error, type, payload)
-@:forwardStatics(createResult)
+@:forward(from,to,id,lang,error,type,payload,createResult)
+//@:forwardStatics(createError,createResponse)
+@:forwardStatics(createError)
 abstract IQ(IQStanza) to Stanza {
+
 	public static inline var NAME = 'iq';
 
 	public inline function new(?payload:Payload, type = IQType.Get, ?id:String, ?to:String, ?from:String)
@@ -89,12 +115,13 @@ abstract IQ(IQStanza) to Stanza {
 
 private class IQStanza extends Stanza {
 
-	/** Either: get/set/result/error */
+	/** Either: get/set/result/error **/
 	public var type:IQType;
 
-	/** The exclusive child element (mostly: '<query xmlns="ext-namspace"/>') */
+	/** The exclusive child element (mostly: `<query xmlns="ext-namspace"/>`) **/
 	public var payload:Payload;
 
+    /** Payload namespace **/
 	public var xmlns(get,never):String;
 	inline function get_xmlns():String
 		return (payload != null) ? payload.xmlns : null;
@@ -107,8 +134,8 @@ private class IQStanza extends Stanza {
 	}
 
 	public function toXML():XML {
-		var xml = Stanza.createXML(this, IQ.NAME);
-		xml.set('type', type);
+		var xml = Stanza.createXML(this, IQ.NAME)
+            .set("type", type);
 		if (payload != null)
 			xml.append(payload);
 		if (error != null)
@@ -127,9 +154,24 @@ private class IQStanza extends Stanza {
 		return iq;
 	}
 
-    public static inline function createResult(iq:IQ, payload:Payload, ?from: String) {
-        return new IQ(payload, Result, iq.id, iq.from, from);
+    public static inline function createError(iq:IQ, type:ErrorType, condition:ErrorCondition, ?text:String, ?from: String) : IQ {
+        var iq = new IQ(Result, iq.id, iq.from, from);
+        //var iq = createResponse(iq, Error, from);
+        iq.error = new xmpp.Stanza.Error(type, condition, text);
+        return iq;
     }
+
+    // public static inline function createResult(iq:IQ, ?payload:Payload, ?from: String) : IQ {
+    //     return new IQ(payload, Result, iq.id, iq.from, from);
+    // }
+    public function createResult(?payload:Payload) {
+        return new IQ(payload, Result, this.id, this.from);
+    }
+
+    // public static inline function createResponse(iq:IQ, type:IQResponseType, ?from: String) : IQ {
+    //     return new IQ(null, cast type, iq.id, iq.from, from);
+    // }
+
 }
 
 @:forward
@@ -146,24 +188,16 @@ abstract Payload(XML) from XML to XML {
 	inline function get_content():XML
 		return this.firstElement;
 	inline function set_content(x:XML):XML {
-		for (e in this.elements)
-			this.removeChild(e);
+		for (e in this.elements) this.removeChild(e);
 		return this.append(x);
 	}
 
 	inline function new(xml:XML) this = xml;
 
-	public static function create(xmlns:String, ?elements:Iterable<XML>, name = 'query'):Payload {
-		var xml = XML.create(name).set('xmlns', xmlns);
-        if(elements != null) {
-            //xml.elements = elements;
-            for(e in elements) xml.append(e);
-        }
-		// if (content != null)
-		// 	xml.append(content);
-        // if(elements != null) {
-        //     
-        // }
+	//public static function create(xmlns:String, ?elements:Iterable<XML>, name = 'query'):Payload {
+	public static function create(xmlns:String, ?content:XML, name = 'query'):Payload {
+		final xml = XML.create(name).set('xmlns', xmlns);
+        if(content != null) xml.append(content);
 		return new Payload(xml);
 	}
 

@@ -18,10 +18,11 @@ abstract class Stream {
 
 	public static inline var XMLNS = 'http://etherx.jabber.org/streams';
 
-	public dynamic function onEnd() {}
 	public dynamic function onMessage(m:Message) {}
 	public dynamic function onPresence(p:Presence) {}
 	public dynamic function onIQ(iq:IQ) {}
+	public dynamic function onRaw(xml:XML):Bool return false;
+	public dynamic function onEnd() {}
 
 	public final xmlns:String;
 	public final domain:String;
@@ -48,7 +49,7 @@ abstract class Stream {
         Info `get` query
     **/
 	public function get<T:IQ.Payload>(payload:IQ.Payload, ?jid:String, handler:(response:Response<T>) -> Void):IQ {
-		var iq = new IQ(payload, IQType.Get, createRandomStanzaId(), jid);
+		var iq = new IQ(payload, IQType.Get, makeRandomId(), jid);
         query(iq, (handler==null) ? null : res -> switch res.type {
             case Result: handler(Result(cast res.payload));
             case Error:
@@ -70,7 +71,7 @@ abstract class Stream {
         Info `set` query
     **/
 	public function set<T:IQ.Payload>(payload:IQ.Payload, ?jid:String, handler:(response:Response<T>) -> Void):IQ {
-		var iq = new IQ(payload, IQType.Set, createRandomStanzaId(), jid);
+		var iq = new IQ(payload, IQType.Set, makeRandomId(), jid);
         if(handler != null) {
             query(iq, res -> switch res.type {
                 case Result: handler(Result(cast res.payload));
@@ -87,7 +88,7 @@ abstract class Stream {
 
     function query(iq:IQ, callback:(response:IQ) -> Void) {
 		if (iq.id == null)
-            iq.id = createRandomStanzaId();
+            iq.id = makeRandomId();
         if(callback != null)
             queries.set(iq.id, cast callback);
 		send(iq);
@@ -156,9 +157,13 @@ abstract class Stream {
 		buffer = new StringBuf();
 		queries = new Map();
 	}
+	
+    // inline function makeRandomStanzaId(length = 8) : String {
+    //     makeRandomId(id);
+    // }
 
-	function createRandomStanzaId(length = 8) : String {
-		return Std.string(Md5.encode(id + Date.now().getTime() + (Math.random()*1))).substr(0, length);
+	public static function makeRandomId(seed:String='', length = 8) : String {
+		return Std.string(Md5.encode(seed + Date.now().getTime() + (Math.random()*1))).substr(0, length);
 	}
 
 	static function createHeader(xmlns:String, to:String, ?version:String, ?lang:String):String {

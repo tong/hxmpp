@@ -49,7 +49,7 @@ class Authentication {
             //     callback(new xmpp.Stanza.Error(null, condition, text));
             //     return;
             // }
-			var xml = XML.parse(str).firstElement;
+			final xml = XML.parse(str).firstElement;
 			switch xml.name {
             case 'challenge':
                 var res = mechanism.createChallengeResponse(xml.text);
@@ -74,8 +74,8 @@ class Authentication {
                 _callback(new xmpp.Stanza.Error(null, condition, text), null);
 			}
 		}
-		var text = mechanism.createAuthenticationText(node, stream.domain, password);
-		var auth = XML.create('auth').set('xmlns', XMLNS).set('mechanism', mechanism.name);
+		final text = mechanism.createAuthenticationText(node, stream.domain, password);
+		final auth = XML.create('auth').set('xmlns', XMLNS).set('mechanism', mechanism.name);
 		if (text != null)
 			auth.text = Base64.encode(Bytes.ofString(text), true);
 		stream.send(auth);
@@ -85,7 +85,7 @@ class Authentication {
         Bind the resource to the connection.
     **/
 	public static function bindResource(stream:Stream, resource:String, callback:(?error:xmpp.Stanza.Error, resource:String) -> Void) {
-        var xml = XML.create('bind').set('xmlns', XMLNS_BIND).append(XML.create('resource', resource));
+        final xml = XML.create('bind').set('xmlns', XMLNS_BIND).append(XML.create('resource', resource));
 		stream.set(xml, (res:Response<XML>) -> {
 			switch res {
             case Error(e): callback(e, null);

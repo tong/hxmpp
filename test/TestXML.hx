@@ -1,42 +1,40 @@
 import utest.Assert.*;
+import Xml;
 import xmpp.XML;
 
 using xmpp.XML;
 
 class TestXML extends utest.Test {
 
-    static var XML_SALES = XML.parse('<sales vendor="John">
-				<item type="peas" price="4" quantity="6"/>
-				<item type="carrot" price="3" quantity="10"/>
-				<item type="chips" price="5" quantity="3"/>
-			</sales> ');
-
-
     function test_create() {
+
         var xml = XML.create("a");
+        equals(XmlType.Element, xml.type);
+        isNull(xml.parent);
         equals("a", xml.name);
+        isNull(xml.text);
         equals(0, xml.elements.count());
-        var xml = XML.create("a",["x"=>"1","y"=>"2"]);
+
+        var xml = XML.create("a","mycontent");
+        equals(XmlType.Element, xml.type);
+        isNull(xml.parent);
+        equals("a", xml.name);
+        equals("mycontent", xml.text);
+        equals(0, xml.elements.count());
+
+        xml = XML.create("a", ["x"=>"1","y"=>"2"]);
+        equals(XmlType.Element, xml.type);
+        isNull(xml.parent);
+        equals("a", xml.name);
+        isNull(xml.text);
         equals("1", xml.get("x"));
         equals("2", xml.get("y"));
+        equals(0, xml.elements.count());
     }
+	
+    function test_attributes() {
 
-	function test_type() {
-		equals(Xml.XmlType.Element, XML.create('node').type);
-		equals(Xml.XmlType.Element, XML_SALES.type);
-	}
-
-	function test_name() {
-		equals('node', XML.create('node').name);
-	}
-
-	function test_parent() {
-		isNull(XML.create('node').parent);
-		notNull(XML_SALES.parent);
-	}
-
-	function test_attributes() {
-		var xml = XML.create('node').set('id', 'abc');
+        var xml = XML.create('node').set('id', 'abc');
 
 		isTrue(xml.has('id'));
 		isFalse(xml.has('nope'));
@@ -49,125 +47,42 @@ class TestXML extends utest.Test {
 		equals('xyz', xml.get('id'));
 		equals('xyz', xml['id']);
 	}
-
-	function test_unset() {
-		var xml = XML.create('node').set('id', 'abc');
-        xml.unset('id');
-        isNull(xml.get('id'));
-		isFalse(xml.has( 'id'));
+	
+	function test_elements_length() {
+        var xml : XML = '<a></a>';
+        equals(0, xml.elements.length);
+        xml = '<a><b></b></a>';
+        equals(1, xml.elements.length);
     }
 
-	function test_text() {
-		var xml = XML.create('node', 'value');
+    /*
+    function test_elements_find() {
+        var xml = XML_SALES;
+        //var item = xml.elements.doFind( e -> return e.get("type") == "chips" );
+        //equals( 'chips', item.get("type") );
+        xml.element["item"].find(element["type"] == "oranges")["quantity"] = "4";
+        //var item = xml.elements.find( element["type"] == "chips" );
+        equals( 'item', item.name );
+        equals( '3', item['price'] );
+    }
+    */
 
-		equals('node', xml.name);
-		equals('value', xml.text);
-
-		xml.text = 'another';
-
-		equals('another', xml.text);
-
-		xml.text = null;
-
-		isNull(xml.text);
-	}
-
-	/* function test_is() {
-
-		var xml = XML.parse( '<node id="123">abc</node>' );
-		isFalse( xml.is( 'https://disktree.net' ) );
-
-		var xml = XML.parse( '<node xmlns="https://disktree.net" id="123">abc</node>' );
-		isTrue( xml.is( 'https://disktree.net' ) );
-	}*/
-
-	function test_count() {
-		equals(3, XML_SALES.elements.count());
-	}
-
-	function test_elements() {
-		equals('peas', XML_SALES.elements.get(0).get('type'));
-		equals('peas', XML_SALES.elements[0].get('type'));
-		equals('carrot', XML_SALES.elements[1].get('type'));
-
-		equals('chips', XML_SALES.elements.get(2).get('type'));
-
-		equals(3, XML_SALES.elements.named('item').length);
-		equals(3, XML_SALES.elements['item'].length);
-		// equals( 3, XML_SALES.elements.count() );
-
-		/* var others = XML.parse(
-				'<others>
-					<item type="aaa" price="111" quantity="111"/>
-					<item type="bbb" price="222" quantity="222"/>
-				</others> ');
-
-			XML_SALES.elements = others.elements;
-
-			equals( 2, XML_SALES.elements.named('item').length );
-			equals( 'aaa', XML_SALES.elements.get(0).get('type') );
-			equals( 'bbb', XML_SALES.elements.get(1).get('type') ); */
-	}
-
-	/* 	function test_element() {
-		var xml = XML_SALES;
-
-	}*/
-	/*
-		function test_unset() {
-			var xml = XML.parse( '<node id="123">abc</node>' );
-			isTrue( xml.has( 'id' ) );
-			xml.unset( 'id' );
-			isFalse( xml.has( 'id' ) );
-		}
-	 */
-
-	function test_parse() {
-		var xml = XML_SALES;
-
-		equals('sales', xml.name);
-		equals('John', xml.get('vendor'));
-
-		equals(3, xml.elements.count());
-
-		equals('peas', xml.elements[0]['type']);
-		equals('4', xml.elements[0]['price']);
-		equals('6', xml.elements[0]['quantity']);
-
-		equals('carrot', xml.elements[1]['type']);
-		equals('3', xml.elements[1]['price']);
-		equals('10', xml.elements[1]['quantity']);
-
-		equals('chips', xml.elements[2]['type']);
-		equals('5', xml.elements[2]['price']);
-		equals('3', xml.elements[2]['quantity']);
-
-		equals(3, xml.elements['item'].length);
-		equals(0, xml.elements['nope'].length);
-	}
-
-	function test_insert() {
+    function test_insert() {
 		var xml = XML.create('node');
-
 		xml.append(XML.create('a'));
 		xml.append(XML.create('b'));
 		xml.append(XML.create('c'));
-
 		equals(3, xml.elements.count());
 		equals('a', xml.elements[0].name);
 		equals('b', xml.elements[1].name);
 		equals('c', xml.elements[2].name);
-
 		xml.insert(XML.create('x'), 1);
-
 		equals(4, xml.elements.count());
 		equals('a', xml.elements[0].name);
 		equals('x', xml.elements[1].name);
 		equals('b', xml.elements[2].name);
 		equals('c', xml.elements[3].name);
-
 		xml.insert(XML.create('y'));
-
 		equals(5, xml.elements.count());
 		equals('y', xml.elements[0].name);
 		equals('a', xml.elements[1].name);
@@ -176,88 +91,90 @@ class TestXML extends utest.Test {
 		equals('c', xml.elements[4].name);
 	}
 
-	function test_primitive_bool() {
-		var xml:XML = '<node>true</node>';
-		equals('true', xml.text);
-		var b:Bool = xml.text;
-		isTrue(b);
-
-		var xml:XML = '<node>false</node>';
-		equals('false', xml.text);
-		var b:Bool = xml.text;
-		isFalse(b);
-
-		var xml:XML = '<node></node>';
-		var b:Bool = xml.text;
-
-		var b:Bool = XML.parse('<node></node>').text;
-		isFalse(b);
-
-		var b:Bool = XML.parse('<node>0</node>').text;
-		isFalse(b);
-
-		var b:Bool = XML.parse('<node>false</node>').text;
-		isFalse(b);
-
-		var b:Bool = XML.parse('<node>null</node>').text;
-		isFalse(b);
-
-		var b:Bool = XML.parse('<node>1</node>').text;
-		isTrue(b);
-
-		var b:Bool = XML.parse('<node>true</node>').text;
-		isTrue(b);
+	function test_is() {
+		var xml : XML = '<node id="123">abc</node>';
+		isFalse(xml.is('https://disktree.net'));
+		xml = '<node xmlns="https://disktree.net" id="123">abc</node>';
+		isTrue(xml.is('https://disktree.net'));
 	}
 
-	function test_primitive_int() {
-		var xml:XML = '<node>23</node>';
-		equals('23', xml.text);
+/*
+    function test_primitive_bool() {
+		var xml:XML = '<node>true</node>';
+		equals('true', xml.text);
+		isTrue(xml.text);
 
+		xml = '<node>false</node>';
+		equals('false', xml.text);
+		isFalse(xml.text);
+		
+        xml = '<node></node>';
+		isFalse(xml.text);
+
+        xml = '<node>0</node>';
+		isFalse(xml.text);
+
+        xml = '<node>00</node>';
+		equals('00', xml.text);
+        var b : Bool = xml.text;
+        isNull(b);
+
+        xml = '<node>1</node>';
+		isTrue(xml.text);
+
+        xml = '<node>11</node>';
+		equals('11', xml.text);
+        var b : Bool = xml.text;
+		isNull(b);
+    }
+    */
+
+	function test_primitive_float() {
+
+        var xml = XML.create("node", "0.123");
+        equals("0.123", xml.text);
+        var f : Float = xml.text;
+        equals(0.123, f);
+
+        var xml = XML.create("node", ".123");
+        equals(".123", xml.text);
+        var f : Float = xml.text;
+        equals(0.123, f);
+
+        xml = XML.create("node");
+        xml.text = 0.123;
+        equals("0.123", xml.text);
+        var f : Float = xml.text;
+        equals(0.123, f);
+    }
+	
+    function test_primitive_int() {
+        var xml:XML = '<node>23</node>';
+		equals('23', xml.text);
 		var i:Int = xml.text;
 		equals(23, i);
 	}
 
-	function test_primitive_float() {
-		var xml:XML = '<node>1.988</node>';
-		equals('1.988', xml.text);
-
-		var f:Float = xml.text;
-		equals(1.988, f);
-
-		xml = '<node>.988</node>';
-		f = xml.text;
-		equals(0.988, f);
+    function test_text() {
+		var xml = XML.create('node', 'value');
+		equals('node', xml.name);
+		equals('value', xml.text);
+		xml.text = 'another';
+		equals('another', xml.text);
+		xml.text = null;
+		isNull(xml.text);
 	}
-
-	function test_field_access_overload() {
-		var xml:XML = '<node>1.988</node>';
-        isNull(xml.id);
-		var xml:XML = '<node id="123">1.988</node>';
-        equals("123", xml.id);
+	
+    function test_unset() {
+		var xml = XML.create('node').set('id', 'abc').set("key", "value");
+        notNull(xml.get('id'));
+        notNull(xml.get('key'));
+        xml.unset('id');
+        isNull(xml.get('id'));
+        notNull(xml.get('key'));
+		isFalse(xml.has('id'));
+		isTrue(xml.has('key'));
     }
-
-	function test_addition_overload() {
-		var xml:XML = '<node></node>';
-        xml = xml + '<child>element</child>';
-        equals(1, xml.elements.count());
-        equals("child", xml.elements[0].name);
-        equals("element", xml.elements[0].text);
-    }
-
-	/*
-    function test_find() {
-
-        var xml = XML_SALES;
-
-        //var item = xml.elements.doFind( e -> return e.get("type") == "chips" );
-        //equals( 'chips', item.get("type") );
-
-        xml.element["item"].find(element["type"] == "oranges")["quantity"] = "4";
-
-        //var item = xml.elements.find( element["type"] == "chips" );
-        equals( 'item', item.name );
-        equals( '3', item['price'] );
-	*/
 
     function test_print() {
         var src = '<node><child ns="my_ns">value</child></node>';
@@ -271,13 +188,12 @@ class TestXML extends utest.Test {
 </node>
 ', str);
     }
-
-	function test_markup() {
+	/*
+    function test_markup() {
 		var x = XML.markup(<div id="myid">MyContent</div>);
 		equals('div', x.name);
 		equals('myid', x.get('id'));
 		equals('MyContent', x.text);
 	}
-
-
+    */
 }

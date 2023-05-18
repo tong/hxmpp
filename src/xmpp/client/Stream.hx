@@ -98,10 +98,9 @@ class Stream extends xmpp.Stream {
         case 'stream:error':
             trace("TODO");
         default:
-            #if debug
-            trace('received invalid stanza', xml);
-            #end
-            end();
+            if(onRaw(xml)) {
+                end();
+            }
 		}
 	}
 }

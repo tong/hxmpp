@@ -91,14 +91,10 @@ private class MessageStanza extends Stanza {
 
 	public function toXML():XML {
 		var xml = Stanza.createXML(this, Message.NAME);
-		if (type != null)
-			xml.set("type", Std.string(type));
-		if (body != null)
-			xml.append(XML.create("body", body));
-		if (thread != null)
-			xml.append(XML.create("thread", thread));
-		for (e in properties)
-			xml.append(e);
+		if(type != null) xml.set("type", Std.string(type));
+		if(body != null) xml.append(XML.create("body", body));
+		if(thread != null) xml.append(XML.create("thread", thread));
+		for(e in properties) xml.append(e);
 		return xml;
 	}
 

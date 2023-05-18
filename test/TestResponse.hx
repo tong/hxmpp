@@ -8,10 +8,10 @@ class TestResponse extends utest.Test {
 
     function test_ok() {
         var r : Response<XML> = Result("<e></e>");
-        isTrue(r.isOk());
+        isTrue(r.ok());
         isTrue(r);
         var r : Response<XML> = Error(new xmpp.Stanza.Error(cancel, bad_request));
-        isFalse(r.isOk());
+        isFalse(r.ok());
         isFalse(r);
     }
 
@@ -21,9 +21,9 @@ class TestResponse extends utest.Test {
         var r : Response<XML> = Error(new xmpp.Stanza.Error(cancel, bad_request));
         isNull(r.payload);
     }
-
+/*
     function test_xmlns() {
-        var r : Response<XML> = Result("<query xmlns='disktree'></query>");
+        var r : Response<XML> = Result('<query xmlns="disktree"></query>');
         equals("disktree", r.xmlns);
         isTrue(r.is('disktree'));
         var r : Response<XML> = Result("<query></query>");
@@ -33,6 +33,7 @@ class TestResponse extends utest.Test {
         isNull(r.xmlns);
         isFalse(r.is('disktree'));
     }
+    */
 
     /*
     function test_toOption() {

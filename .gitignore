@@ -8,8 +8,10 @@ example/*.js.map
 example/*.lua
 example/*.n
 example/*.py
+extra/
 ref/
 test/bin/
+xeps/
 xsd/
 build.hxml
 haxedoc.xml

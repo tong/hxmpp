@@ -156,8 +156,9 @@ enum abstract Subscription(String) to String {
 
 	The <presence/> element represents a broadcast or "publish-subscribe" mechanism, whereby multiple entities receive information about an entity to which they have subscribed (in this case, network availability information).
  */
-@:forward(from, to, id, lang, properties, type, show, status, priority)
+@:forward(from,to,id,lang,properties,type,show,status,priority)
 abstract Presence(PresenceStanza) to Stanza {
+
 	public static inline var NAME = 'presence';
 
 	public inline function new(?show:Show, ?status:Status, ?priority:Priority, ?type:PresenceType)
@@ -170,13 +171,14 @@ abstract Presence(PresenceStanza) to Stanza {
 		return this.toString();
 
 	@:from public static inline function fromString(str:String):Presence
-		return fromXML(XML.parse(str));
+		return fromXML(XML.parse(str).firstElement);
 
 	@:from public static inline function fromXML(xml:XML):Presence
 		return PresenceStanza.parse(xml);
 }
 
 private class PresenceStanza extends Stanza {
+
 	/**/
 	public var type:PresenceType;
 
@@ -202,16 +204,11 @@ private class PresenceStanza extends Stanza {
 
 	public function toXML():XML {
 		final xml = Stanza.createXML(this, Presence.NAME);
-		if (type != null)
-			xml.set("type", type);
-		if (show != null)
-			xml.append(XML.create("show", show));
-		if (status != null)
-			xml.append(XML.create("status", status));
-		if (priority != null)
-			xml.append(priority);
-		for (p in properties)
-			xml.append(p);
+		if (type != null) xml.set("type", type);
+		if (show != null) xml.append(XML.create("show", show));
+		if (status != null) xml.append(XML.create("status", status));
+		if (priority != null) xml.append(priority);
+		for (p in properties) xml.append(p);
 		return xml;
 	}
 

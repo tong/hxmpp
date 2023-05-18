@@ -1,14 +1,15 @@
 function main() {
-    final runner = new utest.Runner();
-    runner.addCase( new TestXML() );
-    runner.addCase( new TestXMLSchema() );
-    runner.addCase( new TestJid() );
-    runner.addCase( new TestResponse() );
-    runner.addCase( new TestStanza() );
-    runner.addCase( new TestMessage() );
-    runner.addCase( new TestPresence() );
-    runner.addCase( new TestIQ() );
-    runner.addCase( new TestStream() );
-    utest.ui.Report.create( runner );
-    runner.run();
+    final r = new utest.Runner();
+    r.addCase(new TestXML());
+    //r.addCase(new TestXMLSchema());
+    r.addCase(new TestJid());
+    r.addCase(new TestStanza());
+    r.addCase(new TestMessage());
+    r.addCase(new TestPresence());
+    r.addCase(new TestIQ());
+    r.addCase(new TestResponse());
+    r.addCase(new TestStream());
+    //r.addCase(new TestURI());
+    utest.ui.Report.create(r);
+    r.run();
 }

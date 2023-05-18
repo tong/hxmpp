@@ -1,8 +1,6 @@
 package xmpp;
 
-import haxe.ds.Option;
-
-enum TResponse<T:IQ.Payload> {
+enum EResponse<T:xmpp.IQ.Payload> {
 
     /** Contains the success value **/
 	Result(payload:T);
@@ -12,21 +10,21 @@ enum TResponse<T:IQ.Payload> {
 }
 
 /**
-    A query response representing either success (Result) or failure (Error).
+    A query response representing either success (`Result`) or failure (`Error`).
 **/
-abstract Response<T:IQ.Payload>(TResponse<T>) from TResponse<T> to TResponse<T> {
+abstract Response<T:xmpp.IQ.Payload>(EResponse<T>) from EResponse<T> to EResponse<T> {
 
     /** The payload **/
     public var payload(get,never) : T;
     inline function get_payload() : T return switch this {
-        case Result(pl): pl;
+        case Result(r): r;
         case Error(e): null;
     }
 
     /** The payload namespace **/
     public var xmlns(get,never) : String;
     inline function get_xmlns() : String return switch this {
-        case Result(pl): pl.get('xmlns');
+        case Result(r): r.get('xmlns');
         case Error(e): null;
     }
 
@@ -36,7 +34,7 @@ abstract Response<T:IQ.Payload>(TResponse<T>) from TResponse<T> to TResponse<T> 
     public inline function is(xmlns:String):Bool
         return get_xmlns() == xmlns;
 
-    @:to public inline function isOk():Bool
+    @:to public inline function ok():Bool
         return switch this {
 		    case Result(_): true;
 		    case Error(_): false;
@@ -44,19 +42,19 @@ abstract Response<T:IQ.Payload>(TResponse<T>) from TResponse<T> to TResponse<T> 
 	
     public inline function sure():Null<T>
 		return switch this {
-			case Result(pl): pl;
+			case Result(r): r;
 			case Error(e): throw e;
 		}
 
     @:to public inline function toXML():XML
         return switch this {
-		    case Result(pl): pl;
+		    case Result(r): r;
 		    case Error(e): e.toXML();
     	}
 	
     @:to public inline function toOption():haxe.ds.Option<T>
 		return switch this {
-			case Result(pl): haxe.ds.Option.Some(pl);
+			case Result(r): haxe.ds.Option.Some(r);
 			case Error(e): haxe.ds.Option.None;
 		}
 }

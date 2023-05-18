@@ -33,13 +33,15 @@ abstract XML(Xml) from Xml to Xml {
 		return ns;
 	}
 
-	public var text(get, set):Text;
+	public var text(get,set):Text;
+    
 	function get_text():Text
 		return switch type {
 			case XmlType.Element:
 				var c = this.firstChild();
 				if (c == null) null else c.nodeValue;
 			default: null;
+
 		}
 	function set_text(v:Text):Text {
 		switch type {
@@ -90,8 +92,10 @@ abstract XML(Xml) from Xml to Xml {
 	public inline function has(att: String):Bool
 		return this.exists(att);
 
-    public inline function unset(att: String)
+    public inline function unset(att: String): XML {
 	    this.remove(att);
+        return this;
+    }
 
 	//@:op(A + B) 
     public inline function append(e:XML):XML {
@@ -136,8 +140,14 @@ abstract XML(Xml) from Xml to Xml {
 		}
 	}
     */
+	@:from public static inline function fromString(str:String):XML {
+        var xml = Xml.parse(str);
+        //trace(@:privateAccess cast(xml.elements(), haxe.iterators.ArrayIterator<Dynamic>).array.length);
+        return new XML(xml.firstElement());
+    }
 
-	@:from public static inline function parse(s:String):XML {
+	//@:from 
+    public static inline function parse(s:String):XML {
 	    //return fromXml(Xml.parse(s).firstElement());
         var x : Xml = Xml.parse(s);
         //trace(@:privateAccess cast(x.elements(), haxe.iterators.ArrayIterator<Dynamic>).array.length);
@@ -236,16 +246,23 @@ private abstract NodeIterator(Iterator<XML>) from Iterator<XML> to Iterator<XML>
 
 @:noDoc
 private abstract Text(String) from String to String {
+
 	@:to public inline function toFloat():Float
 		return Std.parseFloat(this);
 
 	@:to public inline function toInt():Int
 		return Std.parseInt(this);
 
-	@:to function toBool():Bool
-		return switch this {
-			case '', '0', 'false', 'null': false;
-			case '1', 'true': true;
-			case _: throw 'invalid bool value: $this';
-		}
+    @:from public static inline function fromInt(i: Int) : Text
+        return Std.string(i);
+
+    @:from public static inline function fromFloat(f: Float) : Text
+        return Std.string(f);
+
+	// @:to function toBool():Null<Bool>
+	// 	return switch this {
+	// 		case '', '0', 'false', 'null': false;
+	// 		case '1', 'true': true;
+	// 		case _: null; //throw 'invalid bool value: $this';
+	// 	}
 }
