@@ -24,6 +24,7 @@ typedef ApplicationErrorCondition = {
 }
 
 enum abstract ErrorCondition(String) from String to String {
+
 	/**
 		The sender has sent XML that is malformed or that cannot be processed (e.g., an IQ stanza that includes an unrecognized value of the 'type' attribute); The associated error type SHOULD be `modify`.
 	 */
@@ -135,7 +136,9 @@ enum abstract ErrorCondition(String) from String to String {
 	var unexpected_request = "unexpected-request";
 }
 
+@:structInit
 class Error {
+
 	public static inline var XMLNS = "urn:ietf:params:xml:ns:xmpp-stanzas";
 
 	/** */
@@ -166,12 +169,11 @@ class Error {
 	public function toXML():XML {
 		var xml = XML.create('error');
 		xml.set('type', type);
+		if(by != null) xml.set('by', by);
 		xml.append(XML.create(condition).set('xmlns', XMLNS));
-		if (by != null)
-			xml.set('by', by);
-		if (text != null)
+		if(text != null)
 			xml.append(XML.create('text', text).set('xmlns', XMLNS));
-		if (app != null && (app.condition != null && app.xmlns != null))
+		if(app != null && (app.condition != null && app.xmlns != null))
 			xml.append(XML.create(app.condition).set('xmlns', app.xmlns));
 		return xml;
 	}
