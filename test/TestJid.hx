@@ -106,7 +106,7 @@ class TestJid extends utest.Test {
 		equals( str, Jid.escapeNode( Jid.unescapeNode( str ) ) );
 	}
 
-	function testEquals() {
+	function test_equals() {
 		
 		var a = new Jid( 'romeo', 'server.com', 'balcony' );
 		var b = new Jid( 'julia', 'host.net', 'castle' );
@@ -119,7 +119,7 @@ class TestJid extends utest.Test {
 		isTrue( a == b );
 	}
 
-	function testArrayAccess() {
+	function test_arrayaccess() {
 
 		var a = new Jid( 'romeo', 'server.com', 'balcony' );
 		equals( 'romeo', a[0] );
@@ -141,4 +141,14 @@ class TestJid extends utest.Test {
 		equals( 'julia@another.com/woods', a[-1] );
 	}
 
+    function test_struct() {
+        var jid : Jid = { node:'node', domain:'example.com', resource:'hxmpp' };
+		equals('node', jid.node);
+		equals('example.com', jid.domain);
+		equals('hxmpp', jid.resource);
+        jid = { domain: "example.com" };
+		equals("example.com", jid.domain);
+		isNull(jid.node);
+		isNull(jid.resource);
+    }
 }

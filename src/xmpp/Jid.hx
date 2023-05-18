@@ -2,7 +2,9 @@ package xmpp;
 
 using StringTools;
 
+@:structInit
 private class JidType {
+
 	public var node:String;
 	public var domain:String;
 	public var resource:String;
@@ -36,8 +38,9 @@ private class JidType {
 	- [XEP-0106: JID Escaping](https://xmpp.org/extensions/xep-0106.html)
 
 **/
-@:forward(node, domain, resource)
+@:forward(node,domain,resource)
 abstract Jid(JidType) from JidType to JidType {
+
 	// public static inline var MIN_LENGTH = 8;
 	public static inline var MAX_PARTSIZE = 1023;
 	public static inline var MAX_SIZE = 3071;
@@ -61,14 +64,11 @@ abstract Jid(JidType) from JidType to JidType {
 	@:to public inline function toArray():Array<String>
 		return [this.node, this.domain, this.resource];
 
-	@:op(A == B) public function equals(jid:Jid):Bool {
-		if (this.node != jid.node)
-			return false;
-		if (this.domain != jid.domain)
-			return false;
-		if (this.resource != jid.resource)
-			return false;
-		return true;
+	@:op(A==B) public function equals(jid:Jid):Bool {
+        return if(this.node != jid.node
+            || this.domain != jid.domain
+            || this.resource != jid.resource)
+            false else true;
 	}
 
 	@:arrayAccess function getPart(i:Int):String {
@@ -100,7 +100,7 @@ abstract Jid(JidType) from JidType to JidType {
 
 	/**
 		Returns `true` if the given string is a valid jid.
-	 */
+	**/
 	public static function isValid(str:String):Bool {
 		// if( str == null || str.length < MIN_LENGTH || str.length > MAX_SIZE )
 		if (str == null || str.length > MAX_SIZE)
@@ -145,7 +145,7 @@ abstract Jid(JidType) from JidType to JidType {
 		Typically, escaping is performed only by a client that is processing information
 		provided by a human user in unescaped form, or by a gateway to some external system
 		(e.g., email or LDAP) that needs to generate a JID.
-	 */
+    **/
 	public static function escapeNode(s:String):String {
 		// s.split("&").join("&amp;")
 		s = s.replace("\\", "\\5c");
@@ -169,7 +169,7 @@ abstract Jid(JidType) from JidType to JidType {
 		containing escaped characters to a human user, or by a gateway to some
 		external system (e.g., email or LDAP) that needs to generate identifiers
 		for foreign systems.
-	 */
+	**/
 	public static function unescapeNode(s:String):String {
 		s = s.replace("\\20", " ");
 		s = s.replace("\\22", "\"");
