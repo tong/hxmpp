@@ -21,6 +21,14 @@ abstract Response<T:xmpp.IQ.Payload>(EResponse<T>) from EResponse<T> to ERespons
         case Error(e): null;
     }
 
+    /** The error **/
+    public var error(get,never) : xmpp.Stanza.Error;
+    inline function get_error() : xmpp.Stanza.Error return switch this {
+        case Result(r): null;
+        case Error(e): e;
+    }
+
+
     /** The payload namespace **/
     public var xmlns(get,never) : String;
     inline function get_xmlns() : String return switch this {
