@@ -90,9 +90,7 @@ enum abstract IQResponseType(String) to String {
 		|                            |
 
 **/
-@:forward(from,to,id,lang,error,type,payload,createResult)
-//@:forwardStatics(createError,createResponse)
-@:forwardStatics(createError)
+@:forward(from,to,id,lang,error,type,payload,createResult,createError)
 abstract IQ(IQStanza) to Stanza {
 
 	public static inline var NAME = 'iq';
@@ -154,24 +152,14 @@ private class IQStanza extends Stanza {
 		return iq;
 	}
 
-    public static inline function createError(iq:IQ, type:ErrorType, condition:ErrorCondition, ?text:String, ?from: String) : IQ {
-        var iq = new IQ(Result, iq.id, iq.from, from);
-        //var iq = createResponse(iq, Error, from);
-        iq.error = new xmpp.Stanza.Error(type, condition, text);
-        return iq;
-    }
-
-    // public static inline function createResult(iq:IQ, ?payload:Payload, ?from: String) : IQ {
-    //     return new IQ(payload, Result, iq.id, iq.from, from);
-    // }
-    public function createResult(?payload:Payload) {
+    public inline function createResult(?payload: Payload) : IQ
         return new IQ(payload, Result, this.id, this.from);
+
+    public function createError(e: xmpp.Stanza.Error) : IQ {
+        var r = new IQ(Error, this.id, this.from);
+        r.error = e;
+        return r;
     }
-
-    // public static inline function createResponse(iq:IQ, type:IQResponseType, ?from: String) : IQ {
-    //     return new IQ(null, cast type, iq.id, iq.from, from);
-    // }
-
 }
 
 @:forward
