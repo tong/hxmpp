@@ -7,6 +7,7 @@ function main() {
     r.addCase(new TestMessage());
     r.addCase(new TestPresence());
     r.addCase(new TestIQ());
+    r.addCase(new TestDataForm());
     r.addCase(new TestResponse());
     r.addCase(new TestStream());
     //r.addCase(new TestURI());
