@@ -16,6 +16,9 @@ private typedef SSLSocket =
     #elseif macro sys.ssl.Socket;
     #elseif doc_gen Any;
     #end
+#elseif dog_gen
+#else
+    #error "xmpp.StartTLS not implemented"
 #end
 
 /**
