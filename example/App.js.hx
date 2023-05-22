@@ -1,18 +1,15 @@
 
-import xmpp.JID;
 import xmpp.IQ;
+import xmpp.Jid;
 import xmpp.Message;
 import xmpp.Presence;
-import xmpp.Stream;
+import xmpp.Stanza; 
 import xmpp.client.Stream;
-import xmpp.XML;
 import js.node.net.Socket;
-import js.node.tls.TLSSocket;
-import Sys.print;
-import Sys.println;
 
+using xmpp.DelayedDelivery;
+using xmpp.StartTLS;
 using xmpp.client.Authentication;
-using xmpp.client.StartTLS;
 using xmpp.client.Roster;
 
 class App {
@@ -22,21 +19,16 @@ class App {
 		Sys.println(str);
 	}
 
-	public var jid(default,null) : JID;
 	public var stream(default,null) : Stream;
+	public var secure(default,null) = false;
 
-	var password : String;
-	var socket : Socket;
-	var tls : TLSSocket;
+	public function new() {}
 
-	public function new( jid : JID, password : String ) {
-		this.jid = jid;
-		this.password = password;
-	}
+	public function connect(jid: Jid, password: String, ?host : String, callback : Void->Void) {
 
-	public function login( ?ip : String, callback : Void->Void ) {
+		if(host == null) host = jid.domain;
 
-		if( ip == null ) ip = jid.domain;
+		var socket = new Socket();
 
 		function sendData(str:String) {
 			print( xmpp.xml.Printer.print(str,true), 32 );
@@ -49,122 +41,70 @@ class App {
 			stream.recv( str );
 		}
 
-		socket = new Socket();
-		socket.on( Data, recvData );
-		socket.on( End, () -> trace('Socket disconnected') );
-		socket.on( Error, e -> trace('Socket error',e) );
+		socket.on(Data, recvData);
+		socket.on(End, () -> trace('Socket disconnected'));
+		socket.on(Error, e -> trace('Socket error',e));
 
-		stream = new Stream( jid.domain );
-		stream.onPresence = p -> trace( 'Presence from: '+p.from );
-		stream.onMessage = m -> trace( 'Message from: '+m.from );
+		stream = new Stream(jid.domain);
+		stream.onPresence = p -> trace('Presence from: '+p.from);
+		stream.onMessage = m -> {
+            var delay = m.getDelay();
+            var str = '[${m.from}]';
+            if(delay != null) str += '[delay=${delay.stamp}]';
+            str += ' ${m.body}';
+            Sys.println(str);
+        }
 		stream.onIQ = iq -> {
-			trace( 'Unhandled iq: '+iq );
+			trace('Unhandled iq: '+iq);
+            //return Error({type: cancel, condition: feature_not_implemented});
+            return null;
 		}
 
 		stream.output = sendData;
 
-		socket.connect( xmpp.client.Stream.PORT, ip, function() {
-			stream.start( function(features){
-				trace(features);
-				stream.startTLS( function(success){
-					if( success ) {
-						var tls = new js.node.tls.TLSSocket( socket, { requestCert: true, rejectUnauthorized: true } );
-						tls.on( End, () -> trace('TLSSocket disconnected') );
-						tls.on( Error, e -> trace('TLSSocket error',e) );
-						tls.on( Data, recvData );
-						socket = tls;
-						stream.start( function(features){
-							for( f in features.elements ) trace(f);
-							var mech = new sasl.PlainMechanism();
-							//var mech = new sasl.AnonymousMechanism();
-							//var mech = new sasl.SCRAMSHA1Mechanism();
-							stream.authenticate( jid.node, jid.resource, password, mech, function(?error){
-								if( error != null ) {
-									trace( error.condition, error.text );
-									stream.end();
-									socket.end();
-								} else {
+        function handleStreamOpen(features) {
+            if(secure) {
+                var mech = new sasl.PlainMechanism(false);
+                //var mech = new sasl.SCRAMSHA1Mechanism();
+                stream.authenticate(jid.node, jid.resource, password, mech, (?error)->{
+                    trace("logged in");
+                    stream.send(new Presence());
+                });
+            } else {
+				stream.startTLS(success -> {
+					if(success) {
+					    socket = socket.upgrade();
+						socket.on(Data, recvData);
+						// tls.on(End, () -> trace('TLSSocket disconnected'));
+						// tls.on(Error, e -> trace('TLSSocket error',e));
+                        socket.on('keylog', e -> trace(e));
+                        socket.on('secure', () -> {
+                            secure = true;
+                        });
+						stream.start(handleStreamOpen);
+                    }
+                });
+            }
+        }
 
-									//var muc = new MUC( stream, 'conference.x.disktree.net', 'disktree' );
-									//muc.join('tong');
-                                  
-									/* stream.getRoster( r -> switch r {
-									case Result(payload):
-										trace( 'Roster v${payload.ver} loaded' );
-	
-									for( item in payload.items ) {
-											trace(item.name+': '+item.jid);
-										}
-									case Error(error): trace(error);
-									}); */
-
-									/* stream.extensions.set( ServiceDiscovery.XMLNS_INFO, iq -> {
-										trace(iq);
-									} ); */
-
-									/*
-									stream.getRoster( r -> {
-										switch r {
-										case Result(roster):
-											for( i in roster.items ) println( i);
-										case Error(e):
-											trace(e);
-										}
-
-										stream.send( new Presence() );
-
-										 stream.getDiscoInfo( stream.domain, r -> {
-											switch r {
-											case Result(p):
-												for( i in p.identity ) trace(i);
-												for( f in p.feature ) trace(f);
-											case Error(e):
-											}
-										});
-
-										stream.getDiscoItems( stream.domain, r -> {
-											switch r {
-											case Result(p):
-												for( i in p.items ) trace(i);
-											case Error(e):
-											}
-										});
-
-									}); */
-									/*
-									stream.query( new IQ('jabber:iq:roster'), r -> {
-										stream.send( new Presence() );
-										onReady();
-									});
-									*/
-								}
-							});
-						});
-					} else {
-						trace( "StartTLS failed" );
-						socket.end();
-					}
-				});
-			});
+		socket.connect(xmpp.client.Stream.PORT, host, ()->{
+			stream.start(handleStreamOpen);
 		});
 	}
 
 	static function main() {
-
 		var args = Sys.args();
-		if( args.length < 2 ) {
-			Sys.println( 'Invalid arguments' );
-			Sys.println( '\tUsage: node app.js <jid> <password> <?ip>' );
+		if(args.length < 2) {
+			Sys.println('Invalid arguments');
+			Sys.println('\tUsage: node app.js <jid> <password> <?ip>');
 			Sys.exit(1);
 		}
-
-		var jid : JID = args[0];
-		if( jid.resource == null ) jid.resource = 'hxmpp';
+		var jid : Jid = args[0];
+        jid.resource = jid.resource ?? "hxmpp";
 		var password = args[1];
-		var ip = (args[2] == null) ? jid.domain : args[2];
-
-		var client = new App( jid, password );
-		client.login( ip, () -> {
+		var host = (args[2] == null) ? jid.domain : args[2];
+		var client = new App();
+		client.connect(jid, password, host, () -> {
 			trace("Client connected");
 		});
 	}

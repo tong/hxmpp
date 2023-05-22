@@ -1,8 +1,0 @@
--hl app.hl
--main App
--lib hxmpp
--dce full
--debug
--D xmpp_debug
--D analyzer-optimize
-

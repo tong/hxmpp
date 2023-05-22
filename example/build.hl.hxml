@@ -1,0 +1,10 @@
+-hl app.hl
+#-cpp out
+-main AppUV
+-lib hxmpp
+-dce full
+-debug
+-D analyzer-optimize
+-D message.reporting=pretty
+-D no-deprecation-warnings
+-D xmpp_debug

@@ -4,7 +4,8 @@
 -lib hxnodejs
 -dce full
 -debug
--D xmpp_debug
--D js-es=6
 -D analyzer-optimize
-
+-D js-es=6
+-D message.reporting=pretty
+-D no-deprecation-warnings
+-D xmpp_debug
