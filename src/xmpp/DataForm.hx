@@ -30,14 +30,14 @@ enum abstract FieldType(String) from String to String {
 
 	/**
 		The field enables an entity to gather or provide an either-or choice between two options.
-		The default value is "false".
+		The default value is `false`.
 	**/
 	var boolean; //TODO java throws error
 
 	/**
 		The field is intended for data description (e.g., human-readable text such as "section" headers) rather than data gathering or provision.
-		The <value/> child SHOULD NOT contain newlines (the \n and \r characters);
-		instead an application SHOULD generate multiple fixed fields, each with one <value/> child.
+		The `<value/>` child SHOULD NOT contain newlines (the `\n` and `\r` characters);
+		instead an application SHOULD generate multiple fixed fields, each with one `<value/>` child.
 	**/
 	var fixed;
 
@@ -63,8 +63,7 @@ enum abstract FieldType(String) from String to String {
 	/**
 		The field enables an entity to gather or provide one or more options from among many.
 		A form-submitting entity chooses one or more items from among the options presented by the form-processing entity and MUST NOT insert new options.
-		The form-submitting entity MUST NOT modify the order of items as received from the form-processing entity,
-		since the order of items MAY be significant.
+		The form-submitting entity MUST NOT modify the order of items as received from the form-processing entity, since the order of items MAY be significant.
 	**/
 	var list_multi = "list-multi";
 
@@ -91,23 +90,37 @@ enum abstract FieldType(String) from String to String {
 	**/
 	var text_single = "text-single";
 }
-typedef FieldOption = {
+
+private typedef FieldOption = {
     var ?label : String;
     var value : String;
 }
 
 typedef Field = {
+
+    /** **/
     var ?label : String;
-    var ?type : String;
+
+    /** **/
+    var ?type : FieldType;
+
+    /** **/
     @:native('var') var ?variable : String;
+
+    /** **/
 	var ?options : Array<FieldOption>;
+
+    /** Provides a natural-language description of the field. **/
     var ?desc : String;
+
+    /** **/
     var ?values : Array<String>;
+
+    /** Flags the field as required in order for the form to be considered valid. **/
     var ?required : Bool;
 }
 
-@:structInit
-class TDataForm {
+@:structInit private class TDataForm {
     public var type : FormType;
     public var title : String;
     public var instructions : String;
@@ -125,6 +138,8 @@ class TDataForm {
 }
 
 /**
+    Data forms that can be used in workflows such as service configuration as well as for application-specific data description and reporting.
+
     [XEP-0004: Data Forms](https://xmpp.org/extensions/xep-0004.html)
 **/
 @:forward
@@ -136,7 +151,7 @@ abstract DataForm(TDataForm) from TDataForm to TDataForm {
         this = new TDataForm(type, title, instructions, fields, items);
 
     @:to public function toXML() : XML {
-        function fieldToXML(f:Field) {
+        function fieldToXML(f:Field) : XML {
             final c = XML.create("field");
             if(f.variable != null) c.set("var", f.variable);
             if(f.label != null) c.set("label", f.label);
@@ -147,6 +162,8 @@ abstract DataForm(TDataForm) from TDataForm to TDataForm {
                 e.append(XML.create("value", o.value));
                 c.append(e);
             }
+            if(f.desc != null) c.set("desc", f.desc);
+            if(f.values != null) for(v in f.values) c.append(XML.create("value",v));
             return c;
         }
         final xml = XML.create("x").set("xmlns", XMLNS).set("type", this.type);
@@ -154,7 +171,7 @@ abstract DataForm(TDataForm) from TDataForm to TDataForm {
         if(this.instructions != null) xml.append(XML.create("instructions", this.instructions));
         for(f in this.fields) xml.append(fieldToXML(f));
         if(this.reported.length > 0) {
-            var e = XML.create("reported");
+            final e = XML.create("reported");
             for(f in this.reported) e.append(fieldToXML(f));
             xml.append(e);
         }
@@ -162,7 +179,7 @@ abstract DataForm(TDataForm) from TDataForm to TDataForm {
     }
 
     @:from public static function fromXML(xml:XML) : DataForm {
-        function parseField(e:XML) {
+        function parseField(e:XML) : Field {
             final f : Field = {
                 type: e["type"],
                 label: e["label"],
