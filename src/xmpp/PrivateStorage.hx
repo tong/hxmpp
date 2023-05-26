@@ -16,11 +16,11 @@ class PrivateStorage {
         Retrieve private data stored on server.
     **/
     public static inline function getPrivateStorage(stream: Stream, data: XML, handler: Response<Payload>->Void): IQ
-        return stream.get(Payload.create(XMLNS, data), handler);
+        return stream.get(Payload.create(XMLNS).append(data), handler);
 
     /**
         Store private data on server.
     **/
     public static inline function setPrivateStorage(stream: Stream, data: XML, handler: Response<Payload>->Void) : IQ
-        return stream.set(Payload.create(XMLNS, data), handler);
+        return stream.set(Payload.create(XMLNS).append(data), handler);
 }

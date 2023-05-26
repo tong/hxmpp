@@ -90,7 +90,7 @@ enum abstract IQResponseType(String) to String {
 		|                            |
 
 **/
-@:forward(from,to,id,lang,error,type,payload,createResult,createError)
+@:forward(from,to,id,lang,error,type,payload,xmlns,createResult,createError)
 abstract IQ(IQStanza) to Stanza {
 
 	public static inline var NAME = 'iq';
@@ -135,7 +135,7 @@ private class IQStanza extends Stanza {
 		var xml = Stanza.createXML(this, IQ.NAME)
             .set("type", type);
 		if (payload != null)
-			xml.append(payload);
+            xml.append(payload);
 		if (error != null)
 			xml.append(error.toXML());
 		return xml;
@@ -172,22 +172,24 @@ abstract Payload(XML) from XML to XML {
 	inline function set_xmlns(s:String):String
 		return this.set('xmlns', s);
 
-	public var content(get,set):XML;
+	public var content(get,never):XML;
 	inline function get_content():XML
 		return this.firstElement;
-	inline function set_content(x:XML):XML {
-		for (e in this.elements) this.removeChild(e);
-		return this.append(x);
-	}
+	// inline function set_content(x:XML):XML {
+	// 	for (e in this.elements) this.removeChild(e);
+	// 	return this.append(x);
+	// }
 
 	inline function new(xml:XML) this = xml;
 
-	//public static function create(xmlns:String, ?elements:Iterable<XML>, name = 'query'):Payload {
-	public static function create(xmlns:String, ?content:XML, name = 'query'):Payload {
-		final xml = XML.create(name).set('xmlns', xmlns);
-        if(content != null) xml.append(content);
-		return new Payload(xml);
-	}
+    public function toError() : xmpp.Stanza.Error {
+        if(this.name != "error")
+            return null;
+        return xmpp.Stanza.Error.fromXML(this);
+    }
+
+	public static inline function create(xmlns:String, name='query'):Payload
+		return new Payload(XML.create(name).set('xmlns', xmlns));
 
 	@:from public static inline function fromString(xmlns:String):Payload
 		return new Payload(XML.create('query').set('xmlns', xmlns));

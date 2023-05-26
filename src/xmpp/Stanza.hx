@@ -137,18 +137,17 @@ enum abstract ErrorCondition(String) from String to String {
 }
 
 @:structInit
-class Error {
+private class CError {
 
-	public static inline var XMLNS = "urn:ietf:params:xml:ns:xmpp-stanzas";
-
-	/** */
+	/** **/
 	public var type:ErrorType;
+	
+    /** **/
+	public var condition:ErrorCondition;
 
 	/** Error generator */
 	public var by:String;
 
-	/** */
-	public var condition:ErrorCondition;
 
 	/** Describes the error in more detail */
 	public var text:String;
@@ -165,20 +164,31 @@ class Error {
 		this.text = text;
 		this.app = app;
 	}
+}
 
-	public function toXML():XML {
-		var xml = XML.create('error');
-		xml.set('type', type);
-		if(by != null) xml.set('by', by);
-		xml.append(XML.create(condition).set('xmlns', XMLNS));
-		if(text != null)
-			xml.append(XML.create('text', text).set('xmlns', XMLNS));
-		if(app != null && (app.condition != null && app.xmlns != null))
-			xml.append(XML.create(app.condition).set('xmlns', app.xmlns));
+@:forward
+abstract Error(CError) from CError {
+
+    public static inline var XMLNS = "urn:ietf:params:xml:ns:xmpp-stanzas";
+
+	public inline function new(type:ErrorType, condition:ErrorCondition, ?text:String, ?app:ApplicationErrorCondition)
+        this = new CError(type, condition, text, app);
+
+    @:to public inline function toBool() : Bool
+        return this != null;
+
+	@:to public function toXML():XML {
+		var xml = XML.create('error').set('type', this.type)
+            .append(XML.create(this.condition).set('xmlns', XMLNS));
+		if(this.by != null) xml.set('by', this.by);
+		if(this.text != null)
+			xml.append(XML.create('text', this.text).set('xmlns', XMLNS));
+		if(this.app != null && (this.app.condition != null && this.app.xmlns != null))
+			xml.append(XML.create(this.app.condition).set('xmlns', this.app.xmlns));
 		return xml;
 	}
 
-	public static function fromXML(xml:XML):Error {
+	@:from public static function fromXML(xml:XML):Error {
 		var condition:ErrorCondition = null;
 		var text:String = null;
 		var app:ApplicationErrorCondition = null;
@@ -186,14 +196,11 @@ class Error {
 			var ns = e.get('xmlns');
 			if (ns == XMLNS) {
 				switch e.name {
-					case 'text':
-						text = e.text;
-					default:
-						condition = e.name;
+                case 'text': text = e.text;
+                default: condition = e.name;
 				}
 			} else {
-				if (ns != null)
-					app = {condition: e.name, xmlns: ns};
+				if (ns != null) app = {condition: e.name, xmlns: ns};
 			}
 		}
 		return new Error(xml.get('type'), condition, text);
@@ -233,7 +240,7 @@ abstract class Stanza {
 		this.lang = lang;
 	}
 
-	abstract function toXML():XML;
+	public abstract function toXML():XML;
 
 	public inline function toString():String
 		return toXML().toString();

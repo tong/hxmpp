@@ -18,8 +18,8 @@ private typedef SSLSocket =
     #end
 #elseif nodejs
 #elseif dog_gen
-#else
-    #error "xmpp.StartTLS not implemented"
+// #else
+//     #error "xmpp.StartTLS not implemented"
 #end
 
 /**
@@ -50,6 +50,9 @@ class StartTLS {
 
     #if (macro||cpp||hl||neko||python)
 
+    /**
+        Upgrades a `sys.net.Socket` to `sys.ssl.Socket`
+    **/
     @:access(sys.net.Socket)
     public static function upgrade(sock: sys.net.Socket, host: sys.net.Host) : SSLSocket {
 

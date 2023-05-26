@@ -1,5 +1,10 @@
 package xmpp;
 
+/**
+	A runtime value that describes the absence of a value.
+**/
+enum Nil { nil; }
+
 enum EResponse<T:xmpp.IQ.Payload> {
 
     /** Contains the success value **/
@@ -65,5 +70,8 @@ abstract Response<T:xmpp.IQ.Payload>(EResponse<T>) from EResponse<T> to ERespons
 			case Result(r): haxe.ds.Option.Some(r);
 			case Error(e): haxe.ds.Option.None;
 		}
+
+    @:from public static inline function fromError<T:xmpp.IQ.Payload>(e:xmpp.Stanza.Error):Response<T>
+        return new Response(Error(e));
 }
 

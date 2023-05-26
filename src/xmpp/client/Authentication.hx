@@ -70,7 +70,6 @@ class Authentication {
                         default: condition = e.name;
                     }
                 }
-                //callback(new xmpp.Stanza.Error(null, condition, text), null);
                 _callback(new xmpp.Stanza.Error(null, condition, text), null);
 			}
 		}

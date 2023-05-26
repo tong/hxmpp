@@ -2,21 +2,6 @@ package xmpp;
 
 using StringTools;
 
-@:structInit
-private class JidType {
-
-	public var node:String;
-	public var domain:String;
-	public var resource:String;
-
-	@:allow(xmpp.Jid)
-	inline function new(?node:String, domain:String, ?resource:String) {
-		this.node = node;
-		this.domain = domain;
-		this.resource = resource;
-	}
-}
-
 /**
 	Unique jabber identifier.
 
@@ -39,16 +24,16 @@ private class JidType {
 
 **/
 @:forward(node,domain,resource)
-abstract Jid(JidType) from JidType to JidType {
+abstract Jid(CJid) from CJid {
 
 	// public static inline var MIN_LENGTH = 8;
 	public static inline var MAX_PARTSIZE = 1023;
 	public static inline var MAX_SIZE = 3071;
 
-	public static var EREG(default, null) = ~/^(([A-Z0-9._%-]{1,1023})@([A-Z0-9._%-]{1,1023})((?:\/)([A-Z0-9._%-]{1,1023}))?)$/i;
+	public static final EREG = ~/^(([A-Z0-9._%-]{1,1023})@([A-Z0-9._%-]{1,1023})((?:\/)([A-Z0-9._%-]{1,1023}))?)$/i;
 
 	public inline function new(?node:String, domain:String, ?resource:String)
-		this = new JidType(node, domain, resource);
+		this = new CJid(node, domain, resource);
 
 	public function getBare():String {
 		return (this.node == null || this.domain == null) ? null : this.node + '@' + this.domain;
@@ -56,8 +41,7 @@ abstract Jid(JidType) from JidType to JidType {
 
 	@:to public function toString():String {
 		var s = getBare();
-		if (this.resource != null)
-			s += '/' + this.resource;
+		if (this.resource != null) s += '/' + this.resource;
 		return s;
 	}
 
@@ -82,18 +66,15 @@ abstract Jid(JidType) from JidType to JidType {
 
 	@:arrayAccess function setPart(i:Int, str:String) {
 		switch i {
-			case 0:
-				this.node = str;
-			case 1:
-				this.domain = str;
-			case 2:
-				this.resource = str;
+			case 0: this.node = str;
+			case 1: this.domain = str;
+			case 2: this.resource = str;
 			default:
 		}
 	}
 
 	@:from public static inline function fromArray(arr:Array<String>):Jid
-		return new JidType(arr[0], arr[1], arr[2]);
+		return new Jid(arr[0], arr[1], arr[2]);
 
 	@:from public static inline function fromString(str:String):Jid
 		return fromArray(parseParts(str));
@@ -115,8 +96,8 @@ abstract Jid(JidType) from JidType to JidType {
 	}
 
 	public static function parseDomain(str:String):String {
-		var a = str.indexOf("@");
-		var b = str.indexOf("/");
+		final a = str.indexOf("@");
+		final b = str.indexOf("/");
 		// var a = [str.substr( 0, i )];
 		return (b == -1) ? str.substr(a + 1) : str.substr(a + 1, b - a - 1);
 	}
@@ -132,9 +113,9 @@ abstract Jid(JidType) from JidType to JidType {
 	}
 
 	public static function parseParts(str:String):Array<String> {
-		var i = str.indexOf("@");
-		var j = str.indexOf("/");
-		var a = [str.substr(0, i)];
+        final i = str.indexOf("@");
+		final j = str.indexOf("/");
+		final a = [str.substr(0, i)];
 		return a.concat((j == -1) ? [str.substring(i + 1)] : [str.substring(i + 1, j), str.substr(j + 1)]);
 	}
 
@@ -146,19 +127,19 @@ abstract Jid(JidType) from JidType to JidType {
 		provided by a human user in unescaped form, or by a gateway to some external system
 		(e.g., email or LDAP) that needs to generate a JID.
     **/
+    @xep(106)
 	public static function escapeNode(s:String):String {
-		// s.split("&").join("&amp;")
-		s = s.replace("\\", "\\5c");
-		s = s.replace(" ", "\\20");
-		s = s.replace("\"", "\\22");
-		s = s.replace("&", "\\26");
-		s = s.replace("'", "\\27");
-		s = s.replace("/", "\\2f");
-		s = s.replace(":", "\\3a");
-		s = s.replace("<", "\\3c");
-		s = s.replace(">", "\\3e");
-		s = s.replace("@", "\\40");
-		return s;
+		//s.split("&").join("&amp;")
+		return s.replace("\\", "\\5c")
+		    .replace(" ", "\\20")
+		    .replace("\"", "\\22")
+		    .replace("&", "\\26")
+		    .replace("'", "\\27")
+		    .replace("/", "\\2f")
+		    .replace(":", "\\3a")
+		    .replace("<", "\\3c")
+		    .replace(">", "\\3e")
+	        .replace("@", "\\40");
 	}
 
 	/**
@@ -170,17 +151,30 @@ abstract Jid(JidType) from JidType to JidType {
 		external system (e.g., email or LDAP) that needs to generate identifiers
 		for foreign systems.
 	**/
+    @xep(106)
 	public static function unescapeNode(s:String):String {
-		s = s.replace("\\20", " ");
-		s = s.replace("\\22", "\"");
-		s = s.replace("\\26", "&");
-		s = s.replace("\\27", "'");
-		s = s.replace("\\2f", "/");
-		s = s.replace("\\3a", ":");
-		s = s.replace("\\3c", "<");
-		s = s.replace("\\3e", ">");
-		s = s.replace("\\40", "@");
-		s = s.replace("\\5c", "\\");
-		return s;
+		return s.replace("\\20", " ")
+		    .replace("\\22", "\"")
+	        .replace("\\26", "&")
+		    .replace("\\27", "'")
+		    .replace("\\2f", "/")
+		    .replace("\\3a", ":")
+            .replace("\\3c", "<")
+            .replace("\\3e", ">")
+            .replace("\\40", "@")
+            .replace("\\5c", "\\");
+	}
+}
+
+@:structInit
+private class CJid {
+	public var node:String;
+	public var domain:String;
+	public var resource:String;
+	@:allow(xmpp.Jid)
+	inline function new(?node:String, domain:String, ?resource:String) {
+		this.node = node;
+		this.domain = domain;
+		this.resource = resource;
 	}
 }

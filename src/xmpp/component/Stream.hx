@@ -9,10 +9,14 @@ class Stream extends xmpp.Stream {
 
 	public static inline var PORT = 5275;
 
-	/** Server (accept) component namespace **/
+	/**
+        Server (accept) component namespace.
+    **/
 	public static inline var XMLNS = 'jabber:component:accept';
 
-	/** Component name **/
+	/**
+        Component name.
+	**/
 	public var name(default,null) : String;
 
 	public function new(name: String, domain: String, ?xmlns:String, ?lang: String) {
@@ -42,7 +46,7 @@ class Stream extends xmpp.Stream {
 					    trace(xml);
 						var error = xmpp.Stanza.Error.fromXML(xml);
 						//trace(error.condition);
-						callback( error );
+						callback(error);
 					}
 				}
 			}
