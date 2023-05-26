@@ -10,21 +10,24 @@ import xmpp.IQ;
 @xep(30)
 class ServiceDiscovery {
 
-    public static inline var XMLNS       = "http://jabber.org/protocol/disco";
-    public static inline var XMLNS_INFO  = '$XMLNS#info';
-    public static inline var XMLNS_ITEMS = '$XMLNS#items';
+    public static inline var XMLNS_INFO  = "http://jabber.org/protocol/disco#info";
+    public static inline var XMLNS_ITEMS = "http://jabber.org/protocol/disco#items";
 
     /**
         Discover the identity and capabilities of an entity, including the protocols and features it supports.
     **/
-    public static inline function discoInfo(stream: Stream, ?jid: Jid, handler: (res:Response<Payload>)->Void) : IQ {
-        return stream.get(XMLNS_INFO, jid ?? stream.domain, handler);
-    }
+    public static inline function discoInfo(stream: Stream, ?jid: Jid, ?node: String, handler: Response<XML>->Void) : IQ
+        return disco(stream, XMLNS_INFO, jid, node, handler);
 
     /**
         Discover the items associated with an entity, such as the list of rooms hosted at a multi-user chat service.
     **/
-    public static inline function discoItems(stream: Stream, ?jid: Jid, handler: Response<Payload>->Void): IQ {
-        return stream.get(XMLNS_ITEMS, jid ?? stream.domain, handler);
+    public static inline function discoItems(stream: Stream, ?jid: Jid, ?node: String, handler: Response<Payload>->Void): IQ
+        return disco(stream, XMLNS_ITEMS, jid, node, handler);
+
+    static function disco(stream: Stream, xmlns: String, ?jid: Jid, ?node: String, handler: Response<Payload>->Void) : IQ {
+        final xml = Payload.create(xmlns);
+        if(node != null) xml.set("node", node);
+        return stream.get(xml, jid ?? stream.domain, handler);
     }
 }

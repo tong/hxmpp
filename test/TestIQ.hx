@@ -46,30 +46,23 @@ class TestIQ extends utest.Test {
 	function test_payload() {
 
 		var p : xmpp.IQ.Payload = 'abc';
-		equals('query', p.name);
-		equals('abc', p.get('xmlns'));
+		equals("query", p.name);
+		equals("abc", p.get('xmlns'));
 		equals(0, p.elements.length);
-		
-		// var p : Payload = Payload.create('abc', '<feature var="123"/>', 'some');
-		// equals('some', p.name);
-		// equals('abc', p.xmlns);
-  //       trace(p.elements);
-  //       for(e in p.elements) trace(e);
-		//equals( 'feature', p.elements[0].name );
-        
-		//equals( '123', p.elements[0].get('var') );
-  //       var xml = XML.create("query", ["xmlns"=>"some-xmlns"]);
-  //       xml.append(XML.create('feature', ["var"=>"123"]));
-		// equals('query', xml.name);
-		// equals('some-xmlns', xml.get('xmlns'));
-		// equals(1, xml.elements.length);
 
-		var p = Payload.create('abc', XML.create('feature', ["var"=>"123"]), 'some');
-		equals('some',p.name);
-		equals('abc', p.xmlns);
+		//var p = Payload.create('abc', XML.create('feature', ["var"=>"123"]), 'some');
+		var p = Payload.create("abc", "some");
+		equals("some", p.name);
+		equals("abc", p.xmlns);
+		equals(0, p.elements.length);
+		isNull(p.content);
+		
+        var p : Payload = Payload.create("abc", "some").append(XML.create("child","data"));
+		equals("some", p.name);
+		equals("abc", p.xmlns);
 		equals(1, p.elements.length);
-		equals('feature', p.elements[0].name);
-		equals('123', p.elements[0]["var"]);
+		equals("child", p.content.name);
+		equals("data", p.content.text);
 	}
 
 }

@@ -99,11 +99,11 @@ class TestJid extends utest.Test {
     function test_escape() {
 
         var str = 'joe smith"hugo&karl\\tom/che:ruth<elias>rotz@coma\\\\';
-		equals( Jid.unescapeNode( Jid.escapeNode( str ) ), str );
+		equals(str, Jid.unescapeNode(Jid.escapeNode(str)));
 
         var str = '1\\202\\223\\264\\275\\2f6\\3a7\\3c8\\3e9\\4010\\5c';
-		equals( "1 2\"3&4'5/6:7<8>9@10\\", Jid.unescapeNode( str ) );
-		equals( str, Jid.escapeNode( Jid.unescapeNode( str ) ) );
+		equals("1 2\"3&4'5/6:7<8>9@10\\", Jid.unescapeNode(str));
+		equals( str, Jid.escapeNode(Jid.unescapeNode(str)));
 	}
 
 	function test_equals() {
