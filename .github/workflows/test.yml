@@ -10,8 +10,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
-        - ubuntu-latest
         haxe:
         - latest
         - 4.3.1
