@@ -81,8 +81,8 @@ enum abstract PresenceType(String) to String {
 	Optional `<status/>` element containing human-readable XML character data specifying a natural-language description of an entity's availability.
 	It is normally used in conjunction with the show element to provide a detailed description of an availability state (e.g., "In a meeting") when the presence stanza has no `type` attribute.
 
-	See: https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-status
- */
+	https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-status
+i**/
 abstract Status(String) from String to String {
 
 	@:noCompletion public inline function new(s:String)
@@ -100,7 +100,7 @@ abstract Status(String) from String to String {
 	The value MUST be an integer between `-128` and `+127`.
 
 	https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-priority
- */
+**/
 abstract Priority(Int) from Int to Int {
 
 	public static inline var MIN = -128;
@@ -124,8 +124,8 @@ abstract Priority(Int) from Int to Int {
 
 /**
 	Presence subscription states.
- */
-enum abstract Subscription(String) to String {
+**/
+enum abstract Subscription(String) from String to String {
 	/** The user and subscriber have no interest in each other's presence. */
 	var none;
 

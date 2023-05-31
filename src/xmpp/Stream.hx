@@ -1,17 +1,17 @@
 package xmpp;
 
-import haxe.macro.Expr.Error;
 import haxe.crypto.Md5;
 import xmpp.IQ;
+import xmpp.Response;
 
 using StringTools;
 
 private typedef Header = {
-	from:String,
-	to:String,
-	id:String,
-	lang:String,
-	version:String
+	from: String,
+	to: String,
+	id: String,
+	lang: String,
+	version: String
 }
 
 abstract class Stream {
@@ -20,7 +20,7 @@ abstract class Stream {
 
 	public dynamic function onMessage(m:Message) {}
 	public dynamic function onPresence(p:Presence) {}
-	public dynamic function onIQ(iq:IQ) {}
+	public dynamic function onIQ(iq:IQ) : Response<XML> return null;
 	public dynamic function onRaw(xml:XML):Bool return false;
 	public dynamic function onEnd() {}
 
@@ -31,13 +31,13 @@ abstract class Stream {
 	public var id(default,null):String;
 	public var version(default,null) = "1.0";
 	public var ready(default,null) = false;
-	public var extensions = new Map<String,IQ->Void>();
+	public var features = new Map<String,IQ->(?Null<Response<XML>>->Void)->Void>();
+	public var queries(default,null):Map<String,XML->Void>;
 
 	public var input:String->Void;
 	public var output:String->Void;
 
-	var buffer:StringBuf;
-	var queries:Map<String, IQ->Void>;
+	var buf:StringBuf;
 
 	function new(xmlns:String, domain:String, ?lang:String) {
 		this.xmlns = xmlns;
@@ -48,75 +48,93 @@ abstract class Stream {
     /**
         Info `get` query
     **/
-	public function get<T:IQ.Payload>(payload:IQ.Payload, ?jid:String, handler:(response:Response<T>) -> Void):IQ {
-		var iq = new IQ(payload, IQType.Get, makeRandomId(), jid);
-        query(iq, (handler==null) ? null : res -> switch res.type {
-            case Result: handler(Result(cast res.payload));
-            case Error:
-                handler(Error(res.error));
-            /* if( res.error != null ) {
-                    handler( Error( res.error ) );
-                } else {
-                    if( res.payload != null ) {
-                        handler(  new xmpp.Stanza.Error() );
-                    }
-                    //handler( Error( res.error ) );
-            }*/
-            default:
-        });
+	public function get<T:IQ.Payload,R>(payload:IQ.Payload, ?jid:String, ?handler:(response:Response<T>)->Void):IQ {
+		final iq = new IQ(payload, IQType.Get, makeRandomId(), jid);
+	    if(iq.id == null) iq.id = makeRandomId();
+        if(handler != null) {
+            queries.set(iq.id, xml -> {
+                final iq : IQ = xml;
+                switch iq.type {
+                case Result: handler(Result(cast iq.payload));
+                case Error: handler(Error(iq.error));
+                default:
+                }
+
+            });
+        } else {
+            trace("TODO");
+            //query(iq, null);
+        }
+		send(iq);
 		return iq;
-	}
+    }
 
     /**
         Info `set` query
     **/
-	public function set<T:IQ.Payload>(payload:IQ.Payload, ?jid:String, handler:(response:Response<T>) -> Void):IQ {
-		var iq = new IQ(payload, IQType.Set, makeRandomId(), jid);
+    public function set<T:IQ.Payload>(payload:IQ.Payload, ?jid:String, handler:(response:Response<T>)->Void):IQ {
+		final iq = new IQ(payload, IQType.Set, makeRandomId(), jid);
         if(handler != null) {
-            query(iq, res -> switch res.type {
-                case Result: handler(Result(cast res.payload));
-                case Error:
-                    trace(res.error);
-                    handler(Error(res.error));
+            queries.set(iq.id, xml -> {
+                final iq : IQ = xml;
+                switch iq.type {
+                case Result: handler(Result(cast iq.payload));
+                case Error: handler(Error(iq.error));
                 default:
+                }
             });
         } else {
-            query(iq, null);
+            trace("TODO");
+            //query(iq, null);
         }
+        send(iq);
 		return iq;
 	}
 
-    function query(iq:IQ, callback:(response:IQ) -> Void) {
-		if (iq.id == null)
-            iq.id = makeRandomId();
-        if(callback != null)
-            queries.set(iq.id, cast callback);
-		send(iq);
+    public function query(stanza:Stanza, handler:(response:XML)->Void) {
+		if (stanza.id == null)
+            stanza.id = makeRandomId();
+        if(handler != null)
+            queries.set(stanza.id, handler);
+		send(stanza.toXML());
 	}
 
     /**
-        Send XML stanza
+        Send stanza
     **/
 	public function send(xml:XML) {
 		output(xml);
 	}
 
+    /*
+	public function sendStanza<T:xmpp.Stanza>(stanza:T, ?handler:T->Void) : T {
+        if(handler != null) {
+            if(stanza.id == null) stanza.id = Stream.makeRandomId();
+            //queries.set(stanza.id, handler);
+        }
+        // if(stanza.id != null) {
+        //     queries.set(stanza.id, handler);
+        // }
+        return stanza;
+    }
+    */
+
     /**
         Process incoming data
     **/
-	public function recv(str:String) {
+	public function recv(str:String) : Bool {
 		if(str == null || str.length == 0)
 			return false;
-		if(buffer == null) buffer = new StringBuf();
-		buffer.add(str);
+		if(buf == null) buf = new StringBuf();
+		buf.add(str);
 		if(!str.endsWith('>'))
             return false;
-		var received = buffer.toString();
+		var received = buf.toString();
         if(received.endsWith("</stream:stream>")) {
             reset();
             onEnd();
         } else {
-            buffer = new StringBuf(); 
+            buf = new StringBuf(); 
             input(received);
         }
         return true;
@@ -150,21 +168,78 @@ abstract class Stream {
         }
 	}
 
-	abstract function handleXML(xml:XML) : Void;
+	function handleXML(xml:XML) {
+		if(xml.has(xmlns) && xml.get('xmlns') != xmlns) {
+			trace("invalid stream namespace");
+			return;
+        }
+        if(xml.has("id")) {
+            final id = xml.get("id");
+            if(queries.exists(id)) {
+                final h = queries.get(id);
+                queries.remove(id);
+                h(xml);
+                return;
+            }
+        }
+		switch xml.name {
+        case 'message': onMessage(xml);
+        case 'presence': onPresence(xml);
+        case 'iq':
+            final iq:IQ = xml;
+            switch iq.type {
+            case Result, Error:
+                if (queries.exists(iq.id)) {
+                    final h = queries.get(iq.id);
+                    queries.remove(iq.id);
+                    h(iq);
+                } else {
+                    #if debug
+                    trace('unhandled iq response');
+                    #end
+                }
+            case Get, Set:
+                if(iq.payload != null) {
+                    final ns = iq.payload.xmlns;
+                    if(features != null && features.exists(ns)) {
+                        features.get(ns)(iq, (?res)->{
+                            send((res==null)
+                                ? iq.createError({ type:cancel, condition:feature_not_implemented })
+                                : switch res {
+                                    case Result(r): iq.createResult(r);
+                                    case Error(e): iq.createError(e);
+                                }
+                            );
+                        });
+                    } else {
+                        /*
+                        switch onIQ(iq) {
+                        case Result(r): send(iq.createResult(r));
+                        case Error(e): send(iq.createError(e));
+                        case null: send(iq.createError({type:cancel, condition: feature_not_implemented}));
+                        }
+                        */
+                        //TODO async handler
+                        onIQ(iq);
+                    }
+                }
+            }
+        default:
+            //TODO async handler
+            if(!onRaw(xml)) {
+                end();
+            }
+		}
+	}
 
 	function reset() {
 		ready = false;
-		buffer = new StringBuf();
 		queries = new Map();
+		buf = new StringBuf();
 	}
 	
-    // inline function makeRandomStanzaId(length = 8) : String {
-    //     makeRandomId(id);
-    // }
-
-	public static function makeRandomId(seed:String='', length = 8) : String {
+	public static function makeRandomId(seed:String='', length = 8) : String
 		return Std.string(Md5.encode(seed + Date.now().getTime() + (Math.random()*1))).substr(0, length);
-	}
 
 	static function createHeader(xmlns:String, to:String, ?version:String, ?lang:String):String {
 		final xml = XML.create('stream:stream')
@@ -176,7 +251,6 @@ abstract class Stream {
 		var str = xml.toString();
 		str = str.substr(0, str.lastIndexOf('/')) + '>';
 		return str;
-		// return '<?xml version="1.0" encoding="UTF-8"?>'+str;
 	}
 
 	static function readHeader(str:String):Header {

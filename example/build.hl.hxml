@@ -1,6 +1,5 @@
 -hl app.hl
-#-cpp out
--main AppUV
+-main App
 -lib hxmpp
 -dce full
 -debug

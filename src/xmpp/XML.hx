@@ -198,7 +198,7 @@ private abstract NodeIterator(Iterator<XML>) from Iterator<XML> to Iterator<XML>
 	**/
 	@:arrayAccess public function named(name:String):Array<XML> {
 		final e = new Array<XML>();
-		while (this.hasNext()) {
+		while(this.hasNext()) {
 			var c = this.next();
 			if (c.type == Element && c.name == name)
 				e.push(c);
@@ -206,6 +206,21 @@ private abstract NodeIterator(Iterator<XML>) from Iterator<XML> to Iterator<XML>
 		return e;
 	}
 
+    public function first(?f:XML->Bool) : XML {
+        if(f == null)
+            @:privateAccess cast(this, haxe.iterators.ArrayIterator<Dynamic>).array[0];
+        for(e in this) if(f(e)) return e;
+        return null;
+    }
+
+    public function findElement(name: String) : XML {
+        var c : XML = null;
+		while(this.hasNext())
+            if((c = this.next()).name == name)
+                return c;
+        //while((c = this.next()) != null) if(c.name == name) return c;
+        return null;
+    }
 
 	public function count():Int {
         //trace('COUNT');

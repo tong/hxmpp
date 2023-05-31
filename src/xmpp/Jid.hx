@@ -166,8 +166,7 @@ abstract Jid(CJid) from CJid {
 	}
 }
 
-@:structInit
-private class CJid {
+@:structInit private class CJid {
 	public var node:String;
 	public var domain:String;
 	public var resource:String;

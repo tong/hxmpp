@@ -4,7 +4,7 @@
 	"description": "XMPP library",
 	"url": "https://github.com/tong/hxmpp",
 	"license": "MIT",
-	"tags": ["xmpp","jabber"],
+	"tags": ["xmpp","jabber","xml","chat","im","net"],
 	"releasenote": "See CHANGELOG.md",
 	"contributors": ["tong"],
 	"classPath" : "src/",
