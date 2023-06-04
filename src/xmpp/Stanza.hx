@@ -18,9 +18,13 @@ enum abstract ErrorType(String) from String to String {
 	var wait;
 }
 
+/**
+    Application-specific stanza error information.
+**/
 typedef ApplicationErrorCondition = {
 	var condition:String;
 	var xmlns:String;
+    var ?properties:Array<XML>;
 }
 
 enum abstract ErrorCondition(String) from String to String {
@@ -183,27 +187,34 @@ abstract Error(CError) from CError {
 		if(this.by != null) xml.set('by', this.by);
 		if(this.text != null)
 			xml.append(XML.create('text', this.text).set('xmlns', XMLNS));
-		if(this.app != null && (this.app.condition != null && this.app.xmlns != null))
-			xml.append(XML.create(this.app.condition).set('xmlns', this.app.xmlns));
+		if(this.app != null && (this.app.condition != null && this.app.xmlns != null)) {
+            var c = XML.create(this.app.condition).set('xmlns', this.app.xmlns);
+            if(this.app.properties != null) for(e in this.app.properties) c.append(e);
+			xml.append(c);
+        }
 		return xml;
 	}
 
 	@:from public static function fromXML(xml:XML):Error {
-		var condition:ErrorCondition = null;
-		var text:String = null;
-		var app:ApplicationErrorCondition = null;
+		var condition: Null<ErrorCondition> = null;
+		var text: Null<String> = null;
+		var app: Null<ApplicationErrorCondition> = null;
 		for (e in xml.elements) {
-			var ns = e.get('xmlns');
-			if (ns == XMLNS) {
+            switch e.ns {
+            case Error.XMLNS: 
 				switch e.name {
                 case 'text': text = e.text;
-                default: condition = e.name;
+                case _: condition = e.name;
 				}
-			} else {
-				if (ns != null) app = {condition: e.name, xmlns: ns};
-			}
+            case _:
+                app = {
+                    condition: e.name,
+                    xmlns: e.ns,
+                    properties: [for(e in e.elements) e]
+                };
+            }
 		}
-		return new Error(xml.get('type'), condition, text);
+		return new Error(xml.get('type'), condition, text, app);
 	}
 }
 
