@@ -18,10 +18,19 @@ abstract class Stream {
 
 	public static inline var XMLNS = 'http://etherx.jabber.org/streams';
 
+    /** Handle message stanzas **/
 	public dynamic function onMessage(m:Message) {}
+
+    /** Handle presence stanzas **/
 	public dynamic function onPresence(p:Presence) {}
-	public dynamic function onIQ(iq:IQ) : Response<XML> return null;
+
+    /** Handle iq (get,set) stanzas **/
+	public dynamic function onIQ(iq:IQ, res:Null<Response<XML>>->Void) {}
+
+    /** Handle raw xml **/
 	public dynamic function onRaw(xml:XML):Bool return false;
+
+    /** Stream end handler **/
 	public dynamic function onEnd() {}
 
 	public final xmlns:String;
@@ -31,11 +40,12 @@ abstract class Stream {
 	public var id(default,null):String;
 	public var version(default,null) = "1.0";
 	public var ready(default,null) = false;
-	public var features = new Map<String,IQ->(?Null<Response<XML>>->Void)->Void>();
-	public var queries(default,null):Map<String,XML->Void>;
 
 	public var input:String->Void;
 	public var output:String->Void;
+	
+    public var features = new Map<String,IQ->(?Null<Response<XML>>->Void)->Void>();
+	public var queries(default,null):Map<String,XML->Void>;
 
 	var buf:StringBuf;
 
@@ -102,8 +112,9 @@ abstract class Stream {
     /**
         Send stanza
     **/
-	public function send(xml:XML) {
+	public function send(xml:XML) : XML {
 		output(xml);
+        return xml;
 	}
 
     /*
@@ -159,6 +170,7 @@ abstract class Stream {
             }
 			null;
         }
+        //HACK:
         if(@:privateAccess cast(xml.elements(),haxe.iterators.ArrayIterator<Dynamic>).array.length == 1) {
            handleXML(xml.firstElement()); 
         } else {
@@ -212,15 +224,15 @@ abstract class Stream {
                             );
                         });
                     } else {
-                        /*
-                        switch onIQ(iq) {
-                        case Result(r): send(iq.createResult(r));
-                        case Error(e): send(iq.createError(e));
-                        case null: send(iq.createError({type:cancel, condition: feature_not_implemented}));
-                        }
-                        */
-                        //TODO async handler
-                        onIQ(iq);
+                        onIQ(iq, res -> {
+                            send((res==null)
+                                ? iq.createError({ type:cancel, condition:feature_not_implemented })
+                                : switch res {
+                                    case Result(r): iq.createResult(r);
+                                    case Error(e): iq.createError(e);
+                                }
+                            );
+                        });
                     }
                 }
             }
