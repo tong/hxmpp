@@ -2,11 +2,6 @@ package xmpp;
 
 using xmpp.Stanza;
 
-/**
-	Optional `<show/>` element specifying the particular availability sub-state of an entity or a specific resource thereof.
-
-	See: https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-show
-**/
 enum abstract Show(String) to String {
 
 	/** Especially socialable **/
@@ -31,16 +26,6 @@ enum abstract Show(String) to String {
 		}
 }
 
-/**
-	The absence of a `type` attribute signals that the relevant entity is available for communication.
-	A `type` attribute with a value of *unavailable* signals that the relevant entity is not available for communication.
-
-	Note:
-	 - There is no default value for the `type` attribute of the `<presence/>` element.
-	 - There is no value of *available* for the `type` attribute of the `<presence/>` element.
-
-	See: https://xmpp.org/rfcs/rfc6121.html#presence-syntax-type
-**/
 enum abstract PresenceType(String) to String {
 
 	/** An error has occurred regarding processing or delivery of a previously-sent presence stanza. **/
@@ -77,16 +62,9 @@ enum abstract PresenceType(String) to String {
     }
 }
 
-/**
-	Optional `<status/>` element containing human-readable XML character data specifying a natural-language description of an entity's availability.
-	It is normally used in conjunction with the show element to provide a detailed description of an availability state (e.g., "In a meeting") when the presence stanza has no `type` attribute.
-
-	https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-status
-i**/
 abstract Status(String) from String to String {
 
-	@:noCompletion public inline function new(s:String)
-		this = s;
+	@:noCompletion public inline function new(s:String) this = s;
 
 	@:to public inline function toXML():XML
 		return XML.create("status", this);
@@ -95,12 +73,6 @@ abstract Status(String) from String to String {
 		return new Status(xml.text);
 }
 
-/**
-	Optional `<priority/>` element containing non-human-readable XML character data that specifies the priority level of the resource.
-	The value MUST be an integer between `-128` and `+127`.
-
-	https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-priority
-**/
 abstract Priority(Int) from Int to Int {
 
 	public static inline var MIN = -128;
@@ -126,6 +98,7 @@ abstract Priority(Int) from Int to Int {
 	Presence subscription states.
 **/
 enum abstract Subscription(String) from String to String {
+
 	/** The user and subscriber have no interest in each other's presence. */
 	var none;
 
@@ -155,11 +128,10 @@ enum abstract Subscription(String) from String to String {
 /**
 	XMPP presence stanza.
 
-	 - [RFC-3921 - Instant Messaging and Presence](http://xmpp.org/rfcs/rfc3921.html)
-	 - [Exchanging Presence Information](http://www.xmpp.org/rfcs/rfc3921.html#presence)
+	The `<presence/>` element represents a broadcast or *publish-subscribe* mechanism, whereby multiple entities receive information about an entity to which they have subscribed (in this case, network availability information).
 
-	The <presence/> element represents a broadcast or "publish-subscribe" mechanism, whereby multiple entities receive information about an entity to which they have subscribed (in this case, network availability information).
- */
+    @see https://xmpp.org/rfcs/rfc3921.html>
+**/
 @:forward(from,to,id,lang,properties,type,show,status,priority)
 abstract Presence(PresenceStanza) to Stanza {
 
@@ -183,16 +155,38 @@ abstract Presence(PresenceStanza) to Stanza {
 
 private class PresenceStanza extends Stanza {
 
-	/**/
+	/**
+        The absence of a `type` attribute signals that the relevant entity is available for communication.
+        A `type` attribute with a value of *unavailable* signals that the relevant entity is not available for communication.
+
+	    Note:
+	        - There is no default value for the `type` attribute of the `<presence/>` element.
+	        - There is no value of *available* for the `type` attribute of the `<presence/>` element.
+
+	    @see <https://xmpp.org/rfcs/rfc6121.html#presence-syntax-type>
+    **/
 	public var type:PresenceType;
 
-	/**/
+    /**
+        Optional `<show/>` element specifying the particular availability sub-state of an entity or a specific resource thereof.
+
+        @see https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-show
+    **/
 	public var show:Show;
 
-	/**/
+	/**
+	    Optional `<status/>` element containing human-readable XML character data specifying a natural-language description of an entity's availability.
+	    It is normally used in conjunction with the show element to provide a detailed description of an availability state (e.g., "In a meeting") when the presence stanza has no `type` attribute.
+
+	    @see https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-status
+    **/
 	public var status:Status;
 
-	/**/
+	/**
+		Optional `<priority/>` element containing non-human-readable XML character data that specifies the priority level of the resource. The value MUST be an integer between `-128` and `+127`.
+
+	    @see <https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-priority>
+    **/
 	public var priority:Null<Priority>;
 
 	/**/

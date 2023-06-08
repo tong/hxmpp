@@ -3,24 +3,25 @@ package xmpp;
 import xmpp.Stanza;
 
 enum abstract IQType(String) from String to String {
+
 	/**
 		The stanza requests information, inquires about what data is needed in order to complete further operations.
-	 */
+	**/
 	var Get = "get";
 
 	/**
 		The stanza provides data that is needed for an operation to be completed, sets new values, replaces existing values, etc.
-	 */
+	**/
 	var Set = "set";
 
 	/**
 		The stanza is a response to a successful get or set request.
-	 */
+	**/
 	var Result = "result";
 
 	/**
 		The stanza reports an error that has occurred regarding processing or delivery of a get or set request.
-	 */
+	**/
 	var Error = "error";
 
 	// @:from public static function fromString(s:String)
@@ -56,39 +57,36 @@ enum abstract IQResponseType(String) to String {
 }
 
 /**
-	Info/Query, or IQ, is a "request-response" mechanism, similar in some ways to the Hypertext Transfer Protocol [HTTP].
-	The semantics of IQ enable an entity to make a request of, and receive a response from, another entity.
-	The data content of the request and response is defined by the schema or other structural definition associated with
-	the XML namespace that qualifies the direct child element of the IQ element, and the interaction is tracked by the
-	requesting entity through use of the 'id' attribute.
-	Thus, IQ interactions follow a common pattern of structured data exchange such as get/result or set/result (although
-	an error can be returned in reply to a request if appropriate)
+    Info/Query *request-response* mechanism stanza.
 
-	Requesting                  Responding
-	  Entity                      Entity
-	----------                  ----------
-		|                            |
-		| <iq id='1' type='get'>     |
-		|   [ ... payload ... ]      |
-		| </iq>                      |
-		| -------------------------> |
-		|                            |
-		| <iq id='1' type='result'>  |
-		|   [ ... payload ... ]      |
-		| </iq>                      |
-		| <------------------------- |
-		|                            |
-		| <iq id='2' type='set'>     |
-		|   [ ... payload ... ]      |
-		| </iq>                      |
-		| -------------------------> |
-		|                            |
-		| <iq id='2' type='error'>   |
-		|   [ ... condition ... ]    |
-		| </iq>                      |
-		| <------------------------- |
-		|                            |
+	The semantics of IQ enable an entity to make a request of, and receive a response from, another entity. The data content of the request and response is defined by the schema or other structural definition associated with the XML namespace that qualifies the direct child element of the IQ element, and the interaction is tracked by the requesting entity through use of the `id` attribute.
 
+	Thus, IQ interactions follow a common pattern of structured data exchange such as *get/result* or *set/result* (although an error can be returned in reply to a request if appropriate).
+
+        Requesting                  Responding
+          Entity                      Entity
+        ----------                  ----------
+            |                            |
+            | <iq id='1' type='get'>     |
+            |   [ ... payload ... ]      |
+            | </iq>                      |
+            | -------------------------> |
+            |                            |
+            | <iq id='1' type='result'>  |
+            |   [ ... payload ... ]      |
+            | </iq>                      |
+            | <------------------------- |
+            |                            |
+            | <iq id='2' type='set'>     |
+            |   [ ... payload ... ]      |
+            | </iq>                      |
+            | -------------------------> |
+            |                            |
+            | <iq id='2' type='error'>   |
+            |   [ ... condition ... ]    |
+            | </iq>                      |
+            | <------------------------- |
+            |                            |
 **/
 @:forward(from,to,id,lang,error,type,payload,xmlns,createResult,createError)
 abstract IQ(IQStanza) to Stanza {

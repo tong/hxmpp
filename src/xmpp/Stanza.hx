@@ -2,19 +2,19 @@ package xmpp;
 
 enum abstract ErrorType(String) from String to String {
 
-	/** Retry after providing credentials */
+	/** Retry after providing credentials. **/
 	var auth;
 
-	/** Do not retry (the error is unrecoverable)  */
+	/** Do not retry (the error is unrecoverable). **/
 	var cancel;
 
-	/** Proceed (the condition was only a warning)  */
+	/** Proceed (the condition was only a warning). **/
 	var continue_ = "continue";
 
-	/** Retry after changing the data sent */
+	/** Retry after changing the data sent. **/
 	var modify;
 
-	/** Retry after waiting (the error is temporary) */
+	/** Retry after waiting (the error is temporary). **/
 	var wait;
 }
 
@@ -30,73 +30,73 @@ typedef ApplicationErrorCondition = {
 enum abstract ErrorCondition(String) from String to String {
 
 	/**
-		The sender has sent XML that is malformed or that cannot be processed (e.g., an IQ stanza that includes an unrecognized value of the 'type' attribute); The associated error type SHOULD be `modify`.
-	 */
+		The sender has sent XML that is malformed or that cannot be processed (e.g., an IQ stanza that includes an unrecognized value of the `type` attribute); The associated error type SHOULD be `modify`.
+	**/
 	var bad_request = "bad-request";
 
 	/**
 		Access cannot be granted because an existing resource or session exists with the same name or address; The associated error type SHOULD be `cancel`.
-	 */
+	**/
 	var conflict;
 
 	/**
 		The feature requested is not implemented by the recipient or server and therefore cannot be processed; The associated error type SHOULD be `cancel`.
-	 */
+	**/
 	var feature_not_implemented = "feature-not-implemented";
 
 	/**
 		The requesting entity does not possess the required permissions to perform the action; The associated error type SHOULD be `auth`.
-	 */
+	**/
 	var forbidden;
 
 	/**
         The recipient or server can no longer be contacted at this address, typically on a permanent basis (as opposed to the `<redirect/>` error condition, which is used for temporary addressing failures); the associated error type SHOULD be `cancel` and the error stanza SHOULD include a new address (if available) as the XML character data of the `<gone/>` element.
-	 */
+	**/
 	var gone;
 
 	/**
         The server has experienced a misconfiguration or other internal error that prevents it from processing the stanza; the associated error type SHOULD be `cancel`.
-	 */
+	**/
 	var internal_server_error = "internal-server-error";
 
 	/**
 		The addressed JID or item requested cannot be found; the associated error type SHOULD be `cancel`.
-	 */
+	**/
 	var item_not_found = "item-not-found";
 
 	/**
 		The sending entity has provided or communicated an XMPP address (e.g., a value of the 'to' attribute) or aspect thereof (e.g., a resource identifier) that does not adhere to the syntax defined in Addressing Scheme (Addressing Scheme); The associated error type SHOULD be `modify`.
-	 */
+	**/
 	var jid_malformed = "jid-malformed";
 
 	/**
 	    The recipient or server understands the request but is refusing to process it because it does not meet criteria defined by the recipient or server (e.g., a local policy regarding acceptable words in messages); The associated error type SHOULD be `modify`.
-	 */
+	**/
 	var not_acceptable = "not-acceptable";
 
 	/**
 		The recipient or server does not allow any entity to perform the action; The associated error type SHOULD be `cancel`.
-	 */
+	**/
 	var not_allowed = "not-allowed";
 
 	/**
 		The sender must provide proper credentials before being allowed to perform the action, or has provided improper credentials; The associated error type SHOULD be `auth`.
-	 */
+	**/
 	var not_authorized = "not-authorized";
 
 	/**
 		The requesting entity is not authorized to access the requested service because payment is required; The associated error type SHOULD be `auth`.
-	 */
+	**/
 	var payment_required = "payment-required";
 
 	/**
 		The requesting entity is not authorized to access the requested service because payment is required; The associated error type SHOULD be `auth`.
-	 */
+    **/
 	var recipient_unavailable = "recipient-unavailable";
 
 	/**
 		The recipient or server is redirecting requests for this information to another entity, usually temporarily (the error stanza SHOULD contain the alternate address, which MUST be a valid JID, in the XML character data of the `<redirect/>` element) The associated error type SHOULD be `modify`.
-	 */
+	**/
 	var redirect;
 
 	/**
@@ -106,17 +106,17 @@ enum abstract ErrorCondition(String) from String to String {
 
 	/**
 		A remote server or service specified as part or all of the JID of the intended recipient does not exist; The associated error type SHOULD be `cancel`.
-	 */
+	**/
 	var remote_server_not_found = "remote-server-not-found";
 
 	/**
 		A remote server or service specified as part or all of the JID of the intended recipient (or required to fulfill a request) could not be contacted within a reasonable amount of time; The associated error type SHOULD be `wait`.
-	 */
+	**/
 	var remote_server_timeout = "remote-server-timeout";
 
 	/**
 		The server or recipient lacks the system resources necessary to service the request; The associated error type SHOULD be `wait`.
-	 */
+	**/
 	var resource_constraint = "resource-constraint";
 
 	/**
@@ -126,17 +126,17 @@ enum abstract ErrorCondition(String) from String to String {
 
 	/**
 		The requesting entity is not authorized to access the requested service because a subscription is required; The associated error type SHOULD be `auth`.
-	 */
+	**/
 	var subscription_required = "subscription-required";
 
 	/**
 		The error condition is not one of those defined by the other conditions in this list; Any error type may be associated with this condition, and it SHOULD be used only in conjunction with an application-specific condition.
-	 */
+	**/
 	var undefined_condition = "undefined-condition";
 
 	/**
 		The requesting entity is not authorized to access the requested service because a subscription is required; The associated error type SHOULD be `auth`.
-	 */
+	**/
 	var unexpected_request = "unexpected-request";
 }
 
