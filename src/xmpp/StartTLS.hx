@@ -9,17 +9,15 @@ class Socket extends sys.net.Socket {
 }
 #end
 
-#if sys
+#if (sys||lua)
 private typedef SSLSocket =
     #if python xmpp.Socket;
-    #elseif (cpp||hl||neko) sys.ssl.Socket;
+    #elseif (cpp||hl||lua||neko) sys.ssl.Socket;
     #elseif macro sys.ssl.Socket;
     #elseif doc_gen Any;
     #end
 #elseif nodejs
 #elseif dog_gen
-// #else
-//     #error "xmpp.StartTLS not implemented"
 #end
 
 /**
@@ -36,7 +34,6 @@ class StartTLS {
 	public static function startTLS(stream:Stream, callback:(success:Bool) -> Void) {
 		stream.input = str -> {
             var xml = try Xml.parse(str).firstElement() catch(e) {
-                trace(e);
                 callback(false);
                 return;
             }
@@ -48,7 +45,7 @@ class StartTLS {
 		stream.send(XML.create('starttls').set('xmlns', XMLNS));
 	}
 
-    #if (macro||cpp||hl||neko||python)
+    #if (macro||cpp||hl||lua||neko||python)
 
     /**
         Upgrades a `sys.net.Socket` to `sys.ssl.Socket`
@@ -71,14 +68,11 @@ class StartTLS {
         final s = new xmpp.Socket();
         s.__s = ctx.wrap_socket(sock.__s, false, true, true, host.host);
         s.__rebuildIoStreams();
-        #else
-        final s = new sys.ssl.Socket();
-        s.__s = sock.__s;
-        #else
-            #error 'STARTTLS not implemented'
         #end
 
         #if cpp
+        final s = new sys.ssl.Socket();
+        s.__s = sock.__s;
         s.conf = s.buildSSLConfig(false);
 		s.ssl = cpp.NativeSsl.ssl_new(s.conf);
 		cpp.NativeSsl.ssl_set_socket(s.ssl, s.__s);
@@ -87,6 +81,8 @@ class StartTLS {
 		s.handshakeDone = false;
 
         #elseif hl
+        final s = new sys.ssl.Socket();
+        s.__s = sock.__s;
         s.conf = s.buildConfig(false);
 		s.ssl = new sys.ssl.Context(s.conf);
         s.ssl.setSocket(s.__s);
@@ -95,6 +91,8 @@ class StartTLS {
         s.handshakeDone = false;
 
         #elseif neko
+        final s = new sys.ssl.Socket();
+        s.__s = sock.__s;
         s.ctx = s.buildSSLContext(false);
         s.ssl = sys.ssl.Socket.ssl_new(s.ctx);
         sys.ssl.Socket.ssl_set_socket(s.ssl, s.__s);
@@ -102,6 +100,11 @@ class StartTLS {
         sys.ssl.Socket.ssl_set_hostname(s.ssl, untyped host.host.__s);
         //sys.ssl.Socket.ssl_set_hostname(s.ssl, untyped s.hostname.__s);
         s.handshakeDone = false;
+        #elseif lua
+        final s = new sys.ssl.Socket();
+        //s.__s = sock.__s;
+        trace('TODO');
+
         #end
         //s.handshake();
         return s;
