@@ -132,7 +132,7 @@ enum abstract Subscription(String) from String to String {
 
     @see https://xmpp.org/rfcs/rfc3921.html>
 **/
-@:forward(from,to,id,lang,properties,type,show,status,priority)
+@:forward(from,to,id,lang,error,properties,type,show,status,priority)
 abstract Presence(PresenceStanza) to Stanza {
 
 	public static inline var NAME = 'presence';
@@ -217,8 +217,8 @@ private class PresenceStanza extends Stanza {
 			switch e.name {
 				case 'show': p.show = cast e.text;
 				case 'status': p.status= Std.string(e.text);
-				case 'priority': p.priority = Std.parseInt(e.text);
-				case 'error': // TODO:
+				case 'priority': p.priority = try Std.parseInt(e.text) catch(e) null;
+				case 'error': p.error = e;
                 default: p.properties.push(e);
 			}
 		}
