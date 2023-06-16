@@ -132,7 +132,7 @@ enum abstract Subscription(String) from String to String {
 
     @see https://xmpp.org/rfcs/rfc3921.html>
 **/
-@:forward(from,to,id,lang,error,properties,type,show,status,priority)
+@:forward(from,to,id,lang,error,type,show,status,priority,properties)
 abstract Presence(PresenceStanza) to Stanza {
 
 	public static inline var NAME = 'presence';

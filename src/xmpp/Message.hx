@@ -45,7 +45,7 @@ enum abstract MessageType(String) to String {
 
 	@see [RFC-3921 - Instant Messaging and Presence](https://xmpp.org/rfcs/rfc3921.html)
 **/
-@:forward(from, to, id, lang, type, body, subject, thread, properties)
+@:forward(from,to,id,lang,error,type,body,subject,thread,properties)
 abstract Message(MessageStanza) to Stanza {
 	public static inline var NAME = 'message';
 
@@ -113,6 +113,7 @@ private class MessageStanza extends Stanza {
             case 'body': m.body = e.text;
             case 'subject': m.subject = e.text;
             case 'thread': m.thread = e.text;
+            case 'error': m.error = e;
             case _: m.properties.push(e);
 			}
 		}
