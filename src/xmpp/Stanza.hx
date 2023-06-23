@@ -243,6 +243,10 @@ abstract class Stanza {
 	/**
 	**/
 	public var error:Error;
+  
+  /**
+  **/
+  public var properties: Array<XML> = [];
 
 	inline function new(?to:String, ?from:String, ?id:String, ?lang:String) {
 		this.to = to;

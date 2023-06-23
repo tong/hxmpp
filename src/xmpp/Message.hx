@@ -85,9 +85,6 @@ private class MessageStanza extends Stanza {
     **/
 	public var thread:String;
 
-	/**/
-	public var properties:Array<XML> = [];
-
 	public function new(?to:String, ?body:String, ?subject:String, ?type:MessageType=chat, ?thread:String, ?from:String) {
 		super(to, from);
 		this.body = body;

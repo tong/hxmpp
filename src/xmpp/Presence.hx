@@ -189,9 +189,6 @@ private class PresenceStanza extends Stanza {
     **/
 	public var priority:Null<Priority>;
 
-	/**/
-	public var properties:Array<XML> = [];
-
 	public function new(?show:Show, ?status:String, ?priority:Priority, ?type:PresenceType) {
 		super();
 		this.show = show;

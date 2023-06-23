@@ -34,6 +34,7 @@ enum abstract IQType(String) from String to String {
 	// 	}
 }
 
+/*
 enum abstract IQRequestType(String) to String to IQType {
 	var Get = "get";
 	var Set = "set";
@@ -55,6 +56,7 @@ enum abstract IQResponseType(String) to String {
 	// 		case null, _: null;
 	// 	}
 }
+*/
 
 /**
     Info/Query *request-response* mechanism stanza.
@@ -130,22 +132,17 @@ private class IQStanza extends Stanza {
 	}
 
 	public function toXML():XML {
-		var xml = Stanza.createXML(this, IQ.NAME)
-            .set("type", type);
-		if (payload != null)
-            xml.append(payload);
-		if (error != null)
-			xml.append(error.toXML());
+		final xml = Stanza.createXML(this, IQ.NAME).set("type", type);
+		if(payload != null) xml.append(payload);
+		if(error != null) xml.append(error.toXML());
 		return xml;
 	}
 
 	public static function parse(xml:XML):IQ {
-		var iq = Stanza.parseAttributes(new IQ(null, xml.get('type')), xml);
+		final iq = Stanza.parseAttributes(new IQ(null, xml.get('type')), xml);
 		switch iq.type {
-        case Error:
-            iq.error = xmpp.Stanza.Error.fromXML(xml.firstElement);
-        case Get, Set, Result:
-            iq.payload = xml.firstElement;
+        case Error: iq.error = xmpp.Stanza.Error.fromXML(xml.firstElement);
+        case Get, Set, Result: iq.payload = xml.firstElement;
 		}
 		return iq;
 	}
