@@ -5,14 +5,14 @@ using StringTools;
 /**
 	Unique jabber identifier.
 
-	A JID is made up of a **node** (generally a username), a **domain**, and a **resource**.
+	A `Jid` is made up of a **node** (generally a username), a **domain**, and a **resource**.
 
 	The first two parts are demarcated by the `@` character used as a separator and
 	the last two parts are similarly demarcated by the `/` character (e.g., `juliet@example.com/balcony`).
 
-		jid             = [ node "@" ] domain [ "/" resource ]
+		jid             = [ node `@` ] domain [ `/` resource ]
 		domain          = fqdn / address-literal
-		fqdn            = (sub-domain 1*("." sub-domain))
+		fqdn            = (sub-domain 1*(`.` sub-domain))
 		sub-domain      = (internationalized domain label)
 		address-literal = IPv4address / IPv6address
 
@@ -21,31 +21,30 @@ using StringTools;
 
 	- [Extensible Messaging and Presence Protocol: Address Format](https://tools.ietf.org/html/rfc7622)
 	- [XEP-0106: JID Escaping](https://xmpp.org/extensions/xep-0106.html)
-
 **/
+@:nullSafety
 @:forward(node,domain,resource)
 abstract Jid(CJid) from CJid {
 
-	// public static inline var MIN_LENGTH = 8;
 	public static inline var MAX_PARTSIZE = 1023;
 	public static inline var MAX_SIZE = 3071;
 
 	public static final EREG = ~/^(([A-Z0-9._%-]{1,1023})@([A-Z0-9._%-]{1,1023})((?:\/)([A-Z0-9._%-]{1,1023}))?)$/i;
 
-	public inline function new(?node:String, domain:String, ?resource:String)
+	public inline function new(?node:Null<String>, domain:String, ?resource:Null<String>)
 		this = new CJid(node, domain, resource);
 
-	public function getBare():String {
+	public function getBare(): Null<String> {
 		return (this.node == null || this.domain == null) ? null : this.node + '@' + this.domain;
 	}
 
-	@:to public function toString():String {
+	@:to public function toString(): Null<String> {
 		var s = getBare();
 		if (this.resource != null) s += '/' + this.resource;
 		return s;
 	}
 
-	@:to public inline function toArray():Array<String>
+	@:to public inline function toArray():Array<Null<String>>
 		return [this.node, this.domain, this.resource];
 
 	@:op(A==B) public function equals(jid:Jid):Bool {
@@ -102,7 +101,7 @@ abstract Jid(CJid) from CJid {
 		return (b == -1) ? str.substr(a + 1) : str.substr(a + 1, b - a - 1);
 	}
 
-	public static function parseResource(str:String):String {
+	public static function parseResource(str:String):Null<String> {
 		var i = str.indexOf("/");
 		return (i == -1) ? null : str.substr(i + 1);
 	}
@@ -167,9 +166,9 @@ abstract Jid(CJid) from CJid {
 }
 
 @:structInit private class CJid {
-	public var node:String;
+	public var node:Null<String>;
 	public var domain:String;
-	public var resource:String;
+	public var resource:Null<String>;
 	@:allow(xmpp.Jid)
 	inline function new(?node:String, domain:String, ?resource:String) {
 		this.node = node;
