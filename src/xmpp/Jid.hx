@@ -81,13 +81,12 @@ abstract Jid(CJid) from CJid {
 	/**
 		Returns `true` if the given string is a valid jid.
 	**/
+    #if python
+    // TODO: HACK: python complains: Null safety: Cannot assign nullable value here.
+	@:nullSafety(Off) 
+    #end
 	public static function isValid(str:String):Bool {
-		// if( str == null || str.length < MIN_LENGTH || str.length > MAX_SIZE )
-		if (str == null || str.length > MAX_SIZE)
-			return false;
-		if (!EREG.match(str))
-			return false;
-		return true;
+		return (str == null || str.length > MAX_SIZE) ? false : EREG.match(str);
 	}
 
 	public static inline function parseNode(str:String):String {
