@@ -58,12 +58,15 @@ enum abstract IQResponseType(String) to String {
 }
 */
 
+typedef Reply<T:xmpp.Payload> = xmpp.Response<T>;
+
 /**
     Info/Query *request-response* mechanism stanza.
 
-	The semantics of IQ enable an entity to make a request of, and receive a response from, another entity. The data content of the request and response is defined by the schema or other structural definition associated with the XML namespace that qualifies the direct child element of the IQ element, and the interaction is tracked by the requesting entity through use of the `id` attribute.
+	The semantics of IQ enable an entity to make a request of, and receive a response from, another entity.
+    The data content of the request and response is defined by the schema or other structural definition associated with the XML namespace that qualifies the direct child element of the `IQ` element, and the interaction is tracked by the requesting entity through use of the `id` attribute.
 
-	Thus, IQ interactions follow a common pattern of structured data exchange such as *get/result* or *set/result* (although an error can be returned in reply to a request if appropriate).
+	Thus, `IQ` interactions follow a common pattern of structured data exchange such as *get/result* or *set/result* (although an error can be returned in reply to a request if appropriate).
 
         Requesting                  Responding
           Entity                      Entity
@@ -114,14 +117,14 @@ abstract IQ(IQStanza) to Stanza {
 private class IQStanza extends Stanza {
 
 	/** Either: get/set/result/error **/
-	public var type:IQType;
+	public var type: IQType;
 
 	/** The exclusive child element (mostly: `<query xmlns="ext-namspace"/>`) **/
-	public var payload:Payload;
+	public var payload: Null<Payload>;
 
     /** Payload namespace **/
-	public var xmlns(get,never):String;
-	inline function get_xmlns():String
+	public var xmlns(get,never): Null<String>;
+	inline function get_xmlns(): Null<String>
 		return (payload != null) ? payload.xmlns : null;
 
 	@:allow(xmpp.IQ)
@@ -177,11 +180,9 @@ abstract Payload(XML) from XML to XML {
 
 	inline function new(xml:XML) this = xml;
 
-    public function toError() : xmpp.Stanza.Error {
-        if(this.name != "error")
-            return null;
-        return xmpp.Stanza.Error.fromXML(this);
-    }
+  public function toError() : Null<xmpp.Stanza.Error> {
+      return (this.name != "error") ? null : xmpp.Stanza.Error.fromXML(this);
+  }
 
 	public static inline function create(xmlns:String, name='query'):Payload
 		return new Payload(XML.create(name).set('xmlns', xmlns));

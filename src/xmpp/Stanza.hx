@@ -223,26 +223,26 @@ abstract class Stanza {
 	/**
 		JID of the intended recipient.
 	**/
-	public var to:String;
+	public var to: Null<String>;
 
 	/**
 		JID of the sender.
 	**/
-	public var from:String;
+	public var from: Null<String>;
 
 	/**
 		Used by the originating entity to track any response or error stanza that it might receive in relation to the generated stanza from another entity.
 	**/
-	public var id:String;
+	public var id: Null<String>;
 
 	/**
 		Specifies the default language of any such human-readable XML character data.
 	**/
-	public var lang:String;
+	public var lang: Null<String>;
 
 	/**
 	**/
-	public var error:Error;
+	public var error: Null<Error>;
   
   /**
   **/
