@@ -28,7 +28,7 @@ class DelayedDelivery {
 
 	public static inline var XMLNS = "urn:xmpp:delay";
 
-    public static function getDelay(stanza: xmpp.Message) : TDelay {
+    public static function delay(stanza: xmpp.Message) : TDelay {
         for(e in stanza.properties)
             if(e.is(XMLNS))
                 return { from: e["from"], stamp: e["stamp"], description: e.text };
