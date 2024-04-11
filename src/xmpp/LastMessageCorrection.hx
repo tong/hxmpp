@@ -1,9 +1,9 @@
 package xmpp;
 
 /**
-    Method for indicating that a message is a correction of the last sent message.
+    Indicate that a message is a correction of the last sent message.
 
-    [XEP-0308: Last Message Correction](https://xmpp.org/extensions/xep-0308.html)
+    @see [XEP-0308: Last Message Correction](https://xmpp.org/extensions/xep-0308.html)
 **/
 @xep(308)
 class LastMessageCorrection {
@@ -15,11 +15,11 @@ class LastMessageCorrection {
 	**/
 	public static inline function correct(message : xmpp.Message, id: String) : xmpp.Message {
         message.properties.push(XML.create("replace").set('xmlns', XMLNS));
-        return message;
+        return message;//
 	}
 
 	/**
-	   Get the correction id of the given message stanze.
+	   Get the correction id of the given message stanza.
 	**/
     public static inline function correction(message : xmpp.Message) : String {
         return message.properties.filter(e -> return e.is(XMLNS))[0].get('id');

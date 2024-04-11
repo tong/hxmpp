@@ -6,7 +6,6 @@ package xmpp.client;
 	https://xmpp.org/rfcs/rfc6120.html#examples-c2s
 **/
 class Stream extends xmpp.Stream {
-
 	/** IANA registered `xmpp-client` port (5222) **/
 	public static inline var PORT = 5222;
 
@@ -20,11 +19,11 @@ class Stream extends xmpp.Stream {
 	public function start(callback:(features:XML) -> Void):Stream {
 		reset();
 		input = (str:String) -> {
-            if(ready) {
+			if (ready) {
 				handleString(str);
 			} else {
-				if(id == null) {
-				    final header = xmpp.Stream.readHeader(str);
+				if (id == null) {
+					final header = xmpp.Stream.readHeader(str);
 					id = header.id;
 					version = header.version;
 					var features = xmpp.Stream.readFeatures(str);
@@ -40,8 +39,8 @@ class Stream extends xmpp.Stream {
 						callback(features);
 					}
 				}
-            }
-        };
+			}
+		};
 		output(xmpp.Stream.createHeader(XMLNS, domain, version, lang));
 		return this;
 	}

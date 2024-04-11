@@ -1,7 +1,6 @@
 package xmpp;
 
 enum abstract ErrorType(String) from String to String {
-
 	/** Retry after providing credentials. **/
 	var auth;
 
@@ -19,16 +18,15 @@ enum abstract ErrorType(String) from String to String {
 }
 
 /**
-    Application-specific stanza error information.
+	Application-specific stanza error information.
 **/
 typedef ApplicationErrorCondition = {
 	var condition:String;
 	var xmlns:String;
-    var ?properties:Array<XML>;
+	var ?properties:Array<XML>;
 }
 
 enum abstract ErrorCondition(String) from String to String {
-
 	/**
 		The sender has sent XML that is malformed or that cannot be processed (e.g., an IQ stanza that includes an unrecognized value of the `type` attribute); The associated error type SHOULD be `modify`.
 	**/
@@ -50,12 +48,12 @@ enum abstract ErrorCondition(String) from String to String {
 	var forbidden;
 
 	/**
-        The recipient or server can no longer be contacted at this address, typically on a permanent basis (as opposed to the `<redirect/>` error condition, which is used for temporary addressing failures); the associated error type SHOULD be `cancel` and the error stanza SHOULD include a new address (if available) as the XML character data of the `<gone/>` element.
+		The recipient or server can no longer be contacted at this address, typically on a permanent basis (as opposed to the `<redirect/>` error condition, which is used for temporary addressing failures); the associated error type SHOULD be `cancel` and the error stanza SHOULD include a new address (if available) as the XML character data of the `<gone/>` element.
 	**/
 	var gone;
 
 	/**
-        The server has experienced a misconfiguration or other internal error that prevents it from processing the stanza; the associated error type SHOULD be `cancel`.
+		The server has experienced a misconfiguration or other internal error that prevents it from processing the stanza; the associated error type SHOULD be `cancel`.
 	**/
 	var internal_server_error = "internal-server-error";
 
@@ -70,7 +68,7 @@ enum abstract ErrorCondition(String) from String to String {
 	var jid_malformed = "jid-malformed";
 
 	/**
-	    The recipient or server understands the request but is refusing to process it because it does not meet criteria defined by the recipient or server (e.g., a local policy regarding acceptable words in messages); The associated error type SHOULD be `modify`.
+		The recipient or server understands the request but is refusing to process it because it does not meet criteria defined by the recipient or server (e.g., a local policy regarding acceptable words in messages); The associated error type SHOULD be `modify`.
 	**/
 	var not_acceptable = "not-acceptable";
 
@@ -91,7 +89,7 @@ enum abstract ErrorCondition(String) from String to String {
 
 	/**
 		The requesting entity is not authorized to access the requested service because payment is required; The associated error type SHOULD be `auth`.
-    **/
+	**/
 	var recipient_unavailable = "recipient-unavailable";
 
 	/**
@@ -142,16 +140,14 @@ enum abstract ErrorCondition(String) from String to String {
 
 @:structInit
 private class CError {
-
 	/** **/
 	public var type:ErrorType;
-	
-    /** **/
+
+	/** **/
 	public var condition:ErrorCondition;
 
 	/** Error generator */
 	public var by:String;
-
 
 	/** Describes the error in more detail */
 	public var text:String;
@@ -172,81 +168,81 @@ private class CError {
 
 @:forward
 abstract Error(CError) from CError {
-
-    public static inline var XMLNS = "urn:ietf:params:xml:ns:xmpp-stanzas";
+	public static inline var XMLNS = "urn:ietf:params:xml:ns:xmpp-stanzas";
 
 	public inline function new(type:ErrorType, condition:ErrorCondition, ?text:String, ?app:ApplicationErrorCondition)
-        this = new CError(type, condition, text, app);
+		this = new CError(type, condition, text, app);
 
-    @:to public inline function toBool() : Bool
-        return this != null;
+	@:to public inline function toBool():Bool
+		return this != null;
 
 	@:to public function toXML():XML {
-		var xml = XML.create('error').set('type', this.type)
-            .append(XML.create(this.condition).set('xmlns', XMLNS));
-		if(this.by != null) xml.set('by', this.by);
-		if(this.text != null)
+		var xml = XML.create('error').set('type', this.type).append(XML.create(this.condition).set('xmlns', XMLNS));
+		if (this.by != null)
+			xml.set('by', this.by);
+		if (this.text != null)
 			xml.append(XML.create('text', this.text).set('xmlns', XMLNS));
-		if(this.app != null && (this.app.condition != null && this.app.xmlns != null)) {
-            var c = XML.create(this.app.condition).set('xmlns', this.app.xmlns);
-            if(this.app.properties != null) for(e in this.app.properties) c.append(e);
+		if (this.app != null && (this.app.condition != null && this.app.xmlns != null)) {
+			var c = XML.create(this.app.condition).set('xmlns', this.app.xmlns);
+			if (this.app.properties != null)
+				for (e in this.app.properties)
+					c.append(e);
 			xml.append(c);
-        }
+		}
 		return xml;
 	}
 
 	@:from public static function fromXML(xml:XML):Error {
-		var condition: Null<ErrorCondition> = null;
-		var text: Null<String> = null;
-		var app: Null<ApplicationErrorCondition> = null;
+		var condition:Null<ErrorCondition> = null;
+		var text:Null<String> = null;
+		var app:Null<ApplicationErrorCondition> = null;
 		for (e in xml.elements) {
-            switch e.ns {
-            case Error.XMLNS: 
-				switch e.name {
-                case 'text': text = e.text;
-                case _: condition = e.name;
-				}
-            case _:
-                app = {
-                    condition: e.name,
-                    xmlns: e.ns,
-                    properties: [for(e in e.elements) e]
-                };
-            }
+			switch e.ns {
+				case Error.XMLNS:
+					switch e.name {
+						case 'text': text = e.text;
+						case _: condition = e.name;
+					}
+				case _:
+					app = {
+						condition: e.name,
+						xmlns: e.ns,
+						properties: [for (e in e.elements) e]
+					};
+			}
 		}
 		return new Error(xml.get('type'), condition, text, app);
 	}
 }
 
 abstract class Stanza {
-
 	/**
 		JID of the intended recipient.
 	**/
-	public var to: Null<String>;
+	public var to:Null<String>;
 
 	/**
 		JID of the sender.
 	**/
-	public var from: Null<String>;
+	public var from:Null<String>;
 
 	/**
 		Used by the originating entity to track any response or error stanza that it might receive in relation to the generated stanza from another entity.
 	**/
-	public var id: Null<String>;
+	public var id:Null<String>;
 
 	/**
 		Specifies the default language of any such human-readable XML character data.
 	**/
-	public var lang: Null<String>;
+	public var lang:Null<String>;
 
 	/**
 	**/
-	public var error: Null<Error>;
-  
-  /**
-  **/
-  public var properties: Array<XML> = [];
+	public var error:Null<Error>;
+
+	/**
+	**/
+	public var properties:Array<XML> = [];
 
 	inline function new(?to:String, ?from:String, ?id:String, ?lang:String) {
 		this.to = to;
@@ -262,10 +258,14 @@ abstract class Stanza {
 
 	static function createXML(s:Stanza, name:String):XML {
 		final x = XML.create(name);
-		if (s.to != null) x.set('to', s.to);
-		if (s.from != null) x.set('from', s.from);
-		if (s.id != null) x.set('id', s.id);
-		if (s.lang != null) x.set('xml:lang', s.lang);
+		if (s.to != null)
+			x.set('to', s.to);
+		if (s.from != null)
+			x.set('from', s.from);
+		if (s.id != null)
+			x.set('id', s.id);
+		if (s.lang != null)
+			x.set('xml:lang', s.lang);
 		return x;
 	}
 

@@ -23,9 +23,8 @@ using StringTools;
 	- [XEP-0106: JID Escaping](https://xmpp.org/extensions/xep-0106.html)
 **/
 @:nullSafety
-@:forward(node,domain,resource)
+@:forward(node, domain, resource)
 abstract Jid(CJid) from CJid {
-
 	public static inline var MAX_PARTSIZE = 1023;
 	public static inline var MAX_SIZE = 3071;
 
@@ -34,24 +33,22 @@ abstract Jid(CJid) from CJid {
 	public inline function new(?node:Null<String>, domain:String, ?resource:Null<String>)
 		this = new CJid(node, domain, resource);
 
-	public function getBare(): Null<String> {
+	public function getBare():Null<String> {
 		return (this.node == null || this.domain == null) ? null : this.node + '@' + this.domain;
 	}
 
-	@:to public function toString(): Null<String> {
+	@:to public function toString():Null<String> {
 		var s = getBare();
-		if (this.resource != null) s += '/' + this.resource;
+		if (this.resource != null)
+			s += '/' + this.resource;
 		return s;
 	}
 
 	@:to public inline function toArray():Array<Null<String>>
 		return [this.node, this.domain, this.resource];
 
-	@:op(A==B) public function equals(jid:Jid):Bool {
-        return if(this.node != jid.node
-            || this.domain != jid.domain
-            || this.resource != jid.resource)
-            false else true;
+	@:op(A == B) public function equals(jid:Jid):Bool {
+		return if (this.node != jid.node || this.domain != jid.domain || this.resource != jid.resource) false else true;
 	}
 
 	@:arrayAccess function getPart(i:Int):String {
@@ -65,9 +62,12 @@ abstract Jid(CJid) from CJid {
 
 	@:arrayAccess function setPart(i:Int, str:String) {
 		switch i {
-			case 0: this.node = str;
-			case 1: this.domain = str;
-			case 2: this.resource = str;
+			case 0:
+				this.node = str;
+			case 1:
+				this.domain = str;
+			case 2:
+				this.resource = str;
 			default:
 		}
 	}
@@ -81,10 +81,10 @@ abstract Jid(CJid) from CJid {
 	/**
 		Returns `true` if the given string is a valid jid.
 	**/
-    #if python
-    // TODO: HACK: python complains: Null safety: Cannot assign nullable value here.
-	@:nullSafety(Off) 
-    #end
+	#if python
+	// TODO: HACK: python complains: Null safety: Cannot assign nullable value here.
+	@:nullSafety(Off)
+	#end
 	public static function isValid(str:String):Bool {
 		return (str == null || str.length > MAX_SIZE) ? false : EREG.match(str);
 	}
@@ -111,7 +111,7 @@ abstract Jid(CJid) from CJid {
 	}
 
 	public static function parseParts(str:String):Array<String> {
-        final i = str.indexOf("@");
+		final i = str.indexOf("@");
 		final j = str.indexOf("/");
 		final a = [str.substr(0, i)];
 		return a.concat((j == -1) ? [str.substring(i + 1)] : [str.substring(i + 1, j), str.substr(j + 1)]);
@@ -124,20 +124,20 @@ abstract Jid(CJid) from CJid {
 		Typically, escaping is performed only by a client that is processing information
 		provided by a human user in unescaped form, or by a gateway to some external system
 		(e.g., email or LDAP) that needs to generate a JID.
-    **/
-    @xep(106)
+	**/
+	@xep(106)
 	public static function escapeNode(s:String):String {
-		//s.split("&").join("&amp;")
+		// s.split("&").join("&amp;")
 		return s.replace("\\", "\\5c")
-		    .replace(" ", "\\20")
-		    .replace("\"", "\\22")
-		    .replace("&", "\\26")
-		    .replace("'", "\\27")
-		    .replace("/", "\\2f")
-		    .replace(":", "\\3a")
-		    .replace("<", "\\3c")
-		    .replace(">", "\\3e")
-	        .replace("@", "\\40");
+			.replace(" ", "\\20")
+			.replace("\"", "\\22")
+			.replace("&", "\\26")
+			.replace("'", "\\27")
+			.replace("/", "\\2f")
+			.replace(":", "\\3a")
+			.replace("<", "\\3c")
+			.replace(">", "\\3e")
+			.replace("@", "\\40");
 	}
 
 	/**
@@ -149,18 +149,18 @@ abstract Jid(CJid) from CJid {
 		external system (e.g., email or LDAP) that needs to generate identifiers
 		for foreign systems.
 	**/
-    @xep(106)
+	@xep(106)
 	public static function unescapeNode(s:String):String {
 		return s.replace("\\20", " ")
-		    .replace("\\22", "\"")
-	        .replace("\\26", "&")
-		    .replace("\\27", "'")
-		    .replace("\\2f", "/")
-		    .replace("\\3a", ":")
-            .replace("\\3c", "<")
-            .replace("\\3e", ">")
-            .replace("\\40", "@")
-            .replace("\\5c", "\\");
+			.replace("\\22", "\"")
+			.replace("\\26", "&")
+			.replace("\\27", "'")
+			.replace("\\2f", "/")
+			.replace("\\3a", ":")
+			.replace("\\3c", "<")
+			.replace("\\3e", ">")
+			.replace("\\40", "@")
+			.replace("\\5c", "\\");
 	}
 }
 
@@ -168,6 +168,7 @@ abstract Jid(CJid) from CJid {
 	public var node:Null<String>;
 	public var domain:String;
 	public var resource:Null<String>;
+
 	@:allow(xmpp.Jid)
 	inline function new(?node:String, domain:String, ?resource:String) {
 		this.node = node;

@@ -8,8 +8,8 @@ private enum EStringOrXml {
 }
 
 private abstract StringOrXml(EStringOrXml) {
-	
-    inline function new(sox:EStringOrXml) this = sox;
+	inline function new(sox:EStringOrXml)
+		this = sox;
 
 	public inline function isXml():Bool
 		return switch this {
@@ -37,17 +37,17 @@ private abstract StringOrXml(EStringOrXml) {
 }
 
 class Printer {
-
 	public var pretty:Bool;
 
-	public function new(pretty=true) this.pretty = pretty;
-	
-    public inline function it(sox:StringOrXml):String
+	public function new(pretty = true)
+		this.pretty = pretty;
+
+	public inline function it(sox:StringOrXml):String
 		return sox.isXml() ? printXml(sox) : printString(sox);
 
 	public function printString(str:String):String {
 		if (pretty) {
-			var xml:Xml = try Xml.parse(str) catch(e) {
+			var xml:Xml = try Xml.parse(str) catch (e) {
 				return str;
 			}
 			return printXml(xml);
@@ -58,6 +58,6 @@ class Printer {
 	public inline function printXml(xml:Xml):String
 		return haxe.xml.Printer.print(xml, pretty);
 
-	public static inline function print(sox:StringOrXml, ?pretty: Bool):String
-        return new Printer(pretty).it(sox);
+	public static inline function print(sox:StringOrXml, ?pretty:Bool):String
+		return new Printer(pretty).it(sox);
 }
