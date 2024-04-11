@@ -1,3 +1,0 @@
-unit.hxml
--cs bin/cs
--cmd mv bin/cs/bin/Unit.exe bin/unit.exe
