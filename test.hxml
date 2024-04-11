@@ -1,7 +1,7 @@
--main Unit
+-x Unit
+#-main Unit
 -cp test
 -lib hxmpp
 -lib utest
 -dce no
--x Unit
 -D no-deprecation-warnings

@@ -1,12 +1,9 @@
-
 import utest.Assert.*;
 import xmpp.XML;
 import xmpp.xml.Schema;
 
 class TestXMLSchema extends utest.Test {
-
-  function test_parse() {
-
+	function test_parse() {
 		var xml = XML.parse('
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 <xs:element name="note">
@@ -21,25 +18,24 @@ class TestXMLSchema extends utest.Test {
 </xs:element>
 </xs:schema>');
 
-		var schema = Schema.parse( xml );
+		var schema = Schema.parse(xml);
 
-		equals( null, schema.targetNamespace );
-		equals( null, schema.xmlns );
-		equals( null, schema.elementFormDefault );
-		equals( null, schema.annotation );
+		equals(null, schema.targetNamespace);
+		equals(null, schema.xmlns);
+		equals(null, schema.elementFormDefault);
+		equals(null, schema.annotation);
 
-		equals( 1, schema.elements.length );
-		equals( 0, schema.simpleType.length );
-		equals( 0, schema.complexType.length );
+		equals(1, schema.elements.length);
+		equals(0, schema.simpleType.length);
+		equals(0, schema.complexType.length);
 
-		equals( 'note', schema.elements[0].name );
-		notNull( schema.elements[0].complexType );
-		notNull( schema.elements[0].complexType.sequence );
-		equals( 4, schema.elements[0].complexType.sequence.elements.length);
+		equals('note', schema.elements[0].name);
+		notNull(schema.elements[0].complexType);
+		notNull(schema.elements[0].complexType.sequence);
+		equals(4, schema.elements[0].complexType.sequence.elements.length);
 	}
 
 	function test_parse_2() {
-
 		var xml = XML.parse("<?xml version='1.0' encoding='UTF-8' ?>
 
 <xs:schema
@@ -102,26 +98,25 @@ class TestXMLSchema extends utest.Test {
 </xs:schema>
 ");
 
-		var schema = Schema.parse( xml );
+		var schema = Schema.parse(xml);
 
-		equals( 'http://jabber.org/protocol/disco#info', schema.targetNamespace );
-		equals( 'http://jabber.org/protocol/disco#info', schema.xmlns );
-		equals( 'qualified', schema.elementFormDefault );
+		equals('http://jabber.org/protocol/disco#info', schema.targetNamespace);
+		equals('http://jabber.org/protocol/disco#info', schema.xmlns);
+		equals('qualified', schema.elementFormDefault);
 
-		//trace(  schema.annotation.content );
+		// trace(  schema.annotation.content );
 
-		equals( 3, schema.elements.length );
-		equals( 2, schema.simpleType.length );
+		equals(3, schema.elements.length);
+		equals(2, schema.simpleType.length);
 
-		equals( 'nonEmptyString', schema.simpleType[0].name );
-		equals( 1, schema.simpleType[0].restriction.length );
-		equals( 'xs:string', schema.simpleType[0].restriction[0].base );
-		equals( 1, schema.simpleType[0].restriction[0].minLength.value );
+		equals('nonEmptyString', schema.simpleType[0].name);
+		equals(1, schema.simpleType[0].restriction.length);
+		equals('xs:string', schema.simpleType[0].restriction[0].base);
+		equals(1, schema.simpleType[0].restriction[0].minLength.value);
 
-		equals( 'xs:string', schema.simpleType[1].restriction[0].base );
-		equals( '', schema.simpleType[1].restriction[0].enumeration[0].value );
+		equals('xs:string', schema.simpleType[1].restriction[0].base);
+		equals('', schema.simpleType[1].restriction[0].enumeration[0].value);
 
 		// TODO ...
 	}
-
 }
