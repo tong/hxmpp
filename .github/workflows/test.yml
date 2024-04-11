@@ -35,8 +35,6 @@ jobs:
         run: haxe test.hxml
       - name: Build unit tests (hl)
         run: haxe --cwd test build-hl.hxml
-      - name: Build unit tests (java)
-        run: haxe --cwd test build-java.hxml
       - name: Build unit tests (jvm)
         run: haxe --cwd test build-jvm.hxml
       - name: Build unit tests (lua)

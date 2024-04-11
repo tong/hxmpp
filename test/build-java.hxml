@@ -1,3 +1,0 @@
-unit.hxml
--java bin/java
--cmd mv bin/java/Unit.jar bin/unit.jar
