@@ -95,6 +95,8 @@ private class MessageStanza extends Stanza {
 		var xml = Stanza.createXML(this, Message.NAME);
 		if (type != null)
 			xml.set("type", Std.string(type));
+		if (subject != null)
+			xml.append(XML.create("subject", subject));
 		if (body != null)
 			xml.append(XML.create("body", body));
 		if (thread != null)

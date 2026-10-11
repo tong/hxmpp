@@ -46,6 +46,12 @@ class TestMessage extends utest.Test {
 		var xml = m.toXML();
 		equals('node@domain.com/resource', xml.get('to'));
 		equals(MessageType.chat, xml.get('type'));
+		equals('mysubject', xml.elements.named('subject')[0].text);
+		equals('mybody', xml.elements.named('body')[0].text);
+
+		var m:Message = m.toString();
+		equals('mysubject', m.subject);
+		equals('mybody', m.body);
 	}
 
 	function test_fromString() {
