@@ -71,7 +71,8 @@ abstract class Stream {
 	public var output:String->Void;
 
 	var queries:Map<String, Query>;
-	var buf:StringBuf;
+	/** Received data not yet processed **/
+	var buf = '';
 
 	function new(xmlns:String, domain:String, ?lang:String) {
 		this.xmlns = xmlns;
@@ -168,25 +169,119 @@ abstract class Stream {
 		}
 	 */
 	/**
-		Process incoming data
+		Process incoming data.
+
+		The data may be split at any position; complete units (the stream header or a top-level element)
+		are passed to `input` one by one, incomplete data is buffered until more is received.
+
+		Returns `true` if at least one complete unit was processed.
 	**/
 	public function recv(str:String):Bool {
 		if (str == null || str.length == 0)
 			return false;
-		if (buf == null)
-			buf = new StringBuf();
-		buf.add(str);
-		if (!str.endsWith('>'))
-			return false;
-		final received = buf.toString();
-		if (received.endsWith("</stream:stream>")) {
-			reset();
-			onEnd();
-		} else {
-			buf = new StringBuf();
-			input(received);
+		buf += str;
+		var processed = false;
+		// `buf` is re-read on each iteration since a handler may reset the stream
+		while (buf.length > 0) {
+			final unit = nextUnit();
+			if (unit == null)
+				break;
+			processed = true;
+			if (unit == STREAM_END) {
+				reset();
+				onEnd();
+				break;
+			}
+			input(unit);
 		}
-		return true;
+		return processed;
+	}
+
+	static inline var STREAM_END = '</stream:stream>';
+
+	/**
+		Removes and returns the next complete unit from `buf`, `STREAM_END` if the stream was closed,
+		or `null` if more data is needed.
+	**/
+	function nextUnit():Null<String> {
+		var depth = 0;
+		var start = -1;
+		var i = 0;
+		while (true) {
+			final lt = buf.indexOf('<', i);
+			if (start == -1) {
+				// Discard whitespace (keepalives) between top-level elements
+				buf = (lt == -1) ? '' : buf.substr(lt);
+				if (lt == -1)
+					return null;
+				i = 0;
+			} else if (lt == -1)
+				return null;
+			final pos = (start == -1) ? 0 : lt;
+			if (startsAt(pos, '<?') || startsAt(pos, '<!--') || startsAt(pos, '<![CDATA[')) {
+				// Skip xml declaration, comments and character data
+				final close = startsAt(pos, '<?') ? '?>' : startsAt(pos, '<!--') ? '-->' : ']]>';
+				final end = buf.indexOf(close, pos);
+				if (end == -1)
+					return null;
+				if (start == -1) {
+					buf = buf.substr(end + close.length);
+					i = 0;
+				} else
+					i = end + close.length;
+				continue;
+			}
+			final gt = tagEnd(pos);
+			if (gt == -1)
+				return null;
+			if (buf.charCodeAt(pos + 1) == '/'.code) {
+				if (depth == 0) {
+					// Closing tag at top-level closes the stream
+					buf = buf.substr(gt + 1);
+					return STREAM_END;
+				}
+				if (--depth == 0)
+					return takeUnit(start, gt + 1);
+			} else {
+				final selfClosing = buf.charCodeAt(gt - 1) == '/'.code;
+				if (depth == 0) {
+					start = pos;
+					if (selfClosing || startsAt(pos, '<stream:stream'))
+						return takeUnit(start, gt + 1);
+				}
+				if (!selfClosing)
+					depth++;
+			}
+			i = gt + 1;
+		}
+	}
+
+	/**
+		Returns the position of the `>` ending the tag starting at `pos`, ignoring `>` in quoted attribute values.
+	**/
+	function tagEnd(pos:Int):Int {
+		var quote = 0;
+		for (i in pos...buf.length) {
+			final c = StringTools.fastCodeAt(buf, i);
+			if (quote != 0) {
+				if (c == quote)
+					quote = 0;
+			} else if (c == '"'.code || c == "'".code) {
+				quote = c;
+			} else if (c == '>'.code) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	inline function startsAt(pos:Int, str:String):Bool
+		return buf.substr(pos, str.length) == str;
+
+	function takeUnit(start:Int, end:Int):String {
+		final unit = buf.substring(start, end);
+		buf = buf.substr(end);
+		return unit;
 	}
 
 	/**
@@ -200,21 +295,16 @@ abstract class Stream {
 	function handleString(str:String) {
 		if (!ready)
 			return;
-		final xml = try Xml.parse(str) catch (e) {
+		final xml = try XML.parse(str).firstElement catch (e) {
+			#if debug
 			trace(e);
-			if (str.endsWith("</stream:stream>")) {
-				onEnd();
-				return;
-			}
-			null;
+			#end
+			output('<stream:error><not-well-formed xmlns="urn:ietf:params:xml:ns:xmpp-streams"/></stream:error>');
+			end();
+			return;
 		}
-		// HACK:
-		if (@:privateAccess cast(xml.elements(), haxe.iterators.ArrayIterator<Dynamic>).array.length == 1) {
-			handleXML(xml.firstElement());
-		} else {
-			for (e in xml.elements())
-				handleXML(e);
-		}
+		if (xml != null)
+			handleXML(xml);
 	}
 
 	function handleXML(xml:XML) {
@@ -314,7 +404,7 @@ abstract class Stream {
 		ready = false;
 		jid = null;
 		queries = new Map();
-		buf = new StringBuf();
+		buf = '';
 	}
 
 	/**

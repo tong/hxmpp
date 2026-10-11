@@ -1,5 +1,7 @@
 package xmpp.client;
 
+using StringTools;
+
 /**
 	Client-to-Server XMPP stream.
 
@@ -21,23 +23,15 @@ class Stream extends xmpp.Stream {
 		input = (str:String) -> {
 			if (ready) {
 				handleString(str);
+			} else if (str.startsWith('<stream:stream')) {
+				final header = xmpp.Stream.readHeader(str);
+				id = header.id;
+				version = header.version;
 			} else {
-				if (id == null) {
-					final header = xmpp.Stream.readHeader(str);
-					id = header.id;
-					version = header.version;
-					var features = xmpp.Stream.readFeatures(str);
-					if (features != null) {
-						ready = true;
-						callback(features);
-					}
-				} else {
-					// TODO remove
-					var features = xmpp.Stream.readFeatures(str);
-					if (features != null) {
-						ready = true;
-						callback(features);
-					}
+				final features = xmpp.Stream.readFeatures(str);
+				if (features != null) {
+					ready = true;
+					callback(features);
 				}
 			}
 		};

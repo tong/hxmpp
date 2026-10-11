@@ -197,4 +197,67 @@ class TestStream extends utest.Test {
 		equals(1, responses);
 		equals(1, presences);
 	}
+
+	static inline var SERVER_HEADER = "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' id='abc' from='example.com' version='1.0'>";
+	static inline var SERVER_FEATURES = "<stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'/></stream:features>";
+
+	function test_framing_split() {
+		// Feed a whole session char by char
+		final data = SERVER_HEADER + SERVER_FEATURES
+			+ "<message from='a@example.com' id='x>y'><body>a &gt; b</body></message>"
+			+ " \n "
+			+ "<presence from='b@example.com/r'/>"
+			+ "<message from='c@example.com'><x xmlns='urn:x'><x/></x><body><![CDATA[1 < 2]]></body></message>";
+		final stream = new xmpp.client.Stream('example.com');
+		final bodies = new Array<String>();
+		final ids = new Array<String>();
+		var presences = 0;
+		var features:XML = null;
+		stream.onMessage = m -> {
+			bodies.push(m.body);
+			ids.push(m.id);
+		}
+		stream.onPresence = p -> presences++;
+		stream.output = str -> {};
+		stream.start(f -> features = f);
+		for (i in 0...data.length)
+			stream.recv(data.charAt(i));
+		equals('abc', stream.id);
+		equals('stream:features', features.name);
+		equals(2, bodies.length);
+		equals('a > b', bodies[0]);
+		equals('x>y', ids[0]);
+		equals('1 < 2', bodies[1]);
+		equals(1, presences);
+	}
+
+	function test_framing_chunk_ends_with_tag() {
+		final stream = createReadyStream();
+		final bodies = new Array<String>();
+		stream.onMessage = m -> bodies.push(m.body);
+		isFalse(stream.recv("<message from='a@example.com'><body>"));
+		equals(0, bodies.length);
+		isTrue(stream.recv("hi</body></message>"));
+		equals(1, bodies.length);
+		equals('hi', bodies[0]);
+	}
+
+	function test_framing_stream_end() {
+		final stream = createReadyStream();
+		final events = new Array<String>();
+		stream.onMessage = m -> events.push(m.body);
+		stream.onEnd = () -> events.push('end');
+		stream.recv("<message><body>1</body></message><message><body>2</body></message></stream:stream>");
+		equals('1,2,end', events.join(','));
+		isFalse(stream.ready);
+	}
+
+	function test_framing_not_well_formed() {
+		final stream = createReadyStream();
+		final sent = new Array<String>();
+		stream.output = str -> sent.push(str);
+		stream.recv("<message><body>a</bdy></message>");
+		isTrue(sent[0].indexOf('not-well-formed') != -1);
+		equals('</stream:stream>', sent[1]);
+	}
 }
