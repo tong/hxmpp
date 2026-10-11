@@ -80,7 +80,7 @@ class AdHocCommand {
     /**
         Execute the command `node` of the entity `jid` (the server if `null`).
     **/
-    public static function execute(stream: xmpp.Stream, jid: Jid, node: String, handler: Response<XML>->Void) {
+    public static function execute(stream: xmpp.Stream, jid: Null<String>, node: String, handler: Response<XML>->Void):IQ {
         return stream.set(Payload.create(XMLNS, "command")
                 .set("node", node)
                 .set("action", "execute"),
