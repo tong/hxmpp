@@ -28,6 +28,7 @@ class Stream extends xmpp.Stream {
 
 	public function start(secret:String, handler:(?error:xmpp.Stanza.Error) -> Void) {
 		reset();
+		jid = '$name.$domain';
 		input = (str:String) -> {
 			final header = xmpp.Stream.readHeader(str);
 			id = header.id;

@@ -14,6 +14,16 @@ private typedef Header = {
 	version:String
 }
 
+private typedef Query = {
+	/** Name of the request stanza (`iq` or `presence`) **/
+	name:String,
+
+	/** Address the request was sent to **/
+	to:Null<String>,
+
+	handler:XML->Void
+}
+
 private typedef Feature = {
 	xmlns:String,
 	handler:IQ->IQ
@@ -49,13 +59,19 @@ abstract class Stream {
 	public var version(default, null) = "1.0";
 	public var ready(default, null) = false;
 
+	/**
+		The address of this stream's entity, once known (client: after resource binding).
+	**/
+	@:allow(xmpp.client.Authentication)
+	public var jid(default, null):Null<String>;
+
 	// public var ready = false;
 	public var features = new Map<String, IQ->(Null<Response<XML>>->Void)->Void>();
 
 	public var input:String->Void;
 	public var output:String->Void;
 
-	var queries:Map<String, XML->Void>;
+	var queries:Map<String, Query>;
 	var buf:StringBuf;
 
 	function new(xmlns:String, domain:String, ?lang:String) {
@@ -72,7 +88,7 @@ abstract class Stream {
 		if (iq.id == null)
 			iq.id = makeRandomId();
 		if (handler != null) {
-			queries.set(iq.id, xml -> {
+			addQuery(iq, xml -> {
 				final iq:IQ = xml;
 				switch iq.type {
 					case Result: handler(Result(cast iq.payload));
@@ -94,7 +110,7 @@ abstract class Stream {
 	public function set<T:IQ.Payload>(payload:IQ.Payload, ?jid:String, handler:(response:Response<T>) -> Void):IQ {
 		final iq = new IQ(payload, IQType.Set, makeRandomId(), jid);
 		if (handler != null) {
-			queries.set(iq.id, xml -> {
+			addQuery(iq, xml -> {
 				final iq:IQ = xml;
 				switch iq.type {
 					case Result: handler(Result(cast iq.payload));
@@ -113,9 +129,14 @@ abstract class Stream {
 	public function query(stanza:Stanza, handler:(response:XML) -> Void) {
 		if (stanza.id == null)
 			stanza.id = makeRandomId();
+		final xml = stanza.toXML();
 		if (handler != null)
-			queries.set(stanza.id, handler);
-		send(stanza.toXML());
+			queries.set(stanza.id, {name: xml.name, to: stanza.to, handler: handler});
+		send(xml);
+	}
+
+	function addQuery(iq:IQ, handler:XML->Void) {
+		queries.set(iq.id, {name: IQ.NAME, to: iq.to, handler: handler});
 	}
 
 	/**
@@ -205,11 +226,16 @@ abstract class Stream {
 		}
 		if (xml.has("id")) {
 			final id = xml.get("id");
-			if (queries.exists(id)) {
-				final h = queries.get(id);
-				queries.remove(id);
-				h(xml);
-				return;
+			final query = queries.get(id);
+			if (query != null) {
+				if (isResponse(query, xml)) {
+					queries.remove(id);
+					query.handler(xml);
+					return;
+				}
+				#if debug
+				trace('ignoring response to $id from unexpected sender: ${xml.get("from")}');
+				#end
 			}
 		}
 		switch xml.name {
@@ -221,15 +247,9 @@ abstract class Stream {
 				final iq:IQ = xml;
 				switch iq.type {
 					case Result, Error:
-						if (queries.exists(iq.id)) {
-							final h = queries.get(iq.id);
-							queries.remove(iq.id);
-							h(iq);
-						} else {
-							#if debug
-							trace('unhandled iq response');
-							#end
-						}
+						#if debug
+						trace('unhandled iq response');
+						#end
 					case Get, Set:
 						if (iq.payload != null) {
 							final ns = iq.payload.xmlns;
@@ -252,8 +272,48 @@ abstract class Stream {
 		}
 	}
 
+	/**
+		Returns `true` if `xml` is a valid response to the pending `query`:
+		same stanza kind, a `result`/`error` iq, and sent by the entity the request was addressed to
+		([RFC 6120 8.1.2.1](https://xmpp.org/rfcs/rfc6120.html#stanzas-attributes-to-c2s)).
+	**/
+	function isResponse(query:Query, xml:XML):Bool {
+		if (xml.name != query.name)
+			return false;
+		if (query.name == IQ.NAME) {
+			final type = xml.get('type');
+			if (type != IQType.Result && type != IQType.Error)
+				return false;
+		}
+		final from = xml.get('from');
+		if (query.to == null || (jid != null && sameJid(query.to, jid, true))) {
+			// Request to the own account, handled by the server on behalf of it
+			if (from == null)
+				return true;
+			if (jid == null)
+				return sameJid(from, domain);
+			return sameJid(from, jid) || sameJid(from, jid, true);
+		}
+		return sameJid(from, query.to, query.name == Presence.NAME);
+	}
+
+	static function sameJid(a:Null<String>, b:Null<String>, bare = false):Bool {
+		return (a == null || b == null) ? a == b : normalizeJid(a, bare) == normalizeJid(b, bare);
+	}
+
+	static function normalizeJid(str:String, bare:Bool):String {
+		final parts = Jid.parseParts(str);
+		var s = parts[1].toLowerCase();
+		if (parts[0] != null)
+			s = parts[0].toLowerCase() + '@' + s;
+		if (!bare && parts[2] != null)
+			s += '/' + parts[2];
+		return s;
+	}
+
 	function reset() {
 		ready = false;
+		jid = null;
 		queries = new Map();
 		buf = new StringBuf();
 	}

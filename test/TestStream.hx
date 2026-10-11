@@ -89,4 +89,99 @@ class TestStream extends utest.Test {
 		stream.recv("<r xmlns='urn:xmpp:sm:3'/>");
 		equals(1, nonzas);
 	}
+
+	function createReadyStream():xmpp.client.Stream {
+		final stream = new xmpp.client.Stream('example.com');
+		stream.output = str -> {};
+		stream.start(features -> {});
+		stream.recv("<stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' id='abc' from='example.com' version='1.0'><stream:features></stream:features>");
+		return stream;
+	}
+
+	function test_response_sender() {
+		final stream = createReadyStream();
+		var responses = 0;
+		final iq = stream.get(xmpp.IQ.Payload.create('urn:xmpp:ping', 'ping'), 'romeo@example.com/balcony', (r:Response<XML>) -> responses++);
+		stream.recv('<iq type="result" id="${iq.id}" from="mallory@example.com/x"/>');
+		equals(0, responses);
+		stream.recv('<iq type="result" id="${iq.id}" from="romeo@example.com/orchard"/>');
+		equals(0, responses);
+		stream.recv('<iq type="result" id="${iq.id}" from="romeo@example.com/balcony"/>');
+		equals(1, responses);
+		// only handled once
+		stream.recv('<iq type="result" id="${iq.id}" from="romeo@example.com/balcony"/>');
+		equals(1, responses);
+
+		// domain is case-insensitive
+		final iq = stream.get(xmpp.IQ.Payload.create('urn:xmpp:ping', 'ping'), 'Example.COM', (r:Response<XML>) -> responses++);
+		stream.recv('<iq type="error" id="${iq.id}" from="example.com"><error type="cancel"><service-unavailable xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error></iq>');
+		equals(2, responses);
+	}
+
+	function test_response_type() {
+		final stream = createReadyStream();
+		var responses = 0;
+		var requests = 0;
+		stream.onIQ = (iq, res) -> requests++;
+		var messages = 0;
+		stream.onMessage = m -> messages++;
+		final iq = stream.get(xmpp.IQ.Payload.create('urn:xmpp:ping', 'ping'), 'romeo@example.com/balcony', (r:Response<XML>) -> responses++);
+		// requests and messages reusing a pending id are not responses
+		stream.recv('<iq type="get" id="${iq.id}" from="romeo@example.com/balcony"><query xmlns="jabber:iq:version"/></iq>');
+		stream.recv('<message id="${iq.id}" from="romeo@example.com/balcony"><body>hi</body></message>');
+		equals(0, responses);
+		equals(1, requests);
+		equals(1, messages);
+		stream.recv('<iq type="result" id="${iq.id}" from="romeo@example.com/balcony"/>');
+		equals(1, responses);
+	}
+
+	@:access(xmpp.Stream)
+	function test_response_own_account() {
+		final stream = createReadyStream();
+		var responses = 0;
+		function request()
+			return stream.get('jabber:iq:roster', (r:Response<XML>) -> responses++);
+
+		// before resource binding
+		final iq = request();
+		stream.recv('<iq type="result" id="${iq.id}" from="mallory@example.com"/>');
+		equals(0, responses);
+		stream.recv('<iq type="result" id="${iq.id}"/>');
+		equals(1, responses);
+		final iq = request();
+		stream.recv('<iq type="result" id="${iq.id}" from="example.com"/>');
+		equals(2, responses);
+
+		stream.jid = 'juliet@example.com/balcony';
+		final iq = request();
+		stream.recv('<iq type="result" id="${iq.id}" from="example.com"/>');
+		stream.recv('<iq type="result" id="${iq.id}" from="romeo@example.com"/>');
+		equals(2, responses);
+		stream.recv('<iq type="result" id="${iq.id}" from="juliet@example.com"/>');
+		equals(3, responses);
+		final iq = request();
+		stream.recv('<iq type="result" id="${iq.id}" from="juliet@example.com/balcony"/>');
+		equals(4, responses);
+		final iq = request();
+		stream.recv('<iq type="result" id="${iq.id}"/>');
+		equals(5, responses);
+	}
+
+	function test_response_presence() {
+		final stream = createReadyStream();
+		var responses = 0;
+		var presences = 0;
+		stream.onPresence = p -> presences++;
+		final p = new xmpp.Presence();
+		p.to = 'room@muc.example.com/juliet';
+		stream.query(p, xml -> responses++);
+		stream.recv('<presence id="${p.id}" from="other@muc.example.com/juliet"/>');
+		equals(0, responses);
+		equals(1, presences);
+		// the room may assign another nick
+		stream.recv('<presence id="${p.id}" from="room@muc.example.com/juliet2"/>');
+		equals(1, responses);
+		equals(1, presences);
+	}
 }
