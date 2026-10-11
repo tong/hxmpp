@@ -156,19 +156,21 @@ abstract DataForm(TDataForm) from TDataForm to TDataForm {
 				c.set("label", f.label);
 			if (f.type != null)
 				c.set("type", f.type);
+			if (f.desc != null)
+				c.append(XML.create("desc", f.desc));
+			if (f.required == true)
+				c.append(XML.create("required"));
+			if (f.values != null)
+				for (v in f.values)
+					c.append(XML.create("value", v));
 			if (f.options != null)
 				for (o in f.options) {
-					var e = XML.create("option");
+					final e = XML.create("option");
 					if (o.label != null)
 						e.set("label", o.label);
 					e.append(XML.create("value", o.value));
 					c.append(e);
 				}
-			if (f.desc != null)
-				c.set("desc", f.desc);
-			if (f.values != null)
-				for (v in f.values)
-					c.append(XML.create("value", v));
 			return c;
 		}
 		final xml = XML.create("x").set("xmlns", XMLNS).set("type", this.type);
@@ -184,6 +186,12 @@ abstract DataForm(TDataForm) from TDataForm to TDataForm {
 				e.append(fieldToXML(f));
 			xml.append(e);
 		}
+		for (item in this.items) {
+			final e = XML.create("item");
+			for (f in item)
+				e.append(fieldToXML(f));
+			xml.append(e);
+		}
 		return xml;
 	}
 
@@ -193,19 +201,23 @@ abstract DataForm(TDataForm) from TDataForm to TDataForm {
 				type: e["type"],
 				label: e["label"],
 				variable: e["var"],
-				options: []
+				options: [],
+				values: []
 			};
 			for (e in e.elements) {
 				switch e.name {
 					case "desc":
 						f.desc = e.text;
-					case "option":
-						f.options.push({
-							label: e["label"],
-							value: e.firstElement.text
-						});
 					case "required":
 						f.required = true;
+					case "value":
+						f.values.push(e.text ?? "");
+					case "option":
+						final value = e.elements.named("value")[0];
+						f.options.push({
+							label: e["label"],
+							value: (value == null) ? null : value.text
+						});
 				}
 			}
 			return f;
@@ -215,16 +227,15 @@ abstract DataForm(TDataForm) from TDataForm to TDataForm {
 			switch e.name {
 				case "title":
 					form.title = e.text;
-				case "field":
-					form.fields.push(parseField(e));
-				case "item":
-					for (e in e.elements)
-						form.items.push([for (e in e.elements) parseField(e)]);
 				case "instructions":
 					form.instructions = e.text;
+				case "field":
+					form.fields.push(parseField(e));
 				case "reported":
-					for (e in e.elements)
-						form.reported.push(parseField(e));
+					for (f in e.elements)
+						form.reported.push(parseField(f));
+				case "item":
+					form.items.push([for (f in e.elements) parseField(f)]);
 			}
 		}
 		return form;
