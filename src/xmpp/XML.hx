@@ -219,11 +219,12 @@ private abstract NodeIterator(haxe.iterators.ArrayIterator<XML>) from haxe.itera
 		return e;
 	}
 
+	/**
+		Returns the first element (matching `f` if given), or `null`.
+	**/
 	public function first(?f:XML->Bool):XML {
-		if (f == null)
-			@:privateAccess cast(this, haxe.iterators.ArrayIterator<Dynamic>).array[0];
 		for (e in this)
-			if (f(e))
+			if (f == null || f(e))
 				return e;
 		return null;
 	}

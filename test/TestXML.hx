@@ -63,6 +63,15 @@ class TestXML extends utest.Test {
 			equals( '3', item['price'] );
 		}
 	 */
+	function test_elements_first() {
+		var xml:XML = '<a><b id="1"/><c id="2"/><b id="3"/></a>';
+		equals('1', xml.elements.first().get('id'));
+		equals('2', xml.elements.first(e -> e.name == 'c').get('id'));
+		isNull(xml.elements.first(e -> e.name == 'x'));
+		xml = '<a></a>';
+		isNull(xml.elements.first());
+	}
+
 	function test_insert() {
 		var xml = XML.create('node');
 		xml.append(XML.create('a'));
