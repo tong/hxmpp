@@ -14,15 +14,18 @@ class LastMessageCorrection {
         Add a message correction property to the given message stanza.
 	**/
 	public static inline function correct(message : xmpp.Message, id: String) : xmpp.Message {
-        message.properties.push(XML.create("replace").set('xmlns', XMLNS));
-        return message;//
+        message.properties.push(XML.create("replace").set('xmlns', XMLNS).set('id', id));
+        return message;
 	}
 
 	/**
-	   Get the correction id of the given message stanza.
+	   Get the id of the message corrected by the given message stanza, or `null` if it is no correction.
 	**/
-    public static inline function correction(message : xmpp.Message) : String {
-        return message.properties.filter(e -> return e.is(XMLNS))[0].get('id');
+    public static function correction(message : xmpp.Message) : Null<String> {
+        for (e in message.properties)
+            if (e.name == "replace" && e.is(XMLNS))
+                return e.get('id');
+        return null;
 	}
 
 }

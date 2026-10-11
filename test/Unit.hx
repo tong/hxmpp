@@ -14,6 +14,7 @@ function main() {
 	r.addCase(new TestUuid());
 	r.addCase(new TestMuc());
 	r.addCase(new TestClientRoster());
+	r.addCase(new TestExtensions());
 	// r.addCase(new TestURI());
 	var report = utest.ui.Report.create(r);
 	r.run();

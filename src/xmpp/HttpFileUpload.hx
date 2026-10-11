@@ -22,12 +22,15 @@ class HttpFileUpload {
 	}
 
 	/**
+		Respond to a slot request with the upload (`PUT`) and download (`GET`) urls.
+
+		Allowed `headers` for the upload are `Authorization`, `Cookie` and `Expires`.
 	**/
 	public static function sendHttpUploadSlot(stream:Stream, req:IQ, urlPut:String, urlGet:String, ?headers:Map<String, String>) {
 		final put = XML.create("put").set("url", urlPut);
 		if (headers != null)
-			for (k => v in headers)
-				put.append(XML.create("heaader").set(k, v));
+			for (name => value in headers)
+				put.append(XML.create("header", value).set("name", name));
 		stream.send(req.createResult(XML.create("slot")
 			.set("xmlns", XMLNS)
 			.append(put)
