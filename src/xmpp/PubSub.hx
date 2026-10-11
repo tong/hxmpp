@@ -9,6 +9,7 @@ enum abstract AffiliationState(String) from String to String {
 	var none;
 	var owner;
 	var publisher;
+	var publish_only = "publish-only";
 	var member;
 	var outcast;
 }
@@ -82,6 +83,39 @@ enum abstract SubscriptionState(String) from String to String {
 }
 
 /**
+	Event notification received from a pubsub service.
+
+	https://xmpp.org/extensions/xep-0060.html#publisher-publish-success-withpayload
+**/
+enum PubSubEvent {
+
+	/**
+		Items published (`<item/>` elements, with payload if delivered) and/or retracted (item ids) at `node`.
+	**/
+	Items(node:String, items:Array<XML>, retracted:Array<String>);
+
+	/**
+		The `node` was deleted, `redirect` is the uri of a replacement node if any.
+	**/
+	Delete(node:String, ?redirect:String);
+
+	/**
+		All items of the `node` were deleted.
+	**/
+	Purge(node:String);
+
+	/**
+		The configuration of the `node` changed, `form` contains the new configuration if delivered.
+	**/
+	Configuration(node:String, ?form:DataForm);
+
+	/**
+		The subscription state of `jid` to `node` changed.
+	**/
+	Subscription(node:String, jid:String, subscription:SubscriptionState);
+}
+
+/**
     Generic publish-subscribe functionality.
 
     [XEP-0060: Publish Subscribe](https://xmpp.org/extensions/xep-0060.html)
@@ -90,67 +124,82 @@ enum abstract SubscriptionState(String) from String to String {
 class PubSub {
 
 	public static inline var XMLNS = "http://jabber.org/protocol/pubsub";
+	public static inline var XMLNS_OWNER = "http://jabber.org/protocol/pubsub#owner";
+	public static inline var XMLNS_EVENT = "http://jabber.org/protocol/pubsub#event";
 
     /**
+        Create a `node` at the pubsub service `jid`.
     **/
     public static inline function createNode(stream:Stream, jid:String, node:String, handler:Response<XML>->Void) : IQ
         return stream.set(payload(XML.create("create").set("node", node)), jid, handler);
 
     /**
+        Request the configuration form of a `node` (owner).
     **/
     public static inline function requestNodeConfig(stream:Stream, jid:String, node:String, handler:Response<XML>->Void) : IQ
         return stream.get(payload(XML.create("configure").set("node", node), "#owner"), jid, handler);
 
     /**
+        Request the default node configuration of the service (owner).
     **/
     public static inline function requestDefaultNodeConfig(stream:Stream, jid:String, handler:Response<XML>->Void) : IQ
         return stream.get(payload(XML.create("default"), "#owner"), jid, handler);
 
     /**
+        Submit the configuration of a `node` (owner); `data` should be a form of type `submit`.
     **/
     public static inline function configNode(stream:Stream, jid:String, node:String, data:DataForm, handler:Response<XML>->Void) : IQ
         return stream.set(payload(XML.create("configure").set("node", node).append(data), "#owner"), jid, handler);
 
     /**
+        Delete a `node` (owner).
     **/
     public static inline function deleteNode(stream:Stream, jid:String, node:String, handler:Response<XML>->Void) : IQ
-        //return stream.set(payload().append(XML.create("delete").set("node", name)));
-        return stream.set(payload(XML.create("delete").set("node", node)), jid, handler);
+        return stream.set(payload(XML.create("delete").set("node", node), "#owner"), jid, handler);
 
     /**
+        Delete all items of a `node` (owner).
     **/
     public static inline function purgeItems(stream:Stream, jid:String, node:String, handler:Response<XML>->Void) : IQ
-        //return stream.set(payload().append(XML.create("purge").set("node", name)));
-        return stream.set(payload(XML.create("purge").set("node", node)), jid, handler);
+        return stream.set(payload(XML.create("purge").set("node", node), "#owner"), jid, handler);
 
     /**
+        Request the own subscriptions at the service, or to `node` only.
     **/
-    public static inline function getSubscriptions(stream:Stream, jid:String, node:String, handler:Response<XML>->Void) : IQ
+    public static inline function getSubscriptions(stream:Stream, jid:String, ?node:String, handler:Response<XML>->Void) : IQ
         return stream.get(payload(XML.create("subscriptions").set("node", node)), jid, handler);
 
     /**
+        Subscribe to a `node`.
+
+        `subscriber` defaults to the bare jid of the stream.
     **/
-    public static inline function subscribe(stream:Stream, jid:String, node:String, handler:Response<XML>->Void) : IQ
-        return stream.set(payload(XML.create("subscribe").set("node", node)), jid, handler);
+    public static function subscribe(stream:Stream, jid:String, node:String, ?subscriber:String, handler:Response<XML>->Void) : IQ
+        return stream.set(payload(XML.create("subscribe").set("node", node).set("jid", subscriber ?? ownBareJid(stream))), jid, handler);
 
     /**
+        Unsubscribe from a `node`.
+
+        `subscriber` defaults to the bare jid of the stream, `subid` is required if subscribed multiple times.
     **/
-    public static inline function unsubscribe(stream:Stream, jid:String, node:String, handler:Response<XML>->Void) : IQ
-        return stream.set(payload(XML.create("unsubscribe").set("node", node)), jid, handler);
+    public static function unsubscribe(stream:Stream, jid:String, node:String, ?subscriber:String, ?subid:String, handler:Response<XML>->Void) : IQ
+        return stream.set(payload(XML.create("unsubscribe").set("node", node).set("jid", subscriber ?? ownBareJid(stream)).set("subid", subid)), jid, handler);
 
     /**
+        Request the own affiliations at the service, or with `node` only.
     **/
-    public static inline function getAffiliations(stream:Stream, jid:String, node:String, handler:Response<XML>->Void) : IQ
+    public static inline function getAffiliations(stream:Stream, jid:String, ?node:String, handler:Response<XML>->Void) : IQ
         return stream.get(payload(XML.create("affiliations").set("node", node)), jid, handler);
 
     /**
+        Change the affiliation of an entity with a `node` (owner).
         Send only modified affiliations (i.e., a "delta"), not the complete list.
     **/
-    public static inline function setAffiliation(stream:Stream, jid:String, node:String, affiliation: { jid: String, affiliation:String }, handler:Response<XML>->Void) : IQ
+    public static inline function setAffiliation(stream:Stream, jid:String, node:String, affiliation: { jid: String, affiliation:AffiliationState }, handler:Response<XML>->Void) : IQ
         return stream.set(payload(XML.create("affiliations").set("node", node)
             .append(XML.create("affiliation")
                 .set("jid", affiliation.jid)
-                .set("affiliation", affiliation.affiliation))), jid, handler);
+                .set("affiliation", affiliation.affiliation)), "#owner"), jid, handler);
 
     /**
         Request node items.
@@ -174,11 +223,45 @@ class PubSub {
         return stream.set(payload(XML.create("retract").set("node", node).append(XML.create("item").set("id", id))), jid, handler);
 
     /**
+        Publish an `item` (`<item/>` element with optional `id` attribute and the payload) to a `node`.
     **/
-    public static inline function publish(stream: Stream, jid: String, node: String, item: XML, handler: Response<Payload>->Void): IQ
-        return stream.set(Payload.create(XMLNS, "pubsub").append(XML.create("publish").set("node", node).append(item)), jid, handler);
+    public static inline function publish(stream: Stream, jid: String, node: String, item: XML, handler: Response<XML>->Void): IQ
+        return stream.set(payload(XML.create("publish").set("node", node).append(item)), jid, handler);
 
-    //static function pubsub() 
+    /**
+        Returns the pubsub event notification contained in the given message, or `null`.
+    **/
+    public static function getEvent(message:Message):Null<PubSubEvent> {
+        for (e in message.properties) {
+            if (e.name != "event" || !e.is(XMLNS_EVENT))
+                continue;
+            final c = e.firstElement;
+            if (c == null)
+                return null;
+            final node = c.get("node");
+            return switch c.name {
+                case "items":
+                    Items(node,
+                        [for (i in c.elements) if (i.name == "item") i],
+                        [for (i in c.elements) if (i.name == "retract") i.get("id")]);
+                case "delete":
+                    final redirect = c.elements.named("redirect")[0];
+                    Delete(node, (redirect == null) ? null : redirect.get("uri"));
+                case "purge":
+                    Purge(node);
+                case "configuration":
+                    final x = c.elements.first(x -> x.name == "x" && x.is(DataForm.XMLNS));
+                    Configuration(node, (x == null) ? null : DataForm.fromXML(x));
+                case "subscription":
+                    Subscription(node, c.get("jid"), c.get("subscription"));
+                default: null;
+            }
+        }
+        return null;
+    }
+
+    static function ownBareJid(stream:Stream):Null<String>
+        return (stream.jid == null) ? null : Jid.parseBare(stream.jid);
 
     static function payload(content:XML, ns="") : XML {
         return Payload.create('$XMLNS$ns', "pubsub").append(content);
