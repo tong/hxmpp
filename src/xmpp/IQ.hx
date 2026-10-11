@@ -144,7 +144,12 @@ private class IQStanza extends Stanza {
 		final iq = Stanza.parseAttributes(new IQ(null, xml.get('type')), xml);
 		switch iq.type {
 			case Error:
-				iq.error = xmpp.Stanza.Error.fromXML(xml.firstElement);
+				for (e in xml.elements) {
+					if (e.name == 'error')
+						iq.error = xmpp.Stanza.Error.fromXML(e);
+					else if (iq.payload == null)
+						iq.payload = e;
+				}
 			case Get, Set, Result:
 				iq.payload = xml.firstElement;
 		}

@@ -1,6 +1,7 @@
 import utest.Assert.*;
 import xmpp.XML;
 import xmpp.IQ;
+import xmpp.Stanza;
 
 class TestIQ extends utest.Test {
 	function test_create() {
@@ -49,6 +50,19 @@ class TestIQ extends utest.Test {
 		var iq:IQ = '<iq type="result" id="xyz"/>';
 		equals(Result, iq.type);
 		equals('xyz', iq.id);
+	}
+
+	function test_parse_error() {
+		var iq:IQ = '<iq type="error" id="e1"><error type="cancel"><item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error></iq>';
+		equals(IQType.Error, iq.type);
+		equals(item_not_found, iq.error.condition);
+		equals(cancel, iq.error.type);
+		isNull(iq.payload);
+
+		var iq:IQ = '<iq type="error" id="e2"><query xmlns="jabber:iq:roster"/><error type="auth"><forbidden xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error></iq>';
+		equals(forbidden, iq.error.condition);
+		equals(auth, iq.error.type);
+		equals('jabber:iq:roster', iq.payload.xmlns);
 	}
 
 	function test_payload() {
