@@ -1,111 +1,120 @@
-
-import xmpp.IQ;
-import xmpp.Jid;
-import xmpp.Message;
-import xmpp.Presence;
-import xmpp.Stanza; 
-import xmpp.client.Stream;
+import js.Node.process;
+import js.node.Net;
 import js.node.net.Socket;
+import xmpp.Jid;
+import xmpp.Presence;
+import xmpp.Response;
+import xmpp.XML;
+import xmpp.client.Stream;
 
 using xmpp.DelayedDelivery;
 using xmpp.StartTLS;
 using xmpp.client.Authentication;
 using xmpp.client.Roster;
 
+/**
+	Basic XMPP client for nodejs.
+
+	Connects to the server, secures the connection, logs in, prints the roster and incoming messages.
+
+		node app.js <jid> <password> [host]
+**/
 class App {
-
-	static function print( str : String, ?color : Int ) {
-		if( color != null ) str = '\x1B['+color+'m'+str+'\x1B[0m';
-		Sys.println(str);
-	}
-
-	public var stream(default,null) : Stream;
-	public var secure(default,null) = false;
-
-	public function new() {}
-
-	public function connect(jid: Jid, password: String, ?host : String, callback : Void->Void) {
-
-		if(host == null) host = jid.domain;
-
-		var socket = new Socket();
-
-		function sendData(str:String) {
-			print( xmpp.xml.Printer.print(str,true), 32 );
-			socket.write( str );
-		};
-
-		function recvData(buf) {
-			var str : String = #if nodejs buf.toString() #else buf #end;
-			print( xmpp.xml.Printer.print( str, true ), 33 );
-			stream.recv( str );
-		}
-
-		socket.on(Data, recvData);
-		socket.on(End, () -> trace('Socket disconnected'));
-		socket.on(Error, e -> trace('Socket error',e));
-
-		stream = new Stream(jid.domain);
-		stream.onPresence = p -> trace('Presence from: '+p.from);
-		stream.onMessage = m -> {
-            var delay = m.getDelay();
-            var str = '[${m.from}]';
-            if(delay != null) str += '[delay=${delay.stamp}]';
-            str += ' ${m.body}';
-            Sys.println(str);
-        }
-		stream.onIQ = iq -> {
-			trace('Unhandled iq: '+iq);
-            //return Error({type: cancel, condition: feature_not_implemented});
-            return null;
-		}
-
-		stream.output = sendData;
-
-        function handleStreamOpen(features) {
-            if(secure) {
-                var mech = new sasl.PlainMechanism(false);
-                //var mech = new sasl.SCRAMSHA1Mechanism();
-                stream.authenticate(jid.node, jid.resource, password, mech, (?error)->{
-                    trace("logged in");
-                    stream.send(new Presence());
-                });
-            } else {
-				stream.startTLS(success -> {
-					if(success) {
-					    socket = socket.upgrade();
-						socket.on(Data, recvData);
-						// tls.on(End, () -> trace('TLSSocket disconnected'));
-						// tls.on(Error, e -> trace('TLSSocket error',e));
-                        socket.on('keylog', e -> trace(e));
-                        socket.on('secure', () -> {
-                            secure = true;
-                        });
-						stream.start(handleStreamOpen);
-                    }
-                });
-            }
-        }
-
-		socket.connect(xmpp.client.Stream.PORT, host, ()->{
-			stream.start(handleStreamOpen);
-		});
-	}
+	static var socket:Socket;
+	static var stream:Stream;
 
 	static function main() {
-		var args = Sys.args();
-		if(args.length < 2) {
-			Sys.println('Invalid arguments');
-			Sys.println('\tUsage: node app.js <jid> <password> <?ip>');
+		final args = Sys.args();
+		if (args.length < 2) {
+			Sys.println('Usage: node app.js <jid> <password> [host]');
 			Sys.exit(1);
 		}
-		var jid : Jid = args[0];
-        jid.resource = jid.resource ?? "hxmpp";
-		var password = args[1];
-		var host = (args[2] == null) ? jid.domain : args[2];
-		var client = new App();
-		client.connect(jid, password, host, () -> {
-			trace("Client connected");
+		final jid:Jid = args[0];
+		final password = args[1];
+		final host = args[2] ?? jid.domain;
+
+		stream = new Stream(jid.domain);
+		stream.output = str -> {
+			log(str, 32);
+			socket.write(str);
+		}
+		stream.onMessage = m -> {
+			if (m.body == null)
+				return;
+			final delay = m.delay();
+			Sys.println('${m.from}: ${m.body}' + (delay != null ? ' (sent ${delay.stamp})' : ''));
+		}
+		stream.onPresence = p -> Sys.println('${p.from} is ${p.type ?? "available"}');
+
+		Sys.println('Connecting to $host');
+		socket = Net.connect(Stream.PORT, host, () -> stream.start(features -> {
+			// Upgrade the connection to TLS before sending any credentials
+			stream.startTLS(success -> {
+				if (!success)
+					exit('Server does not support TLS');
+				socket = socket.upgrade(jid.domain);
+				listen();
+				socket.on('secureConnect', () -> stream.start(features -> login(jid, password, features)));
+			});
+		}));
+		listen();
+
+		process.on('SIGINT', () -> {
+			stream.send(new Presence(null, null, null, unavailable));
+			stream.end();
+			socket.end();
 		});
+	}
+
+	static function login(jid:Jid, password:String, features:XML) {
+		stream.authenticate(jid.node, jid.resource ?? 'hxmpp', password, selectMechanism(features), (?error) -> {
+			if (error != null)
+				exit('Login failed: ${error.condition} ${error.text ?? ""}');
+			Sys.println('Logged in as ${stream.jid}');
+			stream.send(new Presence());
+			stream.loadRoster(res -> switch res {
+				case Result(roster):
+					Sys.println('Contacts:');
+					for (item in roster.elements)
+						Sys.println('  ${item["jid"]} ${item["name"] ?? ""} [${item["subscription"]}]');
+				case Error(e):
+					Sys.println('Failed to load roster: ${e.condition}');
+			});
+		});
+	}
+
+	/**
+		Selects the strongest SCRAM mechanism offered by the server.
+	**/
+	static function selectMechanism(features:XML):sasl.Mechanism {
+		final offered = [
+			for (e in features.elements)
+				if (e.name == 'mechanisms') for (m in e.elements)
+					m.text
+		];
+		return if (offered.contains('SCRAM-SHA-256')) new sasl.SCRAMSHA256Mechanism() else if (offered.contains('SCRAM-SHA-1'))
+			new sasl.SCRAMSHA1Mechanism() else exit('No supported authentication mechanism offered: $offered');
+	}
+
+	static function listen() {
+		socket.setEncoding('utf8');
+		socket.on('data', (str:String) -> {
+			log(str, 33);
+			stream.recv(str);
+		});
+		socket.on('error', e -> exit(e.message));
+		socket.on('end', () -> exit('Disconnected'));
+	}
+
+	static function log(str:String, color:Int) {
+		#if xmpp_debug
+		Sys.println('\x1B[${color}m' + xmpp.xml.Printer.print(str, true) + '\x1B[0m');
+		#end
+	}
+
+	static function exit<T>(message:String):T {
+		Sys.println(message);
+		Sys.exit(1);
+		return null;
 	}
 }

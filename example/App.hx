@@ -1,203 +1,130 @@
-
 import haxe.io.Bytes;
+import haxe.io.BytesBuffer;
+import sys.net.Host;
 import sys.net.Socket;
 import xmpp.Jid;
-import xmpp.IQ;
 import xmpp.Presence;
 import xmpp.Response;
 import xmpp.XML;
 import xmpp.client.Stream;
 
-using xmpp.EntityTime;
-using xmpp.LastActivity;
-using xmpp.PrivateStorage;
-using xmpp.ServiceDiscovery;
+using xmpp.DelayedDelivery;
 using xmpp.StartTLS;
 using xmpp.client.Authentication;
+using xmpp.client.Roster;
 
+/**
+	Basic XMPP client for sys targets (hl, cpp, neko, lua, python).
+
+	Connects to the server, secures the connection, logs in, prints the roster and incoming messages.
+
+		hl app.hl <jid> <password> [host]
+**/
 class App {
-
-    static var socket : Socket;
-    static var stream : Stream;
+	static var socket:Socket;
+	static var stream:Stream;
 
 	static function main() {
-		var args = Sys.args();
-		if(args.length < 2) {
-            Sys.stderr().writeString('Invalid arguments\nUsage: hl app.hl <jid> <password> <?ip>\n');
+		final args = Sys.args();
+		if (args.length < 2) {
+			Sys.println('Usage: hl app.hl <jid> <password> [host]');
 			Sys.exit(1);
 		}
-		var jid : Jid = args[0];
-        jid.resource = jid.resource ?? "hxmpp";
-		var password = args[1];
-        var host = jid.domain;
-        var port = Stream.PORT;
+		final jid:Jid = args[0];
+		final password = args[1];
+		final host = new Host(args[2] ?? jid.domain);
 
-        connect(jid, password, host, port, () -> {
-            stream.onPresence = p -> {
-                info('${p.from} type=${p.type}');
-                if(p.type == null) {
-                }
-            }
-            stream.onMessage = m -> {
-                trace('Message from: ${m.from}: ${m.body}');
-            }
-            stream.onIQ = iq -> {
-                switch iq.payload.xmlns {
-                case _:
-                    trace('Unhandled iq: '+iq.payload.xmlns);
-                }
-                return null;
-            }
-            stream.discoItems(res -> switch res {
-                case Result(r):
-                    info('Server items:');
-                    trace(r);
-                case Error(e):
-                    warn('ERROR ${e.type}, ${e.condition}');
-                    trace(e);
-            });
-            stream.discoInfo((res:Response<Payload>) -> {
-                switch res {
-                case Result(payload):
-                    info('Server info');
-                    info(' └─ Identities');
-                    for(f in payload.elements.named('identity'))
-                        info('   └─ '+f['category']+':'+f['name']);
-                    info(' └─ Features');
-                    var features = payload.elements.named('feature');
-                    for(f in features) info('   └─ '+f["var"]);
-                    for(f in features) {
-                        switch f['var'] {
-                        /*
-                        case EntityTime.XMLNS: stream.getEntityTime(res -> switch res {
-                            case Result(r): info('Server time: ${r.elements["utc"][0].text} [tzo=${r.elements["tzo"][0].text}]');
-                            case Error(e): warn('ERROR ${e.type}, ${e.condition}');
-                        });
-                        */
-                        case EntityTime.XMLNS:
-                            stream.getEntityTime(res -> trace(res));
-                        case PrivateStorage.XMLNS:
-                            var storageElement = XML.create("hxmpp").set("xmlns", "hxmpp:login-count");
-                            stream.getPrivateStorage(storageElement, res -> {
-                                switch res {
-                                case Result(r):
-                                    final numLogins = (r.content.text == null) ? 1 : Std.parseInt(r.content.text)+1;
-                                    info('Login count: $numLogins');
-                                    storageElement.text = Std.string(numLogins);
-                                    stream.setPrivateStorage(storageElement, res -> {
-                                        if(!res.ok())
-                                            warn('Failed to store data on server: '+res.error);
-                                    });
-                                case Error(e): trace(e);
-                                }
-                            });
-                        }
-                    }
-                case Error(e): warn(e.toXML());
-                }
-                stream.send(new Presence());
-            });
-        });
-	}
-
-    static function connect(jid: Jid, password: String, host: String, ?port: Int, onConnect: Void->Void) {
 		stream = new Stream(jid.domain);
-        var secure = false;
-        var host = new sys.net.Host(host);
-		socket = new sys.net.Socket();
-		function sendData(str:String) {
-			println( xmpp.xml.Printer.print(str,true), 32 );
+		stream.output = str -> {
+			log(str, 32);
 			socket.write(str);
 		}
-		function recvData(buf) {
-			var str : String = buf;
-			println( xmpp.xml.Printer.print( str, true ), 33 );
-			stream.recv( str );
+		stream.onMessage = m -> {
+			if (m.body == null)
+				return;
+			final delay = m.delay();
+			Sys.println('${m.from}: ${m.body}' + (delay != null ? ' (sent ${delay.stamp})' : ''));
 		}
-		stream.output = sendData;
-		Sys.println('Connecting $jid');
-		socket.connect(host, port);
-        function handleStreamOpen(features) {
-            info('Stream open');
-            if(secure) {
-                var mech = new sasl.PlainMechanism(false);
-                stream.authenticate(jid.node, jid.resource, password, mech, (?error) -> {
-                    if(error != null) {
-                        trace(error);
-                    } else {
-                        info('Stream authenticated');
-                        onConnect();
-                        //onConnect(stream);
-                    }
-                });
-            } else {
-                stream.startTLS(success -> {
-                    if(success) {
-                        var tls = socket.upgrade(host);
-                        //tls.verifyCert = false;
-                        tls.handshake();
-                        socket = tls;
-                        secure = true;
-                        stream.start(handleStreamOpen);
-                    } else stream.end();
-                });
-            }
-        }
-        stream.start(handleStreamOpen);
+		stream.onPresence = p -> Sys.println('${p.from} is ${p.type ?? "available"}');
 
-		final bufSize = 512;
-		final maxBufSize = 1024 * 1024;
-		var buf = Bytes.alloc(bufSize);
-		var pos = 0;
-		var bytes : Null<Int> = null;
-		while( true ) {
-			var available = buf.length - pos;
-            try {
-			    bytes = socket.input.readBytes( buf, pos, available );
-            } catch(e:haxe.io.Eof) {
-                trace(e);
-                break;
-            } catch(e) {
-				trace( e );
-			}
-			pos += bytes;
-			//if( pos == bufSize ) {
-			if(bytes == bufSize) {
-				var nsize = buf.length + bufSize;
-				if( nsize >= maxBufSize ) {
-					trace( 'max buffer size ($maxBufSize)' );
-					//return false;
-				}
-				var nbuf = Bytes.alloc( nsize );
-				nbuf.blit( 0, buf, 0, buf.length );
-				buf = nbuf;
-			} else {
-				var str = buf.sub( 0, pos ).toString();
-				recvData( str );
-				buf = Bytes.alloc( bufSize );
-				pos = 0;
-			}
-		}
-    }
-
-	static function print(str: String, ?color: Int, ?background: Int) {
-        if(color == null && background == null) Sys.print(str) else {
-            final out = new StringBuf();
-            final codes = [];
-            if(color != null) codes.push(color);
-            if(background != null) codes.push(background);
-            out.add('\x1B[');
-            out.add(codes.join(";")+"m");
-            out.add(str+'\x1B[0m');
-            Sys.print(out.toString());
-        }
+		Sys.println('Connecting to ${host.host}');
+		socket = new Socket();
+		socket.connect(host, Stream.PORT);
+		stream.start(features -> {
+			// Upgrade the connection to TLS before sending any credentials
+			stream.startTLS(success -> {
+				if (!success)
+					exit('Server does not support TLS');
+				final tls = socket.upgrade(host);
+				try
+					tls.handshake()
+				catch (e)
+					exit('TLS handshake failed (invalid certificate?): $e');
+				socket = tls;
+				stream.start(features -> login(jid, password, features));
+			});
+		});
+		read();
 	}
 
-	static inline function println(str: String, ?color: Int, ?background: Int)
-        print('$str\n', color, background);
+	static function login(jid:Jid, password:String, features:XML) {
+		stream.authenticate(jid.node, jid.resource ?? 'hxmpp', password, selectMechanism(features), (?error) -> {
+			if (error != null)
+				exit('Login failed: ${error.condition} ${error.text ?? ""}');
+			Sys.println('Logged in as ${stream.jid}');
+			stream.send(new Presence());
+			stream.loadRoster(res -> switch res {
+				case Result(roster):
+					Sys.println('Contacts:');
+					for (item in roster.elements)
+						Sys.println('  ${item["jid"]} ${item["name"] ?? ""} [${item["subscription"]}]');
+				case Error(e):
+					Sys.println('Failed to load roster: ${e.condition}');
+			});
+		});
+	}
 
-    static inline function info(str: String) println(str, 94, 40);
-    static inline function warn(str: String) println(str, 95, 40);
-    static inline function error(str: String) println(str, 91, 40);
+	/**
+		Selects the strongest SCRAM mechanism offered by the server.
+	**/
+	static function selectMechanism(features:XML):sasl.Mechanism {
+		final offered = [
+			for (e in features.elements)
+				if (e.name == 'mechanisms')
+					for (m in e.elements) m.text
+		];
+		return if (offered.contains('SCRAM-SHA-256')) new sasl.SCRAMSHA256Mechanism() else if (offered.contains('SCRAM-SHA-1'))
+			new sasl.SCRAMSHA1Mechanism() else exit('No supported authentication mechanism offered: $offered');
+	}
+
+	/**
+		Reads from the socket until disconnected.
+		Data is passed to the stream once no more is available, so multi-byte characters are not split.
+	**/
+	static function read() {
+		final buf = Bytes.alloc(4096);
+		var data = new BytesBuffer();
+		while (true) {
+			final len = try socket.input.readBytes(buf, 0, buf.length) catch (e:haxe.io.Eof) exit('Disconnected');
+			data.addBytes(buf, 0, len);
+			if (len < buf.length) {
+				final str = data.getBytes().toString();
+				data = new BytesBuffer();
+				log(str, 33);
+				stream.recv(str);
+			}
+		}
+	}
+
+	static function log(str:String, color:Int) {
+		#if xmpp_debug
+		Sys.println('\x1B[${color}m' + xmpp.xml.Printer.print(str, true) + '\x1B[0m');
+		#end
+	}
+
+	static function exit<T>(message:String):T {
+		Sys.println(message);
+		Sys.exit(1);
+		return null;
+	}
 }
-
