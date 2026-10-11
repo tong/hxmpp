@@ -103,27 +103,24 @@ class Muc {
 
 	/**
 		Enter groupchat.
+
+		Calls `handler` with `Error` if the room refused the entry (e.g. `conflict` if the nick is in use).
 	**/
 	public function join(nick:String, ?password:String, handler:Response<XML>->Void) {
+		final x = XML.create('x').set('xmlns', XMLNS);
+		if (password != null)
+			x.append(XML.create('password', password));
 		final p = new Presence();
-		p.id = Stream.makeRandomId();
 		p.to = '$room@$host/$nick';
-		p.properties.push(XML.create('x').set('xmlns', '$XMLNS'));
+		p.properties.push(x);
 		stream.query(p, xml -> {
-			final r = parseUserPresence(xml);
-			if (r.statusCodes.contains(PRESENCE_REFERS_TO_OCCUPANT)) {
-				final item = r.items[0];
-				this.affiliation = item.affiliation;
-				this.role = item.role;
-				this.nick = item.nick;
-				// onLeave();
-				// handler(Result(null));
+			final presence:Presence = xml;
+			if (presence.type == error) {
+				handler(Error(presence.error));
+				return;
 			}
-			if (r.statusCodes.contains(PRESENCE_REFERS_TO_OCCUPANT)) {
-				handler(Result(null));
-			} else {
-				trace("???");
-			}
+			handleSelfPresence(presence, nick);
+			handler(Result(xml));
 		});
 	}
 
@@ -133,20 +130,10 @@ class Muc {
 	public function leave(?message:String, ?handler:Void->Void) {
 		final p = new Presence(null, message);
 		p.type = unavailable;
-		p.id = Stream.makeRandomId();
 		p.to = jid;
-		// p.properties.push(XML.create('x').set('xmlns','$XMLNS'));
 		stream.query(p, xml -> {
-			final r = parseUserPresence(xml);
-			if (r.statusCodes.contains(PRESENCE_REFERS_TO_OCCUPANT)) {
-				final item = r.items[0];
-				this.affiliation = item.affiliation;
-				this.role = item.role;
-				this.nick = item.nick;
-				// onLeave();
-				if (handler != null)
-					handler();
-			}
+			if (handler != null)
+				handler();
 		});
 	}
 
@@ -166,35 +153,34 @@ class Muc {
 		Send a message to all occupants in the room.
 	**/
 	public function say(message:String) {
-		var m = new Message(jid, message, null, groupchat);
-		// m.id = Stream.makeRandomId();
-		return stream.send(m);
+		return stream.send(new Message('$room@$host', message, null, groupchat));
 	}
 
 	/**
 		Send a private message to a member of the room.
 	**/
 	public function sendPrivateMessage(nick:String, message:String) {
-		var m = new Message('$room@$host/$nick', message, null, groupchat);
+		final m = new Message('$room@$host/$nick', message, null, chat);
 		m.properties.push(XML.create('x').set('xmlns', '$XMLNS#user'));
-		// m.id = Stream.makeRandomId();
 		return stream.send(m);
 	}
 
 	/**
 		Change your nick name.
+
+		Calls `handler` with the error if the room refused the change, `null` on success.
 	**/
-	public function changeNick(nick:String, handler:xmpp.Stanza.Error->Void) {
+	public function changeNick(nick:String, handler:Null<xmpp.Stanza.Error>->Void) {
 		final p = new Presence();
-		p.id = Stream.makeRandomId();
 		p.to = '$room@$host/$nick';
 		stream.query(p, xml -> {
-			final r = parseUserPresence(xml);
-			if (r.statusCodes.contains(PRESENCE_REFERS_TO_OCCUPANT)) {
-				handler(null);
-			} else {
-				trace("????");
+			final presence:Presence = xml;
+			if (presence.type == error) {
+				handler(presence.error);
+				return;
 			}
+			handleSelfPresence(presence, nick);
+			handler(null);
 		});
 	}
 
@@ -202,8 +188,20 @@ class Muc {
 		Change the room subject.
 	**/
 	public function changeSubject(subject:String) {
-		// todo id handling query
-		stream.send(new xmpp.Message('$room@$host', null, subject));
+		stream.send(new xmpp.Message('$room@$host', null, subject, groupchat));
+	}
+
+	/**
+		Updates nick, role and affiliation from the own occupant presence.
+	**/
+	function handleSelfPresence(presence:Presence, requestedNick:String) {
+		// The room may assign a different nick, the actual one is the resource of the occupant jid
+		this.nick = (presence.from != null ? Jid.parseResource(presence.from) : null) ?? requestedNick;
+		final r = parseUserPresence(presence);
+		if (r.items.length > 0) {
+			this.affiliation = r.items[0].affiliation;
+			this.role = r.items[0].role;
+		}
 	}
 
 	public function handlePresence(presence:Presence) {

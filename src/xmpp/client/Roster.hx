@@ -49,7 +49,7 @@ class Roster {
 	public static function unsubscribePresence(stream:Stream, jid:String) {
 		var p = new Presence();
 		p.to = jid;
-		p.type = unsubscribed;
+		p.type = unsubscribe;
 		p.id = xmpp.Stream.makeRandomId();
 		stream.send(p);
 	}
