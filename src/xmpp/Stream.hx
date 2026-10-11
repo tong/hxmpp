@@ -293,7 +293,7 @@ abstract class Stream {
 			from: xml.get("from"),
 			to: xml.get("to"),
 			version: xml.get("version"),
-			lang: xml.get("lang")
+			lang: xml.get("xml:lang")
 		};
 	}
 

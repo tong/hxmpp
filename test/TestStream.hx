@@ -57,6 +57,16 @@ class TestStream extends utest.Test {
 		equals('jabber:component:connect', header().get('xmlns'));
 	}
 
+	@:access(xmpp.Stream)
+	function test_read_header() {
+		var header = xmpp.Stream.readHeader("<?xml version='1.0'?><stream:stream xml:lang='en' xmlns:stream='http://etherx.jabber.org/streams' version='1.0' from='example.com' to='user@example.com' xmlns='jabber:client' id='abc123'>");
+		equals('abc123', header.id);
+		equals('example.com', header.from);
+		equals('user@example.com', header.to);
+		equals('1.0', header.version);
+		equals('en', header.lang);
+	}
+
 	function test_stream_stanza_namespace() {
 		var stream = new xmpp.client.Stream('example.com');
 		var messages = 0;
