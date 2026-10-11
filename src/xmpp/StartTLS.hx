@@ -3,8 +3,7 @@ package xmpp;
 #if python
 class Socket extends sys.net.Socket {
 	public inline function handshake() {
-		trace('TODO handshake');
-		// SSLSocket.do_handshake()
+		python.Syntax.code('{0}.do_handshake()', __s);
 	}
 }
 #end
@@ -53,10 +52,18 @@ class StartTLS {
 
 	#if (macro || cpp || hl || lua || neko || python)
 	/**
-		Upgrades a `sys.net.Socket` to `sys.ssl.Socket`
+		Upgrades a `sys.net.Socket` to `sys.ssl.Socket`.
+
+		The server certificate must be valid for `servername`, which should be the XMPP domain
+		([RFC 6120 13.7.2](https://xmpp.org/rfcs/rfc6120.html#security-certificates-validation)).
+		If omitted, the name of `host` is used.
+		Verification happens on `handshake()`, which throws if it fails.
+
+		On lua the certificate is **not** verified, since the lua ssl socket does not support it.
 	**/
 	@:access(sys.net.Socket)
-	public static function upgrade(sock:sys.net.Socket, host:sys.net.Host):SSLSocket {
+	public static function upgrade(sock:sys.net.Socket, host:sys.net.Host, ?servername:String):SSLSocket {
+		final servername = servername ?? host.host;
 		#if macro
 		final s = new sys.ssl.Socket();
 		s.socket = sock.socket;
@@ -64,13 +71,13 @@ class StartTLS {
 		sys.ssl.Mbedtls.setSocket(s.ssl, s.socket);
 		s.handshakeDone = false;
 		if (s.hostname == null)
-			s.hostname = host.host;
+			s.hostname = servername;
 		if (s.hostname != null)
 			s.ssl.set_hostname(s.hostname);
 		#elseif python
 		final ctx = python.lib.Ssl.create_default_context(python.lib.ssl.Purpose.SERVER_AUTH);
 		final s = new xmpp.Socket();
-		s.__s = ctx.wrap_socket(sock.__s, false, true, true, host.host);
+		s.__s = ctx.wrap_socket(sock.__s, false, false, true, servername);
 		s.__rebuildIoStreams();
 		#end
 
@@ -80,7 +87,7 @@ class StartTLS {
 		s.conf = s.buildSSLConfig(false);
 		s.ssl = cpp.NativeSsl.ssl_new(s.conf);
 		cpp.NativeSsl.ssl_set_socket(s.ssl, s.__s);
-		s.setHostname(host.host);
+		s.setHostname(servername);
 		cpp.NativeSsl.ssl_set_hostname(s.ssl, s.hostname);
 		s.handshakeDone = false;
 		#elseif hl
@@ -89,8 +96,8 @@ class StartTLS {
 		s.conf = s.buildConfig(false);
 		s.ssl = new sys.ssl.Context(s.conf);
 		s.ssl.setSocket(s.__s);
-		s.hostname = host.host;
-		s.ssl.setHostname(@:privateAccess host.host.toUtf8());
+		s.hostname = servername;
+		s.ssl.setHostname(@:privateAccess servername.toUtf8());
 		s.handshakeDone = false;
 		#elseif neko
 		final s = new sys.ssl.Socket();
@@ -98,9 +105,8 @@ class StartTLS {
 		s.ctx = s.buildSSLContext(false);
 		s.ssl = sys.ssl.Socket.ssl_new(s.ctx);
 		sys.ssl.Socket.ssl_set_socket(s.ssl, s.__s);
-		s.setHostname(host.host);
-		sys.ssl.Socket.ssl_set_hostname(s.ssl, untyped host.host.__s);
-		// sys.ssl.Socket.ssl_set_hostname(s.ssl, untyped s.hostname.__s);
+		s.setHostname(servername);
+		sys.ssl.Socket.ssl_set_hostname(s.ssl, untyped servername.__s);
 		s.handshakeDone = false;
 		#elseif lua
 		final s = new sys.ssl.Socket();

@@ -56,7 +56,7 @@ class App {
 			stream.startTLS(success -> {
 				if (!success)
 					exit('Server does not support TLS');
-				final tls = socket.upgrade(host);
+				final tls = socket.upgrade(host, jid.domain);
 				try
 					tls.handshake()
 				catch (e)
