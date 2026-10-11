@@ -11,6 +11,7 @@ function main() {
 	r.addCase(new TestResponse());
 	r.addCase(new TestStream());
 	r.addCase(new TestAuthentication());
+	r.addCase(new TestUuid());
 	// r.addCase(new TestURI());
 	var report = utest.ui.Report.create(r);
 	r.run();

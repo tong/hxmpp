@@ -7,27 +7,14 @@ package xmpp;
 **/
 class Uuid {
 	/**
-		Returns a string value representing a UUID value.
+		Returns a random (version 4) UUID, e.g. `f47ac10b-58cc-4372-a567-0e02b2c3d479`.
 	**/
 	public static function make():String {
-		var s = [];
-		for (i in 0...8)
-			s[i] = rchar();
-		s[8] = '-';
-		for (i in 9...13)
-			s[i] = rchar();
-		s[13] = '-';
-		s[14] = '4';
-		for (i in 15...18)
-			s[i] = rchar();
-		s[18] = '-';
-		s[19] = "89AB".charAt(rint(0x3));
-		for (i in 20...23)
-			s[i] = rchar();
-		s[23] = '-';
-		for (i in 24...36)
-			s[i] = rchar();
-		return s.join('');
+		final b = @:privateAccess Stream.randomBytes(16);
+		b.set(6, (b.get(6) & 0x0f) | 0x40); // version 4
+		b.set(8, (b.get(8) & 0x3f) | 0x80); // variant 10xx
+		final h = b.toHex();
+		return h.substr(0, 8) + '-' + h.substr(8, 4) + '-' + h.substr(12, 4) + '-' + h.substr(16, 4) + '-' + h.substr(20);
 	}
 
 	public static inline function rint(max:Int):Int
