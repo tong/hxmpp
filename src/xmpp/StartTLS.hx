@@ -112,9 +112,22 @@ class StartTLS {
 		// s.handshake();
 		return s;
 	}
+
 	#elseif nodejs
-	public static inline function upgrade(sock:js.node.net.Socket, ?options:js.node.tls.TLSSocket.TLSSocketOptions):js.node.tls.TLSSocket {
-		return new js.node.tls.TLSSocket(sock, options);
+	/**
+		Upgrades a `js.node.net.Socket` to `js.node.tls.TLSSocket`.
+
+		The server certificate is verified and must be valid for `servername`, which should be the XMPP domain
+		([RFC 6120 13.7.2](https://xmpp.org/rfcs/rfc6120.html#security-certificates-validation)).
+		Verification failures are emitted as `error` event, a successful handshake as `secureConnect` event.
+	**/
+	public static function upgrade(sock:js.node.net.Socket, servername:String, ?options:js.node.Tls.TlsConnectOptions):js.node.tls.TLSSocket {
+		if (options == null)
+			options = {};
+		options.socket = sock;
+		if (options.servername == null)
+			options.servername = servername;
+		return js.node.Tls.connect(options);
 	}
 	#end
 }
