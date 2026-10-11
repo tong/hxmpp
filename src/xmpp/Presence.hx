@@ -52,6 +52,7 @@ enum abstract PresenceType(String) to String {
 			case 'error': error;
 			case 'probe': probe;
 			case 'subscribe': subscribe;
+			case 'subscribed': subscribed;
 			case 'unavailable': unavailable;
 			case 'unsubscribe': unsubscribe;
 			case 'unsubscribed': unsubscribed;

@@ -116,6 +116,13 @@ class TestPresence extends utest.Test {
 		equals(unsubscribe, cast('unsubscribe', PresenceType));
 		equals(unsubscribed, cast('unsubscribed', PresenceType));
 
+		for (t in [error, probe, subscribe, subscribed, unavailable, unsubscribe, unsubscribed]) {
+			var s:PresenceType = Std.string(t);
+			equals(t, s);
+			var p:Presence = '<presence type="$t"/>';
+			equals(t, p.type);
+		}
+
 		var s:PresenceType = '';
 		isNull(s);
 
