@@ -33,11 +33,11 @@ abstract Jid(CJid) from CJid {
 	public inline function new(?node:Null<String>, domain:String, ?resource:Null<String>)
 		this = new CJid(node, domain, resource);
 
-	public function getBare():Null<String> {
-		return (this.node == null || this.domain == null) ? null : this.node + '@' + this.domain;
+	public function getBare():String {
+		return (this.node == null) ? this.domain : this.node + '@' + this.domain;
 	}
 
-	@:to public function toString():Null<String> {
+	@:to public function toString():String {
 		var s = getBare();
 		if (this.resource != null)
 			s += '/' + this.resource;
@@ -75,46 +75,79 @@ abstract Jid(CJid) from CJid {
 	@:from public static inline function fromArray(arr:Array<String>):Jid
 		return new Jid(arr[0], arr[1], arr[2]);
 
-	@:from public static inline function fromString(str:String):Jid
-		return fromArray(parseParts(str));
+	@:from public static function fromString(str:String):Jid {
+		final p = split(str);
+		return new Jid(p.node, p.domain, p.resource);
+	}
 
 	/**
 		Returns `true` if the given string is a valid jid.
+
+		Checks the structure and length limits of [RFC 7622](https://tools.ietf.org/html/rfc7622),
+		but does not apply the full PRECIS profiles.
 	**/
 	#if python
 	// TODO: HACK: python complains: Null safety: Cannot assign nullable value here.
 	@:nullSafety(Off)
 	#end
 	public static function isValid(str:String):Bool {
-		return (str == null || str.length > MAX_SIZE) ? false : EREG.match(str);
+		if (str == null || str.length == 0 || byteLength(str) > MAX_SIZE)
+			return false;
+		final p = split(str);
+		final node = p.node;
+		final domain = p.domain;
+		final resource = p.resource;
+		if (node != null && (!isValidPart(node) || ~/[\s"&'\/:<>@]/.match(node)))
+			return false;
+		if (!isValidPart(domain) || ~/[\s@]/.match(domain))
+			return false;
+		if (resource != null && !isValidPart(resource))
+			return false;
+		return true;
 	}
 
-	public static inline function parseNode(str:String):String {
-		return str.substr(0, str.indexOf("@"));
+	static function isValidPart(part:String):Bool
+		return part.length > 0 && byteLength(part) <= MAX_PARTSIZE;
+
+	static inline function byteLength(str:String):Int
+		return haxe.io.Bytes.ofString(str).length;
+
+	public static function parseNode(str:String):Null<String> {
+		return split(str).node;
 	}
 
 	public static function parseDomain(str:String):String {
-		final a = str.indexOf("@");
-		final b = str.indexOf("/");
-		// var a = [str.substr( 0, i )];
-		return (b == -1) ? str.substr(a + 1) : str.substr(a + 1, b - a - 1);
+		return split(str).domain;
 	}
 
 	public static function parseResource(str:String):Null<String> {
-		var i = str.indexOf("/");
-		return (i == -1) ? null : str.substr(i + 1);
+		return split(str).resource;
 	}
 
 	public static function parseBare(str:String):String {
-		var a = parseParts(str);
-		return a[0] + '@' + a[1];
+		final p = split(str);
+		return (p.node == null) ? p.domain : p.node + '@' + p.domain;
 	}
 
-	public static function parseParts(str:String):Array<String> {
-		final i = str.indexOf("@");
-		final j = str.indexOf("/");
-		final a = [str.substr(0, i)];
-		return a.concat((j == -1) ? [str.substring(i + 1)] : [str.substring(i + 1, j), str.substr(j + 1)]);
+	/**
+		Splits the given string into `[node, domain, resource]`; `node` and `resource` are `null` if absent.
+
+		The resource is everything after the first `/`, so it may contain `@` and `/`.
+	**/
+	public static function parseParts(str:String):Array<Null<String>> {
+		final p = split(str);
+		return [p.node, p.domain, p.resource];
+	}
+
+	static function split(str:String):{node:Null<String>, domain:String, resource:Null<String>} {
+		final slash = str.indexOf("/");
+		final bare = (slash == -1) ? str : str.substr(0, slash);
+		final at = bare.indexOf("@");
+		return {
+			node: (at == -1) ? null : bare.substr(0, at),
+			domain: bare.substr(at + 1),
+			resource: (slash == -1) ? null : str.substr(slash + 1)
+		};
 	}
 
 	/**

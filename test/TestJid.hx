@@ -26,7 +26,22 @@ class TestJid extends utest.Test {
 	}
 
 	function test_validation() {
-		isFalse(Jid.isValid("aaa"));
+		isTrue(Jid.isValid("aaa"));
+		isTrue(Jid.isValid("example.com"));
+		isTrue(Jid.isValid("example.com/Resource"));
+		isTrue(Jid.isValid("user+tag@x.org"));
+		isTrue(Jid.isValid("jürgen@example.de/Wohnzimmer"));
+		isTrue(Jid.isValid("node@domain/res@with/slash"));
+
+		isFalse(Jid.isValid(null));
+		isFalse(Jid.isValid(""));
+		isFalse(Jid.isValid("@domain"));
+		isFalse(Jid.isValid("node@"));
+		isFalse(Jid.isValid("node@domain/"));
+		isFalse(Jid.isValid("a@b@c"));
+		isFalse(Jid.isValid("no de@domain"));
+		isFalse(Jid.isValid("node@do main"));
+		isFalse(Jid.isValid(StringTools.lpad("", "a", Jid.MAX_PARTSIZE + 1) + "@domain"));
 
 		isTrue(Jid.isValid("node@domain"));
 		isTrue(Jid.isValid("node@domain/Resource"));
@@ -63,6 +78,34 @@ class TestJid extends utest.Test {
 		equals('node@domain.net', Jid.parseBare('node@domain.net/Resource'));
 		equals('node@domain.net', Jid.parseBare('node@domain.net'));
 		equals('node@domain', Jid.parseBare('node@domain'));
+
+		parts = Jid.parseParts("example.com");
+		isNull(parts[0]);
+		equals("example.com", parts[1]);
+		isNull(parts[2]);
+		isNull(Jid.parseNode("example.com/Resource"));
+		equals("example.com", Jid.parseDomain("example.com/Resource"));
+		equals("example.com", Jid.parseBare("example.com/Resource"));
+
+		// resource may contain '@' and '/'
+		parts = Jid.parseParts("example.com/a@b/c");
+		isNull(parts[0]);
+		equals("example.com", parts[1]);
+		equals("a@b/c", parts[2]);
+		equals("node", Jid.parseNode("node@example.com/a@b"));
+	}
+
+	function test_domain_only() {
+		var jid:Jid = "example.com";
+		isNull(jid.node);
+		equals("example.com", jid.domain);
+		isNull(jid.resource);
+		equals("example.com", jid.getBare());
+		equals("example.com", jid.toString());
+
+		var jid = new Jid(null, "example.com", "res");
+		equals("example.com", jid.getBare());
+		equals("example.com/res", jid.toString());
 	}
 
 	function test_from() {
