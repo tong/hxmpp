@@ -58,7 +58,7 @@ abstract Message(MessageStanza) to Stanza {
 		return this.toString();
 
 	@:from public static inline function fromString(str:String):Message
-		return fromXML(XML.parse(str));
+		return fromXML(XML.parse(str).firstElement);
 
 	@:from public static inline function fromXML(xml:XML):Message
 		return MessageStanza.parse(xml);

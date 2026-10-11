@@ -48,6 +48,17 @@ class TestMessage extends utest.Test {
 		equals(MessageType.chat, xml.get('type'));
 	}
 
+	function test_fromString() {
+		var m = Message.fromString('<message type="chat" to="romeo@example.net"><body>hi</body></message>');
+		equals(chat, m.type);
+		equals('romeo@example.net', m.to);
+		equals('hi', m.body);
+
+		var m:Message = '<message type="groupchat"><body>all</body></message>';
+		equals(groupchat, m.type);
+		equals('all', m.body);
+	}
+
 	function test_parse() {
 		var xml = Xml.parse('<message type="chat"><body>mybody</body></message>').firstElement();
 		var m = Message.fromXML(xml);

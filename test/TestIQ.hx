@@ -40,6 +40,17 @@ class TestIQ extends utest.Test {
 		equals('http://jabber.org/protocol/disco#info', iq.payload.get('xmlns'));
 	}
 
+	function test_fromString() {
+		var iq = IQ.fromString('<iq type="get" id="ab08a"><query xmlns="jabber:iq:roster"/></iq>');
+		equals(Get, iq.type);
+		equals('ab08a', iq.id);
+		equals('jabber:iq:roster', iq.payload.xmlns);
+
+		var iq:IQ = '<iq type="result" id="xyz"/>';
+		equals(Result, iq.type);
+		equals('xyz', iq.id);
+	}
+
 	function test_payload() {
 		var p:xmpp.IQ.Payload = 'abc';
 		equals("query", p.name);
