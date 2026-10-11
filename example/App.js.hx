@@ -5,6 +5,7 @@ import xmpp.Jid;
 import xmpp.Presence;
 import xmpp.Response;
 import xmpp.XML;
+import xmpp.client.Authentication;
 import xmpp.client.Stream;
 
 using xmpp.DelayedDelivery;
@@ -67,7 +68,10 @@ class App {
 	}
 
 	static function login(jid:Jid, password:String, features:XML) {
-		stream.authenticate(jid.node, jid.resource ?? 'hxmpp', password, selectMechanism(features), (?error) -> {
+		final mechanism = Authentication.selectMechanism(features);
+		if (mechanism == null)
+			exit('No supported authentication mechanism offered: ${Authentication.getMechanisms(features)}');
+		stream.authenticate(jid.node, jid.resource ?? 'hxmpp', password, mechanism, (?error) -> {
 			if (error != null)
 				exit('Login failed: ${error.condition} ${error.text ?? ""}');
 			Sys.println('Logged in as ${stream.jid}');
@@ -81,19 +85,6 @@ class App {
 					Sys.println('Failed to load roster: ${e.condition}');
 			});
 		});
-	}
-
-	/**
-		Selects the strongest SCRAM mechanism offered by the server.
-	**/
-	static function selectMechanism(features:XML):sasl.Mechanism {
-		final offered = [
-			for (e in features.elements)
-				if (e.name == 'mechanisms') for (m in e.elements)
-					m.text
-		];
-		return if (offered.contains('SCRAM-SHA-256')) new sasl.SCRAMSHA256Mechanism() else if (offered.contains('SCRAM-SHA-1'))
-			new sasl.SCRAMSHA1Mechanism() else exit('No supported authentication mechanism offered: $offered');
 	}
 
 	static function listen() {

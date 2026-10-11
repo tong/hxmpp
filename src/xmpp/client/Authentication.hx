@@ -41,6 +41,32 @@ class Authentication {
 	}
 
 	/**
+		Returns the offered SASL mechanism names of the given stream features.
+	**/
+	public static function getMechanisms(features:Null<XML>):Array<String> {
+		if (features == null)
+			return [];
+		return [
+			for (e in features.elements)
+				if (e.name == 'mechanisms' && e.is(XMLNS))
+					for (m in e.elements) m.text
+		];
+	}
+
+	/**
+		Returns the strongest supported SASL mechanism offered by the server, or `null` if none.
+
+		Preference: `SCRAM-SHA-256`, `SCRAM-SHA-1`, `PLAIN`.
+		`PLAIN` transfers the password itself and is only selected if `allowPlain` is `true`;
+		only allow it on a TLS secured stream.
+	**/
+	public static function selectMechanism(features:Null<XML>, allowPlain = false):Null<Mechanism> {
+		final offered = getMechanisms(features);
+		return if (offered.contains('SCRAM-SHA-256')) new sasl.SCRAMSHA256Mechanism() else if (offered.contains('SCRAM-SHA-1'))
+			new sasl.SCRAMSHA1Mechanism() else if (allowPlain && offered.contains('PLAIN')) new sasl.PlainMechanism() else null;
+	}
+
+	/**
 		Returns `true` if the stream features require session establishment.
 
 		Session establishment was removed in [RFC 6121](https://xmpp.org/rfcs/rfc6121.html#session);
