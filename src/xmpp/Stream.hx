@@ -67,6 +67,13 @@ abstract class Stream {
 	// public var ready = false;
 	public var features = new Map<String, IQ->(Null<Response<XML>>->Void)->Void>();
 
+	/**
+		Maximum size (in characters) of received data buffered until a unit is complete, `0` for no limit.
+
+		If exceeded, the stream is closed with a `policy-violation` stream error.
+	**/
+	public var maxBufferSize = 1024 * 1024;
+
 	public var input:String->Void;
 	public var output:String->Void;
 
@@ -193,6 +200,10 @@ abstract class Stream {
 				break;
 			}
 			input(unit);
+		}
+		if (maxBufferSize > 0 && buf.length > maxBufferSize) {
+			output('<stream:error><policy-violation xmlns="urn:ietf:params:xml:ns:xmpp-streams"/></stream:error>');
+			end();
 		}
 		return processed;
 	}

@@ -260,4 +260,25 @@ class TestStream extends utest.Test {
 		isTrue(sent[0].indexOf('not-well-formed') != -1);
 		equals('</stream:stream>', sent[1]);
 	}
+
+	function test_framing_max_buffer_size() {
+		final stream = createReadyStream();
+		final sent = new Array<String>();
+		stream.output = str -> sent.push(str);
+		stream.maxBufferSize = 100;
+		stream.recv("<message><body>" + StringTools.lpad("", "x", 50));
+		equals(0, sent.length);
+		stream.recv(StringTools.lpad("", "x", 50));
+		isTrue(sent[0].indexOf('policy-violation') != -1);
+		equals('</stream:stream>', sent[1]);
+		isFalse(stream.ready);
+
+		// complete units larger than the limit are not affected
+		final stream = createReadyStream();
+		var bodies = 0;
+		stream.onMessage = m -> bodies++;
+		stream.maxBufferSize = 100;
+		stream.recv("<message><body>" + StringTools.lpad("", "x", 200) + "</body></message>");
+		equals(1, bodies);
+	}
 }
