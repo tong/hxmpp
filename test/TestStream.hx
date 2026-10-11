@@ -1,6 +1,7 @@
 import utest.Assert.*;
 import xmpp.Response;
 import xmpp.Stanza;
+import xmpp.XML;
 
 class TestStream extends utest.Test {
 	function test_stream_client_namespace() {
@@ -26,6 +27,34 @@ class TestStream extends utest.Test {
 		isNull(stream.input);
 		isNull(stream.output);
 		isFalse(stream.ready);
+	}
+
+	function test_stream_header_namespace() {
+		var out:String = null;
+		function header():XML
+			return XML.parse(out + '</stream:stream>').firstElement;
+
+		var stream = new xmpp.client.Stream('example.com');
+		stream.output = str -> out = str;
+		stream.start(features -> {});
+		equals(xmpp.client.Stream.XMLNS, header().get('xmlns'));
+		equals('example.com', header().get('to'));
+
+		var stream = new xmpp.client.Stream('example.com', 'jabber:server');
+		stream.output = str -> out = str;
+		stream.start(features -> {});
+		equals('jabber:server', header().get('xmlns'));
+
+		var stream = new xmpp.component.Stream('mycomponent', 'example.com');
+		stream.output = str -> out = str;
+		stream.start('secret', (?error) -> {});
+		equals(xmpp.component.Stream.XMLNS, header().get('xmlns'));
+		equals('mycomponent.example.com', header().get('to'));
+
+		var stream = new xmpp.component.Stream('mycomponent', 'example.com', 'jabber:component:connect');
+		stream.output = str -> out = str;
+		stream.start('secret', (?error) -> {});
+		equals('jabber:component:connect', header().get('xmlns'));
 	}
 
 	function test_stream_stanza_namespace() {

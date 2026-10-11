@@ -53,6 +53,6 @@ class Stream extends xmpp.Stream {
 				}
 			}
 		}
-		output(xmpp.Stream.createHeader(XMLNS, '$name.$domain', null, lang));
+		output(xmpp.Stream.createHeader(xmlns, '$name.$domain', null, lang));
 	}
 }
