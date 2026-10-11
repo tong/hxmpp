@@ -393,6 +393,6 @@ abstract class Stream {
 		i = str.indexOf("</stream:stream>");
 		if (i != -1)
 			str = str.substr(0, i);
-		return XML.parse(str);
+		return XML.parse(str).firstElement;
 	}
 }
