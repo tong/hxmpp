@@ -49,6 +49,7 @@ abstract class Stream {
 	public var version(default, null) = "1.0";
 	public var ready(default, null) = false;
 
+	// public var ready = false;
 	public var features = new Map<String, IQ->(Null<Response<XML>>->Void)->Void>();
 
 	public var input:String->Void;
@@ -197,7 +198,8 @@ abstract class Stream {
 	}
 
 	function handleXML(xml:XML) {
-		if (xml.has(xmlns) && xml.get('xmlns') != xmlns) {
+		final isStanza = xml.name == 'message' || xml.name == 'presence' || xml.name == 'iq';
+		if (isStanza && xml.has('xmlns') && xml.get('xmlns') != xmlns) {
 			trace("invalid stream namespace");
 			return;
 		}
@@ -297,7 +299,8 @@ abstract class Stream {
 
 	static function readFeatures(str:String):XML {
 		var i = str.indexOf("<stream:features");
-		if (i == -1)
+		var j = str.indexOf("</stream:features");
+		if (i == -1 || j == -1)
 			return null;
 		str = str.substr(i);
 		i = str.indexOf("</stream:stream>");

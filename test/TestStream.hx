@@ -27,4 +27,27 @@ class TestStream extends utest.Test {
 		isNull(stream.output);
 		isFalse(stream.ready);
 	}
+
+	function test_stream_stanza_namespace() {
+		var stream = new xmpp.client.Stream('example.com');
+		var messages = 0;
+		var nonzas = 0;
+		stream.onMessage = m -> messages++;
+		stream.onNonza = xml -> {
+			nonzas++;
+			return true;
+		}
+		stream.output = str -> {};
+		stream.start(features -> {});
+		stream.recv("<stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' id='abc' from='example.com' version='1.0'><stream:features></stream:features>");
+		isTrue(stream.ready);
+		stream.recv("<message from='a@example.com'><body>hi</body></message>");
+		equals(1, messages);
+		stream.recv("<message xmlns='jabber:client' from='a@example.com'><body>hi</body></message>");
+		equals(2, messages);
+		stream.recv("<message xmlns='jabber:server' from='a@example.com'><body>hi</body></message>");
+		equals(2, messages);
+		stream.recv("<r xmlns='urn:xmpp:sm:3'/>");
+		equals(1, nonzas);
+	}
 }
