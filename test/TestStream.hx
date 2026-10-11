@@ -90,6 +90,19 @@ class TestStream extends utest.Test {
 		equals(1, nonzas);
 	}
 
+	function test_random_id() {
+		final id = xmpp.Stream.makeRandomId();
+		equals(16, id.length);
+		isTrue(~/^[0-9a-f]+$/.match(id));
+		equals(8, xmpp.Stream.makeRandomId(8).length);
+		equals(7, xmpp.Stream.makeRandomId(7).length);
+		final ids = [for (_ in 0...100) xmpp.Stream.makeRandomId()];
+		for (i in 0...ids.length)
+			for (j in i + 1...ids.length)
+				if (ids[i] == ids[j])
+					fail('duplicate id ${ids[i]}');
+	}
+
 	function createReadyStream():xmpp.client.Stream {
 		final stream = new xmpp.client.Stream('example.com');
 		stream.output = str -> {};
