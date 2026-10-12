@@ -843,7 +843,8 @@ class TestExtensions extends utest.Test {
 
 	function test_nickname() {
 		// https://xmpp.org/extensions/xep-0172.html#exchange-subscription
-		final p = new xmpp.Presence('narrator@moby-dick.lit', subscribe);
+		final p = new xmpp.Presence(null, null, null, subscribe);
+		p.to = 'narrator@moby-dick.lit';
 		p.nickname('Ishmael').nickname('Ishmael');
 		final nicks = p.toXML().elements.filter(e -> e.is(Nickname.XMLNS));
 		equals(1, nicks.length);
