@@ -13,10 +13,9 @@ class TestStanza extends utest.Test {
 	}
 
 	function test_error_parse() {
-		var e = xmpp.Stanza.Error.fromXML(XML.parse("<error type='cancel'>
+		var e = xmpp.Stanza.Error.fromXML(XML.fromString("<error type='cancel'>
           <conflict xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
-        </error>")
-			.firstElement);
+        </error>"));
 		equals(conflict, e.condition);
 		equals(cancel, e.type);
 		isNull(e.by);

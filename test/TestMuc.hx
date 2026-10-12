@@ -19,7 +19,7 @@ class TestMuc extends utest.Test {
 	}
 
 	function lastSent():XML
-		return XML.parse(sent[sent.length - 1]).firstElement;
+		return XML.fromString(sent[sent.length - 1]);
 
 	function join(nick:String, ?password:String):{done:Bool, response:Null<Response<XML>>} {
 		final r = {done: false, response: null};

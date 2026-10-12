@@ -5,7 +5,7 @@ import xmpp.xml.Printer;
 
 class TestResponse extends utest.Test {
 	function test_ok() {
-		var r:Response<XML> = Result(XML.parse("<e></e>"));
+		var r:Response<XML> = Result(XML.fromString("<e></e>"));
 		isTrue(r.ok());
 		isTrue(r);
 		var r:Response<XML> = Error(new xmpp.Stanza.Error(cancel, bad_request));

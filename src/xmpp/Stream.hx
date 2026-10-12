@@ -306,7 +306,7 @@ abstract class Stream {
 	function handleString(str:String) {
 		if (!ready)
 			return;
-		final xml = try XML.parse(str).firstElement catch (e) {
+		final xml = try XML.fromString(str) catch (e) {
 			#if debug
 			trace(e);
 			#end
@@ -475,7 +475,7 @@ abstract class Stream {
 				throw 'invalid stream header'; // TODO:
 			str = str.substr(0, i) + '/>';
 		}
-		final xml = XML.parse(str).firstElement;
+		final xml = XML.fromString(str);
 		return {
 			id: xml.get("id"),
 			from: xml.get("from"),
@@ -494,6 +494,6 @@ abstract class Stream {
 		i = str.indexOf("</stream:stream>");
 		if (i != -1)
 			str = str.substr(0, i);
-		return XML.parse(str).firstElement;
+		return XML.fromString(str);
 	}
 }

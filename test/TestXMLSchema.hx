@@ -4,7 +4,7 @@ import xmpp.xml.Schema;
 
 class TestXMLSchema extends utest.Test {
 	function test_parse() {
-		var xml = XML.parse('
+		var xml = XML.fromString('
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 <xs:element name="note">
   <xs:complexType>
@@ -36,7 +36,7 @@ class TestXMLSchema extends utest.Test {
 	}
 
 	function test_parse_2() {
-		var xml = XML.parse("<?xml version='1.0' encoding='UTF-8' ?>
+		var xml = XML.fromString("<?xml version='1.0' encoding='UTF-8' ?>
 
 <xs:schema
     xmlns:xs='http://www.w3.org/2001/XMLSchema'

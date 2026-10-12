@@ -21,7 +21,7 @@ class TestIQ extends utest.Test {
 	}
 
 	function test_parse() {
-		var iq:IQ = XML.parse('<iq type="result" to="user@example.com" id="ab08a"></iq>').firstElement;
+		var iq:IQ = XML.fromString('<iq type="result" to="user@example.com" id="ab08a"></iq>');
 		equals(IQType.Result, iq.type);
 		equals('user@example.com', iq.to);
 		equals('ab08a', iq.id);
@@ -29,10 +29,9 @@ class TestIQ extends utest.Test {
 		isNull(iq.lang);
 		isNull(iq.payload);
 
-		var iq:IQ = XML.parse('<iq type="get" to="jabber.disktree.net" id="ab08a">
+		var iq:IQ = XML.fromString('<iq type="get" to="jabber.disktree.net" id="ab08a">
 	<query xmlns="http://jabber.org/protocol/disco#info"/>
-</iq>')
-			.firstElement;
+</iq>');
 		equals(Get, iq.type);
 		equals('jabber.disktree.net', iq.to);
 		equals('ab08a', iq.id);

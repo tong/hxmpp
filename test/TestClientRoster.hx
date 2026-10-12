@@ -9,12 +9,12 @@ class TestClientRoster extends utest.Test {
 		final sent = new Array<String>();
 		stream.output = str -> sent.push(str);
 		stream.subscribePresence('romeo@example.net');
-		var p = XML.parse(sent[0]).firstElement;
+		var p = XML.fromString(sent[0]);
 		equals('presence', p.name);
 		equals('romeo@example.net', p.get('to'));
 		equals('subscribe', p.get('type'));
 		stream.unsubscribePresence('romeo@example.net');
-		p = XML.parse(sent[1]).firstElement;
+		p = XML.fromString(sent[1]);
 		equals('romeo@example.net', p.get('to'));
 		equals('unsubscribe', p.get('type'));
 	}

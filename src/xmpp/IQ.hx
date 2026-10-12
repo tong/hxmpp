@@ -105,7 +105,7 @@ abstract IQ(IQStanza) to Stanza {
 		return this.toXML().toString();
 
 	@:from public static inline function fromString(str:String):IQ
-		return IQStanza.parse(XML.parse(str).firstElement);
+		return IQStanza.parse(XML.fromString(str));
 
 	@:from public static inline function fromXML(xml:XML):IQ
 		return IQStanza.parse(xml);

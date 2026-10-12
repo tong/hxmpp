@@ -143,7 +143,7 @@ abstract Presence(PresenceStanza) to Stanza {
 		return this.toString();
 
 	@:from public static inline function fromString(str:String):Presence
-		return fromXML(XML.parse(str).firstElement);
+		return fromXML(XML.fromString(str));
 
 	@:from public static inline function fromXML(xml:XML):Presence
 		return PresenceStanza.parse(xml);

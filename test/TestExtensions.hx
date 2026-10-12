@@ -28,7 +28,7 @@ class TestExtensions extends utest.Test {
 		stream.output = str -> sent.push(str);
 		final req:IQ = '<iq type="get" id="s1" from="romeo@example.net/orchard"><request xmlns="urn:xmpp:http:upload:0" filename="a.jpg" size="23456"/></iq>';
 		stream.sendHttpUploadSlot(req, 'https://upload.example.com/put', 'https://download.example.com/get', ['Authorization' => 'Basic Base64String==']);
-		final iq = XML.parse(sent[0]).firstElement;
+		final iq = XML.fromString(sent[0]);
 		equals('result', iq.get('type'));
 		equals('romeo@example.net/orchard', iq.get('to'));
 		final slot = iq.firstElement;
@@ -52,7 +52,7 @@ class TestExtensions extends utest.Test {
 	}
 
 	function lastSent():XML
-		return XML.parse(sent[sent.length - 1]).firstElement;
+		return XML.fromString(sent[sent.length - 1]);
 
 	function test_pep() {
 		equals('http://jabber.org/protocol/mood', xmpp.Pep.XMLNS_MOOD);

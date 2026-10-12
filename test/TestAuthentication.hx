@@ -34,7 +34,7 @@ class TestAuthentication extends utest.Test {
 	}
 
 	function lastSent():XML
-		return XML.parse(sent[sent.length - 1]).firstElement;
+		return XML.fromString(sent[sent.length - 1]);
 
 	function restart(features:String) {
 		stream.recv(SUCCESS);
@@ -188,8 +188,8 @@ class TestAuthentication extends utest.Test {
 
 	function test_select_mechanism() {
 		function features(mechanisms:Array<String>):XML
-			return XML.parse("<stream:features xmlns:stream='http://etherx.jabber.org/streams'><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>"
-				+ [for (m in mechanisms) '<mechanism>$m</mechanism>'].join('') + "</mechanisms></stream:features>").firstElement;
+			return XML.fromString("<stream:features xmlns:stream='http://etherx.jabber.org/streams'><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>"
+				+ [for (m in mechanisms) '<mechanism>$m</mechanism>'].join('') + "</mechanisms></stream:features>");
 
 		equals('SCRAM-SHA-1,SCRAM-SHA-256,PLAIN', Authentication.getMechanisms(features(['SCRAM-SHA-1', 'SCRAM-SHA-256', 'PLAIN'])).join(','));
 		equals(0, Authentication.getMechanisms(null).length);

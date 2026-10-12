@@ -71,7 +71,7 @@ class TestDataForm extends utest.Test {
 
 	function test_parse_form() {
 		// https://xmpp.org/extensions/xep-0004.html#protocol-results (example 2, shortened)
-		final form:DataForm = XML.parse('<x xmlns="jabber:x:data" type="form">
+		final form:DataForm = XML.fromString('<x xmlns="jabber:x:data" type="form">
 			<title>Bot Configuration</title>
 			<instructions>Fill out this form to configure your new bot!</instructions>
 			<field type="hidden" var="FORM_TYPE"><value>jabber:bot</value></field>
@@ -83,7 +83,7 @@ class TestDataForm extends utest.Test {
 				<value>search</value>
 			</field>
 			<field type="boolean" var="public"><value>0</value></field>
-		</x>').firstElement;
+		</x>');
 		equals(FormType.form, form.type);
 		equals('Bot Configuration', form.title);
 		equals(4, form.fields.length);
@@ -108,7 +108,7 @@ class TestDataForm extends utest.Test {
 
 	function test_parse_items() {
 		// https://xmpp.org/extensions/xep-0004.html#protocol-results (example 8)
-		final form:DataForm = XML.parse('<x xmlns="jabber:x:data" type="result">
+		final form:DataForm = XML.fromString('<x xmlns="jabber:x:data" type="result">
 			<title>Joogle Search: verona</title>
 			<reported>
 				<field var="name"/>
@@ -122,7 +122,7 @@ class TestDataForm extends utest.Test {
 				<field var="name"><value>benvenuto!</value></field>
 				<field var="url"><value>http://www.hellasverona.it/</value></field>
 			</item>
-		</x>').firstElement;
+		</x>');
 		equals(2, form.reported.length);
 		equals('url', form.reported[1].variable);
 		equals(2, form.items.length);
@@ -156,7 +156,7 @@ class TestDataForm extends utest.Test {
 		equals(1, field.elements.named("required").length);
 		equals(2, xml.elements.named("item").length);
 
-		final parsed:DataForm = XML.parse(xml.toString()).firstElement;
+		final parsed:DataForm = XML.fromString(xml.toString());
 		equals("Results", parsed.title);
 		equals("Choose a name", parsed.fields[0].desc);
 		isTrue(parsed.fields[0].required);

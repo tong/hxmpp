@@ -162,19 +162,27 @@ abstract XML(Xml) from Xml to Xml {
 			}
 		}
 	 */
-	@:from public static inline function fromString(str:String):XML {
-		var xml = Xml.parse(str);
-		// trace(@:privateAccess cast(xml.elements(), haxe.iterators.ArrayIterator<Dynamic>).array.length);
-		return new XML(xml.firstElement());
-	}
+	/**
+		Parses `str` and returns its root element.
+	**/
+	@:from public static inline function fromString(str:String):XML
+		return new XML(Xml.parse(str).firstElement());
 
-	// @:from
-	public static inline function parse(str:String):XML {
-		// return fromXml(Xml.parse(s).firstElement());
-		// trace(@:privateAccess cast(x.elements(), haxe.iterators.ArrayIterator<Dynamic>).array.length);
-		var x:Xml = Xml.parse(str);
-		return new XML(x);
-	}
+	/**
+		Parses `str` and returns the document node containing the parsed nodes.
+
+		Use `fromString` to get the root element.
+	**/
+	public static inline function parseDocument(str:String):XML
+		return new XML(Xml.parse(str));
+
+	/**
+		Parses `str` and returns the **document** node.
+	**/
+	@:deprecated("XML.parse returns the document node: use XML.fromString for the root element, or XML.parseDocument")
+	public static inline function parse(str:String):XML
+		return parseDocument(str);
+
 	/*
 		macro public static function markup(mu):ExprOf<xmpp.XML> {
 			return switch mu.expr {

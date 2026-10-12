@@ -32,7 +32,7 @@ class TestStream extends utest.Test {
 	function test_stream_header_namespace() {
 		var out:String = null;
 		function header():XML
-			return XML.parse(out + '</stream:stream>').firstElement;
+			return XML.fromString(out + '</stream:stream>');
 
 		var stream = new xmpp.client.Stream('example.com');
 		stream.output = str -> out = str;
