@@ -86,10 +86,54 @@ class TestMessage extends utest.Test {
 			</message>')
 			.firstElement();
 		var m = Message.fromXML(xml);
-		isNull(m.type);
+		// no type: normal (RFC 6121 5.2.2)
+		equals(normal, m.type);
 		equals('romeo@jabber.disktree.net', m.to);
 		equals('green with envy!', m.body);
 		equals(1, m.properties.length);
 		equals("html", m.properties[0].name);
+	}
+
+	function test_parse_type() {
+		equals(normal, Message.fromString('<message type="foo"><body>x</body></message>').type);
+		equals(headline, Message.fromString('<message type="headline"><body>x</body></message>').type);
+		// new messages are chat by default
+		equals(chat, new Message('a@b', 'x').type);
+	}
+
+	function test_languages() {
+		final m = Message.fromString('<message><subject xml:lang="de">Betreff</subject><subject>Subject</subject><body>Hello</body><body xml:lang="de">Hallo</body></message>');
+		equals('Hello', m.body);
+		equals('Subject', m.subject);
+		equals(2, m.properties.length);
+		final xml = Message.fromString(m.toString()).toXML();
+		equals(2, xml.elements.named('body').length);
+		equals(2, xml.elements.named('subject').length);
+
+		// without default language: the first
+		final m = Message.fromString('<message><body xml:lang="en">Hello</body><body xml:lang="de">Hallo</body></message>');
+		equals('Hello', m.body);
+		equals(1, m.properties.length);
+	}
+
+	function test_thread_parent() {
+		final m = Message.fromString('<message type="chat"><body>x</body><thread parent="e0ffe42b28561960c6b12b944a092794b9683a38">7edac73ab41e45c4aafa7b2d7b749080</thread></message>');
+		equals('7edac73ab41e45c4aafa7b2d7b749080', m.thread);
+		equals('e0ffe42b28561960c6b12b944a092794b9683a38', m.threadParent);
+		final thread = m.toXML().elements.named('thread')[0];
+		equals('e0ffe42b28561960c6b12b944a092794b9683a38', thread.get('parent'));
+		isFalse(new Message('a@b', 'x', null, chat, 't').toXML().elements.named('thread')[0].has('parent'));
+	}
+
+	function test_error() {
+		final m = Message.fromString('<message type="error" from="romeo@example.net" id="m1"><body>hi</body><error type="cancel"><item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error></message>');
+		equals(error, m.type);
+		equals('item-not-found', (m.error.condition : String));
+		final xml = m.toXML();
+		equals(1, xml.elements.named('error').length);
+		equals('item-not-found', Message.fromString(xml.toString()).error.condition);
+
+		final p = xmpp.Presence.fromString('<presence type="error" from="romeo@example.net"><error type="auth"><forbidden xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error></presence>');
+		equals('forbidden', (xmpp.Presence.fromString(p.toString()).error.condition : String));
 	}
 }

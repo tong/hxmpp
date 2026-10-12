@@ -204,6 +204,8 @@ private class PresenceStanza extends Stanza {
 			xml.append(priority);
 		for (p in properties)
 			xml.append(p);
+		if (error != null)
+			xml.append(error.toXML());
 		return xml;
 	}
 
