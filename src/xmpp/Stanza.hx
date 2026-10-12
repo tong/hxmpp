@@ -24,6 +24,9 @@ typedef ApplicationErrorCondition = {
 	var condition:String;
 	var xmlns:String;
 	var ?properties:Array<XML>;
+
+	/** The received application error element (with attributes), set when parsed **/
+	var ?element:XML;
 }
 
 enum abstract ErrorCondition(String) from String to String {
@@ -207,7 +210,8 @@ abstract Error(CError) from CError {
 					app = {
 						condition: e.name,
 						xmlns: e.ns,
-						properties: [for (e in e.elements) e]
+						properties: [for (e in e.elements) e],
+						element: e
 					};
 			}
 		}
