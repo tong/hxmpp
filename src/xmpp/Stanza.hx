@@ -87,11 +87,18 @@ enum abstract ErrorCondition(String) from String to String {
 
 	/**
 		The requesting entity is not authorized to access the requested service because payment is required; The associated error type SHOULD be `auth`.
+
+		Defined in RFC 3920 only, not used by RFC 6120.
 	**/
 	var payment_required = "payment-required";
 
 	/**
-		The requesting entity is not authorized to access the requested service because payment is required; The associated error type SHOULD be `auth`.
+		The entity has violated some local service policy (e.g., a message contains words that are prohibited by the service) and the server MAY choose to specify the policy in the `<text/>` element or in an application-specific condition element; The associated error type SHOULD be `modify` or `wait` depending on the policy being violated.
+	**/
+	var policy_violation = "policy-violation";
+
+	/**
+		The intended recipient is temporarily unavailable, undergoing maintenance, etc.; The associated error type SHOULD be `wait`.
 	**/
 	var recipient_unavailable = "recipient-unavailable";
 
@@ -101,8 +108,8 @@ enum abstract ErrorCondition(String) from String to String {
 	var redirect;
 
 	/**
-		The recipient or server is redirecting requests for this information to another entity, usually temporarily (the error stanza SHOULD contain the alternate address, which MUST be a valid JID, in the XML character data of the <redirect/> element); The associated error type SHOULD be `modify`.
-	 */
+		The requesting entity is not authorized to access the requested service because prior registration is necessary (examples of prior registration include members-only rooms in XMPP multi-user chat and gateways to non-XMPP instant messaging services); The associated error type SHOULD be `auth`.
+	**/
 	var registration_required = "registration-required";
 
 	/**
@@ -122,7 +129,7 @@ enum abstract ErrorCondition(String) from String to String {
 
 	/**
 		The server or recipient does not currently provide the requested service; The associated error type SHOULD be `cancel`.
-	 */
+	**/
 	var service_unavailable = "service-unavailable";
 
 	/**
@@ -136,29 +143,32 @@ enum abstract ErrorCondition(String) from String to String {
 	var undefined_condition = "undefined-condition";
 
 	/**
-		The requesting entity is not authorized to access the requested service because a subscription is required; The associated error type SHOULD be `auth`.
+		The recipient or server understood the request but was not expecting it at this time (e.g., the request was out of order); The associated error type SHOULD be `wait` or `modify`.
 	**/
 	var unexpected_request = "unexpected-request";
 }
 
 @:structInit
 private class CError {
-	/** **/
+	/** How to proceed (retry, modify, ...) **/
 	public var type:ErrorType;
 
-	/** **/
+	/** The defined error condition **/
 	public var condition:ErrorCondition;
 
-	/** Error generator */
+	/** Entity that generated the error **/
 	public var by:String;
 
-	/** Describes the error in more detail */
+	/** Describes the error in more detail **/
 	public var text:String;
 
-	/** Language of the text content XML character data  */
-	// public var lang : String;
+	/** Language of `text` **/
+	public var lang:String;
 
-	/** Application-specific error condition */
+	/** New address of the entity for the `gone` and `redirect` conditions **/
+	public var address:String;
+
+	/** Application-specific error condition **/
 	public var app:ApplicationErrorCondition;
 
 	public function new(type:ErrorType, condition:ErrorCondition, ?text:String, ?app:ApplicationErrorCondition) {
@@ -169,6 +179,9 @@ private class CError {
 	}
 }
 
+/**
+	Stanza error ([RFC 6120 8.3](https://xmpp.org/rfcs/rfc6120.html#stanzas-error)).
+**/
 @:forward
 abstract Error(CError) from CError {
 	public static inline var XMLNS = "urn:ietf:params:xml:ns:xmpp-stanzas";
@@ -180,11 +193,14 @@ abstract Error(CError) from CError {
 		return this != null;
 
 	@:to public function toXML():XML {
-		var xml = XML.create('error').set('type', this.type).append(XML.create(this.condition).set('xmlns', XMLNS));
+		final condition = XML.create(this.condition ?? undefined_condition).set('xmlns', XMLNS);
+		if (this.address != null && (this.condition == gone || this.condition == redirect))
+			condition.text = this.address;
+		final xml = XML.create('error').set('type', this.type ?? cancel).append(condition);
 		if (this.by != null)
 			xml.set('by', this.by);
 		if (this.text != null)
-			xml.append(XML.create('text', this.text).set('xmlns', XMLNS));
+			xml.append(XML.create('text', this.text).set('xmlns', XMLNS).set('xml:lang', this.lang));
 		if (this.app != null && (this.app.condition != null && this.app.xmlns != null)) {
 			var c = XML.create(this.app.condition).set('xmlns', this.app.xmlns);
 			if (this.app.properties != null)
@@ -195,16 +211,31 @@ abstract Error(CError) from CError {
 		return xml;
 	}
 
+	/**
+		Parses an `<error/>` element.
+
+		A missing condition results in `undefined-condition`, a missing type in `cancel`.
+		Of multiple `<text/>` elements the one without `xml:lang` is used (or the first).
+	**/
 	@:from public static function fromXML(xml:XML):Error {
 		var condition:Null<ErrorCondition> = null;
-		var text:Null<String> = null;
+		var address:Null<String> = null;
+		var textElement:Null<XML> = null;
 		var app:Null<ApplicationErrorCondition> = null;
 		for (e in xml.elements) {
 			switch e.ns {
 				case Error.XMLNS:
 					switch e.name {
-						case 'text': text = e.text;
-						case _: condition = e.name;
+						case 'text':
+							if (textElement == null || (textElement.has('xml:lang') && !e.has('xml:lang')))
+								textElement = e;
+						case _:
+							if (condition == null) {
+								condition = e.name;
+								final t:String = e.text;
+								if (t != null && t.length > 0)
+									address = StringTools.trim(t);
+							}
 					}
 				case _:
 					app = {
@@ -215,7 +246,13 @@ abstract Error(CError) from CError {
 					};
 			}
 		}
-		return new Error(xml.get('type'), condition, text, app);
+		final error = new Error(xml.get('type') ?? cancel, condition ?? undefined_condition, (textElement == null) ? null : textElement.text, app);
+		error.by = xml.get('by');
+		if (textElement != null)
+			error.lang = textElement.get('xml:lang');
+		if (condition == gone || condition == redirect)
+			error.address = address;
+		return error;
 	}
 }
 
@@ -241,10 +278,12 @@ abstract class Stanza {
 	public var lang:Null<String>;
 
 	/**
+		The error of a stanza of type `error`.
 	**/
 	public var error:Null<Error>;
 
 	/**
+		Child elements not handled by the stanza type, e.g. extension payloads.
 	**/
 	public var properties:Array<XML> = [];
 
@@ -278,11 +317,6 @@ abstract class Stanza {
 		s.from = x.get('from');
 		s.id = x.get('id');
 		s.lang = x.get('xml:lang');
-		/*
-			if( xml.get( 'type' ) == 'error' ) {
-				stanza.error = xmpp.Error.fromXML( xml.elements["error"][0] );
-			}
-		 */
 		return s;
 	}
 }
