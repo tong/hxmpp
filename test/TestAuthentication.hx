@@ -201,4 +201,47 @@ class TestAuthentication extends utest.Test {
 		isNull(Authentication.selectMechanism(features(['DIGEST-MD5'])));
 		isNull(Authentication.selectMechanism(null));
 	}
+
+	function test_stream_error_condition() {
+		authenticate('balcony');
+		stream.recv("<stream:error><conflict xmlns='urn:ietf:params:xml:ns:xmpp-streams'/><text xmlns='urn:ietf:params:xml:ns:xmpp-streams'>Replaced by new connection</text><escape-your-data xmlns='application-ns'/></stream:error>");
+		equals('conflict', (error.condition : String));
+		equals('Replaced by new connection', error.text);
+	}
+
+	function test_sasl_failure_condition() {
+		// https://xmpp.org/rfcs/rfc6120.html#sasl-errors-account-disabled
+		authenticate('balcony');
+		stream.recv("<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><account-disabled/><text xml:lang='en'>Call 212-555-1212 for assistance.</text></failure>");
+		equals('account-disabled', (error.condition : String));
+		equals('Call 212-555-1212 for assistance.', error.text);
+
+		authenticate('balcony');
+		stream.recv("<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><text>no condition</text></failure>");
+		equals(undefined_condition, error.condition);
+	}
+
+	function test_empty_initial_response() {
+		final mechanism:sasl.Mechanism = new EmptyResponseMechanism();
+		stream.authenticate('juliet', 'balcony', 'secret', mechanism, (?e) -> {});
+		equals('=', lastSent().text);
+	}
+}
+
+private class EmptyResponseMechanism implements sasl.Mechanism {
+	public final name = 'X-EMPTY';
+
+	public function new() {}
+
+	public function createAuthenticationText(username:String, host:String, password:String):String
+		return '';
+
+	public function createChallengeResponse(challenge:String):String
+		return null;
+
+	public function verifySuccess(data:String):Bool
+		return true;
+
+	public function handleAuthenticationText(text:String):Array<String>
+		return null;
 }

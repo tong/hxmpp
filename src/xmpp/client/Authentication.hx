@@ -6,11 +6,17 @@ import sasl.Mechanism;
 import xmpp.Response;
 
 /**
-	SASL (Simple Authentication and Security Layer) client authentication.
+	SASL (Simple Authentication and Security Layer) client authentication and resource binding.
 
-	- [RFC3920-SASL](https://xmpp.org/rfcs/rfc3920.html#sasl)
-	- [RFC3920-BIND](https://xmpp.org/rfcs/rfc3920.html#bind)
-	- [RFC2222](https://datatracker.ietf.org/doc/html/rfc2222)
+	Authenticate only on a TLS secured stream (see `StartTLS`): without TLS the username is exposed,
+	and an eavesdropper can record the exchange to guess the password offline.
+
+	SASL failures are reported as `xmpp.Stanza.Error` with the SASL condition name as `condition`
+	(e.g. `not-authorized`, `account-disabled`, `credentials-expired`, `temporary-auth-failure`).
+
+	- [RFC 6120 6: SASL Negotiation](https://xmpp.org/rfcs/rfc6120.html#sasl)
+	- [RFC 6120 7: Resource Binding](https://xmpp.org/rfcs/rfc6120.html#bind)
+	- [RFC 4422: Simple Authentication and Security Layer](https://www.rfc-editor.org/rfc/rfc4422)
 **/
 class Authentication {
 	public static inline var XMLNS = 'urn:ietf:params:xml:ns:xmpp-sasl';
@@ -32,7 +38,7 @@ class Authentication {
 					if (e != null)
 						callback(e)
 					else if (isSessionRequired(features))
-						initSesssion(stream, callback);
+						initSession(stream, callback);
 					else
 						callback();
 				});
@@ -48,8 +54,8 @@ class Authentication {
 			return [];
 		return [
 			for (e in features.elements)
-				if (e.name == 'mechanisms' && e.is(XMLNS))
-					for (m in e.elements) m.text
+				if (e.name == 'mechanisms' && e.is(XMLNS)) for (m in e.elements)
+					m.text
 		];
 	}
 
@@ -63,7 +69,8 @@ class Authentication {
 	public static function selectMechanism(features:Null<XML>, allowPlain = false):Null<Mechanism> {
 		final offered = getMechanisms(features);
 		return if (offered.contains('SCRAM-SHA-256')) new sasl.SCRAMSHA256Mechanism() else if (offered.contains('SCRAM-SHA-1'))
-			new sasl.SCRAMSHA1Mechanism() else if (allowPlain && offered.contains('PLAIN')) new sasl.PlainMechanism() else null;
+			new sasl.SCRAMSHA1Mechanism() else if (allowPlain
+			&& offered.contains('PLAIN')) new sasl.PlainMechanism() else null;
 	}
 
 	/**
@@ -131,28 +138,37 @@ class Authentication {
 		final text = mechanism.createAuthenticationText(node, stream.domain, password);
 		final auth = XML.create('auth').set('xmlns', XMLNS).set('mechanism', mechanism.name);
 		if (text != null)
-			auth.text = Base64.encode(Bytes.ofString(text), true);
+			// A zero-length initial response is sent as "=" (RFC 6120 6.4.2)
+			auth.text = (text.length == 0) ? "=" : Base64.encode(Bytes.ofString(text), true);
 		stream.send(auth);
 	}
 
+	/**
+		Parses a SASL `<failure/>` or a `<stream:error/>`: the condition is the first element in the
+		namespace of the failure (application-specific elements are ignored).
+	**/
 	static function parseError(xml:XML, type:xmpp.Stanza.ErrorType):xmpp.Stanza.Error {
+		final ns = (xml.name == 'stream:error') ? 'urn:ietf:params:xml:ns:xmpp-streams' : XMLNS;
 		var text:String = null;
-		var condition:xmpp.Stanza.ErrorCondition = undefined_condition;
+		var condition:Null<xmpp.Stanza.ErrorCondition> = null;
 		for (e in xml.elements) {
-			switch e.name {
-				case "text":
-					text = e.text;
-				default:
-					condition = e.name;
-			}
+			// children of <failure/> inherit the namespace, stream error conditions declare it
+			final inNamespace = e.ns == null || e.ns == ns;
+			if (!inNamespace)
+				continue;
+			if (e.name == "text")
+				text = e.text;
+			else if (condition == null)
+				condition = e.name;
 		}
-		return new xmpp.Stanza.Error(type, condition, text);
+		return new xmpp.Stanza.Error(type, condition ?? undefined_condition, text);
 	}
 
 	/**
 		Bind the resource to the connection.
 
 		If `resource` is `null` the server generates one.
+		If the requested resource is in use the server may answer with `conflict`; retry with `null` then.
 	**/
 	public static function bindResource(stream:Stream, ?resource:String, callback:(?error:xmpp.Stanza.Error, resource:String) -> Void) {
 		final xml = XML.create('bind').set('xmlns', XMLNS_BIND);
@@ -177,9 +193,9 @@ class Authentication {
 	}
 
 	/**
-		Establish a session with the server.
+		Establish a session with the server (only if required, see `isSessionRequired`).
 	**/
-	public static function initSesssion(stream:Stream, callback:(?error:xmpp.Stanza.Error) -> Void) {
+	public static function initSession(stream:Stream, callback:(?error:xmpp.Stanza.Error) -> Void) {
 		stream.set(XML.create('session').set('xmlns', XMLNS_SESSION), res -> {
 			callback(switch res {
 				case Error(e): e;
