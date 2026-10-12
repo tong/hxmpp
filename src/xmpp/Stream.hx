@@ -72,6 +72,11 @@ abstract class Stream {
 	@:allow(xmpp.client.Authentication)
 	public var jid(default, null):Null<String>;
 
+	/**
+		The `<stream:features/>` last received from the server (e.g. after authentication), `null` before.
+	**/
+	public var serverFeatures(default, null):Null<XML>;
+
 	// public var ready = false;
 	public var features = new Map<String, IQ->(Null<Response<XML>>->Void)->Void>();
 
@@ -440,6 +445,7 @@ abstract class Stream {
 	function reset() {
 		ready = false;
 		jid = null;
+		serverFeatures = null;
 		queries = new Map();
 		buf = '';
 	}

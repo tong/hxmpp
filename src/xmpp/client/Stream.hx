@@ -30,6 +30,7 @@ class Stream extends xmpp.Stream {
 			} else {
 				final features = xmpp.Stream.readFeatures(str);
 				if (features != null) {
+					serverFeatures = features;
 					ready = true;
 					callback(features);
 				}

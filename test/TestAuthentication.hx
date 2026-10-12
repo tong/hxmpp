@@ -4,6 +4,7 @@ import utest.Assert.*;
 import xmpp.Stanza;
 import xmpp.XML;
 import xmpp.client.Authentication;
+import xmpp.client.CSI;
 
 using xmpp.client.Authentication;
 
@@ -225,6 +226,33 @@ class TestAuthentication extends utest.Test {
 		final mechanism:sasl.Mechanism = new EmptyResponseMechanism();
 		stream.authenticate('juliet', 'balcony', 'secret', mechanism, (?e) -> {});
 		equals('=', lastSent().text);
+	}
+
+	function test_server_features() {
+		// pre-auth features
+		isTrue(stream.serverFeatures.elements.findElement('mechanisms') != null);
+		authenticate('balcony');
+		restart("<bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'/><csi xmlns='urn:xmpp:csi:0'/>");
+		replyBind();
+		isTrue(done);
+		isTrue(CSI.isOffered(stream.serverFeatures));
+	}
+
+	function test_csi() {
+		isFalse(CSI.isOffered(null));
+		// pre-auth features without csi: nothing is sent
+		final count = sent.length;
+		isNull(CSI.setInactive(stream));
+		equals(count, sent.length);
+
+		authenticate('balcony');
+		restart("<bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'/><csi xmlns='urn:xmpp:csi:0'/>");
+		replyBind();
+		CSI.setInactive(stream);
+		equals('inactive', lastSent().name);
+		equals(CSI.XMLNS, lastSent().get('xmlns'));
+		CSI.setActive(stream);
+		equals('active', lastSent().name);
 	}
 }
 
