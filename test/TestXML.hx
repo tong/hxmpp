@@ -72,6 +72,24 @@ class TestXML extends utest.Test {
 		isNull(xml.elements.first());
 	}
 
+	function test_elements_reuse() {
+		final xml:XML = '<a><b/>text<c id="1"/><c id="2"/></a>';
+		final e = xml.elements;
+		equals(3, e.count());
+		equals(2, e.named('c').length);
+		equals(2, e['c'].length);
+		var n = 0;
+		for (_ in e)
+			n++;
+		for (_ in e)
+			n++;
+		equals(6, n);
+		equals('2', e[2].get('id'));
+		isNull(e[3]);
+		equals('1', e.findElement('c').get('id'));
+		isNull(e.findElement('x'));
+	}
+
 	function test_insert() {
 		var xml = XML.create('node');
 		xml.append(XML.create('a'));

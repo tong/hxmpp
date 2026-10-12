@@ -62,19 +62,22 @@ abstract XML(Xml) from Xml to Xml {
 	function set_text(v:Text):Text {
 		if (type != XmlType.Element)
 			return v;
-		for (c in [for (c in this) if (c.nodeType == XmlType.PCData || c.nodeType == XmlType.CData) c])
+		for (c in [
+			for (c in this) if (c.nodeType == XmlType.PCData || c.nodeType == XmlType.CData) c
+		])
 			this.removeChild(c);
 		if (v != null)
 			this.addChild(Xml.createPCData(v));
 		return v;
 	}
 
-	public var elements(get, never):xmpp.XML.NodeIterator;
+	/**
+		Child elements (a new list on each access).
+	**/
+	public var elements(get, never):Elements;
 
-	inline function get_elements():xmpp.XML.NodeIterator {
-		return cast this.elements();
-		// return this.firstChild().elements();
-	}
+	inline function get_elements():Elements
+		return [for (e in this.elements()) e];
 
 	// inline function set_elements(elements:xmpp.XML.NodeIterator):xmpp.XML.NodeIterator {
 	// 	this.children = [for (e in elements) e];
@@ -184,48 +187,22 @@ abstract XML(Xml) from Xml to Xml {
 	 */
 }
 
-@:noDoc
-@:forward(next, hasNext)
-// private abstract NodeIterator(Iterator<XML>) from Iterator<XML> to Iterator<XML> {
-private abstract NodeIterator(haxe.iterators.ArrayIterator<XML>) from haxe.iterators.ArrayIterator<XML> to haxe.iterators.ArrayIterator<XML> {
-	public var length(get, never):Int;
-
-	inline function get_length():Int
-		return @:privateAccess cast(this, haxe.iterators.ArrayIterator<Dynamic>).array.length;
-
-	// public inline function next():XML
-	// 	return this.next();
+/**
+	List of child elements.
+**/
+@:forward(length, iterator, map, filter, indexOf, contains)
+abstract Elements(Array<XML>) from Array<XML> to Array<XML> {
+	/**
+		Get the element at index `i`, or `null`.
+	**/
+	@:arrayAccess public inline function index(i:Int):XML
+		return this[i];
 
 	/**
-		Get nth(i) element.
+		Returns all elements with given node name.
 	**/
-	@:arrayAccess public function index(i:Int):XML {
-		return @:privateAccess cast(this, haxe.iterators.ArrayIterator<Dynamic>).array[i];
-		/*
-			var j = 0;
-			while (j <= i) {
-				if (!this.hasNext())
-					return null;
-				var n = next();
-				if (j++ == i)
-					return n;
-			}
-			return null;
-		 */
-	}
-
-	/**
-		Returns all child elements with given node name.
-	**/
-	@:arrayAccess public function named(name:String):Array<XML> {
-		final e = new Array<XML>();
-		while (this.hasNext()) {
-			var c = this.next();
-			if (c.type == Element && c.name == name)
-				e.push(c);
-		}
-		return e;
-	}
+	@:arrayAccess public function named(name:String):Array<XML>
+		return [for (e in this) if (e.name == name) e];
 
 	/**
 		Returns the first element (matching `f` if given), or `null`.
@@ -237,50 +214,17 @@ private abstract NodeIterator(haxe.iterators.ArrayIterator<XML>) from haxe.itera
 		return null;
 	}
 
-	public function findElement(name:String):XML {
-		var c:XML = null;
-		while (this.hasNext())
-			if ((c = this.next()).name == name)
-				return c;
-		// while((c = this.next()) != null) if(c.name == name) return c;
-		return null;
-	}
+	/**
+		Returns the first element with given node name, or `null`.
+	**/
+	public function findElement(name:String):XML
+		return first(e -> e.name == name);
 
-	public function count():Int {
-		// trace('COUNT');
-		var i = 0;
-		while (this.next() != null)
-			i++;
-		return i;
-		// return @:privateAccess cast(this, haxe.iterators.ArrayIterator<Dynamic>).array.length;
-	}
-
-	//   public function hasChild(f: XML->Bool) : Bool {
-	// for( e in this ) if( f(e) ) return true;
-	//       return false;
-	//   }
-	/*
-		function doFilter( f : XML->Bool ) : NodeIterator {
-			return [for(e in this) if(f(e))e].iterator();
-		}
-
-		function doFind( f : XML->Bool ) : XML {
-			for( e in this ) if( f(e) ) return e;
-			return null;
-		}
-
-		macro public static function where( ethis : ExprOf<xmpp.XML.NodeIterator>, cond : ExprOf<Bool> ) {
-			var f = macro function( element : XML ) return $cond;
-			var e = macro xmpp.XML.NodeIterator.doFilter( $ethis, $f );
-			return e;
-		}
-
-		macro public static function find( ethis : ExprOf<xmpp.XML.NodeIterator>, cond : ExprOf<Bool> ) {
-			var f = macro function(element:XML) return $cond;
-			var e = macro xmpp.XML.NodeIterator.doFind( $ethis, $f );
-			return e;
-		}
-	 */
+	/**
+		Number of elements, same as `length`.
+	**/
+	public inline function count():Int
+		return this.length;
 }
 
 @:noDoc
