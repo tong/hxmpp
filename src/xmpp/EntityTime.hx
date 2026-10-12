@@ -76,6 +76,7 @@ class EntityTime {
 		The answer reveals the local time zone of the user.
 		An entity answering requests MUST advertise the `XMLNS` feature in its service discovery responses.
 	**/
+	@:noUsing
 	public static function handleRequests(stream:Stream) {
 		stream.features.set(XMLNS, (iq, respond) -> {
 			respond((iq.type == Get) ? EResponse.Result(createTime(Date.now())) : EResponse.Error(new xmpp.Stanza.Error(cancel, bad_request)));

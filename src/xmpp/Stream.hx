@@ -111,9 +111,6 @@ abstract class Stream {
 					default:
 				}
 			});
-		} else {
-			trace("TODO");
-			// query(iq, null);
 		}
 		send(iq);
 		return iq;
@@ -133,9 +130,6 @@ abstract class Stream {
 					default:
 				}
 			});
-		} else {
-			trace("TODO");
-			// query(iq, null);
 		}
 		send(iq);
 		return iq;

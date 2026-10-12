@@ -112,6 +112,7 @@ class Bob {
 
 		`lookup` returns the `<data/>` element (see `create`) for a cid, or `null` if unknown (answered with `item-not-found`).
 	**/
+	@:noUsing
 	public static function handleRequests(stream:Stream, lookup:(cid:String) -> Null<XML>) {
 		stream.features.set(XMLNS, (iq, respond) -> {
 			if (iq.type != Get) {

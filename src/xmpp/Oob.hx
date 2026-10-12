@@ -60,6 +60,7 @@ class Oob {
 		`handler` is called with the url and description, and MUST call `respond` once
 		the file was retrieved completely (`Fetched`), retrieving failed (`Failed`), or with `Rejected`.
 	**/
+	@:noUsing
 	public static function handleRequests(stream:Stream, handler:(url:String, desc:Null<String>, from:Null<String>, respond:OobResult->Void) -> Void) {
 		stream.features.set(XMLNS, (iq, respond) -> {
 			final data = (iq.type == Set) ? parse(iq.payload) : null;

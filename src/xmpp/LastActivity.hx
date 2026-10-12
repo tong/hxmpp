@@ -52,6 +52,7 @@ class LastActivity {
 		(requests are answered with `service-unavailable` if this is not used).
 		An entity answering requests MUST advertise the `XMLNS` feature in its service discovery responses.
 	**/
+	@:noUsing
 	public static function handleRequests(stream:Stream, idleSeconds:() -> Int) {
 		stream.features.set(XMLNS, (iq, respond) -> {
 			if (iq.type != Get) {
