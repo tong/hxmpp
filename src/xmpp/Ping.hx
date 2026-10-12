@@ -1,7 +1,6 @@
 package xmpp;
 
 import xmpp.IQ;
-import xmpp.Response.EResponse;
 
 /**
 	Application-level pings, e.g. to check that the connection or another entity is alive.
@@ -28,7 +27,7 @@ class Ping {
 	@:noUsing
 	public static function handleRequests(stream:Stream) {
 		stream.features.set(XMLNS, (iq, respond) -> {
-			respond((iq.type == Get) ? EResponse.Result(null) : EResponse.Error(new xmpp.Stanza.Error(cancel, bad_request)));
+			respond((iq.type == Get) ? Response.success() : Response.failure(cancel, bad_request));
 		});
 	}
 }

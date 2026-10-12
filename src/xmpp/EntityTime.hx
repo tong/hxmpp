@@ -1,7 +1,6 @@
 package xmpp;
 
 import xmpp.IQ;
-import xmpp.Response.EResponse;
 
 typedef TEntityTime = {
 	/**
@@ -79,7 +78,7 @@ class EntityTime {
 	@:noUsing
 	public static function handleRequests(stream:Stream) {
 		stream.features.set(XMLNS, (iq, respond) -> {
-			respond((iq.type == Get) ? EResponse.Result(createTime(Date.now())) : EResponse.Error(new xmpp.Stanza.Error(cancel, bad_request)));
+			respond((iq.type == Get) ? Response.success(createTime(Date.now())) : Response.failure(cancel, bad_request));
 		});
 	}
 

@@ -107,7 +107,7 @@ abstract class Stream {
 				final iq:IQ = xml;
 				switch iq.type {
 					case Result: handler(Result(cast iq.payload));
-					case Error: handler(Error(iq.error));
+					case Error: handler(Error(iq.error ?? new xmpp.Stanza.Error(cancel, undefined_condition)));
 					default:
 				}
 			});
@@ -126,7 +126,7 @@ abstract class Stream {
 				final iq:IQ = xml;
 				switch iq.type {
 					case Result: handler(Result(cast iq.payload));
-					case Error: handler(Error(iq.error));
+					case Error: handler(Error(iq.error ?? new xmpp.Stanza.Error(cancel, undefined_condition)));
 					default:
 				}
 			});

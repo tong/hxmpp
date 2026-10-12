@@ -1,7 +1,6 @@
 package xmpp;
 
 import xmpp.IQ;
-import xmpp.Response.EResponse;
 
 typedef OobData = {
 	/** Url of the resource **/
@@ -65,13 +64,13 @@ class Oob {
 		stream.features.set(XMLNS, (iq, respond) -> {
 			final data = (iq.type == Set) ? parse(iq.payload) : null;
 			if (data == null) {
-				respond(EResponse.Error(new xmpp.Stanza.Error(modify, bad_request)));
+				respond(Response.failure(modify, bad_request));
 				return;
 			}
 			handler(data.url, data.desc, iq.from, result -> respond(switch result {
-				case Fetched: EResponse.Result(null);
-				case Failed: EResponse.Error(new xmpp.Stanza.Error(cancel, item_not_found));
-				case Rejected: EResponse.Error(new xmpp.Stanza.Error(modify, not_acceptable));
+				case Fetched: Response.success();
+				case Failed: Response.failure(cancel, item_not_found);
+				case Rejected: Response.failure(modify, not_acceptable);
 			}));
 		});
 	}

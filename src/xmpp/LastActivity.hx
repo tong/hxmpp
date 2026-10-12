@@ -1,7 +1,6 @@
 package xmpp;
 
 import xmpp.IQ;
-import xmpp.Response.EResponse;
 
 typedef TLastActivity = {
 	/** Seconds since the last activity (see `LastActivity` for the meaning) **/
@@ -56,11 +55,11 @@ class LastActivity {
 	public static function handleRequests(stream:Stream, idleSeconds:() -> Int) {
 		stream.features.set(XMLNS, (iq, respond) -> {
 			if (iq.type != Get) {
-				respond(EResponse.Error(new xmpp.Stanza.Error(cancel, bad_request)));
+				respond(Response.failure(cancel, bad_request));
 				return;
 			}
 			final seconds = idleSeconds();
-			respond(EResponse.Result(Payload.create(XMLNS).set("seconds", Std.string(seconds < 0 ? 0 : seconds))));
+			respond(Response.success(Payload.create(XMLNS).set("seconds", Std.string(seconds < 0 ? 0 : seconds))));
 		});
 	}
 }

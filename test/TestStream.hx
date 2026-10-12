@@ -334,4 +334,13 @@ class TestStream extends utest.Test {
 		stream.recv('<presence from="romeo@example.net/orchard" type="unavailable"/>');
 		equals('available,unavailable', types.join(','));
 	}
+
+	function test_error_response_without_error() {
+		final stream = createReadyStream();
+		var response:Response<XML> = null;
+		final iq = stream.get('jabber:iq:version', r -> response = r);
+		stream.recv('<iq type="error" id="${iq.id}" from="example.com"/>');
+		isFalse(response.ok());
+		equals(undefined_condition, response.error.condition);
+	}
 }

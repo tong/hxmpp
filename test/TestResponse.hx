@@ -12,6 +12,37 @@ class TestResponse extends utest.Test {
 		isFalse(r.ok());
 		isFalse(r);
 	}
+
+	function test_empty_result() {
+		final r:Response<XML> = Result(null);
+		isTrue(r.ok());
+		isNull(r.payload);
+		isNull(r.xmlns);
+		isFalse(r.is('jabber:iq:version'));
+		isNull(r.toXML());
+	}
+
+	function test_payload_namespace() {
+		final r:Response<XML> = Result(XML.fromString('<query xmlns="jabber:iq:version"/>'));
+		equals('jabber:iq:version', r.xmlns);
+		isTrue(r.is('jabber:iq:version'));
+		equals('query', r.toXML().name);
+	}
+
+	function test_helpers() {
+		final r:Response<XML> = Response.success();
+		isTrue(r);
+		isNull(r.payload);
+		final r:Response<XML> = Response.success(XML.create('x'));
+		equals('x', r.payload.name);
+		final r:Response<XML> = Response.failure(cancel, item_not_found, 'gone');
+		isFalse(r);
+		equals(xmpp.Stanza.ErrorCondition.item_not_found, r.error.condition);
+		equals(xmpp.Stanza.ErrorType.cancel, r.error.type);
+		equals('gone', r.error.text);
+		equals('error', r.toXML().name);
+		raises(() -> r.sure());
+	}
 	/*
 		function test_payload() {
 			var r : Response<XML> = Result('<query xmlns="disktree"></query>');

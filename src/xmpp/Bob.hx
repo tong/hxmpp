@@ -5,7 +5,6 @@ import haxe.crypto.Sha1;
 import haxe.crypto.Sha256;
 import haxe.io.Bytes;
 import xmpp.IQ;
-import xmpp.Response.EResponse;
 
 typedef BobData = {
 	/** Content id, `algo+hash@bob.xmpp.org` **/
@@ -116,11 +115,11 @@ class Bob {
 	public static function handleRequests(stream:Stream, lookup:(cid:String) -> Null<XML>) {
 		stream.features.set(XMLNS, (iq, respond) -> {
 			if (iq.type != Get) {
-				respond(EResponse.Error(new xmpp.Stanza.Error(cancel, bad_request)));
+				respond(Response.failure(cancel, bad_request));
 				return;
 			}
 			final data = lookup(iq.payload.get('cid'));
-			respond((data == null) ? EResponse.Error(new xmpp.Stanza.Error(cancel, item_not_found)) : EResponse.Result(data));
+			respond((data == null) ? Response.failure(cancel, item_not_found) : Response.success(data));
 		});
 	}
 

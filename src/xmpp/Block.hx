@@ -1,7 +1,6 @@
 package xmpp;
 
 import xmpp.IQ;
-import xmpp.Response.EResponse;
 
 /**
 	Block communication with other entities.
@@ -56,18 +55,18 @@ class Block {
 	public static function handlePushes(stream:Stream, handler:(blocked:Bool, jids:Array<String>) -> Void) {
 		stream.features.set(XMLNS, (iq, respond) -> {
 			if (iq.type != Set || !isFromOwnServer(stream, iq.from)) {
-				respond(EResponse.Error(new xmpp.Stanza.Error(cancel, service_unavailable)));
+				respond(Response.failure(cancel, service_unavailable));
 				return;
 			}
 			switch iq.payload.name {
 				case "block":
-					respond(EResponse.Result(null));
+					respond(Response.success());
 					handler(true, getItems(iq.payload));
 				case "unblock":
-					respond(EResponse.Result(null));
+					respond(Response.success());
 					handler(false, getItems(iq.payload));
 				default:
-					respond(EResponse.Error(new xmpp.Stanza.Error(modify, bad_request)));
+					respond(Response.failure(modify, bad_request));
 			}
 		});
 	}
