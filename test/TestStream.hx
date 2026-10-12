@@ -351,4 +351,121 @@ class TestStream extends utest.Test {
 		stream.get('jabber:iq:version', r -> {});
 		equals(1, sent.length);
 	}
+
+	static inline var COMPONENT_HEADER = "<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:component:accept' from='plays.shakespeare.lit' id='3BF96D32'>";
+
+	function startComponent(?data:Array<String>):{stream:xmpp.component.Stream, sent:Array<String>, results:Array<Null<xmpp.Stanza.Error>>, ends:Int} {
+		final r = {stream: new xmpp.component.Stream('plays', 'shakespeare.lit'), sent: [], results: [], ends: 0};
+		r.stream.output = str -> r.sent.push(str);
+		r.stream.onEnd = () -> r.ends++;
+		r.stream.start('secret', (?error) -> r.results.push(error));
+		if (data != null)
+			for (d in data)
+				r.stream.recv(d);
+		return r;
+	}
+
+	function test_component_host() {
+		final stream = new xmpp.component.Stream('plays', 'shakespeare.lit');
+		equals('plays.shakespeare.lit', stream.host);
+		equals('shakespeare.lit', stream.domain);
+		final stream = new xmpp.component.Stream('upload.example.org');
+		equals('upload.example.org', stream.host);
+		equals('upload.example.org', stream.name);
+		equals('upload.example.org', stream.domain);
+		stream.output = str -> {};
+		equals(stream, stream.start('secret', (?e) -> {}));
+		equals('upload.example.org', stream.jid);
+	}
+
+	function test_component_handshake() {
+		// https://xmpp.org/extensions/xep-0114.html#protocol
+		final c = startComponent([COMPONENT_HEADER]);
+		equals(2, c.sent.length);
+		final handshake = XML.fromString(c.sent[1]);
+		equals('handshake', handshake.name);
+		equals(haxe.crypto.Sha1.encode('3BF96D32secret'), handshake.text);
+		equals('3BF96D32', c.stream.id);
+		isFalse(c.stream.ready);
+		equals(0, c.results.length);
+		c.stream.recv('<handshake/>');
+		isTrue(c.stream.ready);
+		equals(1, c.results.length);
+		isNull(c.results[0]);
+	}
+
+	function test_component_handshake_errors() {
+		// invalid secret
+		var c = startComponent([COMPONENT_HEADER, "<stream:error><not-authorized xmlns='urn:ietf:params:xml:ns:xmpp-streams'/></stream:error></stream:stream>"]);
+		equals(1, c.results.length);
+		equals(not_authorized, c.results[0].condition);
+		isFalse(c.stream.ready);
+		equals(1, c.ends);
+
+		// error related to the stream header (header, error and stream end at once)
+		c = startComponent([COMPONENT_HEADER + "<stream:error><host-unknown xmlns='urn:ietf:params:xml:ns:xmpp-streams'/><text xmlns='urn:ietf:params:xml:ns:xmpp-streams'>Unknown component</text><app xmlns='urn:example'/></stream:error></stream:stream>"]);
+		equals(1, c.results.length);
+		equals('host-unknown', c.results[0].condition);
+		equals('Unknown component', c.results[0].text);
+
+		// stream closed
+		c = startComponent([COMPONENT_HEADER, '</stream:stream>']);
+		equals(1, c.results.length);
+		equals(undefined_condition, c.results[0].condition);
+		equals(1, c.ends);
+
+		// missing stream id
+		c = startComponent(["<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:component:accept'>", '<handshake/>']);
+		equals(1, c.results.length);
+		equals('invalid-id', c.results[0].condition);
+		equals('</stream:stream>', c.sent[c.sent.length - 1]);
+		equals(1, c.sent.filter(s -> s == '</stream:stream>').length);
+		equals(0, c.sent.filter(s -> s.indexOf('handshake') != -1).length);
+
+		// unexpected element
+		c = startComponent([COMPONENT_HEADER, '<foo/>', '<handshake/>']);
+		equals(1, c.results.length);
+		equals(undefined_condition, c.results[0].condition);
+		isFalse(c.stream.ready);
+		equals('</stream:stream>', c.sent[c.sent.length - 1]);
+	}
+
+	function test_component_from() {
+		final c = startComponent([COMPONENT_HEADER, '<handshake/>']);
+		final sent = c.sent;
+		function last():XML
+			return XML.fromString(sent[sent.length - 1]);
+
+		c.stream.get('jabber:iq:version', 'juliet@example.com', r -> {});
+		equals('plays.shakespeare.lit', last().get('from'));
+		equals('juliet@example.com', last().get('to'));
+		c.stream.send(new xmpp.Message('juliet@example.com', 'hi'));
+		equals('plays.shakespeare.lit', last().get('from'));
+		final m = new xmpp.Message('juliet@example.com', 'hi');
+		m.from = 'bot@plays.shakespeare.lit';
+		c.stream.send(m);
+		equals('bot@plays.shakespeare.lit', last().get('from'));
+		// nonzas are not stamped
+		c.stream.send(XML.create('foo'));
+		isFalse(last().has('from'));
+
+		// responses are sent from the address of the request
+		c.stream.recv("<iq type='get' id='p1' from='juliet@example.com/balcony' to='bot@plays.shakespeare.lit'><ping xmlns='urn:xmpp:ping'/></iq>");
+		equals('error', last().get('type'));
+		equals('bot@plays.shakespeare.lit', last().get('from'));
+		equals('juliet@example.com/balcony', last().get('to'));
+		xmpp.Ping.handleRequests(c.stream);
+		c.stream.recv("<iq type='get' id='p2' from='juliet@example.com/balcony' to='plays.shakespeare.lit'><ping xmlns='urn:xmpp:ping'/></iq>");
+		equals('result', last().get('type'));
+		equals('plays.shakespeare.lit', last().get('from'));
+
+		// client streams do not set from
+		final stream = new xmpp.client.Stream('example.com');
+		final out = [];
+		stream.output = str -> out.push(str);
+		stream.start(f -> {});
+		stream.recv("<stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' id='abc' from='example.com' version='1.0'><stream:features></stream:features>");
+		stream.recv("<iq type='get' id='p3' from='example.com'><ping xmlns='urn:xmpp:ping'/></iq>");
+		isFalse(XML.fromString(out[out.length - 1]).has('from'));
+	}
 }

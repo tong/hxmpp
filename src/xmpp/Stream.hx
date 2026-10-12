@@ -179,6 +179,11 @@ abstract class Stream {
 		return xml;
 	}
 
+	/**
+		Called before sending the `response` to an iq `request`.
+	**/
+	function prepareResponse(request:IQ, response:IQ) {}
+
 	/*
 		public function sendStanza<T:xmpp.Stanza>(stanza:T, ?handler:T->Void) : T {
 			if(handler != null) {
@@ -388,10 +393,12 @@ abstract class Stream {
 						}
 						final ns = iq.payload.xmlns;
 						function handleRes(?res) {
-							send((res == null) ? iq.createError({type: cancel, condition: service_unavailable}) : switch res {
+							final response = (res == null) ? iq.createError({type: cancel, condition: service_unavailable}) : switch res {
 								case Result(r): iq.createResult(r);
 								case Error(e): iq.createError(e);
-							});
+							}
+							prepareResponse(iq, response);
+							send(response);
 						}
 						if (features != null && features.exists(ns)) {
 							features.get(ns)(iq, handleRes);
