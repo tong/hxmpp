@@ -6,6 +6,7 @@ import xmpp.Message;
 import xmpp.Response;
 import xmpp.URI;
 import xmpp.XML;
+import xmpp.client.Nickname;
 
 using xmpp.Attention;
 using xmpp.ChatState;
@@ -13,6 +14,7 @@ using xmpp.DelayedDelivery;
 using xmpp.HttpFileUpload;
 using xmpp.LastMessageCorrection;
 using xmpp.Oob;
+using xmpp.client.Nickname;
 
 class TestExtensions extends utest.Test {
 	function test_last_message_correction() {
@@ -837,6 +839,55 @@ class TestExtensions extends utest.Test {
 
 		stream.recv('<iq type="set" id="o4" from="stpeter@jabber.org/work"><query xmlns="jabber:iq:oob"/></iq>');
 		equals('bad-request', lastSent().elements.named('error')[0].firstElement.name);
+	}
+
+	function test_nickname() {
+		// https://xmpp.org/extensions/xep-0172.html#exchange-subscription
+		final p = new xmpp.Presence('narrator@moby-dick.lit', subscribe);
+		p.nickname('Ishmael').nickname('Ishmael');
+		final nicks = p.toXML().elements.filter(e -> e.is(Nickname.XMLNS));
+		equals(1, nicks.length);
+		equals('nick', nicks[0].name);
+		equals('Ishmael', nicks[0].text);
+		equals('Ishmael', p.getNickname());
+		p.nickname('Starbuck');
+		equals('Starbuck', p.getNickname());
+		p.nickname(null);
+		isNull(p.getNickname());
+		equals(0, p.properties.length);
+
+		// https://xmpp.org/extensions/xep-0172.html#exchange-firstmsg
+		final m = Message.fromString("<message from='narrator@moby-dick.lit/pda' to='starbuck@moby-dick.lit' type='chat'><body>Call me Ishmael.</body><nick xmlns='http://jabber.org/protocol/nick'>Ishmael</nick></message>");
+		equals('Ishmael', m.getNickname());
+		isNull(new Message('romeo@example.net', 'hi').getNickname());
+		isNull(Message.fromString("<message><nick xmlns='http://jabber.org/protocol/nick'/></message>").getNickname());
+		isNull(Message.fromString("<message><nick xmlns='urn:other'>x</nick></message>").getNickname());
+	}
+
+	function test_nickname_pep() {
+		// https://xmpp.org/extensions/xep-0172.html#pep
+		Nickname.publishNickname(stream, 'Ishmael', r -> {});
+		final iq = lastSent();
+		equals('set', iq.get('type'));
+		final publish = iq.firstElement.firstElement;
+		equals(xmpp.PubSub.XMLNS, iq.firstElement.get('xmlns'));
+		equals('publish', publish.name);
+		equals(Nickname.XMLNS, publish.get('node'));
+		final nick = publish.firstElement.firstElement;
+		equals('nick', nick.name);
+		equals(Nickname.XMLNS, nick.get('xmlns'));
+		equals('Ishmael', nick.text);
+		Nickname.publishNickname(stream, null, r -> {});
+		isNull(Nickname.parseNickname(lastSent().firstElement.firstElement.firstElement.firstElement));
+
+		final m = Message.fromString("<message from='narrator@moby-dick.lit' to='starbuck@moby-dick.lit/bridge'><event xmlns='http://jabber.org/protocol/pubsub#event'><items node='http://jabber.org/protocol/nick'><item><nick xmlns='http://jabber.org/protocol/nick'>Ishmael</nick></item></items></event></message>");
+		switch xmpp.PubSub.getEvent(m) {
+			case Items(node, items, _):
+				equals(Nickname.XMLNS, node);
+				equals('Ishmael', Nickname.parseNickname(items[0].firstElement));
+			case _:
+				fail();
+		}
 	}
 
 	function test_chat_state() {
