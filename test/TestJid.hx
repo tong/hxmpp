@@ -138,7 +138,8 @@ class TestJid extends utest.Test {
 
 		var str = '1\\202\\223\\264\\275\\2f6\\3a7\\3c8\\3e9\\4010\\5c';
 		equals("1 2\"3&4'5/6:7<8>9@10\\", Jid.unescapeNode(str));
-		equals(str, Jid.escapeNode(Jid.unescapeNode(str)));
+		// a trailing backslash is not followed by an escape sequence, so not escaped (XEP-0106)
+		equals('1\\202\\223\\264\\275\\2f6\\3a7\\3c8\\3e9\\4010\\', Jid.escapeNode(Jid.unescapeNode(str)));
 	}
 
 	function test_equals() {
@@ -183,5 +184,56 @@ class TestJid extends utest.Test {
 		equals("example.com", jid.domain);
 		isNull(jid.node);
 		isNull(jid.resource);
+	}
+
+	function test_escape_xep() {
+		// https://xmpp.org/extensions/xep-0106.html#examples
+		final examples = [
+			['space cadet', 'space\\20cadet'],
+			['call me "ishmael"', 'call\\20me\\20\\22ishmael\\22'],
+			['at&t guy', 'at\\26t\\20guy'],
+			["d'artagnan", 'd\\27artagnan'],
+			['/.fanboy', '\\2f.fanboy'],
+			['::foo::', '\\3a\\3afoo\\3a\\3a'],
+			['<foo>', '\\3cfoo\\3e'],
+			['user@host', 'user\\40host'],
+			['c:\\net', 'c\\3a\\net'],
+			['c:\\\\net', 'c\\3a\\\\net'],
+			['c:\\cool stuff', 'c\\3a\\cool\\20stuff'],
+			['c:\\5commas', 'c\\3a\\5c5commas'],
+		];
+		for (e in examples) {
+			equals(e[1], Jid.escapeNode(e[0]));
+			equals(e[0], Jid.unescapeNode(e[1]));
+		}
+		// \20 must not be first or last
+		equals('space\\20cadet', Jid.escapeNode('  space cadet '));
+		// unknown sequences are kept
+		equals('a\\41b', Jid.unescapeNode('a\\41b'));
+	}
+
+	function test_compare() {
+		final a:Jid = 'Juliet@Capulet.com/balcony';
+		final b:Jid = 'juliet@capulet.com/balcony';
+		final c:Jid = 'juliet@capulet.com/Balcony';
+		isTrue(a == b);
+		isFalse(a != b);
+		isTrue(a.equals(b));
+		isFalse(a == c);
+		isTrue(a != c);
+		equals('juliet@capulet.com/Balcony', Jid.normalize('JULIET@CAPULET.COM/Balcony'));
+		equals('capulet.com', Jid.normalize('Capulet.COM'));
+
+		final n:Jid = null;
+		isTrue(n == null);
+		isFalse(a == null);
+		isTrue(a != null);
+		isFalse(a.equals(null));
+	}
+
+	function test_from_null() {
+		final s:String = null;
+		final j:Jid = s;
+		isTrue(j == null);
 	}
 }

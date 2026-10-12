@@ -78,6 +78,6 @@ class Carbons {
 	static function isFromOwnBareJid(stream:Stream, from:Null<String>):Bool {
 		if (from == null || stream.jid == null || Jid.parseResource(from) != null)
 			return false;
-		return from.toLowerCase() == Jid.parseBare(stream.jid).toLowerCase();
+		return Jid.normalize(from) == Jid.normalize(Jid.parseBare(stream.jid));
 	}
 }

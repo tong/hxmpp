@@ -19,6 +19,9 @@ using StringTools;
 	Each allowable portion of a jid must not be more than 1023 bytes in length,
 	resulting in a maximum total size (including the `@` and `/` separators) of 3071 bytes.
 
+	Node and domain are case-insensitive, the resource is case-sensitive:
+	`==` compares normalized jids (see `normalize`).
+
 	- [Extensible Messaging and Presence Protocol: Address Format](https://tools.ietf.org/html/rfc7622)
 	- [XEP-0106: JID Escaping](https://xmpp.org/extensions/xep-0106.html)
 **/
@@ -28,6 +31,7 @@ abstract Jid(CJid) from CJid {
 	public static inline var MAX_PARTSIZE = 1023;
 	public static inline var MAX_SIZE = 3071;
 
+	@:deprecated("Jid.EREG only matches ASCII jids with node, use Jid.isValid")
 	public static final EREG = ~/^(([A-Z0-9._%-]{1,1023})@([A-Z0-9._%-]{1,1023})((?:\/)([A-Z0-9._%-]{1,1023}))?)$/i;
 
 	public inline function new(?node:Null<String>, domain:String, ?resource:Null<String>)
@@ -47,9 +51,29 @@ abstract Jid(CJid) from CJid {
 	@:to public inline function toArray():Array<Null<String>>
 		return [this.node, this.domain, this.resource];
 
-	@:op(A == B) public function equals(jid:Jid):Bool {
-		return if (this.node != jid.node || this.domain != jid.domain || this.resource != jid.resource) false else true;
+	/**
+		Returns `true` if both jids are equal, ignoring the case of node and domain.
+	**/
+	public function equals(jid:Null<Jid>):Bool {
+		// Compare the underlying objects, `==` and `!=` of Jid are overloaded
+		final other:Null<CJid> = cast jid;
+		if (other == null)
+			return false;
+		final o:Jid = other;
+		return normalize(toString()) == normalize(o.toString());
 	}
+
+	@:op(A == B) static function eq(a:Null<Jid>, b:Null<Jid>):Bool {
+		final x:Null<CJid> = cast a;
+		final y:Null<CJid> = cast b;
+		if (x == null || y == null)
+			return x == y;
+		final j:Jid = x;
+		return j.equals(y);
+	}
+
+	@:op(A != B) static inline function neq(a:Null<Jid>, b:Null<Jid>):Bool
+		return !eq(a, b);
 
 	@:arrayAccess function getPart(i:Int):String {
 		return switch i {
@@ -75,9 +99,30 @@ abstract Jid(CJid) from CJid {
 	@:from public static inline function fromArray(arr:Array<String>):Jid
 		return new Jid(arr[0], arr[1], arr[2]);
 
-	@:from public static function fromString(str:String):Jid {
+	/**
+		Parses a jid, `null` if `str` is `null`.
+	**/
+	@:from public static function fromString(str:Null<String>):Null<Jid> {
+		if (str == null)
+			return null;
 		final p = split(str);
 		return new Jid(p.node, p.domain, p.resource);
+	}
+
+	/**
+		Returns the jid with node and domain in lowercase, for comparing jids.
+
+		This approximates the [RFC 7622](https://tools.ietf.org/html/rfc7622) preparation of node and domain
+		(the full PRECIS profiles are not applied); the resource is case-sensitive and kept as is.
+	**/
+	public static function normalize(str:String):String {
+		final p = split(str);
+		var s = p.domain.toLowerCase();
+		if (p.node != null)
+			s = p.node.toLowerCase() + '@' + s;
+		if (p.resource != null)
+			s += '/' + p.resource;
+		return s;
 	}
 
 	/**
@@ -87,7 +132,7 @@ abstract Jid(CJid) from CJid {
 		but does not apply the full PRECIS profiles.
 	**/
 	#if python
-	// TODO: HACK: python complains: Null safety: Cannot assign nullable value here.
+	// Haxe 4 null safety rejects EReg.match on python ("Cannot assign nullable value here"); not needed with Haxe 5
 	@:nullSafety(Off)
 	#end
 	public static function isValid(str:String):Bool {
@@ -150,9 +195,17 @@ abstract Jid(CJid) from CJid {
 		};
 	}
 
+	/** Characters escaped by XEP-0106 and their escape sequences **/
+	static final ESCAPES = [
+		" " => "20", "\"" => "22", "&" => "26", "'" => "27", "/" => "2f",
+		":" => "3a", "<" => "3c", ">" => "3e", "@" => "40", "\\" => "5c"
+	];
+
 	/**
-		Escapes the node portion of a JID according to [XEP-0106:JID Escaping](https://xmpp.org/extensions/xep-0106.html).
-		Escaping replaces characters prohibited by node-prep with escape sequences.
+		Escapes the node portion of a JID according to [XEP-0106: JID Escaping](https://xmpp.org/extensions/xep-0106.html).
+
+		Characters disallowed in a node are replaced with escape sequences (e.g. `\20` for a space).
+		A `\` is only escaped if followed by an escape sequence; leading and trailing spaces are removed.
 
 		Typically, escaping is performed only by a client that is processing information
 		provided by a human user in unescaped form, or by a gateway to some external system
@@ -160,22 +213,30 @@ abstract Jid(CJid) from CJid {
 	**/
 	@xep(106)
 	public static function escapeNode(s:String):String {
-		// s.split("&").join("&amp;")
-		return s.replace("\\", "\\5c")
-			.replace(" ", "\\20")
-			.replace("\"", "\\22")
-			.replace("&", "\\26")
-			.replace("'", "\\27")
-			.replace("/", "\\2f")
-			.replace(":", "\\3a")
-			.replace("<", "\\3c")
-			.replace(">", "\\3e")
-			.replace("@", "\\40");
+		var start = 0;
+		var end = s.length;
+		while (start < end && s.charAt(start) == " ")
+			start++;
+		while (end > start && s.charAt(end - 1) == " ")
+			end--;
+		final buf = new StringBuf();
+		for (i in start...end) {
+			final c = s.charAt(i);
+			if (c == "\\") {
+				final seq = s.substr(i + 1, 2);
+				buf.add(isEscapeSequence(seq) ? "\\5c" : c);
+			} else {
+				final e = ESCAPES.get(c);
+				buf.add(e == null ? c : "\\" + e);
+			}
+		}
+		return buf.toString();
 	}
 
 	/**
-		Un-escapes the node portion of a JID according to [XEP-0106:JID Escaping](https://xmpp.org/extensions/xep-0106.html).
-		Escaping replaces characters prohibited by node-prep with escape sequences.
+		Un-escapes the node portion of a JID according to [XEP-0106: JID Escaping](https://xmpp.org/extensions/xep-0106.html).
+
+		Only the defined escape sequences are replaced.
 
 		Typically, unescaping is performed only by a client that wants to display JIDs
 		containing escaped characters to a human user, or by a gateway to some
@@ -184,16 +245,31 @@ abstract Jid(CJid) from CJid {
 	**/
 	@xep(106)
 	public static function unescapeNode(s:String):String {
-		return s.replace("\\20", " ")
-			.replace("\\22", "\"")
-			.replace("\\26", "&")
-			.replace("\\27", "'")
-			.replace("\\2f", "/")
-			.replace("\\3a", ":")
-			.replace("\\3c", "<")
-			.replace("\\3e", ">")
-			.replace("\\40", "@")
-			.replace("\\5c", "\\");
+		final buf = new StringBuf();
+		var i = 0;
+		while (i < s.length) {
+			final c = s.charAt(i);
+			final seq = s.substr(i + 1, 2);
+			if (c == "\\" && isEscapeSequence(seq)) {
+				for (k => v in ESCAPES)
+					if (v == seq) {
+						buf.add(k);
+						break;
+					}
+				i += 3;
+			} else {
+				buf.add(c);
+				i++;
+			}
+		}
+		return buf.toString();
+	}
+
+	static function isEscapeSequence(seq:String):Bool {
+		for (v in ESCAPES)
+			if (v == seq)
+				return true;
+		return false;
 	}
 }
 

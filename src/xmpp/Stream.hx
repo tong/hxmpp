@@ -430,15 +430,9 @@ abstract class Stream {
 		return (a == null || b == null) ? a == b : normalizeJid(a, bare) == normalizeJid(b, bare);
 	}
 
-	static function normalizeJid(str:String, bare:Bool):String {
-		final parts = Jid.parseParts(str);
-		var s = parts[1].toLowerCase();
-		if (parts[0] != null)
-			s = parts[0].toLowerCase() + '@' + s;
-		if (!bare && parts[2] != null)
-			s += '/' + parts[2];
-		return s;
-	}
+	static function normalizeJid(str:String, bare:Bool):String
+		return Jid.normalize(bare ? Jid.parseBare(str) : str);
+
 
 	function reset() {
 		ready = false;

@@ -88,6 +88,7 @@ class Block {
 	}
 
 	static function isFromOwnServer(stream:Stream, from:Null<String>):Bool {
-		return from == null || (stream.jid != null && Jid.parseBare(from) == Jid.parseBare(stream.jid) && Jid.parseResource(from) == null);
+		return from == null
+			|| (stream.jid != null && Jid.parseResource(from) == null && Jid.normalize(from) == Jid.normalize(Jid.parseBare(stream.jid)));
 	}
 }

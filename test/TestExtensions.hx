@@ -197,7 +197,7 @@ class TestExtensions extends utest.Test {
 		equals('result', lastSent().get('type'));
 		equals('push1', lastSent().get('id'));
 
-		stream.recv('<iq from="juliet@capulet.com" type="set" id="push2"><unblock xmlns="urn:xmpp:blocking"/></iq>');
+		stream.recv('<iq from="Juliet@Capulet.com" type="set" id="push2"><unblock xmlns="urn:xmpp:blocking"/></iq>');
 		equals('true:romeo@montague.net false:', pushes.join(' '));
 		equals('result', lastSent().get('type'));
 
