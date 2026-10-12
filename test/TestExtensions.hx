@@ -900,4 +900,37 @@ class TestExtensions extends utest.Test {
 		isFalse(URI.parse('xmpp:a@b?message;body=x') == URI.parse('xmpp:a@b?message'));
 		isNull(URI.parse('mailto:a@b'));
 	}
+
+	function test_uri_encoding() {
+		// '+' is a literal character
+		equals('user+tag@example.com', URI.parse('xmpp:user+tag@example.com').jid);
+		equals('1+1', URI.parse('xmpp:a@b?message;body=1+1').params.get('body'));
+
+		// https://xmpp.org/rfcs/rfc5122.html#iri-uri (non-ascii as percent-encoded utf-8)
+		final u = URI.parse('xmpp:ji%C5%99i@%C4%8Dechy.example/v%20Praze');
+		equals('jiři@čechy.example/v Praze', u.jid);
+		equals('xmpp:ji%C5%99i@%C4%8Dechy.example/v%20Praze', u.toString());
+
+		// characters with a meaning in the uri are encoded
+		final u:URI = {jid: 'room@conf.example.com/nick?x#y;z', action: 'join', account: null, params: ['password' => 'a;b=c&d']};
+		final str = u.toString();
+		equals('xmpp:room@conf.example.com/nick%3Fx%23y%3Bz?join;password=a%3Bb%3Dc%26d', str);
+		isTrue(URI.parse(str) == u);
+
+		// characters outside the BMP
+		final u:URI = {jid: 'a@b', action: 'message', account: null, params: ['body' => 'hi 😀']};
+		equals('hi 😀', URI.parse(u.toString()).params.get('body'));
+
+		// parameters are sorted
+		final u:URI = {jid: 'a@b', action: 'message', account: null, params: ['subject' => 's', 'body' => 'b']};
+		equals('xmpp:a@b?message;body=b;subject=s', u.toString());
+
+		// invalid escapes are kept
+		equals('100%', URI.parse('xmpp:a@b?message;body=100%').params.get('body'));
+
+		final u = URI.parse('xmpp:a@b');
+		isFalse(u == null);
+		isFalse(null == u);
+		isTrue(u != null);
+	}
 }
