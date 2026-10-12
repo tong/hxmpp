@@ -3,7 +3,7 @@ import xmpp.DataForm;
 import xmpp.XML;
 
 class TestDataForm extends utest.Test {
-	static final TEST_FORM = new DataForm(result, "MyTitle", "MyInstructions", [
+	static final TEST_FORM = new DataForm(result, "MyTitle", ["MyInstructions"], [
 		{
 			label: "Some",
 			type: list_single,
@@ -15,7 +15,7 @@ class TestDataForm extends utest.Test {
 		function test(form:DataForm) {
 			equals(result, form.type);
 			equals("MyTitle", form.title);
-			equals("MyInstructions", form.instructions);
+			equals("MyInstructions", form.instructions[0]);
 			equals(1, form.fields.length);
 			equals("Some", form.fields[0].label);
 			equals(list_single, form.fields[0].type);
@@ -25,7 +25,7 @@ class TestDataForm extends utest.Test {
 			equals(0, form.items.length);
 		}
 
-		test(new DataForm(result, "MyTitle", "MyInstructions", [
+		test(new DataForm(result, "MyTitle", ["MyInstructions"], [
 			{
 				label: "Some",
 				type: list_single,
@@ -36,7 +36,7 @@ class TestDataForm extends utest.Test {
 		test({
 			type: result,
 			title: "MyTitle",
-			instructions: "MyInstructions",
+			instructions: ["MyInstructions"],
 			fields: [
 				{
 					label: "Some",
@@ -164,5 +164,63 @@ class TestDataForm extends utest.Test {
 		equals("name", parsed.reported[0].variable);
 		equals(2, parsed.items.length);
 		equals("b", parsed.items[1][0].values[0]);
+	}
+
+	function test_instructions() {
+		final form:DataForm = XML.fromString('<x xmlns="jabber:x:data" type="form"><instructions>one</instructions><instructions>two</instructions></x>');
+		equals('one,two', form.instructions.join(','));
+		equals(2, form.toXML().elements.named('instructions').length);
+		equals(0, new DataForm(FormType.form).instructions.length);
+	}
+
+	function test_values() {
+		// https://xmpp.org/extensions/xep-0045.html#createroom-reserved (shortened)
+		final form:DataForm = XML.fromString('<x xmlns="jabber:x:data" type="form">
+			<field var="FORM_TYPE" type="hidden"><value>http://jabber.org/protocol/muc#roomconfig</value></field>
+			<field var="muc#roomconfig_roomname" type="text-single" label="Natural-Language Room Name"><value>Room</value></field>
+			<field var="muc#roomconfig_persistentroom" type="boolean"><value>1</value></field>
+			<field var="muc#roomconfig_publicroom" type="boolean"><value>false</value></field>
+			<field var="muc#roomconfig_moderatedroom" type="boolean"/>
+			<field var="muc#roomconfig_roomadmins" type="jid-multi"><value>wiccarocks@shakespeare.lit</value><value>hecate@shakespeare.lit</value></field>
+			<field var="muc#roomconfig_roomsecret" type="text-private"><required/></field>
+			<field type="fixed"><value>Section</value></field>
+			<field var="custom" type="x-unknown"/>
+		</x>');
+		equals('http://jabber.org/protocol/muc#roomconfig', form.formType);
+		equals('Room', form.getValue('muc#roomconfig_roomname'));
+		equals(2, form.getValues('muc#roomconfig_roomadmins').length);
+		equals(0, form.getValues('nope').length);
+		isNull(form.getValue('nope'));
+		isNull(form.getField('nope'));
+		isTrue(form.getBool('muc#roomconfig_persistentroom'));
+		isFalse(form.getBool('muc#roomconfig_publicroom'));
+		isFalse(form.getBool('muc#roomconfig_moderatedroom'));
+		isNull(form.getBool('muc#roomconfig_roomname'));
+		isNull(form.getBool('nope'));
+
+		equals(jid_multi, DataForm.fieldType(form.getField('muc#roomconfig_roomadmins')));
+		equals(text_single, DataForm.fieldType(form.getField('custom')));
+		equals(text_single, DataForm.fieldType({variable: 'x'}));
+
+		final submit = form.createSubmit(['muc#roomconfig_roomname' => ['New Room'], 'extra' => ['x']]);
+		equals(FormType.submit, submit.type);
+		equals('FORM_TYPE,muc#roomconfig_roomname,muc#roomconfig_roomsecret,extra', [for (f in submit.fields) f.variable].join(','));
+		equals('http://jabber.org/protocol/muc#roomconfig', submit.formType);
+		equals('New Room', submit.getValue('muc#roomconfig_roomname'));
+		final xml = submit.toXML();
+		equals('submit', xml.get('type'));
+		for (f in xml.elements.named('field')) {
+			isFalse(f.has('label'));
+			isFalse(f.has('type'));
+		}
+
+		equals('cancel', DataForm.createCancel().toXML().get('type'));
+		equals(0, DataForm.createCancel().toXML().elements.length);
+	}
+
+	function test_reported_constructor() {
+		final form = new DataForm(result, null, null, null, [{variable: 'name'}], [[{variable: 'name', values: ['a']}]]);
+		equals(1, form.reported.length);
+		equals(1, form.items.length);
 	}
 }
