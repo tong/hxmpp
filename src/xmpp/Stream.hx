@@ -37,8 +37,15 @@ abstract class Stream {
 	/** Handle presence stanzas **/
 	public dynamic function onPresence(p:Presence) {}
 
-	/** Handle iq (get,set) stanzas **/
-	public dynamic function onIQ(iq:IQ, res:Null<Response<XML>>->Void) {}
+	/**
+		Handle iq requests (get, set) not handled by a `features` handler.
+
+		`res` MUST be called with the response, or `null` if the request is not supported
+		(answered with `service-unavailable`). By default all requests are answered with `service-unavailable`.
+	**/
+	public dynamic function onIQ(iq:IQ, res:Null<Response<XML>>->Void) {
+		res(null);
+	}
 
 	/**
 		Handle non-stanza xml.  
@@ -351,20 +358,33 @@ abstract class Stream {
 						trace('unhandled iq response');
 						#end
 					case Get, Set:
-						if (iq.payload != null) {
-							final ns = iq.payload.xmlns;
-							function handleRes(?res) {
-								send((res == null) ? iq.createError({type: cancel, condition: feature_not_implemented}) : switch res {
-									case Result(r): iq.createResult(r);
-									case Error(e): iq.createError(e);
-								});
-							}
-							if (features != null && features.exists(ns)) {
-								features.get(ns)(iq, handleRes);
-							} else {
-								onIQ(iq, handleRes);
-							}
+						if (iq.id == null) {
+							// No response possible without id
+							#if debug
+							trace('dropping iq request without id');
+							#end
+							return;
 						}
+						if (iq.payload == null) {
+							send(iq.createError({type: modify, condition: bad_request}));
+							return;
+						}
+						final ns = iq.payload.xmlns;
+						function handleRes(?res) {
+							send((res == null) ? iq.createError({type: cancel, condition: service_unavailable}) : switch res {
+								case Result(r): iq.createResult(r);
+								case Error(e): iq.createError(e);
+							});
+						}
+						if (features != null && features.exists(ns)) {
+							features.get(ns)(iq, handleRes);
+						} else {
+							onIQ(iq, handleRes);
+						}
+					case _:
+						// Missing or invalid type
+						if (iq.id != null)
+							send(iq.createError({type: modify, condition: bad_request}));
 				}
 			default:
 				if (!onNonza(xml))

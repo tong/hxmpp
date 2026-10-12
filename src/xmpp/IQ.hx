@@ -22,41 +22,7 @@ enum abstract IQType(String) from String to String {
 		The stanza reports an error that has occurred regarding processing or delivery of a get or set request.
 	**/
 	var Error = "error";
-
-	// @:from public static function fromString(s:String)
-	// 	return switch s {
-	// 		case 'get': Get;
-	// 		case 'set': Set;
-	// 		case 'result': Result;
-	// 		case 'error': Error;
-	// 		case null, _: null;
-	// 	}
 }
-
-/*
-	enum abstract IQRequestType(String) to String to IQType {
-	var Get = "get";
-	var Set = "set";
-	// @:from public static function fromString(s:String)
-	// 	return switch s {
-	// 		case 'get': Get;
-	// 		case 'set': Set;
-	// 		case null, _: null;
-	// 	}
-	}
-
-	enum abstract IQResponseType(String) to String {
-	var Result = "result";
-	var Error = "error";
-	// @:from public static function fromString(s:String)
-	// 	return switch s {
-	// 		case 'result': Result;
-	// 		case 'error': Error;
-	// 		case null, _: null;
-	// 	}
-	}
- */
-typedef Reply<T:xmpp.Payload> = xmpp.Response<T>;
 
 /**
 	Info/Query *request-response* mechanism stanza.
@@ -115,7 +81,7 @@ private class IQStanza extends Stanza {
 	/** Either: get/set/result/error **/
 	public var type:IQType;
 
-	/** The exclusive child element (mostly: `<query xmlns="ext-namspace"/>`) **/
+	/** The exclusive child element (mostly: `<query xmlns="extension-namespace"/>`) **/
 	public var payload:Null<Payload>;
 
 	/** Payload namespace **/
@@ -140,35 +106,56 @@ private class IQStanza extends Stanza {
 		return xml;
 	}
 
+	/**
+		Parses an `<iq/>` element.
+
+		The `type` is taken as is: it is `null` if missing and may be an invalid value (see `Stream` for the handling of invalid IQs).
+	**/
 	public static function parse(xml:XML):IQ {
-		final iq = Stanza.parseAttributes(new IQ(null, xml.get('type')), xml);
+		final iq = Stanza.parseAttributes(new IQ(), xml);
+		iq.type = xml.get('type');
 		switch iq.type {
 			case Error:
+				// The original payload may be included before the <error/> element
 				for (e in xml.elements) {
 					if (e.name == 'error')
 						iq.error = xmpp.Stanza.Error.fromXML(e);
 					else if (iq.payload == null)
 						iq.payload = e;
 				}
-			case Get, Set, Result:
+			case _:
 				iq.payload = xml.firstElement;
 		}
 		return iq;
 	}
 
+	/**
+		Creates the `result` response to this request.
+	**/
 	public inline function createResult(?payload:Payload):IQ
 		return new IQ(payload, Result, this.id, this.from);
 
+	/**
+		Creates the `error` response to this request.
+	**/
 	public function createError(e:xmpp.Stanza.Error):IQ {
-		var r = new IQ(Error, this.id, this.from);
+		final r = new IQ(null, Error, this.id, this.from);
 		r.error = e;
 		return r;
 	}
 }
 
+/**
+	The child element of an IQ, qualified by the namespace of the extension (e.g. `<query xmlns="jabber:iq:roster"/>`).
+
+	A `String` converts implicitly to a `<query/>` element with that string as **namespace**:
+	`stream.get("jabber:iq:version", handler)` sends `<query xmlns="jabber:iq:version"/>`.
+	To parse XML use `XML.fromString`.
+**/
 @:forward
 @:forwardStatics
 abstract Payload(XML) from XML to XML {
+	/** Namespace of the payload **/
 	public var xmlns(get, set):String;
 
 	inline function get_xmlns():String
@@ -177,26 +164,31 @@ abstract Payload(XML) from XML to XML {
 	inline function set_xmlns(s:String):String
 		return this.set('xmlns', s);
 
+	/** First child element of the payload, or `null` **/
 	public var content(get, never):XML;
 
 	inline function get_content():XML
 		return this.firstElement;
 
-	// inline function set_content(x:XML):XML {
-	// 	for (e in this.elements) this.removeChild(e);
-	// 	return this.append(x);
-	// }
-
 	inline function new(xml:XML)
 		this = xml;
 
+	/**
+		Returns the stanza error if this is an `<error/>` element, or `null`.
+	**/
 	public function toError():Null<xmpp.Stanza.Error> {
 		return (this.name != "error") ? null : xmpp.Stanza.Error.fromXML(this);
 	}
 
+	/**
+		Creates a payload element `name` qualified by namespace `xmlns`.
+	**/
 	public static inline function create(xmlns:String, name = 'query'):Payload
 		return new Payload(XML.create(name).set('xmlns', xmlns));
 
+	/**
+		Creates a `<query/>` element qualified by namespace `xmlns`.
+	**/
 	@:from public static inline function fromString(xmlns:String):Payload
 		return new Payload(XML.create('query').set('xmlns', xmlns));
 }

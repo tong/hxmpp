@@ -84,4 +84,27 @@ class TestIQ extends utest.Test {
 		equals("child", p.content.name);
 		equals("data", p.content.text);
 	}
+
+	function test_parse_type() {
+		var iq:IQ = '<iq id="1"><query xmlns="x"/></iq>';
+		isNull(iq.type);
+		iq = '<iq type="bogus" id="2"><query xmlns="x"/></iq>';
+		equals('bogus', (iq.type : String));
+		equals('x', iq.payload.xmlns);
+	}
+
+	function test_create_response() {
+		final req:IQ = '<iq type="get" id="r1" from="romeo@example.net/orchard"><query xmlns="jabber:iq:version"/></iq>';
+		final res = req.createResult(Payload.create('jabber:iq:version'));
+		equals(Result, res.type);
+		equals('r1', res.id);
+		equals('romeo@example.net/orchard', res.to);
+		final err = req.createError(new xmpp.Stanza.Error(cancel, service_unavailable));
+		final xml = err.toXML();
+		equals('error', xml.get('type'));
+		equals('r1', xml.get('id'));
+		isNull(err.payload);
+		equals(1, xml.elements.length);
+		equals('error', xml.firstElement.name);
+	}
 }

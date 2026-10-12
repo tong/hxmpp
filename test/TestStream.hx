@@ -281,4 +281,47 @@ class TestStream extends utest.Test {
 		stream.recv("<message><body>" + StringTools.lpad("", "x", 200) + "</body></message>");
 		equals(1, bodies);
 	}
+
+	function test_iq_requests() {
+		final stream = createReadyStream();
+		final sent = new Array<String>();
+		stream.output = str -> sent.push(str);
+		function last():XML
+			return XML.fromString(sent[sent.length - 1]);
+		function condition():String
+			return last().elements.named('error')[0].firstElement.name;
+
+		// unhandled requests: service-unavailable by default
+		stream.recv('<iq type="get" id="q1" from="romeo@example.net/orchard"><query xmlns="jabber:iq:version"/></iq>');
+		equals('error', last().get('type'));
+		equals('q1', last().get('id'));
+		equals('service-unavailable', condition());
+
+		// handler answering null: service-unavailable
+		stream.onIQ = (iq, res) -> res(null);
+		stream.recv('<iq type="set" id="q2" from="romeo@example.net/orchard"><query xmlns="urn:x"/></iq>');
+		equals('service-unavailable', condition());
+
+		// handler answering a result
+		stream.onIQ = (iq, res) -> res(Result(null));
+		stream.recv('<iq type="get" id="q3" from="romeo@example.net/orchard"><query xmlns="urn:x"/></iq>');
+		equals('result', last().get('type'));
+		equals('q3', last().get('id'));
+
+		// request without payload, missing and invalid type: bad-request
+		stream.recv('<iq type="get" id="q4" from="romeo@example.net/orchard"/>');
+		equals('q4', last().get('id'));
+		equals('bad-request', condition());
+		stream.recv('<iq id="q5" from="romeo@example.net/orchard"><query xmlns="urn:x"/></iq>');
+		equals('q5', last().get('id'));
+		equals('bad-request', condition());
+		stream.recv('<iq type="bogus" id="q6" from="romeo@example.net/orchard"><query xmlns="urn:x"/></iq>');
+		equals('q6', last().get('id'));
+		equals('bad-request', condition());
+
+		// request without id: no response
+		final count = sent.length;
+		stream.recv('<iq type="get" from="romeo@example.net/orchard"><query xmlns="urn:x"/></iq>');
+		equals(count, sent.length);
+	}
 }
