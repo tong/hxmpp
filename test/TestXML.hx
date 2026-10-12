@@ -168,6 +168,28 @@ class TestXML extends utest.Test {
 		isNull(xml.text);
 	}
 
+	function test_text_mixed() {
+		var xml:XML = '<body><b>bold</b> text</body>';
+		equals(' text', xml.text);
+
+		xml = '<body>a<![CDATA[ < b]]> c</body>';
+		equals('a < b c', xml.text);
+
+		xml = '<a><b/></a>';
+		isNull(xml.text);
+		xml.text = 'v';
+		equals('v', xml.text);
+		equals(1, xml.elements.length);
+
+		xml = '<a>one<b/>two</a>';
+		xml.text = 'new';
+		equals('new', xml.text);
+		equals('b', xml.elements[0].name);
+		xml.text = null;
+		isNull(xml.text);
+		equals(1, xml.elements.length);
+	}
+
 	function test_unset() {
 		var xml = XML.create('node').set('id', 'abc').set("key", "value");
 		notNull(xml.get('id'));

@@ -38,26 +38,34 @@ abstract XML(Xml) from Xml to Xml {
 		return ns;
 	}
 
+	/**
+		Character data of the element: all text and CDATA children joined, `null` if there are none.
+
+		Setting it replaces all text and CDATA children; child elements are kept.
+	**/
 	public var text(get, set):Text;
 
-	function get_text():Text
-		return switch type {
-			case XmlType.Element:
-				final c = this.firstChild();
-				if (c == null) null else c.nodeValue;
-			default: null;
+	function get_text():Text {
+		if (type != XmlType.Element)
+			return null;
+		var buf:StringBuf = null;
+		for (c in this) {
+			if (c.nodeType == XmlType.PCData || c.nodeType == XmlType.CData) {
+				if (buf == null)
+					buf = new StringBuf();
+				buf.add(c.nodeValue);
+			}
 		}
+		return (buf == null) ? null : buf.toString();
+	}
 
 	function set_text(v:Text):Text {
-		switch type {
-			case XmlType.Element:
-				final c = this.firstChild();
-				if (c != null)
-					c.nodeValue = v;
-				else
-					this.addChild(Xml.createPCData(v)); // TODO really
-			default:
-		}
+		if (type != XmlType.Element)
+			return v;
+		for (c in [for (c in this) if (c.nodeType == XmlType.PCData || c.nodeType == XmlType.CData) c])
+			this.removeChild(c);
+		if (v != null)
+			this.addChild(Xml.createPCData(v));
 		return v;
 	}
 
