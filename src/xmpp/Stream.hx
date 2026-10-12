@@ -32,6 +32,9 @@ private typedef Feature = {
 abstract class Stream {
 	public static inline var XMLNS = 'http://etherx.jabber.org/streams';
 
+	/** Namespace of the `<open/>` and `<close/>` elements of framed streams (RFC 7395) **/
+	public static inline var XMLNS_FRAMING = 'urn:ietf:params:xml:ns:xmpp-framing';
+
 	/** Handle message stanzas **/
 	public dynamic function onMessage(m:Message) {}
 
@@ -57,6 +60,14 @@ abstract class Stream {
 
 	/** Stream end handler **/
 	public dynamic function onEnd() {}
+
+	/**
+		Called before `onEnd` if the server closed a framed stream with a `see-other-uri`,
+		the endpoint to reconnect to (e.g. for load balancing).
+
+		Do not accept endpoints with a lower security context (e.g. `ws://` after `wss://`).
+	**/
+	public dynamic function onRedirect(uri:String) {}
 
 	public final xmlns:String;
 	public final domain:String;
@@ -86,6 +97,14 @@ abstract class Stream {
 		If exceeded, the stream is closed with a `policy-violation` stream error.
 	**/
 	public var maxBufferSize = 1024 * 1024;
+
+	/**
+		Use the framing of the WebSocket binding ([RFC 7395](https://www.rfc-editor.org/rfc/rfc7395)):
+		the stream is opened with `<open/>` and closed with `<close/>`, and every sent element carries its namespace.
+
+		Set before starting the stream; each WebSocket message must be passed to `recv`, and each `output` sent as one message.
+	**/
+	public var framing = false;
 
 	public var input:String->Void;
 	public var output:String->Void;
@@ -175,6 +194,9 @@ abstract class Stream {
 	// }
 
 	public function send(xml:XML):XML {
+		if (framing && !xml.has('xmlns') && (xml.name == 'message' || xml.name == 'presence' || xml.name == 'iq'))
+			// framed elements must be parsable standalone, including their namespace
+			xml.set('xmlns', xmlns);
 		output(xml);
 		return xml;
 	}
@@ -220,10 +242,29 @@ abstract class Stream {
 				onEnd();
 				break;
 			}
+			if (framing && (unit.startsWith('<close') || unit.startsWith('<error'))) {
+				final xml = try XML.fromString(unit) catch (e) null;
+				if (xml != null && xml.name == 'close' && xml.get('xmlns') == XMLNS_FRAMING) {
+					final uri = xml.get('see-other-uri');
+					reset();
+					if (uri != null)
+						onRedirect(uri);
+					onEnd();
+					break;
+				}
+				if (xml != null && xml.name == 'error' && xml.get('xmlns') == XMLNS) {
+					// unprefixed stream error, handled as <stream:error/>
+					final e = XML.create('stream:error').set('xmlns:stream', XMLNS);
+					for (c in xml.elements)
+						e.append(c);
+					input(e.toString());
+					continue;
+				}
+			}
 			input(unit);
 		}
 		if (maxBufferSize > 0 && buf.length > maxBufferSize) {
-			output('<stream:error><policy-violation xmlns="urn:ietf:params:xml:ns:xmpp-streams"/></stream:error>');
+			output('<stream:error xmlns:stream="http://etherx.jabber.org/streams"><policy-violation xmlns="urn:ietf:params:xml:ns:xmpp-streams"/></stream:error>');
 			end();
 		}
 		return processed;
@@ -320,7 +361,7 @@ abstract class Stream {
 		End stream
 	**/
 	public function end() {
-		output('</stream:stream>');
+		output(framing ? '<close xmlns="$XMLNS_FRAMING"/>' : '</stream:stream>');
 		reset();
 	}
 
@@ -331,7 +372,7 @@ abstract class Stream {
 			#if debug
 			trace(e);
 			#end
-			output('<stream:error><not-well-formed xmlns="urn:ietf:params:xml:ns:xmpp-streams"/></stream:error>');
+			output('<stream:error xmlns:stream="http://etherx.jabber.org/streams"><not-well-formed xmlns="urn:ietf:params:xml:ns:xmpp-streams"/></stream:error>');
 			end();
 			return;
 		}
@@ -464,6 +505,20 @@ abstract class Stream {
 		return Random.bytes((length + 1) >> 1).toHex().substr(0, length);
 
 
+	/**
+		Returns the opening stream header, the `<open/>` element for framed streams.
+	**/
+	function createStreamHeader(to:String, ?version:String):String {
+		if (!framing)
+			return createHeader(xmlns, to, version, lang);
+		final xml = XML.create('open').set('xmlns', XMLNS_FRAMING).set('to', to);
+		if (version != null)
+			xml.set('version', version);
+		if (lang != null)
+			xml.set('xml:lang', lang);
+		return xml.toString();
+	}
+
 	static function createHeader(xmlns:String, to:String, ?version:String, ?lang:String):String {
 		final xml = XML.create('stream:stream')
 			.set('xmlns', xmlns)
@@ -502,13 +557,15 @@ abstract class Stream {
 
 	static function readFeatures(str:String):XML {
 		var i = str.indexOf("<stream:features");
-		var j = str.indexOf("</stream:features");
-		if (i == -1 || j == -1)
+		if (i == -1)
 			return null;
 		str = str.substr(i);
 		i = str.indexOf("</stream:stream>");
 		if (i != -1)
 			str = str.substr(0, i);
+		// complete element, with content or self-closing (no features)
+		if (str.indexOf("</stream:features") == -1 && !str.trim().endsWith("/>"))
+			return null;
 		return XML.fromString(str);
 	}
 }

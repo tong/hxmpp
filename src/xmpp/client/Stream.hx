@@ -23,7 +23,7 @@ class Stream extends xmpp.Stream {
 		input = (str:String) -> {
 			if (ready) {
 				handleString(str);
-			} else if (str.startsWith('<stream:stream')) {
+			} else if (str.startsWith('<stream:stream') || (framing && str.startsWith('<open'))) {
 				final header = xmpp.Stream.readHeader(str);
 				id = header.id;
 				version = header.version;
@@ -36,7 +36,7 @@ class Stream extends xmpp.Stream {
 				}
 			}
 		};
-		output(xmpp.Stream.createHeader(xmlns, domain, version, lang));
+		output(createStreamHeader(domain, version));
 		return this;
 	}
 }

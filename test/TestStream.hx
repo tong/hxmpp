@@ -468,4 +468,145 @@ class TestStream extends utest.Test {
 		stream.recv("<iq type='get' id='p3' from='example.com'><ping xmlns='urn:xmpp:ping'/></iq>");
 		isFalse(XML.fromString(out[out.length - 1]).has('from'));
 	}
+
+	function startFramed():{stream:xmpp.client.Stream, sent:Array<String>, features:Array<XML>} {
+		final r = {stream: new xmpp.client.Stream('example.com', null, 'en'), sent: [], features: []};
+		r.stream.framing = true;
+		r.stream.output = str -> r.sent.push(str);
+		r.stream.start(f -> r.features.push(f));
+		return r;
+	}
+
+	function test_websocket_open() {
+		// https://www.rfc-editor.org/rfc/rfc7395#section-3.4
+		final f = startFramed();
+		final open = XML.fromString(f.sent[0]);
+		equals('open', open.name);
+		equals(xmpp.Stream.XMLNS_FRAMING, open.get('xmlns'));
+		equals('example.com', open.get('to'));
+		equals('1.0', open.get('version'));
+		equals('en', open.get('xml:lang'));
+		isNull(open.get('xmlns:stream'));
+
+		f.stream.recv('<open xmlns="urn:ietf:params:xml:ns:xmpp-framing" from="example.com" id="++TR84Sm6A3hnt3Q065SnAbbk3Y=" xml:lang="en" version="1.0" />');
+		equals('++TR84Sm6A3hnt3Q065SnAbbk3Y=', f.stream.id);
+		isFalse(f.stream.ready);
+		f.stream.recv('<stream:features xmlns:stream="http://etherx.jabber.org/streams"><bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"/></stream:features>');
+		isTrue(f.stream.ready);
+		equals(1, f.features.length);
+		equals('bind', f.features[0].firstElement.name);
+
+		// restart: a new <open/>, never <close/>
+		f.stream.start(features -> {});
+		equals('open', XML.fromString(f.sent[f.sent.length - 1]).name);
+		equals(0, f.sent.filter(s -> s.indexOf('close') != -1).length);
+	}
+
+	function test_websocket_stanzas() {
+		final f = startFramed();
+		f.stream.recv('<open xmlns="urn:ietf:params:xml:ns:xmpp-framing" from="example.com" id="a" version="1.0"/>');
+		f.stream.recv('<stream:features xmlns:stream="http://etherx.jabber.org/streams"/>');
+		isTrue(f.stream.ready);
+		final messages = [];
+		f.stream.onMessage = m -> messages.push(m);
+
+		// https://www.rfc-editor.org/rfc/rfc7395#section-3.3.3
+		f.stream.recv('<message xmlns="jabber:client" xml:lang="en"><body>Every WebSocket message is parsable by itself.</body></message>');
+		equals(1, messages.length);
+		equals('Every WebSocket message is parsable by itself.', messages[0].body);
+
+		// sent stanzas carry their namespace
+		f.stream.send(new xmpp.Message('romeo@example.net', 'hi'));
+		equals('jabber:client', XML.fromString(f.sent[f.sent.length - 1]).get('xmlns'));
+		f.stream.get('jabber:iq:version', r -> {});
+		equals('jabber:client', XML.fromString(f.sent[f.sent.length - 1]).get('xmlns'));
+		f.stream.send(XML.create('r').set('xmlns', 'urn:xmpp:sm:3'));
+		equals('urn:xmpp:sm:3', XML.fromString(f.sent[f.sent.length - 1]).get('xmlns'));
+
+		// tcp streams are unchanged
+		final tcp = new xmpp.client.Stream('example.com');
+		final out = [];
+		tcp.output = str -> out.push(str);
+		tcp.send(new xmpp.Message('romeo@example.net', 'hi'));
+		isNull(XML.fromString(out[0]).get('xmlns'));
+	}
+
+	function test_websocket_close() {
+		// https://www.rfc-editor.org/rfc/rfc7395#section-3.6
+		var f = startFramed();
+		var ends = 0;
+		f.stream.onEnd = () -> ends++;
+		f.stream.recv('<open xmlns="urn:ietf:params:xml:ns:xmpp-framing" from="example.com" id="a" version="1.0"/>');
+		f.stream.recv('<close xmlns="urn:ietf:params:xml:ns:xmpp-framing" />');
+		equals(1, ends);
+		isFalse(f.stream.ready);
+
+		f = startFramed();
+		f.stream.end();
+		final close = XML.fromString(f.sent[f.sent.length - 1]);
+		equals('close', close.name);
+		equals(xmpp.Stream.XMLNS_FRAMING, close.get('xmlns'));
+
+		// https://www.rfc-editor.org/rfc/rfc7395#section-3.6.1
+		f = startFramed();
+		final redirects = [];
+		var redirectedBeforeEnd = false;
+		f.stream.onRedirect = uri -> redirects.push(uri);
+		f.stream.onEnd = () -> redirectedBeforeEnd = redirects.length == 1;
+		f.stream.recv('<close xmlns="urn:ietf:params:xml:ns:xmpp-framing" see-other-uri="wss://otherendpoint.example/xmpp-bind" />');
+		same(['wss://otherendpoint.example/xmpp-bind'], redirects);
+		isTrue(redirectedBeforeEnd);
+
+		// other elements named close are no stream end
+		f = startFramed();
+		ends = 0;
+		f.stream.onEnd = () -> ends++;
+		f.stream.recv('<open xmlns="urn:ietf:params:xml:ns:xmpp-framing" from="example.com" id="a" version="1.0"/>');
+		f.stream.recv('<stream:features xmlns:stream="http://etherx.jabber.org/streams"/>');
+		f.stream.onNonza = xml -> true;
+		f.stream.recv('<close xmlns="urn:example"/>');
+		equals(0, ends);
+	}
+
+	function test_websocket_stream_error() {
+		// https://www.rfc-editor.org/rfc/rfc7395#section-3.3.3 (unprefixed stream error)
+		final f = startFramed();
+		f.stream.recv('<open xmlns="urn:ietf:params:xml:ns:xmpp-framing" from="example.com" id="a" version="1.0"/>');
+		f.stream.recv('<stream:features xmlns:stream="http://etherx.jabber.org/streams"><mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><mechanism>PLAIN</mechanism></mechanisms></stream:features>');
+		var error:xmpp.Stanza.Error = null;
+		xmpp.client.Authentication.saslAuthentication(f.stream, 'romeo', 'secret', new sasl.PlainMechanism(), (?e, features) -> error = e);
+		f.stream.recv('<error xmlns="http://etherx.jabber.org/streams"><host-unknown xmlns="urn:ietf:params:xml:ns:xmpp-streams"/></error>');
+		notNull(error);
+		equals('host-unknown', error.condition);
+
+		// our stream errors declare the prefix
+		final f = startFramed();
+		f.stream.recv('<open xmlns="urn:ietf:params:xml:ns:xmpp-framing" from="example.com" id="a" version="1.0"/>');
+		f.stream.recv('<stream:features xmlns:stream="http://etherx.jabber.org/streams"/>');
+		f.stream.recv('<message><body>x</body></message><broken attr=1/>');
+		final error = f.sent.filter(s -> s.indexOf('not-well-formed') != -1)[0];
+		equals(xmpp.Stream.XMLNS, XML.fromString(error).get('xmlns:stream'));
+		equals('close', XML.fromString(f.sent[f.sent.length - 1]).name);
+	}
+
+	function test_websocket_starttls_ignored() {
+		final f = startFramed();
+		var result:Null<Bool> = null;
+		final count = f.sent.length;
+		xmpp.StartTLS.startTLS(f.stream, success -> result = success);
+		isFalse(result);
+		equals(count, f.sent.length);
+	}
+
+	function test_features_self_closing() {
+		// tcp stream without features
+		final stream = new xmpp.client.Stream('example.com');
+		stream.output = str -> {};
+		var features:XML = null;
+		stream.start(f -> features = f);
+		stream.recv("<stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' id='abc' from='example.com' version='1.0'><stream:features/>");
+		isTrue(stream.ready);
+		notNull(features);
+		equals(0, features.elements.length);
+	}
 }

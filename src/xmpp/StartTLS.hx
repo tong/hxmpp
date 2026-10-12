@@ -42,6 +42,9 @@ typedef SSLSocket =
 
 	Channel binding (`SCRAM-*-PLUS` mechanisms) is not supported.
 
+	Not used with framed streams (WebSocket, `Stream.framing`): TLS is provided by the `wss://` connection,
+	a STARTTLS offer is ignored ([RFC 7395 3.9](https://www.rfc-editor.org/rfc/rfc7395#section-3.9)).
+
 	[RFC 6120 5: STARTTLS Negotiation](https://xmpp.org/rfcs/rfc6120.html#tls)
 **/
 class StartTLS {
@@ -69,8 +72,13 @@ class StartTLS {
 
 		`callback` is called with `true` if the server is ready (`<proceed/>`), `false` otherwise
 		(`<failure/>` or any other response); after a failure the server closes the stream.
+		Fails without sending a request on framed streams.
 	**/
 	public static function startTLS(stream:Stream, callback:(success:Bool) -> Void) {
+		if (stream.framing) {
+			callback(false);
+			return;
+		}
 		stream.input = str -> {
 			var xml = try Xml.parse(str).firstElement() catch (e) {
 				callback(false);
