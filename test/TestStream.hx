@@ -343,4 +343,12 @@ class TestStream extends utest.Test {
 		isFalse(response.ok());
 		equals(undefined_condition, response.error.condition);
 	}
+
+	function test_request_before_start() {
+		final stream = new xmpp.client.Stream('example.com');
+		final sent = new Array<String>();
+		stream.output = str -> sent.push(str);
+		stream.get('jabber:iq:version', r -> {});
+		equals(1, sent.length);
+	}
 }

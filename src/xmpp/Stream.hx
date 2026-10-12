@@ -85,7 +85,7 @@ abstract class Stream {
 	public var input:String->Void;
 	public var output:String->Void;
 
-	var queries:Map<String, Query>;
+	var queries = new Map<String, Query>();
 	/** Received data not yet processed **/
 	var buf = '';
 
