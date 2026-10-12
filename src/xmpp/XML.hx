@@ -2,9 +2,16 @@ package xmpp;
 
 import Xml;
 
+/**
+	XML node with a chainable api, wrapping a `Xml` node.
+
+		final x = XML.create("query").set("xmlns", "jabber:iq:roster").append(XML.create("item").set("jid", jid));
+		final y:XML = '<message><body>hi</body></message>';
+**/
 @:access(Xml)
 @:forward(attributes, children, addChild, removeChild)
 abstract XML(Xml) from Xml to Xml {
+	/** Parent node, `null` for a root node **/
 	public var parent(get, never):XML;
 
 	inline function get_parent():XML
@@ -16,18 +23,23 @@ abstract XML(Xml) from Xml to Xml {
 	inline function get_type():XmlType
 		return this.nodeType;
 
-	/** Node name **/
+	/** Node name, including a namespace prefix (e.g. `stream:features`) **/
 	public var name(get, never):String;
 
 	inline function get_name():String
 		return this.nodeName;
 
+	/** First child element, or `null` **/
 	public var firstElement(get, never):XML;
 
 	inline function get_firstElement():XML
 		return this.firstElement();
 
-	/** Element namespace **/
+	/**
+		Value of the `xmlns` attribute of this element.
+
+		The namespace is not resolved: a namespace inherited from a parent element or a prefixed namespace is not returned.
+	**/
 	public var ns(get, set):String;
 
 	inline function get_ns():String
@@ -79,26 +91,20 @@ abstract XML(Xml) from Xml to Xml {
 	inline function get_elements():Elements
 		return [for (e in this.elements()) e];
 
-	// inline function set_elements(elements:xmpp.XML.NodeIterator):xmpp.XML.NodeIterator {
-	// 	this.children = [for (e in elements) e];
-	// // 	//for (e in elements) this.addChild(e);
-	// 	return get_elements();
-	// }
-	// public var first(get,never) : XML;
-	// inline function get_first() :
-	// public var element(get,never) : ElementAccess;
-	// function get_element() : ElementAccess return new ElementAccess( this );
-
 	@:noDoc inline function new(x:Xml)
 		this = x;
 
-	// TODO: really?
-	// public inline function iterator() : NodeIterator
-	//    	return this.elements();
-
+	/**
+		Returns the value of attribute `att`, or `null`.
+	**/
 	@:arrayAccess public inline function get(att:String):String
 		return this.get(att);
 
+	/**
+		Sets attribute `att` to `value`; a `null` value removes the attribute.
+
+		Returns this element.
+	**/
 	@:arrayAccess public function set(att:String, ?value:String):XML {
 		if (value == null)
 			return unset(att);
@@ -106,39 +112,52 @@ abstract XML(Xml) from Xml to Xml {
 		return this;
 	}
 
+	/**
+		Returns `true` if attribute `att` exists.
+	**/
 	public inline function has(att:String):Bool
 		return this.exists(att);
 
-	// @:op(A==B)
+	/**
+		Returns `true` if the `xmlns` attribute of this element equals `xmlns`.
+
+		The namespace is not resolved, see `ns`.
+	**/
 	public inline function is(xmlns:String):Bool
 		return this.get('xmlns') == xmlns;
 
+	/**
+		Removes attribute `att`, returns this element.
+	**/
 	public inline function unset(att:String):XML {
 		this.remove(att);
 		return this;
 	}
 
+	/**
+		Adds `e` as last child, returns this element.
+	**/
 	public inline function append(e:XML):XML {
 		this.addChild(e);
 		return this;
 	}
 
+	/**
+		Inserts `x` as child at position `pos`, returns this element.
+	**/
 	public inline function insert(x:XML, pos = 0):XML {
 		this.insertChild(x, pos);
 		return this;
 	}
 
-	// public inline function addChild(x:XML):Void
-	// 	this.addChild(x);
-	//
-	// public inline function removeChild(x:XML):Bool
-	// 	return this.removeChild(x);
-	// @:arrayAccess public inline function getChildAt(i:Int):XML
-	// 	return this.children[i];
-
 	@:to public inline function toString():String
 		return this.toString();
 
+	/**
+		Creates an element with given `name`, `attributes` and `text` content.
+
+		`attributes` may be omitted: `XML.create("body", "hello")`.
+	**/
 	public static function create(name:String, ?attributes:Map<String, String>, ?text:String):XML {
 		var x:XML = Xml.createElement(name);
 		if (attributes != null)
@@ -149,19 +168,6 @@ abstract XML(Xml) from Xml to Xml {
 		return x;
 	}
 
-	/*
-		@:from public static inline function fromXml(x:Xml):XML {
-			return switch x.nodeType {
-				//case Document: x.firstElement();
-				case Document: x.firstElement();
-					// if(@:privateAccess cast(x.elements(), haxe.iterators.ArrayIterator<Dynamic>).array.length == 1) {
-					//     return x;
-					// }
-					return x.firstElement();
-				case _: x;
-			}
-		}
-	 */
 	/**
 		Parses `str` and returns its root element.
 	**/
@@ -182,17 +188,6 @@ abstract XML(Xml) from Xml to Xml {
 	@:deprecated("XML.parse returns the document node: use XML.fromString for the root element, or XML.parseDocument")
 	public static inline function parse(str:String):XML
 		return parseDocument(str);
-
-	/*
-		macro public static function markup(mu):ExprOf<xmpp.XML> {
-			return switch mu.expr {
-				case EMeta({name: ":markup"}, {expr: EConst(CString(s))}):
-					macro XML.parse($v{s});
-				case _:
-					throw new haxe.macro.Expr.Error("not an xml literal", mu.pos);
-			}
-		}
-	 */
 }
 
 /**
@@ -235,6 +230,9 @@ abstract Elements(Array<XML>) from Array<XML> to Array<XML> {
 		return this.length;
 }
 
+/**
+	Character data, implicitly convertible from/to `Int` and `Float`.
+**/
 @:noDoc
 private abstract Text(String) from String to String {
 	@:to public inline function toFloat():Float
@@ -248,11 +246,4 @@ private abstract Text(String) from String to String {
 
 	@:from public static inline function fromFloat(f:Float):Text
 		return Std.string(f);
-
-	// @:to function toBool():Null<Bool>
-	// 	return switch this {
-	// 		case '', '0', 'false', 'null': false;
-	// 		case '1', 'true': true;
-	// 		case _: null; //throw 'invalid bool value: $this';
-	// 	}
 }
