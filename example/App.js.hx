@@ -6,6 +6,7 @@ import xmpp.Presence;
 import xmpp.Response;
 import xmpp.XML;
 import xmpp.client.Authentication;
+import xmpp.client.Roster;
 import xmpp.client.Stream;
 
 using xmpp.DelayedDelivery;
@@ -75,14 +76,17 @@ class App {
 			if (error != null)
 				exit('Login failed: ${error.condition} ${error.text ?? ""}');
 			Sys.println('Logged in as ${stream.jid}');
-			stream.send(new Presence());
-			stream.loadRoster(res -> switch res {
-				case Result(roster):
-					Sys.println('Contacts:');
-					for (item in roster.elements)
-						Sys.println('  ${item["jid"]} ${item["name"] ?? ""} [${item["subscription"]}]');
-				case Error(e):
-					Sys.println('Failed to load roster: ${e.condition}');
+			Roster.handleRequests(stream, (item, ver) -> Sys.println('Contact changed: ${item.jid} [${item.subscription}]'));
+			stream.loadRoster(res -> {
+				switch res {
+					case Result(payload):
+						Sys.println('Contacts:');
+						for (item in Roster.parseRoster(payload).items)
+							Sys.println('  ${item.jid} ${item.name ?? ""} [${item.subscription}]');
+					case Error(e):
+						Sys.println('Failed to load roster: ${e.condition}');
+				}
+				stream.send(new Presence());
 			});
 		});
 	}
