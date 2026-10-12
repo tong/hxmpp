@@ -5,6 +5,9 @@ import haxe.io.Bytes;
 import haxe.io.Eof;
 import xmpp.Stanza;
 
+/**
+	[XEP-0047: In-Band Bytestreams](https://xmpp.org/extensions/xep-0047.html)
+**/
 @xep(47)
 class IBBytestream {
 

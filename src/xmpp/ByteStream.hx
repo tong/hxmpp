@@ -9,7 +9,7 @@ typedef StreamHost = {
 }
 
 /**
-	https://xmpp.org/extensions/xep-0065.html
+	[XEP-0065: SOCKS5 Bytestreams](https://xmpp.org/extensions/xep-0065.html)
 **/
 @xep(65)
 class ByteStream {

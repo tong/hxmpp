@@ -152,6 +152,7 @@ typedef Field = {
 
 	[XEP-0004: Data Forms](https://xmpp.org/extensions/xep-0004.html)
 **/
+@xep(4)
 @:forward
 abstract DataForm(TDataForm) from TDataForm to TDataForm {
 	public static inline var XMLNS = "jabber:x:data";
