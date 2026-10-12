@@ -439,32 +439,8 @@ abstract class Stream {
 		Returns a random hex string of given `length`, to be used as stanza or session id.
 	**/
 	public static function makeRandomId(length = 16):String
-		return randomBytes((length + 1) >> 1).toHex().substr(0, length);
+		return Random.bytes((length + 1) >> 1).toHex().substr(0, length);
 
-	/**
-		Returns `length` random bytes from the platform's secure random source,
-		falling back to `Std.random` (not secure) where none is available.
-	**/
-	static function randomBytes(length:Int):haxe.io.Bytes {
-		#if nodejs
-		return js.node.Crypto.randomBytes(length).hxToBytes();
-		#elseif js
-		final a = new js.lib.Uint8Array(length);
-		js.Syntax.code("globalThis.crypto.getRandomValues({0})", a);
-		return haxe.io.Bytes.ofData(a.buffer);
-		#elseif sys
-		if (sys.FileSystem.exists('/dev/urandom')) {
-			final i = sys.io.File.read('/dev/urandom');
-			final b = i.read(length);
-			i.close();
-			return b;
-		}
-		#end
-		final b = haxe.io.Bytes.alloc(length);
-		for (i in 0...length)
-			b.set(i, Std.random(256));
-		return b;
-	}
 
 	static function createHeader(xmlns:String, to:String, ?version:String, ?lang:String):String {
 		final xml = XML.create('stream:stream')
