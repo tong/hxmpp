@@ -126,28 +126,27 @@ class ServiceDiscovery {
 		disco#info results contain `identity`, the disco#info feature, the namespaces of all request handlers
 		registered in `stream.features` (e.g. by `Ping.handleRequests`) at the time of the request, and `features`
 		for supported protocols without request handlers (e.g. `ChatState.XMLNS`).
-		disco#items results are empty. Requests for nodes are answered with `item-not-found`.
+		disco#items results are empty.
+		Requests for nodes are passed to the handler registered before (e.g. by `AdHocCommand.handleRequests`),
+		or answered with `item-not-found`.
 	**/
 	@:noUsing
 	public static function handleRequests(stream:Stream, identity:Identity, ?features:Array<String>) {
-		stream.features.set(XMLNS_INFO, (iq, respond) -> {
-			if (iq.type != Get) {
-				respond(Response.failure(cancel, bad_request));
-				return;
-			}
-			if (iq.payload.has("node")) {
-				respond(Response.failure(cancel, item_not_found));
-				return;
-			}
-			respond(Response.success(createInfo(identity, getFeatures(stream, features))));
-		});
-		stream.features.set(XMLNS_ITEMS, (iq, respond) -> {
-			if (iq.type != Get) {
-				respond(Response.failure(cancel, bad_request));
-				return;
-			}
-			respond(iq.payload.has("node") ? Response.failure(cancel, item_not_found) : Response.success(Payload.create(XMLNS_ITEMS)));
-		});
+		function handle(xmlns:String, respondTo:IQ->Response<XML>) {
+			final previous = stream.features.get(xmlns);
+			stream.features.set(xmlns, (iq, respond) -> {
+				if (iq.payload.has("node")) {
+					if (previous != null)
+						previous(iq, respond);
+					else
+						respond(Response.failure(cancel, item_not_found));
+					return;
+				}
+				respond((iq.type == Get) ? respondTo(iq) : Response.failure(cancel, bad_request));
+			});
+		}
+		handle(XMLNS_INFO, iq -> Response.success(createInfo(identity, getFeatures(stream, features))));
+		handle(XMLNS_ITEMS, iq -> Response.success(Payload.create(XMLNS_ITEMS)));
 	}
 
 	/**
@@ -174,7 +173,10 @@ class ServiceDiscovery {
 	@:noUsing
 	public static function createInfo(identity:Identity, features:Array<String>):XML {
 		final xml:XML = Payload.create(XMLNS_INFO);
-		final e = XML.create("identity").set("category", identity.category).set("type", identity.type).set("name", identity.name);
+		final e = XML.create("identity")
+			.set("category", identity.category)
+			.set("type", identity.type)
+			.set("name", identity.name);
 		if (identity.lang != null)
 			e.set("xml:lang", identity.lang);
 		xml.append(e);
