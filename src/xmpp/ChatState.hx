@@ -37,39 +37,57 @@ enum abstract TChatState(String) from String to String {
 }
 
 /**
-	[XEP-0085: Chat State Notifications](https://xmpp.org/extensions/xep-0224.html)
-
 	Communicates the status of a user in a chat session, thus indicating whether a chat partner is actively engaged in the chat, composing a message, temporarily paused, inactive, or gone.
+
+	Client rules:
+	- Users MUST be able to disable sending chat states.
+	- Do not send the same standalone notification twice in a row (e.g. `composing` while typing a long message).
+	- Messages with content (`body`, `subject`) SHOULD only carry the `active` state.
+	- Only use with message types `chat` and `groupchat`; in groupchats do not send and ignore `gone`.
+
+	[XEP-0085: Chat State Notifications](https://xmpp.org/extensions/xep-0085.html)
 **/
 @xep(85)
 class ChatState {
 	public static inline var XMLNS = "http://jabber.org/protocol/chatstates";
 
 	/**
-		Extract the chatstate property of the message stanze.
+		Returns the chat state of the message, or `null` if it has none.
 	**/
-	public static function getChatState(message:xmpp.Message):TChatState {
+	public static function getChatState(message:xmpp.Message):Null<TChatState> {
 		for (e in message.properties)
 			if (e.is(XMLNS))
-				return e.name;
+				switch e.name {
+					case "active", "composing", "paused", "inactive", "gone":
+						return e.name;
+					case _:
+				}
 		return null;
 	}
 
 	/**
-		Adds the chatstate property to the givent message stanza.
+		Sets the chat state of the message, replacing an existing one.
 	**/
-	public static inline function setChatState(message:xmpp.Message, state:TChatState):xmpp.Message {
+	public static function setChatState(message:xmpp.Message, state:TChatState):xmpp.Message {
+		removeChatState(message);
 		message.properties.push(XML.create(state).set('xmlns', XMLNS));
 		return message;
 	}
 
 	/**
-		Remove the chatstate property from the given message stanza.
+		Removes the chat state from the message.
 	**/
-	public static inline function removeChatState(message:xmpp.Message):xmpp.Message {
+	public static function removeChatState(message:xmpp.Message):xmpp.Message {
 		for (e in message.properties.copy())
 			if (e.is(XMLNS))
 				message.properties.remove(e);
 		return message;
 	}
+
+	/**
+		Creates a standalone chat state notification (a message without content) to `to`.
+	**/
+	@:noUsing
+	public static inline function createChatStateMessage(to:String, state:TChatState, type:xmpp.Message.MessageType = chat):xmpp.Message
+		return setChatState(new xmpp.Message(to, null, null, type), state);
 }
