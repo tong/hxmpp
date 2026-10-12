@@ -1,7 +1,10 @@
 package xmpp;
 
 #if python
-class Socket extends sys.net.Socket {
+/**
+	TLS socket on python, returned by `StartTLS.upgrade`.
+**/
+class PythonTLSSocket extends sys.net.Socket {
 	public inline function handshake() {
 		python.Syntax.code('{0}.do_handshake()', __s);
 	}
@@ -9,32 +12,63 @@ class Socket extends sys.net.Socket {
 #end
 
 #if (sys || lua)
-private typedef SSLSocket =
+/**
+	TLS socket returned by `StartTLS.upgrade` (`sys.ssl.Socket`, or `PythonTLSSocket` on python).
+**/
+typedef SSLSocket =
 	#if python
-	xmpp.Socket;
+	xmpp.StartTLS.PythonTLSSocket;
 	#elseif (cpp || hl || lua || neko)
 	sys.ssl.Socket;
-	#elseif macro
+	#elseif (macro || eval)
 	sys.ssl.Socket;
-	#elseif doc_gen
-	Any;
+	#else
+	Any; // upgrade is not supported on this target
 	#end
 #elseif nodejs
 #elseif doc_gen
 #end
 
 /**
+	Secure the stream with Transport Layer Security (TLS).
 
-	XMPP includes a method for securing the stream from tampering and eavesdropping.
-	This channel encryption method makes use of the Transport Layer Security (TLS) protocol [TLS], along with a "STARTTLS" extension.
+	Flow:
+	1. Check the stream features with `isOffered` (and `isRequired`).
+	2. Call `startTLS`; on success upgrade the socket with `upgrade` (and `handshake()` on sys targets).
+	3. Restart the stream (`client.Stream.start`) over the TLS socket.
 
-	https://xmpp.org/rfcs/rfc3920.html#tls
+	Never continue without TLS (e.g. if TLS is not offered) to authenticate:
+	an attacker can remove the offer from the features to read the credentials (downgrade attack).
+
+	Channel binding (`SCRAM-*-PLUS` mechanisms) is not supported.
+
+	[RFC 6120 5: STARTTLS Negotiation](https://xmpp.org/rfcs/rfc6120.html#tls)
 **/
 class StartTLS {
 	public static inline var XMLNS = 'urn:ietf:params:xml:ns:xmpp-tls';
 
 	/**
-		Ask to start tls negotiation.
+		Returns `true` if the stream features offer STARTTLS.
+	**/
+	public static function isOffered(features:Null<XML>):Bool
+		return getFeature(features) != null;
+
+	/**
+		Returns `true` if the stream features mark STARTTLS as required.
+	**/
+	public static function isRequired(features:Null<XML>):Bool {
+		final e = getFeature(features);
+		return e != null && e.elements.findElement("required") != null;
+	}
+
+	static function getFeature(features:Null<XML>):Null<XML>
+		return (features == null) ? null : features.elements.first(e -> e.name == "starttls" && e.is(XMLNS));
+
+	/**
+		Ask to start TLS negotiation.
+
+		`callback` is called with `true` if the server is ready (`<proceed/>`), `false` otherwise
+		(`<failure/>` or any other response); after a failure the server closes the stream.
 	**/
 	public static function startTLS(stream:Stream, callback:(success:Bool) -> Void) {
 		stream.input = str -> {
@@ -50,7 +84,7 @@ class StartTLS {
 		stream.send(XML.create('starttls').set('xmlns', XMLNS));
 	}
 
-	#if (macro || cpp || hl || lua || neko || python)
+	#if (macro || eval || cpp || hl || lua || neko || python)
 	/**
 		Upgrades a `sys.net.Socket` to `sys.ssl.Socket`.
 
@@ -64,10 +98,12 @@ class StartTLS {
 	@:access(sys.net.Socket)
 	public static function upgrade(sock:sys.net.Socket, host:sys.net.Host, ?servername:String):SSLSocket {
 		final servername = servername ?? host.host;
-		#if macro
+		#if (macro || eval)
 		final s = new sys.ssl.Socket();
 		s.socket = sock.socket;
+		s.conf = s.buildConfig(false);
 		s.ssl = new mbedtls.Ssl();
+		s.ssl.setup(s.conf);
 		sys.ssl.Mbedtls.setSocket(s.ssl, s.socket);
 		s.handshakeDone = false;
 		if (s.hostname == null)
@@ -75,8 +111,9 @@ class StartTLS {
 		if (s.hostname != null)
 			s.ssl.set_hostname(s.hostname);
 		#elseif python
-		final ctx = python.lib.Ssl.create_default_context(python.lib.ssl.Purpose.SERVER_AUTH);
-		final s = new xmpp.Socket();
+		// verifies the certificate and hostname (python >= 3.4); called directly to not require the python_version define
+		final ctx:Dynamic = python.Syntax.code("__import__('ssl').create_default_context()");
+		final s = new PythonTLSSocket();
 		s.__s = ctx.wrap_socket(sock.__s, false, false, true, servername);
 		s.__rebuildIoStreams();
 		#end
