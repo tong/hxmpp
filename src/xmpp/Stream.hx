@@ -107,7 +107,7 @@ abstract class Stream {
 				final iq:IQ = xml;
 				switch iq.type {
 					case Result: handler(Result(cast iq.payload));
-					case Error: handler(Error(iq.error ?? new xmpp.Stanza.Error(cancel, undefined_condition)));
+					case Error: handler(Error(responseError(iq)));
 					default:
 				}
 			});
@@ -126,7 +126,7 @@ abstract class Stream {
 				final iq:IQ = xml;
 				switch iq.type {
 					case Result: handler(Result(cast iq.payload));
-					case Error: handler(Error(iq.error ?? new xmpp.Stanza.Error(cancel, undefined_condition)));
+					case Error: handler(Error(responseError(iq)));
 					default:
 				}
 			});
@@ -142,6 +142,15 @@ abstract class Stream {
 		if (handler != null)
 			queries.set(stanza.id, {name: xml.name, to: stanza.to, handler: handler});
 		send(xml);
+	}
+
+	/**
+		Returns the error of an error response, with its included payload.
+	**/
+	static function responseError(iq:IQ):xmpp.Stanza.Error {
+		final e = iq.error ?? new xmpp.Stanza.Error(cancel, undefined_condition);
+		e.payload = iq.payload;
+		return e;
 	}
 
 	function addQuery(iq:IQ, handler:XML->Void) {

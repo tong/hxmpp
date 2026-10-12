@@ -171,6 +171,9 @@ private class CError {
 	/** Application-specific error condition **/
 	public var app:ApplicationErrorCondition;
 
+	/** The original payload included in the error response, e.g. a data form requesting more information **/
+	public var payload:XML;
+
 	public function new(type:ErrorType, condition:ErrorCondition, ?text:String, ?app:ApplicationErrorCondition) {
 		this.type = type;
 		this.condition = condition;
