@@ -55,9 +55,49 @@ typedef Item = {
 	var affiliation:Affiliation;
 	var role:Role;
 	var ?nick:String;
-	// var actor : String;
-	// var reason : String;
-	// var continue_ : String;
+
+	/** Reason given for a change, e.g. a kick **/
+	var ?reason:String;
+}
+
+/**
+	Why the own occupant left the room.
+**/
+enum LeaveReason {
+	/** Left the room (`leave`) **/
+	Left;
+
+	/** Kicked from the room **/
+	Kicked;
+
+	/** Banned from the room **/
+	Banned;
+
+	/** Removed because of an affiliation change **/
+	AffiliationChanged;
+
+	/** Removed because the room became members-only **/
+	MembersOnly;
+
+	/** Removed because the service is shutting down **/
+	Shutdown;
+
+	/** The room was destroyed, `alternate` is the address of a replacement room, if any **/
+	Destroyed(?alternate:String);
+}
+
+/**
+	Invitation to a room, see `Muc.getInvitation`.
+**/
+typedef Invitation = {
+	/** Address of the room **/
+	var room:String;
+
+	/** Address of the inviting entity, if known **/
+	var ?from:String;
+
+	var ?reason:String;
+	var ?password:String;
 }
 
 /**
@@ -65,20 +105,42 @@ typedef Item = {
 
 	In addition to standard chatroom features such as room topics and invitations, the protocol defines a strong room control model, including the ability to kick and ban users, to name room moderators and administrators, to require membership or passwords in order to join the room, etc.
 
+	Usage: pass all received presences and messages of the room to `handlePresence` and `handleMessage`:
+
+		stream.onPresence = p -> if (muc.isFromRoom(p.from)) muc.handlePresence(p);
+		stream.onMessage = m -> if (muc.isFromRoom(m.from)) muc.handleMessage(m);
+
 	[XEP-0045: Multi-User Chat](https://xmpp.org/extensions/xep-0045.html)  
 	[XEP-0249: Direct MUC Invitations](https://xmpp.org/extensions/xep-0249.html)
 **/
 @xep(45)
 class Muc {
 	public static inline var XMLNS = "http://jabber.org/protocol/muc";
+	public static inline var XMLNS_USER = "http://jabber.org/protocol/muc#user";
 
+	/** Namespace of direct invitations ([XEP-0249](https://xmpp.org/extensions/xep-0249.html)) **/
+	public static inline var XMLNS_CONFERENCE = "jabber:x:conference";
+
+	/** Groupchat message to all occupants **/
 	public dynamic function onMessage(message:xmpp.Message) {}
 
+	/** Private message from an occupant, or a message from the room itself **/
+	public dynamic function onPrivateMessage(message:xmpp.Message) {}
+
+	/** Error returned by the room **/
+	public dynamic function onError(error:xmpp.Stanza.Error) {}
+
+	/** Presence of an occupant (including the own) **/
 	public dynamic function onPresence(presence:xmpp.Presence) {}
 
+	/** The own nick was changed **/
 	public dynamic function onNick(nick:String) {}
 
+	/** The room subject was changed, an empty string if cleared **/
 	public dynamic function onSubject(subject:String) {}
+
+	/** The own occupant left the room, with the reason text if given **/
+	public dynamic function onLeave(reason:LeaveReason, ?text:String) {}
 
 	public final stream:Stream;
 
@@ -89,7 +151,7 @@ class Muc {
 	public var affiliation(default, null):Affiliation;
 	public var subject(default, null):String;
 
-	// public var joined(default,null)	= false;
+	/** Occupant jid of the own user (`room@host/nick`) **/
 	public var jid(get, null):Jid;
 
 	inline function get_jid()
@@ -100,6 +162,12 @@ class Muc {
 		this.host = host;
 		this.room = room;
 	}
+
+	/**
+		Returns `true` if `jid` is the room or one of its occupants.
+	**/
+	public function isFromRoom(jid:Null<String>):Bool
+		return jid != null && Jid.normalize(Jid.parseBare(jid)) == Jid.normalize('$room@$host');
 
 	/**
 		Enter groupchat.
@@ -138,15 +206,58 @@ class Muc {
 	}
 
 	/**
-		Invite user to this room.
+		Invite a user to this room through the room (mediated invitation).
 	**/
-	public function invite(jid:String, reason:String):Message {
-		// TODO: https://xmpp.org/extensions/xep-0249.html
-		final m = new xmpp.Message(jid);
-		m.properties.push(XML.create("x")
-			.set("xmlns", '$XMLNS#user')
-			.append(XML.create("invite").set("to", '$room@$host').append(XML.create("reason", reason))));
+	public function invite(jid:String, ?reason:String):Message {
+		final invite = XML.create("invite").set("to", jid);
+		if (reason != null)
+			invite.append(XML.create("reason", reason));
+		final m = new xmpp.Message('$room@$host', null, null, normal);
+		m.properties.push(XML.create("x").set("xmlns", XMLNS_USER).append(invite));
 		return stream.send(m);
+	}
+
+	/**
+		Invite a user to this room with a message sent directly to the user ([XEP-0249](https://xmpp.org/extensions/xep-0249.html)).
+	**/
+	public function inviteDirect(jid:String, ?reason:String, ?password:String):Message {
+		final m = new xmpp.Message(jid, null, null, normal);
+		m.properties.push(XML.create("x")
+			.set("xmlns", XMLNS_CONFERENCE)
+			.set("jid", '$room@$host')
+			.set("reason", reason)
+			.set("password", password));
+		return stream.send(m);
+	}
+
+	/**
+		Returns the room invitation contained in `message` (mediated or direct), or `null`.
+	**/
+	public static function getInvitation(message:xmpp.Message):Null<Invitation> {
+		for (e in message.properties) {
+			if (e.name == "x" && e.is(XMLNS_USER)) {
+				final invite = e.elements.findElement("invite");
+				if (invite == null || message.from == null)
+					continue;
+				final reason = invite.elements.findElement("reason");
+				final password = e.elements.findElement("password");
+				return {
+					room: Jid.parseBare(message.from),
+					from: invite.get("from"),
+					reason: (reason == null) ? null : StringTools.trim(reason.text ?? ""),
+					password: (password == null) ? null : password.text
+				};
+			}
+		}
+		for (e in message.properties)
+			if (e.name == "x" && e.is(XMLNS_CONFERENCE) && e.has("jid"))
+				return {
+					room: e.get("jid"),
+					from: message.from,
+					reason: e.get("reason"),
+					password: e.get("password")
+				};
+		return null;
 	}
 
 	/**
@@ -161,7 +272,7 @@ class Muc {
 	**/
 	public function sendPrivateMessage(nick:String, message:String) {
 		final m = new Message('$room@$host/$nick', message, null, chat);
-		m.properties.push(XML.create('x').set('xmlns', '$XMLNS#user'));
+		m.properties.push(XML.create('x').set('xmlns', XMLNS_USER));
 		return stream.send(m);
 	}
 
@@ -204,61 +315,95 @@ class Muc {
 		}
 	}
 
+	/**
+		Handle a presence received from the room.
+	**/
 	public function handlePresence(presence:Presence) {
-		final jid:Jid = presence.from;
-		if (jid.getBare() != this.jid.getBare()) {
-			trace('???????????????????????????');
+		if (!isFromRoom(presence.from))
 			return;
-		}
-		// var nick = jid.resource;
-		var r = parseUserPresence(presence);
-		if (r.statusCodes.contains(PRESENCE_REFERS_TO_OCCUPANT)) {
-			if (r.statusCodes.contains(NEW_ROOM_NICKNAME)) {
-				onNick(r.items[0].nick);
+		final r = parseUserPresence(presence);
+		final self = r.statusCodes.contains(PRESENCE_REFERS_TO_OCCUPANT)
+			|| (nick != null && Jid.parseResource(presence.from) == nick);
+		if (self) {
+			if (presence.type == unavailable) {
+				if (r.statusCodes.contains(NEW_ROOM_NICKNAME)) {
+					final newNick = (r.items.length > 0) ? r.items[0].nick : null;
+					if (newNick != null) {
+						this.nick = newNick;
+						onNick(newNick);
+					}
+				} else {
+					final reason = leaveReason(r);
+					role = none;
+					onPresence(presence);
+					onLeave(reason, (r.destroyReason != null) ? r.destroyReason : (r.items.length > 0) ? r.items[0].reason : null);
+					return;
+				}
+			} else if (presence.type == null) {
+				handleSelfPresence(presence, nick);
 			}
 		}
+		onPresence(presence);
 	}
 
+	/**
+		Handle a message received from the room.
+	**/
 	public function handleMessage(message:Message) {
-		final jid:Jid = message.from;
-		if (jid.getBare() != this.jid.getBare()) {
-			trace('???????????????????????????');
+		if (!isFromRoom(message.from))
 			return;
-		}
 		switch message.type {
 			case groupchat:
-				if (message.subject != null) {
+				if (message.subject != null)
 					onSubject(this.subject = message.subject);
-				}
-				if (message.body != null) {
+				if (message.body != null)
 					onMessage(message);
-				}
+			case error:
+				if (message.error != null)
+					onError(message.error);
 			case _:
-				trace("?????");
+				onPrivateMessage(message);
 		}
 	}
 
-	static function parseUserPresence(p:xmpp.Presence):{statusCodes:Array<StatusCode>, items:Array<Item>} {
-		final r = {statusCodes: new Array<StatusCode>(), items: new Array<Item>()}
+	static function leaveReason(r:{statusCodes:Array<StatusCode>, destroyed:Bool, destroyAlternate:Null<String>}):LeaveReason {
+		final c = r.statusCodes;
+		return if (r.destroyed) Destroyed(r.destroyAlternate) else if (c.contains(BANNED)) Banned else if (c.contains(KICKED)) Kicked else
+			if (c.contains(REMOVED_CAUSE_AFFILIATION_CHANGE)) AffiliationChanged else if (c.contains(MEMBERS_ONLY_NOW)) MembersOnly else
+			if (c.contains(SYSTEM_SHUTDOWN)) Shutdown else Left;
+	}
+
+	static function parseUserPresence(p:xmpp.Presence) {
+		final r = {
+			statusCodes: new Array<StatusCode>(),
+			items: new Array<Item>(),
+			destroyed: false,
+			destroyAlternate: (null : Null<String>),
+			destroyReason: (null : Null<String>)
+		};
 		for (e in p.properties) {
-			// if(e != '$XMLNS#user')
-			if (!e.is('$XMLNS#user'))
+			if (!e.is(XMLNS_USER))
 				continue;
 			for (e in e.elements) {
 				switch e.name {
 					case "status":
-						if (e.has("code")) {
-							final code:Null<StatusCode> = try Std.parseInt(e["code"]) catch (e) null;
-							if (code != null)
-								r.statusCodes.push(code);
-						}
+						final code:Null<Int> = Std.parseInt(e["code"]);
+						if (code != null)
+							r.statusCodes.push(code);
 					case "item":
+						final reason = e.elements.findElement("reason");
 						r.items.push({
 							jid: e["jid"],
 							affiliation: e["affiliation"],
 							role: e["role"],
 							nick: e["nick"],
+							reason: (reason == null) ? null : reason.text
 						});
+					case "destroy":
+						r.destroyed = true;
+						r.destroyAlternate = e["jid"];
+						final reason = e.elements.findElement("reason");
+						r.destroyReason = (reason == null) ? null : reason.text;
 				}
 			}
 		}

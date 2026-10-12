@@ -139,9 +139,12 @@ private class MessageStanza extends Stanza {
 		for (e in xml.elements) {
 			switch e.name {
 				case 'body' if (e == body):
-					m.body = e.text;
+					final text:String = e.text;
+					m.body = text ?? "";
 				case 'subject' if (e == subject):
-					m.subject = e.text;
+					// An empty subject is "" (e.g. clearing a groupchat subject), null means no subject
+					final text:String = e.text;
+					m.subject = text ?? "";
 				case 'thread':
 					m.thread = e.text;
 					m.threadParent = e.get('parent');
