@@ -134,4 +134,36 @@ class TestPresence extends utest.Test {
 		var p:Presence = '<presence><status>My status</status></presence>';
 		equals('My status', p.status);
 	}
+
+	function test_parse_values() {
+		var p:Presence = '<presence><status/></presence>';
+		equals('', p.status);
+
+		p = '<presence><show>online</show></presence>';
+		isNull(p.show);
+		p = '<presence><show>dnd</show></presence>';
+		equals(dnd, p.show);
+
+		p = '<presence><priority>999</priority></presence>';
+		equals(127, p.priority);
+		p = '<presence><priority>-500</priority></presence>';
+		equals(-128, p.priority);
+		p = '<presence><priority>abc</priority></presence>';
+		isNull(p.priority);
+	}
+
+	function test_priority_clamped() {
+		final p = new Presence(null, null, 500);
+		equals(127, p.priority);
+		equals('127', p.toXML().elements.named('priority')[0].text);
+		p.priority = -1000;
+		equals(-128, p.priority);
+	}
+
+	function test_status_languages() {
+		final p:Presence = '<presence><status xml:lang="de">Weg</status><status>Away</status></presence>';
+		equals('Away', p.status);
+		equals(1, p.properties.length);
+		equals(2, p.toXML().elements.named('status').length);
+	}
 }

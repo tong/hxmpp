@@ -1,6 +1,7 @@
 package xmpp;
 
 import xmpp.IQ;
+import xmpp.Presence;
 import xmpp.Response;
 
 using StringTools;
@@ -349,6 +350,14 @@ abstract class Stream {
 			case 'message':
 				onMessage(xml);
 			case 'presence':
+				final type = xml.get('type');
+				if (type != null && PresenceType.fromString(type) == null) {
+					// An invalid type must not be taken as available presence
+					#if debug
+					trace('ignoring presence with invalid type: $type');
+					#end
+					return;
+				}
 				onPresence(xml);
 			case 'iq':
 				final iq:IQ = xml;

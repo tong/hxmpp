@@ -324,4 +324,14 @@ class TestStream extends utest.Test {
 		stream.recv('<iq type="get" from="romeo@example.net/orchard"><query xmlns="urn:x"/></iq>');
 		equals(count, sent.length);
 	}
+
+	function test_presence_invalid_type() {
+		final stream = createReadyStream();
+		final types = new Array<String>();
+		stream.onPresence = p -> types.push(p.type ?? 'available');
+		stream.recv('<presence from="romeo@example.net/orchard"/>');
+		stream.recv('<presence from="romeo@example.net/orchard" type="bogus"/>');
+		stream.recv('<presence from="romeo@example.net/orchard" type="unavailable"/>');
+		equals('available,unavailable', types.join(','));
+	}
 }

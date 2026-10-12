@@ -1,9 +1,10 @@
 package xmpp;
 
-using xmpp.Stanza;
-
+/**
+	Availability sub-state of an available entity.
+**/
 enum abstract Show(String) to String {
-	/** Especially socialable **/
+	/** Especially sociable **/
 	var chat;
 
 	/** Away from device **/
@@ -15,14 +16,17 @@ enum abstract Show(String) to String {
 	/** Busy (do not disturb) **/
 	var dnd;
 
-	// @:from public static inline function fromString(s:String)
-	// 	return switch s {
-	// 		case 'chat': chat;
-	// 		case 'away': away;
-	// 		case 'xa': xa;
-	// 		case 'dnd': dnd;
-	// 		case _: null;
-	// 	}
+	/**
+		Returns the show value, or `null` if `s` is not one of `chat`, `away`, `xa`, `dnd`.
+	**/
+	public static function fromString(s:String):Null<Show>
+		return switch s {
+			case 'chat': chat;
+			case 'away': away;
+			case 'xa': xa;
+			case 'dnd': dnd;
+			case _: null;
+		}
 }
 
 enum abstract PresenceType(String) to String {
@@ -72,7 +76,10 @@ abstract Status(String) from String to String {
 		return new Status(xml.text);
 }
 
-abstract Priority(Int) from Int to Int {
+/**
+	Priority of a resource, an integer between `-128` and `+127`; values out of range are clamped.
+**/
+abstract Priority(Int) to Int {
 	public static inline var MIN = -128;
 	public static inline var MAX = 127;
 
@@ -82,14 +89,22 @@ abstract Priority(Int) from Int to Int {
 	@:to public inline function toXML():XML
 		return XML.create("priority", Std.string(this));
 
-	@:from public static inline function fromFloat(f:Float)
+	@:from public static inline function fromInt(i:Int):Priority
+		return new Priority(i);
+
+	@:from public static inline function fromFloat(f:Float):Priority
 		return new Priority(Std.int(f));
 
-	@:from public static inline function fromString(s:String)
-		return new Priority(Std.parseInt(s));
+	/**
+		Parses a priority, returns `null` if `s` is no integer.
+	**/
+	@:from public static function fromString(s:String):Null<Priority> {
+		final i = Std.parseInt(s);
+		return (i == null) ? null : new Priority(i);
+	}
 
-	@:from public static inline function fromXML(x:XML)
-		return new Priority(fromString(x.text));
+	@:from public static inline function fromXML(x:XML):Null<Priority>
+		return fromString(x.text);
 }
 
 /**
@@ -127,7 +142,7 @@ enum abstract Subscription(String) from String to String {
 
 	The `<presence/>` element represents a broadcast or *publish-subscribe* mechanism, whereby multiple entities receive information about an entity to which they have subscribed (in this case, network availability information).
 
-	@see https://xmpp.org/rfcs/rfc3921.html>
+	@see [RFC 6121 - Instant Messaging and Presence](https://xmpp.org/rfcs/rfc6121.html#presence)
 **/
 @:forward(from, to, id, lang, error, type, show, status, priority, properties)
 abstract Presence(PresenceStanza) to Stanza {
@@ -173,6 +188,9 @@ private class PresenceStanza extends Stanza {
 		Optional `<status/>` element containing human-readable XML character data specifying a natural-language description of an entity's availability.
 		It is normally used in conjunction with the show element to provide a detailed description of an availability state (e.g., "In a meeting") when the presence stanza has no `type` attribute.
 
+		If the presence contains status texts in multiple languages, this is the one without `xml:lang` (or the first);
+		the others are kept in `properties`.
+
 		@see https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-status
 	**/
 	public var status:Status;
@@ -209,17 +227,32 @@ private class PresenceStanza extends Stanza {
 		return xml;
 	}
 
+	/**
+		Parses a `<presence/>` element.
+
+		An unknown `type` results in `null`; see `Stream` for the handling of such presences.
+		An unknown `show` value is ignored, the priority is clamped to the allowed range.
+	**/
 	public static function parse(xml:XML):Presence {
 		final p = Stanza.parseAttributes(new Presence(), xml);
 		p.type = xml.get('type');
+		// Of multiple status texts in different languages, use the default one
+		final statuses = xml.elements.named('status');
+		var status = statuses[0];
+		for (e in statuses)
+			if (!e.has('xml:lang')) {
+				status = e;
+				break;
+			}
 		for (e in xml.elements) {
 			switch e.name {
 				case 'show':
-					p.show = cast e.text;
-				case 'status':
-					p.status = Std.string(e.text);
+					p.show = Show.fromString(e.text);
+				case 'status' if (e == status):
+					final text:String = e.text;
+					p.status = text ?? "";
 				case 'priority':
-					p.priority = try Std.parseInt(e.text) catch (e) null;
+					p.priority = Priority.fromString(e.text);
 				case 'error':
 					p.error = e;
 				default:
