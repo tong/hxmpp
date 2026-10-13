@@ -11,6 +11,9 @@ private class Peers {
 	public final juliet:xmpp.client.Stream;
 	public final log = new Array<{from:String, xml:XML}>();
 
+	/** SOCKS5 proxy answering iq requests to its jid **/
+	public var proxy:Null<FakeProxy>;
+
 	public function new() {
 		romeo = connect('romeo@montague.lit/orchard');
 		juliet = connect('juliet@capulet.lit/balcony');
@@ -32,6 +35,12 @@ private class Peers {
 			final xml = XML.fromString(str);
 			xml.set('from', a.jid);
 			log.push({from: a.jid, xml: xml});
+			if (proxy != null && xml.get('to') == proxy.jid) {
+				final response = proxy.handle(xml);
+				if (response != null)
+					a.recv(response.toString());
+				return;
+			}
 			b.recv(xml.toString());
 		}
 	}
@@ -279,12 +288,12 @@ class TestJingle extends utest.Test {
 			if (receive != null)
 				receive(session);
 			else
-				JingleFileTransfer.receiveFile(session, maxBlockSize ?? 65535, n -> r.progress.push(n), (reason, data) -> {
+				JingleFileTransfer.receiveFile(session, {blockSize: maxBlockSize ?? 65535, onProgress: n -> r.progress.push(n)}, (reason, data) -> {
 					r.receiver = reason;
 					r.received = data;
 				});
 		}
-		JingleFileTransfer.sendFile(romeo, JULIET, offer ?? {name: 'test.bin', mediaType: 'application/octet-stream'}, data, blockSize ?? 4096,
+		JingleFileTransfer.sendFile(romeo, JULIET, offer ?? {name: 'test.bin', mediaType: 'application/octet-stream'}, data, {blockSize: blockSize ?? 4096},
 			reason -> r.sender = reason);
 		return r;
 	}
@@ -440,5 +449,416 @@ class TestJingle extends utest.Test {
 		p.inject(p.juliet, ROMEO, "<iq type='set' id='i10'><data xmlns='http://jabber.org/protocol/ibb' sid='ibb2' seq='0'>aGVsbG8=</data></iq>");
 		iq = p.inject(p.juliet, ROMEO, "<iq type='set' id='i11'><data xmlns='http://jabber.org/protocol/ibb' sid='ibb2' seq='1'>" + haxe.crypto.Base64.encode(Bytes.alloc(17)) + "</data></iq>");
 		same(['bad-request'], errors(iq));
+	}
+
+	// SOCKS5 bytestreams
+
+	function test_s5b_transport() {
+		// https://xmpp.org/extensions/xep-0260.html#protocol-initiate
+		final info = JingleS5B.parseTransport(XML.fromString("<transport xmlns='urn:xmpp:jingle:transports:s5b:1' dstaddr='972b7bf47291ca609517f67f86b5081086052dad' mode='tcp' sid='vj3hs98y'>
+			<candidate cid='hft54dqy' host='192.168.4.1' jid='romeo@montague.lit/orchard' port='5086' priority='8257636' type='direct'/>
+			<candidate cid='hutr46fe' host='24.24.24.1' jid='romeo@montague.lit/orchard' port='5087' priority='8258636' type='direct'/>
+			<candidate cid='xmdh4b7i' host='123.456.7.8' jid='streamer.shakespeare.lit' port='7625' priority='7878787' type='proxy'/>
+			<candidate cid='invalid' host='1.2.3.4'/>
+		</transport>"));
+		equals('vj3hs98y', info.sid);
+		equals('972b7bf47291ca609517f67f86b5081086052dad', info.dstaddr);
+		equals('tcp', info.mode);
+		equals(3, info.candidates.length);
+		final c = info.candidates[2];
+		equals('xmdh4b7i', c.cid);
+		equals('123.456.7.8', c.host);
+		equals('streamer.shakespeare.lit', c.jid);
+		equals(7625, c.port);
+		equals(7878787, c.priority);
+		equals(JingleS5BCandidateType.proxy, c.type);
+		isFalse(info.candidateError);
+		same(c, JingleS5B.parseTransport(XML.create('transport').set('xmlns', JingleS5B.XMLNS).set('sid', 's').append(JingleS5B.createCandidate(c))).candidates[0]);
+
+		// https://xmpp.org/extensions/xep-0260.html#protocol-negotiation
+		final info = JingleS5B.parseTransport(XML.fromString("<transport xmlns='urn:xmpp:jingle:transports:s5b:1' sid='vj3hs98y'><candidate-used cid='hr65dqyd'/></transport>"));
+		equals('hr65dqyd', info.candidateUsed);
+		isTrue(JingleS5B.parseTransport(XML.fromString("<transport xmlns='urn:xmpp:jingle:transports:s5b:1' sid='vj3hs98y'><candidate-error/></transport>")).candidateError);
+		equals('xmdh4b7i', JingleS5B.parseTransport(XML.fromString("<transport xmlns='urn:xmpp:jingle:transports:s5b:1' sid='vj3hs98y'><activated cid='xmdh4b7i'/></transport>")).activated);
+		isTrue(JingleS5B.parseTransport(XML.fromString("<transport xmlns='urn:xmpp:jingle:transports:s5b:1' sid='vj3hs98y'><proxy-error/></transport>")).proxyError);
+		isNull(JingleS5B.parseTransport(JingleIBB.createTransport('x')));
+
+		equals('972b7bf47291ca609517f67f86b5081086052dad', JingleS5B.createDstaddr('vj3hs98y', ROMEO, JULIET));
+		equals('1a12fb7bc625e55f3ed5b29a53dbe0e4aa7d80ba', JingleS5B.createDstaddr('vj3hs98y', JULIET, ROMEO));
+		equals(8257536, JingleS5B.priority(direct));
+		equals(8257636, JingleS5B.priority(direct, 100));
+		equals(655360, JingleS5B.priority(proxy));
+	}
+
+	function test_socks5_handshake() {
+		function pair() {
+			final a = new FakeConnection();
+			final b = new FakeConnection();
+			a.peer = b;
+			b.peer = a;
+			return {client: a, server: b};
+		}
+		final addr = JingleS5B.createDstaddr('vj3hs98y', ROMEO, JULIET);
+		var p = pair();
+		var server:{error:String, addr:String, stream:JingleS5BStream} = null;
+		var client:{error:String, stream:JingleS5BStream} = null;
+		JingleS5B.socks5Accept(p.server, a -> a == addr, (e, a, s) -> server = {error: e, addr: a, stream: s});
+		final written = [];
+		final write = p.client.write;
+		JingleS5B.socks5Connect(p.client, addr, (e, s) -> {
+			client = {error: e, stream: s};
+		});
+		isNull(client.error);
+		isNull(server.error);
+		equals(addr, server.addr);
+		// data in both directions, buffered until onData is set
+		client.stream.write(Bytes.ofString('hello'));
+		server.stream.write(Bytes.ofString('world'));
+		final received = [];
+		server.stream.onData = d -> received.push('server:' + d.toString());
+		client.stream.onData = d -> received.push('client:' + d.toString());
+		same(['server:hello', 'client:world'], received);
+		var closed = false;
+		server.stream.onClose = () -> closed = true;
+		client.stream.close();
+		isTrue(closed);
+
+		// wrong address
+		p = pair();
+		JingleS5B.socks5Accept(p.server, a -> a == addr, (e, a, s) -> server = {error: e, addr: a, stream: s});
+		JingleS5B.socks5Connect(p.client, JingleS5B.createDstaddr('other', ROMEO, JULIET), (e, s) -> client = {error: e, stream: s});
+		equals('connection refused', server.error);
+		equals('connection refused (5)', client.error);
+		isNull(client.stream);
+		isTrue(p.server.closed);
+
+		// no acceptable authentication method
+		p = pair();
+		JingleS5B.socks5Accept(p.server, a -> true, (e, a, s) -> server = {error: e, addr: a, stream: s});
+		p.client.write(Bytes.ofHex('050102'));
+		equals('no acceptable authentication method', server.error);
+
+		// request split into single bytes
+		p = pair();
+		server = null;
+		JingleS5B.socks5Accept(p.server, a -> a == addr, (e, a, s) -> server = {error: e, addr: a, stream: s});
+		final bytes = Bytes.ofHex('050100' + '0501000328' + Bytes.ofString(addr).toHex() + '0000');
+		for (i in 0...bytes.length)
+			p.client.write(bytes.sub(i, 1));
+		isNull(server.error);
+		equals(addr, server.addr);
+	}
+
+	function s5bTransfer(romeoConfig:Switchboard->JingleS5BConfig, julietConfig:Switchboard->Null<JingleS5BConfig>, ?fallback:Bool, ?proxy:Bool) {
+		final board = new Switchboard();
+		final p = new Peers();
+		if (proxy)
+			p.proxy = new FakeProxy(board);
+		final romeo = new Jingle(p.romeo);
+		final juliet = new Jingle(p.juliet);
+		final data = Bytes.alloc(100000);
+		for (i in 0...data.length)
+			data.set(i, i * 13 & 0xFF);
+		final r = {
+			peers: p,
+			proxy: p.proxy,
+			data: data,
+			sender: (null : JingleReasonInfo),
+			receiver: (null : JingleReasonInfo),
+			received: (null : Bytes)
+		};
+		final jc = julietConfig(board);
+		juliet.onSessionInitiate = session -> JingleFileTransfer.receiveFile(session, (jc == null) ? null : {s5b: jc}, (reason, data) -> {
+			r.receiver = reason;
+			r.received = data;
+		});
+		JingleFileTransfer.sendFile(romeo, JULIET, {name: 'test.bin'}, data, {s5b: romeoConfig(board), fallback: fallback}, reason -> r.sender = reason);
+		return r;
+	}
+
+	function transportInfo(p:Peers, from:String):Array<String> {
+		final list = [];
+		for (j in p.sent(from, 'jingle'))
+			if (j.get('action') == 'transport-info')
+				list.push(j.firstElement.firstElement.firstElement.name);
+		return list;
+	}
+
+	function test_s5b_direct() {
+		final r = s5bTransfer(b -> {network: new FakeNetwork(b, ['10.0.0.1'])}, b -> {network: new FakeNetwork(b, ['10.0.0.2', '10.0.0.3'])});
+		equals(success, r.sender.condition);
+		equals(success, r.receiver.condition);
+		equals(0, r.data.compare(r.received));
+		// no fallback
+		equals(0, r.peers.sent(ROMEO, 'open').length);
+		same(['candidate-used'], transportInfo(r.peers, ROMEO));
+		same(['candidate-used'], transportInfo(r.peers, JULIET));
+		// the offered candidates
+		final initiate = r.peers.sent(ROMEO, 'jingle')[0];
+		final offer = JingleS5B.parseTransport(initiate.firstElement.elements.named('transport')[0]);
+		equals('tcp', offer.mode);
+		isNull(offer.dstaddr);
+		equals(1, offer.candidates.length);
+		equals('10.0.0.1', offer.candidates[0].host);
+		equals(ROMEO, offer.candidates[0].jid);
+		equals(JingleS5BCandidateType.direct, offer.candidates[0].type);
+		final accept = JingleS5B.parseTransport(r.peers.sent(JULIET, 'jingle')[0].firstElement.elements.named('transport')[0]);
+		equals(offer.sid, accept.sid);
+		isNull(accept.mode);
+		equals(2, accept.candidates.length);
+		isTrue(accept.candidates[0].priority > accept.candidates[1].priority);
+	}
+
+	function test_s5b_one_side() {
+		// romeo offers no candidates, connects to juliet
+		final r = s5bTransfer(b -> {network: new FakeNetwork(b, ['10.0.0.1']), direct: false}, b -> {network: new FakeNetwork(b, ['10.0.0.2'])});
+		equals(success, r.receiver.condition);
+		equals(0, r.data.compare(r.received));
+		same(['candidate-used'], transportInfo(r.peers, ROMEO));
+		same(['candidate-error'], transportInfo(r.peers, JULIET));
+
+		// juliet can not connect
+		final r = s5bTransfer(b -> {network: new FakeNetwork(b, ['10.0.0.1'])}, b -> {
+			final n = new FakeNetwork(b, ['10.0.0.2']);
+			n.offline = true;
+			{network: n, direct: false};
+		});
+		equals(success, r.receiver.condition);
+		equals(0, r.data.compare(r.received));
+		same(['candidate-error'], transportInfo(r.peers, JULIET));
+	}
+
+	function test_s5b_fallback() {
+		function offline(b:Switchboard, host:String):JingleS5BConfig {
+			final n = new FakeNetwork(b, [host]);
+			n.offline = true;
+			return {network: n, direct: false};
+		}
+		// no connection: in-band bytestreams
+		final r = s5bTransfer(b -> offline(b, '10.0.0.1'), b -> offline(b, '10.0.0.2'));
+		equals(success, r.sender.condition);
+		equals(success, r.receiver.condition);
+		equals(0, r.data.compare(r.received));
+		same(['candidate-error'], transportInfo(r.peers, ROMEO));
+		same(['candidate-error'], transportInfo(r.peers, JULIET));
+		final actions = [for (j in r.peers.sent(ROMEO, 'jingle')) j.get('action')];
+		isTrue(actions.contains('transport-replace'));
+		equals('transport-accept', [for (j in r.peers.sent(JULIET, 'jingle')) j.get('action')].filter(a -> a == 'transport-accept')[0]);
+		isTrue(r.peers.sent(ROMEO, 'open').length == 1);
+
+		// the receiver has no network
+		final r = s5bTransfer(b -> {network: new FakeNetwork(b, ['10.0.0.1']), direct: false}, b -> null);
+		equals(success, r.receiver.condition);
+		equals(0, r.data.compare(r.received));
+		isTrue(r.peers.sent(ROMEO, 'open').length == 1);
+
+		// without fallback
+		final r = s5bTransfer(b -> offline(b, '10.0.0.1'), b -> offline(b, '10.0.0.2'), false);
+		equals(connectivity_error, r.sender.condition);
+		equals(connectivity_error, r.receiver.condition);
+		isNull(r.received);
+	}
+
+	function test_s5b_proxy() {
+		// juliet connects to romeo's proxy, romeo activates it
+		final r = s5bTransfer(b -> {network: new FakeNetwork(b, ['10.0.0.1']), direct: false, proxies: [{jid: 'proxy.lit', host: '10.0.0.100', port: 7777}]},
+			b -> {network: new FakeNetwork(b, ['10.0.0.2']), direct: false}, null, true);
+		equals(success, r.sender.condition);
+		equals(success, r.receiver.condition);
+		equals(0, r.data.compare(r.received));
+		same(['candidate-error', 'activated'], transportInfo(r.peers, ROMEO));
+		same(['candidate-used'], transportInfo(r.peers, JULIET));
+		final offer = JingleS5B.parseTransport(r.peers.sent(ROMEO, 'jingle')[0].firstElement.elements.named('transport')[0]);
+		equals(JingleS5B.createDstaddr(offer.sid, ROMEO, JULIET), offer.dstaddr);
+		equals(JingleS5BCandidateType.proxy, offer.candidates[0].type);
+		equals('proxy.lit', offer.candidates[0].jid);
+		same([offer.dstaddr], r.proxy.activations);
+		final activate = r.peers.log.filter(e -> e.xml.get('to') == 'proxy.lit')[0].xml.firstElement;
+		equals(offer.sid, activate.get('sid'));
+		equals(JULIET, activate.firstElement.text);
+
+		// the proxy can not be reached by romeo: proxy-error, fallback
+		final r = s5bTransfer(b -> {
+			final n = new FakeNetwork(b, ['10.0.0.1']);
+			n.blocked.push('10.0.0.100');
+			{network: n, direct: false, proxies: [{jid: 'proxy.lit', host: '10.0.0.100', port: 7777}]};
+		}, b -> {network: new FakeNetwork(b, ['10.0.0.2']), direct: false}, null, true);
+		same(['candidate-error', 'proxy-error'], transportInfo(r.peers, ROMEO));
+		equals(0, r.proxy.activations.length);
+		equals(1, r.peers.sent(ROMEO, 'open').length);
+		equals(success, r.sender.condition);
+		equals(success, r.receiver.condition);
+		equals(0, r.data.compare(r.received));
+
+		// streamhost request
+		final board = new Switchboard();
+		final p = new Peers();
+		p.proxy = new FakeProxy(board);
+		var host:JingleS5BStreamhost = null;
+		JingleS5B.requestStreamhost(p.romeo, 'proxy.lit', res -> host = JingleS5B.parseStreamhost(res.payload));
+		same({jid: 'proxy.lit', host: '10.0.0.100', port: 7777}, host);
+	}
+
+	function test_s5b_nomination() {
+		// both parties connect: on equal priority the initiator's choice (romeo connected to juliet's candidate)
+		final board = new Switchboard();
+		final p = new Peers();
+		final romeo = new Jingle(p.romeo);
+		final juliet = new Jingle(p.juliet);
+		var r5:JingleS5B = null;
+		var j5:JingleS5B = null;
+		final received = [];
+		function handle(s:JingleSession, t:() -> JingleS5B)
+			s.onAction = (req, respond) -> {
+				respond();
+				t().handleInfo(req.contents[0].transport);
+			}
+		juliet.onSessionInitiate = s -> {
+			final offered = s.contents[0].transport;
+			j5 = new JingleS5B(s, 'c', initiator, {network: new FakeNetwork(board, ['10.0.0.2'])}, offered.get('sid'));
+			handle(s, () -> j5);
+			j5.onReady = stream -> {
+				stream.onData = d -> received.push('juliet:' + d.toString());
+				stream.write(Bytes.ofString('from juliet'));
+			}
+			j5.prepare(offered, () -> {
+				s.accept([{creator: initiator, name: 'c', transport: j5.createTransport()}]);
+				j5.start(offered);
+			});
+		}
+		final session = romeo.createSession(JULIET);
+		r5 = new JingleS5B(session, 'c', initiator, {network: new FakeNetwork(board, ['10.0.0.1'])});
+		handle(session, () -> r5);
+		r5.onReady = stream -> {
+			stream.onData = d -> received.push('romeo:' + d.toString());
+			stream.write(Bytes.ofString('from romeo'));
+		}
+		session.onAccept = c -> r5.start(c[0].transport);
+		r5.prepare(null, () -> session.initiate([{creator: initiator, name: 'c', transport: r5.createTransport()}]));
+
+		notNull(r5.nominated);
+		equals(r5.nominated.cid, j5.nominated.cid);
+		equals('10.0.0.2', r5.nominated.host);
+		received.sort((a, b) -> a < b ? -1 : 1);
+		same(['juliet:from romeo', 'romeo:from juliet'], received);
+		same(['candidate-used'], transportInfo(p, ROMEO));
+		same(['candidate-used'], transportInfo(p, JULIET));
+		r5.close();
+		j5.close();
+	}
+}
+
+/**
+	In-memory network: listeners by host and port.
+**/
+private class Switchboard {
+	public final listeners = new Map<String, JingleS5BConnection->Void>();
+	public var nextPort = 7000;
+
+	public function new() {}
+
+	public function connect(host:String, port:Int):Null<FakeConnection> {
+		final listener = listeners.get('$host:$port');
+		if (listener == null)
+			return null;
+		final a = new FakeConnection();
+		final b = new FakeConnection();
+		a.peer = b;
+		b.peer = a;
+		// the accepting side handles the connection first
+		listener(b);
+		return a;
+	}
+}
+
+private class FakeNetwork implements JingleS5BNetwork {
+	final board:Switchboard;
+	final hosts:Array<String>;
+
+	/** Outgoing connections fail **/
+	public var offline = false;
+
+	/** Outgoing connections to these hosts fail **/
+	public var blocked = new Array<String>();
+
+	public function new(board:Switchboard, hosts:Array<String>) {
+		this.board = board;
+		this.hosts = hosts;
+	}
+
+	public function connect(host:String, port:Int, callback:(error:Null<String>, connection:Null<JingleS5BConnection>) -> Void) {
+		final c = (offline || blocked.contains(host)) ? null : board.connect(host, port);
+		callback((c == null) ? 'connection refused' : null, c);
+	}
+
+	public function listen(onConnection:JingleS5BConnection->Void, callback:(error:Null<String>, port:Int) -> Void):() -> Void {
+		final port = board.nextPort++;
+		for (h in hosts)
+			board.listeners.set('$h:$port', onConnection);
+		callback(null, port);
+		return () -> for (h in hosts) board.listeners.remove('$h:$port');
+	}
+
+	public function addresses()
+		return hosts;
+}
+
+private class FakeConnection implements JingleS5BConnection {
+	public var onData:Bytes->Void = data -> {};
+	public var onClose:() -> Void = () -> {};
+	public var peer:Null<FakeConnection>;
+	public var closed(default, null) = false;
+
+	public function new() {}
+
+	public function write(data:Bytes)
+		if (!closed && peer != null && !peer.closed)
+			peer.onData(data.sub(0, data.length));
+
+	public function close() {
+		if (closed)
+			return;
+		closed = true;
+		onClose();
+		if (peer != null)
+			peer.close();
+	}
+}
+
+/**
+	SOCKS5 bytestreams proxy: relays the two connections requesting the same address once activated.
+**/
+private class FakeProxy {
+	public final jid:String;
+	public final host = '10.0.0.100';
+	public final port = 7777;
+	public final requests = new Map<String, Array<JingleS5BStream>>();
+	public final activations = new Array<String>();
+
+	public function new(board:Switchboard, jid = 'proxy.lit') {
+		this.jid = jid;
+		board.listeners.set('$host:$port', connection -> JingleS5B.socks5Accept(connection, addr -> true, (error, addr, stream) -> {
+			if (error == null) {
+				requests[addr] ??= [];
+				requests[addr].push(stream);
+			}
+		}));
+	}
+
+	public function handle(iq:XML):Null<XML> {
+		final query = iq.firstElement;
+		final result = XML.create('iq').set('type', 'result').set('id', iq.get('id')).set('from', jid).set('to', iq.get('from'));
+		final activate = (query == null) ? null : query.elements.named('activate')[0];
+		if (activate == null)
+			return result.append(XML.create('query').set('xmlns', JingleS5B.XMLNS_BYTESTREAMS)
+				.append(XML.create('streamhost').set('jid', jid).set('host', host).set('port', Std.string(port))));
+		final addr = JingleS5B.createDstaddr(query.get('sid'), iq.get('from'), activate.text);
+		final streams = requests.get(addr);
+		if (streams == null || streams.length != 2)
+			return result.set('type', 'error').append(new xmpp.Stanza.Error(cancel, item_not_found).toXML());
+		activations.push(addr);
+		streams[0].onData = data -> streams[1].write(data);
+		streams[1].onData = data -> streams[0].write(data);
+		return result;
 	}
 }

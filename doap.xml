@@ -59,8 +59,8 @@
         <implements>
             <xmpp:SupportedXep>
                 <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0047.html"/>
-                <xmpp:status>partial</xmpp:status>
-                <xmpp:note xml:lang="en">Experimental</xmpp:note>
+                <xmpp:status>complete</xmpp:status>
+                <xmpp:note xml:lang="en">Used by Jingle (iq stanzas)</xmpp:note>
             </xmpp:SupportedXep>
         </implements>
         <implements>
@@ -92,6 +92,13 @@
                 <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0060.html"/>
                 <xmpp:status>partial</xmpp:status>
                 <xmpp:note xml:lang="en">No publish options, subscription options and node owner management</xmpp:note>
+            </xmpp:SupportedXep>
+        </implements>
+        <implements>
+            <xmpp:SupportedXep>
+                <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0065.html"/>
+                <xmpp:status>partial</xmpp:status>
+                <xmpp:note xml:lang="en">SOCKS5 connections and proxies as Jingle transport (XEP-0260), no standalone bytestreams; TCP only</xmpp:note>
             </xmpp:SupportedXep>
         </implements>
         <implements>
@@ -163,6 +170,13 @@
         </implements>
         <implements>
             <xmpp:SupportedXep>
+                <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0166.html"/>
+                <xmpp:status>partial</xmpp:status>
+                <xmpp:note xml:lang="en">No tie-breaking, no transport-replace negotiation</xmpp:note>
+            </xmpp:SupportedXep>
+        </implements>
+        <implements>
+            <xmpp:SupportedXep>
                 <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0172.html"/>
                 <xmpp:status>complete</xmpp:status>
             </xmpp:SupportedXep>
@@ -200,6 +214,26 @@
         <implements>
             <xmpp:SupportedXep>
                 <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0231.html"/>
+                <xmpp:status>complete</xmpp:status>
+            </xmpp:SupportedXep>
+        </implements>
+        <implements>
+            <xmpp:SupportedXep>
+                <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0234.html"/>
+                <xmpp:status>partial</xmpp:status>
+                <xmpp:note xml:lang="en">File offers with SOCKS5 and in-band bytestreams; no file requests, ranged transfers or multiple files</xmpp:note>
+            </xmpp:SupportedXep>
+        </implements>
+        <implements>
+            <xmpp:SupportedXep>
+                <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0260.html"/>
+                <xmpp:status>complete</xmpp:status>
+                <xmpp:note xml:lang="en">Network access provided by the application (built-in for nodejs)</xmpp:note>
+            </xmpp:SupportedXep>
+        </implements>
+        <implements>
+            <xmpp:SupportedXep>
+                <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0261.html"/>
                 <xmpp:status>complete</xmpp:status>
             </xmpp:SupportedXep>
         </implements>
