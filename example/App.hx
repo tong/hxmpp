@@ -1,5 +1,4 @@
 import haxe.io.Bytes;
-import haxe.io.BytesBuffer;
 import sys.net.Host;
 import sys.net.Socket;
 import xmpp.Jid;
@@ -94,16 +93,13 @@ class App {
 
 	static function read() {
 		final buf = Bytes.alloc(4096);
-		var data = new BytesBuffer();
 		while (true) {
 			final len = try socket.input.readBytes(buf, 0, buf.length) catch (e:haxe.io.Eof) exit('Disconnected');
-			data.addBytes(buf, 0, len);
-			if (len < buf.length) {
-				final str = data.getBytes().toString();
-				data = new BytesBuffer();
-				log(str, 33);
-				stream.recv(str);
-			}
+			#if xmpp_debug
+			log(buf.getString(0, len), 33); // may end within a character
+			#end
+			// buffers incomplete data (stanzas, UTF-8 sequences) until the rest arrives
+			stream.recvBytes(buf, 0, len);
 		}
 	}
 

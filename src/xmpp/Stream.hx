@@ -110,8 +110,12 @@ abstract class Stream {
 	public var output:String->Void;
 
 	var queries = new Map<String, Query>();
+
 	/** Received data not yet processed **/
 	var buf = '';
+
+	/** Received bytes of an incomplete UTF-8 sequence (`recvBytes`) **/
+	var pendingBytes:Null<haxe.io.Bytes>;
 
 	function new(xmlns:String, domain:String, ?lang:String) {
 		this.xmlns = xmlns;
@@ -218,6 +222,48 @@ abstract class Stream {
 			return stanza;
 		}
 	 */
+	/**
+		Process incoming raw data (UTF-8), e.g. as read from a socket.
+
+		Like `recv`, but the data may also be split within a multi-byte UTF-8 sequence:
+		an incomplete sequence at the end is held back until the rest is received.
+
+		Returns `true` if at least one complete unit was processed.
+	**/
+	public function recvBytes(bytes:haxe.io.Bytes, pos = 0, ?len:Int):Bool {
+		if (len == null)
+			len = bytes.length - pos;
+		if (pendingBytes != null) {
+			final b = new haxe.io.BytesBuffer();
+			b.add(pendingBytes);
+			b.addBytes(bytes, pos, len);
+			bytes = b.getBytes();
+			pos = 0;
+			len = bytes.length;
+		}
+		final end = utf8CompleteEnd(bytes, pos, pos + len);
+		pendingBytes = (end < pos + len) ? bytes.sub(end, pos + len - end) : null;
+		return recv(bytes.getString(pos, end - pos, UTF8));
+	}
+
+	/**
+		Returns the end of `bytes[pos...end]` without an incomplete UTF-8 sequence at its end.
+	**/
+	static function utf8CompleteEnd(bytes:haxe.io.Bytes, pos:Int, end:Int):Int {
+		// a sequence is at most 4 bytes: look back for its lead byte
+		var i = end - 1;
+		final min = (end - 4 > pos) ? end - 4 : pos;
+		while (i >= min) {
+			final c = bytes.get(i);
+			if (c & 0xC0 != 0x80) {
+				final size = if (c & 0x80 == 0) 1 else if (c & 0xE0 == 0xC0) 2 else if (c & 0xF0 == 0xE0) 3 else if (c & 0xF8 == 0xF0) 4 else 1;
+				return (i + size > end) ? i : end;
+			}
+			i--;
+		}
+		return end;
+	}
+
 	/**
 		Process incoming data.
 
@@ -448,8 +494,7 @@ abstract class Stream {
 						}
 					case _:
 						// Missing or invalid type
-						if (iq.id != null)
-							send(iq.createError({type: modify, condition: bad_request}));
+						if (iq.id != null) send(iq.createError({type: modify, condition: bad_request}));
 				}
 			default:
 				if (!onNonza(xml))
@@ -489,13 +534,13 @@ abstract class Stream {
 	static function normalizeJid(str:String, bare:Bool):String
 		return Jid.normalize(bare ? Jid.parseBare(str) : str);
 
-
 	function reset() {
 		ready = false;
 		jid = null;
 		serverFeatures = null;
 		queries = new Map();
 		buf = '';
+		pendingBytes = null;
 	}
 
 	/**
@@ -503,7 +548,6 @@ abstract class Stream {
 	**/
 	public static function makeRandomId(length = 16):String
 		return Random.bytes((length + 1) >> 1).toHex().substr(0, length);
-
 
 	/**
 		Returns the opening stream header, the `<open/>` element for framed streams.

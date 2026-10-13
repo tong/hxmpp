@@ -231,6 +231,40 @@ class TestStream extends utest.Test {
 		equals(1, presences);
 	}
 
+	function test_recv_bytes_utf8_split() {
+		final body = "hé€😀x";
+		final bytes = haxe.io.Bytes.ofString("<message from='a@example.com'><body>" + body + "</body></message>");
+		// split at every position, including within multi-byte sequences
+		for (cut in 0...bytes.length + 1) {
+			final stream = createReadyStream();
+			final bodies = new Array<String>();
+			stream.onMessage = m -> bodies.push(m.body);
+			stream.recvBytes(bytes, 0, cut);
+			stream.recvBytes(bytes, cut, bytes.length - cut);
+			equals(1, bodies.length);
+			equals(body, bodies[0]);
+		}
+		// byte by byte
+		final stream = createReadyStream();
+		final bodies = new Array<String>();
+		stream.onMessage = m -> bodies.push(m.body);
+		for (i in 0...bytes.length)
+			stream.recvBytes(bytes, i, 1);
+		equals(body, bodies[0]);
+	}
+
+	function test_recv_bytes_reset() {
+		// an incomplete sequence is dropped when the stream restarts
+		final stream = createReadyStream();
+		stream.recvBytes(haxe.io.Bytes.ofString("€"), 0, 1);
+		final bodies = new Array<String>();
+		stream.onMessage = m -> bodies.push(m.body);
+		stream.start(features -> {});
+		stream.recvBytes(haxe.io.Bytes.ofString("<stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' id='abc' from='example.com' version='1.0'><stream:features></stream:features><message><body>ok</body></message>"));
+		equals(1, bodies.length);
+		equals('ok', bodies[0]);
+	}
+
 	function test_framing_chunk_ends_with_tag() {
 		final stream = createReadyStream();
 		final bodies = new Array<String>();
