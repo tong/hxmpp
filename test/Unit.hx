@@ -21,6 +21,7 @@ function main() {
 	r.addCase(new TestJingle());
 	r.addCase(new TestEntityCapabilities());
 	r.addCase(new TestSoftwareVersion());
+	r.addCase(new TestStreamManagement());
 	// r.addCase(new TestURI());
 	var report = utest.ui.Report.create(r);
 	r.run();

@@ -39,7 +39,7 @@ External server components ([XEP-0114](https://xmpp.org/extensions/xep-0114.html
 | [XEP-0012](https://xmpp.org/extensions/xep-0012.html) | Last Activity | `xmpp.LastActivity` |
 | [XEP-0030](https://xmpp.org/extensions/xep-0030.html) | Service Discovery | `xmpp.ServiceDiscovery` |
 | [XEP-0045](https://xmpp.org/extensions/xep-0045.html) | Multi-User Chat | `xmpp.Muc` |
-| [XEP-0047](https://xmpp.org/extensions/xep-0047.html) | In-Band Bytestreams | `xmpp.Jingle` (`JingleIBB`), `xmpp.io.IBBytestream` (experimental) |
+| [XEP-0047](https://xmpp.org/extensions/xep-0047.html) | In-Band Bytestreams | `xmpp.Jingle` (`JingleIBB`), `xmpp.IBBytestream` (experimental) |
 | [XEP-0049](https://xmpp.org/extensions/xep-0049.html) | Private XML Storage | `xmpp.PrivateStorage` |
 | [XEP-0050](https://xmpp.org/extensions/xep-0050.html) | Ad-Hoc Commands | `xmpp.AdHocCommand` |
 | [XEP-0054](https://xmpp.org/extensions/xep-0054.html) | vcard-temp | `xmpp.VCard` |
@@ -60,6 +60,7 @@ External server components ([XEP-0114](https://xmpp.org/extensions/xep-0114.html
 | [XEP-0166](https://xmpp.org/extensions/xep-0166.html) | Jingle | `xmpp.Jingle` |
 | [XEP-0172](https://xmpp.org/extensions/xep-0172.html) | User Nickname | `xmpp.client.Nickname` |
 | [XEP-0191](https://xmpp.org/extensions/xep-0191.html) | Blocking Command | `xmpp.Block` |
+| [XEP-0198](https://xmpp.org/extensions/xep-0198.html) | Stream Management | `xmpp.StreamManagement` |
 | [XEP-0199](https://xmpp.org/extensions/xep-0199.html) | XMPP Ping | `xmpp.Ping` |
 | [XEP-0202](https://xmpp.org/extensions/xep-0202.html) | Entity Time | `xmpp.EntityTime` |
 | [XEP-0203](https://xmpp.org/extensions/xep-0203.html) | Delayed Delivery | `xmpp.DelayedDelivery` |

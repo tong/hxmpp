@@ -29,6 +29,7 @@ private typedef Feature = {
 	handler:IQ->IQ
 }
 
+@:allow(xmpp.StreamManagement)
 abstract class Stream {
 	public static inline var XMLNS = 'http://etherx.jabber.org/streams';
 
@@ -110,6 +111,9 @@ abstract class Stream {
 	public var output:String->Void;
 
 	var queries = new Map<String, Query>();
+
+	/** Counts and acknowledges stanzas, if attached (see `StreamManagement`) **/
+	var streamManagement:Null<StreamManagement>;
 
 	/** Received data not yet processed **/
 	var buf = '';
@@ -202,8 +206,13 @@ abstract class Stream {
 			// framed elements must be parsable standalone, including their namespace
 			xml.set('xmlns', xmlns);
 		output(xml);
+		if (streamManagement != null && isStanza(xml))
+			streamManagement.handleSent(xml);
 		return xml;
 	}
+
+	static inline function isStanza(xml:XML):Bool
+		return xml.name == 'message' || xml.name == 'presence' || xml.name == 'iq';
 
 	/**
 		Called before sending the `response` to an iq `request`.
@@ -407,6 +416,8 @@ abstract class Stream {
 		End stream
 	**/
 	public function end() {
+		if (streamManagement != null)
+			streamManagement.handleEnd();
 		output(framing ? '<close xmlns="$XMLNS_FRAMING"/>' : '</stream:stream>');
 		reset();
 	}
@@ -427,8 +438,16 @@ abstract class Stream {
 	}
 
 	function handleXML(xml:XML) {
-		final isStanza = xml.name == 'message' || xml.name == 'presence' || xml.name == 'iq';
-		if (isStanza && xml.has('xmlns') && xml.get('xmlns') != xmlns) {
+		final stanza = isStanza(xml);
+		if (streamManagement != null) {
+			if (stanza)
+				streamManagement.handleReceived();
+			else if (xml.is(StreamManagement.XMLNS)) {
+				streamManagement.handleNonza(xml);
+				return;
+			}
+		}
+		if (stanza && xml.has('xmlns') && xml.get('xmlns') != xmlns) {
 			trace("invalid stream namespace");
 			return;
 		}
@@ -538,6 +557,8 @@ abstract class Stream {
 		ready = false;
 		jid = null;
 		serverFeatures = null;
+		if (streamManagement != null)
+			streamManagement.handleReset(cast queries);
 		queries = new Map();
 		buf = '';
 		pendingBytes = null;
