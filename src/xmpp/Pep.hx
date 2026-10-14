@@ -7,66 +7,256 @@ import xmpp.IQ;
 **/
 @xep(107)
 enum abstract Mood(String) from String to String {
+	/** Impressed with fear or apprehension; in fear; apprehensive. **/
 	var afraid;
+
+	/** Astonished; confounded with fear, surprise or wonder. **/
 	var amazed;
+
+	/** Inclined to love; having a propensity to love, or to sexual enjoyment; loving, fond, affectionate, passionate, lustful, sexual, etc. **/
+	var amorous;
+
+	/** Displaying or feeling anger, i.e., a strong feeling of displeasure, hostility or antagonism towards someone or something, usually combined with an urge to harm. **/
 	var angry;
+
+	/** To be disturbed or irritated, especially by continued or repeated acts. **/
 	var annoyed;
+
+	/** Full of anxiety or disquietude; greatly concerned or solicitous, esp. respecting something future or unknown; being in painful suspense. **/
 	var anxious;
+
+	/** To be stimulated in one's feelings, especially to be sexually stimulated. **/
 	var aroused;
+
+	/** Feeling shame or guilt. **/
 	var ashamed;
+
+	/** Suffering from boredom; uninterested, without attention. **/
 	var bored;
+
+	/** Strong in the face of fear; courageous. **/
 	var brave;
+
+	/** Peaceful, quiet. **/
 	var calm;
+
+	/** Taking care or caution; tentative. **/
+	var cautious;
+
+	/** Feeling the sensation of coldness, especially to the point of discomfort. **/
 	var cold;
+
+	/** Feeling very sure of or positive about something, especially about one's own capabilities. **/
+	var confident;
+
+	/** Chaotic, jumbled or muddled. **/
 	var confused;
+
+	/** Feeling introspective or thoughtful. **/
+	var contemplative;
+
+	/** Pleased at the satisfaction of a want or desire; satisfied. **/
 	var contented;
+
+	/** Grouchy, irritable; easily upset. **/
 	var cranky;
+
+	/** Feeling out of control; feeling overly excited or enthusiastic. **/
+	var crazy;
+
+	/** Feeling original, expressive, or imaginative. **/
+	var creative;
+
+	/** Inquisitive; tending to ask questions, investigate, or explore. **/
 	var curious;
+
+	/** Feeling sad and dispirited. **/
+	var dejected;
+
+	/** Severely despondent and unhappy. **/
 	var depressed;
+
+	/** Defeated of expectation or hope; let down. **/
 	var disappointed;
+
+	/** Filled with disgust; irritated and out of patience. **/
 	var disgusted;
+
+	/** Feeling a sudden or complete loss of courage in the face of trouble or danger. **/
+	var dismayed;
+
+	/** Having one's attention diverted; preoccupied. **/
 	var distracted;
+
+	/** Having a feeling of shameful discomfort. **/
 	var embarrassed;
+
+	/** Feeling pain by the excellence or good fortune of another. **/
+	var envious;
+
+	/** Having great enthusiasm. **/
 	var excited;
+
+	/** In the mood for flirting. **/
 	var flirtatious;
+
+	/** Suffering from frustration; dissatisfied, agitated, or discontented because one is unable to perform an action or fulfill a desire. **/
 	var frustrated;
+
+	/** Feeling appreciation or thanks. **/
+	var grateful;
+
+	/** Feeling very sad about something, especially something lost; mournful; sorrowful. **/
+	var grieving;
+
+	/** Unhappy and irritable. **/
 	var grumpy;
+
+	/** Feeling responsible for wrongdoing; feeling blameworthy. **/
 	var guilty;
+
+	/** Experiencing the effect of favourable fortune; having the feeling arising from the consciousness of well-being or of enjoyment; enjoying good of any kind, as peace, tranquillity, comfort; contented; joyous. **/
 	var happy;
+
+	/** Having a positive feeling, belief, or expectation that something wished for can or will happen. **/
+	var hopeful;
+
+	/** Feeling the sensation of heat, especially to the point of discomfort. **/
 	var hot;
+
+	/** Having or showing a modest or low estimate of one's own importance; feeling lowered in dignity or importance. **/
 	var humbled;
+
+	/** Feeling deprived of dignity or self-respect. **/
 	var humiliated;
+
+	/** Having a physical need for food. **/
 	var hungry;
+
+	/** Wounded, injured, or pained, whether physically or emotionally. **/
 	var hurt;
+
+	/** Favourably affected by something or someone. **/
 	var impressed;
+
+	/** Feeling amazement at something or someone; or feeling a combination of fear and reverence. **/
 	var in_awe;
+
+	/** Feeling strong affection, care, liking, or attraction. **/
 	var in_love;
+
+	/** Showing anger or indignation, especially at something unjust or wrong. **/
 	var indignant;
+
+	/** Showing great attention to something or someone; having or showing interest. **/
 	var interested;
+
+	/** Under the influence of alcohol; drunk. **/
 	var intoxicated;
+
+	/** Feeling as if one cannot be defeated, overcome or denied. **/
 	var invincible;
+
+	/** Fearful of being replaced in position or affection. **/
 	var jealous;
+
+	/** Feeling isolated, empty, or abandoned. **/
 	var lonely;
+
+	/** Unable to find one's way, either physically or emotionally. **/
+	var lost;
+
+	/** Feeling as if one will be favored by luck. **/
+	var lucky;
+
+	/** Causing or intending to cause intentional harm; bearing ill will towards another; cruel; malicious. **/
 	var mean;
+
+	/** Given to sudden or frequent changes of mind or feeling; temperamental. **/
 	var moody;
+
+	/** Easily agitated or alarmed; apprehensive or anxious. **/
 	var nervous;
+
+	/** Not having a strong mood or emotional state. **/
 	var neutral;
+
+	/** Feeling emotionally hurt, displeased, or insulted. **/
 	var offended;
+
+	/** Feeling resentful anger caused by an extremely violent or vicious attack, or by an offensive, immoral, or indecent act. **/
+	var outraged;
+
+	/** Interested in play; fun, recreational, unserious, lighthearted; joking, silly. **/
 	var playful;
+
+	/** Feeling a sense of one's own worth or accomplishment. **/
 	var proud;
+
+	/** Having an easy-going mood; not stressed; calm. **/
+	var relaxed;
+
+	/** Feeling uplifted because of the removal of stress or discomfort. **/
 	var relieved;
+
+	/** Feeling regret or sadness for doing something wrong. **/
 	var remorseful;
+
+	/** Without rest; unable to be still or quiet; uneasy; continually moving. **/
 	var restless;
+
+	/** Feeling sorrow; sorrowful, mournful. **/
 	var sad;
+
+	/** Mocking and ironical. **/
 	var sarcastic;
+
+	/** Pleased at the fulfillment of a need or desire. **/
+	var satisfied;
+
+	/** Without humor or expression of happiness; grave in manner or disposition; earnest; thoughtful; solemn. **/
 	var serious;
+
+	/** Surprised, startled, confused, or taken aback. **/
 	var shocked;
+
+	/** Feeling easily frightened or scared; timid; reserved or coy. **/
 	var shy;
+
+	/** Feeling in poor health; ill. **/
 	var sick;
+
+	/** Feeling the need for sleep. **/
 	var sleepy;
+
+	/** Acting without planning; natural; impulsive. **/
+	var spontaneous;
+
+	/** Suffering emotional pressure. **/
 	var stressed;
+
+	/** Capable of producing great physical force; or, emotionally forceful, able, determined, unyielding. **/
+	var strong;
+
+	/** Experiencing a feeling caused by something unexpected. **/
 	var surprised;
+
+	/** Showing appreciation or gratitude. **/
+	var thankful;
+
+	/** Feeling the need to drink. **/
 	var thirsty;
+
+	/** In need of rest or sleep. **/
+	var tired;
+
+	/** [Feeling any emotion not defined here.] **/
+	var undefined;
+
+	/** Lacking in force or ability, either physical or emotional. **/
+	var weak;
+
+	/** Thinking about unpleasant things that have happened or that might happen; feeling afraid and unhappy. **/
 	var worried;
 }
 
