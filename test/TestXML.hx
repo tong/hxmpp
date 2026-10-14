@@ -225,11 +225,13 @@ class TestXML extends utest.Test {
 		equals(src, str);
 		var str = xmpp.xml.Printer.print(src, true);
 		equals('<node>
-	<child ns="my_ns">
-		value
-	</child>
-</node>
-', str);
+	<child ns="my_ns">value</child>
+</node>', str);
+		final xml:xmpp.XML = Xml.parse(src).firstElement();
+		equals(src, xmpp.xml.Printer.print(xml, false));
+		equals('<a>  b &amp; c  </a>', xmpp.xml.Printer.print('<a>  b &amp; c  </a>', true));
+		equals('<a>x <b>y</b> z</a>', xmpp.xml.Printer.print('<a>x <b>y</b> z</a>', true));
+		equals('<stream:stream>', xmpp.xml.Printer.print('<stream:stream>', true));
 	}
 	/*
 		function test_markup() {

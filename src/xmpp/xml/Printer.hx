@@ -2,62 +2,94 @@ package xmpp.xml;
 
 using StringTools;
 
-private enum EStringOrXml {
-	str(v:String);
-	xml(v:Xml);
+/**
+	Xml, `xmpp.XML` or a string of XML.
+**/
+abstract Source(Any) from String from Xml {
+	@:from static inline function fromXML(xml:xmpp.XML):Source
+		return (xml : Xml);
 }
 
-private abstract StringOrXml(EStringOrXml) {
-	inline function new(sox:EStringOrXml)
-		this = sox;
+/**
+	Prints XML for display, e.g. logging stanzas.
 
-	public inline function isXml():Bool
-		return switch this {
-			case str(_): false;
-			case xml(_): true;
-		}
-
-	@:to public inline function toString():String
-		return switch this {
-			case str(v): v;
-			case xml(v): v.toString();
-		}
-
-	@:to public inline function toXml():Xml
-		return switch this {
-			case str(v): Xml.parse(v);
-			case xml(v): v;
-		}
-
-	@:from public static inline function fromString(str:String)
-		return new StringOrXml(EStringOrXml.str(str));
-
-	@:from public static inline function fromXml(xml:Xml)
-		return new StringOrXml(EStringOrXml.xml(xml));
-}
-
+	Pretty output puts each element on its own line, indented by tabs.
+	Elements containing text are printed on a single line, so text content is never changed.
+	Whitespace-only text between elements is dropped, so the output is meant for reading, not sending.
+**/
 class Printer {
 	public var pretty:Bool;
 
 	public function new(pretty = true)
 		this.pretty = pretty;
 
-	public inline function it(sox:StringOrXml):String
-		return sox.isXml() ? printXml(sox) : printString(sox);
-
+	/**
+		Prints a string of XML, returns it unchanged if not `pretty` or not parseable.
+	**/
 	public function printString(str:String):String {
-		if (pretty) {
-			var xml:Xml = try Xml.parse(str) catch (e) {
-				return str;
-			}
-			return printXml(xml);
-		}
-		return str;
+		if (!pretty || str == null)
+			return str;
+		final xml = try Xml.parse(str) catch (e) return str;
+		return printXml(xml);
 	}
 
-	public inline function printXml(xml:Xml):String
-		return haxe.xml.Printer.print(xml, pretty);
+	public function printXml(xml:Xml):String {
+		if (!pretty)
+			return haxe.xml.Printer.print(xml);
+		final buf = new StringBuf();
+		write(buf, xml, "");
+		return buf.toString();
+	}
 
-	public static inline function print(sox:StringOrXml, ?pretty:Bool):String
-		return new Printer(pretty).it(sox);
+	public static function print(src:Source, pretty = true):String {
+		if (src == null)
+			return null;
+		final printer = new Printer(pretty);
+		return Std.isOfType(src, String) ? printer.printString(cast src) : printer.printXml(cast src);
+	}
+
+	static function write(buf:StringBuf, xml:Xml, indent:String) {
+		if (xml.nodeType == Document) {
+			var first = true;
+			for (child in xml) {
+				if (isBlank(child))
+					continue;
+				if (!first)
+					buf.add("\n");
+				first = false;
+				write(buf, child, indent);
+			}
+			return;
+		}
+		buf.add(indent);
+		if (xml.nodeType != Element || !hasOnlyElements(xml)) {
+			buf.add(haxe.xml.Printer.print(xml));
+			return;
+		}
+		buf.add('<${xml.nodeName}');
+		for (name in xml.attributes())
+			buf.add(' $name="${xml.get(name).htmlEscape(true)}"');
+		buf.add(">");
+		for (child in xml) {
+			if (isBlank(child))
+				continue;
+			buf.add("\n");
+			write(buf, child, indent + "\t");
+		}
+		buf.add('\n$indent</${xml.nodeName}>');
+	}
+
+	/** Whether `xml` has child elements (or comments) and no text **/
+	static function hasOnlyElements(xml:Xml):Bool {
+		var elements = false;
+		for (child in xml)
+			if (child.nodeType == Element || child.nodeType == Comment)
+				elements = true;
+			else if (!isBlank(child))
+				return false;
+		return elements;
+	}
+
+	static inline function isBlank(xml:Xml):Bool
+		return xml.nodeType == PCData && xml.nodeValue.trim() == "";
 }
