@@ -59,6 +59,7 @@ External server components ([XEP-0114](https://xmpp.org/extensions/xep-0114.html
 | [XEP-0163](https://xmpp.org/extensions/xep-0163.html) | Personal Eventing Protocol | `xmpp.Pep` |
 | [XEP-0166](https://xmpp.org/extensions/xep-0166.html) | Jingle | `xmpp.Jingle` |
 | [XEP-0172](https://xmpp.org/extensions/xep-0172.html) | User Nickname | `xmpp.client.Nickname` |
+| [XEP-0184](https://xmpp.org/extensions/xep-0184.html) | Message Delivery Receipts | `xmpp.DeliveryReceipts` |
 | [XEP-0191](https://xmpp.org/extensions/xep-0191.html) | Blocking Command | `xmpp.Block` |
 | [XEP-0198](https://xmpp.org/extensions/xep-0198.html) | Stream Management | `xmpp.StreamManagement` |
 | [XEP-0199](https://xmpp.org/extensions/xep-0199.html) | XMPP Ping | `xmpp.Ping` |

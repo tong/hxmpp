@@ -14,7 +14,26 @@ function main() {
 	r.addCase(new TestUuid());
 	r.addCase(new TestMuc());
 	r.addCase(new TestClientRoster());
-	r.addCase(new TestExtensions());
+	r.addCase(new TestLastMessageCorrection());
+	r.addCase(new TestHttpFileUpload());
+	r.addCase(new TestPep());
+	r.addCase(new TestPubSub());
+	r.addCase(new TestDeliveryReceipts());
+	r.addCase(new TestAttention());
+	r.addCase(new TestBlock());
+	r.addCase(new TestCarbons());
+	r.addCase(new TestDelayedDelivery());
+	r.addCase(new TestEntityTime());
+	r.addCase(new TestLastActivity());
+	r.addCase(new TestPing());
+	r.addCase(new TestPrivateStorage());
+	r.addCase(new TestResultSet());
+	r.addCase(new TestServiceDiscovery());
+	r.addCase(new TestVCard());
+	r.addCase(new TestOob());
+	r.addCase(new TestNickname());
+	r.addCase(new TestChatState());
+	r.addCase(new TestBob());
 	r.addCase(new TestStartTLS());
 	r.addCase(new TestAccount());
 	r.addCase(new TestAdHocCommand());
@@ -22,7 +41,7 @@ function main() {
 	r.addCase(new TestEntityCapabilities());
 	r.addCase(new TestSoftwareVersion());
 	r.addCase(new TestStreamManagement());
-	// r.addCase(new TestURI());
+	r.addCase(new TestURI());
 	var report = utest.ui.Report.create(r);
 	r.run();
 }

@@ -45,6 +45,14 @@ class TestAdHocCommand extends utest.Test {
 
 	// requester
 
+	function test_adhoc_execute() {
+		xmpp.AdHocCommand.execute(stream, 'responder@example.com', 'list', r -> {});
+		final command = lastSent().firstElement;
+		equals('command', command.name);
+		equals('list', command.get('node'));
+		equals('execute', command.get('action'));
+	}
+
 	function test_requests() {
 		// https://xmpp.org/extensions/xep-0050.html#retrieve
 		stream.requestCommandList('responder@domain', r -> {});
