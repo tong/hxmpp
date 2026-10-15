@@ -38,6 +38,7 @@ function main() {
 	r.addCase(new TestAccount());
 	r.addCase(new TestAdHocCommand());
 	r.addCase(new TestJingle());
+	r.addCase(new TestJingleRtp());
 	r.addCase(new TestEntityCapabilities());
 	r.addCase(new TestSoftwareVersion());
 	r.addCase(new TestStreamManagement());

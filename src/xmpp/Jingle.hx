@@ -289,7 +289,7 @@ class Jingle {
 	**/
 	public function initiate(peer:String, contents:Array<JingleContent>, ?sid:String, ?handler:Response<XML>->Void):JingleSession {
 		final session = createSession(peer, sid);
-		session.initiate(contents, handler);
+		session.initiate(contents, null, handler);
 		return session;
 	}
 
@@ -322,6 +322,7 @@ class Jingle {
 			}
 			final session = new JingleSession(this, req.sid, iq.from, false);
 			session.contents = req.contents;
+			session.payload = req.info;
 			sessions.set(key(iq.from, req.sid), session);
 			respond(Response.success());
 			onSessionInitiate(session);
@@ -339,6 +340,7 @@ class Jingle {
 				}
 				session.state = active;
 				session.contents = req.contents;
+				session.payload = req.info;
 				respond(Response.success());
 				session.onAccept(req.contents);
 			case session_terminate:
@@ -512,6 +514,12 @@ class JingleSession {
 	/** The content definitions, as initiated and (once active) accepted **/
 	public var contents(default, null):Array<JingleContent> = [];
 
+	/**
+		Other elements of the request and acceptance of the session than the contents (e.g. a `<group/>` of contents),
+		as initiated and (once active) accepted
+	**/
+	public var payload(default, null):Array<XML> = [];
+
 	/** The reason of the termination, once `ended` **/
 	public var reason(default, null):Null<JingleReasonInfo>;
 
@@ -549,14 +557,16 @@ class JingleSession {
 	}
 
 	/**
-		Request the session (created by `Jingle.createSession`) with `contents`, the response acknowledges the request.
+		Request the session (created by `Jingle.createSession`) with `contents` (and other elements, `payload`),
+		the response acknowledges the request.
 	**/
-	public function initiate(contents:Array<JingleContent>, ?handler:Response<XML>->Void):Null<IQ> {
+	public function initiate(contents:Array<JingleContent>, ?payload:Array<XML>, ?handler:Response<XML>->Void):Null<IQ> {
 		if (!isInitiator || state != pending || initiated)
 			return null;
 		initiated = true;
 		this.contents = contents;
-		return send(session_initiate, contents, (res:Response<XML>) -> {
+		this.payload = payload ?? [];
+		return send(session_initiate, contents, null, payload, (res:Response<XML>) -> {
 			if (!res.ok())
 				end({condition: general_error, text: res.error.condition});
 			if (handler != null)
@@ -565,15 +575,17 @@ class JingleSession {
 	}
 
 	/**
-		Accept a session initiated by the peer with `contents` (by default the initiated contents).
+		Accept a session initiated by the peer with `contents` (by default the initiated contents) and other elements
+		(`payload`).
 	**/
-	public function accept(?contents:Array<JingleContent>, ?handler:Response<XML>->Void):Null<IQ> {
+	public function accept(?contents:Array<JingleContent>, ?payload:Array<XML>, ?handler:Response<XML>->Void):Null<IQ> {
 		if (isInitiator || state != pending)
 			return null;
 		state = active;
 		if (contents != null)
 			this.contents = contents;
-		return send(session_accept, this.contents, handler);
+		this.payload = payload ?? [];
+		return send(session_accept, this.contents, null, payload, handler);
 	}
 
 	/**
