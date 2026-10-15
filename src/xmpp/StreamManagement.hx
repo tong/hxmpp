@@ -285,5 +285,10 @@ class StreamManagement {
 	}
 
 	static inline function format(n:Float):String
+		#if php
+		// haxe 5 generates invalid php for haxe.Int32 (bodyless methods), pulled in via Int64.fromFloat
+		return php.Syntax.code("sprintf('%.0f', {0})", n);
+		#else
 		return haxe.Int64.toStr(haxe.Int64.fromFloat(n));
+		#end
 }

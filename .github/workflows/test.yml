@@ -44,7 +44,8 @@ jobs:
       - name: Run unit tests (nodejs)
         run: haxe --cwd test build-nodejs.hxml && node test/bin/unit.node.js
       - name: Run unit tests (php)
-        run: haxe --cwd test build-php.hxml && php test/bin/php/unit.php
+        # xdebug.mode=off: xdebug aborts the jingle file transfer test at 256 stack frames
+        run: haxe --cwd test build-php.hxml && php -d xdebug.mode=off test/bin/php/unit.php
       - name: Run unit tests (python)
         run: haxe --cwd test build-python.hxml && python3 test/bin/unit.py
       - name: Run unit tests (cpp)

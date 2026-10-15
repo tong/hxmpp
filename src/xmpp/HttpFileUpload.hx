@@ -54,7 +54,7 @@ class HttpFileUpload {
 	**/
 	public static function requestHttpUploadSlot(stream:Stream, jid:String, filename:String, size:Float, ?contentType:haxe.io.Mime, ?purpose:UploadPurpose,
 			handler:Response<XML>->Void):IQ {
-		final xml = Payload.create(XMLNS, "request").set("filename", filename).set("size", haxe.Int64.toStr(haxe.Int64.fromFloat(size)));
+		final xml = Payload.create(XMLNS, "request").set("filename", filename).set("size", formatSize(size));
 		if (contentType != null)
 			xml.set("content-type", contentType);
 		if (purpose != null)
@@ -134,4 +134,12 @@ class HttpFileUpload {
 
 	static function removeNewlines(s:String):String
 		return ~/[\r\n]/g.replace(s, "");
+
+	static inline function formatSize(v:Float):String
+		#if php
+		// haxe 5 generates invalid php for haxe.Int32 (bodyless methods), pulled in via Int64.fromFloat
+		return php.Syntax.code("sprintf('%.0f', {0})", v);
+		#else
+		return haxe.Int64.toStr(haxe.Int64.fromFloat(v));
+		#end
 }
