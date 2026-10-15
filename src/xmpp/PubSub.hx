@@ -134,6 +134,18 @@ class PubSub {
         return stream.set(payload(XML.create("create").set("node", node)), jid, handler);
 
     /**
+        Create a `node` at the pubsub service `jid` with a configuration: node config fields
+        (e.g. `"pubsub#access_model" => "whitelist"`, `"pubsub#max_items" => "1000"`).
+    **/
+    public static function createConfiguredNode(stream:Stream, jid:String, node:String, config:Map<String, String>, handler:Response<XML>->Void) : IQ {
+        final fields:Array<DataForm.Field> = [{variable: "FORM_TYPE", type: hidden, values: ['$XMLNS#node_config']}];
+        for (k => v in config)
+            fields.push({variable: k, values: [v]});
+        return stream.set(payload(XML.create("create").set("node", node))
+            .append(XML.create("configure").append(new DataForm(submit, null, null, fields))), jid, handler);
+    }
+
+    /**
         Request the configuration form of a `node` (owner).
     **/
     public static inline function requestNodeConfig(stream:Stream, jid:String, node:String, handler:Response<XML>->Void) : IQ
@@ -200,6 +212,58 @@ class PubSub {
             .append(XML.create("affiliation")
                 .set("jid", affiliation.jid)
                 .set("affiliation", affiliation.affiliation)), "#owner"), jid, handler);
+
+    /**
+        Request the affiliations of all entities with a `node` (owner), see `parseAffiliations`.
+    **/
+    public static inline function getNodeAffiliations(stream:Stream, jid:String, node:String, handler:Response<XML>->Void) : IQ
+        return stream.get(payload(XML.create("affiliations").set("node", node), "#owner"), jid, handler);
+
+    /**
+        Request the subscriptions of all entities to a `node` (owner), see `parseSubscriptions`.
+    **/
+    public static inline function getNodeSubscriptions(stream:Stream, jid:String, node:String, handler:Response<XML>->Void) : IQ
+        return stream.get(payload(XML.create("subscriptions").set("node", node), "#owner"), jid, handler);
+
+    /**
+        Change the subscription of `subscriber` to a `node` (owner), e.g. to `none` to end it.
+        Changing the affiliation of an entity doesn't end its subscriptions.
+    **/
+    public static inline function setSubscription(stream:Stream, jid:String, node:String, subscriber:String, subscription:SubscriptionState, handler:Response<XML>->Void) : IQ
+        return stream.set(payload(XML.create("subscriptions").set("node", node)
+            .append(XML.create("subscription")
+                .set("jid", subscriber)
+                .set("subscription", subscription)), "#owner"), jid, handler);
+
+    /**
+        The affiliations of a response (`getAffiliations`, `getNodeAffiliations`).
+    **/
+    public static function parseAffiliations(payload:Null<XML>):Array<{jid:Null<String>, ?node:String, affiliation:AffiliationState}> {
+        final list = payload?.elements.named("affiliations")[0];
+        return (list == null) ? [] : [
+            for (e in list.elements.named("affiliation"))
+                {jid: e.get("jid"), node: e.get("node") ?? list.get("node"), affiliation: e.get("affiliation")}
+        ];
+    }
+
+    /**
+        The subscriptions of a response (`getSubscriptions`, `getNodeSubscriptions`).
+    **/
+    public static function parseSubscriptions(payload:Null<XML>):Array<{jid:String, ?node:String, subscription:SubscriptionState, ?subid:String}> {
+        final list = payload?.elements.named("subscriptions")[0];
+        return (list == null) ? [] : [
+            for (e in list.elements.named("subscription"))
+                {jid: e.get("jid"), node: e.get("node") ?? list.get("node"), subscription: e.get("subscription"), subid: e.get("subid")}
+        ];
+    }
+
+    /**
+        The `<item/>` elements of a response (`loadItems`, `loadItem`), in the order of the service.
+    **/
+    public static function parseItems(payload:Null<XML>):Array<XML> {
+        final items = payload?.elements.named("items")[0];
+        return (items == null) ? [] : items.elements.named("item");
+    }
 
     /**
         Request node items.
