@@ -68,7 +68,7 @@ enum MamResponse {
 	Results arrive as messages before the response of the query: pass all received messages to `handleMessage`,
 	which consumes those of running queries.
 
-		final mam = new Mam(stream);
+		final mam = new MessageArchiveManagement(stream);
 		stream.onMessage = m -> if (!mam.handleMessage(m)) receive(m);
 		// the last 20 messages with juliet
 		mam.query({with: "juliet@capulet.lit", page: {max: 20, before: ""}}, res -> switch res {
@@ -76,12 +76,12 @@ enum MamResponse {
 			case Failed(e): trace(e.condition);
 		});
 
-	Support is advertised by the own bare jid (service discovery: `Mam.XMLNS`), and by rooms with archives.
+	Support is advertised by the own bare jid (service discovery: `MessageArchiveManagement.XMLNS`), and by rooms with archives.
 
 	[XEP-0313: Message Archive Management](https://xmpp.org/extensions/xep-0313.html)
 **/
 @xep(313)
-class Mam {
+class MessageArchiveManagement {
 	public static inline var XMLNS = "urn:xmpp:mam:2";
 
 	static inline var XMLNS_FORWARD = "urn:xmpp:forward:0";

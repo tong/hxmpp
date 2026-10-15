@@ -1,11 +1,11 @@
 import utest.Assert.*;
-import xmpp.Mam;
+import xmpp.MessageArchiveManagement;
 import xmpp.Message;
 import xmpp.XML;
 
 using StringTools;
 
-class TestMam extends StreamTest {
+class TestMessageArchiveManagement extends StreamTest {
 	function result(queryId:String, id:String, from = "juliet@capulet.lit", body = "hi", stamp = "2026-10-15T08:30:00Z"):Message
 		return Message.fromString('<message from="$from" to="juliet@capulet.lit/balcony"><result xmlns="urn:xmpp:mam:2" queryid="$queryId" id="$id">'
 			+ '<forwarded xmlns="urn:xmpp:forward:0"><delay xmlns="urn:xmpp:delay" stamp="$stamp"/>'
@@ -14,7 +14,7 @@ class TestMam extends StreamTest {
 
 	function test_query() {
 		@:privateAccess stream.jid = "juliet@capulet.lit/balcony";
-		final mam = new Mam(stream);
+		final mam = new MessageArchiveManagement(stream);
 		var page:MamResult = null;
 		mam.query({with: "romeo@montague.lit", start: new Date(2026, 9, 1, 0, 0, 0), page: {max: 2, before: ""}}, res -> switch res {
 			case Page(r): page = r;
@@ -25,12 +25,12 @@ class TestMam extends StreamTest {
 		isNull(iq.get("to"));
 		final query = iq.firstElement;
 		equals("query", query.name);
-		equals(Mam.XMLNS, query.get("xmlns"));
+		equals(MessageArchiveManagement.XMLNS, query.get("xmlns"));
 		final queryId = query.get("queryid");
 		notNull(queryId);
 		final form = xmpp.DataForm.fromXML(query.elements.findElement("x"));
 		equals("submit", form.type);
-		equals(Mam.XMLNS, form.getValue("FORM_TYPE"));
+		equals(MessageArchiveManagement.XMLNS, form.getValue("FORM_TYPE"));
 		equals("romeo@montague.lit", form.getValue("with"));
 		isTrue(form.getValue("start").startsWith("2026-"));
 		final set = query.elements.findElement("set");
@@ -66,7 +66,7 @@ class TestMam extends StreamTest {
 
 	function test_room_and_error() {
 		@:privateAccess stream.jid = "juliet@capulet.lit/balcony";
-		final mam = new Mam(stream);
+		final mam = new MessageArchiveManagement(stream);
 		var error:String = null;
 		var page:MamResult = null;
 		mam.query({}, "Room@chat.example.org", res -> switch res {
@@ -95,9 +95,9 @@ class TestMam extends StreamTest {
 	}
 
 	function test_parse() {
-		isNull(Mam.parseResult(XML.fromString('<result xmlns="urn:xmpp:mam:2" queryid="q"/>')));
-		isNull(Mam.parseResult(XML.fromString('<result xmlns="urn:xmpp:mam:2" id="x"><forwarded xmlns="urn:xmpp:forward:0"/></result>')));
-		final item = Mam.parseResult(XML.fromString('<result xmlns="urn:xmpp:mam:2" id="x"><forwarded xmlns="urn:xmpp:forward:0"><message><body>b</body></message></forwarded></result>'));
+		isNull(MessageArchiveManagement.parseResult(XML.fromString('<result xmlns="urn:xmpp:mam:2" queryid="q"/>')));
+		isNull(MessageArchiveManagement.parseResult(XML.fromString('<result xmlns="urn:xmpp:mam:2" id="x"><forwarded xmlns="urn:xmpp:forward:0"/></result>')));
+		final item = MessageArchiveManagement.parseResult(XML.fromString('<result xmlns="urn:xmpp:mam:2" id="x"><forwarded xmlns="urn:xmpp:forward:0"><message><body>b</body></message></forwarded></result>'));
 		equals("x", item.id);
 		equals("b", item.message.body);
 		isNull(item.date);

@@ -4,7 +4,7 @@ import utest.Assert.*;
 import xmpp.Stanza;
 import xmpp.XML;
 import xmpp.client.Authentication;
-import xmpp.client.CSI;
+import xmpp.client.StateIndication;
 
 using xmpp.client.Authentication;
 
@@ -235,23 +235,23 @@ class TestAuthentication extends utest.Test {
 		restart("<bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'/><csi xmlns='urn:xmpp:csi:0'/>");
 		replyBind();
 		isTrue(done);
-		isTrue(CSI.isOffered(stream.serverFeatures));
+		isTrue(StateIndication.isOffered(stream.serverFeatures));
 	}
 
 	function test_csi() {
-		isFalse(CSI.isOffered(null));
+		isFalse(StateIndication.isOffered(null));
 		// pre-auth features without csi: nothing is sent
 		final count = sent.length;
-		isNull(CSI.setInactive(stream));
+		isNull(StateIndication.setInactive(stream));
 		equals(count, sent.length);
 
 		authenticate('balcony');
 		restart("<bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'/><csi xmlns='urn:xmpp:csi:0'/>");
 		replyBind();
-		CSI.setInactive(stream);
+		StateIndication.setInactive(stream);
 		equals('inactive', lastSent().name);
-		equals(CSI.XMLNS, lastSent().get('xmlns'));
-		CSI.setActive(stream);
+		equals(StateIndication.XMLNS, lastSent().get('xmlns'));
+		StateIndication.setActive(stream);
 		equals('active', lastSent().name);
 	}
 }

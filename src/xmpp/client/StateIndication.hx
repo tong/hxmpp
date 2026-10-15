@@ -16,7 +16,7 @@ package xmpp.client;
 	[XEP-0352: Client State Indication](https://xmpp.org/extensions/xep-0352.html)
 **/
 @xep(352)
-class CSI {
+class StateIndication {
 	public static inline var XMLNS = "urn:xmpp:csi:0";
 
 	/**
