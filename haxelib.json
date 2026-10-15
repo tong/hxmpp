@@ -1,6 +1,6 @@
 {
 	"name": "hxmpp",
-	"version": "1.0.0-alpha.2",
+	"version": "1.0.0",
 	"description": "XMPP library",
 	"url": "https://github.com/tong/hxmpp",
 	"license": "MIT",
@@ -9,6 +9,6 @@
 	"contributors": ["tong"],
 	"classPath" : "src/",
 	"dependencies": {
-        "sasl": ""
+        "sasl": "0.2.0"
     }
 }

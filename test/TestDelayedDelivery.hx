@@ -29,7 +29,7 @@ class TestDelayedDelivery extends utest.Test {
 		final parse = xmpp.DelayedDelivery.parseStamp;
 		equals(0.0, parse('1970-01-01T00:00:00Z').getTime());
 		equals(1031699305000.0, parse('2002-09-10T23:08:25Z').getTime());
-		#if !hl // hashlink dates have second resolution
+		#if !(hl || neko) // hashlink and neko dates have second resolution
 		equals(1031699305123.0, parse('2002-09-10T23:08:25.123Z').getTime());
 		#end
 		equals(1031699305000.0, parse('2002-09-11T01:08:25+02:00').getTime());

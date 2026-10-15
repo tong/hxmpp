@@ -104,7 +104,10 @@ class Authentication {
 		// Set if the client aborted the exchange; reported once the server confirmed with <failure/>
 		var abortError:xmpp.Stanza.Error = null;
 		stream.input = str -> {
-			final xml = XML.fromString(str);
+			final xml = try XML.fromString(str) catch (e) {
+				_callback(new xmpp.Stanza.Error(cancel, undefined_condition, 'invalid sasl response'), null);
+				return;
+			}
 			switch xml.name {
 				case 'challenge':
 					final res = try mechanism.createChallengeResponse(xml.text) catch (e:sasl.Error) {

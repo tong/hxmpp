@@ -15,6 +15,9 @@ haxelib install sasl
 
 Requires Haxe 4.3.7 or later; tested on hl, cpp, jvm, lua, neko, nodejs, php and python.
 
+STARTTLS (`xmpp.StartTLS.upgrade`) is available on cpp, hl, neko, python, nodejs and lua (untested on hlc), not on jvm.
+On lua the server certificate is **not** verified.
+
 ## Usage
 
 See [example/App.hx](example/App.hx) for a basic client (connect, TLS, login, roster, messages) on sys targets, and [example/App.js.hx](example/App.js.hx) for nodejs.

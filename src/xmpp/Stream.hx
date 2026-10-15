@@ -24,11 +24,6 @@ private typedef Query = {
 	handler:XML->Void
 }
 
-private typedef Feature = {
-	xmlns:String,
-	handler:IQ->IQ
-}
-
 @:allow(xmpp.StreamManagement)
 abstract class Stream {
 	public static inline var XMLNS = 'http://etherx.jabber.org/streams';
@@ -89,7 +84,6 @@ abstract class Stream {
 	**/
 	public var serverFeatures(default, null):Null<XML>;
 
-	// public var ready = false;
 	public var features = new Map<String, IQ->(Null<Response<XML>>->Void)->Void>();
 
 	/**
@@ -132,8 +126,6 @@ abstract class Stream {
 	**/
 	public function get<T:IQ.Payload, R>(payload:IQ.Payload, ?jid:String, ?handler:(response:Response<T>) -> Void):IQ {
 		final iq = new IQ(payload, IQType.Get, makeRandomId(), jid);
-		if (iq.id == null)
-			iq.id = makeRandomId();
 		if (handler != null) {
 			addQuery(iq, xml -> {
 				final iq:IQ = xml;
@@ -190,17 +182,8 @@ abstract class Stream {
 	}
 
 	/**
-		Send stanza
+		Send xml, e.g. a stanza.
 	**/
-	// public function send(xml:XML) : XML {
-	// 	output(xml);
-	//        return xml;
-	// }
-	// public function send(stanza:Stanza) : Stanza {
-	// 	output(stanza.toString());
-	//        return stanza;
-	// }
-
 	public function send(xml:XML):XML {
 		if (framing && !xml.has('xmlns') && (xml.name == 'message' || xml.name == 'presence' || xml.name == 'iq'))
 			// framed elements must be parsable standalone, including their namespace
@@ -219,18 +202,6 @@ abstract class Stream {
 	**/
 	function prepareResponse(request:IQ, response:IQ) {}
 
-	/*
-		public function sendStanza<T:xmpp.Stanza>(stanza:T, ?handler:T->Void) : T {
-			if(handler != null) {
-				if(stanza.id == null) stanza.id = Stream.makeRandomId();
-				//queries.set(stanza.id, handler);
-			}
-			// if(stanza.id != null) {
-			//     queries.set(stanza.id, handler);
-			// }
-			return stanza;
-		}
-	 */
 	/**
 		Process incoming raw data (UTF-8), e.g. as read from a socket.
 

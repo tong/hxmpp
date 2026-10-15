@@ -35,20 +35,20 @@ jobs:
         run: haxe test.hxml
       - name: Build unit tests (hl)
         run: haxe --cwd test build-hl.hxml
-      - name: Build unit tests (jvm)
-        run: haxe --cwd test build-jvm.hxml
+      - name: Run unit tests (jvm)
+        run: haxe --cwd test build-jvm.hxml && java -jar test/bin/unit.jvm.jar
       - name: Build unit tests (lua)
         run: haxe --cwd test build-lua.hxml
-      - name: Build unit tests (neko)
-        run: haxe --cwd test build-neko.hxml
-      - name: Build unit tests (nodejs)
-        run: haxe --cwd test build-nodejs.hxml
-      - name: Build unit tests (php)
-        run: haxe --cwd test build-php.hxml
-      - name: Build unit tests (python)
-        run: haxe --cwd test build-python.hxml
-      - name: Build unit tests (cpp)
-        run: haxe --cwd test build-cpp.hxml
+      - name: Run unit tests (neko)
+        run: haxe --cwd test build-neko.hxml && neko test/bin/unit.n
+      - name: Run unit tests (nodejs)
+        run: haxe --cwd test build-nodejs.hxml && node test/bin/unit.node.js
+      - name: Run unit tests (php)
+        run: haxe --cwd test build-php.hxml && php test/bin/php/unit.php
+      - name: Run unit tests (python)
+        run: haxe --cwd test build-python.hxml && python3 test/bin/unit.py
+      - name: Run unit tests (cpp)
+        run: haxe --cwd test build-cpp.hxml && test/bin/unit
       - name: Build haxedoc.xml
         run: haxe haxedoc.hxml
       # - name: Build example [node]
