@@ -224,9 +224,20 @@ class PubSub {
 
     /**
         Publish an `item` (`<item/>` element with optional `id` attribute and the payload) to a `node`.
+
+        `options` are publish options (e.g. `"pubsub#access_model" => "whitelist"`): preconditions the node must meet,
+        it is created with them if it doesn't exist (`precondition-not-met` if it has another configuration).
     **/
-    public static inline function publish(stream: Stream, jid: String, node: String, item: XML, handler: Response<XML>->Void): IQ
-        return stream.set(payload(XML.create("publish").set("node", node).append(item)), jid, handler);
+    public static function publish(stream: Stream, jid: String, node: String, item: XML, ?options: Map<String, String>, handler: Response<XML>->Void): IQ {
+        final xml = payload(XML.create("publish").set("node", node).append(item));
+        if (options != null) {
+            final fields:Array<DataForm.Field> = [{variable: "FORM_TYPE", type: hidden, values: ['$XMLNS#publish-options']}];
+            for (k => v in options)
+                fields.push({variable: k, values: [v]});
+            xml.append(XML.create("publish-options").append(new DataForm(submit, null, null, fields)));
+        }
+        return stream.set(xml, jid, handler);
+    }
 
     /**
         Returns the pubsub event notification contained in the given message, or `null`.

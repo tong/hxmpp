@@ -21,6 +21,7 @@ function main() {
 	r.addCase(new TestDeliveryReceipts());
 	r.addCase(new TestAttention());
 	r.addCase(new TestBlock());
+	r.addCase(new TestBookmarks());
 	r.addCase(new TestCarbons());
 	r.addCase(new TestDelayedDelivery());
 	r.addCase(new TestEntityTime());
