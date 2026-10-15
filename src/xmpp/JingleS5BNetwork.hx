@@ -21,6 +21,9 @@ interface JingleS5BNetwork {
 
 /**
 	A TCP connection.
+
+	Data is delivered only after the connection was passed to the `connect` callback or `onConnection`: set `onData`
+	and `onClose` there (synchronously), nothing received before is lost.
 **/
 interface JingleS5BConnection {
 	/** Called with received data **/
@@ -146,7 +149,11 @@ class JingleS5BSysNetwork implements JingleS5BNetwork {
 				return;
 			}
 			final connection = new SysConnection(socket, post);
-			post(() -> callback(null, connection));
+			// reading starts once the callback has set the handlers: received data would get lost before
+			post(() -> {
+				callback(null, connection);
+				connection.start();
+			});
 		});
 	}
 
@@ -173,7 +180,10 @@ class JingleS5BSysNetwork implements JingleS5BNetwork {
 					break;
 				}
 				final connection = new SysConnection(socket, post);
-				post(() -> onConnection(connection));
+				post(() -> {
+					onConnection(connection);
+					connection.start();
+				});
 			}
 			server.close();
 		});
@@ -221,9 +231,18 @@ private class SysConnection implements JingleS5BConnection {
 	var closing = false;
 	var closed = false;
 
+	var started = false;
+
 	public function new(socket:sys.net.Socket, post:(() -> Void)->Void) {
 		this.socket = socket;
 		this.post = post;
+	}
+
+	/** Starts reading and writing, once the handlers are set (on the thread of `post`) **/
+	public function start() {
+		if (started)
+			return;
+		started = true;
 		sys.thread.Thread.create(readLoop);
 		sys.thread.Thread.create(writeLoop);
 	}
