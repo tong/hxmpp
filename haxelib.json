@@ -9,6 +9,6 @@
 	"contributors": ["tong"],
 	"classPath" : "src/",
 	"dependencies": {
-        "sasl": "0.2.0"
+        "sasl": ""
     }
 }
