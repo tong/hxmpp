@@ -29,25 +29,65 @@ enum abstract Role(String) from String to String {
 	[Multi-User Chat Status Codes](https://xmpp.org/registrar/mucstatus.html)
 **/
 enum abstract StatusCode(Int) from Int to Int {
+	/** Any occupant is allowed to see the user's full JID (entering a room) **/
 	var SEE_FULL_JID = 100;
+
+	/** User's affiliation changed while not in the room (message) **/
 	var AFFILIATION_CHANGED_IN_ABSENCE = 101;
+
+	/** Room now shows unavailable members (configuration change) **/
 	var SHOW_UNAVAILABLE_MEMBERS = 102;
+
+	/** Room now does not show unavailable members (configuration change) **/
 	var HIDE_UNAVAILABLE_MEMBERS = 103;
+
+	/** A non-privacy-related room configuration change has occurred **/
 	var CONFIGURATION_CHANGED = 104;
+
+	/** Presence refers to the user itself (self-presence) **/
 	var PRESENCE_REFERS_TO_OCCUPANT = 110;
+
+	/** Room logging is now enabled **/
 	var LOGGING_ENABLED = 170;
+
+	/** Room logging is now disabled **/
 	var LOGGING_DISABLED = 171;
+
+	/** Room is now non-anonymous **/
 	var NON_ANONYMOUS = 172;
+
+	/** Room is now semi-anonymous **/
 	var SEMI_ANONYMOUS = 173;
+
+	/** Room is now fully-anonymous (deprecated, fully-anonymous rooms were removed from XEP-0045) **/
 	var FULL_ANONYMOUS = 174;
+
+	/** A new room has been created **/
 	var NEW_ROOM = 201;
+
+	/** Service has assigned or modified the occupant's roomnick **/
 	var ROOMNICK_MODIFIED = 210;
+
+	/** User has been banned from the room **/
 	var BANNED = 301;
+
+	/** New room nickname of an occupant (nickname change) **/
 	var NEW_ROOM_NICKNAME = 303;
+
+	/** User has been kicked from the room **/
 	var KICKED = 307;
+
+	/** User was removed because of an affiliation change **/
 	var REMOVED_CAUSE_AFFILIATION_CHANGE = 321;
+
+	/** User was removed because the room changed to members-only and the user is not a member **/
 	var MEMBERS_ONLY_NOW = 322;
+
+	/** User was removed because the MUC service is being shut down **/
 	var SYSTEM_SHUTDOWN = 332;
+
+	/** User was removed because of an error reply (technical removal) **/
+	var REMOVED_CAUSE_ERROR = 333;
 }
 
 typedef Item = {
@@ -81,6 +121,9 @@ enum LeaveReason {
 
 	/** Removed because the service is shutting down **/
 	Shutdown;
+
+	/** Removed because of an error reply (technical removal) **/
+	ServiceError;
 
 	/** The room was destroyed, `alternate` is the address of a replacement room, if any **/
 	Destroyed(?alternate:String);
@@ -322,8 +365,7 @@ class Muc {
 		if (!isFromRoom(presence.from))
 			return;
 		final r = parseUserPresence(presence);
-		final self = r.statusCodes.contains(PRESENCE_REFERS_TO_OCCUPANT)
-			|| (nick != null && Jid.parseResource(presence.from) == nick);
+		final self = r.statusCodes.contains(PRESENCE_REFERS_TO_OCCUPANT) || (nick != null && Jid.parseResource(presence.from) == nick);
 		if (self) {
 			if (presence.type == unavailable) {
 				if (r.statusCodes.contains(NEW_ROOM_NICKNAME)) {
@@ -368,9 +410,9 @@ class Muc {
 
 	static function leaveReason(r:{statusCodes:Array<StatusCode>, destroyed:Bool, destroyAlternate:Null<String>}):LeaveReason {
 		final c = r.statusCodes;
-		return if (r.destroyed) Destroyed(r.destroyAlternate) else if (c.contains(BANNED)) Banned else if (c.contains(KICKED)) Kicked else
-			if (c.contains(REMOVED_CAUSE_AFFILIATION_CHANGE)) AffiliationChanged else if (c.contains(MEMBERS_ONLY_NOW)) MembersOnly else
-			if (c.contains(SYSTEM_SHUTDOWN)) Shutdown else Left;
+		return if (r.destroyed) Destroyed(r.destroyAlternate) else if (c.contains(BANNED)) Banned else if (c.contains(REMOVED_CAUSE_ERROR)) ServiceError else
+			if (c.contains(KICKED)) Kicked else if (c.contains(REMOVED_CAUSE_AFFILIATION_CHANGE)) AffiliationChanged else if (c.contains(MEMBERS_ONLY_NOW))
+				MembersOnly else if (c.contains(SYSTEM_SHUTDOWN)) Shutdown else Left;
 	}
 
 	static function parseUserPresence(p:xmpp.Presence) {

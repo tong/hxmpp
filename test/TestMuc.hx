@@ -212,6 +212,10 @@ class TestMuc extends utest.Test {
 		leave('<presence from="room@muc.example.com/juliet" type="unavailable"><x xmlns="http://jabber.org/protocol/muc#user"><item affiliation="outcast" role="none"/><status code="110"/><status code="301"/></x></presence>');
 		isTrue(left.match(Banned));
 
+		// https://xmpp.org/extensions/xep-0045.html#service-error-kick (also carries 307)
+		leave('<presence from="room@muc.example.com/juliet" type="unavailable"><x xmlns="http://jabber.org/protocol/muc#user"><item affiliation="none" role="none"/><status code="110"/><status code="307"/><status code="333"/></x></presence>');
+		isTrue(left.match(ServiceError));
+
 		// https://xmpp.org/extensions/xep-0045.html#destroyroom (no status 110)
 		leave('<presence from="room@muc.example.com/juliet" type="unavailable"><x xmlns="http://jabber.org/protocol/muc#user"><item affiliation="none" role="none"/><destroy jid="coven@chat.shakespeare.lit"><reason>Macbeth doth come.</reason></destroy></x></presence>');
 		switch left {
