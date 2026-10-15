@@ -72,6 +72,7 @@ External server components ([XEP-0114](https://xmpp.org/extensions/xep-0114.html
 | [XEP-0261](https://xmpp.org/extensions/xep-0261.html) | Jingle In-Band Bytestreams Transport Method | `xmpp.JingleIBB` |
 | [XEP-0280](https://xmpp.org/extensions/xep-0280.html) | Message Carbons | `xmpp.Carbons` |
 | [XEP-0308](https://xmpp.org/extensions/xep-0308.html) | Last Message Correction | `xmpp.LastMessageCorrection` |
+| [XEP-0313](https://xmpp.org/extensions/xep-0313.html) | Message Archive Management | `xmpp.Mam` |
 | [XEP-0352](https://xmpp.org/extensions/xep-0352.html) | Client State Indication | `xmpp.client.CSI` |
 | [XEP-0363](https://xmpp.org/extensions/xep-0363.html) | HTTP File Upload | `xmpp.HttpFileUpload` |
 
