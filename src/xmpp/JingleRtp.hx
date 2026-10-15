@@ -62,7 +62,7 @@ class JingleRtp {
 	public static inline var XMLNS_SSMA = "urn:xmpp:jingle:apps:rtp:ssma:0";
 
 	/** Features to advertise for audio calls **/
-	public static final FEATURES_AUDIO = [XMLNS, XMLNS_AUDIO, XMLNS_ICE_UDP, XMLNS_DTLS];
+	public static final FEATURES_AUDIO = [XMLNS, XMLNS_AUDIO, XMLNS_ICE_UDP, XMLNS_DTLS, XMLNS_GROUPING];
 
 	/** Features to advertise for audio and video calls **/
 	public static final FEATURES = FEATURES_AUDIO.concat([XMLNS_VIDEO]);
