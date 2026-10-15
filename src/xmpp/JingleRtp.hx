@@ -130,11 +130,12 @@ class JingleRtp {
 				final id = p.get("id");
 				lines.push('a=rtpmap:$id ${p.get("name")}/${p.get("clockrate")}'
 					+ (p.has("channels") && p.get("channels") != "1" ? '/${p.get("channels")}' : ''));
+				// a parameter without name: only the value (e.g. `0-15`)
 				final params = [
-					for (e in p.elements.named("parameter"))
-						((e.get("name") ?? "").length > 0)
-					?'${e.get("name")}=${e.get("value")}':e.get
-					("value")
+					for (e in p.elements.named("parameter")) {
+						final name = e.get("name");
+						(name != null && name.length > 0) ? '$name=${e.get("value")}' : e.get("value");
+					}
 				];
 				if (params.length > 0)
 					lines.push('a=fmtp:$id ${params.join(";")}');
@@ -239,7 +240,8 @@ class JingleRtp {
 
 	/** Converts a `<candidate/>` to an SDP candidate (without `a=`) **/
 	public static function candidateToSdp(c:XML):String {
-		var s = 'candidate:${c.get("foundation")} ${c.get("component")} ${(c.get("protocol") ?? "udp").toUpperCase()} ${c.get("priority")} ${c.get("ip")} ${c.get("port")} typ ${c.get("type")}';
+		final protocol:String = c.get("protocol") ?? "udp";
+		var s = 'candidate:${c.get("foundation")} ${c.get("component")} ${protocol.toUpperCase()} ${c.get("priority")} ${c.get("ip")} ${c.get("port")} typ ${c.get("type")}';
 		if (c.has("rel-addr"))
 			s += ' raddr ${c.get("rel-addr")} rport ${c.get("rel-port")}';
 		return s + ' generation ${c.get("generation") ?? "0"}';

@@ -16,7 +16,7 @@ class TestMessageArchiveManagement extends StreamTest {
 		@:privateAccess stream.jid = "juliet@capulet.lit/balcony";
 		final mam = new MessageArchiveManagement(stream);
 		var page:MamResult = null;
-		mam.query({with: "romeo@montague.lit", start: new Date(2026, 9, 1, 0, 0, 0), page: {max: 2, before: ""}}, res -> switch res {
+		mam.query({with: "romeo@montague.lit", start: new Date(2026, 9, 1, 0, 0, 0), page: {max: 2, before: ""}}, null, res -> switch res {
 			case Page(r): page = r;
 			case Failed(e): fail(e.condition);
 		});
@@ -86,7 +86,7 @@ class TestMessageArchiveManagement extends StreamTest {
 		isNull(page.page.first);
 		isNull(page.page.count);
 
-		mam.query({}, res -> switch res {
+		mam.query({}, null, res -> switch res {
 			case Page(_): fail("no error");
 			case Failed(e): error = e.condition;
 		});
