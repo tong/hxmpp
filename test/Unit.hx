@@ -15,6 +15,9 @@ function main() {
 	r.addCase(new TestMuc());
 	r.addCase(new TestClientRoster());
 	r.addCase(new TestLastMessageCorrection());
+	r.addCase(new TestMessageReactions());
+	r.addCase(new TestMessageReply());
+	r.addCase(new TestStanzaId());
 	r.addCase(new TestHttpFileUpload());
 	r.addCase(new TestPep());
 	r.addCase(new TestPubSub());
