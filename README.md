@@ -65,6 +65,7 @@ External server components ([XEP-0114](https://xmpp.org/extensions/xep-0114.html
 | [XEP-0199](https://xmpp.org/extensions/xep-0199.html) | XMPP Ping | `xmpp.Ping` |
 | [XEP-0202](https://xmpp.org/extensions/xep-0202.html) | Entity Time | `xmpp.EntityTime` |
 | [XEP-0203](https://xmpp.org/extensions/xep-0203.html) | Delayed Delivery | `xmpp.DelayedDelivery` |
+| [XEP-0215](https://xmpp.org/extensions/xep-0215.html) | External Service Discovery | `xmpp.ExternalServices` |
 | [XEP-0224](https://xmpp.org/extensions/xep-0224.html) | Attention | `xmpp.Attention` |
 | [XEP-0231](https://xmpp.org/extensions/xep-0231.html) | Bits of Binary | `xmpp.Bob` |
 | [XEP-0234](https://xmpp.org/extensions/xep-0234.html) | Jingle File Transfer (file offers) | `xmpp.JingleFileTransfer` |
@@ -75,6 +76,7 @@ External server components ([XEP-0114](https://xmpp.org/extensions/xep-0114.html
 | [XEP-0313](https://xmpp.org/extensions/xep-0313.html) | Message Archive Management | `xmpp.MessageArchiveManagement` |
 | [XEP-0352](https://xmpp.org/extensions/xep-0352.html) | Client State Indication | `xmpp.client.StateIndication` |
 | [XEP-0363](https://xmpp.org/extensions/xep-0363.html) | HTTP File Upload | `xmpp.HttpFileUpload` |
+| [XEP-0402](https://xmpp.org/extensions/xep-0402.html) | PEP Native Bookmarks | `xmpp.Bookmarks` |
 
 ## Tests
 

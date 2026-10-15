@@ -38,6 +38,7 @@ function main() {
 	r.addCase(new TestStartTLS());
 	r.addCase(new TestAccount());
 	r.addCase(new TestAdHocCommand());
+	r.addCase(new TestExternalServices());
 	r.addCase(new TestJingle());
 	r.addCase(new TestJingleRtp());
 	r.addCase(new TestMessageArchiveManagement());
