@@ -1,6 +1,10 @@
 import haxe.io.Bytes;
 import utest.Assert.*;
 import xmpp.Jingle;
+import xmpp.JingleFileTransfer;
+import xmpp.JingleIBB;
+import xmpp.JingleS5B;
+import xmpp.JingleS5BNetwork;
 import xmpp.XML;
 
 /**
