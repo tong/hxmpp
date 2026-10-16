@@ -60,7 +60,7 @@
             <xmpp:SupportedXep>
                 <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0047.html"/>
                 <xmpp:status>complete</xmpp:status>
-                <xmpp:note xml:lang="en">Used by Jingle (iq stanzas)</xmpp:note>
+                <xmpp:note xml:lang="en">Iq stanzas only; used by Jingle, standalone bytestreams experimental</xmpp:note>
             </xmpp:SupportedXep>
         </implements>
         <implements>
@@ -128,8 +128,7 @@
         <implements>
             <xmpp:SupportedXep>
                 <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0092.html"/>
-                <xmpp:status>partial</xmpp:status>
-                <xmpp:note xml:lang="en">Request only, no result parsing or request handler</xmpp:note>
+                <xmpp:status>complete</xmpp:status>
             </xmpp:SupportedXep>
         </implements>
         <implements>
@@ -153,6 +152,12 @@
         <implements>
             <xmpp:SupportedXep>
                 <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0114.html"/>
+                <xmpp:status>complete</xmpp:status>
+            </xmpp:SupportedXep>
+        </implements>
+        <implements>
+            <xmpp:SupportedXep>
+                <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0115.html"/>
                 <xmpp:status>complete</xmpp:status>
             </xmpp:SupportedXep>
         </implements>
@@ -183,8 +188,21 @@
         </implements>
         <implements>
             <xmpp:SupportedXep>
+                <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0184.html"/>
+                <xmpp:status>complete</xmpp:status>
+            </xmpp:SupportedXep>
+        </implements>
+        <implements>
+            <xmpp:SupportedXep>
                 <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0191.html"/>
                 <xmpp:status>complete</xmpp:status>
+            </xmpp:SupportedXep>
+        </implements>
+        <implements>
+            <xmpp:SupportedXep>
+                <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0198.html"/>
+                <xmpp:status>complete</xmpp:status>
+                <xmpp:note xml:lang="en">Client side: acknowledgements and session resumption</xmpp:note>
             </xmpp:SupportedXep>
         </implements>
         <implements>

@@ -52,6 +52,7 @@ External server components ([XEP-0114](https://xmpp.org/extensions/xep-0114.html
 | [XEP-0066](https://xmpp.org/extensions/xep-0066.html) | Out of Band Data | `xmpp.Oob` |
 | [XEP-0077](https://xmpp.org/extensions/xep-0077.html) | In-Band Registration | `xmpp.client.Account` |
 | [XEP-0080](https://xmpp.org/extensions/xep-0080.html) | User Location | `xmpp.Pep` |
+| [XEP-0084](https://xmpp.org/extensions/xep-0084.html) | User Avatar | `xmpp.UserAvatar` |
 | [XEP-0085](https://xmpp.org/extensions/xep-0085.html) | Chat State Notifications | `xmpp.ChatState` |
 | [XEP-0092](https://xmpp.org/extensions/xep-0092.html) | Software Version | `xmpp.SoftwareVersion` |
 | [XEP-0106](https://xmpp.org/extensions/xep-0106.html) | JID Escaping | `xmpp.Jid` |
@@ -59,6 +60,7 @@ External server components ([XEP-0114](https://xmpp.org/extensions/xep-0114.html
 | [XEP-0108](https://xmpp.org/extensions/xep-0108.html) | User Activity | `xmpp.Pep` |
 | [XEP-0114](https://xmpp.org/extensions/xep-0114.html) | Jabber Component Protocol | `xmpp.component.Stream` |
 | [XEP-0118](https://xmpp.org/extensions/xep-0118.html) | User Tune | `xmpp.Pep` |
+| [XEP-0153](https://xmpp.org/extensions/xep-0153.html) | vCard-Based Avatars | `xmpp.VCardAvatar` |
 | [XEP-0163](https://xmpp.org/extensions/xep-0163.html) | Personal Eventing Protocol | `xmpp.Pep` |
 | [XEP-0166](https://xmpp.org/extensions/xep-0166.html) | Jingle | `xmpp.Jingle` |
 | [XEP-0172](https://xmpp.org/extensions/xep-0172.html) | User Nickname | `xmpp.client.Nickname` |
