@@ -66,8 +66,31 @@ class Fallback {
 		final b = new StringBuf();
 		for (i in 0...chars.length)
 			if (!removed[i])
-				b.addChar(chars[i]);
+				addChar(b, chars[i]);
 		return b.toString();
+	}
+
+	/** Adds the code point `c`: neko strings are UTF-8 bytes and its `StringBuf.addChar` takes a byte **/
+	static inline function addChar(b:StringBuf, c:Int) {
+		#if neko
+		if (c < 0x80)
+			b.addChar(c);
+		else if (c < 0x800) {
+			b.addChar(0xC0 | (c >> 6));
+			b.addChar(0x80 | (c & 0x3F));
+		} else if (c < 0x10000) {
+			b.addChar(0xE0 | (c >> 12));
+			b.addChar(0x80 | ((c >> 6) & 0x3F));
+			b.addChar(0x80 | (c & 0x3F));
+		} else {
+			b.addChar(0xF0 | (c >> 18));
+			b.addChar(0x80 | ((c >> 12) & 0x3F));
+			b.addChar(0x80 | ((c >> 6) & 0x3F));
+			b.addChar(0x80 | (c & 0x3F));
+		}
+		#else
+		b.addChar(c);
+		#end
 	}
 
 	/** The length of `text` in Unicode code points **/

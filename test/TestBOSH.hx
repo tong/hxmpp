@@ -51,9 +51,9 @@ class TestBOSH extends utest.Test {
 	function respondEmpty():HttpRequest
 		return respond('<body $BODY_NS/>');
 
-	function sessionResponse(attributes = '', content = '<stream:features>$MECHANISMS</stream:features>'):HttpRequest
+	function sessionResponse(attributes = '', ?content:String):HttpRequest
 		return respond('<body sid="$SID" wait="60" hold="1" requests="2" polling="5" inactivity="30" maxpause="120" ack="' + http[0].body.get('rid') +
-			'" $attributes $BODY_NS xmlns:xmpp="urn:xmpp:xbosh" xmpp:version="1.0" xmpp:restartlogic="true">$content</body>');
+			'" $attributes $BODY_NS xmlns:xmpp="urn:xmpp:xbosh" xmpp:version="1.0" xmpp:restartlogic="true">${content ?? '<stream:features>$MECHANISMS</stream:features>'}</body>');
 
 	/** Creates the session, returns the features **/
 	function connect(?attributes:String):XML {
@@ -67,9 +67,11 @@ class TestBOSH extends utest.Test {
 	function login() {
 		connect();
 		stream.authenticate('juliet', 'balcony', 'secret', new sasl.PlainMechanism(), (?e) -> {});
+		// the connection manager responds to the held request first
+		respondEmpty();
 		respond('<body $BODY_NS><success xmlns="urn:ietf:params:xml:ns:xmpp-sasl"/></body>');
 		// restart
-		respond('<body $BODY_NS><stream:features><bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"/></stream:features></body>');
+		respond('<body $BODY_NS><stream:features><bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"/><sm xmlns="urn:xmpp:sm:3"/></stream:features></body>');
 		// bind
 		final iq = http[0].body.firstElement;
 		respond('<body $BODY_NS><iq type="result" id="${iq.get('id')}" xmlns="jabber:client"><bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"><jid>juliet@example.com/balcony</jid></bind></iq></body>');
@@ -257,10 +259,14 @@ class TestBOSH extends utest.Test {
 		var rid = Std.parseInt(http[0].body.get('rid'));
 		for (i in 0...3) {
 			stream.send(XML.fromString("<presence/>"));
+			equals(rid + 1, Std.parseInt(http[1].body.get('rid')));
+			// the held request is responded to, the payload request is held now
 			respondEmpty();
+			equals(1, http.length);
+			// a new request is held once no request is pending
 			respondEmpty();
-			equals(rid + 2 * i + 1, Std.parseInt(http[0].body.get('rid')));
-			equals(rid + 2 * i + 2, Std.parseInt(http[1].body.get('rid')));
+			equals(1, http.length);
+			equals(rid + 2, Std.parseInt(http[0].body.get('rid')));
 			rid += 2;
 		}
 	}
@@ -283,7 +289,6 @@ class TestBOSH extends utest.Test {
 	function test_terminate_by_client() {
 		login();
 		stream.send(XML.fromString("<presence type='unavailable'/>"));
-		respondEmpty();
 		// held + payload: both requests pending
 		equals(2, http.length);
 		stream.end();
@@ -488,15 +493,23 @@ class TestBOSH extends utest.Test {
 	function test_report() {
 		login();
 		stream.send(XML.fromString("<presence/>"));
-		final lost = http.shift();
-		lost.onError('Failed to connect');
-		final repeated = http.shift();
-		repeated.onError('Failed to connect');
+		final lost = http[0];
+		final second = http[1];
 		http = [];
-		// nothing outstanding for the lost request, the connection manager reports the missing acknowledgement
-		respond("<body report='" + lost.body.get('rid') + '" time="852" $BODY_NS/>');
-		equals(1, http.length);
+		// the response to the first request was lost: the connection manager reports it when responding to the second
+		second.onResponse('<body report="${lost.body.get('rid')}" time="852" $BODY_NS/>');
+		equals(1, http.length, 'the request is repeated');
 		equals(lost.body.toString(), http[0].body.toString());
+		equals(2, bosh.pending);
+		// the repetition is responded to: both are processed, a new request is held
+		respondEmpty();
+		equals(1, http.length);
+		equals(1, bosh.pending);
+		same([], errors);
+		// the late response to the original request is ignored
+		lost.onResponse('<body $BODY_NS/>');
+		equals(1, http.length);
+		same([], errors);
 	}
 
 	function test_pause_resume() {

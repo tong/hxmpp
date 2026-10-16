@@ -435,6 +435,15 @@ class BOSH {
 			return;
 		}
 		r.response = body;
+		if (body.has('report')) {
+			// The response to that request was lost: repeat it, unless a repetition is outstanding
+			final report = Std.parseInt(body.get('report'));
+			for (q in inflight)
+				if (q.rid == report && q.response == null && (q.outstanding == 0 || q.retries == 0)) {
+					q.retries++;
+					post(q);
+				}
+		}
 		// Responses are processed in the order the requests were made
 		while (inflight.length > 0 && inflight[0].response != null) {
 			final r = inflight.shift();
@@ -447,10 +456,12 @@ class BOSH {
 			endSession('error');
 			return;
 		}
-		r.retries++;
+		// Repeat the request and the preceding ones without response, unless a repetition is outstanding
 		for (q in inflight)
-			if (q.rid <= r.rid && q.response == null && q.outstanding == 0)
+			if (q.rid <= r.rid && q.response == null && (q.outstanding == 0 || q.retries == 0)) {
+				q.retries++;
 				post(q);
+			}
 	}
 
 	function process(r:Request, body:XML) {
@@ -486,13 +497,6 @@ class BOSH {
 			else
 				endSession(condition);
 			return;
-		}
-		if (body.has('report')) {
-			// The response to that request was lost: repeat it
-			final report = Std.parseInt(body.get('report'));
-			for (q in inflight)
-				if (q.rid == report && q.response == null && q.outstanding == 0)
-					post(q);
 		}
 		deliver(body);
 		if (sid == null)
