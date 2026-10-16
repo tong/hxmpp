@@ -142,6 +142,9 @@ class JingleS5BSysNetwork implements JingleS5BNetwork {
 			try {
 				socket.setTimeout(timeout);
 				socket.connect(new sys.net.Host(host), port);
+				// a connect timing out may return as if it succeeded (HashLink: EINPROGRESS of the send timeout)
+				if ((try socket.peer() catch (_) null) == null)
+					throw "connection timed out";
 				socket.setTimeout(0);
 			} catch (e) {
 				socket.close();
