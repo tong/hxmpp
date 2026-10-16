@@ -35,6 +35,7 @@ function main() {
 	r.addCase(new TestResultSet());
 	r.addCase(new TestServiceDiscovery());
 	r.addCase(new TestVCard());
+	r.addCase(new TestUserAvatar());
 	r.addCase(new TestOob());
 	r.addCase(new TestNickname());
 	r.addCase(new TestChatState());
@@ -50,6 +51,7 @@ function main() {
 	r.addCase(new TestSoftwareVersion());
 	r.addCase(new TestStreamManagement());
 	r.addCase(new TestURI());
+	r.addCase(new TestBOSH());
 	var report = utest.ui.Report.create(r);
 	r.run();
 }
