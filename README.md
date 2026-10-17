@@ -84,6 +84,7 @@ External server components ([XEP-0114](https://xmpp.org/extensions/xep-0114.html
 | [XEP-0359](https://xmpp.org/extensions/xep-0359.html) | Unique and Stable Stanza IDs | `xmpp.StanzaId` |
 | [XEP-0363](https://xmpp.org/extensions/xep-0363.html) | HTTP File Upload | `xmpp.HttpFileUpload` |
 | [XEP-0402](https://xmpp.org/extensions/xep-0402.html) | PEP Native Bookmarks | `xmpp.Bookmarks` |
+| [XEP-0421](https://xmpp.org/extensions/xep-0421.html) | Occupant identifiers for semi-anonymous MUCs | `xmpp.OccupantId` |
 | [XEP-0424](https://xmpp.org/extensions/xep-0424.html) | Message Retraction | `xmpp.MessageRetraction` |
 | [XEP-0425](https://xmpp.org/extensions/xep-0425.html) | Moderated Message Retraction | `xmpp.MessageModeration` |
 | [XEP-0428](https://xmpp.org/extensions/xep-0428.html) | Fallback Indication | `xmpp.Fallback` |
