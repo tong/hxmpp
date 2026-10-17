@@ -80,8 +80,12 @@ class JingleMessage {
 		`media` for a proposal, `reason` e.g. for a retraction, rejection or finish.
 	**/
 	@:noUsing
-	public static function create(to:String, action:JingleMessageAction, id:String,
-			?options:{?media:Array<String>, ?reason:JingleReasonInfo, ?tieBreak:Bool, ?migrated:String}):Message {
+	public static function create(to:String, action:JingleMessageAction, id:String, ?options:{
+		?media:Array<String>,
+		?reason:JingleReasonInfo,
+		?tieBreak:Bool,
+		?migrated:String
+	}):Message {
 		final e = XML.create(action).set("xmlns", XMLNS).set("id", id);
 		if (options?.media != null)
 			for (media in options.media)

@@ -146,6 +146,11 @@ class JingleS5BStream {
 		if (!closed)
 			connection.write(data);
 
+	/** Calls `callback` once the data written so far is sent (not if the stream is closed) **/
+	public inline function written(callback:() -> Void)
+		if (!closed)
+			connection.written(callback);
+
 	public function close() {
 		if (closed)
 			return;

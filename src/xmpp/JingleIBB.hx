@@ -48,24 +48,29 @@ class JingleIBB {
 	}
 
 	/**
-		Sends `data` to the peer of `session`: opens the bytestream `sid`, sends the chunks (each after the previous was
-		acknowledged) and closes the bytestream. `callback` is called with `null` on success.
+		Sends the data of `input` (to its end) to the peer of `session`: opens the bytestream `sid`, sends the chunks,
+		read one at a time (each after the previous was acknowledged), and closes the bytestream. `callback` is called
+		with `null` on success. `input` is not closed.
 	**/
-	public static function send(session:JingleSession, sid:String, blockSize:Int, data:Bytes, ?onProgress:(sent:Int) -> Void,
+	public static function send(session:JingleSession, sid:String, blockSize:Int, input:haxe.io.Input, ?onProgress:(sent:Float) -> Void,
 			callback:(error:Null<xmpp.Stanza.Error>) -> Void) {
 		final stream = session.jingle.stream;
 		final peer = session.peer;
-		var pos = 0;
+		final buf = Bytes.alloc(blockSize);
+		var sent = 0.0;
 		var seq = 0;
 		function next() {
 			if (session.state == ended)
 				return;
-			if (pos >= data.length) {
+			final len = try readBlock(input, buf) catch (e) {
+				callback(new xmpp.Stanza.Error(cancel, internal_server_error, 'cannot read the data: $e'));
+				return;
+			}
+			if (len == 0) {
 				stream.set(XML.create("close").set("xmlns", XMLNS_IBB).set("sid", sid), peer, res -> callback(res.error));
 				return;
 			}
-			final len = Std.int(Math.min(blockSize, data.length - pos));
-			final chunk = XML.create("data", Base64.encode(data.sub(pos, len)))
+			final chunk = XML.create("data", Base64.encode(buf.sub(0, len)))
 				.set("xmlns", XMLNS_IBB)
 				.set("sid", sid)
 				.set("seq", Std.string(seq));
@@ -74,10 +79,10 @@ class JingleIBB {
 					callback(res.error);
 					return;
 				}
-				pos += len;
+				sent += len;
 				seq = (seq + 1) & 0xFFFF;
 				if (onProgress != null)
-					onProgress(pos);
+					onProgress(sent);
 				next();
 			});
 		}
@@ -90,14 +95,30 @@ class JingleIBB {
 	}
 
 	/**
+		Fills `buf` from `input` (fewer bytes only at its end), returns the number of bytes read: 0 at the end.
+	**/
+	@:noUsing
+	public static function readBlock(input:haxe.io.Input, buf:Bytes):Int {
+		var len = 0;
+		while (len < buf.length) {
+			final n = try input.readBytes(buf, len, buf.length - len) catch (_:haxe.io.Eof) 0;
+			if (n <= 0)
+				break;
+			len += n;
+		}
+		return len;
+	}
+
+	/**
 		Receives the bytestream `sid` from the peer of `session`, at most `maxSize` bytes if set.
+		The data is written to `output` as it arrives if set (the callback gets no data), else collected.
 		`callback` is called once the bytestream is closed with the received data, or with an error.
 	**/
-	public static function receive(session:JingleSession, sid:String, blockSize:Int, ?maxSize:Float, ?onProgress:(received:Int) -> Void,
-			callback:(error:Null<xmpp.Stanza.Error>, data:Null<Bytes>) -> Void) {
+	public static function receive(session:JingleSession, sid:String, blockSize:Int, ?maxSize:Float, ?onProgress:(received:Float) -> Void,
+			?output:haxe.io.Output, callback:(error:Null<xmpp.Stanza.Error>, data:Null<Bytes>) -> Void) {
 		final jingle = session.jingle;
 		final key = Jingle.key(session.peer, sid);
-		jingle.ibbReceivers.set(key, new JingleIBBReceiver(session, blockSize, maxSize, onProgress, (error, data) -> {
+		jingle.ibbReceivers.set(key, new JingleIBBReceiver(session, blockSize, maxSize, onProgress, output, (error, data) -> {
 			jingle.ibbReceivers.remove(key);
 			callback(error, data);
 		}));
@@ -126,17 +147,20 @@ class JingleIBBReceiver {
 	final session:JingleSession;
 	final blockSize:Int;
 	final maxSize:Null<Float>;
-	final onProgress:Null<(received:Int) -> Void>;
+	final onProgress:Null<(received:Float) -> Void>;
+	final output:Null<haxe.io.Output>;
 	final callback:(error:Null<xmpp.Stanza.Error>, data:Null<Bytes>) -> Void;
 	final buf = new BytesBuffer();
+	var received = 0.0;
 	var opened = false;
 	var seq = 0;
 
-	function new(session, blockSize, maxSize, onProgress, callback) {
+	function new(session, blockSize, maxSize, onProgress, output, callback) {
 		this.session = session;
 		this.blockSize = blockSize;
 		this.maxSize = maxSize;
 		this.onProgress = onProgress;
+		this.output = output;
 		this.callback = callback;
 	}
 
@@ -159,16 +183,26 @@ class JingleIBBReceiver {
 				final chunk = try Base64.decode(~/\s+/g.replace(text ?? "", "")) catch (e) null;
 				if (chunk == null || chunk.length > blockSize)
 					return fail(new xmpp.Stanza.Error(modify, bad_request));
-				if (maxSize != null && buf.length + chunk.length > maxSize)
+				if (maxSize != null && received + chunk.length > maxSize)
 					return fail(new xmpp.Stanza.Error(cancel, not_acceptable, 'more data than announced'));
-				buf.add(chunk);
+				if (output != null) {
+					final error = try {
+						output.write(chunk);
+						null;
+					} catch (e)
+						Std.string(e);
+					if (error != null)
+						return fail(new xmpp.Stanza.Error(cancel, resource_constraint, 'cannot write the data: $error'));
+				} else
+					buf.add(chunk);
+				received += chunk.length;
 				seq = (seq + 1) & 0xFFFF;
 				if (onProgress != null)
-					onProgress(buf.length);
+					onProgress(received);
 				return Response.success();
 			case "close" if (opened):
 				opened = false;
-				callback(null, buf.getBytes());
+				callback(null, (output != null) ? null : buf.getBytes());
 				return Response.success();
 			case _:
 				return Response.failure(cancel, item_not_found);

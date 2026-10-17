@@ -312,7 +312,7 @@ class TestJingle extends utest.Test {
 		notNull(r.received);
 		equals(0, r.data.compare(r.received));
 		equals(10, r.progress.length);
-		equals(10000, r.progress[9]);
+		equals(10000.0, r.progress[9]);
 
 		// https://xmpp.org/extensions/xep-0261.html
 		final p = r.peers;
@@ -553,14 +553,15 @@ class TestJingle extends utest.Test {
 		equals(addr, server.addr);
 	}
 
-	function s5bTransfer(romeoConfig:Switchboard->JingleS5BConfig, julietConfig:Switchboard->Null<JingleS5BConfig>, ?fallback:Bool, ?proxy:Bool) {
+	function s5bTransfer(romeoConfig:Switchboard->JingleS5BConfig, julietConfig:Switchboard->Null<JingleS5BConfig>, ?fallback:Bool, ?proxy:Bool,
+			?size:Int, ?streaming:Bool, ?hashes:Array<xmpp.JingleFileTransfer.Hash>) {
 		final board = new Switchboard();
 		final p = new Peers();
 		if (proxy)
 			p.proxy = new FakeProxy(board);
 		final romeo = new Jingle(p.romeo);
 		final juliet = new Jingle(p.juliet);
-		final data = Bytes.alloc(100000);
+		final data = Bytes.alloc(size ?? 100000);
 		for (i in 0...data.length)
 			data.set(i, i * 13 & 0xFF);
 		final r = {
@@ -569,14 +570,31 @@ class TestJingle extends utest.Test {
 			data: data,
 			sender: (null : JingleReasonInfo),
 			receiver: (null : JingleReasonInfo),
-			received: (null : Bytes)
+			received: (null : Bytes),
+			// streaming: the data read from a source (opened how often), received into an output
+			opened: 0,
+			output: new haxe.io.BytesOutput(),
+			progress: new Array<Float>()
 		};
 		final jc = julietConfig(board);
-		juliet.onSessionInitiate = session -> JingleFileTransfer.receiveFile(session, (jc == null) ? null : {s5b: jc}, (reason, data) -> {
+		final options:xmpp.JingleFileTransfer.JingleFileTransferOptions = {onProgress: n -> r.progress.push(n)};
+		if (jc != null)
+			options.s5b = jc;
+		if (streaming)
+			options.output = r.output;
+		juliet.onSessionInitiate = session -> JingleFileTransfer.receiveFile(session, options, (reason, data) -> {
 			r.receiver = reason;
 			r.received = data;
 		});
-		JingleFileTransfer.sendFile(romeo, JULIET, {name: 'test.bin'}, data, {s5b: romeoConfig(board), fallback: fallback}, reason -> r.sender = reason);
+		final source:xmpp.JingleFileTransfer.JingleFileData = streaming ? {
+			size: data.length,
+			open: () -> {
+				r.opened++;
+				new haxe.io.BytesInput(data);
+			}
+		} : data;
+		JingleFileTransfer.sendFile(romeo, JULIET, {name: 'test.bin', hashes: hashes}, source, {s5b: romeoConfig(board), fallback: fallback},
+			reason -> r.sender = reason);
 		return r;
 	}
 
@@ -630,6 +648,69 @@ class TestJingle extends utest.Test {
 		equals(success, r.receiver.condition);
 		equals(0, r.data.compare(r.received));
 		same(['candidate-error'], transportInfo(r.peers, JULIET));
+	}
+
+	function test_streaming() {
+		final direct = (b:Switchboard) -> ({network: new FakeNetwork(b, ['10.0.0.1'])} : JingleS5BConfig);
+		final direct2 = (b:Switchboard) -> ({network: new FakeNetwork(b, ['10.0.0.2'])} : JingleS5BConfig);
+		// several windows of data: read from the source (for the hash, then sent), written to the output
+		final r = s5bTransfer(direct, direct2, null, null, 3 * 1024 * 1024 + 123, true);
+		equals(success, r.sender.condition);
+		equals(success, r.receiver.condition);
+		isNull(r.received);
+		equals(0, r.data.compare(r.output.getBytes()));
+		equals(2, r.opened);
+		equals(r.data.length * 1.0, r.progress[r.progress.length - 1]);
+
+		// the hash given: read once
+		final hash = JingleFileTransfer.hash(Bytes.alloc(0));
+		final r = s5bTransfer(direct, direct2, null, null, 5000, true, [JingleFileTransfer.hashInput(new haxe.io.BytesInput(dataOf(5000)))[0]]);
+		equals(success, r.receiver.condition);
+		equals(1, r.opened);
+
+		// a wrong hash: media-error, the output has the data anyway (the caller discards it)
+		final r = s5bTransfer(direct, direct2, null, null, 5000, true, [hash]);
+		equals(media_error, r.receiver.condition);
+
+		// in-band (no connection), the source opened again for it
+		function offline(b:Switchboard, host:String):JingleS5BConfig {
+			final n = new FakeNetwork(b, [host]);
+			n.offline = true;
+			return {network: n, direct: false};
+		}
+		final r = s5bTransfer(b -> offline(b, '10.0.0.1'), b -> offline(b, '10.0.0.2'), null, null, 20000, true);
+		equals(success, r.receiver.condition);
+		equals(0, r.data.compare(r.output.getBytes()));
+		equals(2, r.opened);
+	}
+
+	function test_digest() {
+		final abc = haxe.io.Bytes.ofString("abc");
+		equals('a9993e364706816aba3e25717850c26c9cd0d89d', xmpp.Digest.make(abc, "sha-1").toHex());
+		equals('ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad', xmpp.Digest.make(abc, "sha-256").toHex());
+		equals('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', xmpp.Digest.make(Bytes.alloc(0), "sha-256").toHex());
+		isNull(xmpp.Digest.create("md5"));
+		// in parts: the same as at once
+		final data = dataOf(10000);
+		for (algo in ["sha-1", "sha-256"]) {
+			final d = xmpp.Digest.create(algo);
+			var pos = 0, n = 1;
+			while (pos < data.length) {
+				final len = Std.int(Math.min(n, data.length - pos));
+				d.update(data, pos, len);
+				pos += len;
+				n = n * 7 % 131 + 1;
+			}
+			equals(xmpp.Digest.make(data, algo).toHex(), d.finish().toHex());
+			equals(algo == "sha-1" ? haxe.crypto.Sha1.make(data).toHex() : haxe.crypto.Sha256.make(data).toHex(), xmpp.Digest.make(data, algo).toHex());
+		}
+	}
+
+	static function dataOf(size:Int):Bytes {
+		final data = Bytes.alloc(size);
+		for (i in 0...data.length)
+			data.set(i, i * 13 & 0xFF);
+		return data;
 	}
 
 	function test_s5b_fallback() {
@@ -818,6 +899,11 @@ private class FakeConnection implements JingleS5BConnection {
 	public function write(data:Bytes)
 		if (!closed && peer != null && !peer.closed)
 			peer.onData(data.sub(0, data.length));
+
+	/** Data is delivered at once: written **/
+	public function written(callback:() -> Void)
+		if (!closed)
+			callback();
 
 	public function close() {
 		if (closed)

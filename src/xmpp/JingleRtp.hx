@@ -394,7 +394,8 @@ class JingleRtp {
 	/** The values of the attributes `name` for format `id` (`name:id value`) **/
 	static function valuesOf(attributes:Array<String>, name:String, id:String):Array<String>
 		return [
-			for (v in values(attributes, name)) if (v.startsWith('$id ')) v.substr(id.length + 1)
+			for (v in values(attributes, name))
+				if (v.startsWith('$id ')) v.substr(id.length + 1)
 		];
 
 	static function valueOf(attributes:Array<String>, name:String, id:String):Null<String>

@@ -57,7 +57,30 @@ typedef JingleFileTransferOptions = {
 	var ?fallback:Bool;
 
 	/** Called with the number of sent or received bytes **/
-	var ?onProgress:(bytes:Int) -> Void;
+	var ?onProgress:(bytes:Float) -> Void;
+
+	/**
+		Receiver: the data is written to it as it arrives (it is not closed), instead of being kept in memory: files of
+		any size. The callback of `receiveFile` gets no data then.
+	**/
+	var ?output:haxe.io.Output;
+}
+
+/** The data of a file to send: its size, and how to read it (from the start, also more than once) **/
+typedef JingleFileSource = {
+	var size:Float;
+
+	/** Opens the data for reading from the start (closed once read): e.g. `() -> sys.io.File.read(path)` **/
+	var open:() -> haxe.io.Input;
+}
+
+/**
+	The data of a file to send: `Bytes`, or a `JingleFileSource` read as it is sent (files of any size).
+**/
+@:forward
+abstract JingleFileData(JingleFileSource) from JingleFileSource to JingleFileSource {
+	@:from static function fromBytes(bytes:Bytes):JingleFileData
+		return {size: bytes.length, open: () -> new haxe.io.BytesInput(bytes)};
 }
 
 /**
@@ -96,23 +119,31 @@ class JingleFileTransfer {
 
 	static inline var CONTENT_NAME = "a-file-offer";
 
+	/** Blocks read and sent over SOCKS5 bytestreams **/
+	static inline var BLOCK_SIZE = 65536;
+
+	/** Bytes sent over SOCKS5 bytestreams before waiting for them to be written: the data kept in memory **/
+	static inline var WINDOW = 1024 * 1024;
+
 	/**
 		Offer `data` as `file` to `peer` (a full jid) and send it once accepted.
 
 		The data is sent with SOCKS5 bytestreams if `options.s5b` is set (falling back to in-band bytestreams if no
-		connection can be established), otherwise with in-band bytestreams.
-		The `size` and a `sha-256` hash are added to `file` if not set.
+		connection can be established), otherwise with in-band bytestreams. It is read as it is sent: a
+		`JingleFileSource` (e.g. of a file) is never held in memory as a whole.
+		The `size` and a `sha-256` hash are added to `file` if not set (the hash reads all data first: for large files
+		better computed before, e.g. in a thread, with `hashInput`).
 		`callback` is called once the session ended, with the reason: `success` if the receiver confirmed the transfer.
 	**/
 	@:noUsing
-	public static function sendFile(jingle:Jingle, peer:String, file:JingleFile, data:Bytes, ?options:JingleFileTransferOptions,
+	public static function sendFile(jingle:Jingle, peer:String, file:JingleFile, data:JingleFileData, ?options:JingleFileTransferOptions,
 			callback:(reason:JingleReasonInfo) -> Void):JingleSession {
 		final options:JingleFileTransferOptions = options ?? {};
 		final blockSize = options.blockSize ?? JingleIBB.DEFAULT_BLOCK_SIZE;
 		final file = Reflect.copy(file);
-		file.size ??= data.length;
+		file.size ??= data.size;
 		if (file.hashes == null || file.hashes.length == 0)
-			file.hashes = [hash(data)];
+			file.hashes = hashInput(data.open(), ["sha-256"]);
 		final content:JingleContent = {
 			creator: initiator,
 			name: CONTENT_NAME,
@@ -122,19 +153,41 @@ class JingleFileTransfer {
 		final session = jingle.createSession(peer);
 		var s5b:Null<JingleS5B> = null;
 		var ibbSid:Null<String> = null;
+		// the data being read, closed when sent or the session ends
+		var input:Null<haxe.io.Input> = null;
+		function closeInput() {
+			if (input != null)
+				try
+					input.close()
+				catch (_) {}
+			input = null;
+		}
+		function openInput():Bool {
+			closeInput();
+			input = try data.open() catch (e) {
+				session.terminate(failed_application, 'cannot read the data: $e');
+				null;
+			}
+			return input != null;
+		}
 		session.onTerminate = reason -> {
 			if (s5b != null)
 				s5b.close();
+			closeInput();
 			callback(reason);
 		}
 		// the receiver confirms the receipt of the file before terminating the session
 		session.onInfo = payload -> payload.filter(e -> e.name == "received" && e.is(XMLNS)).length == payload.length;
-		function sendIBB(sid:String, size:Int)
-			JingleIBB.send(session, sid, size, data, options.onProgress, error -> {
+		function sendIBB(sid:String, size:Int) {
+			if (!openInput())
+				return;
+			JingleIBB.send(session, sid, size, input, options.onProgress, error -> {
+				closeInput();
 				if (error != null)
 					session.terminate(failed_transport, error.condition);
 				// otherwise the receiver terminates the session after verifying the data
 			});
+		}
 		function fallback(reason:String) {
 			if (session.state == ended)
 				return;
@@ -182,15 +235,39 @@ class JingleFileTransfer {
 				}
 				s5b.onFailed = fallback;
 				s5b.onReady = stream -> {
-					var pos = 0;
-					while (pos < data.length) {
-						final len = Std.int(Math.min(65536, data.length - pos));
-						stream.write(data.sub(pos, len));
-						pos += len;
-						if (options.onProgress != null)
-							options.onProgress(pos);
+					if (!openInput())
+						return;
+					final buf = Bytes.alloc(BLOCK_SIZE);
+					var sent = 0.0;
+					// a window of blocks at a time, the next once they are written: little data in memory
+					function pump() {
+						if (session.state == ended || input == null)
+							return;
+						var queued = 0;
+						while (queued < WINDOW) {
+							final len = try JingleIBB.readBlock(input, buf) catch (e) {
+								session.terminate(failed_application, 'cannot read the data: $e');
+								return;
+							}
+							if (len == 0) {
+								// all sent: the receiver terminates the session after verifying the data
+								closeInput();
+								final total = sent;
+								stream.written(() -> if (options.onProgress != null) options.onProgress(total));
+								return;
+							}
+							stream.write(buf.sub(0, len));
+							queued += len;
+							sent += len;
+						}
+						final written = sent;
+						stream.written(() -> {
+							if (options.onProgress != null)
+								options.onProgress(written);
+							pump();
+						});
 					}
-					// the receiver terminates the session after verifying the data
+					pump();
 				}
 				s5b.start(transport);
 			} else {
@@ -231,6 +308,7 @@ class JingleFileTransfer {
 		Offers with in-band bytestreams and SOCKS5 bytestreams are accepted; without `options.s5b`
 		no SOCKS5 connection is attempted (the sender falls back to in-band bytestreams).
 		`callback` is called once the session ended: with the reason `success` and the data if the transfer succeeded.
+		With `options.output` the data is written to it as it arrives (any size) and the callback gets no data.
 		The data is verified with the offered size and hashes (if supported, e.g. `sha-1` and `sha-256`).
 	**/
 	@:noUsing
@@ -242,6 +320,8 @@ class JingleFileTransfer {
 		final file = (content == null) ? null : parseDescription(content.description);
 		var data:Null<Bytes> = null;
 		var s5b:Null<JingleS5B> = null;
+		// counts and hashes the data, writes it to the output or keeps it
+		final received = new ReceivedData(options.output, file?.hashes);
 		session.onTerminate = reason -> {
 			if (s5b != null)
 				s5b.close();
@@ -251,7 +331,7 @@ class JingleFileTransfer {
 			session.terminate(unsupported_applications);
 			return;
 		}
-		function complete(error:Null<xmpp.Stanza.Error>, received:Null<Bytes>) {
+		function complete(error:Null<xmpp.Stanza.Error>, _:Null<Bytes>) {
 			if (session.state == ended)
 				return;
 			if (error != null) {
@@ -262,11 +342,11 @@ class JingleFileTransfer {
 				session.terminate(media_error, 'size mismatch');
 				return;
 			}
-			if (file.hashes != null && verify(received, file.hashes) == false) {
+			if (received.verify() == false) {
 				session.terminate(media_error, 'hash mismatch');
 				return;
 			}
-			data = received;
+			data = received.bytes();
 			session.info([createReceived(content)]);
 			session.terminate(success);
 		}
@@ -297,7 +377,7 @@ class JingleFileTransfer {
 					if (s5b != null)
 						s5b.close();
 					final blockSize = Std.int(Math.min(ibb.blockSize, maxBlockSize));
-					JingleIBB.receive(session, ibb.sid, blockSize, file.size, options.onProgress, complete);
+					JingleIBB.receive(session, ibb.sid, blockSize, file.size, options.onProgress, received, complete);
 					session.send(transport_accept, [
 						{creator: content.creator, name: content.name, transport: JingleIBB.createTransport(ibb.sid, blockSize)}
 					]);
@@ -309,28 +389,36 @@ class JingleFileTransfer {
 		final ibb = JingleIBB.parseTransport(transport);
 		if (ibb != null) {
 			final blockSize = Std.int(Math.min(ibb.blockSize, maxBlockSize));
-			JingleIBB.receive(session, ibb.sid, blockSize, file.size, options.onProgress, complete);
+			JingleIBB.receive(session, ibb.sid, blockSize, file.size, options.onProgress, received, complete);
 			accept(JingleIBB.createTransport(ibb.sid, blockSize));
 		} else if (transport != null && transport.is(JingleS5B.XMLNS) && transport.has("sid")) {
 			s5b = new JingleS5B(session, content.name, content.creator, options.s5b, transport.get("sid"));
 			s5b.onReady = stream -> {
-				final buf = new BytesBuffer();
 				var done = false;
 				function finish(error:Null<xmpp.Stanza.Error>) {
 					if (done)
 						return;
 					done = true;
-					complete(error, (error == null) ? buf.getBytes() : null);
+					complete(error, null);
 				}
 				// without size the data is complete once the sender closes the connection
 				stream.onClose = () -> finish((file.size == null) ? null : new xmpp.Stanza.Error(cancel, item_not_found, 'connection closed'));
 				stream.onData = chunk -> {
 					if (done)
 						return;
-					buf.add(chunk);
+					final error = try {
+						received.write(chunk);
+						null;
+					} catch (e)
+						Std.string(e);
+					if (error != null) {
+						done = true;
+						session.terminate(failed_application, 'cannot write the data: $error');
+						return;
+					}
 					if (options.onProgress != null)
-						options.onProgress(buf.length);
-					if (file.size != null && buf.length >= file.size)
+						options.onProgress(received.length);
+					if (file.size != null && received.length >= file.size)
 						finish(null);
 				}
 			}
@@ -454,10 +542,34 @@ class JingleFileTransfer {
 	**/
 	@:noUsing
 	public static function hash(data:Bytes, algo = "sha-256"):Hash {
-		final digest = digest(data, algo);
+		final digest = Digest.make(data, algo);
 		if (digest == null)
 			throw 'unsupported hash algorithm: $algo';
 		return {algo: algo, value: Base64.encode(digest)};
+	}
+
+	/**
+		Returns the hashes of the data of `input` with `algos` (read to its end, then closed), e.g. of a large file in a
+		thread before offering it. Throws on read errors and unsupported algorithms.
+	**/
+	@:noUsing
+	public static function hashInput(input:haxe.io.Input, ?algos:Array<String>):Array<Hash> {
+		final digests = [
+			for (algo in algos ?? ["sha-256"])
+				Digest.create(algo) ?? throw 'unsupported hash algorithm: $algo'
+		];
+		final buf = Bytes.alloc(BLOCK_SIZE);
+		try {
+			var len = 0;
+			while ((len = JingleIBB.readBlock(input, buf)) > 0)
+				for (d in digests)
+					d.update(buf, 0, len);
+		} catch (e) {
+			input.close();
+			throw e;
+		}
+		input.close();
+		return [for (d in digests) {algo: d.algo, value: Base64.encode(d.finish())}];
 	}
 
 	/**
@@ -468,7 +580,7 @@ class JingleFileTransfer {
 	public static function verify(data:Bytes, hashes:Array<Hash>):Null<Bool> {
 		var verified:Null<Bool> = null;
 		for (h in hashes) {
-			final digest = digest(data, h.algo);
+			final digest = Digest.make(data, h.algo);
 			if (digest == null)
 				continue;
 			final value = try Base64.decode(h.value) catch (e) null;
@@ -479,22 +591,6 @@ class JingleFileTransfer {
 		return verified;
 	}
 
-	static function digest(data:Bytes, algo:String):Null<Bytes> {
-		final name = switch algo {
-			case "sha-1": "sha1";
-			case "sha-256": "sha256";
-			case _: return null;
-		}
-		// native implementations, the portable ones are too slow for files on these targets
-		#if python
-		return Bytes.ofData(python.Syntax.code("bytearray(__import__('hashlib').new({0}, {1}).digest())", name, data.getData()));
-		#elseif nodejs
-		return js.node.Crypto.createHash(name).update(js.node.Buffer.hxFromBytes(data)).digest().hxToBytes();
-		#else
-		return (name == "sha1") ? haxe.crypto.Sha1.make(data) : haxe.crypto.Sha256.make(data);
-		#end
-	}
-
 	static function formatInt(v:Float):String
 		#if php
 		// haxe 5 generates invalid php for haxe.Int32 (bodyless methods), pulled in via Int64.fromFloat
@@ -502,4 +598,57 @@ class JingleFileTransfer {
 		#else
 		return haxe.Int64.toStr(haxe.Int64.fromFloat(v));
 		#end
+}
+
+/**
+	The data received of a file: counted and hashed (the offered algorithms supported) as it arrives, written to an
+	output, or kept.
+**/
+private class ReceivedData extends haxe.io.Output {
+	public var length(default, null) = 0.0;
+
+	final output:Null<haxe.io.Output>;
+	final buffer:Null<BytesBuffer>;
+	final hashes:Array<Hash>;
+	final digests:Array<Digest>;
+
+	public function new(output:Null<haxe.io.Output>, hashes:Null<Array<Hash>>) {
+		this.output = output;
+		buffer = (output == null) ? new BytesBuffer() : null;
+		this.hashes = [for (h in hashes ?? []) if (Digest.ALGORITHMS.contains(h.algo)) h];
+		digests = [for (h in this.hashes) Digest.create(h.algo)];
+	}
+
+	override public function writeByte(c:Int) {
+		final b = Bytes.alloc(1);
+		b.set(0, c);
+		writeBytes(b, 0, 1);
+	}
+
+	override public function writeBytes(b:Bytes, pos:Int, len:Int):Int {
+		if (output != null)
+			output.writeFullBytes(b, pos, len);
+		else
+			buffer.addBytes(b, pos, len);
+		for (d in digests)
+			d.update(b, pos, len);
+		length += len;
+		return len;
+	}
+
+	/** The data matches the hashes (all supported), `null` if none of them is supported **/
+	public function verify():Null<Bool> {
+		if (digests.length == 0)
+			return null;
+		for (i in 0...digests.length) {
+			final value = try Base64.decode(hashes[i].value) catch (e) null;
+			if (value == null || value.compare(digests[i].finish()) != 0)
+				return false;
+		}
+		return true;
+	}
+
+	/** The data, `null` if it was written to the output **/
+	public function bytes():Null<Bytes>
+		return buffer?.getBytes();
 }

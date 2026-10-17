@@ -33,6 +33,10 @@ interface JingleS5BConnection {
 	var onClose:() -> Void;
 
 	function write(data:Bytes):Void;
+
+	/** Calls `callback` once the data written so far is sent (e.g. to write a large file in parts) **/
+	function written(callback:() -> Void):Void;
+
 	function close():Void;
 }
 
@@ -108,6 +112,9 @@ private class NodeConnection implements JingleS5BConnection {
 
 	public function write(data:Bytes)
 		socket.write(js.node.Buffer.hxFromBytes(data));
+
+	public function written(callback:() -> Void)
+		socket.write(js.node.Buffer.alloc(0), () -> callback());
 
 	public function close()
 		socket.end();
@@ -224,12 +231,9 @@ private class SysConnection implements JingleS5BConnection {
 	public var onData:Bytes->Void = data -> {};
 	public var onClose:() -> Void = () -> {};
 
-	/** Queued after the data to write to close the connection **/
-	static final CLOSE = Bytes.alloc(0);
-
 	final socket:sys.net.Socket;
 	final post:(() -> Void)->Void;
-	final writes = new sys.thread.Deque<Bytes>();
+	final writes = new sys.thread.Deque<Write>();
 	final writerDone = new sys.thread.Lock();
 	var closing = false;
 	var closed = false;
@@ -252,14 +256,18 @@ private class SysConnection implements JingleS5BConnection {
 
 	public function write(data:Bytes)
 		if (!closing)
-			writes.add(data);
+			writes.add(Data(data));
+
+	public function written(callback:() -> Void)
+		if (!closing)
+			writes.add(Written(callback));
 
 	/** Closes the connection once the queued data is written **/
 	public function close() {
 		if (closing)
 			return;
 		closing = true;
-		writes.add(CLOSE);
+		writes.add(Close);
 	}
 
 	function readLoop() {
@@ -272,7 +280,7 @@ private class SysConnection implements JingleS5BConnection {
 			post(() -> onData(data));
 		}
 		// stop the writer if the peer closed the connection, close the socket once it is done
-		writes.add(CLOSE);
+		writes.add(Close);
 		writerDone.wait();
 		socket.close();
 		post(() -> {
@@ -285,13 +293,17 @@ private class SysConnection implements JingleS5BConnection {
 
 	function writeLoop() {
 		while (true) {
-			final data = writes.pop(true);
-			if (data == CLOSE)
-				break;
-			try
-				socket.output.writeFullBytes(data, 0, data.length)
-			catch (e)
-				break;
+			switch writes.pop(true) {
+				case Data(data):
+					try
+						socket.output.writeFullBytes(data, 0, data.length)
+					catch (e)
+						break;
+				case Written(callback):
+					post(callback);
+				case Close:
+					break;
+			}
 		}
 		// wakes the reader, which reports the closed connection
 		try
@@ -299,5 +311,15 @@ private class SysConnection implements JingleS5BConnection {
 		catch (_) {}
 		writerDone.release();
 	}
+}
+
+/** What the writer thread of a `SysConnection` does next **/
+private enum Write {
+	Data(data:Bytes);
+
+	/** The data before is written **/
+	Written(callback:() -> Void);
+
+	Close;
 }
 #end
