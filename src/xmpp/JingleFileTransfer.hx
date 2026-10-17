@@ -119,6 +119,8 @@ class JingleFileTransfer {
 
 	static inline var CONTENT_NAME = "a-file-offer";
 
+	static inline var REQUEST_NAME = "a-file-request";
+
 	/** Blocks read and sent over SOCKS5 bytestreams **/
 	static inline var BLOCK_SIZE = 65536;
 
@@ -138,158 +140,18 @@ class JingleFileTransfer {
 	@:noUsing
 	public static function sendFile(jingle:Jingle, peer:String, file:JingleFile, data:JingleFileData, ?options:JingleFileTransferOptions,
 			callback:(reason:JingleReasonInfo) -> Void):JingleSession {
-		final options:JingleFileTransferOptions = options ?? {};
-		final blockSize = options.blockSize ?? JingleIBB.DEFAULT_BLOCK_SIZE;
 		final file = Reflect.copy(file);
 		file.size ??= data.size;
 		if (file.hashes == null || file.hashes.length == 0)
 			file.hashes = hashInput(data.open(), ["sha-256"]);
+		final session = jingle.createSession(peer);
 		final content:JingleContent = {
 			creator: initiator,
 			name: CONTENT_NAME,
 			senders: initiator,
 			description: createDescription(file)
 		};
-		final session = jingle.createSession(peer);
-		var s5b:Null<JingleS5B> = null;
-		var ibbSid:Null<String> = null;
-		// the data being read, closed when sent or the session ends
-		var input:Null<haxe.io.Input> = null;
-		function closeInput() {
-			if (input != null)
-				try
-					input.close()
-				catch (_) {}
-			input = null;
-		}
-		function openInput():Bool {
-			closeInput();
-			input = try data.open() catch (e) {
-				session.terminate(failed_application, 'cannot read the data: $e');
-				null;
-			}
-			return input != null;
-		}
-		session.onTerminate = reason -> {
-			if (s5b != null)
-				s5b.close();
-			closeInput();
-			callback(reason);
-		}
-		// the receiver confirms the receipt of the file before terminating the session
-		session.onInfo = payload -> payload.filter(e -> e.name == "received" && e.is(XMLNS)).length == payload.length;
-		function sendIBB(sid:String, size:Int) {
-			if (!openInput())
-				return;
-			JingleIBB.send(session, sid, size, input, options.onProgress, error -> {
-				closeInput();
-				if (error != null)
-					session.terminate(failed_transport, error.condition);
-				// otherwise the receiver terminates the session after verifying the data
-			});
-		}
-		function fallback(reason:String) {
-			if (session.state == ended)
-				return;
-			if (options.fallback == false) {
-				session.terminate(connectivity_error, reason);
-				return;
-			}
-			ibbSid = xmpp.Stream.makeRandomId();
-			session.send(transport_replace, [
-				{creator: initiator, name: CONTENT_NAME, transport: JingleIBB.createTransport(ibbSid, blockSize)}
-			]);
-		}
-		session.onAction = (req, respond) -> {
-			final c = req.contents.filter(c -> c.name == CONTENT_NAME)[0];
-			final transport = (c == null) ? null : c.transport;
-			switch req.action {
-				case transport_info if (s5b != null && transport != null && transport.is(JingleS5B.XMLNS)):
-					respond();
-					s5b.handleInfo(transport);
-				case transport_accept if (ibbSid != null):
-					final ibb = JingleIBB.parseTransport(transport);
-					if (ibb == null || ibb.sid != ibbSid) {
-						respond(new xmpp.Stanza.Error(modify, bad_request));
-						session.terminate(failed_transport);
-						return;
-					}
-					respond();
-					if (s5b != null)
-						s5b.close();
-					sendIBB(ibb.sid, Std.int(Math.min(blockSize, ibb.blockSize)));
-				case transport_reject if (ibbSid != null):
-					respond();
-					session.terminate(failed_transport);
-				case _:
-					respond(new xmpp.Stanza.Error(cancel, feature_not_implemented));
-			}
-		}
-		session.onAccept = contents -> {
-			final accepted = contents.filter(c -> c.name == CONTENT_NAME)[0];
-			final transport = (accepted == null) ? null : accepted.transport;
-			if (s5b != null) {
-				if (transport == null || !transport.is(JingleS5B.XMLNS)) {
-					session.terminate(unsupported_transports);
-					return;
-				}
-				s5b.onFailed = fallback;
-				s5b.onReady = stream -> {
-					if (!openInput())
-						return;
-					final buf = Bytes.alloc(BLOCK_SIZE);
-					var sent = 0.0;
-					// a window of blocks at a time, the next once they are written: little data in memory
-					function pump() {
-						if (session.state == ended || input == null)
-							return;
-						var queued = 0;
-						while (queued < WINDOW) {
-							final len = try JingleIBB.readBlock(input, buf) catch (e) {
-								session.terminate(failed_application, 'cannot read the data: $e');
-								return;
-							}
-							if (len == 0) {
-								// all sent: the receiver terminates the session after verifying the data
-								closeInput();
-								final total = sent;
-								stream.written(() -> if (options.onProgress != null) options.onProgress(total));
-								return;
-							}
-							stream.write(buf.sub(0, len));
-							queued += len;
-							sent += len;
-						}
-						final written = sent;
-						stream.written(() -> {
-							if (options.onProgress != null)
-								options.onProgress(written);
-							pump();
-						});
-					}
-					pump();
-				}
-				s5b.start(transport);
-			} else {
-				final ibb = JingleIBB.parseTransport(transport);
-				if (ibb == null || ibb.sid != ibbSid) {
-					session.terminate(unsupported_transports);
-					return;
-				}
-				sendIBB(ibb.sid, Std.int(Math.min(blockSize, ibb.blockSize)));
-			}
-		};
-		if (options.s5b != null) {
-			s5b = new JingleS5B(session, CONTENT_NAME, initiator, options.s5b);
-			s5b.prepare(null, () -> {
-				content.transport = s5b.createTransport();
-				session.initiate([content]);
-			});
-		} else {
-			ibbSid = xmpp.Stream.makeRandomId();
-			content.transport = JingleIBB.createTransport(ibbSid, blockSize);
-			session.initiate([content]);
-		}
+		new FileSession(session, content, true, options ?? {}, data, null, (reason, _) -> callback(reason)).start();
 		return session;
 	}
 
@@ -298,7 +160,7 @@ class JingleFileTransfer {
 	**/
 	@:noUsing
 	public static function getFileOffer(session:JingleSession):Null<JingleFile> {
-		final content = getFileContent(session);
+		final content = getFileContent(session, true);
 		return (content == null) ? null : parseDescription(content.description);
 	}
 
@@ -314,131 +176,72 @@ class JingleFileTransfer {
 	@:noUsing
 	public static function receiveFile(session:JingleSession, ?options:JingleFileTransferOptions,
 			callback:(reason:JingleReasonInfo, data:Null<Bytes>) -> Void) {
-		final options:JingleFileTransferOptions = options ?? {};
-		final maxBlockSize = options.blockSize ?? JingleIBB.MAX_BLOCK_SIZE;
-		final content = getFileContent(session);
+		final content = getFileContent(session, true);
 		final file = (content == null) ? null : parseDescription(content.description);
-		var data:Null<Bytes> = null;
-		var s5b:Null<JingleS5B> = null;
-		// counts and hashes the data, writes it to the output or keeps it
-		final received = new ReceivedData(options.output, file?.hashes);
-		session.onTerminate = reason -> {
-			if (s5b != null)
-				s5b.close();
-			callback(reason, (reason.condition == success) ? data : null);
-		}
 		if (file == null) {
+			session.onTerminate = reason -> callback(reason, null);
 			session.terminate(unsupported_applications);
 			return;
 		}
-		function complete(error:Null<xmpp.Stanza.Error>, _:Null<Bytes>) {
-			if (session.state == ended)
-				return;
-			if (error != null) {
-				session.terminate(failed_transport, error.condition);
-				return;
-			}
-			if (file.size != null && received.length != file.size) {
-				session.terminate(media_error, 'size mismatch');
-				return;
-			}
-			if (received.verify() == false) {
-				session.terminate(media_error, 'hash mismatch');
-				return;
-			}
-			data = received.bytes();
-			session.info([createReceived(content)]);
-			session.terminate(success);
-		}
-		function accept(transport:XML)
-			session.accept([
-				{
-					creator: content.creator,
-					name: content.name,
-					senders: content.senders,
-					description: content.description,
-					transport: transport
-				}
-			]);
-		session.onAction = (req, respond) -> {
-			final c = req.contents.filter(c -> c.name == content.name)[0];
-			final transport = (c == null) ? null : c.transport;
-			switch req.action {
-				case transport_info if (s5b != null && transport != null && transport.is(JingleS5B.XMLNS)):
-					respond();
-					s5b.handleInfo(transport);
-				case transport_replace if (transport != null):
-					final ibb = JingleIBB.parseTransport(transport);
-					respond();
-					if (ibb == null) {
-						session.send(transport_reject, [{creator: content.creator, name: content.name, transport: transport}]);
-						return;
-					}
-					if (s5b != null)
-						s5b.close();
-					final blockSize = Std.int(Math.min(ibb.blockSize, maxBlockSize));
-					JingleIBB.receive(session, ibb.sid, blockSize, file.size, options.onProgress, received, complete);
-					session.send(transport_accept, [
-						{creator: content.creator, name: content.name, transport: JingleIBB.createTransport(ibb.sid, blockSize)}
-					]);
-				case _:
-					respond(new xmpp.Stanza.Error(cancel, feature_not_implemented));
-			}
-		}
-		final transport = content.transport;
-		final ibb = JingleIBB.parseTransport(transport);
-		if (ibb != null) {
-			final blockSize = Std.int(Math.min(ibb.blockSize, maxBlockSize));
-			JingleIBB.receive(session, ibb.sid, blockSize, file.size, options.onProgress, received, complete);
-			accept(JingleIBB.createTransport(ibb.sid, blockSize));
-		} else if (transport != null && transport.is(JingleS5B.XMLNS) && transport.has("sid")) {
-			s5b = new JingleS5B(session, content.name, content.creator, options.s5b, transport.get("sid"));
-			s5b.onReady = stream -> {
-				var done = false;
-				function finish(error:Null<xmpp.Stanza.Error>) {
-					if (done)
-						return;
-					done = true;
-					complete(error, null);
-				}
-				// without size the data is complete once the sender closes the connection
-				stream.onClose = () -> finish((file.size == null) ? null : new xmpp.Stanza.Error(cancel, item_not_found, 'connection closed'));
-				stream.onData = chunk -> {
-					if (done)
-						return;
-					final error = try {
-						received.write(chunk);
-						null;
-					} catch (e)
-						Std.string(e);
-					if (error != null) {
-						done = true;
-						session.terminate(failed_application, 'cannot write the data: $error');
-						return;
-					}
-					if (options.onProgress != null)
-						options.onProgress(received.length);
-					if (file.size != null && received.length >= file.size)
-						finish(null);
-				}
-			}
-			// wait for the transport-replace (or the termination) of the sender
-			s5b.onFailed = reason -> {};
-			s5b.prepare(transport, () -> {
-				accept(s5b.createTransport());
-				s5b.start(transport);
-			});
-		} else {
-			session.terminate(unsupported_transports);
-		}
+		new FileSession(session, content, false, options ?? {}, null, file, callback).answer(content.description);
 	}
 
-	static function getFileContent(session:JingleSession):Null<JingleContent> {
+	/**
+		Request the file `file` from `peer` (a full jid): the peer sends it ([XEP-0329](https://xmpp.org/extensions/xep-0329.html):
+		`name` is its path in the shared directories, see `FileSharing`); `size` and `hashes` (if known, e.g. from the
+		listing) verify the data, otherwise those of the peer's answer.
+		The transports and options are those of `receiveFile`; `callback` is called once the session ended, with the
+		reason (`success`: received and verified) and the data (none with `options.output`).
+	**/
+	@:noUsing
+	public static function requestFile(jingle:Jingle, peer:String, file:JingleFile, ?options:JingleFileTransferOptions,
+			callback:(reason:JingleReasonInfo, data:Null<Bytes>) -> Void):JingleSession {
+		final session = jingle.createSession(peer);
+		final content:JingleContent = {
+			creator: initiator,
+			name: REQUEST_NAME,
+			senders: responder,
+			description: createDescription(file)
+		};
+		new FileSession(session, content, true, options ?? {}, null, Reflect.copy(file), callback).start();
+		return session;
+	}
+
+	/**
+		Returns the file requested in a session initiated by the peer (its `name`: the path), or `null` if the session
+		is no file request.
+	**/
+	@:noUsing
+	public static function getFileRequest(session:JingleSession):Null<JingleFile> {
+		final content = getFileContent(session, false);
+		return (content == null) ? null : parseDescription(content.description);
+	}
+
+	/**
+		Answer the file request of `session`: accept it with `file` (the details, e.g. size and hashes, the receiver
+		verifies the data with) and send `data`. Decline with `session.terminate(decline)` (or another reason).
+		`callback` is called once the session ended, with the reason: `success` if the receiver confirmed the transfer.
+	**/
+	@:noUsing
+	public static function answerFileRequest(session:JingleSession, file:JingleFile, data:JingleFileData, ?options:JingleFileTransferOptions,
+			callback:(reason:JingleReasonInfo) -> Void) {
+		final content = getFileContent(session, false);
+		if (content == null) {
+			session.onTerminate = callback;
+			session.terminate(unsupported_applications);
+			return;
+		}
+		final file = Reflect.copy(file);
+		file.size ??= data.size;
+		new FileSession(session, content, false, options ?? {}, data, null, (reason, _) -> callback(reason)).answer(createDescription(file));
+	}
+
+	/** The file content of a session initiated by the peer: an offer (the initiator sends), or a request (the responder sends) **/
+	static function getFileContent(session:JingleSession, offer:Bool):Null<JingleContent> {
 		for (c in session.contents)
 			if (c.description != null && c.description.is(XMLNS)) {
-				// a file offer: the creator sends the file
-				final offer = c.senders == (c.creator : String);
-				return offer ? c : null;
+				final sentByCreator = c.senders == (c.creator : String);
+				return (sentByCreator == offer) ? c : null;
 			}
 		return null;
 	}
@@ -609,12 +412,17 @@ private class ReceivedData extends haxe.io.Output {
 
 	final output:Null<haxe.io.Output>;
 	final buffer:Null<BytesBuffer>;
-	final hashes:Array<Hash>;
-	final digests:Array<Digest>;
+	var hashes:Array<Hash> = [];
+	var digests:Array<Digest> = [];
 
 	public function new(output:Null<haxe.io.Output>, hashes:Null<Array<Hash>>) {
 		this.output = output;
 		buffer = (output == null) ? new BytesBuffer() : null;
+		expect(hashes);
+	}
+
+	/** The hashes to verify (those supported), before data arrives **/
+	public function expect(hashes:Null<Array<Hash>>) {
 		this.hashes = [for (h in hashes ?? []) if (Digest.ALGORITHMS.contains(h.algo)) h];
 		digests = [for (h in this.hashes) Digest.create(h.algo)];
 	}
@@ -651,4 +459,338 @@ private class ReceivedData extends haxe.io.Output {
 	/** The data, `null` if it was written to the output **/
 	public function bytes():Null<Bytes>
 		return buffer?.getBytes();
+}
+
+/**
+	The transfer of the file of a session: the transport by the role in the session (the initiator offers the
+	transport and falls back to in-band bytestreams if no SOCKS5 connection can be established), the data by its
+	direction (the sender reads it as it sends, the receiver verifies it and ends the session).
+	Offers: the initiator sends; requests (XEP-0329): the responder sends.
+**/
+@:access(xmpp.JingleFileTransfer)
+private class FileSession {
+	final session:JingleSession;
+	final content:JingleContent;
+	final initiator:Bool;
+	final sending:Bool;
+	final options:JingleFileTransferOptions;
+
+	/** In-band bytestreams: the block size offered (initiator), at most accepted (responder) **/
+	final blockSize:Int;
+
+	/** Sending: the data **/
+	final data:Null<JingleFileData>;
+
+	/** Receiving: the file expected (size, hashes), the data received **/
+	final file:Null<JingleFile>;
+
+	var received:Null<ReceivedData>;
+
+	final callback:(reason:JingleReasonInfo, data:Null<Bytes>) -> Void;
+
+	var s5b:Null<JingleS5B>;
+	var ibbSid:Null<String>;
+
+	/** The data being read (sending), closed when sent or the session ends **/
+	var input:Null<haxe.io.Input>;
+
+	/** The receiver got all data (verified or not) **/
+	var completed = false;
+
+	public function new(session:JingleSession, content:JingleContent, initiator:Bool, options:JingleFileTransferOptions,
+			data:Null<JingleFileData>, file:Null<JingleFile>, callback:(reason:JingleReasonInfo, data:Null<Bytes>) -> Void) {
+		this.session = session;
+		this.content = content;
+		this.initiator = initiator;
+		this.options = options;
+		this.data = data;
+		this.file = file;
+		this.callback = callback;
+		sending = data != null;
+		blockSize = options.blockSize ?? (sending ? JingleIBB.DEFAULT_BLOCK_SIZE : JingleIBB.MAX_BLOCK_SIZE);
+		if (!sending)
+			received = new ReceivedData(options.output, file?.hashes);
+		var result:Null<Bytes> = null;
+		session.onTerminate = reason -> {
+			if (s5b != null)
+				s5b.close();
+			closeInput();
+			if (received != null && reason.condition == success)
+				result = received.bytes();
+			callback(reason, result);
+		}
+		// the receiver confirms the receipt of the file before terminating the session
+		if (sending)
+			session.onInfo = payload -> payload.filter(e -> e.name == "received" && e.is(JingleFileTransfer.XMLNS)).length == payload.length;
+		session.onAction = action;
+	}
+
+	/** The initiator: offers the transport, initiates the session **/
+	public function start() {
+		session.onAccept = accepted;
+		if (options.s5b != null) {
+			s5b = new JingleS5B(session, content.name, content.creator, options.s5b);
+			s5b.prepare(null, () -> {
+				content.transport = s5b.createTransport();
+				session.initiate([content]);
+			});
+		} else {
+			ibbSid = xmpp.Stream.makeRandomId();
+			content.transport = JingleIBB.createTransport(ibbSid, blockSize);
+			if (!sending)
+				receiveIBB(ibbSid, blockSize);
+			session.initiate([content]);
+		}
+	}
+
+	/** The responder: accepts the session (with `description`) and the transport of the initiator **/
+	public function answer(description:XML) {
+		function accept(transport:XML)
+			session.accept([
+				{
+					creator: content.creator,
+					name: content.name,
+					senders: content.senders,
+					description: description,
+					transport: transport
+				}
+			]);
+		final transport = content.transport;
+		final ibb = JingleIBB.parseTransport(transport);
+		if (ibb != null) {
+			final size = Std.int(Math.min(ibb.blockSize, blockSize));
+			if (!sending)
+				receiveIBB(ibb.sid, size);
+			accept(JingleIBB.createTransport(ibb.sid, size));
+			if (sending)
+				sendIBB(ibb.sid, size);
+		} else if (transport != null && transport.is(JingleS5B.XMLNS) && transport.has("sid")) {
+			s5b = new JingleS5B(session, content.name, content.creator, options.s5b, transport.get("sid"));
+			s5b.onReady = ready;
+			// wait for the transport-replace (or the termination) of the initiator
+			s5b.onFailed = reason -> {};
+			s5b.prepare(transport, () -> {
+				accept(s5b.createTransport());
+				s5b.start(transport);
+			});
+		} else
+			session.terminate(unsupported_transports);
+	}
+
+	/** The initiator: the responder accepted, with its transport (and for requests the details of the file) **/
+	function accepted(contents:Array<JingleContent>) {
+		final c = contents.filter(c -> c.name == content.name)[0];
+		final transport = (c == null) ? null : c.transport;
+		// a request: the size and hashes of the sender, unless requested
+		if (!sending && c?.description != null) {
+			final details = JingleFileTransfer.parseDescription(c.description);
+			if (details != null) {
+				file.size ??= details.size;
+				if (file.hashes == null || file.hashes.length == 0)
+					received.expect(details.hashes);
+			}
+		}
+		if (s5b != null) {
+			if (transport == null || !transport.is(JingleS5B.XMLNS)) {
+				session.terminate(unsupported_transports);
+				return;
+			}
+			s5b.onFailed = fallback;
+			s5b.onReady = ready;
+			s5b.start(transport);
+		} else {
+			final ibb = JingleIBB.parseTransport(transport);
+			if (ibb == null || ibb.sid != ibbSid) {
+				session.terminate(unsupported_transports);
+				return;
+			}
+			if (sending)
+				sendIBB(ibb.sid, Std.int(Math.min(blockSize, ibb.blockSize)));
+		}
+	}
+
+	/** The initiator: no SOCKS5 connection, in-band bytestreams instead (unless `fallback` is `false`) **/
+	function fallback(reason:String) {
+		if (session.state == ended)
+			return;
+		if (options.fallback == false) {
+			session.terminate(connectivity_error, reason);
+			return;
+		}
+		ibbSid = xmpp.Stream.makeRandomId();
+		if (!sending)
+			receiveIBB(ibbSid, blockSize);
+		session.send(transport_replace, [
+			{creator: content.creator, name: content.name, transport: JingleIBB.createTransport(ibbSid, blockSize)}
+		]);
+	}
+
+	function action(req:JingleRequest, respond:(?error:xmpp.Stanza.Error) -> Void) {
+		final c = req.contents.filter(c -> c.name == content.name)[0];
+		final transport = (c == null) ? null : c.transport;
+		switch req.action {
+			case transport_info if (s5b != null && transport != null && transport.is(JingleS5B.XMLNS)):
+				respond();
+				s5b.handleInfo(transport);
+			case transport_accept if (initiator && ibbSid != null):
+				final ibb = JingleIBB.parseTransport(transport);
+				if (ibb == null || ibb.sid != ibbSid) {
+					respond(new xmpp.Stanza.Error(modify, bad_request));
+					session.terminate(failed_transport);
+					return;
+				}
+				respond();
+				if (s5b != null)
+					s5b.close();
+				if (sending)
+					sendIBB(ibb.sid, Std.int(Math.min(blockSize, ibb.blockSize)));
+			case transport_reject if (initiator && ibbSid != null):
+				respond();
+				session.terminate(failed_transport);
+			case transport_replace if (!initiator && transport != null):
+				final ibb = JingleIBB.parseTransport(transport);
+				respond();
+				if (ibb == null) {
+					session.send(transport_reject, [{creator: content.creator, name: content.name, transport: transport}]);
+					return;
+				}
+				if (s5b != null)
+					s5b.close();
+				final size = Std.int(Math.min(ibb.blockSize, blockSize));
+				if (!sending)
+					receiveIBB(ibb.sid, size);
+				session.send(transport_accept, [
+					{creator: content.creator, name: content.name, transport: JingleIBB.createTransport(ibb.sid, size)}
+				]);
+				if (sending)
+					sendIBB(ibb.sid, size);
+			case _:
+				respond(new xmpp.Stanza.Error(cancel, feature_not_implemented));
+		}
+	}
+
+	/** The SOCKS5 bytestream is established: the data is sent or received **/
+	function ready(stream:JingleS5BStream) {
+		if (sending)
+			sendStream(stream);
+		else
+			receiveStream(stream);
+	}
+
+	function closeInput() {
+		if (input != null)
+			try
+				input.close()
+			catch (_) {}
+		input = null;
+	}
+
+	function openInput():Bool {
+		closeInput();
+		input = try data.open() catch (e) {
+			session.terminate(failed_application, 'cannot read the data: $e');
+			null;
+		}
+		return input != null;
+	}
+
+	/** Sends the data over the SOCKS5 bytestream: a window of blocks at a time, the next once they are written **/
+	function sendStream(stream:JingleS5BStream) {
+		if (!openInput())
+			return;
+		final buf = Bytes.alloc(JingleFileTransfer.BLOCK_SIZE);
+		var sent = 0.0;
+		function pump() {
+			if (session.state == ended || input == null)
+				return;
+			var queued = 0;
+			while (queued < JingleFileTransfer.WINDOW) {
+				final len = try JingleIBB.readBlock(input, buf) catch (e) {
+					session.terminate(failed_application, 'cannot read the data: $e');
+					return;
+				}
+				if (len == 0) {
+					// all sent: the receiver terminates the session after verifying the data
+					closeInput();
+					final total = sent;
+					stream.written(() -> if (options.onProgress != null) options.onProgress(total));
+					return;
+				}
+				stream.write(buf.sub(0, len));
+				queued += len;
+				sent += len;
+			}
+			final written = sent;
+			stream.written(() -> {
+				if (options.onProgress != null)
+					options.onProgress(written);
+				pump();
+			});
+		}
+		pump();
+	}
+
+	/** Receives the data of the SOCKS5 bytestream: complete with the size, or (without) once the sender closes it **/
+	function receiveStream(stream:JingleS5BStream) {
+		var done = false;
+		function finish(error:Null<xmpp.Stanza.Error>) {
+			if (done)
+				return;
+			done = true;
+			complete(error, null);
+		}
+		stream.onClose = () -> finish((file.size == null) ? null : new xmpp.Stanza.Error(cancel, item_not_found, 'connection closed'));
+		stream.onData = chunk -> {
+			if (done)
+				return;
+			final error = try {
+				received.write(chunk);
+				null;
+			} catch (e) Std.string(e);
+			if (error != null) {
+				done = true;
+				session.terminate(failed_application, 'cannot write the data: $error');
+				return;
+			}
+			if (options.onProgress != null)
+				options.onProgress(received.length);
+			if (file.size != null && received.length >= file.size)
+				finish(null);
+		}
+	}
+
+	function sendIBB(sid:String, size:Int) {
+		if (!openInput())
+			return;
+		JingleIBB.send(session, sid, size, input, options.onProgress, error -> {
+			closeInput();
+			if (error != null)
+				session.terminate(failed_transport, error.condition);
+			// otherwise the receiver terminates the session after verifying the data
+		});
+	}
+
+	function receiveIBB(sid:String, size:Int)
+		JingleIBB.receive(session, sid, size, file.size, options.onProgress, received, complete);
+
+	/** The receiver got the data: verifies size and hashes, confirms it and ends the session **/
+	function complete(error:Null<xmpp.Stanza.Error>, _:Null<Bytes>) {
+		if (session.state == ended || completed)
+			return;
+		completed = true;
+		if (error != null) {
+			session.terminate(failed_transport, error.condition);
+			return;
+		}
+		if (file.size != null && received.length != file.size) {
+			session.terminate(media_error, 'size mismatch');
+			return;
+		}
+		if (received.verify() == false) {
+			session.terminate(media_error, 'hash mismatch');
+			return;
+		}
+		session.info([JingleFileTransfer.createReceived(content)]);
+		session.terminate(success);
+	}
 }

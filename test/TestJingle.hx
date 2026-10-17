@@ -5,6 +5,7 @@ import xmpp.JingleFileTransfer;
 import xmpp.JingleIBB;
 import xmpp.JingleS5B;
 import xmpp.JingleS5BNetwork;
+import xmpp.FileSharing;
 import xmpp.XML;
 
 /**
@@ -682,6 +683,130 @@ class TestJingle extends utest.Test {
 		equals(success, r.receiver.condition);
 		equals(0, r.data.compare(r.output.getBytes()));
 		equals(2, r.opened);
+	}
+
+	/** juliet requests a file of romeo (the responder sends) **/
+	function request(?romeoConfig:Switchboard->Null<JingleS5BConfig>, ?julietConfig:Switchboard->Null<JingleS5BConfig>, ?details:JingleFile,
+			?requested:JingleFile, ?decline:Bool) {
+		final board = new Switchboard();
+		final p = new Peers();
+		final romeo = new Jingle(p.romeo);
+		final juliet = new Jingle(p.juliet);
+		final data = dataOf(50000);
+		final r = {
+			peers: p,
+			data: data,
+			sender: (null : JingleReasonInfo),
+			receiver: (null : JingleReasonInfo),
+			received: (null : Bytes),
+			request: (null : JingleFile)
+		};
+		final rc = (romeoConfig == null) ? null : romeoConfig(board);
+		romeo.onSessionInitiate = session -> {
+			r.request = JingleFileTransfer.getFileRequest(session);
+			if (decline) {
+				session.onTerminate = reason -> r.sender = reason;
+				session.terminate(xmpp.Jingle.JingleReason.decline);
+				return;
+			}
+			JingleFileTransfer.answerFileRequest(session, details ?? {name: 'cat.bin', hashes: [JingleFileTransfer.hash(data)]}, data,
+				(rc == null) ? null : {s5b: rc}, reason -> r.sender = reason);
+		}
+		final jc = (julietConfig == null) ? null : julietConfig(board);
+		JingleFileTransfer.requestFile(juliet, ROMEO, requested ?? {name: 'pics/cat.bin'}, (jc == null) ? null : {s5b: jc}, (reason, d) -> {
+			r.receiver = reason;
+			r.received = d;
+		});
+		return r;
+	}
+
+	function test_file_request() {
+		// in-band: the request names the path, the answer has the size and hash, the data verified with them
+		final r = request();
+		equals('pics/cat.bin', r.request.name);
+		isNull(JingleFileTransfer.getFileOffer(@:privateAccess new Jingle(r.peers.romeo).createSession(JULIET)));
+		equals(success, r.sender.condition);
+		equals(success, r.receiver.condition);
+		equals(0, r.data.compare(r.received));
+		final initiate = r.peers.sent(JULIET, 'jingle')[0];
+		equals('session-initiate', initiate.get('action'));
+		final content = initiate.firstElement;
+		equals('initiator', content.get('creator'));
+		equals('responder', content.get('senders'));
+		// the data sender opens the in-band bytestream
+		equals(1, r.peers.sent(ROMEO, 'open').length);
+		equals(0, r.peers.sent(JULIET, 'open').length);
+
+		// SOCKS5 direct
+		final r = request(b -> {network: new FakeNetwork(b, ['10.0.0.1'])}, b -> {network: new FakeNetwork(b, ['10.0.0.2'])});
+		equals(success, r.receiver.condition);
+		equals(0, r.data.compare(r.received));
+		equals(0, r.peers.sent(ROMEO, 'open').length);
+
+		// no connection: the initiator (the receiver) replaces the transport, the responder sends in-band
+		function offline(b:Switchboard, host:String):JingleS5BConfig {
+			final n = new FakeNetwork(b, [host]);
+			n.offline = true;
+			return {network: n, direct: false};
+		}
+		final r = request(b -> offline(b, '10.0.0.1'), b -> offline(b, '10.0.0.2'));
+		equals(success, r.receiver.condition);
+		equals(0, r.data.compare(r.received));
+		isTrue([for (j in r.peers.sent(JULIET, 'jingle')) j.get('action')].contains('transport-replace'));
+		isTrue([for (j in r.peers.sent(ROMEO, 'jingle')) j.get('action')].contains('transport-accept'));
+		equals(1, r.peers.sent(ROMEO, 'open').length);
+
+		// the hash of the answer doesn't match: media-error
+		final r = request(null, null, {name: 'cat.bin', hashes: [JingleFileTransfer.hash(Bytes.ofString('other'))]});
+		equals(media_error, r.receiver.condition);
+		isNull(r.received);
+
+		// the hash of the request (e.g. from the listing) is verified, not the answer's
+		final r = request(null, null, {name: 'cat.bin'}, {name: 'pics/cat.bin', hashes: [JingleFileTransfer.hash(Bytes.ofString('other'))]});
+		equals(media_error, r.receiver.condition);
+
+		// declined
+		final r = request(null, null, null, null, true);
+		equals(xmpp.Jingle.JingleReason.decline, r.receiver.condition);
+		isNull(r.received);
+	}
+
+	function test_file_sharing() {
+		final listing = xmpp.FileSharing.createListing('pics', {
+			directories: ['cats'],
+			files: [{name: 'a.png', size: 10, hashes: [{algo: 'sha-256', value: 'x'}]}, {name: 'b.png'}]
+		});
+		equals('urn:xmpp:fis:0', listing.get('xmlns'));
+		equals('pics', listing.get('node'));
+		final parsed = xmpp.FileSharing.parseListing(listing);
+		same(['cats'], parsed.directories);
+		equals(2, parsed.files.length);
+		equals('a.png', parsed.files[0].name);
+		equals(10.0, parsed.files[0].size);
+		equals('x', parsed.files[0].hashes[0].value);
+		// https://xmpp.org/extensions/xep-0329.html: the file-transfer:4 namespace of the examples
+		final old = xmpp.FileSharing.parseListing(XML.fromString("<query xmlns='urn:xmpp:fis:0' node='documents'><file xmlns='urn:xmpp:jingle:apps:file-transfer:4'><name>test.txt</name><size>1022</size></file><directory name='secret docs'/></query>"));
+		equals('test.txt', old.files[0].name);
+		same(['secret docs'], old.directories);
+		isNull(xmpp.FileSharing.parseListing(XML.fromString("<query xmlns='urn:other'/>")));
+
+		// answering: the listing of the node, forbidden for others, item-not-found for unknown nodes
+		final p = new Peers();
+		final nodes = new Array<Null<String>>();
+		xmpp.FileSharing.handleRequests(p.romeo, (from, node) -> {
+			nodes.push(node);
+			return (node == null) ? {directories: ['pics'], files: []} : (node == 'pics') ? {directories: [], files: [{name: 'a.png'}]} : null;
+		}, from -> from == JULIET);
+		var root:Null<FileListing> = null, pics:Null<FileListing> = null, missing:Null<xmpp.Stanza.Error> = null;
+		xmpp.FileSharing.list(p.juliet, ROMEO, null, res -> root = xmpp.FileSharing.parseListing(res.payload));
+		xmpp.FileSharing.list(p.juliet, ROMEO, 'pics', res -> pics = xmpp.FileSharing.parseListing(res.payload));
+		xmpp.FileSharing.list(p.juliet, ROMEO, 'nope', res -> missing = res.error);
+		same(['pics'], root.directories);
+		equals('a.png', pics.files[0].name);
+		equals(xmpp.Stanza.ErrorCondition.item_not_found, missing.condition);
+		same([null, 'pics', 'nope'], nodes);
+		final features = xmpp.ServiceDiscovery.getFeatures(p.romeo);
+		isTrue(features.contains('urn:xmpp:fis:0'));
 	}
 
 	function test_digest() {
