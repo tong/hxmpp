@@ -46,6 +46,7 @@ function main() {
 	r.addCase(new TestExternalServices());
 	r.addCase(new TestJingle());
 	r.addCase(new TestJingleRtp());
+	r.addCase(new TestJingleMessage());
 	r.addCase(new TestMessageArchiveManagement());
 	r.addCase(new TestEntityCapabilities());
 	r.addCase(new TestSoftwareVersion());

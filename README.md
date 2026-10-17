@@ -80,6 +80,7 @@ External server components ([XEP-0114](https://xmpp.org/extensions/xep-0114.html
 | [XEP-0308](https://xmpp.org/extensions/xep-0308.html) | Last Message Correction | `xmpp.LastMessageCorrection` |
 | [XEP-0313](https://xmpp.org/extensions/xep-0313.html) | Message Archive Management | `xmpp.MessageArchiveManagement` |
 | [XEP-0352](https://xmpp.org/extensions/xep-0352.html) | Client State Indication | `xmpp.client.StateIndication` |
+| [XEP-0353](https://xmpp.org/extensions/xep-0353.html) | Jingle Message Initiation | `xmpp.JingleMessage` |
 | [XEP-0359](https://xmpp.org/extensions/xep-0359.html) | Unique and Stable Stanza IDs | `xmpp.StanzaId` |
 | [XEP-0363](https://xmpp.org/extensions/xep-0363.html) | HTTP File Upload | `xmpp.HttpFileUpload` |
 | [XEP-0402](https://xmpp.org/extensions/xep-0402.html) | PEP Native Bookmarks | `xmpp.Bookmarks` |
