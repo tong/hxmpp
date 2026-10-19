@@ -37,6 +37,7 @@ function main() {
 	r.addCase(new TestServiceDiscovery());
 	r.addCase(new TestVCard());
 	r.addCase(new TestUserAvatar());
+	r.addCase(new TestOmemo());
 	r.addCase(new TestOob());
 	r.addCase(new TestNickname());
 	r.addCase(new TestChatState());
