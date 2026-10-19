@@ -705,6 +705,9 @@ private class FileSession {
 				return;
 			var queued = 0;
 			while (queued < JingleFileTransfer.WINDOW) {
+				// a write can end the session (a receiver with all data terminates it): the input is closed then
+				if (session.state == ended || input == null)
+					return;
 				final len = try JingleIBB.readBlock(input, buf) catch (e) {
 					session.terminate(failed_application, 'cannot read the data: $e');
 					return;
