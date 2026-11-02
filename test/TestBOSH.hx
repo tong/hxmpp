@@ -377,15 +377,12 @@ class TestBOSH extends utest.Test {
 
 	function test_remote_stream_error() {
 		login();
-		var nonza:XML = null;
-		stream.onNonza = xml -> {
-			nonza = xml;
-			return false;
-		}
+		var error:xmpp.Stanza.Error = null;
+		stream.onError = e -> error = e;
 		respond('<body type="terminate" condition="remote-stream-error" $BODY_NS><stream:error><conflict xmlns="urn:ietf:params:xml:ns:xmpp-streams"/></stream:error></body>');
-		notNull(nonza);
-		equals('stream:error', nonza.name);
-		equals('conflict', nonza.firstElement.name);
+		notNull(error);
+		equals('conflict', error.condition);
+		isFalse(stream.open);
 		same(['remote-stream-error'], errors);
 		equals(1, ended);
 		equals(0, http.length, 'the stream end caused by the error does not send a termination');

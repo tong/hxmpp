@@ -88,6 +88,10 @@ class Stream extends xmpp.Stream {
 				return;
 			}
 			final header = xmpp.Stream.readHeader(str);
+			if (header == null) {
+				fail(new xmpp.Stanza.Error(cancel, 'not-well-formed', 'invalid stream header'));
+				return;
+			}
 			id = header.id;
 			if (id == null || id.length == 0) {
 				fail(new xmpp.Stanza.Error(cancel, "invalid-id", 'missing stream id'));
@@ -102,16 +106,18 @@ class Stream extends xmpp.Stream {
 						input = handleString;
 						finish();
 					case 'stream:error':
-						// the server closes the stream after the error
+						// e.g. not-authorized for an invalid secret; the server closes the stream after the error
 						onEnd = _onEnd;
-						finish(parseStreamError(xml));
+						final error = xmpp.Stream.parseStreamError(xml);
+						handleStreamError(xml);
+						finish(error);
 					case name:
 						fail(new xmpp.Stanza.Error(cancel, undefined_condition, 'unexpected element: $name'));
 				}
 			}
 			send(XML.create('handshake', Sha1.encode(id + secret)));
 		}
-		output(xmpp.Stream.createHeader(xmlns, host, null, lang));
+		sendHeader(xmpp.Stream.createHeader(xmlns, host, null, lang));
 		return this;
 	}
 
@@ -128,22 +134,5 @@ class Stream extends xmpp.Stream {
 		// respond from the address the request was sent to (e.g. a user at the component)
 		if (response.from == null)
 			response.from = request.to ?? host;
-	}
-
-	/**
-		Parses a `<stream:error/>`: the condition is the first element in the streams namespace.
-	**/
-	static function parseStreamError(xml:XML):xmpp.Stanza.Error {
-		var text:String = null;
-		var condition:Null<xmpp.Stanza.ErrorCondition> = null;
-		for (e in xml.elements) {
-			if (e.get('xmlns') != 'urn:ietf:params:xml:ns:xmpp-streams')
-				continue;
-			if (e.name == 'text')
-				text = e.text;
-			else if (condition == null)
-				condition = e.name;
-		}
-		return new xmpp.Stanza.Error(cancel, condition ?? undefined_condition, text);
 	}
 }

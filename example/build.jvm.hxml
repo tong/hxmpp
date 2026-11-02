@@ -1,0 +1,10 @@
+--jvm app.jar
+-main App
+-lib hxmpp
+-dce full
+-debug
+-D analyzer-optimize
+-D message.reporting=pretty
+-D no-deprecation-warnings
+-D xmpp_debug
+#--macro App.test()

@@ -1,0 +1,12 @@
+--lua app.lua
+-main App
+-lib hxmpp
+-dce full
+-debug
+-D message.reporting=pretty
+-D no-deprecation-warnings
+-D xmpp_debug
+# -D analyzer-optimize
+# -D lua-vanilla
+# -D lua-jit
+# -D lua-ver=5.4

@@ -24,12 +24,15 @@ private typedef Query = {
 	handler:XML->Void
 }
 
-@:allow(xmpp.StreamManagement)
+@:allow(xmpp)
 abstract class Stream {
 	public static inline var XMLNS = 'http://etherx.jabber.org/streams';
 
 	/** Namespace of the `<open/>` and `<close/>` elements of framed streams (RFC 7395) **/
 	public static inline var XMLNS_FRAMING = 'urn:ietf:params:xml:ns:xmpp-framing';
+
+	/** Namespace of stream error conditions **/
+	public static inline var XMLNS_STREAMS = 'urn:ietf:params:xml:ns:xmpp-streams';
 
 	/** Handle message stanzas **/
 	public dynamic function onMessage(m:Message) {}
@@ -48,13 +51,22 @@ abstract class Stream {
 	}
 
 	/**
-		Handle non-stanza xml.
+		Handle non-stanza xml (stream errors are reported to `onError` instead).
 		This is the last resort of handling received xml; must return `true` in order for the stream to resume.
 	**/
 	public dynamic function onNonza(xml:XML)
 		return false;
 
-	/** Stream end handler **/
+	/**
+		Called with a stream error received from the peer, or sent by this stream (e.g. `not-well-formed`, `policy-violation`).
+
+		The stream is closed when called (`open` is `false`); `onEnd` follows once the peer closed the stream as well.
+		The condition is one of [RFC 6120 4.9.3](https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions),
+		an application-specific condition is available as `error.app`.
+	**/
+	public dynamic function onError(error:xmpp.Stanza.Error) {}
+
+	/** Called once the peer closed the stream; the stream is closed then (`open` and `ready` are `false`) **/
 	public dynamic function onEnd() {}
 
 	/**
@@ -71,6 +83,11 @@ abstract class Stream {
 
 	public var id(default, null):String;
 	public var version(default, null) = "1.0";
+
+	/** Whether the stream is open: the header was sent and the stream was not closed yet, by `end` or by the peer **/
+	public var open(default, null) = false;
+
+	/** Whether the stream is ready for stanzas: the peer's stream features were received **/
 	public var ready(default, null) = false;
 
 	/**
@@ -111,6 +128,10 @@ abstract class Stream {
 
 	/** Received data not yet processed **/
 	var buf = '';
+
+	/** Position in `buf` and element depth where the scan for the next unit resumes (`nextUnit`) **/
+	var scanPos = 0;
+	var scanDepth = 0;
 
 	/** Received bytes of an incomplete UTF-8 sequence (`recvBytes`) **/
 	var pendingBytes:Null<haxe.io.Bytes>;
@@ -283,16 +304,17 @@ abstract class Stream {
 					final e = XML.create('stream:error').set('xmlns:stream', XMLNS);
 					for (c in xml.elements)
 						e.append(c);
-					input(e.toString());
+					if (open)
+						input(e.toString());
 					continue;
 				}
 			}
-			input(unit);
+			// A closed stream only waits for the peer's closing tag
+			if (open)
+				input(unit);
 		}
-		if (maxBufferSize > 0 && buf.length > maxBufferSize) {
-			output('<stream:error xmlns:stream="http://etherx.jabber.org/streams"><policy-violation xmlns="urn:ietf:params:xml:ns:xmpp-streams"/></stream:error>');
-			end();
-		}
+		if (open && maxBufferSize > 0 && buf.length > maxBufferSize)
+			sendStreamError(policy_violation);
 		return processed;
 	}
 
@@ -300,30 +322,32 @@ abstract class Stream {
 
 	/**
 		Removes and returns the next complete unit from `buf`, `STREAM_END` if the stream was closed,
-		or `null` if more data is needed.
+		or `null` if more data is needed: the scan then resumes where it stopped (`scanPos`, `scanDepth`)
+		once more data was received, instead of rescanning the incomplete unit.
+
+		An incomplete unit always starts at position `0`: data before it (whitespace, declarations) is discarded.
 	**/
 	function nextUnit():Null<String> {
-		var depth = 0;
-		var start = -1;
-		var i = 0;
+		var i = scanPos;
+		var depth = scanDepth;
 		while (true) {
 			final lt = buf.indexOf('<', i);
-			if (start == -1) {
+			if (depth == 0) {
 				// Discard whitespace (keepalives) between top-level elements
 				buf = (lt == -1) ? '' : buf.substr(lt);
-				if (lt == -1)
-					return null;
 				i = 0;
+				if (lt == -1)
+					return more(0, 0);
 			} else if (lt == -1)
-				return null;
-			final pos = (start == -1) ? 0 : lt;
+				return more(buf.length, depth);
+			final pos = (depth == 0) ? 0 : lt;
 			if (startsAt(pos, '<?') || startsAt(pos, '<!--') || startsAt(pos, '<![CDATA[')) {
 				// Skip xml declaration, comments and character data
 				final close = startsAt(pos, '<?') ? '?>' : startsAt(pos, '<!--') ? '-->' : ']]>';
 				final end = buf.indexOf(close, pos);
 				if (end == -1)
-					return null;
-				if (start == -1) {
+					return more(pos, depth);
+				if (depth == 0) {
 					buf = buf.substr(end + close.length);
 					i = 0;
 				} else
@@ -332,27 +356,32 @@ abstract class Stream {
 			}
 			final gt = tagEnd(pos);
 			if (gt == -1)
-				return null;
+				return more(pos, depth);
 			if (buf.charCodeAt(pos + 1) == '/'.code) {
 				if (depth == 0) {
 					// Closing tag at top-level closes the stream
 					buf = buf.substr(gt + 1);
+					scanPos = scanDepth = 0;
 					return STREAM_END;
 				}
 				if (--depth == 0)
-					return takeUnit(start, gt + 1);
+					return takeUnit(gt + 1);
 			} else {
 				final selfClosing = buf.charCodeAt(gt - 1) == '/'.code;
-				if (depth == 0) {
-					start = pos;
-					if (selfClosing || startsAt(pos, '<stream:stream'))
-						return takeUnit(start, gt + 1);
-				}
+				if (depth == 0 && (selfClosing || startsAt(pos, '<stream:stream')))
+					return takeUnit(gt + 1);
 				if (!selfClosing)
 					depth++;
 			}
 			i = gt + 1;
 		}
+	}
+
+	/** More data is needed: remembers where to resume the scan **/
+	inline function more(pos:Int, depth:Int):Null<String> {
+		scanPos = pos;
+		scanDepth = depth;
+		return null;
 	}
 
 	/**
@@ -377,20 +406,74 @@ abstract class Stream {
 	inline function startsAt(pos:Int, str:String):Bool
 		return buf.substr(pos, str.length) == str;
 
-	function takeUnit(start:Int, end:Int):String {
-		final unit = buf.substring(start, end);
+	/** Removes and returns the unit `buf[0...end]` **/
+	function takeUnit(end:Int):String {
+		final unit = buf.substr(0, end);
 		buf = buf.substr(end);
+		scanPos = scanDepth = 0;
 		return unit;
 	}
 
 	/**
-		End stream
+		Closes the stream: sends the closing tag (nothing if the stream is not open).
+
+		`onEnd` is called once the peer closed the stream as well.
 	**/
 	public function end() {
+		if (!open)
+			return;
 		if (streamManagement != null)
 			streamManagement.handleEnd();
 		output(framing ? '<close xmlns="$XMLNS_FRAMING"/>' : '</stream:stream>');
-		reset();
+		// received data is kept: the peer's closing tag may already be buffered
+		reset(false);
+	}
+
+	/**
+		Sends a stream error with `condition` (and an application-specific `app` element), closes the stream
+		and reports the error to `onError`.
+	**/
+	function sendStreamError(condition:xmpp.Stanza.ErrorCondition, ?app:XML) {
+		if (!open)
+			return;
+		final xml = XML.create('stream:error').set('xmlns:stream', XMLNS).append(XML.create(condition).set('xmlns', XMLNS_STREAMS));
+		if (app != null)
+			xml.append(app);
+		output(xml);
+		end();
+		final error = new xmpp.Stanza.Error(cancel, condition);
+		if (app != null)
+			error.app = {condition: app.name, xmlns: app.ns, properties: [for (e in app.elements) e], element: app};
+		onError(error);
+	}
+
+	/**
+		Handles a `<stream:error/>` received from the peer: closes the stream and reports the error to `onError`.
+	**/
+	function handleStreamError(xml:XML) {
+		final error = parseStreamError(xml);
+		end();
+		onError(error);
+	}
+
+	/**
+		Parses a `<stream:error/>`: the condition is the first element in the streams namespace
+		(`undefined-condition` if there is none), with its `<text/>` and an application-specific condition.
+	**/
+	public static function parseStreamError(xml:XML):xmpp.Stanza.Error {
+		var condition:Null<xmpp.Stanza.ErrorCondition> = null;
+		var text:Null<String> = null;
+		var app:Null<xmpp.Stanza.ApplicationErrorCondition> = null;
+		for (e in xml.elements) {
+			if (e.is(XMLNS_STREAMS)) {
+				if (e.name == 'text')
+					text = e.text;
+				else if (condition == null)
+					condition = e.name;
+			} else if (app == null && e.ns != null)
+				app = {condition: e.name, xmlns: e.ns, properties: [for (c in e.elements) c], element: e};
+		}
+		return new xmpp.Stanza.Error(cancel, condition ?? undefined_condition, text, app);
 	}
 
 	function handleString(str:String) {
@@ -400,8 +483,7 @@ abstract class Stream {
 			#if debug
 			trace(e);
 			#end
-			output('<stream:error xmlns:stream="http://etherx.jabber.org/streams"><not-well-formed xmlns="urn:ietf:params:xml:ns:xmpp-streams"/></stream:error>');
-			end();
+			sendStreamError('not-well-formed');
 			return;
 		}
 		if (xml != null)
@@ -488,6 +570,8 @@ abstract class Stream {
 						// Missing or invalid type
 						if (iq.id != null) send(iq.createError({type: modify, condition: bad_request}));
 				}
+			case 'stream:error':
+				handleStreamError(xml);
 			default:
 				if (!onNonza(xml))
 					end();
@@ -526,15 +610,30 @@ abstract class Stream {
 	static function normalizeJid(str:String, bare:Bool):String
 		return Jid.normalize(bare ? Jid.parseBare(str) : str);
 
-	function reset() {
+	/**
+		Closes the stream state; the received data is discarded if `clearBuffer`.
+	**/
+	function reset(clearBuffer = true) {
+		open = false;
 		ready = false;
 		jid = null;
 		serverFeatures = null;
 		if (streamManagement != null)
 			streamManagement.handleReset(cast queries);
 		queries = new Map();
-		buf = '';
-		pendingBytes = null;
+		if (clearBuffer) {
+			buf = '';
+			scanPos = scanDepth = 0;
+			pendingBytes = null;
+		}
+	}
+
+	/**
+		Sends the stream header, opening the stream.
+	**/
+	function sendHeader(header:String) {
+		open = true;
+		output(header);
 	}
 
 	/**
@@ -571,19 +670,22 @@ abstract class Stream {
 		return str;
 	}
 
-	static function readHeader(str:String):Header {
+	/**
+		Reads the attributes of a stream header (or `<open/>`), `null` if it is not well-formed.
+	**/
+	static function readHeader(str:String):Null<Header> {
 		final r = ~/^(<\?xml) (.)+\?>/;
 		if (r.match(str))
 			str = r.matchedRight();
-		// TODO handle stream:error
-		// var i = str.lastIndexOf( "/>" );
 		if (!str.endsWith('/>')) {
 			final i = str.indexOf(">");
 			if (i == -1)
-				throw 'invalid stream header'; // TODO:
+				return null;
 			str = str.substr(0, i) + '/>';
 		}
-		final xml = XML.fromString(str);
+		final xml = try XML.fromString(str) catch (e) null;
+		if (xml == null)
+			return null;
 		return {
 			id: xml.get("id"),
 			from: xml.get("from"),
@@ -593,7 +695,10 @@ abstract class Stream {
 		};
 	}
 
-	static function readFeatures(str:String):XML {
+	/**
+		Returns the `<stream:features/>` of `str`, `null` if there are none (yet); throws if they are not well-formed.
+	**/
+	static function readFeatures(str:String):Null<XML> {
 		var i = str.indexOf("<stream:features");
 		if (i == -1)
 			return null;

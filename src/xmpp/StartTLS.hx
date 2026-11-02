@@ -71,7 +71,8 @@ class StartTLS {
 		Ask to start TLS negotiation.
 
 		`callback` is called with `true` if the server is ready (`<proceed/>`), `false` otherwise
-		(`<failure/>` or any other response); after a failure the server closes the stream.
+		(`<failure/>` or any other response); after a failure the server closes the stream,
+		a stream error is reported to `Stream.onError`.
 		Fails without sending a request on framed streams.
 	**/
 	public static function startTLS(stream:Stream, callback:(success:Bool) -> Void) {
@@ -79,15 +80,18 @@ class StartTLS {
 			callback(false);
 			return;
 		}
+		final _input = stream.input;
 		stream.input = str -> {
-			var xml = try Xml.parse(str).firstElement() catch (e) {
+			stream.input = _input;
+			final xml = try XML.fromString(str) catch (e) null;
+			if (xml == null) {
+				stream.sendStreamError('not-well-formed');
 				callback(false);
 				return;
 			}
-			callback((xml.get("xmlns") == XMLNS) ? switch xml.nodeName {
-				case 'proceed': true;
-				case _: false;
-			} : false);
+			if (xml.name == 'stream:error')
+				stream.handleStreamError(xml);
+			callback(xml.is(XMLNS) && xml.name == 'proceed');
 		};
 		stream.send(XML.create('starttls').set('xmlns', XMLNS));
 	}

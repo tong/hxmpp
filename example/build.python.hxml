@@ -1,0 +1,10 @@
+--python app.py
+-main App
+-lib hxmpp
+-dce full
+-debug
+-D xmpp_debug
+-D analyzer-optimize
+-D message.reporting=pretty
+-D python_version=3.6
+#--macro App.test()

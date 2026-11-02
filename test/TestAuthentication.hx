@@ -108,11 +108,39 @@ class TestAuthentication extends utest.Test {
 	}
 
 	function test_sasl_stream_error() {
+		final errors = new Array<xmpp.Stanza.Error>();
+		stream.onError = e -> errors.push(e);
 		authenticate('balcony');
 		stream.recv("<stream:error><policy-violation xmlns='urn:ietf:params:xml:ns:xmpp-streams'/></stream:error>");
 		isTrue(done);
 		equals('policy-violation', error.condition);
 		equals(cancel, error.type);
+		// the stream is closed and the error reported
+		equals(1, errors.length);
+		equals('policy-violation', errors[0].condition);
+		equals('</stream:stream>', sent[sent.length - 1]);
+		isFalse(stream.open);
+	}
+
+	function test_custom_stream_start() {
+		var customInputs = 0;
+		var features:XML = null;
+		stream.saslAuthentication('juliet', 'secret', new sasl.PlainMechanism(), (?e, f) -> {
+			done = true;
+			error = e;
+			features = f;
+		}, cb -> {
+			// e.g. a transport restarting the stream itself
+			stream.input = str -> customInputs++;
+			cb(XML.fromString("<stream:features xmlns:stream='http://etherx.jabber.org/streams'/>"));
+		});
+		stream.recv(SUCCESS);
+		isTrue(done);
+		isNull(error);
+		notNull(features);
+		// the input installed by the restart stays in place
+		stream.input('<x/>');
+		equals(1, customInputs);
 	}
 
 	function test_invalid_bind_response() {

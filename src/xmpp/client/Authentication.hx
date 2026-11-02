@@ -96,16 +96,19 @@ class Authentication {
 	**/
 	public static function saslAuthentication(stream:Stream, node:String, ?password:String, mechanism:Mechanism,
 			callback:(?error:xmpp.Stanza.Error, features:XML) -> Void, ?streamStart:(XML->Void)->Void) {
-		var _input = stream.input;
-		function _callback(?e, features) {
+		final _input = stream.input;
+		function restore()
 			stream.input = _input;
+		function _callback(?e, features) {
+			restore();
 			callback(e, features);
 		}
 		// Set if the client aborted the exchange; reported once the server confirmed with <failure/>
 		var abortError:xmpp.Stanza.Error = null;
 		stream.input = str -> {
 			final xml = try XML.fromString(str) catch (e) {
-				_callback(new xmpp.Stanza.Error(cancel, undefined_condition, 'invalid sasl response'), null);
+				_callback(new xmpp.Stanza.Error(cancel, 'not-well-formed', 'invalid sasl response'), null);
+				stream.sendStreamError('not-well-formed');
 				return;
 			}
 			switch xml.name {
@@ -125,15 +128,16 @@ class Authentication {
 						_callback(new xmpp.Stanza.Error(auth, not_authorized, 'server failed to prove its identity'), null);
 						return;
 					}
+					// the restart installs its own input, which must stay in place
+					restore();
 					if (streamStart == null)
 						streamStart = stream.start;
-					streamStart(features -> {
-						_callback(null, features);
-					});
+					streamStart(features -> callback(null, features));
 				case 'failure':
-					_callback(abortError ?? parseError(xml, auth), null);
+					_callback(abortError ?? parseFailure(xml), null);
 				case 'stream:error':
-					_callback(parseError(xml, cancel), null);
+					_callback(xmpp.Stream.parseStreamError(xml), null);
+					stream.handleStreamError(xml);
 				default:
 					_callback(new xmpp.Stanza.Error(cancel, undefined_condition, 'unexpected sasl response: ${xml.name}'), null);
 			}
@@ -147,24 +151,22 @@ class Authentication {
 	}
 
 	/**
-		Parses a SASL `<failure/>` or a `<stream:error/>`: the condition is the first element in the
-		namespace of the failure (application-specific elements are ignored).
+		Parses a SASL `<failure/>`: the condition is the first element in the SASL namespace
+		(application-specific elements are ignored).
 	**/
-	static function parseError(xml:XML, type:xmpp.Stanza.ErrorType):xmpp.Stanza.Error {
-		final ns = (xml.name == 'stream:error') ? 'urn:ietf:params:xml:ns:xmpp-streams' : XMLNS;
+	static function parseFailure(xml:XML):xmpp.Stanza.Error {
 		var text:String = null;
 		var condition:Null<xmpp.Stanza.ErrorCondition> = null;
 		for (e in xml.elements) {
-			// children of <failure/> inherit the namespace, stream error conditions declare it
-			final inNamespace = e.ns == null || e.ns == ns;
-			if (!inNamespace)
+			// children of <failure/> inherit the namespace
+			if (e.ns != null && e.ns != XMLNS)
 				continue;
 			if (e.name == "text")
 				text = e.text;
 			else if (condition == null)
 				condition = e.name;
 		}
-		return new xmpp.Stanza.Error(type, condition ?? undefined_condition, text);
+		return new xmpp.Stanza.Error(auth, condition ?? undefined_condition, text);
 	}
 
 	/**

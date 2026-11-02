@@ -207,7 +207,9 @@ class TestStream extends utest.Test {
 			+ "<message from='a@example.com' id='x>y'><body>a &gt; b</body></message>"
 			+ " \n "
 			+ "<presence from='b@example.com/r'/>"
-			+ "<message from='c@example.com'><x xmlns='urn:x'><x/></x><body><![CDATA[1 < 2]]></body></message>";
+			+ "<message from='c@example.com'><x xmlns='urn:x'><x/></x><body><![CDATA[1 < 2]]></body></message>"
+			+ "<!-- a > comment --><?pi > ?>"
+			+ "<message from='d@example.com'><!-- c > d --><body>c &lt; d</body></message>";
 		final stream = new xmpp.client.Stream('example.com');
 		final bodies = new Array<String>();
 		final ids = new Array<String>();
@@ -224,11 +226,148 @@ class TestStream extends utest.Test {
 			stream.recv(data.charAt(i));
 		equals('abc', stream.id);
 		equals('stream:features', features.name);
-		equals(2, bodies.length);
+		equals(3, bodies.length);
 		equals('a > b', bodies[0]);
 		equals('x>y', ids[0]);
 		equals('1 < 2', bodies[1]);
+		equals('c < d', bodies[2]);
 		equals(1, presences);
+	}
+
+	function test_recv_chunks() {
+		// a large stanza received in small chunks: the scan resumes where it stopped
+		final stream = createReadyStream();
+		final bodies = new Array<String>();
+		var presences = 0;
+		stream.onMessage = m -> bodies.push(m.body);
+		stream.onPresence = p -> presences++;
+		final body = StringTools.lpad('', 'x', 200 * 1024);
+		final data = "<message from='a@example.com'><!-- a > b --><body>" + body + "</body><x attr='>'/></message><presence/>";
+		var i = 0;
+		while (i < data.length) {
+			stream.recv(data.substr(i, 1024));
+			i += 1024;
+		}
+		equals(1, bodies.length);
+		equals(body, bodies[0]);
+		equals(1, presences);
+	}
+
+	function test_end() {
+		// not started: nothing is sent
+		final stream = new xmpp.client.Stream('example.com');
+		final sent = new Array<String>();
+		stream.output = str -> sent.push(str);
+		isFalse(stream.open);
+		stream.end();
+		equals(0, sent.length);
+
+		// started: closed once
+		stream.start(f -> {});
+		isTrue(stream.open);
+		stream.end();
+		stream.end();
+		same(['</stream:stream>'], sent.slice(1));
+		isFalse(stream.open);
+
+		// the peer's closing tag ends the stream, it can be started again
+		var ends = 0;
+		stream.onEnd = () -> ends++;
+		stream.recv('</stream:stream>');
+		equals(1, ends);
+		stream.start(f -> {});
+		isTrue(stream.open);
+		equals(3, sent.length);
+	}
+
+	function test_stream_error_before_features() {
+		final stream = new xmpp.client.Stream('example.com');
+		final sent = new Array<String>();
+		final errors = new Array<xmpp.Stanza.Error>();
+		var ends = 0, nonzas = 0, features = 0;
+		stream.output = str -> sent.push(str);
+		stream.onError = e -> errors.push(e);
+		stream.onEnd = () -> ends++;
+		stream.onNonza = xml -> {
+			nonzas++;
+			return true;
+		}
+		stream.start(f -> features++);
+		// error and stream end in one chunk, as servers send them
+		stream.recv(SERVER_HEADER
+			+ "<stream:error><host-unknown xmlns='urn:ietf:params:xml:ns:xmpp-streams'/><text xmlns='urn:ietf:params:xml:ns:xmpp-streams' xml:lang='en'>Unknown host</text></stream:error></stream:stream>");
+		equals(1, errors.length);
+		equals('host-unknown', errors[0].condition);
+		equals('Unknown host', errors[0].text);
+		equals(cancel, errors[0].type);
+		equals(0, features);
+		equals(0, nonzas);
+		same(['</stream:stream>'], sent.slice(1));
+		equals(1, ends);
+		isFalse(stream.open);
+	}
+
+	function test_stream_error() {
+		final stream = createReadyStream();
+		final sent = new Array<String>();
+		final errors = new Array<xmpp.Stanza.Error>();
+		var ends = 0, nonzas = 0, messages = 0;
+		stream.output = str -> sent.push(str);
+		stream.onError = e -> {
+			errors.push(e);
+			isFalse(stream.open);
+		}
+		stream.onEnd = () -> ends++;
+		stream.onNonza = xml -> {
+			nonzas++;
+			return true;
+		}
+		stream.onMessage = m -> messages++;
+		stream.recv("<stream:error><conflict xmlns='urn:ietf:params:xml:ns:xmpp-streams'/><escape-your-data xmlns='application-ns'><x/></escape-your-data></stream:error>"
+			+ "<message><body>late</body></message></stream:stream>");
+		equals(1, errors.length);
+		equals('conflict', errors[0].condition);
+		equals('escape-your-data', errors[0].app.condition);
+		equals('application-ns', errors[0].app.xmlns);
+		equals(0, nonzas);
+		// nothing is processed after the error, except the stream end
+		equals(0, messages);
+		same(['</stream:stream>'], sent);
+		equals(1, ends);
+		isFalse(stream.ready);
+
+		// the peer's closing tag arriving later
+		final stream = createReadyStream();
+		ends = 0;
+		errors.resize(0);
+		stream.onError = e -> errors.push(e);
+		stream.onEnd = () -> ends++;
+		stream.recv("<stream:error><system-shutdown xmlns='urn:ietf:params:xml:ns:xmpp-streams'/></stream:error>");
+		equals('system-shutdown', errors[0].condition);
+		equals(0, ends);
+		stream.recv("</stream:stream>");
+		equals(1, ends);
+	}
+
+	function test_malformed_header() {
+		for (data in [
+			"<stream:stream xmlns='jabber:client' id='1' version='1.0' junk>",
+			SERVER_HEADER + "<stream:features><bind attr=1/></stream:features>"
+		]) {
+			final stream = new xmpp.client.Stream('example.com');
+			final sent = new Array<String>();
+			final errors = new Array<xmpp.Stanza.Error>();
+			stream.output = str -> sent.push(str);
+			stream.onError = e -> errors.push(e);
+			stream.start(f -> {});
+			// no exception leaves recv
+			stream.recv(data);
+			equals(1, errors.length);
+			equals('not-well-formed', errors[0].condition);
+			isTrue(sent[1].indexOf('not-well-formed') != -1);
+			equals('</stream:stream>', sent[2]);
+			isFalse(stream.open);
+		}
 	}
 
 	function test_recv_bytes_utf8_split() {
@@ -289,10 +428,17 @@ class TestStream extends utest.Test {
 	function test_framing_not_well_formed() {
 		final stream = createReadyStream();
 		final sent = new Array<String>();
+		final errors = new Array<xmpp.Stanza.Error>();
 		stream.output = str -> sent.push(str);
+		stream.onError = e -> errors.push(e);
 		stream.recv("<message><body>a</bdy></message>");
 		isTrue(sent[0].indexOf('not-well-formed') != -1);
 		equals('</stream:stream>', sent[1]);
+		equals('not-well-formed', errors[0].condition);
+		// the closed stream ignores further data
+		stream.recv("<message><body>a</bdy></message>");
+		equals(2, sent.length);
+		equals(1, errors.length);
 	}
 
 	function test_framing_max_buffer_size() {
@@ -300,12 +446,18 @@ class TestStream extends utest.Test {
 		final sent = new Array<String>();
 		stream.output = str -> sent.push(str);
 		stream.maxBufferSize = 100;
+		var error:xmpp.Stanza.Error = null;
+		stream.onError = e -> error = e;
 		stream.recv("<message><body>" + StringTools.lpad("", "x", 50));
 		equals(0, sent.length);
 		stream.recv(StringTools.lpad("", "x", 50));
 		isTrue(sent[0].indexOf('policy-violation') != -1);
 		equals('</stream:stream>', sent[1]);
+		equals('policy-violation', error.condition);
 		isFalse(stream.ready);
+		// the closed stream sends no second error
+		stream.recv(StringTools.lpad("", "x", 50));
+		equals(2, sent.length);
 
 		// complete units larger than the limit are not affected
 		final stream = createReadyStream();
@@ -608,10 +760,23 @@ class TestStream extends utest.Test {
 		f.stream.recv('<open xmlns="urn:ietf:params:xml:ns:xmpp-framing" from="example.com" id="a" version="1.0"/>');
 		f.stream.recv('<stream:features xmlns:stream="http://etherx.jabber.org/streams"><mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><mechanism>PLAIN</mechanism></mechanisms></stream:features>');
 		var error:xmpp.Stanza.Error = null;
+		var streamError:xmpp.Stanza.Error = null;
+		f.stream.onError = e -> streamError = e;
 		xmpp.client.Authentication.saslAuthentication(f.stream, 'romeo', 'secret', new sasl.PlainMechanism(), (?e, features) -> error = e);
 		f.stream.recv('<error xmlns="http://etherx.jabber.org/streams"><host-unknown xmlns="urn:ietf:params:xml:ns:xmpp-streams"/></error>');
 		notNull(error);
 		equals('host-unknown', error.condition);
+		equals('host-unknown', streamError.condition);
+		equals('close', XML.fromString(f.sent[f.sent.length - 1]).name);
+
+		// before the features
+		final f = startFramed();
+		streamError = null;
+		f.stream.onError = e -> streamError = e;
+		f.stream.recv('<open xmlns="urn:ietf:params:xml:ns:xmpp-framing" from="example.com" id="a" version="1.0"/>');
+		f.stream.recv('<error xmlns="http://etherx.jabber.org/streams"><host-unknown xmlns="urn:ietf:params:xml:ns:xmpp-streams"/></error>');
+		equals('host-unknown', streamError.condition);
+		equals('close', XML.fromString(f.sent[f.sent.length - 1]).name);
 
 		// our stream errors declare the prefix
 		final f = startFramed();

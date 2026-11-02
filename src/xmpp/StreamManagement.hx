@@ -238,8 +238,7 @@ class StreamManagement {
 		if (count > queue.length) {
 			final sent = format((acked + queue.length) % SEQ_MAX);
 			enabled = receiving = false;
-			stream.output('<stream:error xmlns:stream="${Stream.XMLNS}"><undefined-condition xmlns="urn:ietf:params:xml:ns:xmpp-streams"/><handled-count-too-high xmlns="$XMLNS" h="${format(h)}" send-count="$sent"/></stream:error>');
-			stream.end();
+			stream.sendStreamError(undefined_condition, XML.create('handled-count-too-high').set('xmlns', XMLNS).set('h', format(h)).set('send-count', sent));
 			return false;
 		}
 		acked = h;

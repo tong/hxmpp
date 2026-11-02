@@ -17,3 +17,4 @@ build.hxml
 haxedoc.xml
 .unittest/
 TODO*
+*.map

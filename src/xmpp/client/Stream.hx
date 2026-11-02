@@ -18,6 +18,12 @@ class Stream extends xmpp.Stream {
 		super(xmlns ?? XMLNS, domain, lang);
 	}
 
+	/**
+		Opens the stream (or restarts it, e.g. after authentication): `callback` is called with the stream features
+		once received, the stream is `ready` then.
+
+		A stream error received before (e.g. `host-unknown`) is reported to `onError`.
+	**/
 	public function start(callback:(features:XML) -> Void):Stream {
 		reset();
 		input = (str:String) -> {
@@ -25,10 +31,23 @@ class Stream extends xmpp.Stream {
 				handleString(str);
 			} else if (str.startsWith('<stream:stream') || (framing && str.startsWith('<open'))) {
 				final header = xmpp.Stream.readHeader(str);
+				if (header == null) {
+					sendStreamError('not-well-formed');
+					return;
+				}
 				id = header.id;
 				version = header.version;
+			} else if (str.startsWith('<stream:error')) {
+				final xml = try XML.fromString(str) catch (e) null;
+				if (xml == null)
+					sendStreamError('not-well-formed');
+				else
+					handleStreamError(xml);
 			} else {
-				final features = xmpp.Stream.readFeatures(str);
+				final features = try xmpp.Stream.readFeatures(str) catch (e) {
+					sendStreamError('not-well-formed');
+					return;
+				}
 				if (features != null) {
 					serverFeatures = features;
 					ready = true;
@@ -36,7 +55,7 @@ class Stream extends xmpp.Stream {
 				}
 			}
 		};
-		output(createStreamHeader(domain, version));
+		sendHeader(createStreamHeader(domain, version));
 		return this;
 	}
 }

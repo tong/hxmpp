@@ -1,0 +1,8 @@
+-cpp out
+-main App
+-lib hxmpp
+-dce full
+-debug
+-D xmpp_debug
+-D analyzer-optimize
+-D message.reporting=pretty
