@@ -35,10 +35,4 @@ class WebSocket {
 
 	/** Link relation of the WebSocket endpoint in host-meta ([XEP-0156](https://xmpp.org/extensions/xep-0156.html)) **/
 	public static inline var REL = 'urn:xmpp:alt-connections:websocket';
-
-	@:noCompletion @:deprecated('Use PROTOCOL')
-	public static inline var PROTOCOL_IDENTIFIER = PROTOCOL;
-
-	@:noCompletion @:deprecated('Use XMLNS')
-	public static inline var URI = XMLNS;
 }

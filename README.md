@@ -9,8 +9,7 @@ The Extensible Messaging and Presence Protocol is an open technology for real-ti
 ## Install
 
 ```sh
-haxelib git https://github.com/tong/hxmpp
-haxelib install sasl
+haxelib install hxmpp
 ```
 
 Requires Haxe 4.3.7 or later.
@@ -20,6 +19,7 @@ Requires Haxe 4.3.7 or later.
 See [example/App.hx](example/App.hx) for a basic client (connect, TLS, login, roster, messages) on sys targets, and [example/App.js.hx](example/App.js.hx) for nodejs.
 
 For WebSocket connections (e.g. browser clients) set `stream.framing = true`, see `xmpp.net.WebSocket`.
+For HTTP connections (BOSH) attach the stream to a `xmpp.net.BOSH` session.
 
 External server components ([XEP-0114](https://xmpp.org/extensions/xep-0114.html)) use `xmpp.component.Stream`.
 
@@ -56,10 +56,13 @@ External server components ([XEP-0114](https://xmpp.org/extensions/xep-0114.html
 | [XEP-0107](https://xmpp.org/extensions/xep-0107.html) | User Mood | `xmpp.Pep` |
 | [XEP-0108](https://xmpp.org/extensions/xep-0108.html) | User Activity | `xmpp.Pep` |
 | [XEP-0114](https://xmpp.org/extensions/xep-0114.html) | Jabber Component Protocol | `xmpp.component.Stream` |
+| [XEP-0115](https://xmpp.org/extensions/xep-0115.html) | Entity Capabilities | `xmpp.EntityCapabilities` |
 | [XEP-0118](https://xmpp.org/extensions/xep-0118.html) | User Tune | `xmpp.Pep` |
+| [XEP-0124](https://xmpp.org/extensions/xep-0124.html) | Bidirectional-streams Over Synchronous HTTP (BOSH) | `xmpp.net.BOSH` |
 | [XEP-0153](https://xmpp.org/extensions/xep-0153.html) | vCard-Based Avatars | `xmpp.VCardAvatar` |
 | [XEP-0163](https://xmpp.org/extensions/xep-0163.html) | Personal Eventing Protocol | `xmpp.Pep` |
 | [XEP-0166](https://xmpp.org/extensions/xep-0166.html) | Jingle | `xmpp.Jingle` |
+| [XEP-0167](https://xmpp.org/extensions/xep-0167.html) | Jingle RTP Sessions (with ICE-UDP, DTLS-SRTP, grouping) | `xmpp.JingleRtp` |
 | [XEP-0172](https://xmpp.org/extensions/xep-0172.html) | User Nickname | `xmpp.client.Nickname` |
 | [XEP-0184](https://xmpp.org/extensions/xep-0184.html) | Message Delivery Receipts | `xmpp.DeliveryReceipts` |
 | [XEP-0191](https://xmpp.org/extensions/xep-0191.html) | Blocking Command | `xmpp.Block` |
@@ -67,6 +70,7 @@ External server components ([XEP-0114](https://xmpp.org/extensions/xep-0114.html
 | [XEP-0199](https://xmpp.org/extensions/xep-0199.html) | XMPP Ping | `xmpp.Ping` |
 | [XEP-0202](https://xmpp.org/extensions/xep-0202.html) | Entity Time | `xmpp.EntityTime` |
 | [XEP-0203](https://xmpp.org/extensions/xep-0203.html) | Delayed Delivery | `xmpp.DelayedDelivery` |
+| [XEP-0206](https://xmpp.org/extensions/xep-0206.html) | XMPP Over BOSH | `xmpp.net.BOSH` |
 | [XEP-0215](https://xmpp.org/extensions/xep-0215.html) | External Service Discovery | `xmpp.ExternalServices` |
 | [XEP-0224](https://xmpp.org/extensions/xep-0224.html) | Attention | `xmpp.Attention` |
 | [XEP-0231](https://xmpp.org/extensions/xep-0231.html) | Bits of Binary | `xmpp.Bob` |
@@ -81,6 +85,7 @@ External server components ([XEP-0114](https://xmpp.org/extensions/xep-0114.html
 | [XEP-0353](https://xmpp.org/extensions/xep-0353.html) | Jingle Message Initiation | `xmpp.JingleMessage` |
 | [XEP-0359](https://xmpp.org/extensions/xep-0359.html) | Unique and Stable Stanza IDs | `xmpp.StanzaId` |
 | [XEP-0363](https://xmpp.org/extensions/xep-0363.html) | HTTP File Upload | `xmpp.HttpFileUpload` |
+| [XEP-0384](https://xmpp.org/extensions/xep-0384.html) | OMEMO Encryption (0.3, without the cryptography) | `xmpp.Omemo` |
 | [XEP-0393](https://xmpp.org/extensions/xep-0393.html) | Message Styling | `xmpp.MessageStyling` |
 | [XEP-0402](https://xmpp.org/extensions/xep-0402.html) | PEP Native Bookmarks | `xmpp.Bookmarks` |
 | [XEP-0421](https://xmpp.org/extensions/xep-0421.html) | Occupant identifiers for semi-anonymous MUCs | `xmpp.OccupantId` |

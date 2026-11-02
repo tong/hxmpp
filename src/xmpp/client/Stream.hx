@@ -11,7 +11,7 @@ class Stream extends xmpp.Stream {
 	/** IANA registered `xmpp-client` port (5222) **/
 	public static inline var PORT = 5222;
 
-	/** XMPP client namespac **/
+	/** XMPP client namespace **/
 	public static inline var XMLNS = 'jabber:client';
 
 	public function new(domain:String, ?xmlns:String, ?lang:String) {

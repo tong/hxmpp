@@ -105,7 +105,7 @@ abstract JingleFileData(JingleFileSource) from JingleFileSource to JingleFileSou
 		JingleFileTransfer.sendFile(jingle, peer, file, bytes, {s5b: s5b}, reason -> trace(reason.condition));
 		JingleFileTransfer.receiveFile(session, {s5b: s5b}, (reason, data) -> {});
 
-	Not implemented: file requests (the receiver initiates), ranged transfers, multiple files per session.
+	Not implemented: ranged transfers, multiple files per session.
 
 	[XEP-0234: Jingle File Transfer](https://xmpp.org/extensions/xep-0234.html)
 **/

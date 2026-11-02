@@ -2,29 +2,6 @@ import utest.Assert.*;
 import xmpp.Jid;
 
 class TestJid extends utest.Test {
-	function test_ereg() {
-		isTrue(Jid.EREG.match('node@domain.net/Resource'));
-		equals('node@domain.net/Resource', Jid.EREG.matched(1));
-		equals('node', Jid.EREG.matched(2));
-		equals('domain.net', Jid.EREG.matched(3));
-		equals('/Resource', Jid.EREG.matched(4));
-		equals('Resource', Jid.EREG.matched(5));
-
-		isTrue(Jid.EREG.match('node@domain/Resource'));
-		equals('node@domain/Resource', Jid.EREG.matched(1));
-		equals('node', Jid.EREG.matched(2));
-		equals('domain', Jid.EREG.matched(3));
-		equals('/Resource', Jid.EREG.matched(4));
-		equals('Resource', Jid.EREG.matched(5));
-
-		isTrue(Jid.EREG.match('node@domain'));
-		equals('node@domain', Jid.EREG.matched(1));
-		equals('node', Jid.EREG.matched(2));
-		equals('domain', Jid.EREG.matched(3));
-		isNull(Jid.EREG.matched(4));
-		isNull(Jid.EREG.matched(5));
-	}
-
 	function test_validation() {
 		isTrue(Jid.isValid("aaa"));
 		isTrue(Jid.isValid("example.com"));

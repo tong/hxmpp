@@ -181,13 +181,6 @@ abstract XML(Xml) from Xml to Xml {
 	**/
 	public static inline function parseDocument(str:String):XML
 		return new XML(Xml.parse(str));
-
-	/**
-		Parses `str` and returns the **document** node.
-	**/
-	@:deprecated("XML.parse returns the document node: use XML.fromString for the root element, or XML.parseDocument")
-	public static inline function parse(str:String):XML
-		return parseDocument(str);
 }
 
 /**

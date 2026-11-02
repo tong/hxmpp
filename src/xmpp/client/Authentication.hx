@@ -26,7 +26,7 @@ class Authentication {
 	/**
 		1. Authenticate a client account using SASL
 		2. Binds the resource to the connection
-		3. Establishs a session with the server, if required by the server
+		3. Establishes a session with the server, if required by the server
 	**/
 	public static function authenticate(stream:Stream, node:String, resource:String, ?password:String, mechanism:Mechanism,
 			callback:(?error:xmpp.Stanza.Error) -> Void, ?streamStart:(XML->Void)->Void) {

@@ -48,8 +48,8 @@ abstract class Stream {
 	}
 
 	/**
-		Handle non-stanza xml.  
-		This is the last ressort of handling received xml; must return `true` in order for the stream to resume.
+		Handle non-stanza xml.
+		This is the last resort of handling received xml; must return `true` in order for the stream to resume.
 	**/
 	public dynamic function onNonza(xml:XML)
 		return false;
@@ -124,7 +124,7 @@ abstract class Stream {
 	/**
 		Info `get` query
 	**/
-	public function get<T:IQ.Payload, R>(payload:IQ.Payload, ?jid:String, ?handler:(response:Response<T>) -> Void):IQ {
+	public function get<T:IQ.Payload>(payload:IQ.Payload, ?jid:String, ?handler:(response:Response<T>) -> Void):IQ {
 		final iq = new IQ(payload, IQType.Get, makeRandomId(), jid);
 		if (handler != null) {
 			addQuery(iq, xml -> {
@@ -143,7 +143,7 @@ abstract class Stream {
 	/**
 		Info `set` query
 	**/
-	public function set<T:IQ.Payload>(payload:IQ.Payload, ?jid:String, handler:(response:Response<T>) -> Void):IQ {
+	public function set<T:IQ.Payload>(payload:IQ.Payload, ?jid:String, ?handler:(response:Response<T>) -> Void):IQ {
 		final iq = new IQ(payload, IQType.Set, makeRandomId(), jid);
 		if (handler != null) {
 			addQuery(iq, xml -> {
@@ -419,7 +419,9 @@ abstract class Stream {
 			}
 		}
 		if (stanza && xml.has('xmlns') && xml.get('xmlns') != xmlns) {
-			trace("invalid stream namespace");
+			#if debug
+			trace('ignoring stanza with invalid namespace: ${xml.get('xmlns')}');
+			#end
 			return;
 		}
 		if (xml.has("id")) {

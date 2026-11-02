@@ -30,6 +30,32 @@ class TestXML extends utest.Test {
 		equals(0, xml.elements.count());
 	}
 
+	function test_parse() {
+		final xml:XML = '<sales vendor="John">
+				<item type="peas" price="4" quantity="6"/>
+				<item type="carrot" price="3" quantity="10"/>
+				<item type="chips" price="5" quantity="3"/>
+			</sales> ';
+		equals(XmlType.Element, xml.type);
+		equals('sales', xml.name);
+		// a parsed root element is the child of the document
+		equals(XmlType.Document, xml.parent.type);
+		equals('John', xml.get('vendor'));
+		equals('John', xml['vendor']);
+		equals(3, xml.elements.count());
+		equals('peas', xml.elements[0]['type']);
+		equals('4', xml.elements[0]['price']);
+		equals('carrot', xml.elements[1]['type']);
+		equals('10', xml.elements[1]['quantity']);
+		equals('chips', xml.elements[2]['type']);
+		equals('sales', xml.elements[2].parent.name);
+		equals(3, xml.elements['item'].length);
+		equals(0, xml.elements['nope'].length);
+
+		equals(XmlType.Document, XML.parseDocument('<a/>').type);
+		equals('a', XML.parseDocument('<a/>').firstElement.name);
+	}
+
 	function test_attributes() {
 		var xml = XML.create('node').set('id', 'abc');
 

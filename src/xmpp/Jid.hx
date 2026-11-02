@@ -31,9 +31,6 @@ abstract Jid(CJid) from CJid {
 	public static inline var MAX_PARTSIZE = 1023;
 	public static inline var MAX_SIZE = 3071;
 
-	@:deprecated("Jid.EREG only matches ASCII jids with node, use Jid.isValid")
-	public static final EREG = ~/^(([A-Z0-9._%-]{1,1023})@([A-Z0-9._%-]{1,1023})((?:\/)([A-Z0-9._%-]{1,1023}))?)$/i;
-
 	public inline function new(?node:Null<String>, domain:String, ?resource:Null<String>)
 		this = new CJid(node, domain, resource);
 

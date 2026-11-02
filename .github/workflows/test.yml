@@ -52,7 +52,10 @@ jobs:
         run: haxe --cwd test build-cpp.hxml && test/bin/unit
       - name: Build haxedoc.xml
         run: haxe haxedoc.hxml
-      # - name: Build example [node]
-      #   run: haxe --cwd example node.hxml
-      # - name: Build example [hl]
-      #   run: haxe --cwd example hl.hxml
+      - name: Build examples
+        run: |
+          haxe --cwd example build.hl.hxml
+          haxe --cwd example build.node.hxml
+          haxe --cwd example build.lua.hxml
+          haxe --cwd example build.neko.hxml
+          haxe --cwd example build.python.hxml
