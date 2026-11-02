@@ -1,6 +1,6 @@
 # HXMPP
 
-[Haxe](https://haxe.org/) [XMPP](https://xmpp.org/) library.
+[Haxe](https://haxe.org/) [XMPP](https://xmpp.org/) client/component library.
 
 The Extensible Messaging and Presence Protocol is an open technology for real-time communication, which powers a wide range of applications including instant messaging, presence, multi-party chat, voice and video calls, collaboration, lightweight middleware, content syndication, and generalized routing of XML data. The XMPP protocols are free, open, public, and easily understandable.
 
@@ -13,10 +13,7 @@ haxelib git https://github.com/tong/hxmpp
 haxelib install sasl
 ```
 
-Requires Haxe 4.3.7 or later; tested on hl, cpp, jvm, lua, neko, nodejs, php and python.
-
-STARTTLS (`xmpp.StartTLS.upgrade`) is available on cpp, hl, neko, python, nodejs and lua (untested on hlc), not on jvm.
-On lua the server certificate is **not** verified.
+Requires Haxe 4.3.7 or later.
 
 ## Usage
 
@@ -37,7 +34,7 @@ External server components ([XEP-0114](https://xmpp.org/extensions/xep-0114.html
 ### Extensions
 
 | XEP | Name | Module |
-|-----|------|--------|
+| ----- | ------ | -------- |
 | [XEP-0004](https://xmpp.org/extensions/xep-0004.html) | Data Forms | `xmpp.DataForm` |
 | [XEP-0012](https://xmpp.org/extensions/xep-0012.html) | Last Activity | `xmpp.LastActivity` |
 | [XEP-0030](https://xmpp.org/extensions/xep-0030.html) | Service Discovery | `xmpp.ServiceDiscovery` |
@@ -84,6 +81,7 @@ External server components ([XEP-0114](https://xmpp.org/extensions/xep-0114.html
 | [XEP-0353](https://xmpp.org/extensions/xep-0353.html) | Jingle Message Initiation | `xmpp.JingleMessage` |
 | [XEP-0359](https://xmpp.org/extensions/xep-0359.html) | Unique and Stable Stanza IDs | `xmpp.StanzaId` |
 | [XEP-0363](https://xmpp.org/extensions/xep-0363.html) | HTTP File Upload | `xmpp.HttpFileUpload` |
+| [XEP-0393](https://xmpp.org/extensions/xep-0393.html) | Message Styling | `xmpp.MessageStyling` |
 | [XEP-0402](https://xmpp.org/extensions/xep-0402.html) | PEP Native Bookmarks | `xmpp.Bookmarks` |
 | [XEP-0421](https://xmpp.org/extensions/xep-0421.html) | Occupant identifiers for semi-anonymous MUCs | `xmpp.OccupantId` |
 | [XEP-0424](https://xmpp.org/extensions/xep-0424.html) | Message Retraction | `xmpp.MessageRetraction` |

@@ -16,6 +16,7 @@ function main() {
 	r.addCase(new TestClientRoster());
 	r.addCase(new TestLastMessageCorrection());
 	r.addCase(new TestMessageReactions());
+	r.addCase(new TestMessageStyling());
 	r.addCase(new TestMessageReply());
 	r.addCase(new TestMessageRetraction());
 	r.addCase(new TestStanzaId());
