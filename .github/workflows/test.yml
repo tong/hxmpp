@@ -27,10 +27,17 @@ jobs:
           haxelib git sasl https://github.com/tong/hxsasl
           haxelib dev hxmpp .
           haxelib install test.hxml --always
-          haxelib install hxcpp
           haxelib install hxjava
           haxelib install hxnodejs
           haxelib git utest https://github.com/haxe-utest/utest
+      - name: Install hxcpp
+        # the released hxcpp does not support the api level of haxe 5 ("Hxcpp is out of date")
+        run: |
+          if [ "${{ matrix.haxe }}" = "latest" ]; then
+            haxelib git hxcpp https://github.com/HaxeFoundation/hxcpp
+          else
+            haxelib install hxcpp
+          fi
       - name: Run unit tests
         run: haxe test.hxml
       - name: Build unit tests (hl)
