@@ -35,6 +35,8 @@ jobs:
         run: |
           if [ "${{ matrix.haxe }}" = "latest" ]; then
             haxelib git hxcpp https://github.com/HaxeFoundation/hxcpp
+            # a source checkout needs its build tool (hxcpp.n) compiled
+            (cd "$(haxelib libpath hxcpp)/tools/hxcpp" && haxe compile.hxml)
           else
             haxelib install hxcpp
           fi
