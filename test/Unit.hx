@@ -1,7 +1,6 @@
 function main() {
 	final r = new utest.Runner();
 	r.addCase(new TestXML());
-	// r.addCase(new TestXMLSchema());
 	r.addCase(new TestJid());
 	r.addCase(new TestStanza());
 	r.addCase(new TestMessage());
