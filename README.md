@@ -107,4 +107,4 @@ hl test/bin/unit.hl
 
 ## License
 
-MIT
+[MIT](LICENSE)
