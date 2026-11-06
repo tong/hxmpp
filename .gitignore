@@ -18,3 +18,4 @@ haxedoc.xml
 .unittest/
 TODO*
 *.map
+*.zip
